@@ -5,11 +5,12 @@ namespace AnimusForge.Refactor.Contracts;
 
 internal sealed class WorldDiplomacyNotice
 {
-    internal WorldDiplomacyNotice(string documentId, string title, string description)
-    { DocumentId = documentId; Title = title; Description = description; }
+    internal WorldDiplomacyNotice(string documentId, string title, string description, bool showOnMap = false)
+    { DocumentId = documentId; Title = title; Description = description; ShowOnMap = showOnMap; }
     public string DocumentId { get; }
     public string Title { get; }
     public string Description { get; }
+    public bool ShowOnMap { get; }
 }
 
 internal sealed class WorldDiplomacyPlayerContext

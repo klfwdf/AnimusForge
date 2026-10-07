@@ -38,8 +38,11 @@ internal static class WeeklyReportArchivePolicy
     // Project only frozen reported materials; legacy model summaries/titles are not facts.
     // Runs at existing publication/import/NPC/history boundaries, never in a new tick scan.
     internal static string BulletinFactSummary(EventRecordEntry entry)
+        => FactSummary(entry?.Materials ?? Enumerable.Empty<EventMaterialReference>());
+
+    private static string FactSummary(IEnumerable<EventMaterialReference> materials)
     {
-        var sentences = (entry?.Materials ?? Enumerable.Empty<EventMaterialReference>())
+        var sentences = materials
             .Where(m => m != null && m.MaterialType == ReportedMaterialType && !string.IsNullOrWhiteSpace(m.SnapshotText))
             .Select(m => {
                 string text = m.SnapshotText;
@@ -51,6 +54,35 @@ internal static class WeeklyReportArchivePolicy
 
     internal static string BulletinFactTitle(EventRecordEntry entry)
         => WorldBulletinPolicy.TitleForKind(entry?.Materials?.FirstOrDefault(m => m?.MaterialType == ReportedMaterialType)?.ActionKind);
+
+    internal static bool RequiresNpcDiplomacyKnowledge(EventRecordEntry entry)
+        => entry?.Materials?.Any(m => m != null && (WorldBulletinPolicy.IsDiplomacyFact(m.ActionKind, null)
+            || m.SourceStableKeys?.Any(k => WorldBulletinPolicy.IsDiplomacyFact(null, k)) == true)) == true;
+
+    // A mixed issue's title/digest has no per-sentence provenance. Hide that narrative if any
+    // declaration is unknown, while retaining visible factual materials. Never mutate the archive.
+    internal static (string Title, string Facts, string Anecdote) ProjectBulletinForNpc(EventRecordEntry entry, ISet<string> knownDocumentIds)
+    {
+        var visible = new List<EventMaterialReference>();
+        bool hidden = false;
+        foreach (var material in entry?.Materials ?? Enumerable.Empty<EventMaterialReference>())
+        {
+            if (material == null) continue;
+            bool diplomacy = WorldBulletinPolicy.IsDiplomacyFact(material.ActionKind, null)
+                || material.SourceStableKeys?.Any(k => WorldBulletinPolicy.IsDiplomacyFact(null, k)) == true;
+            if (diplomacy && (material.SourceStableKeys == null || material.SourceStableKeys.Count == 0
+                || !material.SourceStableKeys.All(k => WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", k, knownDocumentIds))))
+            {
+                hidden = true;
+                continue;
+            }
+            if (material.MaterialType == ReportedMaterialType) visible.Add(material);
+        }
+        // Untraceable legacy prose cannot establish permission to reveal diplomatic content.
+        bool narrativeVisible = !hidden && visible.Count > 0;
+        return (narrativeVisible ? entry?.Title ?? "" : "", FactSummary(visible),
+            narrativeVisible ? entry?.BulletinAnecdote ?? "" : "");
+    }
 
     internal static void AppendRecentMaterial(EventRecordEntry entry, EventMaterialReference material, HashSet<string> keys)
     {

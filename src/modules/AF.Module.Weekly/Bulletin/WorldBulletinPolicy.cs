@@ -432,6 +432,21 @@ internal static class WorldBulletinPolicy
 
 	// ---------- NPC regional knowledge: raw facts, assembled locally, no LLM ----------
 
+    internal static bool IsDiplomacyFact(string kind, string key)
+        => string.Equals(kind, "diplomatic_declaration", StringComparison.OrdinalIgnoreCase)
+            || (key ?? "").StartsWith("declaration:", StringComparison.OrdinalIgnoreCase);
+
+    // A declaration being captured/published does not grant an NPC knowledge of its contents.
+    // Missing identity or diplomacy owner is closed; unrelated news retains its existing rules.
+    internal static bool IsNpcFactVisible(string kind, string key, ISet<string> knownDocumentIds)
+    {
+        if (!IsDiplomacyFact(kind, key)) return true;
+        const string prefix = "declaration:";
+        return knownDocumentIds != null && !string.IsNullOrWhiteSpace(key)
+            && key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+            && key.Length > prefix.Length && knownDocumentIds.Contains(key.Substring(prefix.Length));
+    }
+
 	// Recent facts about one kingdom, strongest first (newest breaks ties).
 	// onePerGroup keeps the always-on layer short; the on-demand layer lists every fact of a story.
 	public static List<WorldBulletinEvent> RecentKingdomFacts(IEnumerable<WorldBulletinEvent> events, string kingdomId, int currentDay, int max, bool onePerGroup = true)
