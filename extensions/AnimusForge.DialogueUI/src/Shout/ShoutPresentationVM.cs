@@ -18,6 +18,11 @@ namespace AnimusForge.DialogueUI.Shout
         private bool _canSubmit = true;
         private string _historyText = "";
         private string _statusText = "Enter 发送 · Shift+Enter 换行 · Esc 收起";
+        private int _illustrationVersion = -1;
+        [DataSourceProperty] public bool IsIllustrationVisible => Host is ShoutTextInputPopupVM vm && vm.IsIllustrationVisible;
+        [DataSourceProperty] public bool CanIllustrate => Host is ShoutTextInputPopupVM vm && vm.CanIllustrate;
+        [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? "生图";
+        public void ExecuteIllustrate() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteIllustrate(); }
 
         [DataSourceProperty] public ViewModel Host { get; private set; }
         [DataSourceProperty] public bool HasSubtitle { get; }
@@ -65,6 +70,12 @@ namespace AnimusForge.DialogueUI.Shout
 
         internal bool RefreshAvailability()
         {
+            int illustrationVersion = ShoutBehavior.SceneIllustrationVersionForExternal;
+            if (_illustrationVersion != illustrationVersion)
+            {
+                _illustrationVersion = illustrationVersion;
+                OnPropertyChanged(nameof(IsIllustrationVisible)); OnPropertyChanged(nameof(CanIllustrate)); OnPropertyChanged(nameof(IllustrationButtonText));
+            }
             bool available = !_released && Host != null && _context.IsCurrent();
             if (_canSubmit != available)
             {

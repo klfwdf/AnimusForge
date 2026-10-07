@@ -283,9 +283,10 @@ def build_scroll():
     text(s, '@StatusText', 680, 80, 270, 20, 13, '#FFB08AFF', 'Right')
     editor(s, 263, 100, 698, 98, '#F0DFBEFF', '输入你想对周围人说的话…… (Enter 发送 · Shift+Enter 换行)', '#E2C38AAA')
     staged_trade(s, 275, 200, 680, 13)
-    button(s, 'AFPlateHistory', '历史记录', 'ExecuteToggleHistory', 991, 82, 94, 32, 13, '#361F0EFF')
-    button(s, 'AFPlateGift', '赠送物品', 'ExecuteGift', 1094, 82, 94, 32, 13, '#361F0EFF', IsEnabled='@CanSend')
-    button(s, 'AFPlateCodex', '人物图鉴', 'ExecuteEncyclopedia', 1198, 82, 94, 32, 13, '#361F0EFF')
+    button(s, 'AFPlateHistory', '历史', 'ExecuteToggleHistory', 991, 82, 70, 32, 13, '#361F0EFF')
+    button(s, 'AFPlateGift', '赠送', 'ExecuteGift', 1067, 82, 70, 32, 13, '#361F0EFF', IsEnabled='@CanSend')
+    button(s, 'AFPlateCodex', '图鉴', 'ExecuteEncyclopedia', 1143, 82, 70, 32, 13, '#361F0EFF')
+    button(s, 'AFPlateIllustrate', '@IllustrationButtonText', 'ExecuteIllustrate', 1219, 82, 70, 32, 13, '#361F0EFF', IsEnabled='@CanIllustrate', IsVisible='@IsIllustrationVisible')
     button(s, 'AFPlaqueSend', '@SendText', 'ExecuteSubmit', 991, 125, 188, 41, 15, '#FFDF95FF', IsEnabled='@CanSend')
     # While a round runs the send plaque is disabled; 打断 sits on top of it.
     button(s, 'AFPlaqueInterrupt', '打断 · 插话', 'ExecuteInterrupt', 991, 125, 188, 41, 15, '#FFB08AFF', IsVisible='@CanInterrupt')
@@ -339,13 +340,14 @@ def build_folio():
     editor(f, 59, 803, 460, 136, '#F0DFBEFF', '输入你要对周围人说的话，或点名片向特定 NPC 交谈……', '#D9C3A0AA')
     text(f, '[Enter] 发送 · [Shift+Enter] 换行 · 按受众名单同步分发', 73, 941, 440, 16, 12, '#B09572FF')
     text(f, '@StatusText', 73, 959, 440, 22, 13, '#FFB08AFF')
-    for bid, label, command, x, w, extra in (('AFRowHistory', '历史记录', 'ExecuteToggleHistory', 39, 85, {}),
-                                             ('AFRowGift', '赠送物品', 'ExecuteGift', 132, 85, {'IsEnabled': '@CanSend'}),
-                                             ('AFRowCodex', '人物图鉴', 'ExecuteEncyclopedia', 224, 85, {}),
+    for bid, label, command, x, w, extra in (('AFRowHistory', '历史', 'ExecuteToggleHistory', 39, 70, {}),
+                                             ('AFRowGift', '赠送', 'ExecuteGift', 115, 70, {'IsEnabled': '@CanSend'}),
+                                             ('AFRowCodex', '图鉴', 'ExecuteEncyclopedia', 191, 70, {}),
+                                             ('AFRowIllustrate', '@IllustrationButtonText', 'ExecuteIllustrate', 267, 70, {'IsEnabled': '@CanIllustrate', 'IsVisible': '@IsIllustrationVisible'}),
                                              ('AFRowLeave', '离开', 'ExecuteLeave', 459, 80, {})):
         dark_button(f, bid, label, command, x, 992, w, 32, size=13, **extra)
-    dark_button(f, 'AFRowSend', '@SendText', 'ExecuteSubmit', 317, 992, 135, 32, fill='#644420F2', stroke='#E5B865FF', color='#FFF0C8FF', size=13, IsEnabled='@CanSend')
-    dark_button(f, 'AFRowInterrupt', '打断 · 插话', 'ExecuteInterrupt', 317, 992, 135, 32, fill='#6A2A1CF2', stroke='#E58A65FF', color='#FFE0D0FF', size=13, IsVisible='@CanInterrupt')
+    dark_button(f, 'AFRowSend', '@SendText', 'ExecuteSubmit', 343, 992, 110, 32, fill='#644420F2', stroke='#E5B865FF', color='#FFF0C8FF', size=13, IsEnabled='@CanSend')
+    dark_button(f, 'AFRowInterrupt', '打断 · 插话', 'ExecuteInterrupt', 343, 992, 110, 32, fill='#6A2A1CF2', stroke='#E58A65FF', color='#FFE0D0FF', size=13, IsVisible='@CanInterrupt')
     history_drawer(chrome, horizontal='Left', MarginLeft=180, MarginTop=150)
     trade_panel(expanded)
     t = children(anchored(r, 90, 180, 'Right', 'Center', IsVisible='@IsCollapsed'))

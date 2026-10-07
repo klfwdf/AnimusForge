@@ -9,7 +9,23 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 
 	private readonly Action _onCancel;
 
-	private readonly Action _onTitleLink;
+    private readonly Action _onTitleLink;
+    private readonly bool _allowIllustration;
+    private readonly Action _onIllustration;
+    private int _illustrationVersion = -1;
+    [DataSourceProperty] public bool IsIllustrationVisible => _allowIllustration && ShoutBehavior.IsSceneIllustrationAvailableForExternal;
+    [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
+    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "生图中…" : "生图";
+    [DataSourceProperty] public string IllustrationStatusText => ShoutBehavior.SceneIllustrationStatusForExternal;
+    public void ExecuteIllustrate() { if (CanIllustrate) _onIllustration?.Invoke(); }
+    public void RefreshIllustration()
+    {
+        int version = ShoutBehavior.SceneIllustrationVersionForExternal;
+        if (_illustrationVersion == version) return;
+        _illustrationVersion = version;
+        OnPropertyChanged(nameof(IsIllustrationVisible)); OnPropertyChanged(nameof(CanIllustrate));
+        OnPropertyChanged(nameof(IllustrationButtonText)); OnPropertyChanged(nameof(IllustrationStatusText));
+    }
 
 	private string _titleText;
 
@@ -146,11 +162,13 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 	[DataSourceProperty]
 	public bool IsTitlePlainTextVisible => !IsTitleLinkEnabled;
 
-	public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null)
+    public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null, bool allowIllustration = false, Action onIllustration = null)
 	{
 		_onSubmit = onSubmit;
 		_onCancel = onCancel;
-		_onTitleLink = onTitleLink;
+        _onTitleLink = onTitleLink;
+        _allowIllustration = allowIllustration;
+        _onIllustration = onIllustration;
 		TitleText = titleText ?? "";
 		SubtitleText = subtitleText ?? "";
 		InputHintText = inputHintText ?? "";

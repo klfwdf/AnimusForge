@@ -167,7 +167,7 @@ namespace AnimusForge.DialogueUI
             string movieName = identifier.MovieName;
             if (movieName == "ShoutTextInputPopup" && OwnedMovies.ContainsKey(identifier.Movie))
             {
-                foreach (string id in new[] { "AFDialogueShoutHistory", "AFDialogueShoutSubmit", "AFDialogueShoutCancel" })
+                foreach (string id in new[] { "AFDialogueShoutHistory", "AFDialogueShoutSubmit", "AFDialogueShoutCancel", "AFDialogueShoutIllustrate" })
                 {
                     try
                     {

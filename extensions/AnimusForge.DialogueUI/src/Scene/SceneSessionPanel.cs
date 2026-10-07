@@ -148,6 +148,7 @@ internal sealed class SessionLayer
             if (!_vm.CloseTradeIfOpen()) ShoutBehavior.EndScenePresentationForExternal("leave_esc");
         }
         _vm.Trade.Tick(dt);
+        _vm.RefreshIllustration();
         Action pending = _vm.TakePending();
         if (pending != null)
         {

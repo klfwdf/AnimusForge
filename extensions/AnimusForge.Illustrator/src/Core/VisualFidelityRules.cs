@@ -129,6 +129,8 @@
         {
             switch (kind)
             {
+                case IllustrationReferenceKind.MissionScreenshot:
+                    return MissionScreenshotRules.SpatialContract;
                 case IllustrationReferenceKind.Character:
                     return CharacterAppearancePriority;
                 case IllustrationReferenceKind.CharacterDetail:

@@ -631,6 +631,13 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void UpdateShoutHotkeyCharge(InputKey shoutKey, InputKey specialMenuKey)
 	{
+		if (IsSceneIllustrationBattleForExternal)
+		{
+			if (_shoutHotkeyChargeActive) CancelShoutHotkeyCharge("battle_direct_input");
+			if (!ShoutTextInputPopup.IsOpen && (Input.IsKeyPressed(shoutKey) || Input.IsKeyPressed(specialMenuKey)))
+				TryStartShoutFromHotkey(false, BuildCurrentShoutTargetingContext());
+			return;
+		}
 		if (UpdatePresentationHotkey(shoutKey, specialMenuKey))
 		{
 			return;
@@ -1415,6 +1422,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (_isProcessingShout || _isWaitingForScenePostprocessGate)
 		{
+			if (IsSceneIllustrationBattleForExternal && IsSceneIllustrationAvailableForExternal && !ShoutTextInputPopup.IsOpen)
+			{
+				OpenBattleShoutInput(imageOnly: true);
+				return;
+			}
 			TryShowShoutProcessingBusyMessage();
 			return;
 		}
@@ -1427,9 +1439,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		_activeShoutTargetingContext = targetingContext;
 		LogShoutTargetingContextSnapshot(openModeMenu, targetingContext);
 		BeginShoutProcessing(openModeMenu ? "hotkey_special_menu" : "hotkey_shout_input");
-		try
-		{
-			if (openModeMenu)
+        try
+        {
+            if (IsSceneIllustrationBattleForExternal)
+            {
+                OpenBattleShoutInput();
+                return;
+            }
+            if (openModeMenu)
 			{
 				TriggerShout();
 			}
@@ -13798,7 +13815,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
-		}, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket)))
+        }, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket), enableIllustration: true))
 		{
 			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + "请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
 			{

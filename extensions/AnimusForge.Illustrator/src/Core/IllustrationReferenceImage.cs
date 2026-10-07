@@ -14,7 +14,8 @@ namespace AnimusForge.Illustrator.Core
         EventEmblem,
         ScenePerspective,
         PairedScenePerspective,
-        GeneratedImage
+        GeneratedImage,
+        MissionScreenshot
     }
 
     /// <summary>
