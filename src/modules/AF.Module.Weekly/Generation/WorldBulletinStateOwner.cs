@@ -54,6 +54,7 @@ internal bool CaptureWorldBulletinEvent(string kind, string key, int score, stri
 				return false;
 			}
 		}
+		score = WorldBulletinPolicy.AdjustBaseScore(kind, score);
 		double now = _port.CurrentHour();
 		WorldBulletinEvent e = new WorldBulletinEvent
 		{

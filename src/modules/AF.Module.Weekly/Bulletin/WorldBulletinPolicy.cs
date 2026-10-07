@@ -270,13 +270,24 @@ internal static class WorldBulletinPolicy
 	}
 
 	// One bulletin, leaning toward the player: own deeds +30, home kingdom +20, neighbours +10.
+	// Apply current editorial limits when reading retained old-save facts as well as at capture.
+	// No migration scan, saved record rewrite, or change to already published issue text.
+	internal static int AdjustBaseScore(string kind, int score) => kind switch
+	{
+		"alliance_formed" => Math.Min(score, 45),
+		"alliance_ended" => Math.Min(score, 40),
+		"diplomatic_declaration" => Math.Min(score, 30),
+		_ => score
+	};
+	private static int EffectiveBaseScore(WorldBulletinEvent e) => e == null ? 0 : AdjustBaseScore(e.Kind, e.Score);
+
 	public static int FocusScore(WorldBulletinEvent e, WorldBulletinFocus focus)
 	{
 		if (e == null)
 		{
 			return 0;
 		}
-		int score = e.Score;
+		int score = EffectiveBaseScore(e);
 		if (e.InvolvesPlayer)
 		{
 			score += PlayerHeroBonus;
@@ -295,12 +306,12 @@ internal static class WorldBulletinPolicy
 	// Far-away noise needs world-level weight; the player's own and home news gets a lower bar.
 	public static bool InScope(WorldBulletinEvent e, WorldBulletinFocus focus)
 	{
-		return e != null && e.Score >= (IsHome(e, focus) ? HomeMembershipScore : WorldMembershipScore);
+		return e != null && EffectiveBaseScore(e) >= (IsHome(e, focus) ? HomeMembershipScore : WorldMembershipScore);
 	}
 
 	private static bool IsMinorCandidate(WorldBulletinEvent e, WorldBulletinFocus focus)
 	{
-		return e.InvolvesPlayer || e.Score >= HomeMembershipScore;
+		return e.InvolvesPlayer || EffectiveBaseScore(e) >= HomeMembershipScore;
 	}
 
 	private static string GroupOf(WorldBulletinEvent e)
@@ -319,7 +330,7 @@ internal static class WorldBulletinPolicy
 	// Bonuses alone must not turn a skirmish or fief grant into a headline.
 	public static bool IsTrigger(WorldBulletinEvent e, WorldBulletinFocus focus)
 	{
-		return InScope(e, focus) && e.Score >= PlayerTriggerBaseScore && FocusScore(e, focus) >= WorldTriggerScore;
+		return InScope(e, focus) && EffectiveBaseScore(e) >= PlayerTriggerBaseScore && FocusScore(e, focus) >= WorldTriggerScore;
 	}
 
 	public static bool TryOpenWindow(WorldBulletinScopeState scope, double triggerHour, double nowHour)
@@ -372,7 +383,7 @@ internal static class WorldBulletinPolicy
 		List<WorldBulletinEvent> window = events
 			.Where(e => e != null && (e.Hour > minHour || (deferred.Contains(e.Key) && e.Hour > nowHour - RetentionDays * 24.0)) && e.Hour <= scope.WindowEndHour && !string.IsNullOrWhiteSpace(e.Sentence))
 			.Select(e => new WorldBulletinEvent { Key=e.Key, Kind=e.Kind, Day=e.Day, Hour=e.Hour,
-				Score=e.Score, Sentence=e.Sentence, GameDate=e.GameDate, Group=e.Group, Detail=e.Detail,
+				Score=EffectiveBaseScore(e), Sentence=e.Sentence, GameDate=e.GameDate, Group=e.Group, Detail=e.Detail,
 				InvolvesPlayer=e.InvolvesPlayer, KingdomIds=new List<string>(e.KingdomIds ?? new List<string>()),
 				Participants=(e.Participants ?? new List<WorldBulletinParticipant>()).Where(p => p != null).Select(p => new WorldBulletinParticipant { HeroId=p.HeroId, Name=p.Name, Role=p.Role }).ToList() })
 			.ToList();

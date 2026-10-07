@@ -24,6 +24,18 @@ internal static class Program
 	private static int Main()
 	{
 		var focus = new WorldBulletinFocus { PlayerKingdomId = "vlandia", NearbyKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "vlandia", "battania", "sturgia" } };
+		Check(WorldBulletinCampaignMaterialPolicy.EventPriority("alliance_formed") == 45 && WorldBulletinCampaignMaterialPolicy.EventPriority("alliance_ended") == 40, "new alliance priorities are reduced");
+		var oldAlliance = Ev("old-alliance", "alliance_formed", 100, 70, "结盟。", "alliance", false, "battania");
+		Check(WorldBulletinPolicy.FocusScore(oldAlliance, focus) == 55 && !WorldBulletinPolicy.IsTrigger(oldAlliance, focus), "old-save neighbour alliance uses new 45 plus 10 without headline trigger");
+		var oldEnd = Ev("old-end", "alliance_ended", 100, 55, "解盟。", "end", false, "vlandia");
+		Check(WorldBulletinPolicy.FocusScore(oldEnd, focus) == 60 && WorldBulletinPolicy.IsTrigger(oldEnd, focus), "home alliance end retains 40 plus 20 headline importance");
+		var oldDeclaration = Ev("old-declaration", "diplomatic_declaration", 100, 50, "公开主张。", "declaration", false, "vlandia");
+		Check(WorldBulletinPolicy.FocusScore(oldDeclaration, focus) == 50 && !WorldBulletinPolicy.IsTrigger(oldDeclaration, focus), "ordinary domestic declaration is no longer a standalone trigger");
+		Check(WorldBulletinPolicy.AdjustBaseScore("diplomatic_declaration", 50) == 30 && oldDeclaration.Score == 50, "capture priority is 30 without mutating old factual records on read");
+		oldDeclaration.InvolvesPlayer = true;
+		Check(WorldBulletinPolicy.FocusScore(oldDeclaration, focus) == 80 && WorldBulletinPolicy.IsTrigger(oldDeclaration, focus), "player declaration retains personal and home bonuses");
+		foreach (var kind in new[] { "ruler_policy", "noble_gathering", "tournament_finished", "peace_made", "war_declared", "battle" })
+			Check(WorldBulletinPolicy.AdjustBaseScore(kind, 50) == 50, "other news unchanged: " + kind);
 		var events = new List<WorldBulletinEvent>
 		{
 			Ev("killed:a", "lord_killed", 100, 50, "甲被玩家处决。", "execution:main_hero:4", true, "empire_s", "vlandia"),
