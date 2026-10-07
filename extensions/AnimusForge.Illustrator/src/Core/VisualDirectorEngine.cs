@@ -312,6 +312,7 @@ namespace AnimusForge.Illustrator.Core
             }
             string contract = VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport);
             sb.AppendLine().Append(preserveEquipment ? contract : VisualFidelityRules.WithoutEquipmentRules(contract));
+            sb.AppendLine().Append(VisualFidelityRules.ClothingStatePriority);
             return sb.ToString().Trim();
         }
 
@@ -502,7 +503,7 @@ namespace AnimusForge.Illustrator.Core
         {
             return $"【重绘变体 · 第 {redrawIndex} 次绘制】先检查本次行动意图与近期作品，再推导姿态、手部动作、视线和镜头；减少双手下垂展示姿势的重复。" +
                    "会话或事件已有行动事实时保持该事实，以取景或叙事瞬间变化；对话未写明动作时换一种情绪外化的身体语言；百科结合近期行动选择不同的瞬间，姿态可以鲜明有力，但不扭曲肢体，也不禁止有情境依据的站立；" +
-                   "【人物与装备细节】：未提出定向改编时按参考保真；本次明确要求改变的部分采用新方案，未指定的人物与部位保持原样。";
+                   "【人物与装备细节】：未提出定向改编时保留装备身份，按已发生叙事更新衣物状态；本次明确要求改变的部分采用新方案，未指定的人物与部位保持原样。";
         }
 
         private static string Preview(string value, int maxChars)
@@ -808,6 +809,7 @@ namespace AnimusForge.Illustrator.Core
                     new JObject { ["role"] = "system", ["content"] =
                         (options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules((plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) : (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) +
                         (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) +
+                        "\n" + VisualFidelityRules.ClothingStatePriority +
                         "\n【输出字符上限】你的完整回复（标题、主题、行动摘要、取景元数据、四段正文、标点及空白合计）最多30000字符。" +
                         "这是上限，不是目标篇幅或最低字数，禁止为凑满上限而扩写。仍以本次请求的约Token篇幅为参考，简洁完整地表达即可；" +
                         "篇幅可浮动不代表可以超过此字符上限。优先删去重复修辞和装备罗列，保留关键事实、行动、空间关系及完整四段；不输出计数或检查过程。" },

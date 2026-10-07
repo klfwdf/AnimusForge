@@ -531,7 +531,7 @@ namespace AnimusForge.Illustrator.Core
                 string clause = strength >= 100
                     ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
-                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
+                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备身份、家族纹章及所有已确认游戏事实保持一致；已发生的衣物状态变化按导演正文呈现。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
             }
             if (playerRedraw) effectivePrompt += Environment.NewLine + VisualFidelityRules.PlayerRedrawImagePriority;
             effectivePrompt += frameTail;
@@ -980,7 +980,7 @@ namespace AnimusForge.Illustrator.Core
                         ["type"] = "text",
                         ["text"] = (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
                                    styleClause +
-                                   "2. 人物容貌与实际衣着装备以对应身份参考图为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
+                                   "2. 人物容貌和衣着装备身份以对应参考图为准，已发生的衣物破损、污渍、湿透等状态以导演正文为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
                                    "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
                                    "4. 姿态与互动遵循导演描述，与支撑物和空间关系保持物理一致。\n" +
                                    "5. 落实导演选定的场所、空间关系与构图；非具名艺术布景可补充与主题一致的材质、装饰和光影细节，真实现场仅保留有依据的内容。背景须保留导演设计的空间与环境细节。"
