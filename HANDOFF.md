@@ -1,4 +1,9 @@
-﻿# 当前交接：周报／快报设置与外交宣言提示（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：处决场景随行 NPC 攻击犯人修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+- 产品192091ddb，检查点cc12eb9bd。行刑前暂停随行同伴/士兵 AI，补齐晚生成和后分队伍事件；保留处决原生敌对死亡链路，安全散场/取消/退出恢复自有控制。
+- 105项回归、AF双API/Bootstrap/双接缝及独立RichExecutions目标1.4.8编译通过。实机随行/散场/退出未验，未部署/打包/推送；回滚仅git revert 192091ddb。
+- [主台账及证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-escort-combat-20261008)、[既有代码范围图](docs/architecture/af-framework-code-scope.md)；保留其他作者提交及未提交工作。
+
+# 当前交接：周报／快报设置与外交宣言提示（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 - 产品 `64704d555`，检查点 `d99810d6f`。MCM主模式及周报/快报折叠项、快报独立自动发布与写作要求；外交送达改左下角并进入快报素材。按最终澄清保留原篇幅、战斗数字模板与选材规则，只用写作要求限制“几人对几人”。
 - 策略53项、设置12项、宿主20项、外交3670断言及双API/Bootstrap/双接缝通过；未实机/真实模型、未Stage/部署/打包/推送。关闭自动发布拦截新请求及发布，必要事件记录保留；已发HTTP不承诺立即终止。
 - [主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-settings-declarations-20261008)，日志 `artifacts/bulletin-settings-news-20261007`。回滚 `git revert 64704d555`，保留其他作者改动。
