@@ -5,5 +5,6 @@
   <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/ScenePresentationController.cs" Link="Production/ScenePresentationController.cs" />
   <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs" Link="Production/SceneAudioLipSyncController.cs" />
   <Compile Include="../../../../src/modules/AF.Module.Conversation/Channels/Scene/ScenePresentationPolicy.cs" Link="Production/ScenePresentationPolicy.cs" />
+  <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneAudience.cs" Link="Production/DuelSettings.SceneAudience.cs" />
  </ItemGroup>
 </Project>

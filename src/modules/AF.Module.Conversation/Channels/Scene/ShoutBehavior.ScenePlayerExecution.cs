@@ -119,7 +119,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
 		receipt?.Bind(conversationEpoch);
-		bool audienceBuilt = TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents, _ports.GetPresentationExcludedAgentIndices());
+		bool audienceBuilt = TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents, _ports.GetPresentationExcludedAgentIndices(), DuelSettings.ShouldAutoExcludeUnframedShoutParticipants());
 		if (audienceBuilt)
 		{
 			_ports.AbsorbPresentationAudience(audienceAgents);

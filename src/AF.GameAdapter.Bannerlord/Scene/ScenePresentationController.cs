@@ -24,13 +24,16 @@ internal sealed class ScenePresentationController
  private readonly Action<int> _activateMovement;
  private readonly Action _deactivateMovement;
  private readonly Action _onEnd;
+ private readonly Func<bool> _autoExcludeUnframedParticipants;
+ private bool _lastAutoExcludeUnframedParticipants;
  internal ScenePresentationController(Func<Agent, bool> canParticipate, Func<long> sequence,
   Func<Mission, string> combatReason, Func<float> maxRange, Func<long> historyFingerprint,
-  Action<int> activateMovement, Action deactivateMovement, Action onEnd)
+  Action<int> activateMovement, Action deactivateMovement, Action onEnd, Func<bool> autoExcludeUnframedParticipants = null)
  {
   _canParticipate = canParticipate; _sequence = sequence; _combatReason = combatReason;
   _maxRange = maxRange; _historyFingerprint = historyFingerprint;
   _activateMovement = activateMovement; _deactivateMovement = deactivateMovement; _onEnd = onEnd;
+  _autoExcludeUnframedParticipants = autoExcludeUnframedParticipants;
  }
 	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
 	{
@@ -193,6 +196,7 @@ internal sealed class Member
 		internal string Role;
 		internal CharacterObject Character;
 		internal ScenePresentationParticipantState State;
+		internal bool ExplicitlyIncluded;
 		internal bool InRange = true;
 	}
 	internal const float PresentationTickSeconds = 0.1f;
@@ -247,8 +251,19 @@ internal Member FindPresentationMember(int agentIndex)
 	}
 
 internal bool IsPresentationAudience(Member member)
+		=> IsPresentationAudience(member, _autoExcludeUnframedParticipants?.Invoke() == true);
+
+private ScenePresentationParticipantState GetParticipantState(Member member, bool autoExclude)
 	{
-		return member != null && ScenePresentationPolicy.IsAudience(member.State, IsUsablePresentationAgent(member.Agent, _presentationMission), member.InRange);
+		// Automatic exclusion is derived; manual states survive toggling the setting in either direction.
+		return autoExclude && !member.ExplicitlyIncluded && member.AgentIndex != _presentationAddresseeIndex
+			&& member.State == ScenePresentationParticipantState.Participating
+			? ScenePresentationParticipantState.Excluded : member.State;
+	}
+
+private bool IsPresentationAudience(Member member, bool autoExclude)
+	{
+		return member != null && ScenePresentationPolicy.IsAudience(GetParticipantState(member, autoExclude), IsUsablePresentationAgent(member.Agent, _presentationMission), member.InRange);
 	}
 
 internal int ChoosePresentationAddressee()
@@ -257,11 +272,12 @@ internal int ChoosePresentationAddressee()
 		int[] indices = new int[count];
 		ScenePresentationParticipantState[] states = new ScenePresentationParticipantState[count];
 		bool[] audience = new bool[count];
+		bool autoExclude = _autoExcludeUnframedParticipants?.Invoke() == true;
 		for (int i = 0; i < count; i++)
 		{
 			indices[i] = _presentationMembers[i].AgentIndex;
-			states[i] = _presentationMembers[i].State;
-			audience[i] = IsPresentationAudience(_presentationMembers[i]);
+			states[i] = GetParticipantState(_presentationMembers[i], autoExclude);
+			audience[i] = IsPresentationAudience(_presentationMembers[i], autoExclude);
 		}
 		return ScenePresentationPolicy.ChooseAddressee(indices, states, audience);
 	}
@@ -285,13 +301,23 @@ internal static string BuildPresentationRole(Agent agent, CharacterObject charac
 		}
 	}
 
-internal bool AddPresentationMembers(IEnumerable<Agent> agents)
+internal bool AddPresentationMembers(IEnumerable<Agent> agents, bool explicitlyIncluded = true)
 	{
 		bool changed = false;
 		foreach (Agent agent in agents ?? Enumerable.Empty<Agent>())
 		{
-			if (!IsUsablePresentationAgent(agent, _presentationMission) || FindPresentationMember(agent.Index) != null)
+			if (!IsUsablePresentationAgent(agent, _presentationMission))
 			{
+				continue;
+			}
+			Member existing = FindPresentationMember(agent.Index);
+			if (existing != null)
+			{
+				if (explicitlyIncluded && !existing.ExplicitlyIncluded)
+				{
+					existing.ExplicitlyIncluded = true;
+					changed = true;
+				}
 				continue;
 			}
 			CharacterObject character = agent.Character as CharacterObject;
@@ -302,7 +328,8 @@ internal bool AddPresentationMembers(IEnumerable<Agent> agents)
 				Name = agent.Name?.ToString() ?? character?.Name?.ToString() ?? "NPC",
 				Role = BuildPresentationRole(agent, character),
 				Character = character,
-				State = ScenePresentationParticipantState.Participating
+				State = ScenePresentationParticipantState.Participating,
+				ExplicitlyIncluded = explicitlyIncluded
 			});
 			changed = true;
 		}
@@ -360,6 +387,7 @@ internal void EndPresentationSession(string reason)
 		_presentationMissionRef.SetTarget(null);
 		_presentationAddresseeIndex = -1;
 		_presentationHistoryFingerprint = 0;
+		_lastAutoExcludeUnframedParticipants = false;
 		MergesHotkeyCharge=false;
 		_onEnd();
 		TradeRequestMode = null;
@@ -406,7 +434,9 @@ internal void TickPresentationSession(float dt)
 			EndPresentationSession(combatReason);
 			return;
 		}
-		bool changed = false;
+		bool autoExclude = _autoExcludeUnframedParticipants?.Invoke() == true;
+		bool changed = autoExclude != _lastAutoExcludeUnframedParticipants;
+		_lastAutoExcludeUnframedParticipants = autoExclude;
 		// Typing does not pause the mission; any damage hands control straight back to the player.
 		if (!_presentationCollapsed && _presentationLastPlayerHealth >= 0f && player.Health < _presentationLastPlayerHealth - 0.01f)
 		{
@@ -533,6 +563,7 @@ internal List<ScenePresentationParticipantInfo> GetParticipants()
 		{
 			return result;
 		}
+		bool autoExclude = _autoExcludeUnframedParticipants?.Invoke() == true;
 		foreach (Member member in _presentationMembers)
 		{
 			result.Add(new ScenePresentationParticipantInfo
@@ -540,7 +571,7 @@ internal List<ScenePresentationParticipantInfo> GetParticipants()
 				AgentIndex = member.AgentIndex,
 				Name = member.Name ?? "",
 				Role = member.Role ?? "",
-				State = member.State,
+				State = GetParticipantState(member, autoExclude),
 				IsAddressee = member.AgentIndex == _presentationAddresseeIndex,
 				IsInRange = member.InRange,
 				Character = member.Character
@@ -559,6 +590,7 @@ internal bool SetAddressee(int agentIndex)
 		{
 			member.State = ScenePresentationParticipantState.Participating;
 		}
+		member.ExplicitlyIncluded = true;
 		if (!IsPresentationAudience(member))
 		{
 			return false;
@@ -575,7 +607,8 @@ internal void CycleParticipant(int agentIndex)
 		{
 			return;
 		}
-		member.State = ScenePresentationPolicy.NextState(member.State, agentIndex == _presentationAddresseeIndex);
+		member.State = ScenePresentationPolicy.NextState(GetParticipantState(member, _autoExcludeUnframedParticipants?.Invoke() == true), agentIndex == _presentationAddresseeIndex);
+		member.ExplicitlyIncluded = true;
 		BumpPresentation();
 	}
 internal void SetAllParticipants(bool include)
@@ -586,9 +619,13 @@ internal void SetAllParticipants(bool include)
 		}
 		foreach (Member member in _presentationMembers)
 		{
-			if (include && member.State == ScenePresentationParticipantState.Excluded)
+			if (include)
 			{
-				member.State = ScenePresentationParticipantState.Participating;
+				if (member.State == ScenePresentationParticipantState.Excluded)
+				{
+					member.State = ScenePresentationParticipantState.Participating;
+				}
+				member.ExplicitlyIncluded = true;
 			}
 			else if (!include && member.State == ScenePresentationParticipantState.Participating && member.AgentIndex != _presentationAddresseeIndex)
 			{
@@ -637,9 +674,10 @@ internal HashSet<int> GetPresentationExcludedAgentIndices()
 			return null;
 		}
 		HashSet<int> excluded = null;
+		bool autoExclude = _autoExcludeUnframedParticipants?.Invoke() == true;
 		foreach (Member member in _presentationMembers)
 		{
-			if (member.State == ScenePresentationParticipantState.Excluded)
+			if (GetParticipantState(member, autoExclude) == ScenePresentationParticipantState.Excluded)
 			{
 				(excluded ??= new HashSet<int>()).Add(member.AgentIndex);
 			}
@@ -756,11 +794,12 @@ internal bool UpdateHotkey(ScenePresentationHotkeyPort input, InputKey shoutKey,
  }
  internal void VisitAudience(Action<int,Agent> visit)
  {
-  foreach (Member member in _presentationMembers) if (IsPresentationAudience(member)) visit(member.AgentIndex,member.Agent);
+  bool autoExclude = _autoExcludeUnframedParticipants?.Invoke() == true;
+  foreach (Member member in _presentationMembers) if (IsPresentationAudience(member, autoExclude)) visit(member.AgentIndex,member.Agent);
  }
  internal void AbsorbAudience(IReadOnlyList<Agent> agents)
  {
-  if (IsPresentationSessionLive() && AddPresentationMembers(agents)) BumpPresentation();
+  if (IsPresentationSessionLive() && AddPresentationMembers(agents, explicitlyIncluded: false)) BumpPresentation();
  }
 }
 

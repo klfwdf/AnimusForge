@@ -47,7 +47,7 @@ public partial class ShoutBehavior
 		=> SceneHistoryOwner.PublicFingerprint();
 
 	// The turn's framed audience: every non-excluded member currently in range (locked at any distance).
-	// ProcessCurrentScenePlayerShout still adds 10 m bystanders around the addressee and the player.
+	// ProcessCurrentScenePlayerShout adds 10 m bystanders only when automatic exclusion is off.
 	private ShoutTargetingContext BuildPresentationTargetingContext()
 	{
 		GetConfiguredShoutRange(out var _, out var maxRange);
