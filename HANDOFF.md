@@ -1,4 +1,10 @@
-﻿# 当前交接：场景喊话未框选人物自动屏蔽（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：场景喊话与战斗双截图生图（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `e5c32267c`，检查点 `2b2020879`。手动面板按钮，战斗喊话直进UI；临时冻结/隐藏UI采当前及反侧回望两图，立即恢复，再必经识图导演和双图生成。保持站位/距离/朝向，喊话用完整最近两轮多人对白，战斗保留截图动作；禁止重复、丢图回退或自动重试。
+- 采集/恢复/转码189断言、两个最终生产DLL的实际请求/历史各43断言、XML绑定/生成器一致性及原双API1.3/1.4+Bootstrap+接缝构建PASS。真实GPU、HUD、切场景/恢复、真实模型及画廊实机NOT-RUN；未Stage/部署/打包/推送。
+- [唯一主台账、源码坐标、证据与剩余验收](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mission-screenshots-20261008)，[既有职责导航](docs/architecture/af-framework-code-scope.md)。证据 `artifacts/mission-screenshots-20261008/verification-receipt.json`，回滚只 `git revert e5c32267c`，保留其他作者工作和NuGet目录。
+
+# 当前交接：场景喊话未框选人物自动屏蔽（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `027f58976`，检查点 `1deffce9`。MCM“3. 场景喊话”新增“自动屏蔽未框选人物”，默认关闭；开启过滤后来的旁观者和现有自动成员，框选/手动邀请/锁定有效、手动屏蔽保留，下一轮生效。
 - 新增开关/成员30、实际受众构造13与既有相关124项通过；隔离候选原双 API/Bootstrap/双 DLL 接线通过。真实 MCM/场景/模型未验，未 Stage/部署/打包/推送。
