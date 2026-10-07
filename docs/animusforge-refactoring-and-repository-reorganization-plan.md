@@ -8317,3 +8317,15 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - XML/绑定检查：两种暂停呈现共用卷轴、不含受众名录、各有单个生图/关闭入口、滚动Clip/Inner/Scrollbar路径可解析、6000/自动聚焦/光标跟随正确；持续卷轴/手札各保留生图与受众。生成器二次执行字节一致，`artifacts/shout-scroll-fallback-20261008/ui-check-final.log`。现有生产链接UI生命周期/失效context回归103项PASS，`lifecycle-final.log`；没有运行Illustrator离线审计或付费API。
 - NOT-RUN：真实MCM名称/旧配置显示、Gauntlet字体/点击/缩放/滚动和暂停恢复实机；没有部署/Stage/打包/推送。本包只改呈现，不修改前包生图HTTP/双截图/导演owner。最终构建结果、产品修订与回滚见下方完成记录。
 - 完成：产品`25ea05c267aa94f2446b858c9b7c7541bd3d6d6c`，上述坐标绑定该提交，意图检查点`3b2816366`。原`build_single_module.ps1` Debug双API（1.3.15.110062 / 1.4.6.115628）、Bootstrap与双实际DLL接缝PASS，最终`build-verified.log`；`git diff --check` PASS。九个产品文件hash及结果绑定`artifacts/shout-scroll-fallback-20261008/source-receipt.json`。回滚仅`git revert 25ea05c26`，保留前包双截图功能和其他作者工作。
+
+
+<a id="scene-image-deploy-20261008"></a>
+# 双截图与卷轴暂停界面部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+
+- 用户明确“编译部署”；源码 `e88949dc4dad6161820ef6b5f7e4fb7bb34e76f9`，main，跟踪文件干净。部署包含此前本地全部已提交产品：双截图`e5c32267c`、卷轴暂停`25ea05c26`、Google原生生图`6e029030`、外交贸易/知情`ffa6301b`、原版开战接续`a8727db4`、会面生命周期`110bbeed`、滚轮/历史定位`27205125`及祖先；未提交NuGet目录不打包。用户后询问已明确这些其他会话改动也包含。
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Debug -Stage` 完成1.3.15.110062 / 1.4.6.115628、Bootstrap及双DLL接缝。首次Stage失败于旧暂存目录与新源码资源不一致：`Reset-ProjectStageDirectory`在清理旧Stage前先校验最新源hash，命中旧`WorldBulletinWritingRequirements.json`。未改构建入口或绕过校验，完整移动旧Stage到仓内证据目录后复用原`deploy_module.ps1`重建/全校验再覆盖。
+- 1.3/1.4本次实际DLL的生图协议/导演/历史回归各114 PASS（全HTTP内存拦截，无外部API）；新Stage的最新提示词/两个暂停卷轴XML、四生图按钮和Bootstrap单入口校验PASS。脚本部署success，更新16文件；Stage全部3380文件与安装目录SHA256一致，Recovery16旧文件hash匹配且complete标记存在。未修改游戏/TaleWorlds原版DLL；未打包、推送或启动游戏。
+- 安装路径 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。证据 `artifacts/scene-image-deploy-20261008/`：`build-stage.log`保留原失败，`deploy.log`记录成功，`request-tests-13.log`/`request-tests-14.log`、`stage-ui-checks.json`、`deployment-receipt.json`绑定安装hash及源码；当前源和部署前源一致。
+- 安装回滚点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-1705e1000cc3437ea3508f544c9ec554`，清单与16旧文件已验证。只按manifest恢复本次替换文件；源码功能回滚仍分别用各产品inverse commit，禁止整体重置其他作者历史。
+- 用户追加“旧缓存直接删”，按上下文指刚保留的旧构建Stage缓存`artifacts/scene-image-deploy-20261008/prior-stage`。绝对路径校验后请求PowerShell删除被自动审批策略拒绝，返回`blocked by policy`，未说明具体原因；未绕过拒绝，目录仍保留，未删除画廊/玩家配置/存档/部署Recovery。该缓存未包含在安装文件中。
+- NOT-RUN：游戏加载、真实GPU双截图/HUD/反向机位及恢复、暂停UI显示/点击/滚动、后台离场保存/画廊、真实导演生图与玩家存档。构建/安装哈希PASS不冒称实机验收。本条覆盖上述产品此前“未部署”状态，保留其未验范围。

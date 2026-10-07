@@ -1,4 +1,10 @@
-﻿# 当前交接：对话滚轮减速和历史最新定位（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：双截图及卷轴暂停界面已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+
+- 用户授权编译部署；源码`e88949dc`及其全部已提交改动（含其他会话的会面、外交、生图接口、滚轮/历史）按原双API/Bootstrap/接缝构建通过，生图实际DLL各114项PASS。部署更新16文件，3380安装文件SHA一致，16份Recovery备份验证通过。
+- [唯一部署台账、证据与回滚位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-deploy-20261008)；收据`artifacts/scene-image-deploy-20261008/deployment-receipt.json`。游戏模块已覆盖，未打包/推送/启动；真实GPU/UI/模型/玩家存档仍待实机验收。
+- 用户要求删除的旧构建Stage缓存被自动审批策略阻止（blocked by policy，未提供细因），仍保留在证据目录的prior-stage；不影响已部署模块。原版DLL与玩家画廊/配置/存档未删除。
+
+# 当前交接：对话滚轮减速和历史最新定位（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `27205125`，检查点 `034bb89`。正文/选项和共享历史面板滚轮速度0.2→0.04；“最新”直接跳末页底部，已在末页仍重新定位，不逐页构建；筛选范围、下一页衔接、拖动和自动定位逻辑保持。
 - 导航/真实历史控件12项及双API命中回归各163项PASS；固定产品隔离原双API/Bootstrap/双DLL接缝构建PASS。引擎/布局替身，真实鼠标手感/分辨率布局/游戏内最新定位未验；未Stage/部署/打包/推送。
