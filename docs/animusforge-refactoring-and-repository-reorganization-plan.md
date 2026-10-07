@@ -1,4 +1,17 @@
-﻿<a id="scene-audience-toggle-20261008"></a>
+﻿<a id="diplomacy-offer-prefix-20261008"></a>
+# 外交原案 ID 漏前缀修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户授权修复日志中巴丹尼亚接受贸易三次失败；模型漏掉 `diplomacy_document:`，完整来源无法匹配，触发 final_live_legal_action_guard。产品 `5c0c1a31c42e0aa519640c44b5837eb0c6688fe5`，检查点 `1aad4df`，主树 main；保留其他作者提交/草稿和未跟踪 NuGet 目录。
+- 实现：只在玩家宣言解析完成入口，针对没有冒号的来源 ID，尝试补齐固定前缀；必须在 owner 提供的玩家已知、活跃回合开放提案中唯一匹配双向当事国、提案类型、动作 ID，并确认源公文存在、已公开、作者正确。缺动作 ID 时只允许唯一动作；多记录/多动作拒绝猜测。记录归一化诊断，保存实际 canonical ID；随后仍经过原回合绑定、合法动作、战争/王权等资格检查和原效果提交。
+- 保持：不改变全局 ID 比较、完整 ID/正常绑定规则、模型采样/提示词/请求数/公共 API/存档键/持久类型。仅接受或拒绝原案的玩家公告解析受此修复；私聊/信使/喊话及 AI 发文没有被改写。不会自动重放旧失败公文或补发旧外交动作；更新后需重新回应仍开放的提案，已失效提案须重新提出。没有操作玩家文件。
+- 性能：正常完整 ID 仍使用现有惰性提案枚举，O(1) 退出新增 helper；只有缺前缀的响应捕获一次当前已知活跃提案列表并复用，扫描遇第二候选即拒绝。唯一匹配后一次既有 ResolveDocument 核实，不增加 Tick/全档轮询/反射/后台游戏对象读取或 LLM 请求。
+- 源码坐标（产品修订，一基行号）：`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs:122–131` 在 CommitAnalysis 中复用候选并先归一化；`:254–286` 的 `NormalizePlayerOfferSourcePrefix` 实施窄匹配。权威提供者 `WorldDiplomacyOrchestration.DialogueIndex.cs:19–22` 的 PlayerAnalysisOffers 原样保持，提供已知开放原案；真实消费者仍为 owner 回合归属与 DocumentExecution/OfferApplication。回归 `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlayerSemanticReplay.cs:254–324` 的 VerifyShortOfferSourceIds；本地 code-map 对记录提交/当前源码两个模式 PASS。
+- 专项 **3918 PASS**（新增18场景、108断言）：短/完整/大小写来源、唯一缺动作、拒绝、未获知、关闭、错对象/动作/意图、丢失/未公开公文、作者矛盾、歧义、异前缀、残缺后缀、战争、无权威提供者；逐项覆盖实际解析→owner绑定→执行准入→原案结算、JSON往返和重复完成。真实生产应用/规则，game effects 与宿主为替身；非真实游戏或模型验收。旧 net6 项目用已安装 SDK 8.0.421 的仓内隔离 net8 工程链接191个原文件，无产品方法体变换。
+- 红绿证据：首次 fixture 引入真实状态校验时旧和平案例默认和平，修正 fixture 默认交战后 `diplomacy-red-fixed-1` 精确复现短 ID 失败；生产修复后 `diplomacy-green-1` PASS，正常路径保持惰性枚举的最终版 `diplomacy-final-1` PASS。所有失败日志保留，最终191个链接源码与验证 manifest SHA一致。
+- 构建：共享树原入口双API/Bootstrap/双DLL接缝 exit0；期间其他作者新增生图草稿，因此本包产品在仓内隔离 worktree `artifacts/diplomacy-offer-prefix-20261008/source-verified` 按固定提交再次验证，最终双 API、Bootstrap 和双实际 DLL 接缝 **exit0**。固定提交的两任务文件与最终专项和主树 blob 相同，9个产物副本 SHA 与原输出/metadata 核对通过。不 Stage/Deploy；脚本不变，Debug，1.3引用 `_deps_auto` 的 v1.3.15.110062，1.4引用 `.tmp/build_check/1.4` 的 v1.4.6.115628。
+- 统一证据 `artifacts/diplomacy-offer-prefix-20261008/`：red/green/final专项日志及 source-manifest、source-inputs.json、code-map.json、共享/隔离 build日志及退出码、receipt.json 和 compiled/。NOT-RUN：真实模型/双版本战役/玩家旧档与旧失败公告恢复。未 Stage、部署、打包、推送。回滚仅 `git revert 5c0c1a31c`；不回滚其他作者、不 hard reset。
+
+<a id="scene-audience-toggle-20261008"></a>
 # 场景喊话自动屏蔽未框选人物（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户追加要求：MCM“3. 场景喊话”新增“自动屏蔽未框选人物”，默认关闭、无需重启。旧 JSON 缺键/设置不可用同样关闭。开启时只让框选或手动邀请的人参与，新走近的旁观者不进入本轮受众；当前会话原先自动加入者派生为屏蔽。重新框选、点击人物、参与/锁定及全员参与可显式邀请，原手动屏蔽保留；关闭恢复自动参与，已提交的旧轮回复不取消，下一轮生效。
