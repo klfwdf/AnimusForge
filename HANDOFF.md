@@ -1,3 +1,7 @@
+# 当前交付：城堡读档修复融合最新 main（2026-10-07）
+
+以远端 `52177454` 为基线，仅接入本次城堡修复为 `f94179d5`，保留远端其他更新及本地旧分支。融合134、邻接60检查与Debug双API+Bootstrap重验通过；目标 `origin/main` 普通快进推送，实际远端收据单独记录。未部署，报告故障档与崩溃根因仍未实机确认。详见[main融合台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-main-integration-20261007)。
+
 # 当前局部修复：城堡战后菜单读档恢复（2026-10-07）
 
 只补齐经严格匹配的加载后城堡战后场景上下文；原宽恕/结算/reset保持，新增有界即时菜单诊断。独立2507、融合134检查及原Debug双API+Bootstrap通过；报告崩溃根因与故障存档实机仍未验证。本次已授权只融合修复并推送main、不部署；融合后的验证另记，详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-recovery-20261007)。
