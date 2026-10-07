@@ -1,11 +1,16 @@
 ﻿<a id="execution-escort-combat-20261008"></a>
-# 处决场景随行 NPC 自动攻击犯人（2026-10-08，ACTIVE）
+# 处决场景随行 NPC 自动攻击犯人（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 工作区 F:/AnimusForge-main，main，起点 fc4f556beb43b2fe94ec6cc9b0ad51fb845297be；保留外交、周报、MCM 等既有未提交工作。
 - 根因：TryResolveCeremonyTeams 将玩家/犯人队伍设为相互敌对以保留原生死亡链路，但未接管玩家带入 NPC 的 AI。修改范围为 Vengeance 权威场景 owner、现有处决回归测试与本交接记录。
 - 目标：行刑开始前暂停既有及晚生成的玩家队伍 NPC，排除玩家/坐骑/处决生成演员；安全散场、取消、卸载时恢复，仅恢复本场仍持有的控制权。保留敌对死亡结算和自定义布置阶段，不改存档、构建入口，不部署/打包/推送。
-- 性能：初始化一次扫描，后续按 Agent 生成事件登记；收尾只遍历本场已登记 NPC，不新增每帧全场扫描。
-- 退出门：受影响生产逻辑回放及原散场回归、AF 1.3/1.4 + Bootstrap/接缝、独立 RichExecutions 目标编译、diff 检查。实机随行/取消/散场 NOT-RUN，需安装候选后验收。
+- 检查点 cc12eb9bd，产品 192091ddb。性能：初始化一次扫描，后续按 OnAgentBuild/OnAgentTeamChanged 事件登记；收尾只遍历本场已登记 NPC，复用移除缓冲，不新增每帧全场扫描、反射、锁或存档写入。
+- 源码证据（192091ddb，一基行号）：Vengeance/Source/Scene/TownExecutionMissionBehavior.Escorts.cs:18-75，SuspendExistingExecutionEscorts / OnAgentBuild / OnAgentTeamChanged / SuspendExecutionEscort 持有当前场次 AI 控制快照，包含晚生成和生成后才分配玩家队伍的人物；:78-119，RestoreExecutionEscortControl 只恢复仍在原队伍且控制器仍为 None 的人物，失效/他人接管放行、原生失败保留待重试，活着且仍敌对的冻结受刑者阻止过早恢复。玩家、坐骑、已非 AI 人物、其他队伍、受刑者和本场生成演员均排除。
+- 真实消费者：Scene.cs:178-200 的 BuildRuntimeScene 在受刑者生成前调用暂停；Placement.cs:1307-1317 的 SpawnCharacter 在原生同步回调期间用 try/finally 排除本场生成演员；Death.cs:1776 的 FinishAftermath 安全恢复；Lifecycle.cs:124-126 的 CleanupRuntimeObjects 在移除临时演员后（或任务已结束）强制恢复，覆盖取消/提前退出/行为卸载。TryResolveCeremonyTeams 原敌对关系和死亡 owner 未变，自定义刑场尚未确认时不暂停 NPC。并未把整个处决 owner 标为重写。
+- 验证：tests/Vengeance/ExecutionCrowdDispersalTests 链接新增生产 partial，以假引擎回放 105 PASS（原散场/预约回归 74 + 新控制/接线 31）；覆盖初始/晚到/后分队伍、排除演员、安全散场、强制取消/退出、重复、移除、其他 owner 接管、恢复失败与重试。完整场景/死亡 owner 的消费接线仅做窄源码检查，不冒充真实 Mission 回放。初轮 fixture 缺少 Core using 编译失败已修复并保留日志。
+- 最终原 scripts/build/build_single_module.ps1 在进程内仅隔离输出/中间目录，无 Stage/Deploy：AF 1.3（v1.3.15.110062）/1.4（v1.4.6.115628）+ Bootstrap/双接缝全部 exit0/0 error；独立 RichExecutions 项目配置在仓内副本、链接同一权威 Source，以目标 1.4.8 引用安装目录编译 exit0/0 error/16 条既有警告。新增代码的 nullable 警告已修复；原一键入口和外部独立项目未修改。两实现集成编译包含同期其他作者源码，不验收其功能。
+- 证据：artifacts/execution-escort-combat-20261008/{regression-verified.log,build-verified.log,standalone-verified.log,source-verified.json,receipt.json}，构建前后 8 个任务文件原始 SHA256 一致，三 AF DLL marker/SHA 复核通过；候选 build-verified/ 与 standalone-bin/，diff --check PASS。日志/产物留本地，不上传。
+- 未验证：真实 1.3/1.4 游戏内带同伴/选兵进入自定义刑场、布置和等待、玩家/刽子手执行、散场继续跟随/移动、取消/退出，以及独立版实机，均 NOT-RUN；未部署、打包、推送。回滚仅 git revert 192091ddb，保留其他作者提交和工作树；文档检查点不包含既有产品改动。
 
 <a id="illustrator-final-widescreen-20261007"></a>
 # 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
