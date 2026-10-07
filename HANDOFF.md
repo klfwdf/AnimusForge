@@ -1,4 +1,9 @@
-﻿# 当前交接：定向换装与纹章精简（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：装备保真MCM开关（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+- 产品df45d7b51，检查点a8ee795。默认开启，关闭放开服装装备，保留人物身份和事实；请求冻结，协议回退同样生效。
+- 双API/Bootstrap/接缝通过；未实机/部署/打包/推送。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#equipment-fidelity-option-20261007--build_verified_not_deployed)。
+- 覆盖之前“未新增装备保真开关”的状态说明。
+
+# 当前交接：定向换装与纹章精简（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 - 产品c734274c3；检查点8bb3912。定向重绘采用换装参考说明，普通生成保真；删除逐层纹章文字。尚未新增装备保真MCM开关。
 - 双API/Bootstrap/接缝通过，未实机/部署/推送。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#directed-outfit-redraw-20261007--build_verified_not_deployed)。
 

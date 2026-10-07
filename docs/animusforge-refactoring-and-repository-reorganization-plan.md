@@ -7843,3 +7843,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - VisualFidelityRules.DirectedReferenceLabel/DirectedRedrawRepaint保留人物身份标题、定向换装按融合正文；非人物参考保留场景/纹章标签。VisualDirectorEngine.BuildRedrawVariationDirective移除绝对锁装措辞，导演图片标签使用定向分支；UniversalOpenAiImageClient的Chat/Edits引用与末尾规范改用定向分支。普通生成保持原规则。
 - 每请求每图有限文本处理，无新增模型调用/游戏对象扫描/Tick。未新增装备保真MCM开关；系统prompt与原事实仍提供给导演作为基线，用户定向指令覆盖冲突部分，实际模型遵从未验。
 - 原入口双API/Bootstrap/接缝通过，artifacts/redraw-clothing-20261007-build-final.log；diff检查通过。未实机、付费API、部署、打包或推送。回滚git revert c734274c3。
+
+
+## Equipment fidelity option 20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+- 产品df45d7b51，检查点a8ee795。IllustratorSettings.PreserveEquipmentFidelity默认true，位于生图API组；IllustrationOptions构造冻结设置，副本沿用该值。
+- VisualDirectorEngine请求入口移除装备事实，固定系统规则/最终契约/本地构图使用WithoutEquipmentRules，用户规则允许衣装变化；VisualFidelityRules新增自主装备规则，保留身份与事件边界。UniversalOpenAiImageClient将选项传递ComposeImagePrompt及Chat/Edits/Player2/回退，引用不锁旧装备。关闭时旧随机表现锁装段不追加；自定义画风原文保留。
+- 每请求有限文本处理，无新增Tick、游戏状态修改或模型调用。普通默认true保留原行为；true下定向重绘仍可覆盖。关闭后真实模型、MCM持久化及UI未实测。
+- 双API/Bootstrap/接缝通过，日志artifacts/equipment-fidelity-option-build-final.log；diff检查通过。未部署/打包/推送，回滚git revert df45d7b51。
