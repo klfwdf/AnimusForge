@@ -35,6 +35,23 @@ internal static class WeeklyReportArchivePolicy
         (entry.Materials ?? new List<EventMaterialReference>()).Where(m => m != null)
         .SelectMany(m => m.SourceStableKeys ?? new List<string>()).Where(k => !string.IsNullOrWhiteSpace(k)),StringComparer.Ordinal);
 
+    // Project only frozen reported materials; legacy model summaries/titles are not facts.
+    // Runs at existing publication/import/NPC/history boundaries, never in a new tick scan.
+    internal static string BulletinFactSummary(EventRecordEntry entry)
+    {
+        var sentences = (entry?.Materials ?? Enumerable.Empty<EventMaterialReference>())
+            .Where(m => m != null && m.MaterialType == ReportedMaterialType && !string.IsNullOrWhiteSpace(m.SnapshotText))
+            .Select(m => {
+                string text = m.SnapshotText;
+                int newline = text.IndexOf('\n');
+                return (newline < 0 ? text : text.Substring(0, newline)).Trim();
+            }).ToList();
+        return sentences.Count == 0 ? "" : WorldBulletinPolicy.BuildShortFromFacts(sentences[0], sentences.Skip(1));
+    }
+
+    internal static string BulletinFactTitle(EventRecordEntry entry)
+        => WorldBulletinPolicy.TitleForKind(entry?.Materials?.FirstOrDefault(m => m?.MaterialType == ReportedMaterialType)?.ActionKind);
+
     internal static void AppendRecentMaterial(EventRecordEntry entry, EventMaterialReference material, HashSet<string> keys)
     {
         var sources=material.SourceStableKeys ?? new List<string>();
@@ -135,7 +152,7 @@ internal static class WeeklyReportArchivePolicy
 
     internal static EventRecordEntry CloneForArchive(EventRecordEntry e) => new EventRecordEntry {
         EventId=e.EventId, EventKind=e.EventKind, ScopeKingdomId=e.ScopeKingdomId, WeekIndex=e.WeekIndex,
-        Title=e.Title, Summary=e.Summary, ShortSummary=e.ShortSummary, TagText=e.TagText, PromptText=e.PromptText,
+        Title=e.Title, Summary=e.Summary, ShortSummary=e.ShortSummary, BulletinAnecdote=e.BulletinAnecdote, TagText=e.TagText, PromptText=e.PromptText,
         CreatedDay=e.CreatedDay, CreatedDate=e.CreatedDate, BulletinKingdomIds=NormalizeKingdomIds(e.BulletinKingdomIds),
         Materials=new List<EventMaterialReference>(e.Materials ?? new List<EventMaterialReference>())
     };

@@ -4847,6 +4847,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			string sourceText = migrateWorldDiplomacyPrompt
 				? MigrateLegacyWorldDiplomacyPromptText(parsed.Text)
 				: parsed.Text;
+			if (string.Equals(Path.GetFileName(path), WorldBulletinWritingRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
+				sourceText = MigrateLegacyWorldBulletinWritingRequirements(sourceText);
 			text = normalize != null ? normalize(sourceText) : (sourceText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 			return true;
 		}
@@ -5060,6 +5062,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				BackupCustomPromptMigrationSourceUnlocked(path, "aggregate-v" + Math.Max(1, parsed.Version).ToString(CultureInfo.InvariantCulture));
 				parsed.WorldDiplomacyPrompt = MigrateLegacyWorldDiplomacyPromptText(parsed.WorldDiplomacyPrompt);
 			}
+			parsed.WorldBulletinWritingRequirements = MigrateLegacyWorldBulletinWritingRequirements(parsed.WorldBulletinWritingRequirements);
 			store = NormalizeCustomPromptTextStore(parsed);
 			if (needsMigration)
 			{

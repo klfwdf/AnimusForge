@@ -8,6 +8,9 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);args=parser.parse_args()
 out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=resolve_dotnet(ROOT)
 spec=importlib.util.spec_from_file_location("extract",ROOT/"tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py");extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
+sys.path.insert(0,str(ROOT/"tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests"))
+from business_owner_fixture_support import enable_expression_declarations
+enable_expression_declarations(extract)
 manifest=[]
 def read(path):
  text=(ROOT/path).read_text(encoding="utf-8-sig");manifest.append({"path":path,"sha256":hashlib.sha256((ROOT/path).read_bytes()).hexdigest()});return text
@@ -20,10 +23,23 @@ assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: fal
 presentation=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs")
 timeline=read("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs")
 # Exact declarations and exact contiguous production methods, no body substitutions.
-generated="using System;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
-generated+=spans(host,["internal sealed class EventRecordEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData"])+extract.declaration(records,"internal sealed class EventImportPayload")+"}"
+generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
+generated+=spans(host,["internal sealed class EventRecordEntry","internal sealed class ApiCallResult","public sealed class WeeklyPromptSnapshot","public sealed class WorldWeeklyReportHistoryEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData","private IReadOnlyList<WorldWeeklyReportHistoryEntry> GetPublishedWorldWeeklyReportHistoryInternal"])+extract.declaration(records,"internal sealed class EventImportPayload")
+npc_source=read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletinNpc.cs")
+generated+=spans(npc_source,["private WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot","private static List<KeyValuePair<string, string>> ToKingdomDisplayPairs"])+"}"
 generated+=extract.declaration(editor,"internal class WeeklyEditorDisplayPort")+"internal static class WeeklyEditorProjection {"+spans(editor,["internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData","internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries","internal static string BuildWeeklyReportBrowserDefaultTitle"])+"}"
-generated+="internal sealed class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port;"+spans(owner,["internal void UpsertWorldBulletinRecord"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
+generated+="internal sealed partial class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port;"+spans(owner,["internal void UpsertWorldBulletinRecord","internal WorldBulletinSaveState EnsureWorldBulletinState","internal void PublishWorldBulletin","internal async Task RunWorldBulletinRequestAsync","internal void CompleteWorldBulletin","internal void ProcessWorldBulletinMainThreadActions","internal void QueueNoticeAfterIllustration","private void ReleasePendingWorldBulletinNotice"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
+generated+=extract.declaration(owner,"internal sealed class WorldBulletinPort")+extract.declaration(owner,"internal sealed class WorldBulletinPromptFacts")
+settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs")
+bulletin_settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs")
+generated+='public partial class DuelSettings { private const int WorldDiplomacyPromptJsonVersion=3; private const long CustomPromptJsonMaxBytes=262144L; private static readonly Encoding CustomPromptStrictUtf8Encoding=new UTF8Encoding(false,true);'
+for name in ["WorldBulletinWritingRequirementsJsonFileName","DefaultWorldBulletinWritingRequirements"]:
+ generated+=re.search(r"private const string "+name+r" = [^;]+;",bulletin_settings).group()
+generated+=spans(bulletin_settings,["private static string MigrateLegacyWorldBulletinWritingRequirements","private static string NormalizeWorldBulletinWritingRequirementsText"])
+generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadLayeredCustomPromptTextJsonFile","private static bool IsCustomPromptTextFileTooLarge"])+"}"
+assert "latest?.BulletinAnecdote" in npc_source, "NPC snapshot must forward the optional narrative digest"
+packaged=read("content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json")
+(out/"packaged-default.json").write_text(packaged,encoding="utf-8")
 generated+=spans(timeline,["public sealed class WorldMessageTimelineEntryData","public sealed class WorldMessageTimelineCountryReference"])
 constants="\n".join(re.search(r"(?:public|private) const (?:string|int) "+name+r" = [^;]+;",timeline).group() for name in ["WeeklyCategoryId","WorldWeeklyCountryId","UnknownCountryId","MaxWeeklySourceEntries","DetailCharacterLimit","DetailLineLimit"])
 generated+="internal static class WorldMessageTimelineUi { "+constants+"internal static List<WorldMessageTimelineEntryData> Replay(){var result=new List<WorldMessageTimelineEntryData>();AppendWeeklyEntries(result);return result;}"+spans(timeline,["private static void AppendWeeklyEntries","private static void AddCountry","private static string FormatDay","private static string LimitMultiline","private static string FirstNonEmpty"])+"}}"
@@ -37,7 +53,7 @@ paths.append("src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowse
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")
-assert period.attrib.get("WidthSizePolicy")=="StretchToParent", "Issue/category labels need available row width"
+assert period.attrib.get("WidthSizePolicy") in ("StretchToParent", "CoverChildren"), "Issue/category label must stretch or fit content without a fixed width cap"
 country_list=next(node for node in ui.iter() if node.attrib.get("DataSource")=="{CountryItems}")
 assert any(node.attrib.get("Command.Click")=="ExecuteSelect" for node in country_list.iter()), "Country select binding missing"
 assert any(node.attrib.get("Text")=="@ReaderBodyText" for node in ui.iter()), "Independent reader binding missing"

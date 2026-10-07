@@ -32,7 +32,7 @@ public partial class MyBehavior
 		string surroundingsDetail = string.IsNullOrWhiteSpace(surroundingsKingdomId) ? "" : WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcSurroundingsHeader, ResolveKingdomDisplay(surroundingsKingdomId), surroundingsKingdomId, events, day);
 		EventRecordEntry latest = FindLatestWorldBulletinRecord();
 		// World headlines are emitted next to the NPC-kingdom block (npc_major_actions), so its facts are skipped there.
-		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, day, latest?.Title, latest?.ShortSummary, latest?.CreatedDay ?? -1, npcKingdomId);
+		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, day, latest?.Title, WeeklyReportArchivePolicy.BulletinFactSummary(latest), latest?.CreatedDay ?? -1, npcKingdomId, latest?.BulletinAnecdote);
 		return new WeeklyPromptSnapshot(
 			WorldBulletinPolicy.BuildNpcBriefBlock(ToKingdomDisplayPairs(including), events, day),
 			WorldBulletinPolicy.BuildNpcBriefBlock(ToKingdomDisplayPairs(excluding), events, day),
