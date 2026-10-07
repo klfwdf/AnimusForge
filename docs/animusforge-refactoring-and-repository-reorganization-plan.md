@@ -8280,3 +8280,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 既有代码范围图增加本包导航，详细坐标仍只在本条。记录修订校验 **838锚点PASS**；`--working-tree`仍FAIL于旧冻结表的`src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs`内容已演进，本产品提交未修改该文件。不刷新无关历史hash或声称全仓导航已签收，保留`code-map-recorded.log` / `code-map-working-tree.log`。
 - NOT-RUN：真实两个版本的截图实际路径、HUD隐藏、两帧对应/动画冻结、反向机位/相机/暂停恢复、关闭/离场/读档后台保存、画廊显示、真实导演/生图效果和帧性能。本轮未部署/打包/推送、未旧存档验收，不把离线PASS写为实机完成；原生/模型失败明确报错。
 - 回滚只 `git revert e5c32267c`，不回滚其他作者。源码在上表，测试在`extensions/AnimusForge.Illustrator/tests/MissionScreenshotTests`和`MissionScreenshotRequestTests`；候选留在`bin/Debug/single_module_artifacts`，游戏安装未覆盖。
+
+
+<a id="shout-scroll-fallback-20261008"></a>
+# 场景喊话卷轴兜底（2026-10-08，ACTIVE）
+
+- 用户要求原版场景喊话兜底复用卷轴式但不显示受众名录；核实原版兜底、旧皮肤、卷轴、侧边册页都有手动生图按钮。只改兜底呈现/资源接线，保留输入目标资格、暂停、提交/关闭、历史和生图owner。
+- 计划复用卷轴生成器的底座与输入区域，原版兜底直接绑定宿主VM，已有皮肤继续经wrapper绑定及目标失效检查；不添加受众数据/扫描。按原双API/Bootstrap和XML绑定验证，不部署/推送。
