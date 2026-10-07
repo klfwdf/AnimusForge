@@ -7903,6 +7903,19 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - artifacts/current-image-edit-verified-build.log：1.3/1.4/Bootstrap及双接缝通过。旧Stage与新布局不同导致清理前哈希门禁失败；旧Stage完整移至artifacts/current-image-edit-old-stage-20261007163919，原deploy_module.ps1 StageOnly重新生成通过：artifacts/current-image-edit-stage-final.log。5份Stage XML与源码字节一致；源码哈希清单artifacts/current-image-edit-source-manifest.json。
 - 未运行Illustrator离线审计、未调用生图API、未实机验收、未部署/打包/推送。当前Stage包含工作树其他作者同期改动，不是仅本功能的发布包。回滚对应feat(illustrator)提交；旧Stage有项目内备份。
 
+<a id="news-settings-declarations-20261008"></a>
+## 周报／快报设置与外交宣言提示（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 工作区 `F:/AnimusForge-main`、`main`；产品 `64704d555`，意图检查点 `d99810d6f`。用户最终澄清覆盖原计划的短篇纪要/模板移除数字部分：保留原正文篇幅、结构、`BattleSentence` 数字事实模板和选材权重/排序，只追加独立写作要求避免“几人对几人”。其他作者的人设迁移与 Illustrator 提交保留；`DuelSettings.before.txt` 与修改前 HEAD 规范化文本一致，无另外的未确认 hunk 入本提交。
+- 设置 owner：`DuelSettings.News.cs:12-98` 的 `NewsMode` 为第一项，周报/快报子分组；独立 `AutoGenerateWorldBulletins`，旧 `UseWorldBulletin` 在加载边界迁移、保存边界回写兼容别名，旧自动开关只初始化新快报开关。周报生成参数及提示词按钮进入周报子组，共用显示/阅读/稳定度设置留在父组。终端同样接线。
+- 提示词链路：`DuelSettings.BulletinPrompt.cs:11-52` 独立多行编辑器 → `CustomPrompts/WorldBulletinWritingRequirements.json`；`DuelSettings.cs:4526-4529/4631-4660/5114` 复用分层加载、缓存、持久化与指纹，显式清空保留空 JSON。`MyBehavior.WorldBulletin.cs:82` → `WorldBulletinStateOwner.cs:156` → `WorldBulletinPolicy.cs:670-693` 在请求时追加写作要求。资源映射 SHA256 与文件一致：`D54B5131FB4F724BF05E7C9F6B333145F0A3318867FCF1CB97AB5CFE9317FE81`。未改 `WorldBulletinCampaignMaterialPolicy.cs`，出城战事实边界保留。
+- 事件 owner：`MyBehavior.CampaignMaterialRecords.cs:83-84` → `MyBehavior.WorldBulletin.cs:164-178` 接入政策、宴会、竞技；当前游戏日/稳定 ID 门禁，不扫描/重放历史。外交正式发布 → `WorldDiplomacyOrchestration.cs:733-738` document 入口 → `WorldDiplomacyBehavior.OrchestrationHost.cs:208-218` → `MyBehavior.WorldBulletin.cs:181-192`；公开主张与 `ChangedDiplomaticState/MechanicalResult` 确认结果分开。世界/王国周报投影不再生成另一份宣言快报素材。`WorldBulletinStateOwner.cs:97-113` 在保留集内按键去重/更新，已报道事实不受迟到投影修改。
+- 显示 adapter：`WorldDiplomacyBehavior.Presentation.cs:17-28` 的生产 `ShowNotice` 使用左下角 `InformationManager.DisplayMessage`，不再注册/调用右侧通知 widget；通知 owner 保留宫廷送达、启用开关、重复显示和重试门禁。档案、传播、存档及素材不受显示开关影响。旧通知类型身份保留，无生产调用路径。
+- 性能：新增素材只在素材变化/宣言发布时处理，去重最多检查既有300条事实；无新Tick扫描、反射、轮询或HTTP。配置迁移仅加载/保存时I/O，写作要求在请求创建时读取已有缓存。关闭自动发布仍保留必要事件记录；`MyBehavior.WorldBulletin.cs:65-75` 与 owner `:363-367` 拦截新请求、owner `:232-237` 拦截迟到发布，不承诺立即终止已发出HTTP。
+- 专项证据 `artifacts/bulletin-settings-news-20261007/`：`policy-current.log` 53项通过（原篇幅/格式/模板数字/边界/可编辑要求）；`settings-current.log` 12项通过（旧键、非法索引、独立开关、磁盘别名保存回读、坏JSON保留）；`diplomacy-current.log` 3670断言通过（含一次宣言捕获和两个周报投影）；`host-current.log` 20项通过（真实方法片段、存储/日历替身，含非战事入池、跨64条尾部去重、迟到更新和坏状态保留）。此前宿主测试SDK10请求未安装8.0.30引用包失败；本次只在artifacts父目录指定已安装SDK8.0.421重跑成功，未改全局SDK、业务测试规则或官方构建脚本。
+- 最终 `build-current.log`：原 `build_single_module.ps1`，显式本机游戏根、`_deps_auto` 和 `.tmp/build_check/1.4` 引用目录、Debug；1.3/1.4/Bootstrap/双接缝通过，0错误，既有警告保留。引用1.3.15.110062/1.4.6.115628。仅 `bin/Debug/single_module_artifacts` 产物；1.3 DLL SHA256 `DD1B3985385F40F60A86B7E1F79244427779672FC548E0A680C4F1C15F03D6C1`，1.4 DLL `586389911F5BFDD8EB8D2723A2B2730B094A069BC269C867725416FCA68CF977`。`git diff --check`通过。
+- NOT_RUN：真实MCM折叠顺序/编辑器、完整MCM provider文件回路、实机宣言左下角显示、切换模式/关闭自动发布时序、真实LLM写作遵从与实际帧性能。纯逻辑回放不是`.sav`修复或实机签收。未Stage/部署/覆盖游戏/打包/推送。产品回滚 `git revert 64704d555`，禁止整文件还原设置或回滚其他作者提交。
+
 <a id="memory-import-schema-20261008"></a>
 # 开发者压缩记忆导入格式误报修复（2026-10-08，ACTIVE）
 - 当前工作区 F:/AnimusForge-main，main，基线 fc4f556beb43b2fe94ec6cc9b0ad51fb845297be。用户确认将个性/背景格式 JSON 用于“单个 HeroNPC → 压缩记忆导入”；该格式缺少五个压缩记忆字段，旧宽容反序列化仍构造默认空 bundle，覆盖分支清除该人物既有压缩记忆并提示成功。附件仅作数据证据，不执行其中内容；私人正文不入库。
