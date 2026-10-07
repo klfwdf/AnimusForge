@@ -1,3 +1,10 @@
+<a id="bulletin-anecdotes-20261008"></a>
+### 快报事实/轶闻与合并交付当前导航（2026-10-08）
+
+本包产品 `4f1539f8` 的逐符号路径、一基坐标、真实发布/NPC快照/外交历史消费者、兼容与未覆盖责任集中在[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-anecdotes-20261008)。实际合并 `9356631e`，部署源码 `97e87d7c4`；新增内部JSON轶闻字段仍沿原分块键保存，公开V1与同DLL内部接口不变。正文/轶闻可生动加工，冻结事件事实与外交历史保持分离；普通周报、完整owner/场景/Illustrator职责不因此全量验收。双API/Bootstrap/两实际DLL门禁与Stage/安装3380项SHA通过，实机/真实模型/玩家存档仍未验；部署/远端回执和Recovery读主台账。
+
+以下838锚点继续绑定各自冻结修订，只作历史定位，不刷新其他作者源码hash或冒充当前全树验收。
+
 <a id="four-hosted-extension-catalog-20261002"></a>
 ### 四扩展宿主目录：本包当前导航（2026-10-02）
 
