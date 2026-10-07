@@ -24,6 +24,18 @@
 - NOT-RUN：真实模型能否遵守具名同场边界、轶事多样性/生动程度、重复桥段与NPC实际转述；两版游戏实机、玩家存档加载与游戏中的编辑器验收。本轮没有重新跑全外交生命周期/独立分块门禁，相关生产路径未变，实际接线与保存重载由上述专项覆盖，不称全仓验收。
 - 回滚仅 `git revert e06f885c6`；保留 `9f6f43df` 和其他作者更新，不 hard reset、回滚旧快报分流产品或清理玩家数据。
 
+<a id="illustrator-style-identity-20261008"></a>
+# 日系半写实预设：画法与面部结构分离（2026-10-08，BUILD_VERIFIED_ISOLATED_NOT_DEPLOYED）
+
+- 用户明确保留长版，反馈玩家感觉脸型偏亚洲，并强调模型仍须知道日系动漫画风。本包在[上一预设](#illustrator-narrative-anime-20261008)上修订开头：保留“日系动漫插画的线条、色块和半写实明暗表现”，脸部轮廓、颧骨/下颌、鼻部、眼窝/眼形、五官间距及肤色以本人参考图为准，风格化限定于绘画语言。其余长版、负面词、MCM名称/token/序号、默认值及重绘优先语义保持。
+- 工作区 `F:/AnimusForge-main`、`main`，起点 `e9953f04`，本地检查点 `99561eb`，产品 `3e08ad018`。只修改 `extensions/AnimusForge.Illustrator/src/Core/IllustrationStylePresets.cs:59–70` 的 `NarrativeAnime` 固定文本及 README 说明，保留并行截图/政策/周报/外交源码及未跟踪文件。
+- 真实消费者仍是 `VisualDirectorEngine` 的画风偏好和 `UniversalOpenAiImageClient` 的共享预设/最终画风锚点。主树读取点分别为 `Core/VisualDirectorEngine.cs:942`、`Core/UniversalOpenAiImageClient.cs:104–106`，绑定调查时工作树；隔离构建绑定99561eb加本包两文件。复用静态不可变预设和原请求解析，无新增Tick、扫描、反射、模型请求或存档键。
+- 源码差异检查通过。主树首轮构建被并行未完成截图改动阻塞：`VisualDirectorEngine.cs:377` 调用缺少新增bool参数，`Engine/MissionScreenshotCapture.cs:62` 使用1.3不存在的MissionStartedRendering；日志保留，本包未修改那些文件，也不签收并行整树。
+- 隔离检出 `artifacts/illustrator-style-identity-20261008/verify-tree` 从99561eb建立，只复制本包两个文件并核对SHA一致。原统一脚本、Debug、显式已验证引用 `_deps_auto` v1.3.15.110062及 `.tmp/build_check/1.4` v1.4.6.115628：双API、Bootstrap、双实现接线均exit0/0错误。构建日志 `build-final.log`、最终源码/三DLL哈希 `final-hashes.json`、产物 `compiled/` 留在上述证据目录；不修改一键流程。
+- NOT-RUN：玩家反馈图的真实请求/原立绘尚未匹配，措辞可能诱发模板脸但不声称已证实该图根因；真实模型画风及面部结构遵从、MCM实机、当前并行主树最终编译仍未验。未运行Illustrator离线审计/测试、调用付费API、Stage、部署、打包或推送。
+- 回滚本包仅 `git revert 3e08ad018`，保留上一预设、其他作者与历史记录。临时验证检出为仓内本任务副本，不用于游戏部署。
+- [职责导航](architecture/af-framework-code-scope.md#illustrator-style-identity-20261008)。
+
 <a id="illustrator-narrative-anime-20261008"></a>
 # 日系半写实叙事插画 MCM 预设（2026-10-08，BUILD_VERIFIED_NOT_DEPLOYED）
 

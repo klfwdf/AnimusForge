@@ -3,6 +3,11 @@
 
 产品 `9e3586b44` 将 `SettlementBalanceRuntime` 的原版粮食输入适配接到独立 MCM Bool，默认保留原版，按次读取当前值；粮仓/其他上限、政策模型与存档身份不变。生产者/消费者、一基源码范围、双 API 97 项与隔离构建证据集中于[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#prosperity-food-toggle-20261008)。未签收完整 Policy 模块、真实 MCM/Campaign 或共享工作树其他并行改动，不更新既有冻结职责证据。
 
+<a id="illustrator-style-identity-20261008"></a>
+### 日系插画画法与面部结构修订导航（2026-10-08）
+
+产品 `3e08ad018` 在现有 NarrativeAnime 预设开头保留日系动漫绘画语言，并将骨相与五官比例绑定本人参考图；其余长版和MCM合同保持。源坐标、真实消费者、首轮并行编译失败和隔离双API验证边界见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-style-identity-20261008)。未验真实模型面容遵从或并行主树最终构建，不签收完整Illustrator职责。
+
 <a id="illustrator-narrative-anime-20261008"></a>
 ### 日系半写实叙事插画预设导航（2026-10-08）
 
