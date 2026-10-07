@@ -7820,3 +7820,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 回归：dotnet run --project tests/modules/AF.Module.Diplomacy/DiplomacyDialogueRoutingTests，89检查通过；同命令WorldDiplomacyRoundLifecycle.SmokeTests，3668断言通过。新增日志原样标签、25000不变、明确21天通过、旧案继承及共用主/后规则实际组装断言。证据artifacts/oral-peace-clarification-20261007/routing.log、lifecycle.log。
 - 原build_single_module.ps1使用本仓库/Debug、游戏根F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord、1.4引用.tmp/build_check/1.4：1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap及双接缝通过，退出0，build.log留证；git diff --check通过。规则只在外交请求组装时拼接常量，失败时格式化说明；无Tick扫描、额外LLM请求或反射。
 - NOT-RUN：真实模型是否稳定追问、玩家存档的正式发布/接受/停战扣贡验收；未部署、打包或推送。回滚git revert 6c5197e34，保留此前接力/吞并修复。
+
+
+## Readable prompts and no screenshots 20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+- 用户授权：输出可读导演正文与最终提示词；不要游戏截图。产品 d72afbfb1，检查点6e38101。
+- GenerationDiagnostics.cs:215–245 RecordDirectorText/WriteReadablePrompt 保存脱敏、有限长、UTF-8 BOM的诊断副本；277–299从实际请求提取Images/Edits/Chat/Player2提示词。VisualDirectorEngine.cs:865在降级前记录解析正文。文件按现有12目录策略轮替，协议回退保留最后请求，无模型调用/Tick工作。
+- PassiveSceneScreenshot.cs:10–16返回空；ScreenCaptureHelper.cs:58–62禁用窗口截图；SceneReferenceCapture.cs:45–58拒绝旧截图输入。独立全景和人物离屏保留，无CopyFromScreen调用。历史允许窗口截图条款由模块AGENTS新条款覆盖。
+- 原入口双1.3/1.4、Bootstrap及接缝通过，证据 artifacts/readable-prompt-no-screenshot-build-20261007.log；diff检查通过。未运行Illustrator离线审计、未实机验证文本文件或API请求、未部署/打包/推送。
+- 回滚：聚焦逆向提交 d72afbfb1，不恢复其他作者变更。

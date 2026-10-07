@@ -1,3 +1,8 @@
+﻿# 当前交接：可读提示词与禁止游戏截图（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+- 产品d72afbfb1；检查点6e38101。新增两份可读提示词诊断，禁用窗口截图及旧截图引用，保留原生全景/人物离屏。
+- 双API/Bootstrap/接缝通过；未实机、部署、打包或推送。证据 artifacts/readable-prompt-no-screenshot-build-20261007.log。
+- [主台账及源码位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#readable-prompts-and-no-screenshots-20261007--build_verified_not_deployed)，回滚git revert d72afbfb1。
+
 # 当前交接：口头议和缺项澄清修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品6c5197e34，检查点94b7090。三渠道共用主/后提示澄清贡金期限，提交失败中文说明；不自动填期限，不将口头承诺当执行。
