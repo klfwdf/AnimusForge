@@ -1045,12 +1045,8 @@ namespace AnimusForge.Illustrator.Core
                     }
                 };
 
-                // Gemini 等多模态对话生图原生支持 aspect_ratio 顶层字段
-                string ar = ResolveGeminiAspectRatio(size);
-                if (!string.IsNullOrWhiteSpace(ar))
-                {
-                    payload["aspect_ratio"] = ar;
-                }
+                // Chat-compatible gateways do not share a top-level aspect_ratio extension.
+                // Keep the requested frame in sentPrompt; vendor fields require a verified route.
             }
             else
             {
