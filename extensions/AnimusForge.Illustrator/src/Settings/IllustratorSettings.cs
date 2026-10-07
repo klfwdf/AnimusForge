@@ -367,7 +367,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
-        [SettingPropertyBool("按 AF 装备保真", Order = 11, RequireRestart = false, HintText = "默认开启。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。")]
+        [SettingPropertyBool("按 AF 装备保真", Order = 11, RequireRestart = false, HintText = "默认开启，保留装备款式身份，但允许叙事中已发生的撕裂、污渍、湿透等状态变化。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool PreserveEquipmentFidelity { get; set; } = true;
 
