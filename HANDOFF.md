@@ -1,4 +1,9 @@
-﻿# 当前交接：衣物叙事变化（2026-10-07，BUILD_VERIFIED_DEPLOY_PENDING）
+﻿# 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
+- 产品a042639a7已提交推送；双版本/Bootstrap/接缝通过，部署更新9文件，3379文件哈希一致。
+- 包：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。实机出图未验。
+- [部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clothing-narrative-deployment-20261007--deployed_packaged_live_pending)，覆盖此前部署等待状态。
+
+# 当前交接：衣物叙事变化（2026-10-07，BUILD_VERIFIED_DEPLOY_PENDING）
 - 产品a042639a7已推送，双API/Bootstrap/接缝及Stage通过；衣物以参考图为基础，允许按已发生叙述变化及合理扩展。
 - 启动器22360待用户关闭，部署未进行；打包成功：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。
 - [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clothing-narrative-state-20261007--build_verified_deploy_pending)。实机出图未验。
