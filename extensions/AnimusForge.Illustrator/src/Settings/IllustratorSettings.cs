@@ -321,7 +321,8 @@ namespace AnimusForge.Illustrator
             "暗黑史诗写实 (提示词注入)",
             "电影级光影 (提示词注入)",
             "提示词 (自定义画风)",
-            "莫桑艺术·默兹河珐琅彩饰 (提示词注入)"
+            "莫桑艺术·默兹河珐琅彩饰 (提示词注入)",
+            "日系半写实叙事插画 (提示词注入)"
         };
         private Dropdown<string> _styleDropdown;
 
@@ -351,6 +352,7 @@ namespace AnimusForge.Illustrator
                     case 4: return "cinematic";
                     case 5: return "custom";
                     case 6: return "mosan-art";
+                    case 7: return "narrative-anime";
                     default: return "classic-oil";
                 }
             }
