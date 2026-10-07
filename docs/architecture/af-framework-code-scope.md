@@ -1,3 +1,8 @@
+<a id="ai-mode-continue-20261008"></a>
+### AI 模式原版继续拦截导航（2026-10-08）
+
+产品 `e9b16679` 将生成期保护扩为全程AI模式，三原生入口、透明层/HitTest一致，普通模式和明确离开保留。源码坐标、两版真实DLL/Harmony、UI替身回放与未实机边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#ai-mode-continue-20261008)。
+
 <a id="chat-aspect-schema-20261008"></a>
 ### Chat 生图请求字段修复导航（2026-10-08）
 
