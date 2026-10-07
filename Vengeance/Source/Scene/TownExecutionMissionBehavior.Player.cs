@@ -80,6 +80,7 @@ public sealed partial class TownExecutionMissionBehavior
             return null!;
         }
 
+        ReleaseCrowdForMissionExit();
         canPlayerLeave = true;
         return null!;
     }

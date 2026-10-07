@@ -82,6 +82,10 @@ namespace TaleWorlds.MountAndBlade
     public readonly record struct FakeFrame(WorldPosition Origin);
     public sealed class StandingPoint
     {
+        public Agent MovingAgent, UserAgent;
+        public List<Agent> DefendingAgents = new();
+        public void RemoveMovingAgent(Agent agent) { if(MovingAgent==agent) MovingAgent=null; }
+        public void RemoveDefendingAgent(Agent agent)=>DefendingAgents.Remove(agent);
         public Vec2 Position;
         public bool IsDisabledForAgent(Agent agent)=>false;
         public FakeFrame GetUserFrameForAgent(Agent agent)=>new(new(Position));
@@ -90,6 +94,7 @@ namespace TaleWorlds.MountAndBlade
     {
         public bool IsDisabled, IsDestroyed, Available=true;
         public StandingPoint Point=new(){Position=new(25,0)};
+        public IEnumerable<StandingPoint> StandingPoints => new[]{Point};
         public bool IsStandingPointAvailableForAgent(Agent agent)=>Available;
         public StandingPoint GetVacantStandingPointForAI(Agent agent)=>Available?Point:null;
     }
@@ -112,6 +117,7 @@ namespace TaleWorlds.MountAndBlade
         public T GetComponent<T>() where T:class=>Component as T;
         public void AddComponent(CampaignAgentComponent c) { if(ThrowOnComponent)throw new InvalidOperationException();Component=c; }
         public void DisableScriptedMovement()=>MovementReleaseCount++;
+        public void StopUsingGameObject() { if(CurrentlyUsedGameObject is StandingPoint p && p.UserAgent==this) p.UserAgent=null; CurrentlyUsedGameObject=null; }
         public void SetMaximumSpeedLimit(float speed,bool isMultiplier) { }
         public TaleWorlds.Core.ActionIndexCache GetCurrentAction(int channel)=>Actions[channel];
         public bool SetActionChannel(int channel,in TaleWorlds.Core.ActionIndexCache action,bool ignorePriority)
@@ -134,7 +140,14 @@ namespace SandBox
         public T AddBehaviorGroup<T>() where T:AgentBehaviorGroup,new()
         { if(!_groups.TryGetValue(typeof(T),out var g))_groups[typeof(T)]=g=new T{Navigator=this};return (T)g; }
         public void ClearTarget(){TargetCleared=true;TargetUsableMachine=null;}
-        public void SetTarget(UsableMachine target)=>TargetUsableMachine=target;
+        public bool BoundBeforeAI;
+        public void SetTarget(UsableMachine target) {
+            TargetUsableMachine=target;
+            if(target!=null) {
+                BoundBeforeAI |= OwnerAgent.Controller!=TaleWorlds.Core.AgentControllerType.AI;
+                target.Point.MovingAgent=OwnerAgent;
+            }
+        }
     }
 }
 namespace SandBox.Missions.AgentBehaviors
@@ -201,5 +214,6 @@ namespace RichExecutions.Scene
         {_playerExecutionStateRestored=player;_aftermathConversationsRestored=conversations;_aftermathSessionReleased=released;_cleanupComplete=cleanup;}
         public Agent AddSpectator(){var a=new Agent{Team=_executionTeam,Index=_crowdAgents.Count,Mission=Mission};_crowdAgents.Add(a);return a;}
         public void Tick(float dt)=>TickCrowdDispersal(dt);
+        public void Exit()=>ReleaseCrowdForMissionExit();
     }
 }
