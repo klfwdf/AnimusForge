@@ -159,6 +159,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     protected override void OnEndMission()
     {
+        ReleaseCrowdForMissionExit();
         EndCeremonySpeech();
         TryStageObservedProjectileVictimDeath("mission end", updateScene: false);
         if (CommitCampaignExecutionOnMissionExit())
@@ -177,6 +178,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     public override void OnRemoveBehavior()
     {
+        ReleaseCrowdForMissionExit();
         EndCeremonySpeech();
         if (_campaignCommitPending && Mission.MissionEnded)
         {

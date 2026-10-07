@@ -16,6 +16,7 @@ public sealed partial class TownExecutionMissionBehavior
 {
     private readonly ExecutionCrowdDispersalSchedule _crowdDispersal = new();
     private readonly Dictionary<Agent, ExecutionCrowdRoute> _crowdRoutes = new();
+    private readonly Dictionary<Agent, ExecutionCrowdWalkAwayBehavior> _crowdWalking = new();
     private bool _crowdDispersalInterrupted;
     private float _crowdExclusionRadius;
 
@@ -118,6 +119,7 @@ public sealed partial class TownExecutionMissionBehavior
         daily.RemoveBehavior<WalkingBehavior>();
         var walking = daily.GetBehavior<ExecutionCrowdWalkAwayBehavior>() ?? daily.AddBehavior<ExecutionCrowdWalkAwayBehavior>();
         walking.Configure(route, target);
+        _crowdWalking[agent] = walking;
         navigator.ClearTarget();
         agent.DisableScriptedMovement();
         agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
@@ -132,9 +134,22 @@ public sealed partial class TownExecutionMissionBehavior
         // A ceremony death can leave a frozen spectator alarmed. Having checked
         // that no other owner took it, resume peaceful walking rather than flee.
         agent.SetWatchState(Agent.WatchState.Patrolling);
-        navigator.SetTarget(target);
         agent.Controller = AgentControllerType.AI;
+        navigator.SetTarget(target);
         RexLog.Info($"Session {Request.SessionId} released spectator {agent.Index} to a verified outward town target.");
         return true;
     }
+    private void ReleaseCrowdForMissionExit()
+    {
+        _crowdDispersalInterrupted = true;
+        foreach (var entry in _crowdWalking)
+        {
+            try { entry.Value.ReleaseForMissionExit(); }
+            catch (Exception exception)
+            {
+                RexLog.Error($"Could not release spectator {entry.Key.Index} navigation before mission exit.", exception);
+            }
+        }
+    }
+
 }

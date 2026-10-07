@@ -200,3 +200,26 @@ Check(identities.Clear() && interior.Characters.Count == 0 && location.Character
 Check(ReferenceEquals(location.Characters[0], existingEntry), "cleanup preserves pre-existing native character");
 Check(identities.Clear() && location.Characters.Count == 1, "repeated cleanup is idempotent");
 Console.WriteLine($"{checks}/{checks} production crowd and location identity tests passed with fake engine objects; native pathfinding NOT_RUN");
+
+foreach (int released in new[]{0,1,14}) {
+ var owner=new TownExecutionMissionBehavior(); owner.Ready();
+ var spectators=Enumerable.Range(0,14).Select(_=>owner.AddSpectator()).ToArray();
+ for(int i=0;i<released;i++)owner.Tick(.36f);
+ var walkers=spectators.Where(a=>a.Component!=null).ToArray();
+ Check(walkers.All(a=>!a.Component.AgentNavigator.BoundBeforeAI), "AI controller precedes point binding");
+ var targets=walkers.Select(a=>a.Component.AgentNavigator.TargetUsableMachine).ToArray();
+ owner.Exit();owner.Exit();owner.Tick(100);
+ Check(targets.All(t=>t.Point.MovingAgent==null),"exit removes owned moving reservations "+released);
+ Check(walkers.All(a=>a.Component.AgentNavigator.TargetUsableMachine==null),"exit clears navigation "+released);
+}
+var takeoverOwner=new TownExecutionMissionBehavior();takeoverOwner.Ready();
+var owned=takeoverOwner.AddSpectator();takeoverOwner.Tick(1);
+var oldPoint=owned.Component.AgentNavigator.TargetUsableMachine.Point;
+var other=new Agent();
+oldPoint.MovingAgent=other;
+var foreignTarget=new UsableMachine();
+owned.Component.AgentNavigator.SetTarget(foreignTarget);
+takeoverOwner.Exit();
+Check(oldPoint.MovingAgent==other,"exit preserves another occupant");
+Check(owned.Component.AgentNavigator.TargetUsableMachine==foreignTarget,"exit preserves foreign navigation target");
+Console.WriteLine($"TOTAL {checks}");
