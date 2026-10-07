@@ -1,3 +1,12 @@
+<a id="castle-aftermath-load-main-integration-20261007"></a>
+# 城堡读档修复只接入最新 main（2026-10-07，MAIN_INTEGRATION_OFFLINE_VERIFIED）
+
+- 用户明确授权“只接入本次修复并推送main”，随后再次确认“拉取最新源码、融合、推送”。远端基线 `52177454b911250acf5b32ec8fac9aaf3040e608`；在同一施工目录新建 `codex/gccz-castle-load-integration-20261007`，保留旧修复分支，未merge/rebase/强推旧分叉历史。只移植 `68c2bf10` 为产品 `f94179d5`，文档顶部冲突保留最新main全部记录再加本片说明；仓内桥接说明不再依赖另一个本地目录才能阅读。
+- 六项受影响产品/测试路径与原已验证修复完全一致；远端其他134个提交保留，不夹带本地旧城镇提交、Council/UI草稿或游戏文件。源码只改城堡加载恢复与有界诊断，不调整正常原版结算。
+- 在最新main基线上重跑融合134、城镇规则记忆邻接60项PASS；原入口Debug双API（1.3引用v1.3.15、1.4引用v1.4.6）+Bootstrap及双接缝/注册门禁通过、0错误。独立2507结果因核心/测试未变复用。历史code-map仍缺原记录提交7c5c7cd1，未冒充通过；差异/冲突检查PASS。
+- 原Debug生成目录在工作区内完整保留为 `*-before-castle-main-20261007`，没有覆盖游戏或旧候选。最终发布前再次fetch，必须保持普通快进；推送结果由远端main实际SHA与本地 `artifacts/castle-load-main-20261007/push-receipt.json` 对照确认。
+- 故障报告版本/存档、实际Harmony、宽恕返回castle_outside仍未实测；报告崩溃根因尚未确认。授权不含Stage/部署/操作存档；本片不声明修复任何损坏存档。回滚仅focused revert本片产品提交，不重写main。
+
 <a id="castle-aftermath-load-recovery-20261007"></a>
 # 城堡战后菜单读档最小恢复（2026-10-07，SOURCE_AND_OFFLINE_VERIFIED / REPORT_CRASH_UNCONFIRMED）
 
