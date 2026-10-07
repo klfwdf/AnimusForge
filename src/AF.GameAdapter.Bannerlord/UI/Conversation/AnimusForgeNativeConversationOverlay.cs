@@ -621,6 +621,15 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
+			if (_isSubmitting && _dataSource.IsCustomAnswerVisible && !_isClosed && !_temporarySystemUiActive)
+			{
+				// Keep Escape on the reply owner while the editor is disabled. Mouse hit
+				// testing still lets the lower conversation layer receive body scrolling.
+				_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+				_layer.IsFocusLayer = true;
+				ScreenManager.TrySetFocus(_layer);
+				return;
+			}
 			if (IsMouseOverTopRightButtons())
 			{
 				_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
@@ -647,7 +656,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			{
 				return false;
 			}
-			float bottom = _dataSource?.IsTagTestVisible == true ? 335f : (_dataSource?.IsPersonaEditVisible == true ? 285f : 235f);
+			float bottom = _dataSource?.IsTagTestVisible == true ? 385f : (_dataSource?.IsPersonaEditVisible == true ? 335f : 285f);
 			return mouse.x >= width - 330f && mouse.y >= 60f && mouse.y <= bottom;
 		}
 		catch
