@@ -130,6 +130,32 @@ internal static class Program
         var damaged = References(); damaged.SetValue(Activator.CreateInstance(_reference, new object[] { "not-valid-base64", "B", Enum.Parse(_kind, "MissionScreenshot") }), 1);
         Check(!Get<bool>(Generate(Options(), damaged), "Success") && handler.Records.Count == 0, "malformed second image never silently dropped");
     }
+    private static void ChatSchemaContracts(Handler handler)
+    {
+        string success = "{\"data\":[{\"b64_json\":\"" + _pngA + "\"}]}";
+        string[] models = { "gemini-3.1-flash-image", "gemini-2.5-flash-image", "chat-image-fixture" };
+        string[] sizes = { "1024x1024", "1280x720", "1024x1536" };
+        string[] frames = { "正方形1:1", "横向16:9", "竖向2:3" };
+        for (int i = 0; i < models.Length; i++)
+        {
+            object options = Options(true);
+            Set(options, "IsMissionScreenshot", false); Set(options, "UseExactEndpointUrl", true);
+            Set(options, "ApiBaseUrl", "http://fixture.invalid/v1/chat/completions");
+            Set(options, "ModelName", models[i]); Set(options, "ImageSize", sizes[i]);
+            Set(options, "OutputFrameRequirement", frames[i]); Set(options, "EnableReferenceImageForGeneration", true);
+            handler.Reset(success);
+            var result = Generate(options, i == 1 ? References("Character") : null);
+            Check(Get<bool>(result, "Success"), models[i] + " compatible chat success");
+            Check(handler.Records.Count == 1 && handler.Records[0].Url == "/v1/chat/completions", "exact chat URL and one attempt");
+            var payload = (Dictionary<string, object>)Json.DeserializeObject(handler.Records[0].Text);
+            Check(payload.Count == 2 && payload.ContainsKey("model") && payload.ContainsKey("messages") && !payload.ContainsKey("aspect_ratio"), "portable chat body excludes unsupported extensions");
+            Check(handler.Records[0].Text.Contains(frames[i]) && Get<string>(result, "ResolvedPrompt").Contains(frames[i]), "fixed frame survives in actual request and resolved prompt");
+            Check(handler.Records[0].Images == (i == 1 ? 2 : 0), "identity references are preserved");
+            handler.Reset("{\"error\":{\"message\":\"Unknown name aspect_ratio\"}}", HttpStatusCode.BadRequest);
+            result = Generate(options, i == 1 ? References("Character") : null);
+            Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("HTTP 400"), "schema rejection stops without a paid retry");
+        }
+    }
     private static object Direction(object options, Array refs, HttpClient client)
     {
         object plan = Activator.CreateInstance(_plan, new object[] { "场景喊话双截图插画", "玩家与目标相距2米。", "保持相对站位距离朝向。", "玩家：对白完整原文。\nNPC甲：动作已经发生。\nNPC乙：完整多人回应。" });
@@ -199,7 +225,7 @@ internal static class Program
                 using (var http = new HttpClient(handler))
                 {
                     field.SetValue(null, http);
-                    try { ImageContracts(handler); DirectorContracts(handler, http); DialogueContracts(); }
+                    try { ImageContracts(handler); ChatSchemaContracts(handler); DirectorContracts(handler, http); DialogueContracts(); }
                     finally { field.SetValue(null, previous); }
                 }
             }
