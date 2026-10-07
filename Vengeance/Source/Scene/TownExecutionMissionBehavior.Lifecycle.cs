@@ -122,6 +122,8 @@ public sealed partial class TownExecutionMissionBehavior
                 }
             }
             if (agentsRemoved) completed &= _sceneLocationCharacters.Clear();
+            if (agentsRemoved || Mission.MissionEnded)
+                completed &= RestoreExecutionEscortControl(force: true);
         }
 
         if (removeEntities)

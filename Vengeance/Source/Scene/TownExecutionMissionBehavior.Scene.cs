@@ -183,6 +183,7 @@ public sealed partial class TownExecutionMissionBehavior
 
         _executionTeam = executionTeam;
         _victimTeam = victimTeam;
+        SuspendExistingExecutionEscorts();
         if (!TryResolveInitialExecutionerPosition(out _executionerPosition))
         {
             throw new InvalidOperationException(

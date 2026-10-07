@@ -1,4 +1,5 @@
 using RichExecutions.Core;
+using TaleWorlds.Core;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -39,6 +40,7 @@ namespace TaleWorlds.Library
 }
 namespace TaleWorlds.Core
 {
+    public sealed class Banner { }
     public class AgentData
     {
         public object Origin;
@@ -47,6 +49,10 @@ namespace TaleWorlds.Core
     }
     public enum AgentControllerType { None, AI, Player }
     public readonly record struct ActionIndexCache(int Id) { public static ActionIndexCache act_none; }
+}
+namespace TaleWorlds.Localization
+{
+    public sealed class TextObject { public TextObject(string text) { } }
 }
 namespace TaleWorlds.CampaignSystem
 {
@@ -58,12 +64,21 @@ namespace TaleWorlds.MountAndBlade
     public struct MissionWeapon { } public struct Blow { } public struct AttackCollisionData { }
     public class MissionLogic
     {
+        public virtual void OnAgentBuild(Agent agent, Banner banner) { }
+        public virtual void OnAgentTeamChanged(Team previousTeam, Team newTeam, Agent agent) { }
         public virtual void OnAgentAlarmedStateChanged(Agent agent, Agent.AIStateFlag flag) { }
         public virtual void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon weapon, in Blow blow, in AttackCollisionData collision) { }
     }
-    public sealed class Team { }
+    public sealed class Team
+    {
+        public bool IsValid = true;
+        private readonly HashSet<Team> _enemies = new();
+        public bool IsEnemyOf(Team team) => _enemies.Contains(team);
+        public void SetIsEnemyOf(Team team, bool enemy) { if (enemy) _enemies.Add(team); else _enemies.Remove(team); }
+    }
     public sealed class Mission
     {
+        public List<Agent> Agents = new(); public Agent MainAgent;
         public MissionAgentHandler Handler = new(); public MissionFightHandler Fight = new();
         public FakeScene Scene = new(); public float CurrentTime;
         public T GetMissionBehavior<T>() where T : class => (typeof(T)==typeof(MissionAgentHandler)?(object)Handler:Fight) as T;
@@ -104,7 +119,13 @@ namespace TaleWorlds.MountAndBlade
         public object Character = new TaleWorlds.CampaignSystem.CharacterObject();
         public int Index; public Mission Mission;
         public bool Active=true, ClearSucceeds=true, ThrowOnComponent;
-        public TaleWorlds.Core.AgentControllerType Controller;
+        private TaleWorlds.Core.AgentControllerType _controller;
+        public bool ThrowOnController; public int ControllerChanges; public bool IsHuman = true;
+        public TaleWorlds.Core.AgentControllerType Controller
+        {
+            get => _controller;
+            set { if (ThrowOnController) throw new InvalidOperationException("native controller setter"); _controller = value; ControllerChanges++; }
+        }
         public Team Team; public object CurrentlyUsedGameObject;
         public enum WatchState { Patrolling, Alarmed } public enum AIStateFlag { None, Cautious, Alarmed }
         public WatchState Watch; public int ClearCount, MovementReleaseCount;
@@ -201,6 +222,29 @@ namespace RichExecutions.Scene
 {
     public sealed partial class TownExecutionMissionBehavior:MissionLogic
     {
+        private readonly List<Agent> _spawnedAgents = new();
+        private Agent _playerAgent, _victimAgent; private bool _lethalAttempted;
+        private void CancelSceneAndReturn(ExecutionFailureReason reason, TaleWorlds.Localization.TextObject message)
+        { State = ExecutionSessionState.Cancelled; RestoreExecutionEscortControl(force: true); }
+        public Team EscortTeam => _executionTeam;
+        public Agent ExecutionVictim => _victimAgent;
+        public Agent AddEscort(Team team = null)
+        { var a = new Agent { Team = team ?? _executionTeam, Mission = Mission, Controller = AgentControllerType.AI }; Mission.Agents.Add(a); return a; }
+        public void HoldEscorts()
+        {
+            State = ExecutionSessionState.WaitingForPlayer;
+            _playerAgent = Mission.MainAgent ??= new Agent { Team = _executionTeam, Controller = AgentControllerType.Player };
+            _victimAgent = new Agent { Team = new Team() };
+            _executionTeam.SetIsEnemyOf(_victimAgent.Team, true);
+            _victimAgent.Team.SetIsEnemyOf(_executionTeam, true);
+            SuspendExistingExecutionEscorts();
+        }
+        public bool RestoreEscorts(bool force = false) => RestoreExecutionEscortControl(force);
+        public void SafeVictim(bool inactive = false)
+        { if (inactive) _victimAgent.Active = false; else _victimAgent.Team = _executionTeam; }
+        public void GenerateActor(Agent actor)
+        { _spawningExecutionAgent = true; try { OnAgentBuild(actor, null); } finally { _spawningExecutionAgent = false; } _spawnedAgents.Add(actor); }
+        public void RegisterActor(Agent actor) => _spawnedAgents.Add(actor);
         private bool _cleanupComplete,_playerExecutionStateRestored,_aftermathConversationsRestored,_aftermathSessionReleased;
         private readonly List<Agent> _crowdAgents=new(); private readonly Team _executionTeam=new();
         private Vec3 _victimPosition=new(); private PlacementFixture _placement=new();
