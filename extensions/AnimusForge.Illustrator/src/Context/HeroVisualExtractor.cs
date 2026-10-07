@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
@@ -909,112 +909,13 @@ namespace AnimusForge.Illustrator.Context
         {
             if (hero.Clan == null) return string.Empty;
 
-            string clanName = hero.Clan.Name != null ? hero.Clan.Name.ToString() : "家族";
-            string composition = string.Empty;
-            try
-            {
-                composition = DescribeBannerComposition(hero.Clan.Banner ?? hero.Clan.Kingdom?.Banner);
-            }
-            catch { }
-
-            // Clan.Color/Color2 are faction/livery metadata, not the actual BannerData background.
-            return $"{clanName} 的家族纹章标准图案规格（仅供参考）：" +
-                (!string.IsNullOrEmpty(composition)
-                    ? composition + "。颜色HEX来自实际BannerData图层。"
-                    : "未取得有效纹章图层配色。") +
-                "【纹章载体说明】：纹章仅在画面存在盾牌、罩袍或背景旗帜等合理载体时绘制，普通金属胸甲保持原装金属质感。";
-        }
-
-        /// <summary>
-        /// 将 Banner.BannerDataList 结构化数据转成文字构图：每枚纹章的颜色/位置/大小/旋转/镜像与类别。
-        /// 纹章图形本身是图集切片无法转文字，但构图与配色可被文字完整描述。
-        /// </summary>
-        private static string DescribeBannerComposition(Banner banner)
-        {
-            if (banner == null || banner.IsBannerDataListEmpty()) return string.Empty;
-            var manager = BannerManager.Instance;
-            if (manager == null) return string.Empty;
-
-            float full = Math.Max(Banner.BannerFullSize, 1f);
-            int count = banner.GetBannerDataListCount();
-            var parts = new List<string>();
-            for (int i = 0; i < count; i++)
-            {
-                var data = banner.GetBannerDataAtIndex(i);
-                if (data == null) continue;
-
-                if (i == Banner.BackgroundDataIndex)
-                {
-                    var background = new StringBuilder("底层（实际BannerData，底纹布局按标准图）");
-                    if (data.ColorId >= 0)
-                    {
-                        uint color = BannerManager.GetColor(data.ColorId);
-                        background.Append($"主色#{(color & 0x00FFFFFF):X6}（{ResolveColorName(color)}）");
-                    }
-                    if (data.ColorId2 >= 0 && data.ColorId2 != data.ColorId)
-                    {
-                        uint color = BannerManager.GetColor(data.ColorId2);
-                        background.Append($"，第二底色#{(color & 0x00FFFFFF):X6}（{ResolveColorName(color)}）");
-                    }
-                    parts.Add(background.ToString());
-                    continue;
-                }
-
-                var sb = new StringBuilder($"图层{i}：纹章画布{DescribeBannerRegion(data.Position, full)}的{DescribeBannerScale(data.Size, full)}");
-                if (data.ColorId >= 0)
-                {
-                    uint c = BannerManager.GetColor(data.ColorId);
-                    sb.Append($"{ResolveColorName(c)} (#{(c & 0x00FFFFFF):X6}) ");
-                }
-                string group = ResolveIconGroupName(data.MeshId);
-                if (!string.IsNullOrEmpty(group)) sb.Append(group).Append("类");
-                sb.Append("纹章");
-                if (data.ColorId2 >= 0 && data.ColorId2 != data.ColorId)
-                {
-                    uint c2 = BannerManager.GetColor(data.ColorId2);
-                    sb.Append($"，辅以{ResolveColorName(c2)} (#{(c2 & 0x00FFFFFF):X6})双色");
-                }
-                if (data.DrawStroke) sb.Append("，带描边");
-                float deg = data.Rotation * 57.29578f;
-                if (Math.Abs(deg) > 5f) sb.Append($"，旋转{Math.Round(deg):0}°");
-                if (data.Mirror) sb.Append("，水平镜像");
-                parts.Add(sb.ToString());
-            }
-            return string.Join("；", parts.ToArray());
-        }
-
-        private static string ResolveIconGroupName(int meshId)
-        {
-            try
-            {
-                var groups = BannerManager.Instance?.BannerIconGroups;
-                if (groups == null) return null;
-                foreach (var g in groups)
-                {
-                    if (g?.AllIcons == null || g.IsPattern) continue;
-                    if (g.AllIcons.ContainsKey(meshId)) return g.Name?.ToString();
-                }
-            }
-            catch { }
-            return null;
-        }
-
-        private static string DescribeBannerRegion(Vec2 pos, float full)
-        {
-            float nx = pos.X / full;
-            float ny = pos.Y / full;
-            string h = nx < 0.33f ? "左" : nx > 0.67f ? "右" : string.Empty;
-            string v = ny < 0.33f ? "上" : ny > 0.67f ? "下" : string.Empty;
-            string region = h + v;
-            return string.IsNullOrEmpty(region) ? "中央" : region;
-        }
-
-        private static string DescribeBannerScale(Vec2 size, float full)
-        {
-            float ratio = Math.Max(size.X, size.Y) / full;
-            if (ratio >= 0.45f) return "大型";
-            if (ratio >= 0.22f) return "中型";
-            return "小型";
+            // The real banner is sent as a dedicated emblem reference image when a
+            // confirmed heraldic carrier is present. Expanding every BannerData layer
+            // into prose duplicated that image and could consume tens of thousands of
+            // prompt characters for complex banners. Keep only attribution and carrier
+            // semantics here; the reference image owns exact colors, shapes and layout.
+            return "家族纹章图案与配色以对应的真实纹章参考图为准；未提供纹章图时仅保留人物或现场参考中可辨的已有图案，不推测细节。" +
+                "【纹章载体说明】：仅在画面存在已确认的盾牌、罩袍、服饰纹章或背景旗帜等合理载体时还原，不新增盾牌、旗帜或其他载体，普通金属胸甲保持原装金属质感。";
         }
 
         public static string ResolveColorName(uint colorUint)

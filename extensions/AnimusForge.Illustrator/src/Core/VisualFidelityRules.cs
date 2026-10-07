@@ -1,4 +1,4 @@
-namespace AnimusForge.Illustrator.Core
+﻿namespace AnimusForge.Illustrator.Core
 {
     internal static class VisualFidelityRules
     {
@@ -6,6 +6,7 @@ namespace AnimusForge.Illustrator.Core
             "【本次玩家定向重绘·最高优先级】玩家在本次重绘要求中明确提出的画面变化，优先于本模式默认限制、游戏事实、参考图、MCM长期偏好和旧画去重建议。" +
             "明确要求有剑或手持剑时必须在正文落实，即使原装备没有剑或百科默认禁武器；其他明确的道具、动作、外观、环境、人数及画风要求同理。" +
             "只覆盖玩家明确要求改变的方面；未提及的身份、外观、装备、场景与画风继续沿用原资料及设置，不借此随意改变其他内容。" +
+            "换装时逐人写清新服装的款式、颜色及覆盖部位，删除被替换的旧衣甲描述，不将新衣叠加在旧衣甲上；只改变指定人物和部位。" +
             "这是仅用于本幅图的艺术改编，不修改游戏状态，也不宣称改编已在游戏中发生。" +
             "把要求转化为确定、可绘制的描述；在四段正文中明确最终采用的画风和所需变化，不复述原始要求，不把要求画成文字。保持原定元数据和四段输出格式。";
 
@@ -16,6 +17,30 @@ namespace AnimusForge.Illustrator.Core
 
         internal const string PlayerRedrawReferenceException =
             "若本次标有【本次玩家定向重绘】，本段参考保真及默认呈现限制只约束导演未明确改编的部分，不能覆盖导演已融合的玩家要求。";
+
+        internal const string DirectedRedrawRepaint =
+            "按导演融合本次要求后的方案完整重绘，统一光照、笔触与透视，不粘贴参考图像素或UI。逐人保留未要求改变的身份特征；明确换装的人物只采用新服装，不叠穿、恢复或混入被替换的旧衣甲、披肩和配饰。其他人物及未指定部位仍保留原样。";
+
+        internal static string DirectedReferenceLabel(IllustrationReferenceImage reference)
+        {
+            bool character = reference.Kind == IllustrationReferenceKind.Character ||
+                reference.Kind == IllustrationReferenceKind.CharacterDetail ||
+                reference.Kind == IllustrationReferenceKind.EventCharacter;
+            // Keep scene geometry, paired-view A/B and emblem ownership intact.
+            if (!character) return reference.Label + PlayerRedrawReferenceException;
+            // Keep source role/name headings, not the old equipment-lock prose.
+            var identity = new System.Text.StringBuilder();
+            foreach (System.Text.RegularExpressions.Match match in
+                System.Text.RegularExpressions.Regex.Matches(reference.Label ?? "", @"【[^】\r\n]+】"))
+            {
+                if (match.Value == "【全身图用途】" || match.Value == "【此刻动作】" || match.Value == "【人物与镜头】") break;
+                identity.Append(match.Value);
+            }
+            return identity.ToString() + (character
+                ? "此图对应人物身份；面容、发型和体型保留未被明确改编的部分。服装、盔甲、武器与配饰采用导演正文确定的最终方案；要求换装时原衣装仅为旧状态，不是新图约束。未改动的人物和部位沿用参考。"
+                : "此图为" + reference.Kind + "参考，仅用于导演未明确改编的部分；不覆盖本次方案。") +
+                "不增加人物、不借用他人身份；事件参考不代表该人物必须在场。";
+        }
 
         internal const string EnvironmentGeometryPriority =
             "【现场结构优先级】：有环境参考图时，建筑布局、拱券与门窗数量、封闭墙面、楼层、阶梯、家具位置及地面拼花以环境图为准，高于导演文字中的概括与补充。" +

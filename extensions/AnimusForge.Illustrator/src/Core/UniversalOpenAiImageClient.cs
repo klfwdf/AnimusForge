@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using AnimusForge.Illustrator.Engine;
@@ -738,7 +738,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
                     var labels = new StringBuilder();
-                    labels.AppendLine().AppendLine().AppendLine(VisualFidelityRules.ReferenceRepaint);
+                    labels.AppendLine().AppendLine().AppendLine(playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint);
                     if (playerRedraw) labels.AppendLine(VisualFidelityRules.PlayerRedrawReferenceException);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
@@ -752,7 +752,7 @@ namespace AnimusForge.Illustrator.Core
                         labels.Append("\n参考图 ").Append(sent + 1);
                         if (grokJson) labels.Append("（<IMAGE_").Append(sent).Append(">）：");
                         else labels.Append("（reference_").Append(sent).Append(".png）：");
-                        labels.Append(VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)).Append(" ").Append(reference.Label);
+                        labels.Append(playerRedraw ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
                         if (player2) jsonImages.Add("data:image/png;base64," + reference.Base64Image);
                         else if (grokJson)
                             jsonImages.Add(new JObject { ["url"] = "data:image/png;base64," + reference.Base64Image });
@@ -875,7 +875,7 @@ namespace AnimusForge.Illustrator.Core
                     var content = new JArray
                     {
                         new JObject { ["type"] = "text", ["text"] = effectivePrompt },
-                        new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.ReferenceRepaint }
+                        new JObject { ["type"] = "text", ["text"] = playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint }
                     };
 
                     if (string.IsNullOrWhiteSpace((string)content[0]["text"])) content.RemoveAt(0);
@@ -894,7 +894,7 @@ namespace AnimusForge.Illustrator.Core
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
-                        string label = reference.Label ?? string.Empty;
+                        string label = playerRedraw ? VisualFidelityRules.DirectedReferenceLabel(reference) : reference.Label ?? string.Empty;
                         bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
                         bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama ||
                             reference.Kind == IllustrationReferenceKind.SceneViews || reference.Kind == IllustrationReferenceKind.MapConversationScene ||
@@ -924,7 +924,8 @@ namespace AnimusForge.Illustrator.Core
                             });
                         }
 
-                        if (reference.Kind == IllustrationReferenceKind.EventCharacter || reference.Kind == IllustrationReferenceKind.EventEmblem)
+                        if (playerRedraw) { /* Scoped reference label above is the complete contract. */ }
+                        else if (reference.Kind == IllustrationReferenceKind.EventCharacter || reference.Kind == IllustrationReferenceKind.EventEmblem)
                         {
                             content.Add(new JObject
                             {
@@ -975,7 +976,7 @@ namespace AnimusForge.Illustrator.Core
                     content.Add(new JObject
                     {
                         ["type"] = "text",
-                        ["text"] = "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
+                        ["text"] = playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
                                    styleClause +
                                    "2. 人物容貌与实际衣着装备以对应身份参考图为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
                                    "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
