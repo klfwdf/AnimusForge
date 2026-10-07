@@ -76,11 +76,11 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = true;
 
-        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "填写服务根地址或 /v1。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
+        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://api.siliconflow.cn/v1";
 
-        [SettingPropertyBool("使用完整调用 URL (不自动拼接后缀)", HintText = "开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径。", Order = 2, RequireRestart = false)]
+        [SettingPropertyBool("使用完整调用 URL (不自动拼接后缀)", HintText = "开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径；Google原生勾选后必须填写完整 :generateContent 地址，实际模型以URL为准。", Order = 2, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool UseExactEndpointUrl { get; set; } = false;
 
@@ -88,7 +88,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ApiKey { get; set; } = "";
 
-        [SettingPropertyButton("拉取生图模型列表", Content = "点击拉取", Order = 4, RequireRestart = false, HintText = "向配置的 Base URL (GET /models) 发起查询，自动拉取服务端支持的模型列表，并优先筛选出图像与绘画模型。")]
+        [SettingPropertyButton("拉取生图模型列表", Content = "点击拉取", Order = 4, RequireRestart = false, HintText = "向配置接口查询模型列表，Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
@@ -803,6 +803,7 @@ namespace AnimusForge.Illustrator
             {
                 if (await UniversalOpenAiImageClient.DetectPlayer2Async(baseUrl, System.Threading.CancellationToken.None).ConfigureAwait(false))
                     return new ModelListFetchResult { Player2 = true };
+                bool nativeGemini = GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
                 string modelsUrl = baseUrl;
                 if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
                     modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
@@ -817,9 +818,9 @@ namespace AnimusForge.Illustrator
                 }
 
                 using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
-                using (var request = new HttpRequestMessage(HttpMethod.Get, modelsUrl))
+                using (var request = nativeGemini ? GeminiNativeImageProtocol.CreateModelListRequest(baseUrl, apiKey) : new HttpRequestMessage(HttpMethod.Get, modelsUrl))
                 {
-                    if (!string.IsNullOrWhiteSpace(apiKey))
+                    if (!nativeGemini && !string.IsNullOrWhiteSpace(apiKey))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                     }
@@ -834,6 +835,11 @@ namespace AnimusForge.Illustrator
 
                         JObject parsed = JObject.Parse(json);
                         JArray data = parsed["data"] as JArray;
+                        if (nativeGemini)
+                        {
+                            data = new JArray();
+                            foreach (string id in GeminiNativeImageProtocol.ReadModelIds(parsed)) data.Add(new JObject { ["id"] = id });
+                        }
                         if (data == null || data.Count == 0)
                         {
                             return new ModelListFetchResult { Error = "接口返回成功，但未解析到可用模型数据。" };

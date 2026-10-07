@@ -139,19 +139,23 @@ namespace AnimusForge.Illustrator.Core
                 GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset && !playerRedraw, ["customNegativeActive"] = isCustomPreset && !playerRedraw && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = imageEdit ? "current image edit; director bypassed" : playerRedraw ? "player redraw reconciled by director; saved style/negatives only as defaults" : "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
 
                 bool player2 = settings.UsePlayer2ImageApi;
+                bool nativeGemini = !player2 && GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
                 bool configuredEditsEndpoint = player2 ? requestedRefImages > 0 : IsImagesEditsEndpointUrl(baseUrl);
                 bool exactEditsEndpoint = settings.UseExactEndpointUrl && configuredEditsEndpoint;
-                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
+                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (nativeGemini || IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
-                string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+                string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : nativeGemini
+                    ? GeminiNativeImageProtocol.ResolveEndpoint(baseUrl, model, settings.UseExactEndpointUrl)
+                    : ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+                if (nativeGemini) model = GeminiNativeImageProtocol.EndpointModel(endpointUrl);
                 var composed = imageEdit ? new ComposedImagePrompt() : ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.IsMissionScreenshot ? 0 : settings.Randomness,
-                    (player2 || settings.IsMissionScreenshot) ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement, settings.IsMissionScreenshot || settings.PreserveEquipmentFidelity);
+                    (player2 || settings.IsMissionScreenshot) ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement, settings.IsMissionScreenshot || settings.PreserveEquipmentFidelity, nativeGemini);
                 string effectivePrompt = imageEdit
                     ? "修改指定部分，未指定部分保持原图。\n" + prompt + "\n" + settings.OutputFrameRequirement
                     : composed.Text;
                 if (imageEdit && (string.IsNullOrWhiteSpace(prompt) || referenceImages?.Count != 1 || referenceImages[0]?.Kind != IllustrationReferenceKind.GeneratedImage))
                     throw new InvalidOperationException("基于本图重绘需要一张有效的当前成图，未发送请求。");
-                string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
+                string route = nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
                 if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
@@ -204,7 +208,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit, nativeGemini).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -487,7 +491,7 @@ namespace AnimusForge.Illustrator.Core
             return ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, chatProtocol, randomness, ImagePromptProfile.Full).Text;
         }
 
-        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false, string outputFrameRequirement = null, bool preserveEquipment = true)
+        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false, string outputFrameRequirement = null, bool preserveEquipment = true, bool nativeGemini = false)
         {
             // Request-owned layout survives omitted director wording and player redraws.
             // A separate heading keeps it outside flexible director sections in the final budget.
@@ -520,7 +524,7 @@ namespace AnimusForge.Illustrator.Core
             }
 
             string effectivePrompt = chatProtocol
-                ? BuildChatImagePrompt(prompt, size, quality, string.Empty)
+                ? BuildChatImagePromptCore(prompt, size, quality, string.Empty, exactAspectRatio: nativeGemini)
                 : (prompt ?? string.Empty);
             // One full style anchor shared by Chat, Edits and Generations.
             string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
@@ -868,7 +872,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true, bool imageEdit = false)
+            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true, bool imageEdit = false, bool nativeGemini = false)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -1080,6 +1084,7 @@ namespace AnimusForge.Illustrator.Core
                 }
             }
 
+            if (nativeGemini) payload = GeminiNativeImageProtocol.ConvertPayload(payload, size);
             if (player2)
             {
                 payload = new JObject { ["prompt"] = sentPrompt };
@@ -1091,11 +1096,12 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                    if (nativeGemini) request.Headers.Add("x-goog-api-key", apiKey);
+                    else request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
-                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, player2 ? "Player2Generate" : isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
+                Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
+                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, player2 ? "Player2Generate" : nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
                 GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(endpointUrl), ["actualRefs"] = actualRefImages });
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
@@ -1176,9 +1182,11 @@ namespace AnimusForge.Illustrator.Core
                 var parsed = JObject.Parse(responseText);
                 var choice = (parsed["choices"] as JArray)?.First;
                 var message = choice?["message"];
-                if (!string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()) || choice?["finish_reason"]?.ToString() == "content_filter")
+                string nativeFinish = parsed.SelectToken("candidates[0].finishReason")?.Value<string>();
+                if (parsed.SelectToken("promptFeedback.blockReason") != null || nativeFinish == "SAFETY"
+                    || nativeFinish == "IMAGE_SAFETY" || !string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()) || choice?["finish_reason"]?.ToString() == "content_filter")
                     reason = "服务端拒绝生成图片或触发内容过滤";
-                else if (choice?["finish_reason"]?.ToString() == "length")
+                else if (nativeFinish == "MAX_TOKENS" || choice?["finish_reason"]?.ToString() == "length")
                     reason = "服务端输出达到长度上限，未取得图片";
                 else if (message != null && string.IsNullOrWhiteSpace(message["content"]?.ToString()) &&
                     !(message["images"] is JArray images && images.Count > 0))
@@ -1204,6 +1212,18 @@ namespace AnimusForge.Illustrator.Core
         {
             if (string.IsNullOrWhiteSpace(responseText)) return null;
             JObject parsed = JObject.Parse(responseText);
+            foreach (string data in GeminiNativeImageProtocol.ImageData(parsed))
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (data.Length > ImagePayload.MaxBytes * 4L / 3 + 8) continue;
+                    return new ExtractedImage { Bytes = ImagePayload.Normalize(Convert.FromBase64String(data)) };
+                }
+                catch (InvalidDataException) { }
+                catch (ArgumentException) { }
+                catch (FormatException) { }
+            }
             if (parsed["image"]?.Type == JTokenType.String)
                 return new ExtractedImage { Bytes = ImagePayload.Normalize(Convert.FromBase64String(parsed["image"].Value<string>())) };
             if (parsed["data"] is JArray dataArray)
@@ -1522,9 +1542,14 @@ namespace AnimusForge.Illustrator.Core
 
         public static string BuildChatImagePrompt(string prompt, string size, string quality, string style, string customStyleHint = null)
         {
+            return BuildChatImagePromptCore(prompt, size, quality, style, customStyleHint);
+        }
+
+        private static string BuildChatImagePromptCore(string prompt, string size, string quality, string style, string customStyleHint = null, bool exactAspectRatio = false)
+        {
             var directives = new System.Collections.Generic.List<string>();
 
-            string ar = ResolveGeminiAspectRatio(size);
+            string ar = exactAspectRatio ? GeminiNativeImageProtocol.ExactAspectRatio(size) : ResolveGeminiAspectRatio(size);
             if (!string.IsNullOrWhiteSpace(ar))
             {
                 directives.Add($"aspect ratio {ar}");

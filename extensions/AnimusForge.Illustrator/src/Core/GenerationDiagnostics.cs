@@ -295,6 +295,15 @@ namespace AnimusForge.Illustrator.Core
                     }
                     prompt = string.Join("\n\n", parts);
                 }
+                if (prompt == null && payload["contents"] is JArray nativeContents)
+                {
+                    var texts = new List<string>();
+                    foreach (var content in nativeContents)
+                        if (content["parts"] is JArray parts)
+                            foreach (var part in parts)
+                                if (part["text"]?.Type == JTokenType.String) texts.Add(part["text"].Value<string>());
+                    prompt = string.Join("\n\n", texts);
+                }
                 if (prompt != null) WriteReadablePrompt("最终生图提示词.txt", prompt);
                 Safe(() => AddEvent("image_request", data));
             }
@@ -349,7 +358,19 @@ namespace AnimusForge.Illustrator.Core
                 foreach (var property in obj.Properties())
                 {
                     string name = property.Name.ToLowerInvariant();
-                    if (name == "authorization" || name == "api_key" || name == "apikey" || name == "access_token" || name == "secret") copy[property.Name] = "[redacted]";
+                    if (name == "authorization" || name == "x-goog-api-key" || name == "api_key" || name == "apikey" || name == "access_token" || name == "secret") copy[property.Name] = "[redacted]";
+                    else if ((name == "inlinedata" || name == "inline_data") && property.Value is JObject inline)
+                    {
+                        string mime = (string)(inline["mimeType"] ?? inline["mime_type"]);
+                        string encoded = (string)inline["data"] ?? string.Empty;
+                        if (!saveReferences) copy[property.Name] = "[returned inline image omitted]";
+                        else if (encoded.Length > ImagePayload.MaxBytes * 4L / 3 + 8) copy[property.Name] = "[oversize reference omitted]";
+                        else
+                        {
+                            try { copy[property.Name] = new JObject { ["mimeType"] = mime, ["reference"] = StoreReference(Convert.FromBase64String(encoded), "gemini_reference") }; }
+                            catch { copy[property.Name] = "[invalid inline reference omitted]"; }
+                        }
+                    }
                     else if (name == "b64_json" || name == "image" && property.Value.Type == JTokenType.String || name == "b64" || (name == "data" && property.Value.Type == JTokenType.String && property.Value.ToString().Length > 1024))
                         copy[property.Name] = "[image data omitted, " + property.Value.ToString().Length + " chars]";
                     else copy[property.Name] = Sanitize(property.Value, saveReferences);
