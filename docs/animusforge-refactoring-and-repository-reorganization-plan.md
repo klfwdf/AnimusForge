@@ -8329,3 +8329,19 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 安装回滚点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-1705e1000cc3437ea3508f544c9ec554`，清单与16旧文件已验证。只按manifest恢复本次替换文件；源码功能回滚仍分别用各产品inverse commit，禁止整体重置其他作者历史。
 - 用户追加“旧缓存直接删”，按上下文指刚保留的旧构建Stage缓存`artifacts/scene-image-deploy-20261008/prior-stage`。绝对路径校验后请求PowerShell删除被自动审批策略拒绝，返回`blocked by policy`，未说明具体原因；未绕过拒绝，目录仍保留，未删除画廊/玩家配置/存档/部署Recovery。该缓存未包含在安装文件中。
 - NOT-RUN：游戏加载、真实GPU双截图/HUD/反向机位及恢复、暂停UI显示/点击/滚动、后台离场保存/画廊、真实导演生图与玩家存档。构建/安装哈希PASS不冒称实机验收。本条覆盖上述产品此前“未部署”状态，保留其未验范围。
+
+
+<a id="reranker-gpu-player-pack-20261008"></a>
+# 玩家CUDA运行组件包（2026-10-08，PACKAGED_GPU_VERIFIED）
+
+- 用户要求检查GPU选项并生成可转发玩家的ONNX GPU库包。MCM已接入RerankerDeviceRuntime，NVIDIA独立worker只加速重排序；向量CPU保持。实际游戏日志已出现active=CUDA worker_ready，不能以该启动记录代替全部场景性能验证。
+- 用当前源码和原build_optional_pack.py/已校验依赖档重新构建ORT1.22.0/CUDA12.8/cuDNN9.8，未改游戏CPU库、ONNX模型或配置。RTX4060 Laptop真实GPU/退出回退、CPU/无效/缺件各17、GPU19、kill24及22故障检查PASS；profile1083 CUDA/24 CPU事件，样例分数最大差2.51e-7且顺序一致，保护输入hash不变。
+- 玩家包：artifacts/reranker-gpu-player-20261008/release/AnimusForge_ONNX_GPU_NVIDIA_20261008.zip；1968279287字节（约1.83GiB），解压2411908350字节，54条目。CRC及manifest所有payload哈希PASS，SHA256=1283e0e22d6f07f9cb408d3d853585a5c97b666975a97ed53baffb535f9f7ecd。仅OptionalRuntimes/RerankerCuda及安装说明/许可，无主DLL、模型、日志、PDB或本机路径；版本协议与包内说明完整。
+- 证据：同目录上级package-receipt.json、build.log、verified-integration/summary.json；性能样例CPU35.85ms/GPU6.45ms不是完整游戏基准。新包未安装到游戏；RTX5060/全部显卡/长时游戏/MCM交互NOT-RUN。卸载仅可选组件目录，先选择CPU并退出游戏。
+- 顺带回答两个新闻开关：默认值都true，但周报有效条件AutoGenerateWeeklyReports && !UseWorldBulletin，快报条件UseWorldBulletin && AutoGenerateWorldBulletins，主模式互斥。用户仅询问，未改默认/个人配置。
+
+<a id="scene-image-panel-legibility-20261008"></a>
+# 场景喊话生图等待面板与字色（2026-10-08，ACTIVE）
+
+- 用户实机截图指出场景控制按钮小字深色难读；同时点击生图只有忙碌字样，不弹面板。现有MissionScreenshotIllustration只在成图后打开画廊，没有等待/错误面板，确认呈现缺口。
+- 本包修按钮文字与三种布局一致性，并复用现有IllustrationCardPopup显示截图结束后的导演/生图进度、错误与成图；不得影响隐藏UI截屏、用户关闭后后台保存、离场无弹出及单请求防重复。主线程渲染与后台生成owner保持分离；读真实日志不把另一快报的403错归场景请求。按实际生产接线/生命周期与原双API构建验证。
