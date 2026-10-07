@@ -7883,3 +7883,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户要求旧配置也关闭。DuelSettings.cs:2516/2527双MCM读取入口接入EnsureAdultHeroPersonaDefaultMigration:2564；首次加载强制false并SaveSettings，成功后写.adult_hero_persona_off_20261007标记。后续手动开启保留；保存失败不写标记，下次启动重试。内存门闩在保存前设置防重入，每次启动最多一次迁移I/O，无Tick扫描。
 - work/verify_adult_persona_migration.py提取真实方法验证旧true关闭、保存重入、标记幂等、手动开启保留、失败与重启重试通过。证据artifacts/adult-persona-migration-test/result.log。双API/Bootstrap编译通过；首轮接缝进程异常退出，统一流程重跑全部通过含Stage：artifacts/adult-persona-off-migration-build-retry.log。
 - 未实机、未部署、打包或推送；玩家旧配置需安装新版后运行才迁移。保留其他作者Vengeance改动；构建包含工作树同期内容。回滚对应fix(settings)迁移提交；已迁移用户可手动开启。
+
+
+<a id="current-image-redraw-20261008"></a>
+# 重绘（基于本图）（2026-10-08，BUILD_VERIFIED_NOT_DEPLOYED）
+- 用户批准本图+修改要求直接生图，无导演；百科、对话普通/全屏、周报/快报统一入口，暂不做画廊编辑/场景喊话/战斗。检查点0bb1a33。保留其他作者外交与周报工作树改动，不提交这些文件。
+- 链路：IllustrationCardPopup.OpenCurrentImageEditor:187 / WeeklyReportPopupIllustrationPatch.OpenCurrentImageEditor:482 → CurrentImageRedraw.Start → IllustrationOptions.ForCurrentImageEdit → UniversalOpenAiImageClient.GenerateImageAsync:109。GeneratedImage枚举末尾追加；编辑只有一张底图，无普通参考开关丢图，无导演/旧事实/画风/负面词/随机拼接，无失败文生图回退。保留现有画幅、请求预算/校验/取消。
+- 当前成图元数据快照绑定源Key/存档/主体；底图内存字节或有界磁盘读一次，均脱离游戏对象。后台生成复用scope/快报job；新图保存SourceImageKey/EditInstruction/GenerationMode，旧SaveImage签名和旧JSON可继续读取。旧图不覆盖，本次缓存淘汰保护源Key；新纹理加载失败不释放旧图。不新增Tick扫描。
+- VM命令/可用状态及5份XML绑定检查通过；窄面板双行重绘栏宽382/382/380分别不超过430/440/420；快报本图按钮独立放标题行。初始/加载时禁用，输入非空校验和取消沿现有编辑器；底图模式绕过导演校验。源码审查包含连续编辑、失败草稿保留、过期界面接受、旧JSON及多协议；未进行运行时mock回放或付费请求，不能称这些路径实机已验。
+- artifacts/current-image-edit-verified-build.log：1.3/1.4/Bootstrap及双接缝通过。旧Stage与新布局不同导致清理前哈希门禁失败；旧Stage完整移至artifacts/current-image-edit-old-stage-20261007163919，原deploy_module.ps1 StageOnly重新生成通过：artifacts/current-image-edit-stage-final.log。5份Stage XML与源码字节一致；源码哈希清单artifacts/current-image-edit-source-manifest.json。
+- 未运行Illustrator离线审计、未调用生图API、未实机验收、未部署/打包/推送。当前Stage包含工作树其他作者同期改动，不是仅本功能的发布包。回滚对应feat(illustrator)提交；旧Stage有项目内备份。

@@ -28,6 +28,9 @@ namespace AnimusForge.Illustrator.Engine
         // with a different fingerprint must be regenerated instead of being presented as
         // if it followed the current style settings.
         public string StyleFingerprint { get; set; } = string.Empty;
+        public string SourceImageKey { get; set; }
+        public string EditInstruction { get; set; }
+        public string GenerationMode { get; set; }
         [JsonIgnore]
         public string ThemeText => string.IsNullOrWhiteSpace(Theme) ? "纪事画卷" : "主题：" + Theme;
         [JsonIgnore]
@@ -174,6 +177,11 @@ namespace AnimusForge.Illustrator.Engine
 
         public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null, string styleFingerprint = null)
         {
+            return SaveImageWithEditMetadata(subjectKey, bytes, prompt, title, category, campaignKey, maxCacheCount, makeDefault, allowImplicitDefault, theme, actionSummary, diagnosticId, directorStatus, directorStatusText, directorFallbackReason, styleFingerprint);
+        }
+
+        public static CachedIllustrationItem SaveImageWithEditMetadata(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null, string styleFingerprint = null, string sourceImageKey = null, string editInstruction = null, string generationMode = null)
+        {
             try { bytes = ImagePayload.Normalize(bytes); }
             catch (Exception ex) { Core.GenerationDiagnostics.Current?.RecordStage("cache_image_invalid", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "cache.invalid_image", ["error"] = ex.Message }); Core.GenerationDiagnostics.Current?.Finish("failed", ex.Message); return null; }
             lock (CacheLock)
@@ -207,13 +215,14 @@ namespace AnimusForge.Illustrator.Engine
                     DirectorStatusText = directorStatusText ?? string.Empty,
                     DirectorFallbackReason = directorFallbackReason ?? string.Empty,
                     StyleFingerprint = styleFingerprint ?? string.Empty,
+                    SourceImageKey = sourceImageKey, EditInstruction = editInstruction, GenerationMode = generationMode,
                     CreatedTime = DateTime.UtcNow,
                     IsDefault = isDefault
                 };
                 AtomicWrite(Path.ChangeExtension(filePath, ".json"), JsonConvert.SerializeObject(item, Formatting.Indented));
                 InvalidateCache();
                 if (item.IsDefault) SetDefault(item, campaignKey);
-                EnforceLimit(campaignKey, maxCacheCount);
+                EnforceLimit(campaignKey, maxCacheCount, sourceImageKey);
                 Core.GenerationDiagnostics.Current?.RecordStage("cache_save_complete", new Newtonsoft.Json.Linq.JObject { ["bytes"] = bytes.Length, ["fileName"] = Path.GetFileName(filePath) });
                 return item;
             }
@@ -469,7 +478,7 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        private static void EnforceLimit(string campaignKey, int maxCacheCount)
+        private static void EnforceLimit(string campaignKey, int maxCacheCount, string preserveImageKey = null)
         {
             var items = GetAllCachedIllustrations(campaignKey);
             int limit = Math.Max(20, Math.Min(1000, maxCacheCount));
@@ -477,7 +486,7 @@ namespace AnimusForge.Illustrator.Engine
             int remaining = items.Count;
             // Keep the newest generated histories; otherwise an unpromoted new image is
             // immediately evicted when all older subjects already have a default.
-            foreach (var item in items.Where(i => !i.IsFavorite).OrderBy(i => i.CreatedTime))
+            foreach (var item in items.Where(i => !i.IsFavorite && i.Key != preserveImageKey).OrderBy(i => i.CreatedTime))
             {
                 if (remaining <= limit) break;
                 if (DeleteItem(item, campaignKey)) remaining--;

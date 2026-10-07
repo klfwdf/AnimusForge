@@ -6,7 +6,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
     internal static class IllustrationRedrawPromptEditor
     {
         internal static void Show(string draft, Func<bool> isCurrent, Action<string> redraw,
-            Action<string> status, Action<bool> setEditing)
+            Action<string> status, Action<bool> setEditing, bool basedOnImage = false)
         {
             if (!isCurrent()) return;
             bool editing = false;
@@ -14,10 +14,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
             Action restore = () => { if (editing) { editing = false; setEditing(false); } };
             try
             {
-                VisualDirectorEngine.RequirePlayerRedrawDirector("requested", IllustratorRuntime.CaptureOptions());
+                if (!basedOnImage) VisualDirectorEngine.RequirePlayerRedrawDirector("requested", IllustratorRuntime.CaptureOptions());
                 editing = true;
                 setEditing(true);
-                DevTextEditorHelper.ShowLongTextEditor("重绘（带提示词）", "", "", draft ?? "", input =>
+                DevTextEditorHelper.ShowLongTextEditor(basedOnImage ? "重绘（基于本图）" : "重绘（带提示词）", "", "", draft ?? "", input =>
                 {
                     restore();
                     if (submitted) return;
@@ -27,7 +27,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (prompt.Length == 0) { status("请填写本次重绘提示词，未开始生成。"); return; }
                     try
                     {
-                        VisualDirectorEngine.RequirePlayerRedrawDirector(prompt, IllustratorRuntime.CaptureOptions());
+                        if (!basedOnImage) VisualDirectorEngine.RequirePlayerRedrawDirector(prompt, IllustratorRuntime.CaptureOptions());
                         redraw(prompt);
                     }
                     catch (Exception ex) { status("重绘准备失败：" + ex.Message); }

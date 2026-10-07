@@ -110,6 +110,9 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	public Action OnRegenerate;
 
 	public Action OnRegenerateWithPrompt;
+	public Action OnRegenerateBasedOnImage;
+	[DataSourceProperty] public bool CanRegenerateBasedOnImage => HasIllustration && !IsLoading && OnRegenerateBasedOnImage != null;
+	public void ExecuteRegenerateBasedOnImage() { if (CanRegenerateBasedOnImage) OnRegenerateBasedOnImage(); }
 
 	internal Action<bool> SetPromptEditing;
 
@@ -191,6 +194,7 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 		OnPropertyChangedWithValue(ShowPlaceholder, nameof(ShowPlaceholder));
 		OnPropertyChangedWithValue(CanRegenerate, nameof(CanRegenerate));
 		OnPropertyChangedWithValue(CanRegenerateWithPrompt, nameof(CanRegenerateWithPrompt));
+		OnPropertyChangedWithValue(CanRegenerateBasedOnImage, nameof(CanRegenerateBasedOnImage));
 	}
 
 	public void NotifyHandlersChanged()

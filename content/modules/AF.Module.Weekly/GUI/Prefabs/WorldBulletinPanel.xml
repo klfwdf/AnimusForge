@@ -1,4 +1,4 @@
-﻿<Prefab>
+<Prefab>
   <!-- Layout mirrors pencil-new.pen frame sAH0C (1920×1080 新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
@@ -59,6 +59,9 @@
                       </Children>
                     </Widget>
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="17" MarginTop="250" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#6B4E30FF" Brush.TextVerticalAlignment="Center" Text="@CaptionText" DoNotAcceptEvents="true" />
+                    <ButtonWidget IsEnabled="@CanRegenerateBasedOnImage" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="128" MarginTop="250" MarginRight="28" HorizontalAlignment="Right" SuggestedHeight="17" Command.Click="ExecuteRegenerateBasedOnImage">
+                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="重绘（基于本图）" DoNotAcceptEvents="true" /></Children>
+                        </ButtonWidget>
                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="17" MarginTop="276" MarginRight="28" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="17" Command.Click="ExecuteRegenerate" IsEnabled="@CanRegenerate">
@@ -68,6 +71,7 @@
                         <ButtonWidget IsEnabled="@CanRegenerateWithPrompt" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="116" SuggestedHeight="17" Command.Click="ExecuteRegenerateWithPrompt">
                           <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="重绘（带提示词）" DoNotAcceptEvents="true" /></Children>
                         </ButtonWidget>
+
                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="16" SuggestedHeight="17" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="·" DoNotAcceptEvents="true" />
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="17" Command.Click="ExecuteOpenGallery">
                           <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="画廊" DoNotAcceptEvents="true" /></Children>

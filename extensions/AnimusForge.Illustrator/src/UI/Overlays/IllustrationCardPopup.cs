@@ -34,6 +34,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly string _category;
         private readonly Action<string> _onRegenerate;
         private string _playerRedrawDraft = string.Empty;
+        private string _imageEditDraft = string.Empty;
+        private CachedIllustrationItem _displayedImage;
         private bool _editingRedrawPrompt;
         private bool _hiddenForSystemUi;
         private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -128,6 +130,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _autoFullscreen = autoFullscreen;
             _onRegenerate = onRegenerate;
             _dataSource = new IllustrationCardVM(Close, () => Regenerate(null), onSceneProbe, OpenRedrawPromptEditor);
+            _dataSource.OnRegenerateBasedOnImage = OpenCurrentImageEditor;
             var layer = new MovableGauntletLayer(autoFullscreen ? "IllustrationFullscreenOverlay" : "IllustrationCardOverlay", autoFullscreen ? 4020 : 4015, false);
             _layer = layer;
             try
@@ -179,6 +182,30 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_closed || !_scope.IsCurrent || !ReferenceEquals(_activeInstance, this) || _dataSource.IsLoading) return;
             _onRegenerate?.Invoke(playerPrompt);
+        }
+
+        private void OpenCurrentImageEditor()
+        {
+            if (_editingRedrawPrompt || _displayedImage == null || !_dataSource.CanRegenerateBasedOnImage) return;
+            var source = _displayedImage;
+            string session = _category == "conversation" ? ConversationSessionOwnerKey() : null;
+            IllustrationRedrawPromptEditor.Show(_imageEditDraft,
+                () => !_closed && _scope.IsCurrent && ReferenceEquals(_activeInstance, this) &&
+                    ReferenceEquals(source, _displayedImage) && !_dataSource.IsLoading &&
+                    (_category != "conversation" || session == ConversationSessionOwnerKey()),
+                prompt => {
+                    _imageEditDraft = prompt;
+                    var options = IllustratorRuntime.CaptureOptions();
+                    if (_autoFullscreen) options = options?.WithSceneImageSize();
+                    ++_cacheLoadVersion;
+                    _dataSource.SetLoading("正在基于本图重绘…");
+                    CurrentImageRedraw.Start(_scope, source, prompt, options, session, completion => {
+                        if (completion.Saved != null && PublishImage(completion.Saved, completion.Result.ImageBytes, completion.Result.ResolvedPrompt))
+                            _dataSource.SetReady("重绘完成，已保存为新版本。");
+                        else _dataSource.SetReady("重绘失败：" + (completion.Result?.ErrorMessage ?? "未能保存或显示图片"));
+                    }, error => _dataSource.SetReady("重绘失败：" + error));
+                }, status => _dataSource.StatusText = status,
+                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } }, basedOnImage: true);
         }
 
         private void OpenRedrawPromptEditor()
@@ -962,12 +989,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 : "Illustration_" + Guid.NewGuid().ToString("N");
 
             // 无缓存条目的试采使用唯一纹理名；注册失败时保留原来的正式插画。
-            if (item != null) ReleaseActiveSprite();
+            // Keep the previous texture alive until replacement registration succeeds.
             var publishClock = System.Diagnostics.Stopwatch.StartNew();
             GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_texture_begin", "bytes=" + (imageBytes?.Length ?? 0));
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes);
             if (sprite == null) { GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_texture_failed", "texture registration returned null; bytes=" + (imageBytes?.Length ?? 0)); return false; }
-            if (item == null) ReleaseActiveSprite();
+            if (_activeSpriteName != spriteName) ReleaseActiveSprite();
+            _displayedImage = item;
+            _dataSource.SetEditableImage(item != null);
             _activeSpriteName = spriteName;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);

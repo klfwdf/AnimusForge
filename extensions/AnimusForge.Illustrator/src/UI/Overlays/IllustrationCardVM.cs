@@ -11,6 +11,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly Action _onRegenerate;
         private readonly Action _onSceneProbe;
         private readonly Action _onRegenerateWithPrompt;
+        internal Action OnRegenerateBasedOnImage;
+        internal bool HasEditableImage;
+        internal void SetEditableImage(bool value) { HasEditableImage = value; OnPropertyChanged(nameof(CanRegenerateBasedOnImage)); }
+        [DataSourceProperty] public bool CanRegenerateBasedOnImage => HasEditableImage && HasIllustration && !IsLoading && OnRegenerateBasedOnImage != null;
+        public void ExecuteRegenerateBasedOnImage()
+        {
+            if (!CanRegenerateBasedOnImage) return;
+            try { OnRegenerateBasedOnImage(); } catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
+        }
         private string _titleText = string.Empty;
         private string _statusText = string.Empty;
         private string _promptText = string.Empty;
@@ -99,6 +108,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _hasIllustration = value;
                     OnPropertyChangedWithValue(value, nameof(HasIllustration));
+                    OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
                 }
             }
         }
@@ -115,6 +125,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
                     OnPropertyChanged(nameof(CanExecuteSceneProbe));
                     OnPropertyChanged(nameof(CanRegenerateWithPrompt));
+                    OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
                 }
             }
         }
