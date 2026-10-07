@@ -1579,3 +1579,7 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 工具 `9ee66b68`，检查点 `313a8d33`；本机 RTX 4060 Laptop，不是 5060。三组/三轮独立 net472 对照 + profile，1080 计时调用和 8 自检通过；原模型/分词/截断/打分/缓存/规则未改，未覆盖游戏或 push。
 - 热态 CUDA 对同版 CPU 5.75–11.96x；设备采样显存增量峰值约 2.56 GiB。分数最大差 5.21e-7，测试集 Top1/Top2/全序一致；冷启动/首次调用有代价。建议可选重排序 CUDA，不默认开启，先复测目标 5060；实机/并发/native 共享加载未验。
 - [唯一主台账与工具代码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rag-reranker-cpu-cuda-20261003)；本地 `artifacts/reranker-cpu-cuda-20261003/REPORT.md` / `receipt.json` 保存完整数据、界限和回滚。此测试记录不取代其他产品交付，原共享文档 dirty 保留。
+
+
+# 对话历史超链接修复（2026-10-07）
+- 补齐反射导航第四参数，旧调用异常复现、新调用回放和双版本统一构建通过。未实机/部署/推送。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#history-link-reflection-20261007)。

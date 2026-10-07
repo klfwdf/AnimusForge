@@ -7828,3 +7828,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - PassiveSceneScreenshot.cs:10–16返回空；ScreenCaptureHelper.cs:58–62禁用窗口截图；SceneReferenceCapture.cs:45–58拒绝旧截图输入。独立全景和人物离屏保留，无CopyFromScreen调用。历史允许窗口截图条款由模块AGENTS新条款覆盖。
 - 原入口双1.3/1.4、Bootstrap及接缝通过，证据 artifacts/readable-prompt-no-screenshot-build-20261007.log；diff检查通过。未运行Illustrator离线审计、未实机验证文本文件或API请求、未部署/打包/推送。
 - 回滚：聚焦逆向提交 d72afbfb1，不恢复其他作者变更。
+
+
+<a id="history-link-reflection-20261007"></a>
+# 对话历史超链接修复（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+- 基线4586bd534。AFDialogueNativeOverlay.xml:167 → HistoryLogItemVM.ExecuteOpenEncyclopediaLink → DialogueAuxiliaryVM.OpenEncyclopedia:214-220 → EncyclopediaEntityLinkNavigationCoordinator.Request:44-63。反射旧调用3参数而真实方法4参数，复现TargetParameterCountException；显式传入CanInteract/IsCurrentTarget回调，关闭面板或目标过期时取消延迟导航。不改历史数据，仅点击时创建回调。
+- 最终双API/Bootstrap/双接缝/Stage通过：artifacts/history-link-unified-build.log。真实点击及Request源码回放通过：work/verify_history_link.py、artifacts/history-link-focused/result.log。同步契约检查和导航回归用例。
+- 独立UI旧构建入口缺宿主PreparePlayerRequestedNativeConversationLeave，完整BulletinArchiveTests被已有WeekText布局断言阻断；未宣称全套通过。UI实际编入主程序集且统一构建通过。
+- 未实机、部署、打包或推送。保留已有HeroVisualExtractor改动，Stage包含当前工作树其他改动；不作为仅本修复发布包。回滚本条对应fix(dialogue-ui)提交。

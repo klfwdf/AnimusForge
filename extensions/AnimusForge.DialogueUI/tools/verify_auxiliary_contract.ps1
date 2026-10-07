@@ -56,7 +56,7 @@ foreach($name in @('FocusInputIfVisible','RestoreNativeConversationInputAfterOrd
 $history=$hostAssembly.GetType('AnimusForge.AnimusForgeConversationHistoryLogVM',$true)
 if(!$history.GetMethod('CancelDeferredFormatting',$flags)){throw 'History cleanup unavailable'}
 $nav=$hostAssembly.GetType('AnimusForge.EncyclopediaEntityLinkNavigationCoordinator',$true).GetMethod('Request',$flags)
-if($nav.GetParameters().Count -ne 3){throw 'Navigation callback mismatch'}
+if($nav.GetParameters().Count -ne 4){throw 'Navigation callback mismatch'}
 $inquiry=$core.GetType('TaleWorlds.Core.MBInformationManager',$true).GetMethod('ShowMultiSelectionInquiry',$flags)
 if($inquiry.GetParameters()[0].ParameterType.FullName -ne 'TaleWorlds.Core.MultiSelectionInquiryData'){throw 'Inquiry signature mismatch'}
 

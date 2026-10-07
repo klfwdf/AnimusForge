@@ -198,7 +198,12 @@ long navGeneration=SaveRuntimeGuard.CaptureGeneration();
 EncyclopediaEntityLinkNavigationCoordinator.Request("hero:expired-load",()=>suspended++,()=>{},()=>SaveRuntimeGuard.IsCurrentGeneration(navGeneration));
 SaveRuntimeGuard.AdvanceGeneration("pending-navigation-load");EncyclopediaEntityLinkNavigationCoordinator.ProcessPending();
 Check(manager.Opens==0&&suspended==0,"loading before deferred link callback cancels navigation");
-EncyclopediaEntityLinkNavigationCoordinator.Request("event:hero:valid",()=>suspended++,()=>{},()=>true);
+var navigationRequest=typeof(EncyclopediaEntityLinkNavigationCoordinator).GetMethod("Request",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+bool oldReflectionRejected=false;
+try { navigationRequest.Invoke(null,new object[]{"event:hero:valid",(Action)(()=>suspended++),(Action)(()=>{})}); }
+catch(System.Reflection.TargetParameterCountException) { oldReflectionRejected=true; }
+Check(oldReflectionRejected,"legacy three-argument reflection call fails despite optional fourth parameter");
+navigationRequest.Invoke(null,new object[]{"event:hero:valid",(Action)(()=>suspended++),(Action)(()=>{}),(Func<bool>)(()=>true)});
 EncyclopediaEntityLinkNavigationCoordinator.ProcessPending();
 Check(manager.Opens==1&&manager.Link=="hero:valid"&&suspended==1,"current encyclopedia navigation suspends once and opens normalized original target");
 Console.WriteLine($"PASS: {count} final archive/save/UI/navigation assertions (native rendering and encyclopedia lifecycle stubbed).");
