@@ -7850,3 +7850,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - VisualDirectorEngine请求入口移除装备事实，固定系统规则/最终契约/本地构图使用WithoutEquipmentRules，用户规则允许衣装变化；VisualFidelityRules新增自主装备规则，保留身份与事件边界。UniversalOpenAiImageClient将选项传递ComposeImagePrompt及Chat/Edits/Player2/回退，引用不锁旧装备。关闭时旧随机表现锁装段不追加；自定义画风原文保留。
 - 每请求有限文本处理，无新增Tick、游戏状态修改或模型调用。普通默认true保留原行为；true下定向重绘仍可覆盖。关闭后真实模型、MCM持久化及UI未实测。
 - 双API/Bootstrap/接缝通过，日志artifacts/equipment-fidelity-option-build-final.log；diff检查通过。未部署/打包/推送，回滚git revert df45d7b51。
+
+
+## Illustrator release 20261007 — DEPLOYED_PACKAGED_LIVE_PENDING
+- 用户授权编译部署提交推送打包。565d990a6已推送origin/main，包含df45d7b51装备保真开关、c734274c3换装/纹章精简及d72afbfb1禁截图/可读诊断。
+- 原入口双API/Bootstrap/双接缝通过；部署更新9文件，Stage与安装3379文件SHA256全一致。证据artifacts/illustrator-release-20261007.log。
+- package_mod.ps1同一Stage打包成功：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_174412_294.zip。ZIP版本v1.5.5，源码/安装仍v1.5.4（脚本既有行为）；证据artifacts/illustrator-package-20261007.log。不含ONNX与玩家日志。
+- Recovery: C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-33d0e57b2d2848e485fb5f780e7af9f1。实机MCM、换装、图片模型遵从未验；服装叙事破损没有专项规则改动。覆盖以上修复尚未部署状态。
