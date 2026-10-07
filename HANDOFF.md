@@ -3,6 +3,11 @@
 - 策略53项、设置12项、宿主20项、外交3670断言及双API/Bootstrap/双接缝通过；未实机/真实模型、未Stage/部署/打包/推送。关闭自动发布拦截新请求及发布，必要事件记录保留；已发HTTP不承诺立即终止。
 - [主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-settings-declarations-20261008)，日志 `artifacts/bulletin-settings-news-20261007`。回滚 `git revert 64704d555`，保留其他作者改动。
 
+# 当前交接：压缩记忆误导入个性文件修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+- 产品 `834146d55`，检查点 `b975e9cb4`。在默认空 DTO 创建/重复确认/覆盖之前验证记忆文件，persona 文件明确提示正确导入入口；合法记忆格式及空导出语义保留。
+- 107 项相关运行断言、故障变异及官方双 API/Bootstrap/双接缝通过；历史 UI 静态检查仍有既有路径失效，未冒称全仓通过。实机/旧已覆盖记忆恢复未验，未 Stage/部署/打包/推送。
+- [主台账、验证过的源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#memory-import-schema-20261008)；[既有职责导航（冻结修订范围不扩张）](docs/architecture/af-framework-code-scope.md)。构建与哈希证据 `artifacts/memory-import-schema-20261008/`，保留其他作者工作树改动。
+
 # 当前交接：处决退出卡死修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 - 产品3d7a2e35d，检查点2e4096b。现场线程/堆定位散场Agent296残留交互点预约；先恢复AI再绑定、退出前仅释放本场持有预约。
 - 74项回归、双API/Bootstrap/接缝、独立1.4.8编译通过。实机退出与结算未验，未部署/推送/打包。
