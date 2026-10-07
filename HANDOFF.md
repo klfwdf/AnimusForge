@@ -1,4 +1,10 @@
-﻿# 当前交接：场景喊话与战斗双截图生图（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：外交原案 ID 漏前缀修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `5c0c1a31c`，检查点 `1aad4df`。玩家公告解析收到缺 `diplomacy_document:` 的来源时，仅从玩家已知的活跃开放提案中核实唯一双边/类型/动作及真实公开源公文后补齐；保留原执行资格检查。正常 ID 不变，无新增 Tick/模型请求/公共 API/存档键。
+- 日志形状短ID旧代码失败，新版外交专项3918 PASS（新增18场景108断言）；固定产品隔离worktree原双API1.3/1.4、Bootstrap与双实际DLL接缝exit0。真实模型/战役/玩家旧档未验，未Stage/部署/打包/推送；旧失败公告不自动重放，更新后重新回应仍有效提案。
+- [唯一主台账、源码坐标与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-offer-prefix-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md)。本地证据 `artifacts/diplomacy-offer-prefix-20261008/receipt.json`；回滚仅 `git revert 5c0c1a31c`，保留其他作者工作。
+
+# 当前交接：场景喊话与战斗双截图生图（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `e5c32267c`，检查点 `2b2020879`。手动面板按钮，战斗喊话直进UI；临时冻结/隐藏UI采当前及反侧回望两图，立即恢复，再必经识图导演和双图生成。保持站位/距离/朝向，喊话用完整最近两轮多人对白，战斗保留截图动作；禁止重复、丢图回退或自动重试。
 - 采集/恢复/转码189断言、两个最终生产DLL的实际请求/历史各43断言、XML绑定/生成器一致性及原双API1.3/1.4+Bootstrap+接缝构建PASS。真实GPU、HUD、切场景/恢复、真实模型及画廊实机NOT-RUN；未Stage/部署/打包/推送。
