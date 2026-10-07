@@ -1,6 +1,6 @@
-# 当前交接：最新快报与截图修复已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+# 当前交接：最新快报与截图修复已部署并推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
-- 用户授权部署；源码`5790cd60`包含截图修复/黑图拦截、快报按大事件组抽选配图、外交结盟45/解盟40/宣言30。原双API/Bootstrap/接缝已过，5582输入与构建一致，部署9文件，3380安装SHA和9备份PASS。已覆盖游戏，未推送；实机仍待复测。
+- 用户授权部署；源码`5790cd60`包含截图修复/黑图拦截、快报按大事件组抽选配图、外交结盟45/解盟40/宣言30。原双API/Bootstrap/接缝已过，5582输入与构建一致，部署9文件，3380安装SHA和9备份PASS。已覆盖游戏；用户追加授权后8个提交已推送并确认远端438180a9，本交接同步随后推送；实机仍待复测。
 - [唯一部署记录与恢复路径](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-and-capture-deploy-20261008)，证据 `artifacts/news-and-capture-deploy-20261008/receipt.json`。下方对应“未部署”状态由本条取代，不改变尚未实机验收的边界。
 
 # 当前交接：外交快报评分降低（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
