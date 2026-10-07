@@ -85,6 +85,9 @@ internal static class WorldDiplomacyPlayerApplication
         IWorldDiplomacyOrchestration orchestration)
     {
         WorldDiplomacyPlayerContext context = world.Player;
+        string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
+        if (string.IsNullOrWhiteSpace(cleanBody)) return "外交回应正文不能为空。";
+        if (!context.IsRuler) return "你当前不再是王国统治者，外交回应没有发布。";
         string player = context.KingdomId;
         string target = world.KingdomExists(sourceDocument.AuthorKingdomId) ? sourceDocument.AuthorKingdomId : null;
         if (player == null || target == null || !context.Independent)
@@ -95,11 +98,19 @@ internal static class WorldDiplomacyPlayerApplication
             }
             return "";
         }
+        if (!WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
+        {
+            string previousRoundId = round.RoundId;
+            round = orchestration.EnsureActiveRound(player, target, isPlayerInsertion: true);
+            if (round != null) round.ExternalOpeningContext = "玩家回应独立成案；原事件=" + previousRoundId
+                + "；背景公文=" + sourceDocument.DocumentId + "。原事件已结束，旧提案不因此恢复有效。";
+        }
+        if (round == null) return "外交回应暂未发布：无法建立交涉回合。";
         WorldDiplomacyDocument response = orchestration.CreateDocument(
             player,
             target,
             "外交回应",
-            WorldDiplomacyTextRules.NormalizeBody(body),
+            cleanBody,
             "player_response",
             isPlayerAuthored: true,
             isResponse: true,
@@ -107,6 +118,7 @@ internal static class WorldDiplomacyPlayerApplication
         response.RoundId = round.RoundId;
         response.SourceDocumentId = sourceDocument.DocumentId;
         response.AutomaticReplyDepth = Math.Max(1, sourceDocument.AutomaticReplyDepth + 1);
+        round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, response.DocumentId);
         orchestration.AddDocument(response);
         WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, player, "active", mandatoryReply: false);
         participant.MandatoryReplyPending = false;

@@ -121,8 +121,8 @@ internal static class RoundApplicationReplay
                 () => events.Add("compress"), _ => events.Add("log"));
             Close(scenario.Item1);
             Test.True(round.State == "closed" && round.RoundStatus == scenario.Item4 && round.CompletedDay == 20, "close status parity: " + scenario.Item1);
-            Test.True(storage.Jobs.Count == 2 && storage.Jobs[0].JobId == "mine" && storage.Jobs[1].JobId == "other" && storage.RelayArrivals.Count == 0
-                      && storage.PlayerOpportunities[0].Status == "expired", "close clears round propagation queues and preserves jobs for the original completion owner");
+            Test.True(storage.Jobs.Count == 1 && storage.Jobs[0].JobId == "other" && storage.RelayArrivals.Count == 0
+                      && storage.PlayerOpportunities[0].Status == "expired", "close retires own jobs and queues while preserving unrelated jobs");
             Test.True(!round.CommonContractSnapshotInitialized && round.CommonContractSnapshot == "", "frozen contract is released after summary");
             string expected = scenario.Item1 == "no_result" ? "cooldown,log,compress" : "cooldown,summary,log,compress";
             Test.True(string.Join(",", events) == expected, "closure effects preserve order and no-document summary gate");
@@ -134,7 +134,7 @@ internal static class RoundApplicationReplay
             Test.True(events.Count == count && storage.CompletedRounds.Single().CloseReason == scenario.Item1, "closed save roundtrip cannot replay effects");
         }
         var delayed = new WorldDiplomacyStorage(); var active = Open(delayed);
-        active.HardEndDay = 15; delayed.Jobs.Add(new WorldDiplomacyJob { JobId = "inflight", RoundId = "r" });
+        active.HardEndDay = 15; delayed.Jobs.Add(new WorldDiplomacyJob { JobId = "inflight", RoundId = "r", IsRunning = true });
         int closes = 0;
         void CloseDelayed(string reason) { closes++; WorldDiplomacyRoundApplication.Close(delayed, reason, () => 20, _ => { }, _ => { }, (_, _) => { }, () => { }, _ => { }); }
         void Tick() => WorldDiplomacyRoundApplication.ProcessRoundLifecycle(delayed, () => 20, _ => null, (_, _) => { }, _ => { }, _ => { }, CloseDelayed, _ => { });

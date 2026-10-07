@@ -86,7 +86,10 @@ internal static class WorldDiplomacyPresentationQueries
         WorldDiplomacyRoundParticipant participant = player.IsRuler
             ? round?.Participants?.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase))
             : null;
-        bool canReply = round != null && participant?.MandatoryReplyPending == true && player.Independent;
+        bool canReply = player.IsRuler && player.Independent && round != null
+            && document.IsReadyForPublication && !document.IsPlayerAuthored
+            && !string.Equals(document.AuthorKingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase)
+            && (participant?.MandatoryReplyPending == true || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State));
         return Detail(document, player.Generation, canReply, formatDate,
             WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, player));
     }
