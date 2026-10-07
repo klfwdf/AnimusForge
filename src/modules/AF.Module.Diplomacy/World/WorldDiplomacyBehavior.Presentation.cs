@@ -79,7 +79,8 @@ public sealed partial class WorldDiplomacyBehavior
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {
             return generation == _owner._runtimeGeneration && _owner.ResolveDocument(documentId) != null
-                && _owner.ResolveRound(roundId) != null;
+                && string.Equals(_owner.ResolveDocument(documentId).RoundId, roundId, StringComparison.Ordinal)
+                && Detail(documentId)?.CanReply == true;
         }
         public WorldDiplomacyDocumentDetail Detail(string id)
         {

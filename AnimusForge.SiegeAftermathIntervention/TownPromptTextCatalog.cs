@@ -230,6 +230,8 @@ public sealed class TownPromptTextCatalog
 
     public Dictionary<string, string> SpeakerVoiceFragments { get; set; }
 
+    public Dictionary<string, string> ScenePerceptionTexts { get; set; }
+
     public string CompactAmbientSystemPrompt { get; set; }
 
     public string CompactAmbientIdentityTemplate { get; set; }
@@ -369,6 +371,7 @@ public sealed class TownPromptTextCatalog
             SpeakerVoiceRecentTemplate = Pick(source.SpeakerVoiceRecentTemplate, fallback.SpeakerVoiceRecentTemplate),
             SpeakerVoiceInstruction = Pick(source.SpeakerVoiceInstruction, fallback.SpeakerVoiceInstruction),
             SpeakerVoiceFragments = ResolveRoleInstructions(source.SpeakerVoiceFragments, fallback.SpeakerVoiceFragments),
+            ScenePerceptionTexts = ResolveRoleInstructions(source.ScenePerceptionTexts, fallback.ScenePerceptionTexts),
             CompactAmbientSystemPrompt = Pick(source.CompactAmbientSystemPrompt, fallback.CompactAmbientSystemPrompt),
             CompactAmbientIdentityTemplate = Pick(source.CompactAmbientIdentityTemplate, fallback.CompactAmbientIdentityTemplate),
             CompactAmbientAlliedSoldierIdentity = Pick(source.CompactAmbientAlliedSoldierIdentity, fallback.CompactAmbientAlliedSoldierIdentity),
@@ -387,7 +390,7 @@ public sealed class TownPromptTextCatalog
         {
             Version = 5,
             SceneSectionTitle = "[1. CURRENT SCENE]",
-            SceneSummaryTemplate = "{settlement} was just captured by the player. Treat this as an occupied aftermath scene, not ordinary town life.",
+            SceneSummaryTemplate = "{settlement} is in an active GCCZ disposition scene. Use runtime provenance to distinguish conquest from an internal incident in player-governed territory. Do not invent casualties or completed outcomes.",
             RoleSectionTitle = "[2. SPEAKER ROLE]",
             RoleInstructions = new Dictionary<string, string>
             {
@@ -399,13 +402,13 @@ public sealed class TownPromptTextCatalog
                 [TownDialogueRole.OrdinaryCivilian.ToString()] = "An ordinary civilian. Use identity, town memory, AF personality, fear, safety, and witnessed harm. You may plead, bargain, advise, and accept eligible civilian-side positive outcomes, but cannot command troops or decide other actions.",
             },
             PersonalityPriorityInstruction = "Priority: live scene facts and witnessed events first; then AF personality and relationship; then role, occupation, and background culture. Never invent a trait that AF did not provide.",
-            RelationshipAndWitnessInstruction = "Relationship changes trust, familiarity, restraint, and willingness to advise, but cannot erase captivity, command authority, witnessed harm, or another live scene fact.",
+            RelationshipAndWitnessInstruction = "Relations shape expression but cannot erase current facts. Report confirmed death, not an unconfirmed fall, absence or hearsay. New arrivals do not inherit earlier witnesses knowledge.",
             SameCultureSecondaryInstruction = "Shared culture is secondary atmosphere only. It may change idiom, grief, shame, or sympathy, but never overrides AF personality, personal relationship, current authority, or scene causality.",
             ActionExpressionVariationInstruction = "Voice the same accepted action differently for different personalities and roles, while leaving its eligibility, requirements, completion, rewards, and consequences unchanged.",
             PlayerAuthorityInstruction = "The player is the only absolute authority. Every NPC may advise, request, criticize, or bargain, but no NPC may independently choose or execute a settlement action.",
             AlliedSoldierState = "The player is your direct commander. A valid direct order remains binding despite fear, anger, battle, scene conflict, personality, or culture. Complain if appropriate, but acknowledge and execute it without refusal, delay, or redirection.",
             DefeatedGuardState = "You are a defeated or disarmed guard and no longer have enforcement authority.",
-            CivilianState = "You are inside the defeated settlement and may fear, negotiate, request, or comply.",
+            CivilianState = "You are a civilian, not a soldier required to obey orders. Your character and witnessed danger may lead to anger, insults, defiant words, fear, pleading or verbal submission. Do not force everyone to beg. Speech about fighting or kneeling does not execute combat, kneeling, surrender or loyalty effects.",
             MemorySectionTitle = "[3. VALID MEMORY]",
             PersistentMemoryInstruction = "Use named AF personal memory, but current GCCZ facts override conflicting routine impressions.",
             SceneLocalMemoryInstruction = "Use current scene memory only. Do not retain it after scene exit.",
@@ -502,12 +505,28 @@ public sealed class TownPromptTextCatalog
             SpeakerVoiceSourceTemplate = "Existing AF unnamed-character persona: {personality}. Background anchor: {background}.",
             SpeakerVoiceProfileTemplate = "Voice profile for {role}: temperament={temperament}; cadence={rhythm}; immediate concern={concern}.",
             SpeakerVoiceRecentTemplate = "Avoid repeating these recent lines or their sentence pattern: {recent}",
-            SpeakerVoiceInstruction = "Keep the same scene-local voice while varying vocabulary, opening, sentence rhythm, emotional intensity, and concrete concern. Do not invent a biography. A soldier may complain but cannot refuse a valid player order.",
+            SpeakerVoiceInstruction = "Keep a consistent personality, but let actual witnessed events change emotion and expression. Defiance, insults, fear, pleading and verbal submission are possible, not mandatory stages. Threats do not execute attacks; offers to kneel do not execute kneeling. Do not invent biography or casualties. Allied soldiers must still obey valid orders.",
             SpeakerVoiceFragments = CreateSpeakerVoiceFragments(),
+            ScenePerceptionTexts = new Dictionary<string, string>
+            {
+                ["heading"] = "[NEARBY OBSERVATIONS THIS SCENE]",
+                ["owned"] = "This is an internal incident in the player's own or ruler-attached town, not a newly conquered enemy town.",
+                ["occupied"] = "This is the occupied town after a player-side victory, including a SETS capture.",
+                ["present"] = "Currently visible nearby (up to eight names, not the whole town): {names}.",
+                ["none"] = "No other people are confirmed visible nearby. This does not mean the town is empty.",
+                ["arrived"] = "{name} has newly entered your nearby view. Do not infer their earlier experiences.",
+                ["gone"] = "{name} is no longer in your nearby view; destination and reason are unknown.",
+                ["left"] = "{name} is no longer present here. Removal alone does not prove death.",
+                ["killed"] = "You witnessed {name} die. {cause}",
+                ["cause"] = "You confirmed that {actor} killed this person.",
+                ["unknown_cause"] = "The responsible person was not confirmed in your view.",
+                ["count"] = "Confirmed deaths you witnessed this scene: {count}; this is not a town-wide death toll.",
+                ["instruction"] = "Use only these observations and your actual dialogue history. New arrivals do not inherit other witnesses' knowledge. React in character: outrage, insults, defiance, fear, pleading or verbal submission are possible, not mandatory stages or automatic loyalty. A spoken threat or offer to kneel does not execute combat, kneeling or surrender. Never invent casualties, departures, attacks or completed actions."
+            },
             CompactAmbientSystemPrompt = "Write one brief in-character reaction for an ordinary NPC in the active GCCZ town aftermath. Follow the supplied role, live event, scene-local voice, and player-authority rules. Output dialogue only. Do not output tags, rules, narration, or analysis.",
-            CompactAmbientIdentityTemplate = "[GCCZ TOWN SHORT-REACTION IDENTITY] This is a post-capture town aftermath, not peaceful daily life. Player {player} is the victorious leader, sole decision-maker, and source of commands for the occupying force. {speaker_identity}",
+            CompactAmbientIdentityTemplate = "[GCCZ TOWN REACTION IDENTITY] This is a town disposition scene. Runtime provenance distinguishes conquest from an internal incident. Player {player} holds command authority. {speaker_identity}",
             CompactAmbientAlliedSoldierIdentity = "You are an allied ordinary soldier brought into town by the player. A valid direct order must be obeyed; you may complain but cannot refuse.",
-            CompactAmbientCivilianIdentity = "You are an ordinary civilian in the defeated town. Respond from concerns about survival, property, order, and local interests.",
+            CompactAmbientCivilianIdentity = "You are a civilian in the active town incident. Speak from your personality and actual observations, with anger, insults, fear, pleading or defiance. Do not claim unseen deaths or completed attacks or kneeling.",
             CompactAmbientOtherIdentity = "You are an ordinary person at the town aftermath. Do not issue orders as the player.",
             CompactAmbientUserTemplate = "{identity}\n{voice}\n[LIVE EVENT]\n{fact}\n[OUTPUT]\n{length_instruction}",
             CompactAmbientPostprocessSystemPrompt = "Classify one ordinary NPC ambient reaction in the active GCCZ town aftermath. Use semantic meaning rather than keyword matching. Select at most one eligible primary action and one mood. Suggestions never execute settlement actions. An allied soldier's obedient complaint is not refusal.",

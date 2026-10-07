@@ -456,6 +456,12 @@ internal static class AfGcczShoutBridge
 			: string.Empty;
 	}
 
+	internal static void CaptureOrdinarySpeakerPerception(NpcDataPacket npc)
+	{
+		if (npc != null && !npc.IsHero && IsTownOrCastleAftermathActive())
+			TownScenePerceptionRuntimeBridge.CaptureForSpeaker(npc.AgentIndex);
+	}
+
 	internal static string BuildOrdinarySpeakerVoiceContext(Hero targetHero, NpcDataPacket npc)
 	{
 		if (npc == null || !IsTownOrCastleAftermathActive())

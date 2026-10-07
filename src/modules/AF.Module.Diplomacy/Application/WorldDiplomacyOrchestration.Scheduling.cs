@@ -44,6 +44,72 @@ internal sealed partial class WorldDiplomacyOrchestration
 
 
 
+    private bool CanPlayerDocumentJoinRound(WorldDiplomacyDocument document, WorldDiplomacyRound round)
+    {
+        if (!IsLiveRound(round)) return false;
+        if (!round.ResultSettlementPending) return true;
+        var newTargets = GetDocumentTargetIds(document).Where(id =>
+            !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, id)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        return (round.RelayRouteKingdomIds?.Count ?? 0) + newTargets.Count <= _host.MaxRelayParticipants()
+            && newTargets.All(id => _host.PartyResolved(id) && _host.HasIndependentAuthority(id));
+    }
+
+    // Submission/analysis/load/close boundaries only; no archive work on ticks.
+    internal WorldDiplomacyRound EnsurePlayerDocumentRound(WorldDiplomacyDocument document)
+    {
+        if (document?.IsPlayerAuthored != true) return ResolveRound(document?.RoundId);
+        var previous = ResolveRound(document.RoundId);
+        if (CanPlayerDocumentJoinRound(document, previous)) return previous;
+        return MovePlayerDocumentToIndependentRound(document, previous);
+    }
+
+    private WorldDiplomacyRound MovePlayerDocumentToIndependentRound(WorldDiplomacyDocument document, WorldDiplomacyRound previous)
+    {
+        var source = ResolveDocument(document.SourceDocumentId);
+        string target = FirstNonEmpty(document.TargetKingdomId, source?.AuthorKingdomId);
+        var round = CreateIndependentDialogueRound(document.AuthorKingdomId, target, "player_manual_declaration");
+        round.RootDocumentId = document.DocumentId;
+        round.RoundTopic = FirstNonEmpty(document.Title, "玩家外交回应");
+        round.ExternalOpeningContext = "玩家发言已独立成案；原事件=" + (previous?.RoundId ?? "")
+            + "；背景公文=" + (source?.DocumentId ?? document.SourceDocumentId ?? "")
+            + "。背景联系不恢复已关闭事件或过期提案；任何接受仍须核验原案当前有效性。";
+        MovePlayerDocumentRouting(document, round);
+        document.ResultSettlementSlotId = "";
+        document.IsRelayTurn = false;
+        document.IsExternalResponseOnly = false;
+        document.RoundAccountingHandled = false;
+        document.RoundProgressHandled = false;
+        _diplomacyWorkNeedsReconcile = true;
+        _host.Log("player declaration independent round document=" + document.DocumentId
+            + " previous=" + (previous?.RoundId ?? "") + " round=" + round.RoundId);
+        return round;
+    }
+
+    private void MovePlayerDocumentRouting(WorldDiplomacyDocument document, WorldDiplomacyRound destination)
+    {
+        document.RoundId = document.ExchangeId = destination.RoundId;
+        foreach (var job in Storage.Jobs.Where(x => x != null && x.Kind == "analyze" && x.DocumentId == document.DocumentId))
+            job.RoundId = job.ExchangeId = destination.RoundId;
+        foreach (var arrival in Storage.PropagationArrivals.Where(x => x != null && x.DocumentId == document.DocumentId))
+            arrival.RoundId = destination.RoundId;
+        WorldDiplomacyRequestHistoryApplication.InvalidateDocumentRouting(Storage);
+        InvalidateDialogueIndex();
+    }
+
+    private void PreservePendingPlayerAnalysisForClosingRound(WorldDiplomacyRound round, string reason)
+    {
+        foreach (var document in Storage.Documents.Where(x => x?.IsPlayerAuthored == true && x.RoundId == round.RoundId
+            && x.IsReadyForPublication && x.AnalysisStatus == "pending_analysis" && !x.PlayerAnalysisCommitted).ToList())
+        {
+            if (reason == "closed_disabled")
+            {
+                WorldDiplomacyAnalysisApplication.MarkPlayerAnalysisFailed(document, _host.Log);
+                continue;
+            }
+            MovePlayerDocumentToIndependentRound(document, round);
+        }
+    }
+
     private void BindPlayerDeclarationToSharedEvent(WorldDiplomacyDocument document)
     {
         var provisional = ResolveRound(document.RoundId);
@@ -101,7 +167,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         if (sources.Count != 1) return; // Independent player speech is always retained.
         var destination = sources[0];
-        document.RoundId = document.ExchangeId = destination.RoundId;
+        if (!CanPlayerDocumentJoinRound(document, destination)) return;
+        MovePlayerDocumentRouting(document, destination);
         destination.ConversationRevision++;
         EnsureRoundParticipant(destination, document.AuthorKingdomId, "active", false);
         IntegratePlayerDeclaration(destination, document);

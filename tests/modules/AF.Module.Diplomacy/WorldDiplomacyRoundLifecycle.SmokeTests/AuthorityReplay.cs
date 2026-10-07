@@ -19,7 +19,7 @@ internal static class AuthorityReplay
             Test.True(reason == (!exists || eliminated ? "author_kingdom_missing" : player ? "player_controlled_realm_requires_player_authorization" : !rulerAlive ? "ruler_unavailable" : ""), "authorship rejection priority preserved");
             Test.True(WorldDiplomacyAuthorityRules.Representative(party) == (controlled ? "s" : "a"), "representative selection");
         }
-        var doc = new WorldDiplomacyDocument { DocumentId = "d", RoundId = "r" };
+        var doc = new WorldDiplomacyDocument { DocumentId = "d", RoundId = "r", AuthorKingdomId = "b", IsReadyForPublication = true };
         var round = new WorldDiplomacyRound { RoundId = "r" };
         round.Participants.Add(new WorldDiplomacyRoundParticipant { KingdomId = "a", MandatoryReplyPending = true });
         foreach (bool ruler in new[] { false, true })
