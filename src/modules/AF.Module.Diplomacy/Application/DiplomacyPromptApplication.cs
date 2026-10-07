@@ -65,7 +65,8 @@ internal static class DiplomacyPromptApplication
             var eligibility = source.CaptureEligibility();
             if (topic && DiplomacyConversationEligibilityApplication.CanInject(eligibility))
             {
-                Append(result, AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.MainReplyInstruction);
+                if (!(source is IDiplomacyOralPromptSource mode) || mode.UseFormalCommitments)
+                    Append(result, AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.MainReplyInstruction);
                 var snapshot = source.Capture();
                 Append(result, BuildInstruction(source, eligibility, snapshot));
                 Append(result, RuntimeInstruction(source, eligibility, snapshot));
@@ -108,7 +109,8 @@ internal static class DiplomacyPromptApplication
             foreach (var war in wars) AppendWar(sb, war, wars);
             if (!string.IsNullOrEmpty(s.PeaceKingdomName))
             { sb.AppendLine(); sb.AppendLine($"【与{s.PeaceKingdomName}的和平状态】双方目前处于和平状态。"); }
-            string annexation = source.AnnexationInstruction();
+            string annexation = source is IDiplomacyOralPromptSource mode && !mode.UseFormalCommitments
+                ? "" : source.AnnexationInstruction();
             if (!string.IsNullOrWhiteSpace(annexation)) { sb.AppendLine(); sb.AppendLine(annexation); }
             return sb.ToString().TrimEnd();
         }
@@ -155,5 +157,6 @@ internal static class DiplomacyPromptApplication
 // Optional request-local read port; arrangement state remains with the world owner.
 internal interface IDiplomacyOralPromptSource
 {
+    bool UseFormalCommitments { get; }
     string OralArrangementContext();
 }

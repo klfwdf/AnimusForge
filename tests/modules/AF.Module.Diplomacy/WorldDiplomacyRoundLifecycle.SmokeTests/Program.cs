@@ -240,6 +240,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunJobCompositionDecisionTests();
     RunGenerationJobCompositionDecisionTests();
         PromptMemoryReplay.Run();
+        NativeDiplomacyFallbackReplay.Run();
         AuthorityReplay.Run();
         RoundApplicationReplay.Run();
         string orchestrationHost = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"));

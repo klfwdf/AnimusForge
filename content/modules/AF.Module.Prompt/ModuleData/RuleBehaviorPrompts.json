@@ -764,23 +764,43 @@
     "Code": "DIPLOMACY",
     "PreprocessExcludedInstruction": "你不可以代表王国参与宣战、议和、结盟、贸易、贡金或其他国家外交；若玩家提及，应让其寻找国王或国家统治者。（DIPLOMACY）",
     "NonHeroInstruction": "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
-    "Instruction": "你作为当前国王可以被任何能够与你交谈的人劝说，结合个人记忆、与玩家的交谈和真实局势决定是否答应。讨论、考虑、报价不等于承诺。明确答应后先发布你的正式宣言，双边提案须对方正式接受才执行；玩家宣言只能玩家亲自发布。玩家是国王时口头谈妥和平，也由你正式提出谈妥的原始条款等待玩家正式接受。玩家不是国王不能代表所属国家签约，但可以劝你回应第三国提案。新事项或改条款开独立新回合；接受或拒绝旧案准确绑定来源宣言和动作，不借新回合绕过歧义；多份同类提案须让玩家指明。原案接受不得改条款。旧国王未发布的私人承诺不由继任者继承。私人理由、秘密不自动公开，玩家自述不是已证实事实。例外：有权限的玩家国王亲自口头宣战，以及独立玩家家族无条件议和，可立即生效。吞并、朝贡、驻军和完全臣属都必须明确角色与条款，走正式宣言。正文自然发言，不写标签。",
+    "Instruction": "你作为当前国王可以被任何能够与你交谈的人劝说，结合个人记忆、与玩家的交谈和真实局势决定是否答应。讨论、考虑、报价不等于承诺。AI外交启用时，明确答应后先发布你的正式宣言，双边提案须对方正式接受才执行；玩家宣言只能玩家亲自发布。玩家是国王时口头谈妥和平，也由你正式提出谈妥的原始条款等待玩家正式接受。玩家不是国王不能代表所属国家签约，但可以劝你回应第三国提案。新事项或改条款开独立新回合；接受或拒绝旧案准确绑定来源宣言和动作，不借新回合绕过歧义；多份同类提案须让玩家指明。原案接受不得改条款。旧国王未发布的私人承诺不由继任者继承。私人理由、秘密不自动公开，玩家自述不是已证实事实。例外：有权限的玩家国王亲自口头宣战，以及独立玩家家族无条件议和，可立即生效。吞并、朝贡、驻军和完全臣属都必须明确角色与条款，走正式宣言。以上正式公文规则仅在运行时AI外交启用时适用。AI外交关闭时，按运行时原版外交规则直接处理宣战、议和、结盟及贸易，不要求回国发文或等待正式宣言；不得声称游戏尚未确认的行动已经生效。原版入口不支持的复杂公文条款不能假装执行。正文自然发言，不写标签。",
     "PostprocessRules": [
         {
             "Tag": "[ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]",
-            "Description": "仅 latest_reply 中 NPC 当前国王明确最终答应时输出；考虑、报价、犹豫不输出。action=Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。move=NewMatter/AcceptProposal/RejectProposal；接受或拒绝原案附 source_document=原宣言ID;source_action=原动作ID。原案歧义先问玩家，不能选最新或最早。贡金必须明确金额与期限，未明确先澄清；无贡金和平期限为0。和平附 payer/receiver/tribute/days/cession_from/cession_to/settlement，按明确同意的原始条款复制；接受原案省略条款代表完全接受原案，不能更改。吞并/臣属附 receiving=接收国或宗主国ID;joining=并入国或臣属国ID。ID从运行时复制。不能代玩家发文。 修改尚未发布的约定时，NewMatter必须附supersedes=旧约定ID;version=旧版本号;reason=本轮明确改约原因，并完整复制新条件；ID及版本从运行时清单复制，不能猜测。其他独立新事项不附supersedes。旧公文已公开时先用COMMITMENT取消开放提案，再另发新方案；已生效行动不能借改约回滚。"
+            "Description": "仅AI外交启用时使用。仅 latest_reply 中 NPC 当前国王明确最终答应时输出；考虑、报价、犹豫不输出。action=Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。move=NewMatter/AcceptProposal/RejectProposal；接受或拒绝原案附 source_document=原宣言ID;source_action=原动作ID。原案歧义先问玩家，不能选最新或最早。贡金必须明确金额与期限，未明确先澄清；无贡金和平期限为0。和平附 payer/receiver/tribute/days/cession_from/cession_to/settlement，按明确同意的原始条款复制；接受原案省略条款代表完全接受原案，不能更改。吞并/臣属附 receiving=接收国或宗主国ID;joining=并入国或臣属国ID。ID从运行时复制。不能代玩家发文。 修改尚未发布的约定时，NewMatter必须附supersedes=旧约定ID;version=旧版本号;reason=本轮明确改约原因，并完整复制新条件；ID及版本从运行时清单复制，不能猜测。其他独立新事项不附supersedes。旧公文已公开时先用COMMITMENT取消开放提案，再另发新方案；已生效行动不能借改约回滚。"
         },
         {
             "Tag": "[ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred;reason=明确原因]",
-            "Description": "仅NPC明确决定延期、取消或恢复自己的约定时输出。state=deferred/cancelled/accepted，arrangement从运行时约定清单复制。已经发布且尚未被正式接受的自己提案只能cancelled，转为正式撤回宣言；已生效行动不能撤销。改条款用带supersedes与version的COMMIT:NewMatter。原因须来自本次NPC明确发言，不泄露私人内容到公开宣言。"
+            "Description": "仅AI外交启用时使用。仅NPC明确决定延期、取消或恢复自己的约定时输出。state=deferred/cancelled/accepted，arrangement从运行时约定清单复制。已经发布且尚未被正式接受的自己提案只能cancelled，转为正式撤回宣言；已生效行动不能撤销。改条款用带supersedes与version的COMMIT:NewMatter。原因须来自本次NPC明确发言，不泄露私人内容到公开宣言。"
         },
         {
             "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
-            "Description": "仅有国家宣战权限的玩家国王亲自向 NPC 王国明确口头宣战时输出，id1=玩家王国ID,id2=NPC王国ID。劝说 NPC 对第三国开战使用 COMMIT:DeclareWar，不能跳过 NPC 正式宣言。"
+            "Description": "玩家国王有权限并明确亲自宣战时，id1=玩家国,id2=NPC国，直接执行。NPC明确最终决定对某国宣战：AI外交启用用COMMIT:DeclareWar；关闭用此标签，id1=NPC国,id2=目标国。考虑、威胁、假设均不得输出，ID从运行时复制。"
         },
         {
             "Tag": "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
             "Description": "仅当运行时事实表明NPC是敌对王国当前国王，且<latest_reply>中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:id1:id2:金额:天数]",
+            "Description": "仅AI外交关闭且双方当前国王明确同意、玩家也是国王时输出。id1=付款国,id2=收款国，必须为玩家国与NPC国。无贡金用0:0；有贡金须明确金额与1至252天期限，缺项先澄清，不用默认金额或期限。不得附割地等无法完整执行的条件。 启用AI外交时改用COMMIT，不输出本标签。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:天数]",
+            "Description": "仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意结盟时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。 启用AI外交时改用COMMIT，不输出本标签。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
+            "Description": "仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定解除双方现有同盟时输出。 启用AI外交时改用COMMIT，不输出本标签。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:天数]",
+            "Description": "仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意贸易协议时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。 启用AI外交时改用COMMIT，不输出本标签。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
+            "Description": "仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定取消双方现有贸易协议时输出。 启用AI外交时改用COMMIT，不输出本标签。"
         }
     ],
     "TriggerKeywords": [
@@ -832,7 +852,9 @@
         "level_7": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
         "level_8": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
         "level_9": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-        "level_10": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。"
+        "level_10": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "native_action_main": "【外交执行模式】AI外交已关闭。明确同意后使用原版外交执行，不要求正式宣言或等候公文。玩家与NPC双方都是当前国王时可直接议和、结盟、解除同盟、贸易或取消贸易；玩家不是国王不能代本国签约，但可劝说当前NPC国王对第三国宣战。只讨论、报价、考虑或威胁不算决定。议和有贡金必须谈清付款国、收款国、每日金额及1至252天支付期限，缺项先问；无贡金不设期限。带割地、朝贡、驻军、吞并或臣属的复杂公文不能借此模式简化执行。只有游戏回执证明行动已生效。",
+        "native_action_postprocess": "【外交执行模式】AI外交已关闭，只用原版外交标签，不用COMMIT或COMMITMENT。仅NPC当前国王本轮明确最终同意才输出，讨论/报价/假设/威胁不输出。NPC决定宣战用[ACTION:DIPLOMACY:DECLARE_WAR:NPC王国ID:目标王国ID]；玩家国王亲自宣战可用玩家国ID:NPC国ID。以下五项要求玩家和NPC都是当前国王，国家ID仅为双方：议和[ACTION:DIPLOMACY:MAKE_PEACE:付款国ID:收款国ID:每日金额:支付天数]，无贡金为0:0，有贡金必须明确金额及1至252天期限，缺项先澄清；结盟[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:天数]；贸易[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:天数]，期限未约定用default；解除同盟[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]；取消贸易[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]。不能从旧公文继承未明示条件，不输出割地、朝贡、驻军、吞并或臣属的简化行动。ID只能从运行时表复制，不能猜测。"
     }
 },
                         {

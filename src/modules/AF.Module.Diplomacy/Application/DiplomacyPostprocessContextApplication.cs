@@ -83,7 +83,7 @@ internal static class DiplomacyPostprocessContextApplication
             DiplomacyPostprocessKingdomSnapshot kingdoms = source.CaptureKingdoms();
             if (!kingdoms.NpcKingdomExists) return "";
             string royal = BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
-            if (source is IDiplomacyOralPostprocessSource oral)
+            if (source is IDiplomacyOralPostprocessSource oral && oral.UseFormalCommitments)
                 royal += "\n" + oral.OralArrangementContext();
             return royal;
         }
@@ -120,7 +120,7 @@ internal static class DiplomacyPostprocessContextApplication
         if (value.PlayerKingdomExists && !value.PlayerKingdomEliminated)
             sb.AppendLine($"  玩家王国ID：{value.PlayerId}（{value.PlayerName}）" + (value.PlayerIsRuler ? "，玩家是国王" : ""));
         else sb.AppendLine("  玩家当前没有可代表的王国。");
-        if (allowFullDiplomacy)
+        if (allowFullDiplomacy && (!(source is IDiplomacyOralPostprocessSource mode) || mode.UseFormalCommitments))
         {
             string annexationHint = source.GetAnnexationHint();
             if (!string.IsNullOrWhiteSpace(annexationHint))
@@ -131,6 +131,11 @@ internal static class DiplomacyPostprocessContextApplication
             }
         }
 
+        if (source is IDiplomacyOralPostprocessSource native && !native.UseFormalCommitments)
+        {
+            sb.AppendLine(native.NativeActionInstruction());
+            return sb.ToString().TrimEnd();
+        }
         sb.AppendLine("仅 NPC 明确最终答应时使用 [ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]；action 可为 Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。考虑、报价、假设不输出。move=AcceptProposal 或 RejectProposal 时附 source_document=原宣言ID;source_action=原动作ID（单动作公文无动作ID可留空）。原案歧义先让玩家选择。贡金必须明确金额与期限；未明确先澄清，无贡金的和平期限为0。和平可附 payer/receiver/tribute/days/cession_from/cession_to/settlement，必须复制明确同意的原始条款；不改接受原案条款。吞并或臣属必须附 receiving=接收国/宗主国ID;joining=并入国/臣属国ID。接受原案可以省略条款表示完全接受原案，不能省略来源。新条件必须 NewMatter，不能假装接受原案。玩家不是立约方也可劝说你回应第三国提案。不得代玩家发布宣言。NPC 口头答应宣战使用 COMMIT，由 NPC 正式发文再开战。");
         sb.AppendLine("NPC 明确决定延期、取消或恢复自己的发文约定时，用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred|cancelled|accepted;reason=明确原因]。ID从约定上下文复制；已发布且尚未被接受的自己提案只能 cancelled，系统另发正式撤回宣言。已生效的行动不能撤销；改变条款另用 COMMIT:NewMatter。");
         if (value.PlayerIsRuler && value.PlayerKingdomExists && value.KingdomsDiffer)
@@ -142,5 +147,7 @@ internal static class DiplomacyPostprocessContextApplication
 
 internal interface IDiplomacyOralPostprocessSource
 {
+    bool UseFormalCommitments { get; }
+    string NativeActionInstruction();
     string OralArrangementContext();
 }
