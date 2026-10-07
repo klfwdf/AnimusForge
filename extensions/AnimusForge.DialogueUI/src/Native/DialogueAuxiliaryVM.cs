@@ -210,7 +210,7 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     public void FilterAll() { _filter = "all"; RebuildHistory(); RefreshState(); }
     public void FilterDialogue() { _filter = "dialogue"; RebuildHistory(); RefreshState(); }
     public void FilterActions() { _filter = "action"; RebuildHistory(); RefreshState(); }
-    public void LatestHistory() { while (History?.CanLoadNewerPage == true) History.LoadNewerPage(); }
+    public void LatestHistory() { if (CanInteract) History?.JumpToLatestPage(); }
     private void OpenEncyclopedia(string link)
     {
         if (!CanInteract || Navigate == null) return;

@@ -74,6 +74,7 @@ static class Program
         Blank("answers -> no answers");
 
         var scroll = new AFDialogueClickThroughScrollPanel(new UIContext());
+        Check(Math.Abs(scroll.MouseScrollSpeed - 0.04f) < 0.0001f, "dialogue wheel speed is one fifth of vanilla");
         foreach (var e in new[] { GauntletEvent.MousePressed, GauntletEvent.MouseReleased, GauntletEvent.MouseAlternatePressed, GauntletEvent.MouseAlternateReleased })
             Check(!scroll.PreviewEvent(e), "scroll viewport passes through " + e);
         Check(scroll.PreviewEvent(GauntletEvent.MouseScroll), "scroll subclass retains wheel preview");
@@ -228,6 +229,7 @@ namespace TaleWorlds.GauntletUI.BaseTypes
     public class ButtonWidget : Widget { public ButtonWidget(UIContext context) : base(context) { } }
     public class ScrollablePanel : Widget
     {
+        public float MouseScrollSpeed = 0.2f;
         public ScrollablePanel(UIContext context) : base(context) { }
         protected override bool OnPreviewMouseScroll() => true;
     }

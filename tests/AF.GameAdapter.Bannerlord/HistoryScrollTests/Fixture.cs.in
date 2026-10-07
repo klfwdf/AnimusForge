@@ -1,0 +1,72 @@
+using System;
+using System.Collections.Generic;
+using AnimusForge;
+
+static class Program
+{
+    static int checks;
+    static void Check(bool value, string name) { if (!value) throw new Exception(name); checks++; }
+    static void Main()
+    {
+        var vm = new HistoryProbe(1001, 0);
+        vm.JumpToLatestPage();
+        Check(vm.Page == 20 && vm.Refreshes == 1 && vm.Bottom == 1 && vm.Top == 0, "latest jumps once across many pages to bottom");
+        vm.JumpToLatestPage();
+        Check(vm.Refreshes == 1 && vm.Bottom == 2, "latest on last page still scrolls without rebuilding rows");
+        vm.LoadOlderPage(); vm.LoadNewerPage();
+        Check(vm.Top == 1, "next-page continuity still requests page top");
+        vm.JumpToLatestPage();
+        Check(vm.Bottom == 4 && vm.Top == 1, "latest overrides the previous top request");
+        var empty = new HistoryProbe(0, 0); empty.JumpToLatestPage();
+        Check(empty.Refreshes == 0 && empty.Bottom == 0, "empty history is inert");
+        vm.Close(); vm.JumpToLatestPage(); Check(vm.Bottom == 4, "closed history is inert");
+        var panel = new PanelProbe();
+        Check(Math.Abs(panel.MouseScrollSpeed - 0.04f) < 0.0001f, "history wheel speed reduced");
+        panel.AutoScrollTopRequestVersion = 1; panel.Frame(); Check(panel.VerticalScrollbar.ValueFloat == 0, "top request starts at top");
+        panel.AutoScrollRequestVersion = 1; panel.Frame(); Check(panel.VerticalScrollbar.ValueFloat == 100, "bottom request supersedes pending top");
+        panel.VerticalScrollbar.MaxValue = 450; panel.Frame(); Check(panel.VerticalScrollbar.ValueFloat == 450, "deferred measured height updates bottom");
+        panel.Wheel(); panel.VerticalScrollbar.ValueFloat = 200; panel.Frame();
+        Check(panel.VerticalScrollbar.ValueFloat == 200, "manual scroll cancels automatic positioning");
+        panel.AutoScrollRequestVersion = 2; panel.Frame(); Check(panel.VerticalScrollbar.ValueFloat == 450, "repeated latest request reaches actual bottom");
+        Console.WriteLine("PASS " + checks + " history navigation/scroll checks; layout and VM row construction stubbed");
+    }
+}
+sealed class HistoryProbe
+{
+    private bool _isFinalized;
+    private int _currentPageIndex;
+    private const int HistoryPageSize = 50;
+    private readonly List<int> _historyEntries;
+    public int AutoScrollRequestVersion, AutoScrollTopRequestVersion, Refreshes;
+    public int Page => _currentPageIndex;
+    public int Bottom => AutoScrollRequestVersion;
+    public int Top => AutoScrollTopRequestVersion;
+    public HistoryProbe(int count, int page) { _historyEntries = new List<int>(new int[count]); _currentPageIndex = page; }
+    private int GetPageCount() => Math.Max(1, (_historyEntries.Count + 49) / 50);
+    private void RefreshCurrentPage(bool requestBottomScroll, bool requestTopScroll)
+    { Refreshes++; if (requestBottomScroll) AutoScrollRequestVersion++; else if (requestTopScroll) AutoScrollTopRequestVersion++; }
+    public void Close() => _isFinalized = true;
+    __JUMP__
+    __OLDER__
+    __NEWER__
+}
+sealed class PanelProbe : AnimusForgeConversationHistoryAutoScrollPanel
+{
+    public PanelProbe() : base(new TaleWorlds.GauntletUI.UIContext()) { VerticalScrollbar = new() { MaxValue = 100 }; }
+    public void Frame() => OnLateUpdate(0.016f);
+    public void Wheel() => OnMouseScroll();
+}
+namespace TaleWorlds.GauntletUI { public sealed class UIContext { } }
+namespace TaleWorlds.GauntletUI.BaseTypes
+{
+    public class Scrollbar { public float MaxValue, ValueFloat; }
+    public class ScrollablePanel
+    {
+        public float MouseScrollSpeed = 0.2f;
+        public Scrollbar VerticalScrollbar;
+        public ScrollablePanel(TaleWorlds.GauntletUI.UIContext context) { }
+        protected virtual void OnLateUpdate(float dt) { }
+        protected virtual void OnMouseScroll() { }
+        protected virtual void OnRightStickMovement() { }
+    }
+}
