@@ -1,4 +1,10 @@
-﻿# 当前调查：单次提示词与自动生图区别（2026-10-08，NO_PRODUCT_CHANGE）
+﻿# 当前交接：快报口吻与自由开篇细化（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `e06f885c6`、检查点 `4d9b28f6`。按用户确认：有同场参战依据的具名人物可以补写合理交锋；允许适度讥讽/粗粝感及多样反应；自由开篇/叙述顺序，不强行评价局势。篇幅/标记、选材、事实与轶闻分流保持；两版旧默认精确升级，自定义和清空保留。
+- 策略63、实际发布/NPC/外交投影/归档/重载/提示词128项与原双API1.3/1.4、Bootstrap/双接缝构建通过。真实模型/实机未验，本轮未部署/打包/推送。保留并行生图提交 `9f6f43df`。
+- [主台账、源码坐标、验证证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-narrative-refinement-20261008)；证据 `artifacts/bulletin-narrative-refinement-20261008/run-1eed8266ec`，产品回滚仅 `git revert e06f885c6`。既有职责导航见 [代码范围图](docs/architecture/af-framework-code-scope.md)。
+
+# 当前调查：单次提示词与自动生图区别（2026-10-08，NO_PRODUCT_CHANGE）
 
 - 用户截图补充：带提示词生成有效，开启随对话生成后又出现玩家。源码确认手动传本次提示词，自动调用不继承；符合现有一次性要求，建议先保留行为。
 - 本轮参考过滤试改已撤回，六个产品文件无内容差异，未部署/调用付费API。持续单人偏好需另行明确需求；该玩家真实请求与出图未验。
