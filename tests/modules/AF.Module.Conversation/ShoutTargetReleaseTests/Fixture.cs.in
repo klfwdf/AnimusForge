@@ -1,0 +1,69 @@
+using System;
+using System.Collections.Generic;
+enum InputKey { Invalid, T, Y }
+static class Input {
+ public static InputKey Pressed, Down, Released;
+ public static bool IsKeyPressed(InputKey k)=>k==Pressed && k!=InputKey.Invalid;
+ public static bool IsKeyDown(InputKey k)=>k==Down && k!=InputKey.Invalid;
+ public static bool IsKeyReleased(InputKey k)=>k==Released && k!=InputKey.Invalid;
+}
+static class Logger { public static void Log(string a,string b) {} public static void LogVerbose(string a,string b,Func<string> c,double d) {} }
+static class ShoutUtils { public static bool IsInValidScene()=>true; }
+static class ShoutTextInputPopup { public static bool IsOpen; }
+struct Color { public Color(float a,float b,float c) {} }
+class InformationMessage { public InformationMessage(string a,Color b) {} }
+static class InformationManager { public static void DisplayMessage(InformationMessage m) {} }
+class ShoutTargetingContext { public List<int> CandidateAgentIndices=new List<int>(); }
+class Program {
+ bool IsSceneIllustrationBattleForExternal=true, IsSceneIllustrationAvailableForExternal=true;
+ bool _isProcessingShout, _isWaitingForScenePostprocessGate, _shoutHotkeyChargeActive, _shoutHotkeyChargeOpenModeMenu;
+ InputKey _shoutHotkeyChargeKey;
+ float _shoutHotkeyChargeStartedAt;
+ ShoutTargetingContext _lastRenderedShoutTargetingContext, _activeShoutTargetingContext;
+ ShoutTargetingContext next=new ShoutTargetingContext();
+ int preview, wheel, panel, direct;
+ bool ShouldSuppressShoutHotkeyAfterFocusChange()=>false;
+ bool UpdatePresentationHotkey(InputKey a, InputKey b)=>false;
+ bool IsScenePresentationSessionEnabled()=>true;
+ float GetApplicationTimeSafe()=>1;
+ void ResetPassiveStareTracking() {}
+ void CancelShoutHotkeyCharge(string why) { _shoutHotkeyChargeActive=false; _lastRenderedShoutTargetingContext=null; }
+ ShoutTargetingContext BuildCurrentShoutTargetingContext()=>next;
+ void DrawShoutRangePreview(ShoutTargetingContext c) { preview++; _lastRenderedShoutTargetingContext=c; }
+ void TryShowShoutProcessingBusyMessage() {}
+ void LogShoutTargetingContextSnapshot(bool b,ShoutTargetingContext c) {}
+ void BeginShoutProcessing(string reason) {}
+ void OpenBattleShoutInput(bool imageOnly=false) { panel++; }
+ void TriggerShout() { wheel++; }
+ void TriggerShoutDirectInput() { direct++; }
+ void ResumeGame() {}
+ __UPDATE__
+ __BEGIN__
+ __RELEASE__
+ static int checks;
+ static void Check(bool b,string m) { if(!b) throw new Exception(m); checks++; }
+ void Tick(InputKey pressed=InputKey.Invalid,InputKey down=InputKey.Invalid,InputKey released=InputKey.Invalid) {
+  Input.Pressed=pressed;Input.Down=down;Input.Released=released;UpdateShoutHotkeyCharge(InputKey.T,InputKey.Y);
+ }
+ static void Main() {
+  foreach(bool battle in new[]{true,false}) foreach(bool target in new[]{false,true}) {
+   var p=new Program { IsSceneIllustrationBattleForExternal=battle };
+   if(target) p.next.CandidateAgentIndices.Add(9);
+   p.Tick(InputKey.T,InputKey.T);
+   Check(p._shoutHotkeyChargeActive && p.preview==1 && p.panel+p.wheel==0,"press begins framing instead of opening panel");
+   p.Tick(down:InputKey.T);
+   Check(p.preview==2 && p.panel+p.wheel==0,"held key keeps targeting preview");
+   var frozen=p.next;
+   p.Tick(released:InputKey.T);
+   Check(!p._shoutHotkeyChargeActive && ReferenceEquals(p._activeShoutTargetingContext,frozen),"release retains rendered target snapshot");
+   Check(target ? p.wheel==1 && p.panel==0 : p.wheel==0 && p.panel==1,"only targetless release bypasses wheel");
+   p.Tick(); Check(p.wheel+p.panel==1,"no repeated open after release");
+  }
+  var disabled=new Program { IsSceneIllustrationAvailableForExternal=false }; disabled.next.CandidateAgentIndices.Add(1);
+  disabled.Tick(InputKey.T,InputKey.T);disabled.Tick(released:InputKey.T);
+  Check(disabled.wheel==1 && disabled.panel==0,"disabled image feature preserves targeted wheel");
+  var cancelled=new Program(); cancelled.Tick(InputKey.T,InputKey.T);cancelled.Tick();
+  Check(!cancelled._shoutHotkeyChargeActive && cancelled.panel==0,"lost key state cancels framing");
+  Console.WriteLine("PASS "+checks+" source-extracted hotkey checks; native input and selection rendering are doubles.");
+ }
+}

@@ -62,7 +62,7 @@ public partial class ShoutBehavior
             if (ReferenceEquals(Mission.Current, mission) && mission?.Scene != null) mission.Scene.TimeSpeed = speed;
         };
         if (!imageOnly) PauseGame();
-        if (!ShoutTextInputPopup.Show(packet?.Name ?? "战斗现场",
+        if (!ShoutTextInputPopup.Show(packet?.Name ?? (IsSceneIllustrationBattleForExternal ? "战斗现场" : "场景现场"),
             imageOnly ? "喊话回复尚未完成；当前面板仅提供截图生图。" : packet == null ? "当前没有有效喊话目标，可以点击生图；发送喊话仍需框选有效目标。" : "战斗中可手动生成当前现场插画。",
             "生图不使用未发送的输入草稿。", "", input =>
             {
@@ -81,7 +81,7 @@ public partial class ShoutBehavior
             }, close, BuildShoutTargetEncyclopediaAction(packet), enableIllustration: true))
         {
             close();
-            InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 战斗输入面板打开失败。"));
+            InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 输入面板打开失败。"));
         }
     }
 }
