@@ -1,4 +1,18 @@
-﻿<a id="bulletin-anecdotes-20261008"></a>
+﻿<a id="bulletin-narrative-refinement-20261008"></a>
+# 快报人物轶事、口吻与自由开篇（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 工作区 `F:/AnimusForge-main`、`main`，起点 `2adcf3ea`，本地检查点 `4d9b28f6`，产品 `e06f885c6`。用户已确认 Q1 同场参与者可合理补写直接交锋、Q2 适度讥讽/粗粝感及多样反应、Q3 保持篇幅/标记但放开叙述顺序与可选影响评价。本条补充并细化前一快报轶闻方案的写法，不改变旧包的事实分流验收。并行生图草稿已由其作者提交为 `9f6f43df`，完整保留且未纳入本包功能验收。
+- 产品源码坐标（修订 `e06f885c6`，一基行号）：`src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:675–725` 的旧/新默认及 `BuildSystemPrompt`，限制具名直接交锋须有同场参战依据，允许粗粝/讥讽及勇气/机智/体面，放开开篇与段落顺序、取消强制宏大评价。原 260–400 / 320–480 字、两到三段、TITLE/MAJOR/M1…/SHORT 格式与数字表达边界保持。真实消费者仍为 `WorldBulletinStateOwner.cs:156`，冻结素材、生图、选材、发布、NPC/外交分流及采样未修改。
+- `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs:33–42` 精确迁移两版旧默认，并澄清编辑器提示。沿用 `DuelSettings.cs:4850–4851,5065` 的单文件/旧聚合原始加载；只有全文逐字相等才升级，修改过的旧默认、自定义、明确清空及空白归一化后才相等的内容保留。`content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json:1` 与运行时新默认一致；`content/content-map.json:706–708` SHA 为 `A6C6698F890234178A0982630D4E7AB07AF26B56C10E50277B6AEF4F3DBC2934`。
+- 性能：只在既有写作请求构建/配置加载边界增加固定文本和一次有界字符串比较；无新增 Tick 扫描、反射、请求、采样参数、存档键或锁。
+- 专项：既有策略源码专项 63 PASS（新增四项断言 `tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/Program.cs:143–146`）；实际发布/NPC快照/外交历史投影/归档/分块重载/原始提示词加载回放 128 PASS（新增精确叙事默认迁移、幂等、自定义/空白保留，`tests/modules/AF.Module.Weekly/BulletinArchiveTests/Program.cs:277–285`）。策略是提示词契约检查；接线回放真实生产方法，但游戏/区域聚合/渲染/插画生命周期有替身，不能代替真实模型。
+- 构建：原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord13ReferenceDir F:/AnimusForge-main/_deps_auto -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`，不传 Stage/Deploy，exit0；1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap及双实际DLL Coup/注册/记忆接缝 PASS，0编译错误，两实现各346条警告未在本包处理。最终6个任务输入原始SHA与测试/构建前相同，3份DLL SHA与构建门禁候选核对后保存。
+- 环境修复：第一轮本地SDK路径存在但没有完整SDK，改用已安装 `C:/Program Files/dotnet/sdk/8.0.421`；策略隔离中间目录后原obj被默认源码glob拾取，改为仓内隔离工程显式链接原四个生产/测试文件，无产品body变换。失败日志保留，未安装SDK、清理原obj或修改官方构建入口/测试工程。
+- 证据 `artifacts/bulletin-narrative-refinement-20261008/run-1eed8266ec/`：`policy.log`、`archive-verified/result.log`、`build.log`、`source-inputs.json`、`receipt.json`、`compiled/`，并保留SDK/隔离失败日志。本轮未 Stage、部署、打包或推送，未写玩家覆盖文件；旧已部署包不会因本地构建自动更新。
+- NOT-RUN：真实模型能否遵守具名同场边界、轶事多样性/生动程度、重复桥段与NPC实际转述；两版游戏实机、玩家存档加载与游戏中的编辑器验收。本轮没有重新跑全外交生命周期/独立分块门禁，相关生产路径未变，实际接线与保存重载由上述专项覆盖，不称全仓验收。
+- 回滚仅 `git revert e06f885c6`；保留 `9f6f43df` 和其他作者更新，不 hard reset、回滚旧快报分流产品或清理玩家数据。
+
+<a id="bulletin-anecdotes-20261008"></a>
 <a id="remote-merge-deploy-20261008"></a>
 # 快报事实与轶闻分流、远端合并及部署（2026-10-08，DEPLOYED_LIVE_PENDING）
 
