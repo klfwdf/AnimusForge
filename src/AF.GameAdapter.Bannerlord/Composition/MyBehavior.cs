@@ -352,6 +352,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string ShortSummary;
 
+		// Optional narrative digest, separate from the locally captured event facts.
+		public string BulletinAnecdote = "";
+
 		public string Summary;
 
 		public string TagText;
@@ -447,8 +450,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string PublishedTitle { get; }
 
-		// EventRecordEntry.Summary is the final published LLM report. PromptText, ShortSummary
-		// and Materials are intentionally not exposed to diplomacy history.
+		// Weeklies retain their published text; bulletins expose only locally captured fact
+		// summaries. Narrative bodies/titles and anecdotes never become diplomacy facts.
 		public string PublishedReportText { get; }
 	}
 
@@ -26783,15 +26786,17 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				continue;
 			}
 			string text = (eventRecordEntry.EventId ?? "").Trim();
-			string text2 = (eventRecordEntry.Summary ?? "").Trim();
+			bool isBulletin = WeeklyReportArchivePolicy.IsBulletin(text);
+			string text2 = isBulletin ? WeeklyReportArchivePolicy.BulletinFactSummary(eventRecordEntry) : (eventRecordEntry.Summary ?? "").Trim();
 			if (!text.StartsWith("weekly_report:world:", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(text2))
 			{
 				continue;
 			}
 			latestBySource ??= new Dictionary<string, WorldWeeklyReportHistoryEntry>(StringComparer.OrdinalIgnoreCase);
 			// The record list is append ordered. If a same-week report is corrected under the same
-			// stable source ID, expose the latest full text so canonical history can append a correction.
-			WorldWeeklyReportHistoryEntry candidate = new WorldWeeklyReportHistoryEntry(text, Math.Max(0, eventRecordEntry.WeekIndex), Math.Max(0, eventRecordEntry.CreatedDay), (eventRecordEntry.CreatedDate ?? "").Trim(), (eventRecordEntry.Title ?? "").Trim(), text2);
+			// stable source ID, expose the latest facts (bulletin) or full text (weekly) as a correction.
+			string historyTitle = isBulletin ? WeeklyReportArchivePolicy.BulletinFactTitle(eventRecordEntry) : (eventRecordEntry.Title ?? "").Trim();
+			WorldWeeklyReportHistoryEntry candidate = new WorldWeeklyReportHistoryEntry(text, Math.Max(0, eventRecordEntry.WeekIndex), Math.Max(0, eventRecordEntry.CreatedDay), (eventRecordEntry.CreatedDate ?? "").Trim(), historyTitle, text2);
 			if (!latestBySource.TryGetValue(text, out WorldWeeklyReportHistoryEntry existing)
 				|| candidate.WeekIndex > existing.WeekIndex
 				|| (candidate.WeekIndex == existing.WeekIndex && candidate.CreatedDay >= existing.CreatedDay))

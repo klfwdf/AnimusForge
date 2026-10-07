@@ -86,11 +86,11 @@ internal static class Program
 		// Scene prompts end the rule section only on the legacy "完整周报" headers.
 		Check(detail.StartsWith("【NPC所属王国完整周报】\n标题：瓦兰迪亚"), "detail block keeps the legacy header the scene splitter recognises");
 		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "血染刑场", "玩家连斩两人", 4);
-		Check(world.StartsWith("【世界完整周报】") && world.Contains("南帝国向北帝国宣战") && !world.Contains("远方村") && world.Contains("最新快报《血染刑场》"), "world block: legacy header, headlines only + latest bulletin");
+		Check(world.StartsWith("【世界完整周报】") && world.Contains("南帝国向北帝国宣战") && !world.Contains("远方村") && world.Contains("最新快报事实摘要：玩家连斩两人"), "world block: legacy header, headlines only + latest bulletin facts");
 		string worldForSouth = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "", "", -1, "empire_s");
 		Check(!worldForSouth.Contains("南帝国向北帝国宣战"), "world block skips facts already in the NPC kingdom block");
 		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 100, "旧停战", "甲乙停战", 10) == "", "90-day-old bulletin excluded");
-		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 12, "边界", "消息", 5).Contains("边界"), "seven-day boundary included");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 12, "边界", "消息", 5).Contains("最新快报事实摘要：消息"), "seven-day boundary included");
 		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "边界", "消息", 5) == "", "eight-day-old bulletin excluded");
 		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未知", "消息", -1) == "", "unknown publication day excluded");
 		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未来", "消息", 6) == "", "future publication day excluded");
@@ -133,11 +133,18 @@ internal static class Program
 		Check(user.Contains("1. 甲被玩家处决") && user.Contains("M1. ") && user.Contains("【相关王国现状】"), "user prompt lists facts, context and M1");
 		string sys = WorldBulletinPolicy.BuildSystemPrompt(s.MajorFacts.Count, s.Minors.Count);
         Check(sys.Contains("合写成同一篇") && sys.Contains("320到480字") && sys.Contains("[M1]"), "existing length, merged-story and format contract retained");
-        Check(sys.Contains("几人对几人") && sys.Contains("不要连续罗列"), "default writing requirements discourage numeric battle recitals");
+        Check(sys.Contains("几人对几人") && sys.Contains("不连续罗列"), "default writing requirements discourage numeric battle recitals");
         var custom = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "测试独立写作风格");
         Check(custom.Contains("测试独立写作风格") && !custom.Contains(WorldBulletinPolicy.DefaultWritingRequirements) && custom.Contains("260到400字"), "custom writing replaces only editable style, retaining existing length");
         var empty = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "");
-        Check(!empty.Contains("【快报写作要求】") && empty.Contains("[MAJOR]") && empty.Contains("不得添加"), "explicit empty style keeps factual and output contracts");
+        Check(!empty.Contains("【快报写作要求】") && empty.Contains("[MAJOR]") && empty.Contains("不另造死亡、俘虏、领土易主、宣战或结盟"), "explicit empty style keeps major-result and output contracts");
+        Check(sys.Contains("允许合理补写动作、短对白和现场反应") && !sys.Contains("不写对白") && !sys.Contains("只能使用给出的事实"), "narrative actions and dialogue allowed without conflicting legacy prohibitions");
+        Check(sys.Contains("[SHORT]") && sys.Contains("正文已有内容") && sys.Contains("不为了衔接编造因果") && sys.Contains("已有明确记录的对白或遗言"), "digest derives from body and preserves recorded quotations and causal boundaries");
+        string anecdotal = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "报刊标题", "甲军获胜", 4, null, "甲打掉了乙的牙，乙怒骂退场");
+        Check(anecdotal.Contains("【快报轶闻】来源：快报《报刊标题》") && anecdotal.Contains("听说") && anecdotal.Contains("不作为已确认事实") && anecdotal.Contains("打掉了乙的牙"), "NPC receives source-labelled anecdote with explicit fact boundary");
+        Check(!WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "旧轶闻", "", 5, null, "掉牙").Contains("掉牙"), "anecdote obeys existing seven-day freshness boundary");
+        Check(WorldBulletinPolicy.ParseResponse("[MAJOR] 正文", 0).Short == "" && WorldBulletinPolicy.NormalizeBulletinAnecdote(new string('字', 110)).Length <= 100, "missing SHORT stays empty and narrative digest is capped at 100 characters");
+        Check(WorldBulletinPolicy.NormalizeBulletinAnecdote(new string('字', 99) + "😀结尾") == new string('字', 99), "100-character cap preserves complete Unicode characters at surrogate boundary");
 		string sallySentence = WorldBulletinCampaignMaterialPolicy.BattleSentence("某城", true, true, "甲军", "瓦兰迪亚", "乙军", "南帝国", 120);
 		string sallyDetail = WorldBulletinCampaignMaterialPolicy.BattleDetail(80, "伤亡10人", 40, "伤亡30人", true, true, "瓦兰迪亚伯爵", true, "南帝国伯爵");
 		Check(sallySentence.Contains("出城战") && sallySentence.Contains("本次参战部队"), "sally-out material labels only the engaged troops");

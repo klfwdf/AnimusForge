@@ -264,7 +264,8 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 			_port.Log("WorldBulletin", "[WARN] model returned " + polishedMinors + "/" + selection.Minors.Count + " minors; template lines fill the rest");
 		}
 		string body = WorldBulletinPolicy.BuildBody(text.Major, minors);
-		string shortText = !string.IsNullOrWhiteSpace(text.Short) ? WorldBulletinPolicy.Truncate(text.Short, 140) : template.Short;
+		// Never feed model prose back into canonical event/diplomacy facts.
+		string shortText = template.Short;
 		double now = _port.CurrentHour();
 		int day = _port.CurrentDay();
 		string seq = (scope.Sequence + 1).ToString(CultureInfo.InvariantCulture);
@@ -273,8 +274,10 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		string eventId = "weekly_report:world" + WorldBulletinBulletinIdMarker + seq + ":" + day;
 		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: false);
 		var issue = _port.FindRecord(eventId);
+		issue.BulletinAnecdote = WorldBulletinPolicy.NormalizeBulletinAnecdote(generated?.Short);
 		issue.Materials = selection.MajorFacts.Concat(selection.Minors.SelectMany(m => m.Events))
 			.Select(f => WeeklyReportArchivePolicy.FactMaterial(f, "", WeeklyReportArchivePolicy.ReportedMaterialType)).ToList();
+		issue.ShortSummary = WeeklyReportArchivePolicy.BulletinFactSummary(issue);
 		CommitRegionalPublication(regional);
 		var snapshotKeys = new HashSet<string>(selection.WindowFacts.Select(f => f.Key),StringComparer.Ordinal);
 		var previousDeferred = new HashSet<string>(scope.DeferredFactKeys ?? new List<string>(),StringComparer.Ordinal);
@@ -330,7 +333,8 @@ internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string
 		entry.Title = WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(title);
 		entry.Summary = WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(summary);
 		entry.ShortSummary = WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(shortSummary);
-		if (string.IsNullOrWhiteSpace(entry.ShortSummary))
+		entry.BulletinAnecdote = "";
+		if (string.IsNullOrWhiteSpace(entry.ShortSummary) && !WeeklyReportArchivePolicy.IsBulletin(eventId))
 		{
 			entry.ShortSummary = WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(entry.Summary);
 		}

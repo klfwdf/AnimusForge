@@ -125,6 +125,7 @@ internal static class WeeklyEventDataImportOwner
 				BulletinKingdomIds = WeeklyReportArchivePolicy.NormalizeKingdomIds(item.BulletinKingdomIds),
 				Title = flag ? neutralize(text2) : text2,
 				ShortSummary = shortSummary(item.ShortSummary),
+				BulletinAnecdote = WorldBulletinPolicy.NormalizeBulletinAnecdote(item.BulletinAnecdote),
 				Summary = flag ? neutralize(item.Summary) : (item.Summary ?? "").Trim(),
 				TagText = normalizeTags(item.TagText),
 				PromptText = flag ? neutralize(item.PromptText) : (item.PromptText ?? "").Trim(),
@@ -132,7 +133,7 @@ internal static class WeeklyEventDataImportOwner
 				CreatedDate = (item.CreatedDate ?? "").Trim(),
 				Materials = new List<EventMaterialReference>()
 			};
-			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
+			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary) && !WeeklyReportArchivePolicy.IsBulletin(text))
 			{
 				eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.Summary);
 			}
@@ -181,6 +182,8 @@ internal static class WeeklyEventDataImportOwner
 					});
 				}
 			}
+			if (WeeklyReportArchivePolicy.IsBulletin(text))
+				eventRecordEntry.ShortSummary = WeeklyReportArchivePolicy.BulletinFactSummary(eventRecordEntry);
 			list.Add(eventRecordEntry);
 		}
 		return list.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
@@ -300,16 +303,19 @@ internal static class WeeklyEventDataImportOwner
 			eventRecordEntry.BulletinKingdomIds = WeeklyReportArchivePolicy.NormalizeKingdomIds(eventRecordEntry.BulletinKingdomIds);
 			eventRecordEntry.Title = flag ? neutralize(text2) : text2;
 			eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.ShortSummary);
+			eventRecordEntry.BulletinAnecdote = WorldBulletinPolicy.NormalizeBulletinAnecdote(eventRecordEntry.BulletinAnecdote);
 			eventRecordEntry.Summary = flag ? neutralize(eventRecordEntry.Summary) : (eventRecordEntry.Summary ?? "").Trim();
 			eventRecordEntry.TagText = normalizeTags(eventRecordEntry.TagText);
 			eventRecordEntry.PromptText = flag ? neutralize(eventRecordEntry.PromptText) : (eventRecordEntry.PromptText ?? "").Trim();
 			eventRecordEntry.CreatedDay = Math.Max(0, eventRecordEntry.CreatedDay);
 			eventRecordEntry.CreatedDate = (eventRecordEntry.CreatedDate ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
+			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary) && !WeeklyReportArchivePolicy.IsBulletin(text))
 			{
 				eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.Summary);
 			}
 			eventRecordEntry.Materials = NormalizeEventMaterialReferencesInPlace(eventRecordEntry.Materials, flag, neutralize);
+			if (WeeklyReportArchivePolicy.IsBulletin(text))
+				eventRecordEntry.ShortSummary = WeeklyReportArchivePolicy.BulletinFactSummary(eventRecordEntry);
 		}
 		List<EventRecordEntry> list = source.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
 		source.Clear();
