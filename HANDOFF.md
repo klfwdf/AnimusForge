@@ -1,4 +1,10 @@
-﻿# 当前交接：原版开战对话战斗接续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：卷轴式（暂停）替换旧喊话样式（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `25ea05c26`，检查点 `3b2816366`。用户截图所示旧喊话皮肤及原版兜底共用现有卷轴底座/输入/按钮，不显示受众名录，保留暂停、记录、长输入和提交校验。MCM索引0改名“卷轴式（暂停）”，默认/序号不变；三种面板均有生图按钮。
+- UI生命周期103、XML绑定/滚动路径/生成器一致性、原双API/Bootstrap/双接缝PASS。实机MCM、显示/点击/滚动/暂停未验；未部署/打包/推送。仅回滚 `git revert 25ea05c26`。
+- [唯一主台账及源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#shout-scroll-fallback-20261008)，证据 `artifacts/shout-scroll-fallback-20261008/`。前包双截图实现保持，保留其他作者和NuGet目录。
+
+# 当前交接：原版开战对话战斗接续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `a8727db4a`，检查点 `179c6b74`。自定义菜单打开原版对话后，捕获明确战斗终结并等待卸载，恢复原版战前菜单；身份/离开/投降/特殊场景守卫与同步重定向豁免。
 - 生命周期55、既有会面164、双版真实Harmony入口与隔离原双API/Bootstrap/双DLL构建通过；玩家实机未验，未部署/打包/推送。本机成功测试尚未定位，不能断言未复现的具体原因。

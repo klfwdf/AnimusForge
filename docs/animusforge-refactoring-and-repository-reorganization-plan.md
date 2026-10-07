@@ -8283,7 +8283,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 
 <a id="shout-scroll-fallback-20261008"></a>
-# 场景喊话卷轴兜底（2026-10-08，ACTIVE）
+# 场景喊话卷轴兜底（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户要求原版场景喊话兜底复用卷轴式但不显示受众名录；核实原版兜底、旧皮肤、卷轴、侧边册页都有手动生图按钮。只改兜底呈现/资源接线，保留输入目标资格、暂停、提交/关闭、历史和生图owner。
 - 计划复用卷轴生成器的底座与输入区域，原版兜底直接绑定宿主VM，已有皮肤继续经wrapper绑定及目标失效检查；不添加受众数据/扫描。按原双API/Bootstrap和XML绑定验证，不部署/推送。
+
+- 用户追加截图指明旧`AFDialogueShout`样式，要求直接复用现有卷轴，并将MCM原“原样”名称改为“卷轴式（暂停）”。实施覆盖旧皮肤及原版兜底两条路，由同一`scroll_chassis`生成底座；不显示受众名录。索引0/1/2、默认1不改，现有`Original=0`继续表示暂停单次输入；普通卷轴/右侧手札保持原持续会话。
+- 只在打开面板时读取/缓存卷轴、铭牌和按钮共5张原资源，固定6个按钮ID设置brush；资源刷新重新注册已加载贴图，不新增Tick场景枚举或历史读取。关闭皮肤仍可用同卷轴兜底；资源不可用时保留纯色输入/按钮。输入框保留6000上限、自动聚焦、Enter提交、焦点回调及宿主关闭/暂停；新增裁剪滚动与光标跟随，旧wrapper的记录/目标失效提交检查保持。
+- 本包核实坐标：`extensions/AnimusForge.DialogueUI/tools/build_scene_layouts.py:360–444`的`scroll_chassis/build_shout_fallback`；`src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopupVM.cs:16–19,100–103,130–133,178`的原皮肤可用/空输入/副标题绑定与按需资源接线；同目录`ShoutTextInputPopup.cs:568–569`的固定按钮样式；`extensions/AnimusForge.DialogueUI/src/DialogueUiButtons.cs:95–103`的`StyleShoutScroll`；`DialogueUiSprites.cs:19–41`的单次资源加载/刷新；`DialogueUiSettings.cs:49–53`的名称与提示，`PresentationRouter.LayerLoadPostfix`复用按钮样式。生成消费者为`content/modules/AF.Module.Conversation/GUI/Prefabs/ShoutTextInputPopup.xml`和`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueShout.xml`。
+- XML/绑定检查：两种暂停呈现共用卷轴、不含受众名录、各有单个生图/关闭入口、滚动Clip/Inner/Scrollbar路径可解析、6000/自动聚焦/光标跟随正确；持续卷轴/手札各保留生图与受众。生成器二次执行字节一致，`artifacts/shout-scroll-fallback-20261008/ui-check-final.log`。现有生产链接UI生命周期/失效context回归103项PASS，`lifecycle-final.log`；没有运行Illustrator离线审计或付费API。
+- NOT-RUN：真实MCM名称/旧配置显示、Gauntlet字体/点击/缩放/滚动和暂停恢复实机；没有部署/Stage/打包/推送。本包只改呈现，不修改前包生图HTTP/双截图/导演owner。最终构建结果、产品修订与回滚见下方完成记录。
+- 完成：产品`25ea05c267aa94f2446b858c9b7c7541bd3d6d6c`，上述坐标绑定该提交，意图检查点`3b2816366`。原`build_single_module.ps1` Debug双API（1.3.15.110062 / 1.4.6.115628）、Bootstrap与双实际DLL接缝PASS，最终`build-verified.log`；`git diff --check` PASS。九个产品文件hash及结果绑定`artifacts/shout-scroll-fallback-20261008/source-receipt.json`。回滚仅`git revert 25ea05c26`，保留前包双截图功能和其他作者工作。
