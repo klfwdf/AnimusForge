@@ -1,4 +1,4 @@
-<a id="illustrator-final-widescreen-20261007"></a>
+﻿<a id="illustrator-final-widescreen-20261007"></a>
 # 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确按快报方式修复全屏链路：画幅要求必须直达最终生图提示词，普通生成/重绘均保留。现场证据conversation_1007-000032_f162和000421_24ca均发size=1280x720，但最终prompt没有16:9；快报224339则明确保留。该差异已确认，不能证明模型一定遵从新文字。
@@ -7857,3 +7857,9 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原入口双API/Bootstrap/双接缝通过；部署更新9文件，Stage与安装3379文件SHA256全一致。证据artifacts/illustrator-release-20261007.log。
 - package_mod.ps1同一Stage打包成功：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_174412_294.zip。ZIP版本v1.5.5，源码/安装仍v1.5.4（脚本既有行为）；证据artifacts/illustrator-package-20261007.log。不含ONNX与玩家日志。
 - Recovery: C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-33d0e57b2d2848e485fb5f780e7af9f1。实机MCM、换装、图片模型遵从未验；服装叙事破损没有专项规则改动。覆盖以上修复尚未部署状态。
+
+
+## Clothing narrative state 20261007 — BUILD_VERIFIED_DEPLOY_PENDING
+- 产品a042639a7，检查点4ae897458，已推送origin/main。VisualFidelityRules.ClothingStatePriority区分参考衣物身份与叙事状态，允许动作支持的破损扩展、衣片脱落；人物/事件事实和定向重绘边界保留。VisualDirectorEngine在导演系统与最终普通构图追加共用规则；参考外观/整幅重绘、随机指导、Chat末尾保真和MCM说明同步。
+- 一次请求固定文本拼接，无新增调用、Tick或游戏装备修改。双API/Bootstrap/接缝及Stage成功，artifacts/clothing-state-release-build.log；未实机/模型遵从验收。启动器22360仍运行，已请求关闭，部署等待；同一Stage打包成功：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip，日志artifacts/clothing-state-release-package.log。
+- 回滚git revert a042639a7。此条为新衣物状态修复，不覆盖前版已部署事实。

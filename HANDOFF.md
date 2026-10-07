@@ -1,4 +1,9 @@
-﻿# 当前交接：生图修复已交付（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
+﻿# 当前交接：衣物叙事变化（2026-10-07，BUILD_VERIFIED_DEPLOY_PENDING）
+- 产品a042639a7已推送，双API/Bootstrap/接缝及Stage通过；衣物以参考图为基础，允许按已发生叙述变化及合理扩展。
+- 启动器22360待用户关闭，部署未进行；打包成功：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clothing-narrative-state-20261007--build_verified_deploy_pending)。实机出图未验。
+
+# 当前交接：生图修复已交付（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
 - 565d990a6已推送；装备保真开关、换装规则、纹章精简、禁截图及可读提示词已部署。双API/Bootstrap/接缝通过，3379文件哈希一致。
 - ZIP: 一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_174412_294.zip。实机及模型遵从未验。
 - [证据与Recovery](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-release-20261007--deployed_packaged_live_pending)，覆盖这些修复此前未部署状态。
