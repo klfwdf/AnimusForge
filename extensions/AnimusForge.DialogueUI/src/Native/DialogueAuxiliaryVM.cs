@@ -214,7 +214,9 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     private void OpenEncyclopedia(string link)
     {
         if (!CanInteract || Navigate == null) return;
-        Navigate.Invoke(null, new object[] { link, (Action)(() => SetSuspended(true)), (Action)(() => SetSuspended(false)) });
+        // MethodInfo.Invoke does not apply C# optional parameters. Pass the current-target
+        // predicate explicitly so a closed panel or changed target cancels queued navigation.
+        Navigate.Invoke(null, new object[] { link, (Action)(() => SetSuspended(true)), (Action)(() => SetSuspended(false)), (Func<bool>)(() => CanInteract && IsCurrentTarget()) });
     }
     private void SetSuspended(bool value)
     {
