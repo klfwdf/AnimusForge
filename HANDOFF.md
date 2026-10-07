@@ -10,6 +10,12 @@
 - 策略63、实际发布/NPC/外交投影/归档/重载/提示词128项与原双API1.3/1.4、Bootstrap/双接缝构建通过。真实模型/实机未验，本轮未部署/打包/推送。保留并行生图提交 `9f6f43df`。
 - [主台账、源码坐标、验证证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-narrative-refinement-20261008)；证据 `artifacts/bulletin-narrative-refinement-20261008/run-1eed8266ec`，产品回滚仅 `git revert e06f885c6`。既有职责导航见 [代码范围图](docs/architecture/af-framework-code-scope.md)。
 
+# 当前交接：日系插画画法与脸部结构分离（2026-10-08，BUILD_VERIFIED_ISOLATED_NOT_DEPLOYED）
+
+- 产品 `3e08ad018`，检查点 `99561eb`。保留长版和明确日系动漫画法，新增按本人参考图保留骨相、五官比例及肤色的约束；其余预设/MCM索引不变。
+- 隔离源码双API/Bootstrap/双接线通过；并行主树首轮有截图代码编译错误，未修改其文件或签收主树。真实出图遵从/MCM实机未验，未调用付费API/部署/打包/推送。
+- [主台账及源码/构建边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-style-identity-20261008)、[职责导航](docs/architecture/af-framework-code-scope.md#illustrator-style-identity-20261008)。证据artifacts/illustrator-style-identity-20261008；回滚仅git revert 3e08ad018。
+
 # 当前交接：日系半写实叙事插画预设（2026-10-08，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `9f6f43dfc`，检查点 `2adcf3e`。MCM末尾新增“日系半写实叙事插画”，统一导演/生图文本及专属负面词；保留原选项序号、默认值和一次性重绘覆盖。
