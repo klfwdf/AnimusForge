@@ -1,4 +1,9 @@
-﻿# 当前交接：处决退出卡死修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：周报／快报设置与外交宣言提示（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+- 产品 `64704d555`，检查点 `d99810d6f`。MCM主模式及周报/快报折叠项、快报独立自动发布与写作要求；外交送达改左下角并进入快报素材。按最终澄清保留原篇幅、战斗数字模板与选材规则，只用写作要求限制“几人对几人”。
+- 策略53项、设置12项、宿主20项、外交3670断言及双API/Bootstrap/双接缝通过；未实机/真实模型、未Stage/部署/打包/推送。关闭自动发布拦截新请求及发布，必要事件记录保留；已发HTTP不承诺立即终止。
+- [主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-settings-declarations-20261008)，日志 `artifacts/bulletin-settings-news-20261007`。回滚 `git revert 64704d555`，保留其他作者改动。
+
+# 当前交接：处决退出卡死修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 - 产品3d7a2e35d，检查点2e4096b。现场线程/堆定位散场Agent296残留交互点预约；先恢复AI再绑定、退出前仅释放本场持有预约。
 - 74项回归、双API/Bootstrap/接缝、独立1.4.8编译通过。实机退出与结算未验，未部署/推送/打包。
 - [主台账及证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-crowd-exit-hang-20261007--offline_verified_not_deployed)。保留其他作者DuelSettings.cs未提交改动。
