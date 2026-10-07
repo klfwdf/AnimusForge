@@ -614,6 +614,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_load_finished");
 		ClearCastleLordDefeatProvenance("game_load_finished");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadFinishedSource);
+		CastleAftermathLoadRecoveryBridge.OnGameLoadFinished();
 		_loadedTownColonizationRecoveryReady = _loadedTownColonizationSnapshot != null;
 	}
 
@@ -1371,6 +1372,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void PrepareInterventionEntryRuntime(Settlement settlement, string cleanupSource)
 	{
+		CastleAftermathLoadRecoveryBridge.Reset();
 		_activeMode = InterventionMode.WaitingDecision;
 		_pendingMode = InterventionMode.WaitingDecision;
 		_activeSettlementId = settlement.StringId ?? "";
@@ -15621,6 +15623,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void ResetAftermathRuntimeGuards(string reason)
 	{
+		CastleAftermathLoadRecoveryBridge.Reset();
 		try
 		{
 			TroopInspectionBehavior.CancelPreparedExternalInspectionRuntime("gccz_reset:" + (reason ?? "N/A"));

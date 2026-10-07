@@ -22,6 +22,8 @@ internal static class SiegeAftermathPatchBootstrap
 		PatchOne(harmony, typeof(Patch_SiegeAftermath_ContextualSummary_OnInit_AFRedirect));
 		PatchOne(harmony, typeof(Patch_SiegeAftermath_Continue_AFMassacreLoot));
 		PatchOne(harmony, typeof(Patch_GameStateManager_OnTick_AFMassacreLoot));
+		PatchOne(harmony, typeof(Patch_GameMenu_RunOnInit_AFCastleLoadTrace));
+		PatchOne(harmony, typeof(Patch_SiegeAftermath_ShowMercy_AFCastleLoadTrace));
 	}
 
 	private static void PatchOne(Harmony harmony, Type patchType)
@@ -35,6 +37,44 @@ internal static class SiegeAftermathPatchBootstrap
 		{
 			Logger.LogTrace("SubModule", ">>> " + patchType.Name + " failed: " + ex.Message);
 		}
+	}
+}
+
+// Observe only the castle aftermath chain captured at load-finished. Finalizers preserve
+// the original exception; these probes neither suppress native menus nor replay effects.
+[HarmonyPatch(typeof(GameMenu), "RunOnInit")]
+public static class Patch_GameMenu_RunOnInit_AFCastleLoadTrace
+{
+	public static void Prefix(GameMenu __instance, out bool __state)
+	{
+		__state = CastleAftermathLoadRecoveryBridge.BeginMenuTrace(__instance.StringId);
+	}
+
+	public static Exception Finalizer(GameMenu __instance, bool __state, Exception __exception)
+	{
+		if (__state)
+		{
+			CastleAftermathLoadRecoveryBridge.EndMenuTrace(__instance.StringId, __exception);
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(SiegeAftermathCampaignBehavior), "menu_settlement_taken_show_mercy_on_consequence")]
+public static class Patch_SiegeAftermath_ShowMercy_AFCastleLoadTrace
+{
+	public static void Prefix(out bool __state)
+	{
+		__state = CastleAftermathLoadRecoveryBridge.BeginMercyTrace();
+	}
+
+	public static Exception Finalizer(bool __state, Exception __exception)
+	{
+		if (__state)
+		{
+			CastleAftermathLoadRecoveryBridge.EndMercyTrace(__exception);
+		}
+		return __exception;
 	}
 }
 
