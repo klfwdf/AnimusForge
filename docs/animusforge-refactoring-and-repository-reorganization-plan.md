@@ -1,4 +1,16 @@
-﻿<a id="diplomacy-expired-reminder-20261008"></a>
+﻿<a id="ai-mode-continue-20261008"></a>
+# AI 模式全程拦截原版点击继续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `e9b16679`，检查点 `fa3bfc98`，工作区 `F:/AnimusForge-main` / main。旧保护只有backend busy和pending shield，AI完成后放行。用户要求全程AI拦截，已覆盖空闲/生成/完成/辅助面板；普通模式/明确离开保持。本条替代历史busy-only修复的当前行为。
+- 原版双版本参考链：MapConversationVM.ExecuteContinue → GauntletMapConversationView.OnContinue → handler → MissionConversationVM.ExecuteContinue → ConversationManager.ContinueConversation；地图键盘直接进handler，场景点击/键盘进Mission VM。三入口共享守卫，无LLM/存档/三渠道规则变更。
+- 生产源码（一基坐标，产品修订）：`src/AF.GameAdapter.Bannerlord/Patches/Safety/ContinueConversationSafePatch.cs:13–87` 三入口安装与ShouldBlockContinue，保留backend busy/旧finalizer；`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.ContinueGuard.cs:7–22` 读取活跃overlay真实模式、manager身份/存档代/会话存活，无Mission依赖；`extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:61,109,141–145` 新绑定，`NativeUiAdapter.cs:469–476` 全程HitTest，`GUI/Prefabs/AFDialogueNativeOverlay.xml:6` 透明层。
+- 性能：成功补丁缓存，既有Ensure入口仅计数短路；输入事件O(1)状态/引用/代读取，无新增Tick、扫描、文件读取或重复反射。Mod_Logic的NativeConversationUI记录入口安装，详细拦截日志按1秒限频；日志异常不放行。
+- 验证：NativeContinueGuardTests生产patch/guard/SaveRuntimeGuard+两版真实DLL/真实Harmony各44 PASS；地图callback在普通执行、AI拒绝，Mission副作用与manager正文拒绝。Campaign/overlay shell/backend/recovery替身，命名生命周期只测mode/busy invariant。既有点击双API各162 PASS，旧fa3bfc98为160 PASS/2 FAIL（completed body及shield绑定）；UI lifecycle103 PASS。既有fixture缺生图接口补齐五成员；一次漏传仓库参数失败，最终正确调用通过。引擎/布局/drawer替身，非实机。
+- 原统一脚本 `scripts/build/build_single_module.ps1`，ProjectRoot当前仓库、游戏根 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord`、两版引用 `_deps_auto` / `.tmp/build_check/1.4`、Release，无Stage/Deploy。双API(v1.3.15.110062/v1.4.6.115628)、Bootstrap、双实际DLL接线exit0；各实现346既有警告/0错误；11个任务文件SHA构建后未变。
+- 证据 `artifacts/ai-mode-continue-20261008/`：build.log、native-build/native两版log、hit-1.3/1.4及hit-old-counterexample/run.log、lifecycle-final.log、source-inputs.json。产物 `bin/Release/single_module_artifacts/`；1.3 SHA D01A71563CC757034B316CD70DE74209F79D5DCD8FDD07D8AEDE244A0F6F494D；1.4 SHA F9C3717C95AE394092DDA42A97AE98C7AC8727F6BC086B22107C3E57E09A0E47。
+- NOT-RUN：野外/场景物理输入、第三方UI、玩家旧档、真实LLM/TTS；未Stage/部署/打包/推送，不改默认模式入口或一键流程。仅回滚 `git revert e9b16679`，保留其他作者改动。
+
+<a id="diplomacy-expired-reminder-20261008"></a>
 # 删除外交回应倒计时通知（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户最初反馈剩余0日仍催促，随后明确要求整条通知直接删除；后一要求替代仅抑制0日的方案。检查点 `b0d12bfaf`；中间产品 `b8073b253`（仅抑制0日），最终产品 `53945643a`（删除所有倒计时提醒）。保留其他作者UI/继续按钮修改。

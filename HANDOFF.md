@@ -1,4 +1,10 @@
-﻿# 当前交接：删除外交回应倒计时提醒（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：AI 模式全程拦截原版点击继续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `e9b16679`、检查点 `fa3bfc98`。AI模式空闲/生成/完成均拦截正文点击；地图VM、场景VM与ConversationManager三入口保护，继续键同样受控；普通模式及明确离开保持。
+- 双版真实DLL/Harmony各44、点击回放各162、UI生命周期103 PASS；旧反例2 FAIL符合预期。原双API/Bootstrap/双DLL接线通过，实机未验，未Stage/部署/打包/推送。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#ai-mode-continue-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#ai-mode-continue-20261008)，证据 `artifacts/ai-mode-continue-20261008/`；回滚仅 `git revert e9b16679`。
+
+# 当前交接：删除外交回应倒计时提醒（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 按用户最终要求删除整条“等待回应、剩余X日”通知。最终产品 `53945643a` 替代中间仅抑制0日的 `b8073b253`；调用和生成方法均删除，普通回应/结果结算均静默，宣言通知、回应入口和原超时处理保持。
 - 最终外交3918专项PASS；最终隔离原双API/Bootstrap/双DLL接缝构建exit0。真实UI/战役未验，未Stage/部署/打包/推送；存档兼容字段保留，无新增扫描。
