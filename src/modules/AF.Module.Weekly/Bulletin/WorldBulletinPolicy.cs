@@ -151,8 +151,13 @@ internal static class WorldBulletinPolicy
 	public static WorldBulletinIllustrationPlan BuildIllustrationPlan(WorldBulletinSelection selection, string identity, string dateText)
 	{
 		if (selection?.Major == null) return null;
-		WorldBulletinEvent lead = selection.Major;
-		// One illustration depicts the lead story only; other headlines stay in the newspaper.
+		// One draw per recorded story, not per supporting fact. Stable per issue, so reopening
+		// or retrying uses the same frozen scene rather than requesting another random image.
+		var stories = (selection.MajorFacts ?? new List<WorldBulletinEvent>()).Concat(new[] { selection.Major })
+			.Where(f => f != null && !string.IsNullOrWhiteSpace(f.Sentence))
+			.GroupBy(GroupOf, StringComparer.Ordinal).Select(g => g.First()).OrderBy(GroupOf, StringComparer.Ordinal).ToList();
+		WorldBulletinEvent lead = stories.Count == 0 ? selection.Major : stories[IllustrationStoryIndex(identity, stories.Count)];
+		// Other stories remain in the newspaper; only this story's facts and participants are illustrated.
 		List<WorldBulletinEvent> facts = new List<WorldBulletinEvent> { lead };
 		foreach (var fact in selection.MajorFacts ?? new List<WorldBulletinEvent>())
 			if (fact != null && fact.Key != lead.Key && facts.Count < MaxMajorFacts &&
@@ -164,6 +169,17 @@ internal static class WorldBulletinPolicy
 				if (person != null && !string.IsNullOrWhiteSpace(person.HeroId) && plan.Participants.Count < 4 && !plan.Participants.Any(x => x.HeroId == person.HeroId))
 					plan.Participants.Add(new WorldBulletinParticipant { HeroId = person.HeroId, Name = person.Name, Role = person.Role });
 		return plan;
+	}
+
+	internal static int IllustrationStoryIndex(string identity, int count)
+	{
+		if (count <= 1) return 0;
+		using (var hash = System.Security.Cryptography.SHA256.Create())
+		{
+			byte[] bytes = hash.ComputeHash(Encoding.UTF8.GetBytes("bulletin-art-story-v1:" + (identity ?? "")));
+			uint value = (uint)bytes[0] | (uint)bytes[1] << 8 | (uint)bytes[2] << 16 | (uint)bytes[3] << 24;
+			return (int)(value % (uint)count);
+		}
 	}
 
 	public const int WorldMembershipScore = 40;

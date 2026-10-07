@@ -59,11 +59,21 @@ internal static class Program
 		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "player", Name = "玩家", Role = "行刑方" });
 		s.WindowFacts.Single(f => f.Key == events[1].Key).Participants.Add(new WorldBulletinParticipant { HeroId = "b", Name = "乙", Role = "死者" });
 		s.WindowFacts.Single(f => f.Key == events[6].Key).Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
-		var art = WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:1", "1084年夏季8日");
+		var art = Enumerable.Range(0, 64).Select(i => WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:" + i, "1084年夏季8日"))
+			.First(p => p.Facts.Contains("甲被玩家处决"));
 		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player", "b" }), "art preserves all core participants but excludes unrelated headline");
 		Check(art.Facts.Contains("甲被玩家处决") && art.Facts.Contains("乙被玩家处决") && !art.Facts.Contains("宣战") && !art.Facts.Contains("村一"), "art freezes only same-story facts");
 		s.Major.Participants[0].Role = "已改写";
 		Check(art.Participants[0].Role == "死者", "plan clones event-time role independently of source mutations");
+		var artSamples = Enumerable.Range(0, 64).Select(i => WorldBulletinPolicy.BuildIllustrationPlan(s, "issue-random:" + i, "同一天")).ToList();
+		Check(artSamples.Select(p => p.Facts).Distinct().Count() > 1, "illustration can choose another major story instead of always the lead");
+		Check(artSamples.All(p => !p.Facts.Contains("村一")), "minor news never enters major illustration lottery");
+		var repeatedArt = WorldBulletinPolicy.BuildIllustrationPlan(s, "issue-random:17", "同一天");
+		Check(repeatedArt.Facts == artSamples[17].Facts, "same issue identity freezes random story across reopen/retry");
+		var originalFacts = s.MajorFacts.ToList();
+		s.MajorFacts.Add(s.MajorFacts[0]);
+		Check(WorldBulletinPolicy.BuildIllustrationPlan(s, "issue-random:17", "同一天").Facts == repeatedArt.Facts, "duplicate fact does not add a story lottery ticket");
+		s.MajorFacts = originalFacts;
 		var filledMinors = WorldBulletinPolicy.MergeMinors(new List<string>(), enoughNews.Minors, out int filledCount);
 		Check(filledMinors.Count >= 2 && filledMinors.All(m => !string.IsNullOrWhiteSpace(m)) && filledCount == 0, "missing generated minors filled with real selected facts");
 

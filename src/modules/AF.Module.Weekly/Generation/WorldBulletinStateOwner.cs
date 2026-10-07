@@ -157,6 +157,8 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
 		WorldBulletinIllustrationPlan illustrationPlan = WorldBulletinPolicy.BuildIllustrationPlan(selection,
 			"selection:" + (scope.Sequence + 1).ToString(CultureInfo.InvariantCulture) + ":" + scope.WindowEndHour.ToString("R", CultureInfo.InvariantCulture),
 			_port.CurrentDate());
+		_port.Log("WorldBulletin", "[IllustrationSelect] issue=" + illustrationPlan?.Identity + " title=" + illustrationPlan?.Title
+			+ " facts=" + WorldBulletinPolicy.Truncate(illustrationPlan?.Facts, 220));
 		_port.Log("WorldBulletin", "[Select] home=" + focus.PlayerKingdomId + " majorFacts=" + selection.MajorFacts.Count + " minors=" + selection.Minors.Count + " minorEvents=" + selection.Minors.Sum(x => x.Events.Count));
 		// Set last: if anything above throws, the flag stays clear and the next tick retries instead of blocking forever.
 		InFlight = true;
