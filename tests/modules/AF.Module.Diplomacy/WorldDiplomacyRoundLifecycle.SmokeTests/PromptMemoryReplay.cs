@@ -7,6 +7,8 @@ internal static class PromptMemoryReplay
         internal int Captures, Wars;
         internal string Oral = "";
         internal int OralReads;
+        internal bool Native;
+        public bool UseFormalCommitments => !Native;
         public string OralArrangementContext() { OralReads++; return Oral; }
         internal List<string> Templates = new();
         public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => new(true, false, false, true, false, TopicAllowed, true, false, true, PlayerRuler);
@@ -28,6 +30,9 @@ internal static class PromptMemoryReplay
     }
     private struct Postprocess : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource
     {
+        internal bool Native;
+        public bool UseFormalCommitments => !Native;
+        public string NativeActionInstruction() => "AI外交已关闭 [ACTION:DIPLOMACY:DECLARE_WAR:a:b] 原版执行";
         public bool HasSpeaker => true;
         public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot) { snapshot = default; return false; }
         public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => new(true, false, false, true, false, true, true, false, true, true);
@@ -62,6 +67,14 @@ internal static class PromptMemoryReplay
             "postprocessing receives arrangement identity and the previously approved oral tags");
         Test.True(!post.Contains("DIPLOMACY:MAKE_TRADE:") && post.Contains("DIPLOMACY:DECLARE_WAR:p:a"),
             "NPC consent submits formal documents while the existing player's explicit-war exception remains available");
+        var nativePost = new Postprocess { Native=true };
+        string nativeTags = DiplomacyPostprocessContextApplication.Build(ref nativePost);
+        Test.True(nativeTags.Contains(nativePost.NativeActionInstruction()) && !nativeTags.Contains("DIPLOMACY:COMMIT") && !nativeTags.Contains("arrangement=owned"),
+            "disabled diplomacy uses native postprocessing template without formal tags or private arrangements");
+        var nativePrompt = new Prompt {Native=true,Oral="AI外交已关闭，可按原版外交规则直接达成"};
+        string nativeMain = DiplomacyPromptApplication.Build(nativePrompt,"【附加规则:diplomacy】");
+        Test.True(nativeMain.Contains(nativePrompt.Oral) && !nativeMain.Contains(AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.MainReplyInstruction) && !nativeMain.Contains("兼并规则"),
+            "disabled main reply does not force formal peace publication or annexation flow");
         prompt = new Prompt { Independent = true, PlayerRuler = false };
         text = DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】");
         Test.True(text.Contains("独立有城家族：家族") && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");

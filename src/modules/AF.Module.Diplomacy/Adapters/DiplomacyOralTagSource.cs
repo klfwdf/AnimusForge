@@ -11,6 +11,7 @@ internal readonly struct DiplomacyOralTagSource : IDiplomacyOralTagSource, IDipl
         || Campaign.Current?.GetCampaignBehavior<DiplomacyBehavior>() != null;
     public string SpeakerHeroId => _npc.StringId;
     public string SpeakerKingdomId => _npc?.Clan?.Kingdom?.StringId ?? "";
+    public bool UseFormalCommitments => WorldDiplomacyBehavior.UseFormalDiplomacyForConversation;
     public string SubmitCommitment(string payload) => WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(_npc, payload);
     public string ControlCommitment(string payload) => WorldDiplomacyBehavior.ControlOralDiplomaticCommitment(_npc, payload);
     public string SubmitLegacyCommitment(string action, string payload) => WorldDiplomacyBehavior.SubmitLegacyOralCommitment(_npc, action, payload);

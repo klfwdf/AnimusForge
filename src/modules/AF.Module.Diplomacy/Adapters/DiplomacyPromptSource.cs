@@ -10,7 +10,9 @@ internal sealed class DiplomacyPromptSource : IDiplomacyPromptSource, IDiplomacy
 {
     private readonly Hero _npc;
     internal DiplomacyPromptSource(Hero npc) => _npc = npc;
-    public string OralArrangementContext() => WorldDiplomacyBehavior.BuildOralArrangementContext(_npc);
+    public bool UseFormalCommitments => WorldDiplomacyBehavior.UseFormalDiplomacyForConversation;
+    public string OralArrangementContext() => UseFormalCommitments
+        ? WorldDiplomacyBehavior.BuildOralArrangementContext(_npc) : Template("native_action_main", null);
     public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => DiplomacyBehavior.CaptureEligibilitySnapshot(_npc);
     public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
     {

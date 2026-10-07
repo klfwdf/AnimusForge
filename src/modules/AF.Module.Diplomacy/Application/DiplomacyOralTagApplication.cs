@@ -54,20 +54,24 @@ internal static class DiplomacyOralTagApplication
         try
         {
             source.Log($"[Tag] action={action} payload={payload} npc={source.SpeakerHeroId}");
+            var formal = source is IDiplomacyCommitmentTagSource candidate && candidate.UseFormalCommitments ? candidate : null;
             switch (action.ToUpperInvariant())
             {
-                case "COMMIT": return (source as IDiplomacyCommitmentTagSource)?.SubmitCommitment(payload) ?? "";
-                case "COMMITMENT": return (source as IDiplomacyCommitmentTagSource)?.ControlCommitment(payload) ?? "";
+                case "COMMIT": return formal != null ? formal.SubmitCommitment(payload)
+                    : source is IDiplomacyCommitmentTagSource direct
+                        ? DiplomacyNativeCommitmentApplication.Execute(source, direct.SpeakerKingdomId, payload) : "";
+                case "COMMITMENT": return formal != null ? formal.ControlCommitment(payload)
+                    : "AI外交已关闭，原有发文约定不能在当前模式下变更。";
                 case "DECLARE_WAR":
-                    return source is IDiplomacyCommitmentTagSource commitment
-                        && (payload ?? "").Split(':')[0] == commitment.SpeakerKingdomId
-                        ? commitment.SubmitLegacyCommitment("DeclareWar", payload) : source.DeclareWar(payload);
-                case "MAKE_PEACE": return source is IDiplomacyCommitmentTagSource peace ? peace.SubmitLegacyCommitment("Peace", payload) : source.MakePeace(payload);
+                    return formal != null
+                        && string.Equals((payload ?? "").Split(':')[0].Trim(), formal.SpeakerKingdomId, StringComparison.OrdinalIgnoreCase)
+                        ? formal.SubmitLegacyCommitment("DeclareWar", payload) : source.DeclareWar(payload);
+                case "MAKE_PEACE": return formal != null ? formal.SubmitLegacyCommitment("Peace", payload) : source.MakePeace(payload);
                 case "INDEPENDENT_CLAN_PEACE": return source.IndependentClanPeace(payload);
-                case "FORM_ALLIANCE": return source is IDiplomacyCommitmentTagSource alliance ? alliance.SubmitLegacyCommitment("Alliance", payload) : source.FormAlliance(payload);
-                case "BREAK_ALLIANCE": return source is IDiplomacyCommitmentTagSource broken ? broken.SubmitLegacyCommitment("BreakAlliance", payload) : source.BreakAlliance(payload);
-                case "MAKE_TRADE": return source is IDiplomacyCommitmentTagSource trade ? trade.SubmitLegacyCommitment("Trade", payload) : source.MakeTrade(payload);
-                case "CANCEL_TRADE": return source is IDiplomacyCommitmentTagSource cancelled ? cancelled.SubmitLegacyCommitment("CancelTrade", payload) : source.CancelTrade(payload);
+                case "FORM_ALLIANCE": return formal != null ? formal.SubmitLegacyCommitment("Alliance", payload) : source.FormAlliance(payload);
+                case "BREAK_ALLIANCE": return formal != null ? formal.SubmitLegacyCommitment("BreakAlliance", payload) : source.BreakAlliance(payload);
+                case "MAKE_TRADE": return formal != null ? formal.SubmitLegacyCommitment("Trade", payload) : source.MakeTrade(payload);
+                case "CANCEL_TRADE": return formal != null ? formal.SubmitLegacyCommitment("CancelTrade", payload) : source.CancelTrade(payload);
                 default:
                     source.Log($"[Tag] Unknown action: {action}");
                     return "";

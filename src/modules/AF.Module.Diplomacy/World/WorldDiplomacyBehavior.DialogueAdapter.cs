@@ -5,6 +5,7 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
+    internal static bool UseFormalDiplomacyForConversation => IsWorldDiplomacyEnabled();
     internal static string SubmitLegacyOralCommitment(Hero npc, string action, string payload) =>
         Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>()?._orchestration.SubmitLegacyOralCommitment(
             npc?.StringId, npc?.Clan?.Kingdom?.StringId, action, payload, DiplomacyDialogueSourceScope.Current) ?? "";

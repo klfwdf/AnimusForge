@@ -12,6 +12,8 @@ internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContext
 
     internal DiplomacyPostprocessContextSource(Hero npc) : this() => _npc = npc;
     public bool HasSpeaker => _npc != null;
+    public bool UseFormalCommitments => WorldDiplomacyBehavior.UseFormalDiplomacyForConversation;
+    public string NativeActionInstruction() => AIConfigHandler.ResolveRuleRuntimeText("diplomacy", "native_action_postprocess", forConstraint: false, null);
     public string OralArrangementContext() => WorldDiplomacyBehavior.BuildOralArrangementContext(_npc);
 
     public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
