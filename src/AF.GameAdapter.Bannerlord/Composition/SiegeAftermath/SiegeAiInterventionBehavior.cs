@@ -161,6 +161,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				NativeMovementOrders.Forget(affectedAgent.Index);
 				StuckRecovery.Forget(affectedAgent.Index);
 			}
+			TownScenePerceptionRuntimeBridge.RecordRemoval(affectedAgent, affectorAgent, agentState);
 			SiegeAiInterventionBehavior.OnInterventionAgentRemoved(affectedAgent, affectorAgent, agentState);
 		}
 
@@ -2000,6 +2001,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		RemoveBackstreetCrimeAgents(mission);
 		RemoveUnsafeAssemblyCivilianAgents(mission);
 		TrackSceneCivilianAgents(mission);
+		TownScenePerceptionRuntimeBridge.Begin(mission, ResolveCurrentSettlement());
 		MaintainCivilianAssembly(mission, SiegeCivilianAssemblyProfile.MissionAfterStartSource, force: true);
 		GcczDiagnosticLog.Log("Mission", "after-start prepared settlement=" + (_activeSettlementId ?? "N/A")
 			+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0)
@@ -2131,6 +2133,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		bool memoryCleared = InterventionSceneMemory.EndScene();
 		OrdinarySpeakerVoices.EndScene();
+		TownScenePerceptionRuntimeBridge.EndScene();
 		ClearInterventionSceneTransientState();
 		if (memoryCleared)
 		{
@@ -3223,9 +3226,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return string.Empty;
 			}
 
-			return OrdinarySpeakerVoices.BuildPromptContext(
-				facts,
-				GcczTownPromptResourceProvider.GetCatalog());
+			TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+			return AppendRuntimeContext(
+				OrdinarySpeakerVoices.BuildPromptContext(facts, text),
+				TownScenePerceptionRuntimeBridge.BuildContext(agentIndex, _setsOwnedSettlementIncidentContext, text));
 		}
 		catch (Exception ex)
 		{
@@ -3329,6 +3333,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			+ ((speakerKey ?? string.Empty).Trim())
 			+ "|agent:"
 			+ agentIndex
+			+ "|instance:"
+			+ TownScenePerceptionRuntimeBridge.GetSpeakerIdentity(agentIndex)
 			+ "|scene:"
 			+ _ordinarySpeakerVoiceGeneration
 			+ "|name:"
@@ -15523,6 +15529,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		TownEntryPresentation.Reset();
 		OrdinarySpeakerVoices.Reset();
+		TownScenePerceptionRuntimeBridge.EndScene();
 		_alliedTroopsAutoSummoned = false;
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;

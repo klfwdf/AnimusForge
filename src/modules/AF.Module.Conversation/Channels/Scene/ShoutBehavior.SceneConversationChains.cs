@@ -1425,6 +1425,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			contextHero = npcCharacter?.HeroObject;
 		}
 		PopulateImmediateSceneReactionPersonaOnMainThread(targetNpc, contextHero);
+		AfGcczShoutBridge.CaptureOrdinarySpeakerPerception(targetNpc);
 		DuelSettings settings = DuelSettings.GetSettings();
 		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 		bool useCompactTownOrdinaryChain = runSiegeReactionPostprocess
