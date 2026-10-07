@@ -1,3 +1,8 @@
+<a id="scene-audience-toggle-20261008"></a>
+### 场景喊话自动屏蔽导航（2026-10-08）
+
+产品 `027f58976` 的默认关闭 MCM Bool 接入场景受众构造与 `ScenePresentationController` 的成员来源判断；框选/手动邀请和自动加入分开，派生屏蔽同步 UI/黑名单/请求名单。复用原 10 Hz 刷新，保持三渠道链路、公开 DTO 与存档身份。源码坐标、替身回放、双 API 隔离构建和未实机范围见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#scene-audience-toggle-20261008)。
+
 <a id="prosperity-food-toggle-20261008"></a>
 ### 繁荣度耗粮独立开关导航（2026-10-08）
 

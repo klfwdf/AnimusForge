@@ -1,4 +1,10 @@
-﻿# 当前交接：快报外交知情、通知路由与关闭 AI 外交原版执行（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：场景喊话未框选人物自动屏蔽（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `027f58976`，检查点 `1deffce9`。MCM“3. 场景喊话”新增“自动屏蔽未框选人物”，默认关闭；开启过滤后来的旁观者和现有自动成员，框选/手动邀请/锁定有效、手动屏蔽保留，下一轮生效。
+- 新增开关/成员30、实际受众构造13与既有相关124项通过；隔离候选原双 API/Bootstrap/双 DLL 接线通过。真实 MCM/场景/模型未验，未 Stage/部署/打包/推送。
+- [唯一主台账、源码坐标与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-audience-toggle-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#scene-audience-toggle-20261008)。证据 `artifacts/scene-audience-toggle-20261008/`；回滚仅 `git revert 027f58976`，之前繁荣开关仍为 `9e3586b44`。
+
+# 当前交接：快报外交知情、通知路由与关闭 AI 外交原版执行（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `cc9d0b2b9` / `c89fb24c5`，检查点 `e9953f04` / `74d5acbe`。NPC 快报遵守宣言传播权限；发布国为玩家所属国时保留右侧图标，外国左下角；AI 外交关闭时六类外交标签复用原口头执行器，开启仍走正式公文。复杂/旧案约定不简化执行，原王权与状态检查保留，三渠道继续共享执行入口。
 - 快报策略68、实际发布/NPC/归档/展示183、宿主20、外交3810及六口头执行/分块专项PASS；最终干净提交源码隔离worktree原双API1.3/1.4、Bootstrap及双实际DLL接缝exit0。共享树首轮并行生图编译失败保留，未动对方代码；契约/替身回放不等于实机。

@@ -1,4 +1,17 @@
-﻿<a id="prosperity-food-toggle-20261008"></a>
+﻿<a id="scene-audience-toggle-20261008"></a>
+# 场景喊话自动屏蔽未框选人物（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户追加要求：MCM“3. 场景喊话”新增“自动屏蔽未框选人物”，默认关闭、无需重启。旧 JSON 缺键/设置不可用同样关闭。开启时只让框选或手动邀请的人参与，新走近的旁观者不进入本轮受众；当前会话原先自动加入者派生为屏蔽。重新框选、点击人物、参与/锁定及全员参与可显式邀请，原手动屏蔽保留；关闭恢复自动参与，已提交的旧轮回复不取消，下一轮生效。
+- 工作区 `F:/AnimusForge-main`、`main`；检查点 `1deffce9`，产品 `027f58976`（14文件，六个生产文件）。只接现有 scene-only 多人受众，不改三渠道规则/请求/历史/后处理/动作链路；信使与原版一对一没有此范围受众。MCM 磁盘 Bool 不进入 .sav，无新增存档键/分块字段/公开 API；保留其他作者场景 UI、生图、外交及未跟踪目录。
+- 源码证据（产品修订，一基行号）：`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneAudience.cs:7–26` 的属性与 `ShouldAutoExcludeUnframedShoutParticipants`；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePresentationSession.cs:35–42` 注入已加载配置读取；`ShoutBehavior.ScenePlayerExecution.cs:122` 在主线程将开关传给 `TryBuildSceneShoutConversationScope`；同目录 `ShoutBehavior.cs:1339–1407` 受众构造开启时只遍历邀请名单，仍保留选中人物的 anchor/LOS 元数据及原失效/屏蔽/主对象保护。
+- 成员 owner `src/AF.GameAdapter.Bannerlord/Scene/ScenePresentationController.cs`：`Member.ExplicitlyIncluded:199`、`GetParticipantState:256–266` 派生自动屏蔽、`AddPresentationMembers:304–338` 区分框选与吸收，`TickPresentationSession:402–496` 在原 10 Hz 刷新中检测开关变化；`SetAddressee/CycleParticipant/SetAllParticipants:582–638` 保留手动选择，`GetPresentationExcludedAgentIndices:670–687` 与 `VisitAudience/AbsorbAudience:795–803` 同步 UI、黑名单与实际请求名单。公开 DTO/外部接口形状保持，生命周期结束清除成员来源。
+- 性能：配置读已加载 Bool，O(1)，不走会初始化提示词/迁移的通用 GetSettings。参与者刷新仍 10 Hz、只访问持有成员；每轮开启时 anchor 查询从全场缩为本轮邀请名单，保留既有 LOS/校验。没有新增每帧扫描、反射、文件读取、锁、轮询或序列化。
+- 专项：生产 controller/设置 partial 的开关与成员状态 **30 PASS**，涵盖默认/旧 JSON/往返/缺失/抛错、现有自动成员、中途切换、重新框选、手动邀请/锁定/屏蔽、全员操作和结束重开；实际受众构造方法提取 + 生产 scope **13 PASS**，涵盖开启/关闭、晚到旁观者、禁止 ambient LOS 查询、anchor 标记、主对象、手动屏蔽、远处邀请者与旧目标失效。已有 presentation/audio **46**、语音输出 **54**、参与者规则 **19**、scope **5 PASS**（合计167）。游戏/原生音频/MCM provider/LOS 是替身；不是实机或真实 MCM 文件保存回路。
+- 构建复用仓内隔离 worktree `artifacts/prosperity-food-toggle-20261008/validation-worktree`：基于 `dc0eb32` 加已验繁荣开关，接入本次五个完整生产源（SHA一致）及 ShoutBehavior 两个自有 hunk（方法逐字一致），不纳入其他并行草稿。原 `scripts/build/build_single_module.ps1` 传相同两版引用、`-Configuration Release`，不传 Stage/Deploy，双 API（`v1.3.15.110062 / v1.4.6.115628`）、Bootstrap、双实际 DLL 接线 **exit0**；每实现346既有警告、0错误。先前繁荣的 Debug 证据保留。不能据此声称共享工作树最新混合改动整体通过。
+- 证据 `artifacts/scene-audience-toggle-20261008/` 的 `build-isolated.log`、`source-inputs.json`、`scene-host-only.patch`、`capture/run.log`、`scope.log` 与 `verification.md`；产物为隔离树 `bin/Release/single_module_artifacts/`。双实现 SHA：`039E52F40F970F81636B94B85537E96C9D469F2E292A029E58A91B5160E306FA` / `60EF5AA40E63634A870F8C7B54154D1D7DC52B58288C4B644B0163CEA299BE20`。
+- NOT-RUN：实机 MCM 显示/保存/取消/重启回读、真实人物走入/框选/面板交互、完整 LLM 请求和旧玩家存档；未 Stage、部署、覆盖游戏、打包、推送。产品回滚仅 `git revert 027f58976`，此前繁荣开关另为 `9e3586b44`，保留其他作者提交。
+
+<a id="prosperity-food-toggle-20261008"></a>
 # 繁荣度耗粮独立开关（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户要求将取消繁荣耗粮做成独立开关；MCM“16. 政策系统”新增“取消繁荣度耗粮”，默认关闭，旧配置缺少此键也保留原版。保存后下一次粮食模型计算读取当前值，开启取消、关闭恢复；玩家/NPC 城市和城堡同规则。
