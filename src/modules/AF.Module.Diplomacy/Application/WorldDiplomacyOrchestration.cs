@@ -1508,7 +1508,6 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         foreach (var round in GetLiveRounds().ToList())
         {
             if (Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && (x.Status == "accepted" || x.Status == "deferred"))) continue;
-            NotifyPlayerWaitRemaining(round);
             WorldDiplomacyRoundApplication.ProcessRoundLifecycle(Storage, _host.CurrentDay, ResolveDocument,
                 EnqueueRoundPlanJob, ScheduleNextResultSettlementTurn, r => ScheduleNextRelayHop(r),
                 reason => CloseRound(reason, round), _host.Log, round);

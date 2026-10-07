@@ -53,23 +53,4 @@ internal sealed partial class WorldDiplomacyOrchestration
         _diplomacyWorkNeedsReconcile = true;
     }
 
-    // One notice per event per game day; the original five-day deadline stays.
-    internal void NotifyPlayerWaitRemaining(WorldDiplomacyRound round)
-    {
-        int day = _host.CurrentDay();
-        if (round.PlayerWaitReminderDay == day) return;
-        var slot = round.ResultSettlementSlots?.FirstOrDefault(x => x != null
-            && x.SlotId == round.ResultSettlementCurrentSlotId && x.Status == "waiting_player");
-        int? since = slot == null ? null : round.ResultSettlementPlayerWaitingSinceDay;
-        if (!since.HasValue)
-            since = Storage.PlayerOpportunities.Where(x => x != null && x.RoundId == round.RoundId && x.Status == "open")
-                .Select(x => (int?)x.ArrivedDay).FirstOrDefault();
-        if (!since.HasValue) return;
-        int remaining = Math.Max(0, 5 - (day - since.Value));
-        round.PlayerWaitReminderDay = day;
-        // Lifecycle settlement runs after this reminder and can still own an expired wait.
-        // Mark today's check, but never prompt the player to answer an expired deadline.
-        if (remaining == 0) return;
-        _host.Notify("外交交涉「" + round.RoundTopic + "」正在等待你的回应，剩余 " + remaining + " 个游戏日。");
-    }
 }

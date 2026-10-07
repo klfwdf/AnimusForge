@@ -260,13 +260,11 @@ internal static class ConcurrentOralMigrationReplay
         deliveryHost.CurrentDayValue = 20; deliveryOwner.ProcessPropagationArrivals();
         Test.True(deliveryOwner.CurrentStorage.SettlementKnowledge.Any(x => x.SettlementId == "village" && x.DocumentIds.Contains(news.DocumentId)),
             "civilian location knowledge appears at its own configured date");
-        o.CurrentStorage.PlayerOpportunities.Add(new() { RoundId = a.RoundId, ArrivedDay = 10 });
-        o.NotifyPlayerWaitRemaining(a); o.NotifyPlayerWaitRemaining(a);
-        Test.True(h.Notices.Count(x => x.Contains("剩余 3")) == 1, "remaining player wait shown once per event/day");
         foreach (bool settlement in new[] { false, true })
         {
             var (reminderHost, reminderOwner) = Fixture();
             var waiting = reminderOwner.EnsureActiveRound("p", "a", true);
+            waiting.HardEndDay = 100;
             var opportunity = new WorldDiplomacyPlayerOpportunity { RoundId = waiting.RoundId, ArrivedDay = 10, Status = "open" };
             reminderOwner.CurrentStorage.PlayerOpportunities.Add(opportunity);
             if (settlement)
@@ -276,19 +274,13 @@ internal static class ConcurrentOralMigrationReplay
                 waiting.ResultSettlementPlayerWaitingSinceDay = 10;
                 waiting.ResultSettlementSlots.Add(new() { SlotId = "waiting-slot", KingdomId = "p", Status = "waiting_player" });
             }
-            reminderHost.CurrentDayValue = 14;
-            reminderOwner.NotifyPlayerWaitRemaining(waiting); reminderOwner.NotifyPlayerWaitRemaining(waiting);
-            Test.True(reminderHost.Notices.Count == 1 && reminderHost.Notices[0].Contains("剩余 1 个游戏日"),
-                "last valid day reminds once for opportunity/settlement: " + settlement);
-            foreach (int expiredDay in new[] { 15, 16, 30 })
+            foreach (int day in new[] { 12, 14, 15, 16, 30 })
             {
-                reminderHost.CurrentDayValue = expiredDay;
-                reminderOwner.NotifyPlayerWaitRemaining(waiting); reminderOwner.NotifyPlayerWaitRemaining(waiting);
-                Test.True(reminderHost.Notices.Count == 1 && waiting.PlayerWaitReminderDay == expiredDay,
-                    "deadline and overdue reminders are silent and checked once per day: " + settlement + "/" + expiredDay);
+                reminderHost.CurrentDayValue = day;
+                reminderOwner.ProcessRoundLifecycle(); reminderOwner.ProcessRoundLifecycle();
+                Test.True(reminderHost.Notices.Count == 0,
+                    "round lifecycle never sends countdown reminders before or after deadline: " + settlement + "/" + day);
             }
-            Test.True(opportunity.Status == "open" && (!settlement || waiting.ResultSettlementSlots[0].Status == "waiting_player"),
-                "reminder suppression leaves actual timeout decisions to lifecycle owner: " + settlement);
         }
 
         // Real oral consent path remains independent and private while publication is deferred.
