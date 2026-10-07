@@ -98,7 +98,7 @@ static class Program
         }
         overlay.Original.IsInputEnabled = true;
         TaleWorlds.InputSystem.Input.MousePositionPixel = (700, 300);
-        Check(!overlay.HitTest(), "completed reply releases body hit restriction");
+        Check(overlay.HitTest(), "completed reply in AI mode still blocks body continue");
         overlay.Original.IsInputEnabled = false;
         overlay.Original.IsCustomAnswerVisible = false;
         Check(!overlay.HitTest(), "ordinary mode is not blocked by a stale busy flag");
@@ -106,7 +106,7 @@ static class Program
         var overlayXml = XDocument.Load(args[1]).Root.Element("Window").Elements().Single();
         var shieldXml = overlayXml.Element("Children").Elements().FirstOrDefault();
         Check((string)shieldXml?.Attribute("Id") == "AFDialogueReplyClickShield", "shield is behind overlay controls");
-        Check((string)shieldXml?.Attribute("IsVisible") == "@IsReplyPending", "shield follows reply lifecycle");
+        Check((string)shieldXml?.Attribute("IsVisible") == "@IsNativeContinueBlocked", "shield follows AI mode, including idle and completed reply");
         Check(!shieldXml.Attributes().Any(a => a.Name.LocalName.StartsWith("Command.")), "shield has no continue command");
         var shield = Build(shieldXml, new Rect(0, 0, 1440, 400));
         root.Add(shield);
@@ -119,7 +119,7 @@ static class Program
         root.Add(toolbar);
         Check(Hit(1140, 120) == toolbar, "toolbar above shield still receives its click");
         shield.IsVisible = false;
-        Check(Hit(1040, 300) == button, "completion removes shield and restores native continue");
+        Check(Hit(1040, 300) == button, "ordinary mode removes shield and restores native continue");
         overlay._wrapper.Auxiliary.IsVisible = true;
         TaleWorlds.InputSystem.Input.MousePositionPixel = (40, 20);
         Check(overlay.HitTest(), "auxiliary panel prevents continue");
