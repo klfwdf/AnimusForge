@@ -4,6 +4,12 @@
 - 生命周期55、既有会面164、双版真实Harmony入口与隔离原双API/Bootstrap/双DLL构建通过；玩家实机未验，未部署/打包/推送。本机成功测试尚未定位，不能断言未复现的具体原因。
 - [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-dialogue-combat-continuation-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#native-dialogue-combat-continuation-20261008)。证据 `artifacts/meeting-native-war-investigation-20261008/`；回滚仅 `git revert a8727db4a`。
 
+# 当前交接：Google 原生生图接口支持（2026-10-08，OFFLINE_VERIFIED_ISOLATED_NOT_DEPLOYED）
+
+- 产品6e0290301、检查点db1c6a4。生图按地址走原生generateContent/x-goog/contents与inlineData图片；比例用原生嵌套字段，生图模型列表按原生GET。兼容Chat/Edits/Player2保持；主API与导演仍是原兼容协议。
+- 隔离候选双API/Bootstrap/双接线及两生产DLL各114检查通过；旧DLL原生检查FAIL符合预期。未调用外部API/付费生成/既有审计，未Stage/部署/打包/推送；真实Google/像素/保真/MCM实机及后来主树整合未验。
+- [唯一主台账、源码与配置边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-gemini-images-20261008)、[职责导航](docs/architecture/af-framework-code-scope.md#native-gemini-images-20261008)。证据artifacts/native-gemini-images-20261008；回滚仅git revert 6e0290301。现有游戏DLL未更新。
+
 # 当前交接：外交贸易条款与来源知情修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `ffa6301b1`，检查点 `2f6289f`。贸易接受改期/非法期限不再被原条款覆盖后执行，提示另发新案；省略条款或相同期限继续接受。完整与缺前缀ID统一经过已知开放原案绑定，owner执行时再查知情，未送达原案不能接受。

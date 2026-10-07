@@ -10,6 +10,21 @@
 - 原统一 `scripts/build/build_single_module.ps1` 在本地隔离 `artifacts/meeting-native-war-investigation-20261008/verify-tree`（179c6b74 + 两产品源，source-inputs.json核对SHA）Release构建：1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap与双实际DLL接线通过。证据同目录 lifecycle.log、existing-lifecycle/run.log、hooks-1.3/1.4.log、build.log；产物在隔离树 bin/Release/single_module_artifacts。1.3 SHA `226076F8980B9D5EEE6F48D402A8F94B31F4E95D670E318655C4E1D705B2D999`，1.4 SHA `D5015E9B86E4518F5CF72AAACF506C60792829D05A63A8803FCC4D5B6C8B8555`。
 - NOT-RUN：玩家存档/双版真实游戏复现、进入战场验收。未Stage、部署、打包、推送。回滚仅 `git revert a8727db4a`。复现需对齐自定义菜单入口、未建Battle和具体终结选项。
 
+<a id="native-gemini-images-20261008"></a>
+# 生图 Google 原生 generateContent 支持（2026-10-08，OFFLINE_VERIFIED_ISOLATED_NOT_DEPLOYED）
+
+- 用户针对400字段拒收、401鉴权截图询问如何修复，并认为主API已支持Google。核对 LlmApiCompat 的 GetEffectiveChatApiUrl/PrepareChatRequestPayload/ApplyAuthenticationHeaders：原发送协议为OpenAI兼容Chat或Anthropic，只在响应抽取中兼容Gemini候选文本；没有原生generateContent请求转换/x-goog鉴权。本包只给Illustrator生图补原生Gemini Developer API，不修改主API、导演协议或框架/public合同。
+- 工作区F:/AnimusForge-main、main，调查起点fa3bfc98，本地检查点db1c6a4，产品6e0290301。保留同期UI继续、外交与会面任务。原68385c50通用Chat字段移除继续生效，原生协议正确地在generationConfig.imageConfig.aspectRatio内发送支持的精确比例。
+- 源码（6e0290301，一基行号）：extensions/AnimusForge.Illustrator/src/Core/GeminiNativeImageProtocol.cs:15–50 的 IsNativeUrl/ResolveEndpoint 排除兼容Chat/Edits地址，识别原生根/完整generateContent，拒绝流式与勾完整URL的根地址；:52–85 的 CreateModelListRequest/ReadModelIds 处理原生GET与模型名；:103–155 的 ConvertPayload/ImageData 转写单幅请求及解析PNG/JPEG成图，跳过thought图/非STOP候选。
+- 实际消费者：Core/UniversalOpenAiImageClient.cs:142–158 冻结路由与URL模型，:211 进入原单次attempt，:1087–1104 生成原生JSON/鉴权与诊断，:1215后的解析复用ImagePayload归一化；Settings/IllustratorSettings.cs:806–844 生图模型列表真实GET路径/鉴权/模型名；Core/GenerationDiagnostics.cs:298–307 保存原生文本诊断，:361–375记录有界参考元数据并排除回图base64/密钥。原生单图编辑/双截图/普通参考都沿原body构造和规则，不丢图或新增自动重试。MCM仅更新提示文案，没有新持久化字段、默认值或索引迁移。
+- 性能：纯转换只在发起请求时运行，线性于已有内容块与返回候选；引用原已验证参考，静态比例集合只初始化一次。模型列表仍是显式按钮的一次15秒GET，只读取当前返回页，遗漏模型可手动填；没有新增Tick、全场扫描、反射热路径、网络探测、游戏对象后台读取或额外生图调用。响应保持36MiB/图片24MiB边界，原生超大编码在解码前跳过。
+- 验证：首轮主树原双API/Bootstrap/双接线及两DLL各104通过。最终模型列表/脱敏补齐后，在db1c6a4隔离检出verify-tree复制本包六文件，原统一脚本Debug、显式引用1.3 v1.3.15.110062与1.4 v1.4.6.115628，双API/Bootstrap/双实现接线exit0/0错误。每份最终DLL的MissionScreenshotRequestTests各114断言（原61+原生43+模型列表/脱敏10）通过，覆盖根/完整URL、x-goog无Bearer、输入参考完整、正确比例位置、7:4不降格、跳过thought图片、解码成图、401/过滤无重试、当前成图编辑和兼容Chat/Edits/Player2保持。全部HTTP由内存handler拦截，未发外部请求；旧68385c50 DLL在原生成功检查真实FAIL，记录baseline-red.log。未运行既有Illustrator审计脚本。
+- 最终证据artifacts/native-gemini-images-20261008/build-final.log、replay-final-1.3.log、replay-final-1.4.log、final-input-hashes.json/final-output-hashes.json和compiled-final；输入与主树本包内容SHA相等。验证树包含检查点和本包，排除后来并行作者改动，不能据此签收最终主树整合，也不能直接当整仓发布包。
+- 配置：原生生图地址可填https://generativelanguage.googleapis.com/v1beta（不勾完整URL），模型填实际生图模型、API Key填对应Google/原生网关密钥；勾完整URL时填完整models/模型名:generateContent，URL里的模型为准。兼容/openai/chat/completions继续Bearer。生图导演仍用现有兼容Chat接口，不声称主API/原生导演已扩展。
+- NOT-RUN：用户真实地址/完整转发脚本/401响应匹配、付费Google生成与参考保真、实际像素/画幅、MCM模型列表实机和游戏缓存；模型列表GET的HTTP入口仅源码接线，request构造/ID解析执行了真实helper。没有Stage/部署/打包/推送；现有安装仍旧版。原生仅结构化控制支持比例，未发送imageSize枚举，像素尺寸仍是提示词要求，不保证像素精确。
+- 依据：Google generate-content image-generation官方REST文档与generate-content API reference（原生header/contents/inlineData/ImageConfig）。截图提到的fix.ps1未执行；通道修改不依赖该脚本。回滚仅git revert 6e0290301，保留此前Chat修复及其他作者提交。
+- [职责导航](architecture/af-framework-code-scope.md#native-gemini-images-20261008)。
+
 <a id="diplomacy-review-fixes-20261008"></a>
 # 外交审查修复：贸易原条款与完整ID知情边界（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
