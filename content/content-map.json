@@ -561,7 +561,7 @@
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
       "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
-      "sha256": "2D22EF667F1876FE5F9D034F53D4AC88E5252350ECA80DC5FD4315615DE23C46"
+      "sha256": "6600DC9CCAFAC0DF7EDBC92CFE66A4A0FE34DC0D57C29BFCBEC63B013AEC470F"
     },
     {
       "owner": "AF.Module.Prompt",
@@ -705,7 +705,7 @@
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
       "target": "CustomPrompts/WorldBulletinWritingRequirements.json",
-      "sha256": "D54B5131FB4F724BF05E7C9F6B333145F0A3318867FCF1CB97AB5CFE9317FE81"
+      "sha256": "EF15353EFC63EA930E532DF196C2B089A11095C901700BD7CB346BB787917B6B"
     },
     {
       "owner": "AF.Module.Weekly",
