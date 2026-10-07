@@ -470,9 +470,9 @@ public static class NativeUiAdapter
         {
             if (!Root.IsRecursivelyVisible()) return false;
             if (_wrapper?.Auxiliary.IsVisible == true) return true;
-            // Match the transparent busy shield. Otherwise the host releases mouse restrictions
-            // outside the input column and native Continue still receives body/background clicks.
-            if (Original.IsCustomAnswerVisible && !Original.IsInputEnabled) return true;
+            // AI mode owns body/background clicks even after a reply finishes.
+            // The core command guard also covers map/mission ContinueKey and fallback UI.
+            if (Original.IsCustomAnswerVisible) return true;
             var mouse = Input.MousePositionPixel;
 
             // The column is claimed only while the AI input occupies it. In ordinary mode the native

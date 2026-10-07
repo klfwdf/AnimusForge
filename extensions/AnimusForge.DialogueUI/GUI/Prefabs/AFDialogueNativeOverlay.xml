@@ -3,7 +3,7 @@
     <Widget Id="AFDialogueNativeOverlay" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
         <!-- Behind the interactive overlay controls, above native Continue. No click command/sound. -->
-        <Widget Id="AFDialogueReplyClickShield" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@IsReplyPending" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" />
+        <Widget Id="AFDialogueReplyClickShield" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@IsNativeContinueBlocked" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" />
         <Widget Id="AFDialogueConsoleOverlayFrame" WidthSizePolicy="Fixed" SuggestedWidth="1619" HeightSizePolicy="Fixed" SuggestedHeight="326" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="0" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" PositionXOffset="-12.5">
           <Children>
             <Widget Id="AFDialogueRightColumn" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="211" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="36" MarginBottom="42" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">

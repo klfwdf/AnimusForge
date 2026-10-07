@@ -52,6 +52,7 @@ namespace AnimusForge
     public class NpcDataPacket { public int AgentIndex; }
     public class ShoutBehavior
     {
+        public static int SceneIllustrationVersionForExternal => 0;
         private object _shoutTradeTargetNpc, _activeShoutTargetingContext = new();
         private TaleWorlds.MountAndBlade.Agent _shoutTradeTargetAgentSnapshot;
         private bool _shoutTradeActionOnly;
@@ -63,7 +64,7 @@ namespace AnimusForge
         private static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int agent, int limit) => new() { "history" };
     }
     public class ShoutTextInputPopup { private object _dataSource; private void Close(bool silent) { } }
-    public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public void ExecuteSubmit() { } public void ExecuteCancel() { } }
+    public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public bool IsIllustrationVisible => false; public bool CanIllustrate => false; public string IllustrationButtonText => ""; public void ExecuteIllustrate() { } public void ExecuteSubmit() { } public void ExecuteCancel() { } }
     public static class AnimusForgeNativeConversationOverlay { public static void CloseActive() { } }
     public static class LordEncounterBehavior { public static void PreparePlayerRequestedNativeConversationLeave() { } }
 }
