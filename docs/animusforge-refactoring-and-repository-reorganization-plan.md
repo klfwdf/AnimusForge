@@ -1,7 +1,7 @@
 <a id="news-and-capture-deploy-20261008"></a>
-# 截图修复、随机配图与外交降分已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+# 截图修复、随机配图与外交降分已部署并推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
-- 用户最新明确授权“部署”。部署源码 `5790cd608949c7bb78512220974a5bc572ddad8f`，含截图采集/黑图拦截 `1cfa75456`、快报大事件配图抽选 `f3574ab59`、外交评分 `932562c8d`（结盟45/解盟40/宣言30）。本条取代这些任务的未部署状态，未推送状态保持。
+- 用户最新明确授权“部署”。部署源码 `5790cd608949c7bb78512220974a5bc572ddad8f`，含截图采集/黑图拦截 `1cfa75456`、快报大事件配图抽选 `f3574ab59`、外交评分 `932562c8d`（结盟45/解盟40/宣言30）。本条取代这些任务的未部署状态；用户随后追加“提交推送”，8个待推提交已普通推送至origin/main，独立ls-remote确认438180a96ba4f974e63c783749207174f5c7c7c0；本次文档同步作为后续提交一并推送。出站19个blob检查通过，两个空NuGet缓存标记保留本地。推送证据见同目录push.log、push-audit.json和remote-confirmation.json。
 - 复用最后完成原双API/Bootstrap/双接缝的隔离构建，5582构建输入与当前源码一致、三DLL哈希与构建收据一致；原deploy_module.ps1事务exit0，更新9文件，3380 Stage文件与安装目录逐项SHA一致，9份旧文件备份验证通过。游戏目录 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，未更改原版DLL/玩家配置/存档/画廊/模型或未知文件。
 - 恢复点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-0e79362ea15046ffb42ec7c4111f77fd`，complete；按manifest逐文件校验并恢复备份，禁止整体回滚游戏目录。证据 `artifacts/news-and-capture-deploy-20261008/receipt.json`、source-check.json、deploy.log/exit。本交接为后续文档提交，未再重编产品。
 - NOT-RUN：实机无UI前后平视截图、黑图成因的GPU复现/相机恢复、快报题材分布及模型输出。本轮未启动游戏、付费请求、打包或推送；先前离线通过不代替真实画面验收。
