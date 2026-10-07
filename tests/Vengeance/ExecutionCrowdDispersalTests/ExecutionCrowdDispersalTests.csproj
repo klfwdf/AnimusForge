@@ -12,6 +12,7 @@
     <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdWalkAwayBehavior.cs" Link="ExecutionCrowdWalkAwayBehavior.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdDispersalSchedule.cs" Link="ExecutionCrowdDispersalSchedule.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/TownExecutionMissionBehavior.Crowd.cs" Link="TownExecutionMissionBehavior.Crowd.cs" />
+    <Compile Include="../../../Vengeance/Source/Scene/TownExecutionMissionBehavior.Escorts.cs" Link="TownExecutionMissionBehavior.Escorts.cs" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="ExecutionEnums.cs" />
   </ItemGroup>
 </Project>

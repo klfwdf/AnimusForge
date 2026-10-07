@@ -1304,7 +1304,17 @@ public sealed partial class TownExecutionMissionBehavior
             buildData = buildData.BodyProperties(bodyPropertiesOverride.Value);
         }
 
-        var agent = Mission.SpawnAgent(buildData, spawnFromAgentVisuals: false);
+        Agent agent;
+        var wasSpawningExecutionAgent = _spawningExecutionAgent;
+        _spawningExecutionAgent = true;
+        try
+        {
+            agent = Mission.SpawnAgent(buildData, spawnFromAgentVisuals: false);
+        }
+        finally
+        {
+            _spawningExecutionAgent = wasSpawningExecutionAgent;
+        }
         agent.Controller = AgentControllerType.None;
         if (invulnerable)
         {

@@ -222,4 +222,116 @@ owned.Component.AgentNavigator.SetTarget(foreignTarget);
 takeoverOwner.Exit();
 Check(oldPoint.MovingAgent==other,"exit preserves another occupant");
 Check(owned.Component.AgentNavigator.TargetUsableMachine==foreignTarget,"exit preserves foreign navigation target");
+var escorts = new TownExecutionMissionBehavior();
+var companion = escorts.AddEscort(); var soldier = escorts.AddEscort();
+var nativePlayer = escorts.AddEscort(); nativePlayer.Controller = AgentControllerType.Player;
+escorts.Mission.MainAgent = nativePlayer;
+var mount = escorts.AddEscort(); mount.IsHuman = false;
+var foreign = escorts.AddEscort(new Team());
+var inactiveEscort = escorts.AddEscort(); inactiveEscort.Active = false;
+var otherOwner = escorts.AddEscort(); otherOwner.Controller = AgentControllerType.None;
+var ceremonyActor = escorts.AddEscort(); escorts.RegisterActor(ceremonyActor);
+escorts.OnAgentBuild(companion, null);
+Check(companion.Controller == AgentControllerType.AI, "builder stage leaves escort AI untouched");
+escorts.HoldEscorts();
+Check(companion.Controller == AgentControllerType.None && soldier.Controller == AgentControllerType.None,
+    "existing companion and selected soldier cannot attack hostile prisoner");
+Check(nativePlayer.Controller == AgentControllerType.Player && mount.Controller == AgentControllerType.AI &&
+    foreign.Controller == AgentControllerType.AI && inactiveEscort.Controller == AgentControllerType.AI &&
+    otherOwner.Controller == AgentControllerType.None && ceremonyActor.Controller == AgentControllerType.AI,
+    "player mount foreign team inactive other owner and ceremony actors excluded");
+Check(companion.Team == escorts.EscortTeam && companion.MovementReleaseCount == 0 && companion.ClearCount == 0,
+    "escort retains team formation and navigation state");
+escorts.OnAgentBuild(companion, null);
+Check(companion.ControllerChanges == 2, "duplicate build notification never captures suspended state");
+var arriving = escorts.AddEscort(); escorts.OnAgentBuild(arriving, null);
+Check(arriving.Controller == AgentControllerType.None, "late arrival suspended through production OnAgentBuild");
+var assignedLater = escorts.AddEscort(new Team()); var unassignedTeam = assignedLater.Team;
+escorts.OnAgentBuild(assignedLater, null);
+Check(assignedLater.Controller == AgentControllerType.AI, "unassigned late arrival remains outside player escort scope");
+assignedLater.Team = escorts.EscortTeam;
+escorts.OnAgentTeamChanged(unassignedTeam, assignedLater.Team, assignedLater);
+Check(assignedLater.Controller == AgentControllerType.None, "post-spawn native player-team assignment also suspends escort");
+var generated = escorts.AddEscort(); escorts.GenerateActor(generated);
+Check(generated.Controller == AgentControllerType.AI, "synchronous generated actor callback excluded before registration");
+Check(!escorts.RestoreEscorts() && companion.Controller == AgentControllerType.None,
+    "waiting stage cannot return escort to combat AI");
+escorts.State = ExecutionSessionState.Aftermath;
+escorts.Ready(player: false);
+Check(!escorts.RestoreEscorts(), "partial aftermath retains escort control");
+escorts.Ready();
+Check(!escorts.RestoreEscorts() && companion.Controller == AgentControllerType.None,
+    "living hostile frozen victim blocks escort release");
+escorts.SafeVictim();
+Check(escorts.RestoreEscorts() && companion.Controller == AgentControllerType.AI &&
+    soldier.Controller == AgentControllerType.AI && arriving.Controller == AgentControllerType.AI,
+    "safe aftermath restores existing and late escort AI");
+int restoredChanges = companion.ControllerChanges;
+Check(escorts.RestoreEscorts() && companion.ControllerChanges == restoredChanges, "escort restoration idempotent");
+var afterRelease = escorts.AddEscort(); escorts.OnAgentBuild(afterRelease, null);
+Check(afterRelease.Controller == AgentControllerType.AI, "safe aftermath new arrivals stay under native control");
+Check(assignedLater.Controller == AgentControllerType.AI, "post-spawn assigned escort also restored");
+var deadVictimOwner = new TownExecutionMissionBehavior(); var deadVictimEscort = deadVictimOwner.AddEscort();
+deadVictimOwner.HoldEscorts(); deadVictimOwner.State = ExecutionSessionState.Aftermath;
+deadVictimOwner.Ready(); deadVictimOwner.SafeVictim(inactive: true);
+Check(deadVictimOwner.RestoreEscorts() && deadVictimEscort.Controller == AgentControllerType.AI,
+    "removed victim allows normal escort release");
+foreach (string ending in new[] { "cancel", "early exit", "remove behavior" })
+{
+    var owner = new TownExecutionMissionBehavior(); var escort = owner.AddEscort(); owner.HoldEscorts();
+    Check(owner.RestoreEscorts(force: true) && escort.Controller == AgentControllerType.AI,
+        ending + " forced restoration bypasses live hostile victim");
+}
+var taken = new TownExecutionMissionBehavior();
+var transferred = taken.AddEscort(); var controlled = taken.AddEscort(); var removedEscort = taken.AddEscort();
+taken.HoldEscorts(); transferred.Team = new Team(); controlled.Controller = AgentControllerType.Player; removedEscort.Active = false;
+Check(taken.RestoreEscorts(force: true) && transferred.Controller == AgentControllerType.None &&
+    controlled.Controller == AgentControllerType.Player && removedEscort.Controller == AgentControllerType.None,
+    "team takeover player takeover and removed agents never overwritten");
+var teamRoundtrip = new TownExecutionMissionBehavior(); var teamMovedEscort = teamRoundtrip.AddEscort(); teamRoundtrip.HoldEscorts();
+var originalEscortTeam = teamMovedEscort.Team; teamMovedEscort.Team = new Team();
+teamRoundtrip.OnAgentTeamChanged(originalEscortTeam, teamMovedEscort.Team, teamMovedEscort);
+var takeoverTeam = teamMovedEscort.Team; teamMovedEscort.Team = originalEscortTeam;
+teamRoundtrip.OnAgentTeamChanged(takeoverTeam, originalEscortTeam, teamMovedEscort);
+Check(teamRoundtrip.RestoreEscorts(force: true) && teamMovedEscort.Controller == AgentControllerType.None,
+    "team change away and back relinquishes old snapshot instead of reviving another owner");
+var restoreRetry = new TownExecutionMissionBehavior(); var restoreFailure = restoreRetry.AddEscort();
+var restoreHealthy = restoreRetry.AddEscort(); restoreRetry.HoldEscorts(); restoreFailure.ThrowOnController = true;
+Check(!restoreRetry.RestoreEscorts(force: true) && restoreHealthy.Controller == AgentControllerType.AI,
+    "one native restore failure cannot strand healthy escorts");
+restoreFailure.ThrowOnController = false;
+Check(restoreRetry.RestoreEscorts(force: true) && restoreFailure.Controller == AgentControllerType.AI,
+    "native restore failure retains snapshot for retry");
+var arrivalFailure = new TownExecutionMissionBehavior(); var alreadyHeld = arrivalFailure.AddEscort(); arrivalFailure.HoldEscorts();
+var brokenArrival = arrivalFailure.AddEscort(); brokenArrival.ThrowOnController = true;
+arrivalFailure.OnAgentBuild(brokenArrival, null);
+Check(arrivalFailure.State == ExecutionSessionState.Cancelled && alreadyHeld.Controller == AgentControllerType.AI,
+    "failed arrival suspension cancels pre-lethal scene and releases earlier escorts");
+var victimTransfer = new TownExecutionMissionBehavior(); victimTransfer.HoldEscorts();
+var hostileVictimTeam = victimTransfer.ExecutionVictim.Team;
+victimTransfer.ExecutionVictim.Controller = AgentControllerType.AI;
+victimTransfer.SafeVictim();
+victimTransfer.OnAgentTeamChanged(hostileVictimTeam, victimTransfer.ExecutionVictim.Team, victimTransfer.ExecutionVictim);
+Check(victimTransfer.ExecutionVictim.Controller == AgentControllerType.AI,
+    "prisoner transfer to player team never becomes an escort snapshot");
+
+// Narrow wiring checks complement the production partial replay. They do not
+// pretend these fake callbacks execute the real full scene/death owner.
+string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+while (!File.Exists(Path.Combine(root, "AnimusForge.csproj"))) root = Directory.GetParent(root)!.FullName;
+string SceneSource(string name) => File.ReadAllText(Path.Combine(root, "Vengeance/Source/Scene/" + name));
+string sceneSource = SceneSource("TownExecutionMissionBehavior.Scene.cs");
+int suspensionIndex = sceneSource.IndexOf("SuspendExistingExecutionEscorts();", StringComparison.Ordinal);
+int victimSpawnIndex = sceneSource.IndexOf("TrySpawnOriginalHeroVictim(facing", StringComparison.Ordinal);
+Check(suspensionIndex >= 0 && victimSpawnIndex > suspensionIndex, "production escort suspension precedes victim spawn");
+Check(SceneSource("TownExecutionMissionBehavior.Death.cs").Contains("RestoreExecutionEscortControl();"),
+    "real aftermath consumer restores escorts");
+Check(SceneSource("TownExecutionMissionBehavior.Lifecycle.cs").Contains("RestoreExecutionEscortControl(force: true);"),
+    "shared cancellation and teardown cleanup force restoration");
+string placementSource = SceneSource("TownExecutionMissionBehavior.Placement.cs");
+Check(placementSource.Contains("_spawningExecutionAgent = true;") &&
+    placementSource.Contains("_spawningExecutionAgent = wasSpawningExecutionAgent;"),
+    "real generated spawn sets and restores escort exclusion guard");
+Check(!SceneSource("TownExecutionMissionBehavior.cs").Contains("SuspendExistingExecutionEscorts();"),
+    "mission tick does not rescan escorts");
 Console.WriteLine($"TOTAL {checks}");

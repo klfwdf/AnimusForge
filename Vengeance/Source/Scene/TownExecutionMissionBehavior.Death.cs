@@ -1773,6 +1773,7 @@ public sealed partial class TownExecutionMissionBehavior
                 RexLog.Error("Could not release the execution session; aftermath cleanup will retry.", exception);
             }
         }
+        RestoreExecutionEscortControl();
     }
 
     private bool HasDynamicAgentClearance(Agent player, Vec3 position)
