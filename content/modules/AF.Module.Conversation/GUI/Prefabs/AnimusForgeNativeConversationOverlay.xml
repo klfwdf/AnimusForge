@@ -20,13 +20,19 @@
           </Children>
         </ButtonWidget>
 
-        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="EditPersona" IsEnabled="true" IsVisible="@IsPersonaEditVisible" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="230" MarginRight="60">
+        <ButtonWidget Id="AnimusForgeConversationIllustrateButton" DoNotPassEventsToChildren="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="ShowIllustration" IsVisible="@IsIllustrationAvailable" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="230" MarginRight="60">
+          <Children>
+            <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="场景插画" Brush.FontSize="26" />
+          </Children>
+        </ButtonWidget>
+
+        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="EditPersona" IsEnabled="true" IsVisible="@IsPersonaEditVisible" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="280" MarginRight="60">
           <Children>
             <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="@PersonaEditButtonText" Brush.FontSize="26" />
           </Children>
         </ButtonWidget>
 
-        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="OpenTagTest" IsEnabled="true" IsVisible="@IsTagTestVisible" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="280" MarginRight="60">
+        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="OpenTagTest" IsEnabled="true" IsVisible="@IsTagTestVisible" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="330" MarginRight="60">
           <Children>
             <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="@TagTestButtonText" Brush.FontSize="26" />
           </Children>

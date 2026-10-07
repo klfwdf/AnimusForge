@@ -5,6 +5,10 @@ namespace AnimusForge;
 
 public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 {
+    private readonly Func<bool> _illustrationAvailable;
+    private readonly Action _onIllustration;
+    [DataSourceProperty] public bool IsIllustrationAvailable => _illustrationAvailable?.Invoke() == true;
+    public void ShowIllustration() { if (IsIllustrationAvailable) _onIllustration?.Invoke(); }
 	private readonly Action<string> _onSubmit;
 
 	private readonly Action _onSwitchTalk;
@@ -227,8 +231,11 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		}
 	}
 
-	public AnimusForgeNativeConversationOverlayVM(Action<string> onSubmit, Action onSwitchTalk, Action onShowHistory, Action onGiveShow, Action onEditPersona, Action onTagTest)
+	public AnimusForgeNativeConversationOverlayVM(Action<string> onSubmit, Action onSwitchTalk, Action onShowHistory, Action onGiveShow, Action onEditPersona, Action onTagTest,
+        Func<bool> illustrationAvailable = null, Action onIllustration = null)
 	{
+        _illustrationAvailable = illustrationAvailable;
+        _onIllustration = onIllustration;
 		_onSubmit = onSubmit;
 		_onSwitchTalk = onSwitchTalk;
 		_onShowHistory = onShowHistory;

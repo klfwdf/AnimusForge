@@ -104,7 +104,14 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	private AnimusForgeNativeConversationOverlay(ScreenBase screen)
 	{
 		_screen = screen;
-		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested, HandleEditPersonaRequested, HandleTagTestRequested);
+		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested, HandleEditPersonaRequested, HandleTagTestRequested,
+            DialogueUI.Native.IllustratorBridge.IsAvailable, () => {
+                if (_isClosed) return;
+                _mainThreadActions.Enqueue(() => {
+                    if (!_isClosed && ReferenceEquals(_screen, ScreenManager.TopScreen) && ShoutBehavior.CanSubmitNativeConversationForExternal())
+                        DialogueUI.Native.IllustratorBridge.Invoke();
+                });
+            });
 		_layer = new GauntletLayer("AnimusForgeNativeConversationOverlay", 350, false);
 	}
 

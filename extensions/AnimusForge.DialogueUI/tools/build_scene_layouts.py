@@ -49,13 +49,21 @@ def text(parent, value, x, y, w, h, size=14, color=INK, align='Left', valign='Ce
 
 
 def button(parent, bid, label, command, x, y, w, h, size=14, color=INK, **attrs):
+    # Dark engraved plates need bright outlined lettering; parchment tabs keep their ink.
+    readable = (bid.startswith(('AFPlate', 'AFPlaque')) or bid in {
+        'AFRowHistory', 'AFRowGift', 'AFRowCodex', 'AFRowIllustrate', 'AFRowLeave', 'AFRowSend', 'AFRowInterrupt',
+        'SceneIllustrationButton', 'AFShoutCodex', 'AFShoutSubmit', 'AFShoutCancel',
+        'AFDialogueShoutHistory', 'AFDialogueShoutSubmit'})
+    if readable:
+        size, color = max(size, 17), '#FFF4D6FF'
     b = el(parent, 'ButtonWidget', Id=bid, WidthSizePolicy='Fixed', HeightSizePolicy='Fixed', SuggestedWidth=w, SuggestedHeight=h,
            HorizontalAlignment='Left', VerticalAlignment='Top', MarginLeft=x, MarginTop=y, Brush='Popup.Cancel.Button',
            DoNotAcceptEvents='false', DoNotPassEventsToChildren='true', UpdateChildrenStates='true', Command__Click=command, **attrs)
     if label is not None:
         el(children(b), 'TextWidget', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', Text=label,
            Brush='Popup.Button.Text', DoNotAcceptEvents='true', Brush__FontSize=size, Brush__FontColor=color,
-           Brush__TextHorizontalAlignment='Center', Brush__TextVerticalAlignment='Center')
+           Brush__TextHorizontalAlignment='Center', Brush__TextVerticalAlignment='Center',
+           **({'Brush.TextOutlineAmount': '0.8', 'Brush.TextOutlineColor': '#201006FF'} if readable else {}))
     return b
 
 

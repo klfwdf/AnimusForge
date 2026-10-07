@@ -34,7 +34,7 @@ namespace AnimusForge.Illustrator.Core
         // New: conversation_1003-222530_3f9a. Legacy (still pruned): 20261003T142530_<32 hex>.
         // Not RegexOptions.Compiled: it runs at most twice per generation, and compiling would cost more on first use.
         private static readonly Regex RecordName = new Regex(
-            @"^((encyclopedia|conversation|weekly_report)_\d{4}-\d{6}_[a-f0-9]{4}|\d{8}T\d{6}_[a-f0-9]{32})$");
+            @"^((encyclopedia|conversation|weekly_report|general)_\d{4}-\d{6}_[a-f0-9]{4}|\d{8}T\d{6}_[a-f0-9]{32})$");
         private static readonly HashSet<string> Active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private readonly object _gate = new object();
         private readonly GenerationDiagnostics _previous;
@@ -55,7 +55,7 @@ namespace AnimusForge.Illustrator.Core
         private GenerationDiagnostics(string campaign, string category, string root)
         {
             // The name must match RecordName, otherwise retention would never prune it.
-            if (category != "encyclopedia" && category != "conversation" && category != "weekly_report")
+            if (category != "encyclopedia" && category != "conversation" && category != "weekly_report" && category != "general")
                 throw new ArgumentException("Unsupported diagnostic category.", nameof(category));
             // Short readable name: category + local MMdd-HHmmss + 4-hex suffix, e.g. conversation_1003-222530_3f9a.
             // Year is omitted on purpose; retention is 12 records and pruning orders by creation time, not by name.
@@ -93,7 +93,7 @@ namespace AnimusForge.Illustrator.Core
 
         internal static GenerationDiagnostics Begin(string campaign, string category)
         {
-            if (category != "encyclopedia" && category != "conversation" && category != "weekly_report") return null;
+            if (category != "encyclopedia" && category != "conversation" && category != "weekly_report" && category != "general") return null;
             try { return new GenerationDiagnostics(campaign, category, Path.Combine(DiskImageCacheManager.CacheRoot, "Diagnostics")); }
             catch (Exception ex) { WriteDelivery(null, "diagnostics_unavailable", ex.GetType().Name); return null; }
         }

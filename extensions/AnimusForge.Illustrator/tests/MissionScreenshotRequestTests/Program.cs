@@ -286,6 +286,34 @@ internal static class Program
         history.GetMethod("Reset", AllInstance).Invoke(owner, null);
         Check((string)capture.Invoke(owner, null) == "", "new mission history empty after owner reset");
     }
+
+    private static void PresentationContracts()
+    {
+        Type vm = _dll.GetType("AnimusForge.AnimusForgeNativeConversationOverlayVM", true);
+        bool enabled = true; int calls = 0;
+        object host = Activator.CreateInstance(vm, new object[] { null, null, null, null, null, null,
+            (Func<bool>)(() => enabled), (Action)(() => calls++) });
+        Check(Get<bool>(host, "IsIllustrationAvailable"), "original UI illustration available without skin dependency");
+        vm.GetMethod("ShowIllustration").Invoke(host, null);
+        Check(calls == 1, "original UI command reaches supplied callback once");
+        enabled = false; vm.GetMethod("ShowIllustration").Invoke(host, null);
+        Check(!Get<bool>(host, "IsIllustrationAvailable") && calls == 1, "disabled illustrator cannot execute from original UI");
+        Type card = _dll.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardVM", true);
+        object readOnlyCard = Activator.CreateInstance(card, new object[] { (Action)(() => calls++), null, null, null });
+        card.GetMethod("SetLoading").Invoke(readOnlyCard, new object[] { "正在导演推演" });
+        Check(Get<bool>(readOnlyCard, "IsLoading") && !Get<bool>(readOnlyCard, "CanRegenerate"), "joined screenshot progress disables duplicate generation");
+        card.GetMethod("SetReady").Invoke(readOnlyCard, new object[] { "生图失败：测试错误" });
+        Check(!Get<bool>(readOnlyCard, "IsLoading") && Get<string>(readOnlyCard, "StatusText").Contains("测试错误"), "error ends busy presentation with explicit reason");
+        Check(!Get<bool>(readOnlyCard, "CanRegenerate") && !Get<bool>(readOnlyCard, "CanRegenerateWithPrompt"), "subscriber card cannot initiate unowned generation");
+        object normalCard = Activator.CreateInstance(card, new object[] { null, (Action)(() => calls++), null, null });
+        Check(Get<bool>(normalCard, "CanRegenerate"), "existing manual card retains regenerate");
+        card.GetMethod("SetLoading").Invoke(normalCard, new object[] { "忙碌" });
+        Check(!Get<bool>(normalCard, "CanRegenerate"), "normal card blocks regenerate while busy");
+        Type diagnostics = _dll.GetType("AnimusForge.Illustrator.Core.GenerationDiagnostics", true);
+        var names = (System.Text.RegularExpressions.Regex)diagnostics.GetField("RecordName", AllStatic).GetValue(null);
+        Check(names.IsMatch("general_1008-062342_abcd") && names.IsMatch("conversation_1008-062342_abcd")
+            && !names.IsMatch("unbounded_unknown_1008-062342_abcd"), "new screenshot diagnostics participate in existing bounded retention");
+    }
     public static int Main(string[] args)
     {
         try
@@ -303,7 +331,7 @@ internal static class Program
                 using (var http = new HttpClient(handler))
                 {
                     field.SetValue(null, http);
-                    try { ImageContracts(handler); ChatSchemaContracts(handler); NativeGeminiContracts(handler); NativeProtocolContracts(); DirectorContracts(handler, http); DialogueContracts(); }
+                    try { ImageContracts(handler); ChatSchemaContracts(handler); NativeGeminiContracts(handler); NativeProtocolContracts(); DirectorContracts(handler, http); DialogueContracts(); PresentationContracts(); }
                     finally { field.SetValue(null, previous); }
                 }
             }

@@ -15,6 +15,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal bool HasEditableImage;
         internal void SetEditableImage(bool value) { HasEditableImage = value; OnPropertyChanged(nameof(CanRegenerateBasedOnImage)); }
         [DataSourceProperty] public bool CanRegenerateBasedOnImage => HasEditableImage && HasIllustration && !IsLoading && OnRegenerateBasedOnImage != null;
+        [DataSourceProperty] public bool CanRegenerate => !IsLoading && _onRegenerate != null;
         public void ExecuteRegenerateBasedOnImage()
         {
             if (!CanRegenerateBasedOnImage) return;
@@ -109,6 +110,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     _hasIllustration = value;
                     OnPropertyChangedWithValue(value, nameof(HasIllustration));
                     OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
+                    OnPropertyChanged(nameof(CanRegenerate));
                 }
             }
         }
@@ -123,6 +125,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _isLoading = value;
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
+                    OnPropertyChanged(nameof(CanRegenerate));
                     OnPropertyChanged(nameof(CanExecuteSceneProbe));
                     OnPropertyChanged(nameof(CanRegenerateWithPrompt));
                     OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
@@ -182,7 +185,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         public void ExecuteRegenerate()
         {
-            if (IsLoading) return;
+            if (!CanRegenerate) return;
             try { _onRegenerate?.Invoke(); }
             catch (Exception ex) { SetReady("生成准备失败：" + ex.Message); }
         }

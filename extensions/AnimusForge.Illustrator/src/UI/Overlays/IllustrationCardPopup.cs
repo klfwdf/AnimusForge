@@ -42,6 +42,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly bool _autoFullscreen;
         private string _activeSpriteName;
         private bool _closed;
+        private TaleWorlds.MountAndBlade.Mission _screenshotMission;
         private int _generationCount;
         private int _cacheLoadVersion;
         private IllustrationScope _joinedGeneration;
@@ -123,14 +124,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 current.DirectorOnlyFacts + (session.SceneDirectorNote ?? string.Empty), current.PlayerRedrawPrompt);
         }
 
-        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action<string> onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false)
+        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action<string> onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false, bool missionScreenshot = false)
         {
             _screen = screen;
             _category = category;
             _autoFullscreen = autoFullscreen;
             _onRegenerate = onRegenerate;
-            _dataSource = new IllustrationCardVM(Close, () => Regenerate(null), onSceneProbe, OpenRedrawPromptEditor);
-            _dataSource.OnRegenerateBasedOnImage = OpenCurrentImageEditor;
+            _dataSource = new IllustrationCardVM(Close, onRegenerate == null ? (Action)null : () => Regenerate(null), onSceneProbe,
+                missionScreenshot ? (Action)null : OpenRedrawPromptEditor);
+            _dataSource.OnRegenerateBasedOnImage = missionScreenshot ? (Action)null : OpenCurrentImageEditor;
             var layer = new MovableGauntletLayer(autoFullscreen ? "IllustrationFullscreenOverlay" : "IllustrationCardOverlay", autoFullscreen ? 4020 : 4015, false);
             _layer = layer;
             try
@@ -152,7 +154,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             // only its actual buttons participate in mouse hit testing.
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
             _layer = layer;
-            _scope = new IllustrationScope(screen, category, Close);
+            _scope = new IllustrationScope(screen, category, Close, missionOwned: missionScreenshot);
             IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
 
             try
@@ -176,6 +178,36 @@ namespace AnimusForge.Illustrator.UI.Overlays
             ++_cacheLoadVersion; // invalidate a cache read that may otherwise overwrite the new result
             _dataSource.SetLoading("画卷正在后台生成，可关闭面板，完成后会通知并更新画廊。");
             return true;
+        }
+
+        // A presentation-only subscriber. Closing this card never cancels the mission generation owner.
+        internal static void ShowForMissionScreenshot(IllustrationScope generation, string subjectKey,
+            TaleWorlds.MountAndBlade.Mission mission, string status)
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (generation == null || !generation.IsCurrent || !ReferenceEquals(TaleWorlds.MountAndBlade.Mission.Current, mission)) return;
+            IllustrationCardPopup popup = null;
+            try
+            {
+                _activeInstance?.Close();
+                var screen = ScreenManager.TopScreen;
+                popup = new IllustrationCardPopup(screen, "EncyclopediaIllustrationOverlay", "general", null, missionScreenshot: true);
+                popup._screenshotMission = mission;
+                popup._joinedGeneration = generation;
+                popup._joinedSubjectKey = subjectKey;
+                popup._dataSource.TitleText = "场景画卷";
+                popup._dataSource.SetLoading(status + " 可关闭面板，完成后自动保存到画廊。");
+                screen.AddLayer(popup._layer);
+                _activeInstance = popup;
+            }
+            catch { popup?.Close(); throw; }
+        }
+
+        internal static void UpdateMissionScreenshotStatus(IllustrationScope generation, string status)
+        {
+            var popup = _activeInstance;
+            if (popup == null || popup._closed || popup._screenshotMission == null || !ReferenceEquals(popup._joinedGeneration, generation)) return;
+            popup._dataSource.StatusText = status;
         }
 
         private void Regenerate(string playerPrompt)
@@ -1081,7 +1113,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal static void TickSystemUiVisibility()
         {
             var instance = _activeInstance;
-            if (instance == null || instance._closed || !instance._autoFullscreen) return;
+            if (instance == null || instance._closed) return;
+            if (instance._screenshotMission != null && (!ReferenceEquals(TaleWorlds.MountAndBlade.Mission.Current, instance._screenshotMission)
+                || instance._screenshotMission.MissionEnded || !instance._scope.IsCurrent))
+            {
+                instance.Close();
+                return;
+            }
+            if (!instance._autoFullscreen) return;
             bool hide = instance.IsSystemUiCovering();
             if (hide == instance._hiddenForSystemUi) return;
             instance._hiddenForSystemUi = hide;

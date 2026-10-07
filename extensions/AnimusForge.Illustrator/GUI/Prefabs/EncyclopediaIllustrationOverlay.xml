@@ -54,7 +54,7 @@
 
         <!-- 底部功能按钮条 -->
         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="62" LayoutImp.LayoutMethod="HorizontalLeftToRight"><Children>
-<ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="92" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
+<ButtonWidget IsEnabled="@CanRegenerate" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="92" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
               <Children>
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="重新绘制" DoNotAcceptEvents="true" />
               </Children>

@@ -10,7 +10,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Engine;
-using AnimusForge.Illustrator.UI.Gallery;
+using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator.Core
 {
@@ -24,6 +24,7 @@ namespace AnimusForge.Illustrator.Core
         private static InputKey _shoutKey = InputKey.T, _menuKey = InputKey.Y;
         private static bool _lastAvailable;
         private static Mission _lastMission;
+        private static Action _openProgress;
         internal static void Install()
         {
             ShoutBehavior.SceneIllustrationAvailableHook = () => IllustratorRuntime.IsMainThread && IllustratorRuntime.IsEnabled() && Mission.Current != null;
@@ -41,6 +42,12 @@ namespace AnimusForge.Illustrator.Core
                 ShoutBehavior.NotifySceneIllustrationChangedForExternal();
             }
             _capture?.Tick();
+            if (_capture?.Completion.IsCompleted == true && _openProgress != null)
+            {
+                Action open = _openProgress; _openProgress = null;
+                try { open(); }
+                catch (Exception ex) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败：" + ex.Message)); }
+            }
             // Campaign owns its existing hotkeys. Custom battles have no CampaignBehavior owner.
             if (Campaign.Current != null || Mission.Current == null || !IllustratorRuntime.IsEnabled()
                 || !ShoutBehavior.IsSceneIllustrationBattleForExternal || ShoutTextInputPopup.IsOpen
@@ -68,6 +75,7 @@ namespace AnimusForge.Illustrator.Core
         {
             _statusMission = ReferenceEquals(Mission.Current, mission) ? mission : null;
             _status = status;
+            IllustrationCardPopup.UpdateMissionScreenshotStatus(_scope, status);
             ShoutBehavior.NotifySceneIllustrationChangedForExternal();
         }
 
@@ -112,6 +120,12 @@ namespace AnimusForge.Illustrator.Core
             _capture = capture;
             SetStatus(mission, "正在采集两张截图，完成后恢复原画面…");
             _scope = scope;
+            // Open only after capture restores the UI/camera. Never put the waiting card into a screenshot.
+            _openProgress = () => {
+                if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded
+                    && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
+                    IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, "双截图采集已结束，正在准备画卷…");
+            };
             try
             {
                 bool started = scope.RunGeneration(subject, null, async token =>
@@ -150,16 +164,14 @@ namespace AnimusForge.Illustrator.Core
                             directorFallbackReason: direction.FallbackReason, styleFingerprint: options.StyleFingerprint,
                             generationMode: battle ? "battle_screenshots" : "scene_shout_screenshots");
                         if (saved == null) throw new InvalidOperationException("成图未能保存到画廊。");
+                        // Disk save returns metadata only. Carry this request's bytes to the waiting
+                        // card subscriber; never decode/read the cache on the UI thread.
+                        saved.ImageData = image.ImageBytes;
                         return saved;
                     }
                 }, saved =>
                 {
                     Finish(scope, capture, mission, "插画已保存到画廊。");
-                    if (ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
-                        IllustratorRuntime.PostCritical(() => {
-                            if (ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
-                                IllustratorGalleryPopup.Show(saved.Key);
-                        });
                 }, error => Finish(scope, capture, mission, "生图失败：" + error), value => value, _ => "成图保存失败。");
                 if (!started) Finish(scope, capture, mission, "生图任务繁忙，请等待已有任务完成。");
             }
@@ -187,7 +199,8 @@ namespace AnimusForge.Illustrator.Core
             capture.Cancel("双截图采集已结束。");
             if (ReferenceEquals(_scope, scope))
             {
-                _scope = null; _capture = null; SetStatus(mission, status);
+                SetStatus(mission, status);
+                _scope = null; _capture = null; _openProgress = null;
                 InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + status));
             }
             scope.Close();
@@ -196,7 +209,7 @@ namespace AnimusForge.Illustrator.Core
         {
             capture?.Cancel("截图生图已取消（生图关闭或宿主切换）。");
             if (!ReferenceEquals(_scope, scope)) return;
-            _scope = null; _capture = null;
+            _scope = null; _capture = null; _openProgress = null;
             SetStatus(mission, "截图生图已取消（生图关闭或宿主切换）。");
             InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + _status));
         }
@@ -204,6 +217,7 @@ namespace AnimusForge.Illustrator.Core
         {
             _capture?.Cancel("生图宿主已切换，采集终止。");
             _capture = null;
+            _openProgress = null;
             _scope?.Close();
             _scope = null;
             _status = ""; _statusMission = null;
