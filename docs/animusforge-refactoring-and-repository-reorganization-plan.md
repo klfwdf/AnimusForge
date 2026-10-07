@@ -1,3 +1,12 @@
+<a id="all-session-deploy-push-20261008"></a>
+# 全会话改动统一部署与推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
+
+- 用户明确授权“包括其他会话的改动部署提交推送”。产品源码快照为 `4cfcbc8e5135493dcc1567ea69e0f29dd71b96ce`，含已提交的场景生图等待卡片/按钮、原版正文滚动/Esc、前后平视机位、战役T键框选、MCM全屏默认及此前全部其他会话主线改动。本条替代以上任务“未部署/未推送”状态；实机验收仍未完成。
+- 复用最终已通过原脚本的隔离双API/Bootstrap/双接缝构建；当前30286个源码/资源/构建输入与该快照逐文件一致，默认全屏改动已包含最终构建。原 `deploy_module.ps1` 从该快照投影Stage并完成事务，exit0；更新16文件，3380个Stage文件与安装目录逐项SHA一致，16份旧文件备份复验通过。未修改构建流程，不打包或启动游戏。
+- 部署目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；恢复点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-682fe33147d04a16ad348eb45cf23087`（complete）。回滚应按manifest逐文件校验并恢复备份，不整体删除模块。玩家存档/配置/画廊/ONNX及未列入Stage的文件保持。
+- fetch后origin/main无新增，本地领先64提交。出站241个历史blob检查未发现明显token/private-key模式，明确排除的本地交接文件不在新增历史。常规push成功，独立ls-remote确认main=`4cfcbc8e5135493dcc1567ea69e0f29dd71b96ce`；本记录为后续文档提交，不改变已部署产品。两个空NuGet/Migrations/1标记未提交/未推送。
+- 完整证据 `artifacts/all-session-deploy-push-20261008/`：source-comparison.json、outgoing-audit.json、deploy.log/exit、deployment-receipt.json、push.log/exit和后续remote-confirmation.json。真实GPU双视角、战场框选/轮盘、MCM/对话UI与真实模型效果NOT-RUN；构建和哈希校验不能替代实机验收。
+
 <a id="scene-level-views-20261008"></a>
 # 前后平视参考图、战役T键框选和全屏默认值（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 

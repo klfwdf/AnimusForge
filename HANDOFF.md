@@ -1,3 +1,8 @@
+# 当前交接：全部已提交会话改动统一部署/推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
+
+- 用户授权全部会话改动部署提交推送。产品`4cfcbc8e`已部署且远端main独立确认一致；含对话UI/生图面板、前后平视、战役长按T框选和全屏默认。原双API/Bootstrap/接缝通过，30286构建输入一致；部署16文件、3380目标SHA与16备份通过。下方旧“未部署/未推送”条目由本条取代，实机仍待验。
+- [唯一部署/发布记录与恢复路径](docs/animusforge-refactoring-and-repository-reorganization-plan.md#all-session-deploy-push-20261008)，证据`artifacts/all-session-deploy-push-20261008/`。本交接仅记录授权已完成，不构成未来部署推送授权。空NuGet标记未纳入提交。
+
 # 当前交接：前后平视、战役长按框选、全屏默认（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `702d7a63f`：前后独立平视机位；战役长按T保留框选，有目标轮盘/无目标生图面板；生图MCM默认全屏覆盖，旧选择保留。双API/Bootstrap/接缝、输入22项、两DLL几何各12项PASS；实机未验，未部署。
