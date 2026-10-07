@@ -56,6 +56,18 @@ namespace AnimusForge.Illustrator.Core
             "莫桑艺术, 默兹河流域12世纪罗马式珐琅与手抄本彩饰风格, 景泰蓝式宝石级饱和平涂色块, 金色勾边与装饰性边框纹样, 拉长端庄的程式化人物造型, 浓重黑色轮廓线, 平面化叙事构图, Mosan art, Romanesque manuscript illumination, champleve enamel, jewel-like saturated flat colors, gold outlines, decorative borders",
             "photorealism, soft gradients, photographic lighting, cartoon, anime, 摄影光影");
 
+        private static readonly IllustrationStylePreset NarrativeAnime = new IllustrationStylePreset(
+            "日系半写实叙事插画，精致的动画人物造型与细腻的写实环境绘制融合。" +
+            "人物保持原有年龄、面容特征与正常人体比例，五官适度风格化，眼睛大小克制，表情细腻自然。" +
+            "细线描与绘画式明暗结合，轮廓线轻盈且随受光变化，头发以清楚的发束和少量细发丝塑形。" +
+            "以清晰的大块明暗表现体积，局部受光过渡柔和，肤色通透，衣褶具有方向、重量与层次，材质呈现可信的反光和纹理。" +
+            "色彩鲜活清透，以有层次的冷暖关系和饱和度差异组织画面，亮部明净，暗部保留色彩与细节。" +
+            "环境具有准确透视、精细材质与清楚的空间层次，远景通过适量空气透视拉开距离，关键人物与动作保持清晰。" +
+            "采用电影叙事式的视觉组织，人物与环境共用光源、投影和环境反光，整幅画面统一为精细数字绘画。" +
+            "昼夜、天气、光源方向、人物衣着和物体固有色服从本次场景事实；地点、人数、动作与机位由本次内容决定。",
+            null,
+            "chibi, oversized anime eyes, thick comic outlines, flat vector art, rough sketch, plastic skin, 3d game render, photographic rendering, heavy impasto, muddy colors, excessive bloom");
+
         private static readonly IllustrationStylePreset Vivid = new IllustrationStylePreset(
             "色彩鲜明、叙事清晰，材质与空间层次丰富可信", null, "dull colors, washed out, cartoon, anime", "vivid");
 
@@ -73,6 +85,7 @@ namespace AnimusForge.Illustrator.Core
                 case "dark-epic": return DarkEpic;
                 case "cinematic": return Cinematic;
                 case "mosan-art": return MosanArt;
+                case "narrative-anime": return NarrativeAnime;
                 case "vivid": return Vivid;
                 case "natural": return Natural;
                 case "classic-oil":
