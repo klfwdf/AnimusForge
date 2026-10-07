@@ -1,4 +1,10 @@
-﻿# 当前交接：Chat 生图比例字段 HTTP400 修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：删除外交回应倒计时提醒（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 按用户最终要求删除整条“等待回应、剩余X日”通知。最终产品 `53945643a` 替代中间仅抑制0日的 `b8073b253`；调用和生成方法均删除，普通回应/结果结算均静默，宣言通知、回应入口和原超时处理保持。
+- 最终外交3918专项PASS；最终隔离原双API/Bootstrap/双DLL接缝构建exit0。真实UI/战役未验，未Stage/部署/打包/推送；存档兼容字段保留，无新增扫描。
+- [唯一主台账、源码坐标和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-expired-reminder-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md)；最终证据 `artifacts/diplomacy-expired-reminder-20261008/receipt-final.json`。
+
+# 当前交接：Chat 生图比例字段 HTTP400 修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品68385c50，检查点e111ee1。通用Chat不再发送顶层aspect_ratio，尺寸/固定画幅提示、参考图与其他协议保持；完整URL只决定地址，旧版仍会发字段。
 - 原双API/Bootstrap/双接线及两实际DLL各61项请求检查通过，未调用外部/付费API或运行既有审计。玩家网关、真实比例/像素、MCM实机未验，未部署/打包/推送。

@@ -1,4 +1,14 @@
-﻿<a id="chat-aspect-schema-20261008"></a>
+﻿<a id="diplomacy-expired-reminder-20261008"></a>
+# 删除外交回应倒计时通知（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户最初反馈剩余0日仍催促，随后明确要求整条通知直接删除；后一要求替代仅抑制0日的方案。检查点 `b0d12bfaf`；中间产品 `b8073b253`（仅抑制0日），最终产品 `53945643a`（删除所有倒计时提醒）。保留其他作者UI/继续按钮修改。
+- 最终源码：`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:1506–1516` 的 ProcessRoundLifecycle 删除提醒调用，继续原 RoundApplication 生命周期和玩家回应调度；同目录 `WorldDiplomacyOrchestration.Recovery.cs` 删除整个 NotifyPlayerWaitRemaining。普通回应/结果结算在任何剩余天数均无此通知；外交宣言通知、回应入口、五日期限及原超时处理保持。
+- 性能：删除每轮每交涉的提醒检查、slot/机会枚举和文本生成，无新增Tick/请求/公共API/存档键。原 `PlayerWaitReminderDay` JSON字段保留以维持存档兼容，已无通知消费者；不重写玩家档。
+- 回归 `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/ConcurrentOralMigrationReplay.cs:263–284`：真实owner ProcessRoundLifecycle、假宿主，普通回应及结算等待，在剩余3/1/0与过期日重复调用都不通知。最终外交专项3918 PASS（含既有五日超时规则回归），191个输入SHA与验证manifest相同；不把假宿主视为实机。SDK8.0.421，仓内隔离net8工程链接生产文件，无方法体变换。
+- 中间0日版的 build.log、receipt.json、compiled/仅作历史；最终独立证据 diplomacy-no-reminder-1、build-final.log/exit、receipt-final.json、compiled-final/，code-map-final.json绑定最终入口。原双API/Bootstrap/双DLL接缝按最终提交在仓内 source-verified worktree复核exit0（1.3 v1.3.15.110062、1.4 v1.4.6.115628，Debug），9产物SHA与metadata核对通过；不Stage/Deploy。
+- 实机/玩家旧档未验；未部署、打包或推送。只撤销删除通知用 `git revert 53945643a`；回到本包前行为需再逆序撤销 `b8073b253`，不动其他作者、不hard reset。
+
+<a id="chat-aspect-schema-20261008"></a>
 # Chat 生图顶层 aspect_ratio 拒收修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户提供 HTTP400 截图：Invalid JSON payload / Unknown name aspect_ratio。源码在所有 Chat 生图请求中无条件注入该顶层字段；“完整URL”只控制请求地址，不改变请求结构，不能保证消除该字段拒收。截图未含玩家模型/地址，本包不猜测其服务商或安装修订。
