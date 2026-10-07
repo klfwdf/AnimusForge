@@ -30,6 +30,9 @@ namespace AnimusForge.Illustrator.UI.Patches
         private bool _showPrompt;
         private readonly Action _onRegenerate;
         private readonly Action _onRegenerateWithPrompt;
+        internal Action OnRegenerateBasedOnImage;
+        [DataSourceProperty] public bool CanRegenerateBasedOnImage => HasIllustration && !IsLoading && OnRegenerateBasedOnImage != null;
+        public void ExecuteRegenerateBasedOnImage() { if (CanRegenerateBasedOnImage) OnRegenerateBasedOnImage(); }
 
         public WeeklyReportIllustrationOverlayVM(string title, Action onRegenerate)
             : this(title, onRegenerate, null)
@@ -67,6 +70,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     _hasIllustration = value;
                     OnPropertyChangedWithValue(value, nameof(HasIllustration));
+                    OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
                 }
             }
         }
@@ -82,6 +86,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     _isLoading = value;
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
                     OnPropertyChanged(nameof(CanRegenerateWithPrompt));
+                    OnPropertyChanged(nameof(CanRegenerateBasedOnImage));
                 }
             }
         }
@@ -200,6 +205,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static IllustrationScope _scope;
         private static ScreenBase _ownerScreen;
         private static string _playerRedrawDraft = string.Empty;
+        private static string _imageEditDraft = string.Empty;
         private static bool _editingRedrawPrompt;
         private static string _activeSpriteName;
         private static bool _closing;
@@ -296,6 +302,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             Debug.Print($"[Illustrator] Weekly report popup opened: '{title}' context={(_currentContext != null)}");
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate, OpenRedrawPromptEditor);
+            _overlayVm.OnRegenerateBasedOnImage = OpenCurrentImageEditor;
             _sink = _overlayVm;
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
             _overlayLayer = layer;
@@ -335,6 +342,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.TitleText = title ?? "";
                 slot.StatusText = "正在为本期快报绘制新插画...";
                 slot.OnRegenerate = TriggerRegenerate;
+                slot.OnRegenerateBasedOnImage = () => { if (ReferenceEquals(ownerScope, _scope)) OpenCurrentImageEditor(); };
                 slot.OnRegenerateWithPrompt = () => { if (ReferenceEquals(ownerScope, _scope)) OpenRedrawPromptEditor(); };
                 slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
@@ -357,7 +365,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void DeleteCurrentBulletinIllustration()
         {
-            if (_bulletinSlot == null || _scope == null) return;
+            if (_bulletinSlot == null || _scope == null || _sink.IsLoading) return;
             CachedIllustrationItem item = _activeItem;
             if (item == null)
             {
@@ -390,7 +398,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (job == null) return;
             _sink.IsLoading = job.Pending;
             _sink.StatusText = job.Status;
-            if (job.Pending) { _sink.HasIllustration = false; return; }
+            if (job.Pending) { if (!job.EditingCurrentImage) _sink.HasIllustration = false; return; }
             if (!job.Ready) return;
             if (result != null)
             {
@@ -469,6 +477,35 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 if (_sink != null) { _sink.IsLoading = false; _sink.StatusText = "生成准备失败：" + ex.Message; }
             }
+        }
+
+        private static void OpenCurrentImageEditor()
+        {
+            if (_editingRedrawPrompt || _scope == null || _sink == null || _sink.IsLoading || !_sink.HasIllustration || _activeItem == null) return;
+            var owner = _scope; var sink = _sink; var source = _activeItem;
+            IllustrationRedrawPromptEditor.Show(_imageEditDraft,
+                () => ReferenceEquals(owner, _scope) && owner.IsCurrent && ReferenceEquals(sink, _sink) &&
+                    ReferenceEquals(source, _activeItem) && !sink.IsLoading,
+                prompt => {
+                    _imageEditDraft = prompt;
+                    var options = IllustratorRuntime.CaptureOptions();
+                    if (_bulletinSlot != null) options = options?.WithSceneImageSize();
+                    ++_redrawCount;
+                    sink.IsLoading = true; sink.StatusText = "正在基于本图重绘…";
+                    if (_bulletinSlot != null) { BulletinIllustrationPreloader.EditCurrentImage(source, prompt, options); return; }
+                    CurrentImageRedraw.Start(owner, source, prompt, options, null, result => {
+                        if (!ReferenceEquals(owner, _scope) || !ReferenceEquals(sink, _sink)) return;
+                        if (result.Saved != null && Publish(result.Saved, result.Result.ResolvedPrompt, result.Result.ImageBytes))
+                            sink.StatusText = "重绘完成，已保存为新版本。";
+                        else { sink.IsLoading = false; sink.StatusText = "重绘失败：" + (result.Result?.ErrorMessage ?? "未能保存图片"); }
+                    }, error => { if (ReferenceEquals(owner, _scope)) { sink.IsLoading = false; sink.StatusText = "重绘失败：" + error; } });
+                }, status => sink.StatusText = status,
+                editing => {
+                    if (!ReferenceEquals(owner, _scope)) return;
+                    _editingRedrawPrompt = editing;
+                    if (_overlayLayer?.UIContext?.Root != null) _overlayLayer.UIContext.Root.IsVisible = !editing;
+                    _bulletinSlot?.SetPromptEditing?.Invoke(editing);
+                }, basedOnImage: true);
         }
 
         private static void OpenRedrawPromptEditor()
@@ -654,17 +691,14 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
         {
             if (item == null && imageBytes == null) return false;
-            if (!string.IsNullOrEmpty(_activeSpriteName))
-            {
-                GauntletTextureLoader.ReleaseSprite(_activeSpriteName);
-                _activeSpriteName = null;
-            }
+            string previousSprite = _activeSpriteName;
             string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly";
             var bytes = imageBytes ?? item.ImageData;
             var publishClock = System.Diagnostics.Stopwatch.StartNew();
             GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_texture_begin", "bytes=" + (bytes?.Length ?? 0));
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
             if (sprite == null) { GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_texture_failed", "bytes=" + (bytes?.Length ?? 0)); return false; }
+            if (!string.IsNullOrEmpty(previousSprite) && previousSprite != spriteName) GauntletTextureLoader.ReleaseSprite(previousSprite);
             _activeSpriteName = spriteName;
             _activeItem = item;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
@@ -705,7 +739,8 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             finally
             {
-                if (_bulletinSlot != null) _bulletinSlot.OnRegenerateWithPrompt = null;
+                if (_bulletinSlot != null) { _bulletinSlot.OnRegenerateWithPrompt = null; _bulletinSlot.OnRegenerateBasedOnImage = null; }
+                _imageEditDraft = string.Empty;
                 _playerRedrawDraft = string.Empty;
                 _editingRedrawPrompt = false;
                 _overlayLayer = null;

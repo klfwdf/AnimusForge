@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -43,6 +43,13 @@ namespace AnimusForge.Illustrator.Core
         public int ImageGenerationTimeoutSeconds { get; }
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
+        internal bool IsCurrentImageEdit { get; private set; }
+        internal IllustrationOptions ForCurrentImageEdit()
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.IsCurrentImageEdit = true;
+            return copy;
+        }
         internal string OutputFrameRequirement { get; private set; } = string.Empty;
 
         private bool _player2Resolved;

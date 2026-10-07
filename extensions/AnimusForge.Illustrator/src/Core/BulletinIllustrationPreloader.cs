@@ -19,6 +19,7 @@ namespace AnimusForge.Illustrator.Core
             internal IllustrationScope Scope;
             internal bool Pending = true;
             internal bool Ready;
+            internal bool EditingCurrentImage;
             internal int Attempt;
             internal string Status = "本期配图正在提前生成…";
             // Main-thread only; each waiter runs exactly once when the job settles, is cancelled or times out.
@@ -163,6 +164,24 @@ namespace AnimusForge.Illustrator.Core
             return job;
         }
 
+        internal static void EditCurrentImage(CachedIllustrationItem source, string prompt, IllustrationOptions options)
+        {
+            string key = source.SubjectKey;
+            var previous = Find(key);
+            if (previous?.Pending == true) return;
+            var job = new Job { Key = key, EditingCurrentImage = true, Attempt = (previous?.Attempt ?? 0) + 1 };
+            Jobs[key] = job;
+            job.Scope = new IllustrationScope(null, "weekly_report", () => {
+                if (Find(key) == job && job.Pending) Finish(job, "本图重绘已取消。", null);
+            }, campaignOwned: true);
+            CurrentImageRedraw.Start(job.Scope, source, prompt, options, null, value => {
+                if (value.Saved != null)
+                    Finish(job, "重绘完成，已保存为新版本。", new WeeklyReportPopupIllustrationPatch.GenerationResult {
+                        Result = value.Result, Saved = value.Saved, Prompt = value.Result.ResolvedPrompt });
+                else Finish(job, "重绘失败：" + (value.Result?.ErrorMessage ?? "未能保存图片"), null);
+            }, error => Finish(job, "重绘失败：" + error, null));
+        }
+
         private static void Generate(Job job, WeeklyReportVisualContext context, string playerRedrawPrompt = null)
         {
             WeeklyReportPopupIllustrationPatch.StartGeneration(job.Scope, context, job.Key, true, job.Attempt,
@@ -183,7 +202,7 @@ namespace AnimusForge.Illustrator.Core
         {
             if (Find(job.Key) != job || !job.Pending) return;
             job.Pending = false;
-            job.Ready = result != null;
+            job.Ready = result != null || job.EditingCurrentImage;
             job.Status = status;
             job.Scope?.Close();
             Updated?.Invoke(job.Key, result);

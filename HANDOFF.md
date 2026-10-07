@@ -1616,3 +1616,8 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 # 新成年人物自动生成旧设置强制关闭（2026-10-07）
 - 一次性MCM迁移旧true到false，之后可手动开启。迁移回放及统一双API/Bootstrap/接缝/Stage通过，未部署/实机/推送。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#adult-persona-off-migration-20261007)。
+
+
+# 重绘（基于本图）完成待授权（2026-10-08）
+- 五个生图入口已接当前图编辑，无导演，新版本留存。双API/Bootstrap/双接缝及重建Stage通过；未实机、API测试或部署/打包/推送。
+- [主台账、代码与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#current-image-redraw-20261008)。本轮结束等待用户授权，场景喊话/战斗生图未实施。

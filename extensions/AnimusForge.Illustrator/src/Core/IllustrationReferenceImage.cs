@@ -13,7 +13,8 @@ namespace AnimusForge.Illustrator.Core
         EventCharacter,
         EventEmblem,
         ScenePerspective,
-        PairedScenePerspective
+        PairedScenePerspective,
+        GeneratedImage
     }
 
     /// <summary>
