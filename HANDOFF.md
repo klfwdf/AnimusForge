@@ -1,3 +1,7 @@
+# 当前交付：外交回应与回合生命周期修复（2026-10-08，OFFLINE_VERIFIED）
+
+从 `origin/main@187286489` 隔离交付产品 `6e430682e`：玩家回复结束事件建立独立回合，分析/关闭/读档保留文书归属，清理失效任务并保留真实请求租约，正式条约附加字段不再静默丢弃。外交3720断言、Debug双API 1.3.15/1.4.7 + Bootstrap及双接缝门禁通过；未部署、实机或玩家旧档验收。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-lifecycle-publication-20261008)及[公开变更说明](docs/diplomacy-round-design/UPDATE_20261008.md)。原本地检查点、设计草稿和部署记录不进入这次交付历史。
+
 # 当前交付：城堡读档修复融合最新 main（2026-10-07）
 
 以远端 `52177454` 为基线，仅接入本次城堡修复为 `f94179d5`，保留远端其他更新及本地旧分支。融合134、邻接60检查与Debug双API+Bootstrap重验通过；目标 `origin/main` 普通快进推送，实际远端收据单独记录。未部署，报告故障档与崩溃根因仍未实机确认。详见[main融合台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-main-integration-20261007)。
