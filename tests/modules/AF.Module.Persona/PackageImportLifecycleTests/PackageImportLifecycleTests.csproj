@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>
 <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageImportController.cs" Link="Production/DeveloperPackageImportController.cs"/>
 <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperImportController.cs" Link="Production/DeveloperImportController.cs"/>
+<Compile Include="../../../../src/modules/AF.Module.Memory/ImportExport/CompressedMemoryExportBundleReader.cs" Link="Production/CompressedMemoryExportBundleReader.cs"/>
 <Compile Include="../../../../src/modules/AF.Module.Economy/Debt/DebtImportMergePolicy.cs" Link="Production/DebtImportMergePolicy.cs"/>
-<Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll</HintPath></Reference>
+<Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
 </ItemGroup></Project>

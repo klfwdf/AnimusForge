@@ -122,14 +122,14 @@ internal sealed class DeveloperPackageImportController
 					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
-						if (bundle != null)
+						if (CompressedMemoryExportBundleReader.TryRead(text3, out var bundle, out var memoryImportError))
 						{
 							dhNew[_port.NormalizeMemoryHeroId(text4)] = bundle;
 						}
 						else
 						{
 							invalidMemoryFiles++;
+							Logger.Log("MemoryImport", "[WARN] Skipped " + Path.GetFileName(text3) + ": " + memoryImportError);
 						}
 					}
 					else

@@ -522,10 +522,9 @@ public partial class MyBehavior
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
-			CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
-			if (bundle == null)
+			if (!CompressedMemoryExportBundleReader.TryRead(text3, out var bundle, out var memoryImportError))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆文件无效。"));
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：" + memoryImportError));
 				return;
 			}
 			bool flag = true;
@@ -1806,14 +1805,14 @@ public partial class MyBehavior
 				string text2 = NpcDataFileName.TryParseHeroId(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text);
-					if (bundle != null)
+					if (CompressedMemoryExportBundleReader.TryRead(text, out var bundle, out var memoryImportError))
 					{
 						dict[NormalizeMemoryHeroId(text2)] = bundle;
 					}
 					else
 					{
 						invalidMemoryFiles++;
+						Logger.Log("MemoryImport", "[WARN] Skipped " + Path.GetFileName(text) + ": " + memoryImportError);
 					}
 				}
 				else

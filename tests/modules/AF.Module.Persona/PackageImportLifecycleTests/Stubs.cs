@@ -5,7 +5,7 @@ namespace TaleWorlds.Library { public class InformationMessage {public string Te
 namespace AnimusForge {
 internal static class TestState {internal static List<string> Order=new();}
 public partial class MyBehavior {internal class NpcPersonaProfile {public string HeroId,HeroName,Personality;}internal class DialogueDay {public int GameDayIndex;public List<string> Lines=new();}internal class EventRecordEntry {public string EventId;}internal class EventImportPayload {public bool HasWorldSummaryFile,HasKingdomSummariesFile,HasEventRecordsFile;public Dictionary<string,string> KingdomSummaries=new();public List<EventRecordEntry> EventRecords=new();}}
-internal class CompressedMemoryExportBundle {public string HeroId;}
+internal class CompressedMemoryExportBundle {public string HeroId;public List<object> DailyDrafts=new(),Blocks=new(),SummaryQueue=new(),OverviewQueue=new();public object Overview;}
 internal static class Logger {internal static void Log(string channel,string text){}}
 internal static class NpcDataFileName {internal static string TryParseHeroId(string path)=>Path.GetFileNameWithoutExtension(path).Split("__")[0];}
 internal class RewardSystemBehavior {internal static RewardSystemBehavior Instance=new();internal class DebtExportEntry {public int Amount;}internal Dictionary<string,DebtExportEntry> Snapshot=new();internal Dictionary<string,DebtExportEntry> LastExport,LastCommit;internal Dictionary<string,DebtExportEntry> ExportDebtEntries()=>LastExport=new(Snapshot);internal void ImportDebtEntries(Dictionary<string,DebtExportEntry> entries){TestState.Order.Add("debt");LastCommit=entries;Snapshot=entries;}}
