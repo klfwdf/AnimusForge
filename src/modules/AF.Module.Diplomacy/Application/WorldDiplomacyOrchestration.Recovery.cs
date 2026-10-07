@@ -67,6 +67,9 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!since.HasValue) return;
         int remaining = Math.Max(0, 5 - (day - since.Value));
         round.PlayerWaitReminderDay = day;
+        // Lifecycle settlement runs after this reminder and can still own an expired wait.
+        // Mark today's check, but never prompt the player to answer an expired deadline.
+        if (remaining == 0) return;
         _host.Notify("外交交涉「" + round.RoundTopic + "」正在等待你的回应，剩余 " + remaining + " 个游戏日。");
     }
 }
