@@ -1,4 +1,13 @@
-﻿<a id="illustrator-final-widescreen-20261007"></a>
+﻿<a id="execution-escort-combat-20261008"></a>
+# 处决场景随行 NPC 自动攻击犯人（2026-10-08，ACTIVE）
+
+- 工作区 F:/AnimusForge-main，main，起点 fc4f556beb43b2fe94ec6cc9b0ad51fb845297be；保留外交、周报、MCM 等既有未提交工作。
+- 根因：TryResolveCeremonyTeams 将玩家/犯人队伍设为相互敌对以保留原生死亡链路，但未接管玩家带入 NPC 的 AI。修改范围为 Vengeance 权威场景 owner、现有处决回归测试与本交接记录。
+- 目标：行刑开始前暂停既有及晚生成的玩家队伍 NPC，排除玩家/坐骑/处决生成演员；安全散场、取消、卸载时恢复，仅恢复本场仍持有的控制权。保留敌对死亡结算和自定义布置阶段，不改存档、构建入口，不部署/打包/推送。
+- 性能：初始化一次扫描，后续按 Agent 生成事件登记；收尾只遍历本场已登记 NPC，不新增每帧全场扫描。
+- 退出门：受影响生产逻辑回放及原散场回归、AF 1.3/1.4 + Bootstrap/接缝、独立 RichExecutions 目标编译、diff 检查。实机随行/取消/散场 NOT-RUN，需安装候选后验收。
+
+<a id="illustrator-final-widescreen-20261007"></a>
 # 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确按快报方式修复全屏链路：画幅要求必须直达最终生图提示词，普通生成/重绘均保留。现场证据conversation_1007-000032_f162和000421_24ca均发size=1280x720，但最终prompt没有16:9；快报224339则明确保留。该差异已确认，不能证明模型一定遵从新文字。
