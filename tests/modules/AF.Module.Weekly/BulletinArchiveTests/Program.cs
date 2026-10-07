@@ -274,6 +274,15 @@ string promptFile=Path.Combine("prompt-fixtures","WorldBulletinWritingRequiremen
 void WritePrompt(string text)=>File.WriteAllText(promptFile,JsonConvert.SerializeObject(new {Version=1,Text=text}));
 WritePrompt(WorldBulletinPolicy.LegacyDefaultWritingRequirements);
 Check(DuelSettings.ReplayReadPrompt(promptFile,out var oldPrompt)&&oldPrompt==WorldBulletinPolicy.DefaultWritingRequirements,"exact old default migrates at actual JSON load boundary");
+WritePrompt(WorldBulletinPolicy.LegacyNarrativeWritingRequirements);
+Check(DuelSettings.ReplayReadPrompt(promptFile,out var oldNarrativePrompt)&&oldNarrativePrompt==WorldBulletinPolicy.DefaultWritingRequirements,"exact earlier narrative default migrates to refined tone and structure");
+Check(DuelSettings.ReplayMigratePrompt(oldNarrativePrompt)==oldNarrativePrompt,"new narrative default migration is idempotent");
+string changedNarrative=WorldBulletinPolicy.LegacyNarrativeWritingRequirements+"\n只写商贸。";
+WritePrompt(changedNarrative);
+Check(DuelSettings.ReplayReadPrompt(promptFile,out var preservedNarrative)&&preservedNarrative==changedNarrative,"modified earlier narrative default stays custom");
+string spacedNarrative=" "+WorldBulletinPolicy.LegacyNarrativeWritingRequirements;
+WritePrompt(spacedNarrative);
+Check(DuelSettings.ReplayReadPrompt(promptFile,out var normalizedNarrative)&&normalizedNarrative==WorldBulletinPolicy.LegacyNarrativeWritingRequirements&&DuelSettings.ReplayMigratePrompt(spacedNarrative)==spacedNarrative,"near-narrative default stays custom even when normalization matches");
 WritePrompt("只报道商贸，我的自定义要求");
 Check(DuelSettings.ReplayReadPrompt(promptFile,out var customPrompt)&&customPrompt=="只报道商贸，我的自定义要求","custom prompt remains owned by the user");
 WritePrompt("");Check(DuelSettings.ReplayReadPrompt(promptFile,out var blankPrompt)&&blankPrompt=="","explicit empty override remains empty");

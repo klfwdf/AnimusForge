@@ -140,6 +140,10 @@ internal static class Program
         Check(!empty.Contains("【快报写作要求】") && empty.Contains("[MAJOR]") && empty.Contains("不另造死亡、俘虏、领土易主、宣战或结盟"), "explicit empty style keeps major-result and output contracts");
         Check(sys.Contains("允许合理补写动作、短对白和现场反应") && !sys.Contains("不写对白") && !sys.Contains("只能使用给出的事实"), "narrative actions and dialogue allowed without conflicting legacy prohibitions");
         Check(sys.Contains("[SHORT]") && sys.Contains("正文已有内容") && sys.Contains("不为了衔接编造因果") && sys.Contains("已有明确记录的对白或遗言"), "digest derives from body and preserves recorded quotations and causal boundaries");
+        Check(sys.Contains("只有素材确认两人确实参与同场交战") && sys.Contains("未参战人物拉到现场") && sys.Contains("不能改变胜负、生死或俘虏结果"), "named direct encounters require co-participation and preserve battle outcomes");
+        Check(sys.Contains("适度讥讽和粗粝感") && sys.Contains("勇气、机智和体面") && sys.Contains("避免现代段子") && sys.Contains("不要每篇都靠打架取乐"), "medieval anecdote tone has varied reactions without compulsory violence or modern jokes");
+        Check(sys.Contains("自由选择切入点") && sys.Contains("不固定叙述顺序") && sys.Contains("不强行补一段宏大评价") && !sys.Contains("先交代来龙去脉") && !sys.Contains("最后写对相关王国"), "opening and paragraph order are free and macro commentary is optional");
+        Check(empty.Contains("同场交战") && empty.Contains("粗粝感") && empty.Contains("自由选择切入点") && custom.Contains("不强行补一段宏大评价"), "core encounter and structure rules apply with custom or explicitly empty editable style");
         string anecdotal = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "报刊标题", "甲军获胜", 4, null, "甲打掉了乙的牙，乙怒骂退场");
         Check(anecdotal.Contains("【快报轶闻】来源：快报《报刊标题》") && anecdotal.Contains("听说") && anecdotal.Contains("不作为已确认事实") && anecdotal.Contains("打掉了乙的牙"), "NPC receives source-labelled anecdote with explicit fact boundary");
         Check(!WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "旧轶闻", "", 5, null, "掉牙").Contains("掉牙"), "anecdote obeys existing seven-day freshness boundary");

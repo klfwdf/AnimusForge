@@ -33,12 +33,13 @@ public partial class DuelSettings
     // Load boundary only: an exact shipped default can advance; custom/empty text stays owned by the user.
     private static string MigrateLegacyWorldBulletinWritingRequirements(string input)
         => string.Equals(input, WorldBulletinPolicy.LegacyDefaultWritingRequirements, StringComparison.Ordinal)
+            || string.Equals(input, WorldBulletinPolicy.LegacyNarrativeWritingRequirements, StringComparison.Ordinal)
             ? DefaultWorldBulletinWritingRequirements : input;
 
     private void OpenWorldBulletinWritingRequirementsEditor()
     {
         DevTextEditorHelper.ShowLongTextEditor("编辑快报写作要求", "只编辑即时快报的写作要求，不修改周报。",
-            "保存后用于下一次快报请求；清空后不追加写作要求。事实约束、输出格式和现有篇幅规则仍由内置提示词控制。",
+            "保存后用于下一次快报请求；清空后不追加写作要求。主体与重大结果边界、输出格式和现有篇幅规则仍由内置提示词控制。",
             WorldBulletinWritingRequirements ?? "", SaveWorldBulletinWritingRequirementsFromEditor, null, "保存", "返回");
     }
 
