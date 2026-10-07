@@ -1,3 +1,8 @@
+<a id="mission-screenshots-20261008"></a>
+### 场景喊话与战斗双截图导航（2026-10-08）
+
+产品 `e5c32267c`：`MissionScreenshotIllustration` 持有单请求与后台保存，`MissionScreenshotCapture` 只拥有临时相机/UI/暂停及两个原生文件；`SceneConversationHistoryOwner.CaptureIllustrationDialogue` 冻结原权威历史，输入框和DialogueUI经同DLL presentation hooks接入。Api.V1、原普通会话截图禁用/全景链及战斗伤害机制保持。详细一基坐标、实际消费者、189/双43断言、双API/Bootstrap证据及GPU/模型未验范围只记[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mission-screenshots-20261008)，不刷新既有冻结职责表。
+
 <a id="scene-audience-toggle-20261008"></a>
 ### 场景喊话自动屏蔽导航（2026-10-08）
 

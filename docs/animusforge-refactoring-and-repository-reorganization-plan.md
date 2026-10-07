@@ -8155,7 +8155,9 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 核实源码坐标及责任：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ImportExportUi.cs:461–581`，单NPC入口；`src/modules/AF.Module.Memory/ImportExport/MemoryImportExportOwner.cs:76–132`，Apply；`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:1202–1242`权威projections、`29796–29806`实际apply、`23560–23582`总览、`23600–23655`历史；同目录 `MyBehavior.HistoryPromptSnapshot.cs:35–77`，当前目标snapshot；`MyBehavior.UncompressedMemoryPrompt.cs:18–82`，daily capture；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:10637–10678`，Native capture，`13474–13556`，API caller；`src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs:74–80,113–136,192–210`，capture/join/split/prefix；`src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs:360–429`，split/header；`src/modules/AF.Module.Llm/ShoutNetwork.cs:379–411`，payload，`766–779,1001–1005`真实调用点；`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:130–138`，JSON。提取验证见 `artifacts/imported-memory-source-spans-20261008.log`，精确内容以evidence源hash为准。
 - 结论：当前源码正确目标+覆盖这份有效记忆文件时，未复现记忆注入丢失；不能证明玩家实际导入结果或模型遵从。现场判因需要目标StringId、导入后重导出的同NPC记忆、同回合 `DialogueHistory compressed_context` / `[MemoryPerf] history_context_done` / `[NativeConversation] request persistedChars` 日志；实际日志目录为安装模块 `logs`。
 - NOT-RUN：玩家安装DLL/配置、真实Campaign/.sav往返、完整Native调度/场景bridge、显示名别名、实际HTTP发送/重试/响应、真实模型和三渠道实机效果。生产源码未变，本轮不重跑或冒称重跑双API/Bootstrap；此前构建仅保持原覆盖范围。本任务未Stage/部署/打包/推送；其他任务的部署记录不代替本任务实机验收。回滚仅本任务测试/文档提交；产品格式修复回滚仍单独 `git revert 834146d55`。
-# 场景喊话与战斗双截图生图（2026-10-08，ACTIVE）
+<a id="mission-screenshots-20261008"></a>
+
+# 场景喊话与战斗双截图生图（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户确认实施；基线 `main@652f0fda63ac00c6e3818f1e6a6de9d0589020db`。保留其他任务与未跟踪 NuGet 目录，本任务不部署、不打包、不推送，不调用付费 API。
 - 手动面板按钮；战斗喊话跳过轮盘直开 UI，允许无 NPC 目标生图；既有交流目标资格和和平常驻会话边界保持。所有战斗含无 Campaign 的自定义战斗。
@@ -8164,3 +8166,31 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 两图必须交导演及带图生成；继承现有模型、画风、尺寸和画廊，不丢图、不使用本地导演替代、不自动重试。采集未完离场终止，采完后关闭/离场继续后台保存，晚结果不弹到新场景，未完成期间禁止重复点击。
 - 修改范围：Scene 喊话入口/历史快照、输入框与 DialogueUI 面板/预制体、Illustrator 专用双截图采集/请求 owner、导演/HTTP 参考语义与画廊保存接缝。主线程只做有界按需现场读取和原生调用；后台只用冻结标量、字节与配置，复用现有四 worker 限额。
 - 退出门：入口与实际消费者接通；双截图失败/恢复/离场/重复提交边界有代码和针对性验证；1.3/1.4/Bootstrap 原构建通过。真实 GPU 截图帧/HUD/相机恢复及真实模型效果明确记 NOT-RUN，源码接口或离线测试不冒称实机验收。完成证据与回滚提交在本条更新。
+
+## 实现与验收证据
+
+- 产品 `e5c32267c313e3ac1003a21c36240b6f57babc7b`，检查点 `2b2020879`；31个任务文件。保留并发快报/外交、画风及未框选受众开关提交；普通会话禁截图/全景职责、三渠道聊天/标签/事实语义及一键入口不改。
+- 真实入口：输入框/DialogueUI wrapper/常驻面板的 `ExecuteIllustrate` 经 deferred/tick 调用 `ShoutBehavior.RequestSceneIllustrationForExternal`，由 `MissionScreenshotIllustration.Request` 持有全局单请求。战斗无NPC也可生图，但发送喊话仍用 `TryPrepareShoutTarget` 验证onboarding/目标资格和移动控制；忙碌时仅生图输入不结束原回合。和平自定义meeting排除伪战斗。
+- 主线程按需读取玩家/持有目标标量和最近两轮历史；采集每帧只推进一个状态，只有一次反向机位碰撞检测，使用原版 `CameraCollisionRayCastExludeFlags | DontCollideWithCamera`。两个唯一原生BMP导出受同一8秒预算，无自动重发；独占可读完整BMP才算文件完成，帧间隔只是调度分离，不是GPU屏障。恢复自有暂停/UI/相机；被其他功能接管时不覆盖或释放其相机。
+- 后台文件等待40ms间隔；单张BMP限96 MiB/24 Mi像素，哈希/标准RGBA PNG转换在后台，长边最多2048、保留比例/颜色、不交换红蓝。转码后释放原始字节，复用四worker和scope准入；不新增场景扫描、全景或人物导出。采完关闭/离场继续保存到general画廊，无Campaign使用`custom_battles`；展示重验原Mission/Screen/面板。Reset/关闭生图取消scope并释放忙碌状态。
+
+核实源码坐标绑定产品 `e5c32267c`，一基范围；不把范围外的既有职责称为已重写：
+
+| 路径 / 范围 | 符号与覆盖责任 |
+| --- | --- |
+| `extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs:17–213` | `Install/Tick/Request/Finish/ScopeClosed/Reset`，准入、冻结输入、导演/生图/保存和晚结果边界 |
+| `extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:29–212` | `MissionScreenshotCapture`，双图状态机、自有资源恢复、文件完成；GPU对应未验 |
+| `extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotImageCodec.cs:12–98` | `ReadCompleteAsync/ValidateBitmap/ToPng/SameImage`，独立BMP预算和后台编码 |
+| `extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotRules.cs:8–44` | 专用空间/动作优先级、导演格式和双图必需契约 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneIllustration.cs:10–87` | presentation hooks、战斗分类/直开输入/发话资格；不改战斗伤害机制 |
+| `src/modules/AF.Module.Conversation/Internal/History/SceneConversationHistoryOwner.cs:13–34` | `CaptureIllustrationDialogue`，最近两条user起始的完整多人回复和事实，按需冻结不截断 |
+| `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:47–54,250–286,403–426` | 请求模式、Reset/Tick接线和missionOwned scope；普通scope默认语义保持 |
+| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs` / `UniversalOpenAiImageClient.cs` | `CreateDirectionWithClientAsync/BuildDirectorPayload` / `GenerateImageAsync/AttemptImagesEditsAsync/AttemptGenerateOnceAsync/FitPlayer2Request`，双图无回退；其他模式和通用传输保留原owner |
+
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Debug`：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap和两个实际DLL接缝全部PASS。初轮缺参错误已修正，最终 `artifacts/mission-screenshots-20261008/build-final2.log`；旧警告仍存在，没有Stage/Deploy参数。
+- `MissionScreenshotTests`直接编译生产采集/codec/rules，native/camera用明确fixture替代：**189断言PASS**，含两张/原暂停、自有资源清理、相机接管、离场/finalize/失败、8秒deadline/不重发、独占文件、4K BMP、DPI/RGBA/尺寸与两图类型。`capture-tests-final3.log`；不能代替原生渲染/HUD或帧对应。
+- `MissionScreenshotRequestTests`对最终1.3/1.4实际DLL各 **43断言PASS**，全部HTTP内存拦截并强制yield：Edits/Chat/Player2两张字节、参考开关关闭不丢图、文本端点/坏图拒发、单次失败、识图导演空/缺段/不支持不回退、完整多人历史和冻结后变化。`request-tests-final2-13.log` / `request-tests-final2-14.log`。未运行既有Illustrator离线审计脚本，未调用付费或外部API。
+- 四个prefab XML、按钮可见/禁用/命令/文字事件绑定PASS；新按钮位于270高输入面板内，wheel/scroll/folio生成器输出一致，`ui-bindings-final2.log`。真实焦点/缩放/点击未验。`git diff --check` PASS；31源文件及三个DLL SHA256、准入修订和分层结果见同目录 `verification-receipt.json`。
+- 既有代码范围图增加本包导航，详细坐标仍只在本条。记录修订校验 **838锚点PASS**；`--working-tree`仍FAIL于旧冻结表的`src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs`内容已演进，本产品提交未修改该文件。不刷新无关历史hash或声称全仓导航已签收，保留`code-map-recorded.log` / `code-map-working-tree.log`。
+- NOT-RUN：真实两个版本的截图实际路径、HUD隐藏、两帧对应/动画冻结、反向机位/相机/暂停恢复、关闭/离场/读档后台保存、画廊显示、真实导演/生图效果和帧性能。本轮未部署/打包/推送、未旧存档验收，不把离线PASS写为实机完成；原生/模型失败明确报错。
+- 回滚只 `git revert e5c32267c`，不回滚其他作者。源码在上表，测试在`extensions/AnimusForge.Illustrator/tests/MissionScreenshotTests`和`MissionScreenshotRequestTests`；候选留在`bin/Debug/single_module_artifacts`，游戏安装未覆盖。
