@@ -1,3 +1,8 @@
+<a id="meeting-lifecycle-fixes-20261008"></a>
+### 会面放行与投降生命周期导航（2026-10-08）
+
+产品 `110bbeed` 在LordEncounterBehavior复用既有owner绑定投降身份、复验放行回调、区分地图活跃对话与手动退出。源码坐标、172/34/55检查及隔离双API构建边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#meeting-lifecycle-fixes-20261008)。未实机验收，不改变框架/public API职责。
+
 <a id="native-dialogue-combat-continuation-20261008"></a>
 ### 原版开战对话接续导航（2026-10-08）
 
