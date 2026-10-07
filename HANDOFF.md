@@ -1,4 +1,11 @@
-﻿# 当前交接：繁荣度耗粮独立开关（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：快报外交知情、通知路由与关闭 AI 外交原版执行（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `cc9d0b2b9` / `c89fb24c5`，检查点 `e9953f04` / `74d5acbe`。NPC 快报遵守宣言传播权限；发布国为玩家所属国时保留右侧图标，外国左下角；AI 外交关闭时六类外交标签复用原口头执行器，开启仍走正式公文。复杂/旧案约定不简化执行，原王权与状态检查保留，三渠道继续共享执行入口。
+- 快报策略68、实际发布/NPC/归档/展示183、宿主20、外交3810及六口头执行/分块专项PASS；最终干净提交源码隔离worktree原双API1.3/1.4、Bootstrap及双实际DLL接缝exit0。共享树首轮并行生图编译失败保留，未动对方代码；契约/替身回放不等于实机。
+- [唯一主台账、源码坐标与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-diplomacy-guard-20261008)、[既有代码导航](docs/architecture/af-framework-code-scope.md)。本地证据 `artifacts/bulletin-diplomacy-guard-20261008/run-69b7640462/receipt.json`；28任务文件与最终源码一致，9产物SHA核对通过。
+- 实机/UI/真实模型/玩家旧档未验，未Stage/部署/打包/推送。获准后才做游戏验收；仅回滚本轮产品依次 `git revert c89fb24c5`、`git revert cc9d0b2b9`，保留其他作者工作。
+
+# 当前交接：繁荣度耗粮独立开关（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `9e3586b44`，检查点 `dc0eb32`。MCM“16. 政策系统”新增“取消繁荣度耗粮”，默认关闭；保存后下一次计算开启取消、关闭恢复，与粮仓/上限独立。旧配置缺键保持原版，玩家/NPC 城市和城堡同规则。
 - 双 API 专项各 97 PASS；仓内隔离副本原双 API/Bootstrap/实际 DLL 接线 PASS。共享工作树首轮仍因并行生图未完成接口失败，未修改对方代码；MCM/真实战役未验，未 Stage/部署/打包/推送。
