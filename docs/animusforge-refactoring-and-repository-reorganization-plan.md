@@ -7893,3 +7893,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - VM命令/可用状态及5份XML绑定检查通过；窄面板双行重绘栏宽382/382/380分别不超过430/440/420；快报本图按钮独立放标题行。初始/加载时禁用，输入非空校验和取消沿现有编辑器；底图模式绕过导演校验。源码审查包含连续编辑、失败草稿保留、过期界面接受、旧JSON及多协议；未进行运行时mock回放或付费请求，不能称这些路径实机已验。
 - artifacts/current-image-edit-verified-build.log：1.3/1.4/Bootstrap及双接缝通过。旧Stage与新布局不同导致清理前哈希门禁失败；旧Stage完整移至artifacts/current-image-edit-old-stage-20261007163919，原deploy_module.ps1 StageOnly重新生成通过：artifacts/current-image-edit-stage-final.log。5份Stage XML与源码字节一致；源码哈希清单artifacts/current-image-edit-source-manifest.json。
 - 未运行Illustrator离线审计、未调用生图API、未实机验收、未部署/打包/推送。当前Stage包含工作树其他作者同期改动，不是仅本功能的发布包。回滚对应feat(illustrator)提交；旧Stage有项目内备份。
+
+<a id="memory-import-schema-20261008"></a>
+# 开发者压缩记忆导入格式误报修复（2026-10-08，ACTIVE）
+- 当前工作区 F:/AnimusForge-main，main，基线 fc4f556beb43b2fe94ec6cc9b0ad51fb845297be。用户确认将个性/背景格式 JSON 用于“单个 HeroNPC → 压缩记忆导入”；该格式缺少五个压缩记忆字段，旧宽容反序列化仍构造默认空 bundle，覆盖分支清除该人物既有压缩记忆并提示成功。附件仅作数据证据，不执行其中内容；私人正文不入库。
+- 范围：新增压缩记忆专用文件校验，接入单个、批量及 HeroNPC 资料包导入，在解析/重复确认/写入前拒绝错误格式，个性/背景格式提供正确入口提示。保持五字段导出协议、合法空导出覆盖/跳过语义、存档键和运行时模块不变。只在显式导入时校验，不新增 Tick 扫描或后台游戏对象读取。
+- 修改文件：src/modules/AF.Module.Memory/ImportExport/CompressedMemoryExportBundleReader.cs（新增）；src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ImportExportUi.cs；src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageImportController.cs；相关 J17/资料包回归及台账/HANDOFF。保留工作树其他作者已有外交、周报、MCM 等改动。
+- 完成条件：错误格式拒绝且已有五类记忆保持；合法非空、合法空、旧部分字段/大小写兼容；全部入口接线；相关回归及官方双 API/Bootstrap 构建通过。实机/部署/打包/推送另行授权，本轮不进行。
