@@ -20,7 +20,7 @@ internal sealed class SettlementBalanceEditorVM : ViewModel
 	}
 	[DataSourceProperty] public string TitleText => "政策相关数值上限调整";
 	[DataSourceProperty] public string DescriptionText => "每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。";
-	[DataSourceProperty] public string FoodRuleText => "玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮始终取消，不受这些开关影响；驻军耗粮、围城、供粮和政策粮食变化保留。";
+	[DataSourceProperty] public string FoodRuleText => "玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。";
 	[DataSourceProperty] public string RestoreDefaultsText => "恢复默认";
 	[DataSourceProperty] public string CancelText => "取消";
 	[DataSourceProperty] public string SaveText => "保存并关闭";

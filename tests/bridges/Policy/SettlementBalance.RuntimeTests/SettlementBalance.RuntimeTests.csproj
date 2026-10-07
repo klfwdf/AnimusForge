@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="../../../../PolicySystem/Balance/*.cs" Link="Production/%(Filename)%(Extension)" />
     <Compile Include="../../../../PolicySystem/UI/SettlementBalanceEditorVM.cs" Link="Production/SettlementBalanceEditorVM.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SettlementBalance.cs" Link="Production/DuelSettings.SettlementBalance.cs" />
     <Reference Include="$(BalanceReferenceDir)/TaleWorlds.*.dll"><Private>true</Private></Reference>
     <Reference Include="TaleWorlds.SaveSystem"><HintPath>$(BalanceSharedReferenceDir)/TaleWorlds.SaveSystem.dll</HintPath></Reference>
     <Reference Include="Newtonsoft.Json"><HintPath>../../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
