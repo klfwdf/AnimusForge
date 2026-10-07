@@ -15,15 +15,17 @@ public sealed partial class WorldDiplomacyBehavior
         private readonly WorldDiplomacyBehavior _owner;
         internal NotificationWorld(WorldDiplomacyBehavior owner) { _owner = owner; }
         public bool MapNotificationsEnabled => AreMapNotificationsEnabled();
-        public bool CanPublishMapNotification() => WorldDiplomacyBehavior.CanPublishMapNotification();
-        public bool EnsureMapNotificationRegistered() => _owner.TryEnsureMapNotificationRegistered();
+        public bool CanPublishMapNotification() => TaleWorlds.MountAndBlade.Mission.Current == null
+            && Game.Current?.GameStateManager?.ActiveState is TaleWorlds.CampaignSystem.GameState.MapState;
+        // Text notices do not depend on the right-hand map notification widget.
+        public bool EnsureMapNotificationRegistered() => true;
         public string KingdomName(string id) => WorldDiplomacyBehavior.KingdomName(ResolveKingdom(id));
         public string FormatCampaignDate(int day) => WorldDiplomacyBehavior.FormatCampaignDate(day);
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public string PlayerKingdomId => Clan.PlayerClan?.Kingdom?.StringId ?? "";
         public void ShowRumor(string text) => InformationManager.DisplayMessage(new InformationMessage(text));
-        public void ShowNotice(WorldDiplomacyNotice notice) => MBInformationManager.AddNotice(
-            new WorldDiplomacyMapNotification(notice.DocumentId, notice.Title, notice.Description));
+        public void ShowNotice(WorldDiplomacyNotice notice) => InformationManager.DisplayMessage(
+            new InformationMessage("【外交宣言送达】" + notice.Title + "。可在王国公告中查看全文。", Colors.Yellow));
         public void Log(string text) => WorldDiplomacyBehavior.Log(text);
     }
 

@@ -80,6 +80,8 @@ public partial class MyBehavior
             ActorHeroId = normalizedActorHeroId, ActorKingdomId = actorKingdomId,
             IncludeInWorld = includeInWorld, IncludeInKingdom = includeInKingdom
         }, () => ++_npcActionGlobalOrderCounter, _weeklyReportMaterialRevisions.MarkDay);
+        CaptureCivilNewsMaterial(normalizedMaterialKind, stableKey, label, text,
+            kingdomId, actorKingdomId, actorHeroId, day, includeInWorld);
     }
 
 	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries, NpcActionFacts facts, bool isMajor, bool allowNonLordHero = false)

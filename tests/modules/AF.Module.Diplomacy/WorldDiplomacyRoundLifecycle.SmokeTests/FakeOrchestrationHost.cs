@@ -527,6 +527,10 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     {
         Calls.Add("RecordWorldDiplomacyWeeklyMaterialExternal");
     }
+    public virtual void RecordDiplomacyBulletinMaterial(WorldDiplomacyDocument document)
+    {
+        Calls.Add("RecordDiplomacyBulletinMaterial");
+    }
     public virtual bool TryBuildKingdomStrategicProfilePrompt(string kingdomId, string marker, out string prompt)
     {
         Calls.Add("TryBuildKingdomStrategicProfilePrompt");

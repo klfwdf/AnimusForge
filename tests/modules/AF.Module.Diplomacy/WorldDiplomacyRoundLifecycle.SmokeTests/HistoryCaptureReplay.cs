@@ -28,6 +28,17 @@ internal static class HistoryCaptureReplay
     }
     internal static void Run()
     {
+        var newsHost = new FakeOrchestrationHost();
+        var newsOwner = new WorldDiplomacyOrchestration(newsHost, new WorldDiplomacyRuntimeState());
+        newsOwner.ReplaceStorage(new WorldDiplomacyStorage());
+        newsHost.Calls.Clear();
+        newsOwner.RecordDiplomacyWeeklyMaterial(new WorldDiplomacyDocument { DocumentId = "unpublished" });
+        Test.True(newsHost.Calls.Count == 0, "unpublished diplomacy document cannot enter bulletin or weekly material");
+        newsOwner.RecordDiplomacyWeeklyMaterial(new WorldDiplomacyDocument {
+            DocumentId = "published", IsReadyForPublication = true, AuthorKingdomId = "a", TargetKingdomId = "b", Day = 12 });
+        Test.True(newsHost.Calls.Count(x => x == "RecordDiplomacyBulletinMaterial") == 1
+            && newsHost.Calls.Count(x => x == "RecordWorldDiplomacyWeeklyMaterialExternal") == 2,
+            "one declaration capture precedes separate world and kingdom weekly projections");
         int hour = -1; long revision = -1;
         var port = new Port();
         var orch = new Orch(port);

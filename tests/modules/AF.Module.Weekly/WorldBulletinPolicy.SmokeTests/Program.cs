@@ -132,10 +132,16 @@ internal static class Program
 		string user = WorldBulletinPolicy.BuildUserPrompt("快报视角：天下大事", "某日", s, new[] { "瓦兰迪亚：君主某某" });
 		Check(user.Contains("1. 甲被玩家处决") && user.Contains("M1. ") && user.Contains("【相关王国现状】"), "user prompt lists facts, context and M1");
 		string sys = WorldBulletinPolicy.BuildSystemPrompt(s.MajorFacts.Count, s.Minors.Count);
-		Check(sys.Contains("合写成同一篇") && sys.Contains("[M1]"), "system prompt asks for merged story and indexed minors");
+        Check(sys.Contains("合写成同一篇") && sys.Contains("320到480字") && sys.Contains("[M1]"), "existing length, merged-story and format contract retained");
+        Check(sys.Contains("几人对几人") && sys.Contains("不要连续罗列"), "default writing requirements discourage numeric battle recitals");
+        var custom = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "测试独立写作风格");
+        Check(custom.Contains("测试独立写作风格") && !custom.Contains(WorldBulletinPolicy.DefaultWritingRequirements) && custom.Contains("260到400字"), "custom writing replaces only editable style, retaining existing length");
+        var empty = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "");
+        Check(!empty.Contains("【快报写作要求】") && empty.Contains("[MAJOR]") && empty.Contains("不得添加"), "explicit empty style keeps factual and output contracts");
 		string sallySentence = WorldBulletinCampaignMaterialPolicy.BattleSentence("某城", true, true, "甲军", "瓦兰迪亚", "乙军", "南帝国", 120);
 		string sallyDetail = WorldBulletinCampaignMaterialPolicy.BattleDetail(80, "伤亡10人", 40, "伤亡30人", true, true, "瓦兰迪亚伯爵", true, "南帝国伯爵");
 		Check(sallySentence.Contains("出城战") && sallySentence.Contains("本次参战部队"), "sally-out material labels only the engaged troops");
+        Check(sallySentence.Contains("120") && sallyDetail.Contains("80") && sallyDetail.Contains("40"), "original battle fact template and numeric details retained");
 		Check(sallyDetail.Contains("仅记录本场交战") && sallyDetail.Contains("不代表围城军或守军整支军团覆灭"), "sally-out detail preserves the force boundary");
 		Check(WorldBulletinPolicy.TitleForKind("sally_out_battle") == "出城战报" && sys.Contains("击败全军"), "sally-out title and anti-exaggeration prompt are explicit");
 		WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(s);

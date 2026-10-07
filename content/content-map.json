@@ -703,6 +703,12 @@
     },
     {
       "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
+      "target": "CustomPrompts/WorldBulletinWritingRequirements.json",
+      "sha256": "D54B5131FB4F724BF05E7C9F6B333145F0A3318867FCF1CB97AB5CFE9317FE81"
+    },
+    {
+      "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
       "target": "CustomPrompts/WeeklyReportWritingRequirements.json",
       "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"

@@ -205,6 +205,17 @@ public sealed partial class WorldDiplomacyBehavior
             DiplomacyModuleServices.Policy.TryAcknowledgePublishedPolicyHistoryThrough(throughSequence);
         public List<PublishedPolicyArtifactLedgerEntry> ReadPublishedPolicyArtifacts() => WorldDiplomacyBehavior.ReadAllPublishedPolicyArtifactsForMigration();
         public long PublishedWorldWeeklyHistoryRevision() => MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
+        public void RecordDiplomacyBulletinMaterial(WorldDiplomacyDocument document)
+        {
+            string author = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.AuthorKingdomName, KingdomName(ResolveKingdom(document.AuthorKingdomId)), "某国");
+            string sentence = author + "发布外交宣言《" + WorldDiplomacyTextRules.Limit(document.Title, 80)
+                + "》，宣言称：“" + WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.NormalizeBody(document.Body), 180) + "”。";
+            string detail = document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult)
+                ? "已确认结果：" + WorldDiplomacyTextRules.Limit(document.MechanicalResult, 160)
+                : "仅确认宣言已发布，未确认其提议已经实施。";
+            MyBehavior.RecordDiplomacyBulletinMaterial(document.DocumentId, sentence, detail,
+                document.AuthorKingdomId, document.TargetKingdomId, document.AuthorRulerId, document.Day);
+        }
         public void RecordWorldDiplomacyWeeklyMaterialExternal(string stableKey, string title, string text,
             string authorKingdomId, string authorRulerId, string relatedKingdomId, bool isWorldLevel, int day, string gameDate) =>
             MyBehavior.RecordWorldDiplomacyWeeklyMaterialForExternal(stableKey, title, text,

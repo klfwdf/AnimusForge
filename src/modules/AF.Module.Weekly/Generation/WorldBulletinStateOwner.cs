@@ -93,6 +93,24 @@ internal static void PruneWorldBulletinWeeklyStability(WorldBulletinSaveState st
 			}
 		}
 	}
+
+    internal void CaptureCivilNewsMaterial(string kind, string key, string sentence, string detail,
+        bool player, params string[] kingdoms)
+    {
+        if (!_port.Enabled()) return;
+        var state = EnsureWorldBulletinState();
+        // At most 300 retained facts, only on material changes. Repeated policy/round
+        // projections update the same unreported fact rather than multiplying news.
+        var existing = state.Events.LastOrDefault(e => e != null && e.Key == key);
+        if (existing != null)
+        {
+            if (existing.Hour <= state.World.CutoffHour || (existing.Sentence == sentence && existing.Detail == detail)) return;
+            existing.Sentence = sentence;
+            existing.Detail = detail;
+            return;
+        }
+        CaptureWorldBulletinEvent(kind, key, 50, sentence, player, key, detail, kingdoms);
+    }
 internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now)
 	{
 		if (InFlight)
@@ -135,7 +153,7 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
         WorldBulletinPromptFacts facts = _port.CapturePromptFacts(selection, focus);
         WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(selection);
         string userPrompt = WorldBulletinPolicy.BuildUserPrompt(facts.ScopeLine, facts.Date, selection, facts.KingdomContext);
-        string systemPrompt = WorldBulletinPolicy.BuildSystemPrompt(selection.MajorFacts.Count, selection.Minors.Count);
+        string systemPrompt = WorldBulletinPolicy.BuildSystemPrompt(selection.MajorFacts.Count, selection.Minors.Count, _port.WritingRequirements?.Invoke());
 		WorldBulletinIllustrationPlan illustrationPlan = WorldBulletinPolicy.BuildIllustrationPlan(selection,
 			"selection:" + (scope.Sequence + 1).ToString(CultureInfo.InvariantCulture) + ":" + scope.WindowEndHour.ToString("R", CultureInfo.InvariantCulture),
 			_port.CurrentDate());
@@ -405,6 +423,7 @@ internal string ExportJson(){if(State!=null&&CorruptRaw!=null)State.PreservedUnr
 }
 internal sealed class WorldBulletinPromptFacts {internal string ScopeLine,Date;internal List<string> KingdomContext;}
 internal sealed class WorldBulletinPort {
+ internal Func<string> WritingRequirements;
  internal Func<string,string> ResolveKingdom;internal Func<EventRecordEntry,string> NoticeTitle,PopupSubtitle,PopupBody;
  internal Func<int> AutoWeek;internal Action<int> SetAutoWeek;
  internal Func<bool> Enabled,PublishingEnabled;internal Func<int> CurrentDay;internal Func<double> CurrentHour;internal Func<string> CurrentDate;internal Func<WorldBulletinFocus> Focus;internal Func<string,string> Render;
