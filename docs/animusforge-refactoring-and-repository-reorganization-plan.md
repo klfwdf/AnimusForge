@@ -7869,3 +7869,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户关闭启动器后，原deploy_module入口部署已验证产物成功，更新9文件。Stage与安装3379文件SHA256全部一致。产品a042639a7已推送，发布ZIP为一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。
 - 证据artifacts/clothing-state-release-deploy.log、clothing-state-release-build.log、clothing-state-release-package.log。Recovery: C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-c44f37b92dfe4542a62ad8783ad3991d。
 - 覆盖上一条部署等待状态；实机/真实模型遵从尚未验证，旧图不自动修改。
+
+
+## Execution crowd exit hang 20261007 — OFFLINE_VERIFIED_NOT_DEPLOYED
+- 本机两次离开满条卡死。PID36276托管线程10052栈为Mission.EndMission→MissionEnded→UsableMachine.OnMissionEnded→UsableMissionObject.IsDeactivated→Agent.StopUsingGameObjectAux；堆取证唯一停用且残留MovingAgent的AnimationPoint指向散场Agent296，日志对应同一人。证据artifacts/execution-hang-20261007/managed-stacks.txt、usable-deactivated.txt、hang-36276.dmp（私有内存，不提交）。
+- 产品3d7a2e35d；检查点2e4096b。TownExecutionMissionBehavior.Crowd.TryReleaseCrowdAgent先设AI再SetTarget；持有本场散场行为引用。Player.OnEndMissionRequest允许退出前ReleaseCrowdForMissionExit，Lifecycle退出/移除兜底。ExecutionCrowdWalkAwayBehavior.ReleaseOwnedTarget仅清该目标中同Agent的移动/防守预约与使用状态，保留别人的占用及新导航目标；停用route防晚Tick重绑。
+- 已有63项及新增退出/幂等/顺序/外部接管共74项通过（链接真实生产方法，fake引擎）；原双1.3/1.4+Bootstrap+接缝通过，独立RichExecutions 1.4.8构建0错误（16警告）。日志regression.log、build.log、standalone-build.log位于证据目录。实机三种退出时机及结算一次性未验，未部署/推送/打包。
+- 工作区其他作者DuelSettings.cs改动保留不入本提交；回滚git revert 3d7a2e35d。清理每场退出/目标释放有界执行，不扫描全场Agent，不新增Tick扫描。
