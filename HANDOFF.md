@@ -1,4 +1,10 @@
-﻿# 当前交接：卷轴式（暂停）替换旧喊话样式（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：会面放行/投降生命周期修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `110bbeed`，检查点 `d5ab7760`。投降任务绑定原遭遇/存档并保护正常退出；放行回调后复验身份；地图对话落实10秒延时，保留手动早退。
+- 172会面边界、34放行/投降scope、55战斗接续PASS，旧源反例FAIL符合预期；隔离原双API/Bootstrap/双DLL构建通过。未实机/部署/打包/推送。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#meeting-lifecycle-fixes-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#meeting-lifecycle-fixes-20261008)。证据 `artifacts/meeting-lifecycle-fixes-20261008/receipt.json`；回滚仅 `git revert 110bbeed`。
+
+# 当前交接：卷轴式（暂停）替换旧喊话样式（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `25ea05c26`，检查点 `3b2816366`。用户截图所示旧喊话皮肤及原版兜底共用现有卷轴底座/输入/按钮，不显示受众名录，保留暂停、记录、长输入和提交校验。MCM索引0改名“卷轴式（暂停）”，默认/序号不变；三种面板均有生图按钮。
 - UI生命周期103、XML绑定/滚动路径/生成器一致性、原双API/Bootstrap/双接缝PASS。实机MCM、显示/点击/滚动/暂停未验；未部署/打包/推送。仅回滚 `git revert 25ea05c26`。

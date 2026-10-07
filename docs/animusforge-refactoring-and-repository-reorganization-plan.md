@@ -1,4 +1,16 @@
-﻿<a id="native-dialogue-combat-continuation-20261008"></a>
+﻿<a id="meeting-lifecycle-fixes-20261008"></a>
+# 会面放行/投降生命周期修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户授权修复会面审查确认的三项。检查点 `d5ab7760`，产品 `110bbeed`（5文件）。范围仅原会面宿主和专项测试；保留并行对话UI工作。本条取代本地 meeting-full-review-20261008/findings.md 三项待修状态，不将这些问题认定为之前玩家开战失败的根因。
+- NPC投降：排队绑定 encounter / party / manager / source Mission / save generation；消费前先校验身份，再判断对话是否退出。失效、缺失、会话加载清除，不再用旧party重启一个遭遇。同一Mission结束→地图过渡可继续；明确投降时工具栏离开不设置LeaveEncounter，OnMissionEnded不将它当普通和平会面销毁，保留原遭遇供投降结算。
+- 放行：EndConversation前捕获请求；回调后复验原encounter、party、存档代、manager和完全相同的Mission，失败不授权/不结束新场景；成功授权捕获的原请求。地图对话无Mission但仍活跃时也等待完整10秒，手动提前退出仍可立即完成；原场景延时/120秒超时/0.25秒重试保持。
+- 源码坐标（产品修订，一基）：`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:240–242` 投降scope，`:422` 会话清理，`:634–636` 保留投降遭遇，`:7333–7353` 放行回调复验，`:7447–7450` 地图延时，`:8188–8190` 投降绑定，`:8225–8241` 身份验证，`:8261–8275` 清除，`:8344–8353` 移除旧party重启并在执行前复验，`:8730` 工具栏离开保护。生产EncounterReleaseOwner算法/接口未改。
+- 性能：已有Tick在无任务时短路；有任务增加固定次数的引用/代次/会话状态检查，无扫描、反射、锁、后台游戏读取或新增存档字段。任务结束/失效才记录日志。
+- 验证：现有EncounterLifecycleBoundaryTests扩展至172 PASS（含地图0.1/9.99/10秒、手动早退和投降离开）；新增ReleaseSurrenderBoundaryTests为34 PASS，原样抽取10个生产声明并链接两个真实owner，覆盖回调换遭遇/party/Mission/manager/存档代、正常放行、投降过期/失效/缺失不复活、同scope地图/场景卸载及重复消费。原版战斗接续55 PASS。旧d5ab7760生产源在新增回调测试如预期FAIL，保留old-scope/run.log。游戏状态、资格和原生副作用端点为替身，不是实机。
+- 原统一scripts/build/build_single_module.ps1在隔离verify-tree（d5ab7760 + 唯一生产文件，SHA一致）Release运行，双API1.3/1.4、Bootstrap和双实际DLL接线exit0；未Stage/Deploy。证据 `artifacts/meeting-lifecycle-fixes-20261008/receipt.json`、build.log、boundary-final/run.log、scope-final/run.log；产物在隔离树bin/Release/single_module_artifacts。与并行UI改动的合并实机未验。
+- NOT-RUN：玩家存档、真实地图/会面场景退出及俘虏战利品结算；未部署、打包、推送。回滚仅 `git revert 110bbeed`，保留其他作者工作。
+
+<a id="native-dialogue-combat-continuation-20261008"></a>
 # 原版开战对话结束后的战斗接续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 检查点 `179c6b74`，产品 `a8727db4a`。玩家确认选择原版开战选项；日志最后三次主动进入原版对话后仍为自定义菜单、Begin、leave=0、mapBattle=null，后来 menu_attack_option 才出现战斗。单次结束回调早于完整卸载，不能单独证明失败；重复时间线与源码缺口相符。原日志与摘录仅保留本地 evidence.json，不上传。
