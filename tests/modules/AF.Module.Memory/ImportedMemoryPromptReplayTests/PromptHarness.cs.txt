@@ -1,0 +1,44 @@
+        internal sealed class NpcDataPacket { public int AgentIndex; }
+        private ShoutBehavior _ports => this;
+        private static bool IsBannerlordMainThreadForNativeActions() => TaleWorlds.Library.TWParallel.IsMainThread();
+        private static int TryResolveNativeConversationAgentIndex(Hero hero, CharacterObject character) => 7;
+        private static NpcDataPacket BuildNativeConversationNpcData(Hero hero, CharacterObject character) => null;
+        private static string NormalizeNativeConversationVisibleTextKey(string text) => text ?? "";
+        private static string GetLatestNativeConversationNpcUtteranceForExternal(Hero hero, CharacterObject character, int index) => "";
+        private static bool TryResolveWildernessNonHeroMemory(NpcDataPacket npc, Hero hero, CharacterObject character, int index, out string id, out string name) { id = name = ""; return false; }
+        private static void LogNonHeroMemoryTrace(string text) { }
+        internal static Func<string> CaptureImportedHistory(Hero hero, long generation) => CaptureNativeConversationPersistedHistoryWork(hero, null, "Recall our prior shared experiences.", "", false, generation);
+        internal async Task<string> Replay(string persistedHeroHistory, List<ConversationMessage> dailyMessages = null)
+        {
+            HistorySectionProjectionOwner.SplitPersistedHeroHistorySections(persistedHeroHistory, out string privateRecentWindowSection, out string persistedWithoutRecentWindow);
+            string roleRuntimeContext = "NPC runtime", nativeNpcListBlock = "", trustBlock = "", miscExtrasSection = "";
+            string knowledgeExtrasSection = "", systemRuleBlock = "", nativeMeetingTauntRuleBlock = "", layeredPrompt = "Answer the player.";
+            string npcOpeningUserText = "", promptPlayerText = "Recall our prior shared experiences.";
+            bool npcInitiatedOpening = false;
+            int nativeTargetAgentIndex = 7;
+            var nativeHistoryMessages = new List<ConversationMessage> { new ConversationMessage { Role = "user", Content = promptPlayerText, TargetAgentIndex = nativeTargetAgentIndex, EventSequence = 1 } };
+            var persistentMemoryRoleMessages = dailyMessages ?? new List<ConversationMessage>();
+            var pendingNativeCurrentAfefFacts = new List<ConversationMessage>();
+            List<object> messages;
+            @@NATIVE_PREFIX@@
+            string output = await CallNativeConversationApiAsync(messages, null);
+            ReplayChecks.Check(output == "ok" && LegacyShoutNetworkGateway.LastRequest != null, "actual Native API caller reaches gateway");
+            using var request = JsonDocument.Parse(JsonSerializer.Serialize(LegacyShoutNetworkGateway.LastRequest));
+            var wire = request.RootElement.GetProperty("messages").EnumerateArray().ToArray();
+            ReplayChecks.Check(wire[0].GetProperty("role").GetString() == "system", "Native final system role retained");
+            ReplayChecks.Check(wire.Any(message => message.GetProperty("role").GetString() == "user" && message.GetProperty("content").GetString().Contains(promptPlayerText)), "Native player input reaches final user message");
+            string text = string.Join("\n", wire.Select(message => message.GetProperty("content").GetString()));
+            ReplayChecks.Check(text.Contains(persistedWithoutRecentWindow.Trim(), StringComparison.Ordinal), "whole imported history prefix survives final assembly and caller");
+            foreach (bool streaming in new[] { false, true })
+            {
+                var payload = ShoutNetwork.CapturePayload(messages, streaming);
+                foreach (string url in new[] { "https://replay.invalid/v1/chat/completions", "https://replay.invalid/v1/messages" })
+                {
+                    var body = Newtonsoft.Json.Linq.JObject.Parse(LlmApiCompat.PrepareChatRequestJson(url, payload));
+                    string sentText = string.Join("\n", body.SelectTokens("$..content").Select(token => token.Type == Newtonsoft.Json.Linq.JTokenType.String ? token.ToString() : ""))
+                        + "\n" + string.Join("\n", body.SelectTokens("$..text").Select(token => token.ToString()));
+                    ReplayChecks.Check(sentText.Contains(persistedWithoutRecentWindow.Trim(), StringComparison.Ordinal), "OpenAI/Anthropic stream/nonstream HTTP body retains whole imported history prefix");
+                }
+            }
+            return text;
+        }

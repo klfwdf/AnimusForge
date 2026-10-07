@@ -1,0 +1,175 @@
+        private readonly MemoryBusinessStateOwner _memoryBusinessState = new();
+        internal class DialogueDay { }
+        private MemoryOverviewState GetMemoryOverviewState(string id) => _memoryBusinessState.GetMemoryOverviewState(id);
+        private static int GetMemoryOverviewStartBlockCountFromSettings() => 3;
+        private bool HasMemoryOverviewPendingBlocks(string id, List<CompressedMemoryBlock> blocks) => false;
+        private void MarkMemoryOverviewDirty(string id) => _memoryBusinessState.DirtyOverviewIds.Add(id);
+        private int GetCurrentSceneSessionIdForDailyMemorySuppression() => -1;
+        private int GetCurrentNativeConversationMemorySessionIdForSuppression() => -1;
+        private string BuildCurrentMemorySessionKey(int scene, int dialogue) => "";
+        private bool HasCompressedMemoryBlock(string id, int day) => _memoryBusinessState.LoadBlocks(id).Any(x => x.GameDayIndex == day);
+        private bool IsMemorySourceEditorCurrent(long generation) => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(generation);
+        private string FindNpcJsonByHeroId(string dir, string id) => null;
+        internal static string DuplicateChoice = "overwrite";
+        internal static int DuplicatePrompts;
+        private void ShowDuplicateImportInquiry(string title, string body, Action overwrite, Action skip, Action cancel)
+        {
+            DuplicatePrompts++;
+            if (DuplicateChoice == "skip") skip();
+            else if (DuplicateChoice == "overwrite") overwrite();
+            else cancel();
+        }
+        internal void Import(string file, string id) => ImportSingleNpcDialogueHistoryData(file, id);
+        internal CompressedMemoryExportBundle Export(string id) => MemoryImportExportOwner.Build(id, CaptureMemoryImportExportState());
+        internal bool HasData(string id) => HasCompressedMemoryDataForHero(id);
+        internal void SetOverview(string id, string text) => _memoryBusinessState.Overviews[id] = new MemoryOverviewState { HeroId = id, Summary = text };
+    }
+    internal static class ReplayChecks
+    {
+        private static int Checks;
+        internal static void Check(bool condition, string label)
+        {
+            Checks++;
+            if (!condition) throw new InvalidOperationException("ASSERTION: " + label);
+        }
+        private static MyBehavior NewOwner()
+        {
+            Host.Reset();
+            Host.Day = 92600;
+            Host.Final = 4;
+            Host.Limit = 20;
+            Host.Reply = "1,2,3";
+            MyBehavior.DuplicateChoice = "overwrite";
+            MyBehavior.DuplicatePrompts = 0;
+            var owner = new MyBehavior();
+            MyBehavior.Instance = owner;
+            Campaign.Owner = owner;
+            SaveRuntimeGuard.AdvanceGeneration("import-replay");
+            InformationManager.Messages.Clear();
+            return owner;
+        }
+        internal static string Context(Hero hero)
+        {
+            var work = ShoutBehavior.CaptureImportedHistory(hero, SaveRuntimeGuard.CurrentGeneration);
+            Check(work != null, "current Native capture returns work");
+            int before = Host.OffThread;
+            string text = Task.Run(work).GetAwaiter().GetResult();
+            Check(Host.OffThread == before, "recall worker does not read game objects");
+            return text;
+        }
+        private static string ContentLines(string text) => string.Join("\n", text.Replace("\r", "").Split('\n').Select(x => x.Trim()).Where(x => x.Length > 0));
+        private static int Included(string text, CompressedMemoryExportBundle bundle) => bundle.Blocks.Count(block => !string.IsNullOrWhiteSpace(block.Summary) && ContentLines(text).Contains(ContentLines(block.Summary), StringComparison.Ordinal));
+        private static bool ContainsOverview(string text, string overview) => ContentLines(text).Contains(ContentLines(overview), StringComparison.Ordinal);
+        private static string Wire(string text) => new ShoutBehavior().Replay(text).GetAwaiter().GetResult();
+        internal static int Run(string file, string output)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(file))
+                {
+                    var synthetic = new CompressedMemoryExportBundle
+                    {
+                        Overview = new MemoryOverviewState { HeroId = "original", Summary = "Known player and prior shared experiences.", IncludedBlockIds = Enumerable.Range(0, 17).Select(i => "b" + i).ToList() },
+                        Blocks = Enumerable.Range(0, 17).Select(i => new CompressedMemoryBlock { Id = "b" + i, HeroId = "original", GameDayIndex = 100 + i, RichTitle = "Event " + i, Summary = "Recorded shared experience number " + i + ".", AfefLines = new() { "[AFEF] Confirmed event " + i } }).ToList(),
+                        DailyDrafts = new() { new DailyMemoryDraft { HeroId = "original", GameDayIndex = 117, HasLlmDialogue = true, Lines = new() { new DailyMemoryLine { Text = "Latest conversation", GameDayIndex = 117, IsLlmDialogue = true } } } }
+                    };
+                    file = Path.Combine(output, "synthetic-memory.json");
+                    File.WriteAllText(file, JsonConvert.SerializeObject(synthetic));
+                }
+                Check(CompressedMemoryExportBundleReader.TryRead(file, out var input, out _), "attachment accepted by actual reader");
+                int blockCount = input.Blocks.Count;
+                Check(blockCount > 4 && blockCount <= 20, "fixture covers default4 selection and all-block branch");
+                string overview = input.Overview.Summary.Trim();
+                Check(overview.Length > 0 && input.Overview.LastError == "", "overview available without error masking");
+                string ownerId = input.Blocks[0].HeroId.Trim().ToLowerInvariant();
+                var hero = new Hero { Id = ownerId.ToUpperInvariant(), NameValue = input.Blocks[0].HeroName };
+                var other = new Hero { Id = "other_npc" };
+                Hero.Registry = new() { hero, other };
+                var owner = NewOwner();
+                owner.Import(file, hero.StringId);
+                Check(InformationManager.Messages.Last().StartsWith("导入完成：", StringComparison.Ordinal), "actual single-NPC UI reports completion");
+                Check(MyBehavior.DuplicatePrompts == 0, "first import needs no duplicate confirmation");
+                var stored = owner.Export(hero.StringId);
+                Check(stored.Blocks.Count == blockCount, "all blocks stored in authoritative owner");
+                Check(stored.DailyDrafts.Count == input.DailyDrafts.Count, "draft count retained");
+                Check(stored.DailyDrafts.Sum(x => x.Lines.Count) == input.DailyDrafts.Sum(x => x.Lines.Count), "daily lines retained by actual sanitizer");
+                Check(stored.Overview.Summary == overview, "overview retained exactly");
+                Check(stored.Blocks.All(x => x.HeroId == ownerId), "selected NPC owns imported blocks");
+                Check(stored.DailyDrafts.All(x => x.HeroId == ownerId), "selected NPC owns imported drafts");
+                string defaultContext = Context(hero);
+                Check(ContainsOverview(defaultContext, overview), "default context includes exact overview");
+                Check(Included(defaultContext, stored) == 4, "default recall injects four exact summaries");
+                Check(defaultContext.Contains(stored.Blocks.OrderByDescending(x => x.GameDayIndex).First().Summary.Trim(), StringComparison.Ordinal), "default recall retains latest block");
+                Check(Host.ApiCalls == 1 && Host.EmbedCalls == 0, "17 blocks use one fake auxiliary call and no embedding at default settings");
+                string defaultWire = Wire(defaultContext);
+                Check(ContainsOverview(defaultWire, overview) && Included(defaultWire, stored) == 4, "default recall and overview reach Native gateway");
+                Host.Final = 20;
+                int calls = Host.ApiCalls;
+                string allContext = Context(hero);
+                string allWire = Wire(allContext);
+                Check(Host.ApiCalls == calls && Host.EmbedCalls == 0, "all-block branch needs no model or embedding");
+                Check(Included(allContext, stored) == blockCount && Included(allWire, stored) == blockCount, "all exact summaries reach context and final gateway");
+                var dailyMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, 7, false);
+                Check(dailyMessages.Count > 0, "imported uncompressed draft contributes role messages");
+                string dailyWire = new ShoutBehavior().Replay(allContext, dailyMessages).GetAwaiter().GetResult();
+                foreach (var message in dailyMessages)
+                    Check(ContentLines(dailyWire).Contains(ContentLines(message.Content), StringComparison.Ordinal), "imported daily role message survives final Native request");
+                Host.Day = 50;
+                Check(Included(Context(hero), stored) == blockCount, "different campaign date does not discard imported compressed blocks");
+                Host.Day = 92600;
+                foreach (var block in stored.Blocks)
+                    foreach (string fact in block.AfefLines.Where(x => !string.IsNullOrWhiteSpace(x)))
+                        Check(ContentLines(allWire).Contains(ContentLines(MemoryRecallContextOwner.FormatPastAfefLineForPrompt(fact)), StringComparison.Ordinal), "imported AFEF survives final message assembly");
+                Check(Context(other) == "", "another NPC cannot read selected NPC memory");
+                owner.SetOverview(hero.StringId.ToLowerInvariant(), "existing overview sentinel");
+                MyBehavior.DuplicateChoice = "skip";
+                owner.Import(file, hero.StringId);
+                Check(MyBehavior.DuplicatePrompts == 1 && InformationManager.Messages.Last().Contains("已跳过重复", StringComparison.Ordinal), "actual skip UI is a successful no-replacement import");
+                Check(Wire(Context(hero)).Contains("existing overview sentinel", StringComparison.Ordinal), "skip leaves prior overview in next Native request");
+                MyBehavior.DuplicateChoice = "overwrite";
+                owner.Import(file, hero.StringId);
+                string freshWire = Wire(Context(hero));
+                Check(ContainsOverview(freshWire, overview) && !freshWire.Contains("existing overview sentinel", StringComparison.Ordinal), "overwrite refreshes next turn without stale cached overview");
+                Host.Final = 4;
+                Host.ApiOk = false;
+                string failureContext = Context(hero);
+                Check(ContainsOverview(failureContext, overview) && Included(failureContext, stored) == 0, "preprocess failure loses recalled blocks while retaining overview");
+                Check(ContainsOverview(Wire(failureContext), overview), "overview survives recall failure into gateway");
+                Check(Host.LastErrorGeneration == SaveRuntimeGuard.CurrentGeneration, "recall failure reports captured generation");
+                Host.ApiOk = true;
+                hero.IsDisabled = true;
+                Check(Context(hero) == "", "disabled NPC is ineligible for memory injection");
+                hero.IsDisabled = false;
+                var staleWork = ShoutBehavior.CaptureImportedHistory(hero, SaveRuntimeGuard.CurrentGeneration);
+                SaveRuntimeGuard.AdvanceGeneration("read-save");
+                Check(Task.Run(staleWork).GetAwaiter().GetResult() == "", "old capture cannot inject across save generation");
+                owner = NewOwner();
+                owner.Import(file, other.StringId);
+                Check(InformationManager.Messages.Last().StartsWith("导入完成：", StringComparison.Ordinal), "wrong selected NPC still reports import completion");
+                Check(Context(hero) == "" && ContainsOverview(Context(other), overview), "direct file import writes to menu target rather than attachment HeroId");
+                string invalidFile = Path.Combine(output, "synthetic-persona.json");
+                File.WriteAllText(invalidFile, "{\"Personality\":\"synthetic\",\"Background\":\"synthetic\"}");
+                owner.Import(invalidFile, other.StringId);
+                Check(InformationManager.Messages.Last().Contains("不是压缩记忆", StringComparison.Ordinal), "persona rejected in actual single-NPC UI");
+                Check(ContainsOverview(Context(other), overview), "rejected format does not erase prior memory");
+                Console.WriteLine($"PASS ImportedMemoryPromptReplay checks={Checks} blocks={blockCount} drafts={stored.DailyDrafts.Count} lines={stored.DailyDrafts.Sum(x=>x.Lines.Count)} dailyRoleMessages={dailyMessages.Count} overviewChars={overview.Length} defaultInjected=4 allInjected={blockCount} game=STUBBED auxiliary=STUBBED gateway=STUBBED live=NOT_RUN");
+                return 0;
+            }
+            catch (Exception error)
+            {
+                Console.Error.WriteLine(error is InvalidOperationException && error.Message.StartsWith("ASSERTION:", StringComparison.Ordinal) ? error.Message : "Replay failed: " + error.GetType().Name);
+                return 1;
+            }
+        }
+    }
+    internal static class Program { public static int Main(string[] args) => ReplayChecks.Run(args[0], args[1]); }
+}
+namespace TaleWorlds.Library
+{
+    public sealed class InformationMessage { public string Text; public InformationMessage(string text) { Text = text; } }
+    public static class InformationManager
+    {
+        public static List<string> Messages = new();
+        public static void DisplayMessage(InformationMessage message) => Messages.Add(message.Text);
+    }
+}

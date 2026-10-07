@@ -4,6 +4,12 @@
 - 本轮参考过滤试改已撤回，六个产品文件无内容差异，未部署/调用付费API。持续单人偏好需另行明确需求；该玩家真实请求与出图未验。
 - [主台账及真实调用点](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-redraw-cast-20261008)。本地撤回候选及构建证据留在artifacts/illustrator-redraw-cast-20261008，不作为可交付修复；保留其他作者工作。
 
+# 当前验证：有效压缩记忆至最终请求（2026-10-08，OFFLINE_VERIFIED_LIVE_NOT_RUN）
+
+- 单NPC导入、权威存储、Native召回、每日记录、最终消息及生产OpenAI/Anthropic请求体回放：安温附件168、合成121、历史快照852、导入86通过，3故障变异检出。本轮仅测试/文档，未改生产逻辑。
+- 正确目标+覆盖有效文件时未复现记忆丢失；跳过重复/选错NPC均能提示完成但目标对话不变。玩家真实安装、存档、请求和模型仍未验；本任务未部署/推送。全Native历史源码对照仍失败于既有Commit演进，未冒称全仓通过。
+- [主台账、源码坐标与未验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#imported-memory-prompt-replay-20261008)。证据 `artifacts/tests/imported-memory-prompt/run-5bb055a33f68413897f403610ec69b48/`；检查点 `9356631e3`，并发合并后在 `658686d1` 重验，保留其他任务交接。
+
 # 当前交接：快报轶闻分流与远端合并已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
 
 - 快报产品 `4f1539f8`：正文可写生动轶事，NPC按带来源的报刊轶闻转述；事件事实、外交历史与模型叙事分开，旧自定义提示词/清空保持。实际合并 `9356631e`，部署源码 `97e87d7c4`，保留双方更新及并行任务记录。
