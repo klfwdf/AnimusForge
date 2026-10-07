@@ -60,22 +60,22 @@
             <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="201" Text="@IllustrationStatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
             <ButtonWidget Id="SceneIllustrationButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1219" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteIllustrate" IsVisible="@IsIllustrationVisible" IsEnabled="@CanIllustrate">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
               </Children>
             </ButtonWidget>
             <ButtonWidget Id="AFShoutCodex" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1143" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteOpenTitleLink" IsVisible="@IsTitleLinkEnabled">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="图鉴" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="图鉴" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
               </Children>
             </ButtonWidget>
             <ButtonWidget Id="AFShoutSubmit" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSubmit">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="发送" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#FFDF95FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="发送" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
               </Children>
             </ButtonWidget>
             <ButtonWidget Id="AFShoutCancel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="102" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1189" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCancel">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="关闭" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="关闭" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
               </Children>
             </ButtonWidget>
           </Children>
