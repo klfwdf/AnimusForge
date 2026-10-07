@@ -1,0 +1,151 @@
+using AnimusForge.Refactor.Modules;
+
+class Program
+{
+    static void Main() => Host.Verify();
+}
+class Host
+{
+    static Hero _targetHero;
+    static readonly EncounterReleaseOwner<MeetingPlayerReleaseRequest> _releaseOwner = new();
+    static readonly EncounterPendingReturnOwner<PlayerEncounter,PartyBase> _npcSurrenderScope = new();
+    static Mission _npcSurrenderSourceMission;
+    static ConversationManager _npcSurrenderManager;
+    static bool _pendingNativeConversationNpcSurrender;
+    static float _pendingNativeConversationNpcSurrenderAtTime, _pendingNativeConversationNpcSurrenderLastAttemptTime;
+    static Hero _pendingNativeConversationNpcSurrenderHero;
+    static CharacterObject _pendingNativeConversationNpcSurrenderCharacter;
+    static PartyBase _pendingNativeConversationNpcSurrenderParty;
+    static int _pendingNativeConversationNpcSurrenderAgentIndex;
+    static string _pendingNativeConversationNpcSurrenderReason;
+    static PartyBase EffectParty;
+    static PlayerEncounter FinishedEncounter;
+    static int Effects, Checks;
+    static void Check(bool value,string name) { if(!value) throw new Exception("FAIL "+name); Checks++; }
+    static PlayerEncounter Reset(bool mission=false)
+    {
+        ClearPendingNativeConversationNpcSurrender("test"); _releaseOwner.ClearAuthorization();
+        EffectParty=null; FinishedEncounter=null; Effects=0;
+        PlayerEncounter.Current=new(){Party=new()}; PlayerEncounter.PlayerSurrender=false;
+        Campaign.Current=new(); Mission.Current=mission ? new() : null;
+        Game.Current=new(); if(mission) Game.Current.GameStateManager.ActiveState=new MissionState();
+        SaveRuntimeGuard.Generation=1; Time.ApplicationTime=100;
+        return PlayerEncounter.Current;
+    }
+    internal static void Verify()
+    {
+        foreach(string change in new[]{"encounter","party","generation","manager","mission","missing","mission_removed"})
+        {
+            var original=Reset(change=="mission_removed"); var originalMission=Mission.Current;
+            Campaign.Current.ConversationManager.OnEnd=()=>Change(change);
+            bool released=TryExecuteMeetingPlayerRelease(new Hero(),original.Party,"test");
+            Check(!released && FinishedEncounter==null && _releaseOwner.Authorization==null,"callback rejects "+change);
+            Check((Mission.Current?.EndCount??0)==0 && (originalMission?.EndCount??0)==0,"callback cannot close changed mission "+change);
+        }
+        foreach(bool mission in new[]{false,true})
+        {
+            var original=Reset(mission);
+            Check(TryExecuteMeetingPlayerRelease(new Hero(),original.Party,"normal"),"unchanged release succeeds");
+            Check(mission ? Mission.Current.EndCount==1 : ReferenceEquals(FinishedEncounter,original),"only captured scope released");
+        }
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            Check(!TryExecuteMeetingPlayerRelease(new Hero(),new PartyBase(),"mismatch") && manager.EndCount==0,"wrong party rejected before ending conversation");
+        }
+        foreach(string change in new[]{"encounter","party","generation","manager","mission","missing","expiry"})
+        {
+            Reset(); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"test");
+            Change(change); if(change=="expiry") Time.ApplicationTime=701;
+            TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==0 && !_pendingNativeConversationNpcSurrender,"stale surrender cancelled: "+change);
+            if(change=="missing") Check(PlayerEncounter.Current==null,"missing encounter is not resurrected");
+        }
+        {
+            var original=Reset(); Campaign.Current.ConversationManager.IsConversationInProgress=true;
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"nonhero");
+            Time.ApplicationTime=101; TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==0,"surrender waits for manual dialogue exit");
+            Campaign.Current.ConversationManager.IsConversationInProgress=false;
+            TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==1 && ReferenceEquals(EffectParty,original.Party),"normal nonhero surrender uses original party");
+            TryForcePendingNativeConversationNpcSurrenderIfReady(); Check(Effects==1,"surrender consumed once");
+        }
+        {
+            var original=Reset(true); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"mission");
+            Time.ApplicationTime=101; TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==0,"mission surrender waits for map");
+            Mission.Current=null; TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==0 && _pendingNativeConversationNpcSurrender,"mission teardown retains pending task");
+            Game.Current.GameStateManager.ActiveState=new(); TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==1 && ReferenceEquals(EffectParty,original.Party),"same encounter survives mission teardown");
+        }
+        {
+            Reset(); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"old");
+            ClearPendingNativeConversationNpcSurrender("session_launched");
+            Time.ApplicationTime=101; TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==0,"session reset revokes pending surrender");
+        }
+        Console.WriteLine($"PASS {Checks} release callback and surrender scope checks (actual extracted host methods; native effects are fixtures).");
+    }
+    static void Change(string change)
+    {
+        switch(change)
+        {
+            case "encounter": PlayerEncounter.Current=new(){Party=PlayerEncounter.Current.Party}; break;
+            case "party": PlayerEncounter.Current.Party=new(); break;
+            case "generation": SaveRuntimeGuard.Generation++; break;
+            case "manager": Campaign.Current.ConversationManager=new(); break;
+            case "mission": Mission.Current=new(); break;
+            case "missing": PlayerEncounter.Current=null; break;
+            case "mission_removed": Mission.Current=null; break;
+        }
+    }
+    static bool TryExecuteNpcSurrenderFromFreeConversation(Hero hero,CharacterObject c,int index,string reason,bool closeConversation)
+    {
+        if(!TryGetNpcSurrenderEncounterParty(hero,c,out var party,out _)) return false;
+        EffectParty=party; Effects++; return true;
+    }
+    static PartyBase TryGetMeetingReleaseEncounterParty() => PlayerEncounter.Current?.Party;
+    static bool TryGetMeetingReleaseContext(Hero hero,out Hero target,out int a,out int b,out int c,out int d,out string e,out bool negotiable)
+    { target=hero; a=b=c=d=0; e=""; negotiable=true; return true; }
+    static bool IsMissionStateActiveForMeetingRelease() => Mission.Current!=null;
+    static void AuthorizeMeetingPlayerRelease(string reason) => _releaseOwner.Authorize(CaptureMeetingPlayerReleaseRequest(_targetHero,reason));
+    static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason) {}
+    static bool TryEndCurrentMeetingMissionByReflection(string reason) { Mission.Current.EndMission(); return true; }
+    static bool TryFinishMeetingPlayerReleaseEncounterDirectly(Hero hero,string reason,PartyBase party)
+    { FinishedEncounter=PlayerEncounter.Current; return true; }
+    static void ClearMeetingPlayerReleaseAuthorization(string reason) => _releaseOwner.ClearAuthorization();
+    static string GetPartyLogName(PartyBase party) => "party";
+    @@METHODS@@
+}
+class Hero { public string StringId="hero"; public object Name="hero"; public CharacterObject CharacterObject; public MobileParty PartyBelongedTo; }
+class CharacterObject { public Hero HeroObject; public string StringId="character"; }
+class PartyBase { public static PartyBase MainParty=new(); public object Name="party"; public Hero LeaderHero; public MobileParty MobileParty=new(); }
+class MobileParty { public static MobileParty MainParty=new(); public static MobileParty ConversationParty; public PartyBase Party; }
+class PlayerEncounter
+{
+    public static PlayerEncounter Current;
+    public static PartyBase EncounteredParty => Current?.Party;
+    public static bool PlayerSurrender;
+    public PartyBase Party;
+    public static void Start() => Current=new();
+    public void SetupFields(PartyBase main,PartyBase target) => Party=target;
+}
+static class PlayerEncounterCompat
+{
+    public static PartyBase GetEncounteredPartySafe() => PlayerEncounter.EncounteredParty;
+    public static void RestartPlayerEncounter(PartyBase target,PartyBase main,bool forcePlayerOutFromSettlement) => PlayerEncounter.Current=new(){Party=target};
+}
+class Mission { public static Mission Current; public int EndCount; public void EndMission() => EndCount++; }
+static class SaveRuntimeGuard { public static long Generation=1; public static long CaptureGeneration()=>Generation; public static bool IsCurrentGeneration(long value)=>value==Generation; }
+class Campaign { public static Campaign Current=new(); public ConversationManager ConversationManager=new(); }
+class ConversationManager { public bool IsConversationInProgress,IsConversationFlowActive; public Action OnEnd; public int EndCount; public void EndConversation() { EndCount++; IsConversationInProgress=false; OnEnd?.Invoke(); } }
+class Game { public static Game Current=new(); public StateManager GameStateManager=new(); }
+class StateManager { public object ActiveState=new(); }
+class MissionState {}
+static class Time { public static float ApplicationTime=100; }
+static class Logger { public static void Log(string category,string message) {} }
+static class AnimusForgeQuickInfo { public static void Show(string message,CharacterObject c) {} }
+class Color { public Color(float r,float g,float b) {} }
+class InformationMessage { public InformationMessage(string message,Color color) {} }
+static class InformationManager { public static void DisplayMessage(InformationMessage message) {} }

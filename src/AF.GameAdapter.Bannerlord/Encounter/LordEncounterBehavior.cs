@@ -237,6 +237,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _pendingNativeConversationNpcSurrender;
 
+    private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _npcSurrenderScope = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();
+    private static Mission _npcSurrenderSourceMission;
+    private static ConversationManager _npcSurrenderManager;
+
 	private static float _pendingNativeConversationNpcSurrenderAtTime;
 
 	private static float _pendingNativeConversationNpcSurrenderLastAttemptTime = -1f;
@@ -415,6 +419,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
         NativeDialogueBattleContinuation.Cancel("session_launched");
+        ClearPendingNativeConversationNpcSurrender("session_launched");
         ClearNativeDialogueHandoff();
 		PlayerCaptivityGhostSafePatch.RepairMainHeroRosters("session_launched");
 		ClearCustomEncounterMenuHardSuppression("session_launched");
@@ -626,7 +631,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingBattle", "OnMissionEnded fallback escalation failed: " + ex.Message);
 			}
 		}
-		bool flag10 = flag2 && !flag && !flag3 && !flag14;
+		// A confirmed NPC surrender owns this encounter through mission teardown.
+		// Peaceful cleanup would destroy it before the queued settlement can run.
+		bool flag10 = flag2 && !flag && !flag3 && !flag14 && !HasPendingNativeConversationNpcSurrender();
 		bool flag19 = ConsumeMeetingPlayerReleaseAuthorization("mission_ended");
 		bool flag20 = flag10 && !flag19 && !flag22 && !flag21 && IsHostileEncounterInitiatedByOpponent();
 		bool flag11 = flag2 && flag && !flag3 && !flag4 && !flag6;
@@ -7323,6 +7330,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				targetName = releaseParty?.Name?.ToString() ?? "encounter_party";
 			}
 			Logger.Log("MeetingRelease", $"Player release triggered. Target={targetName}, Reason={reason ?? "N/A"}");
+			MeetingPlayerReleaseRequest request = CaptureMeetingPlayerReleaseRequest(resolvedTarget, reason ?? "meeting_release_player");
+			if (request == null) return false;
+			ConversationManager releaseManager = Campaign.Current?.ConversationManager;
 			bool flag = IsMissionStateActiveForMeetingRelease();
 			try
 			{
@@ -7331,7 +7341,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			AuthorizeMeetingPlayerRelease(reason ?? "meeting_release_player");
+			// EndConversation dispatches synchronous callbacks. Never authorize a new
+			// encounter or close a replacement mission on behalf of the old request.
+			if (!IsMeetingPlayerReleaseRequestCurrent(request) || !ReferenceEquals(request.SourceMission, Mission.Current)
+				|| !ReferenceEquals(releaseManager, Campaign.Current?.ConversationManager))
+			{
+				Logger.Log("MeetingRelease", "Release cancelled after conversation callback changed scope.");
+				return false;
+			}
+			_releaseOwner.Authorize(request);
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_player");
 			if (flag)
 			{
@@ -7426,6 +7444,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		MeetingPlayerReleaseRequest request = _pendingNativeConversationMeetingRelease;
 		float applicationTime = Time.ApplicationTime;
 		bool missionActive = IsMissionStateActiveForMeetingRelease() || Game.Current?.GameStateManager?.ActiveState is MissionState;
+		// Map conversations have no Mission. Honor the same reading delay while
+		// their dialog is active; manual early exit may still finish immediately.
+		if (!missionActive && IsNativeConversationStillActive()
+			&& applicationTime - request.RequestedAt < NativeConversationReleaseDialogDelaySeconds) return;
 		// Mission teardown can clear Mission.Current before MissionState is popped.
 		// Retain the request until the map tick can finish the same encounter.
 		if (!_releaseOwner.TryBeginPendingAttempt(applicationTime, missionActive,
@@ -8163,6 +8185,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				return false;
 			}
 			_pendingNativeConversationNpcSurrender = true;
+			_npcSurrenderScope.Mark(PlayerEncounter.Current, encounterParty, SaveRuntimeGuard.CaptureGeneration());
+			_npcSurrenderSourceMission = Mission.Current;
+			_npcSurrenderManager = Campaign.Current?.ConversationManager;
 			try
 			{
 				_pendingNativeConversationNpcSurrenderAtTime = Time.ApplicationTime;
@@ -8203,6 +8228,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (!_npcSurrenderScope.IsCurrent(PlayerEncounter.Current, TryGetMeetingReleaseEncounterParty(), SaveRuntimeGuard.CaptureGeneration())
+			|| !ReferenceEquals(_npcSurrenderManager, Campaign.Current?.ConversationManager)
+			|| (Mission.Current != null && !ReferenceEquals(_npcSurrenderSourceMission, Mission.Current)))
+		{
+			ClearPendingNativeConversationNpcSurrender("context_changed");
+			return false;
+		}
 		if (IsNativeConversationStillActive())
 		{
 			return true;
@@ -8228,6 +8260,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void ClearPendingNativeConversationNpcSurrender(string reason)
 	{
+		_npcSurrenderScope.Clear();
+		_npcSurrenderSourceMission = null;
+		_npcSurrenderManager = null;
 		_pendingNativeConversationNpcSurrender = false;
 		_pendingNativeConversationNpcSurrenderAtTime = 0f;
 		_pendingNativeConversationNpcSurrenderLastAttemptTime = -1f;
@@ -8306,38 +8341,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (PlayerEncounter.Current == null && _pendingNativeConversationNpcSurrenderParty != null && PartyBase.MainParty != null)
-			{
-				try
-				{
-					PlayerEncounterCompat.RestartPlayerEncounter(_pendingNativeConversationNpcSurrenderParty, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("NpcSurrender", "RestartPlayerEncounter for pending native NPC surrender failed: " + ex.Message);
-				}
-				if (PlayerEncounter.Current == null)
-				{
-					try
-					{
-						PlayerEncounter.Start();
-						if (PlayerEncounter.Current != null)
-						{
-							PlayerEncounter.Current.SetupFields(PartyBase.MainParty, _pendingNativeConversationNpcSurrenderParty);
-						}
-					}
-					catch (Exception ex2)
-					{
-						Logger.Log("NpcSurrender", "Start+SetupFields fallback for pending native NPC surrender failed: " + ex2.Message);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
+        // The same encounter must survive the dialog/mission teardown. A vanished
+        // encounter is not permission to resurrect the old party after load/travel.
+        if (!HasPendingNativeConversationNpcSurrender()) return;
 		try
 		{
 			if (TryExecuteNpcSurrenderFromFreeConversation(_pendingNativeConversationNpcSurrenderHero, _pendingNativeConversationNpcSurrenderCharacter, _pendingNativeConversationNpcSurrenderAgentIndex, _pendingNativeConversationNpcSurrenderReason ?? "native_conversation_npc_surrender_tag", closeConversation: false))
@@ -8721,7 +8727,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
                     !IsEncounterArmyMemberTarget(conversation.OtherSideConversationData.Character?.HeroObject, encounterParty))) return;
         }
         if (HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult() ||
-            HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu() ||
+            HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu() || HasPendingNativeConversationNpcSurrender() ||
             PlayerEncounterCompat.HasEncounterBattleContext() || PlayerEncounterCompat.HasCampaignBattleResult() ||
             PlayerEncounterCompat.IsInPostBattleResultFlow() || MeetingBattleRuntime.IsCombatEscalated ||
             PlayerEncounter.PlayerSurrender || IsNativeEncounterActivityContext(target) ||

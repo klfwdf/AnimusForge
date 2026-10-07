@@ -194,11 +194,12 @@ internal static class PlayerLeaveAudit
     }
     static class MeetingBattleRuntime { internal static bool IsCombatEscalated; }
     static class MapSeaContextGuard { internal static bool Sea; internal static bool IsCurrentPlayerEncounterAtSea(Hero hero) => Sea; }
-    static bool Attack, MeetingResult, Captivity, BattleMenu, Native, HostileInterception;
+    static bool Attack, MeetingResult, Captivity, BattleMenu, Native, HostileInterception, NpcSurrender;
     static bool HasPendingForceNativeEncounterAttack() => Attack;
     static bool HasPendingMeetingBattleNativeResult() => MeetingResult;
     static bool HasPendingForceNativeDefeatCaptivityMenu() => Captivity;
     static bool HasPendingForceNativeEncounterBattleMenu() => BattleMenu;
+    static bool HasPendingNativeConversationNpcSurrender() => NpcSurrender;
     static bool IsNativeEncounterActivityContext(Hero target) => Native;
     static bool IsHostileEncounterInitiatedByOpponent() => HostileInterception;
     static Hero GetCurrentEncounterLeaderSafe() => null; // caravans/non-Hero targets must also be able to leave
@@ -208,7 +209,7 @@ internal static class PlayerLeaveAudit
         PlayerEncounter.Current = new State(); PlayerEncounter.LeaveEncounter = PlayerEncounter.PlayerSurrender = false;
         PlayerEncounter.PlayerIsAttacker = true; EncounterParty = new PartyBase(); ArmyMember = null;
         Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter; Mission.Current = null;
-        Attack = MeetingResult = Captivity = BattleMenu = Native = HostileInterception = false;
+        Attack = MeetingResult = Captivity = BattleMenu = Native = HostileInterception = NpcSurrender = false;
         PlayerEncounterCompat.Battle = PlayerEncounterCompat.Result = PlayerEncounterCompat.PostResult = false;
         MeetingBattleRuntime.IsCombatEscalated = MapSeaContextGuard.Sea = false;
     }
@@ -221,6 +222,8 @@ internal static class PlayerLeaveAudit
     internal static void Run() {
         Setup(); PreparePlayerRequestedNativeConversationLeave();
         Program.Check(PlayerEncounter.LeaveEncounter && !PlayerEncounter.Current.IsPlayerWaiting, "toolbar farewell leaves an ordinary map encounter, including a caravan without a lord");
+        Setup(); NpcSurrender=true; PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(!PlayerEncounter.LeaveEncounter, "toolbar exit keeps the same encounter for confirmed NPC surrender");
         Setup(); PlayerEncounter.Current.EncounterState = PlayerEncounterState.Wait; PreparePlayerRequestedNativeConversationLeave();
         Program.Check(PlayerEncounter.LeaveEncounter, "waiting map conversation has the same farewell consequence");
         SetupNavalConversation(); PreparePlayerRequestedNativeConversationLeave();
@@ -530,6 +533,7 @@ internal static class ReleaseAudit
     private static Hero _releasedTarget;
     private static PartyBase TryGetMeetingReleaseEncounterParty() => _party;
     private static bool IsMissionStateActiveForMeetingRelease() => Mission.Current != null;
+    private static bool IsNativeConversationStillActive() => Campaign.Current.ConversationManager.IsConversationInProgress;
     private static bool IsNonHeroMeetingReleaseParty(PartyBase party) => party.IsNonHero;
     private static bool TryEndCurrentMeetingMissionByReflection(string reason) { Mission.Current.EndMission(); return true; }
     private static void SuppressCustomEncounterMenuUntilBackOnMap(string reason) { }
@@ -582,6 +586,20 @@ internal static class ReleaseAudit
         Program.Check(_pendingNativeConversationMeetingRelease!=null && _executions==0, "mission teardown retains pending release until map state");
         Game.Current.GameStateManager.ActiveState=null; TryForcePendingNativeConversationMeetingReleaseIfReady();
         Program.Check(_executions==1 && original.EndCount==0, "mission teardown completes on following map tick");
+        Reset(false); Campaign.Current.ConversationManager.IsConversationInProgress=true;
+        Time.ApplicationTime=0.1f; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==0, "map dialogue waits rather than releasing on next frame");
+        Time.ApplicationTime=9.99f; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==0, "map dialogue waits for full ten seconds");
+        Time.ApplicationTime=10f; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==1, "map dialogue releases at deadline");
+        TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==1, "map release is consumed once");
+        Reset(false); Campaign.Current.ConversationManager.IsConversationInProgress=true;
+        Time.ApplicationTime=1; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Campaign.Current.ConversationManager.IsConversationInProgress=false;
+        TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==1, "manual map dialogue exit completes before deadline");
         Reset(false); _party.IsNonHero=true; TryForcePendingNativeConversationMeetingReleaseIfReady();
         Program.Check(_releasedTarget==null, "nonhero party cannot inherit a stale lord target");
         Reset(); var pending=_pendingNativeConversationMeetingRelease; AuthorizeMeetingPlayerRelease("newer");
