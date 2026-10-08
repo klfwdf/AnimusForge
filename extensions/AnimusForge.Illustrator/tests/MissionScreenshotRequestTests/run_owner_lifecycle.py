@@ -7,8 +7,10 @@ spec = importlib.util.spec_from_file_location('extract', root / 'tests/modules/A
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 source = (root / 'extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs').read_text(encoding='utf-8-sig')
 fixture = Path(__file__).with_name('OwnerLifecycle.cs.in').read_text(encoding='utf-8')
-for name in ['TickCapture', 'Finish', 'ScopeClosed']:
+for name in ['TickCapture', 'Finish', 'ScopeClosed', 'TryShowProgress']:
     fixture = fixture.replace('__' + name + '__', extract.declaration(source, 'private static void ' + name + '('))
+popup = (root / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopup.cs').read_text(encoding='utf-8-sig')
+fixture = fixture.replace('__ShouldCancelForSystemInterruption__', extract.declaration(popup, 'private bool ShouldCancelForSystemInterruption('))
 (out/'Program.cs').write_text(fixture, encoding='utf-8')
 (out/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>', encoding='utf-8')
 subprocess.run(['dotnet','build',str(out/'Test.csproj'),'-o',str(out/'bin')],check=True)

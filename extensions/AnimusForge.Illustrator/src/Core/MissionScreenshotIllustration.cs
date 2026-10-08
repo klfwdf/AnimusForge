@@ -194,11 +194,26 @@ namespace AnimusForge.Illustrator.Core
                     Finish(scope, capture, mission, "插画已保存到画廊。");
                 }, error => Finish(scope, capture, mission, "生图失败：" + error), value => value, _ => "成图保存失败。");
                 if (!started) { Finish(scope, capture, mission, "生图任务繁忙，请等待已有任务完成。"); return; }
+                TryShowProgress(scope, subject, mission, originScreen, panelStillOpen);
+            }
+            catch (Exception ex) { Finish(scope, capture, mission, "生图失败：" + ex.Message); }
+        }
+
+        private static void TryShowProgress(IllustrationScope scope, string subject, Mission mission,
+            ScreenBase originScreen, Func<bool> panelStillOpen)
+        {
+            try
+            {
                 if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded
                     && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
                     IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, "现场截图已确认，正在准备画卷…");
             }
-            catch (Exception ex) { Finish(scope, capture, mission, "生图失败：" + ex.Message); }
+            catch (Exception ex)
+            {
+                // Presentation is optional after admission. Never cancel or resubmit the paid worker here.
+                Debug.Print("[Illustrator] Mission progress UI unavailable: " + ex.GetType().Name);
+                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败，生成仍在后台继续，完成后可到画廊查看。"));
+            }
         }
 
         private static string CaptureFacts(Agent player, Agent target, bool battle)

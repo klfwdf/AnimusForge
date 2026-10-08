@@ -88,7 +88,7 @@ namespace TaleWorlds.MountAndBlade
 namespace TaleWorlds.ScreenSystem
 {
     public enum InputUsageMask {All, Mouse}
-    public sealed class Restrictions {public bool Mouse;public void SetInputRestrictions(bool mouse,InputUsageMask mask){Mouse=mouse;}public void ResetInputRestrictions(){}}
+    public sealed class Restrictions {public bool Mouse;public bool MouseVisibility => Mouse;public void SetMouseVisibility(bool value){Mouse=value;}public void SetInputRestrictions(bool mouse,InputUsageMask mask){Mouse=mouse;}public void ResetInputRestrictions(){}}
     public class ScreenLayer { public bool IsFinalized, IsActive = true, IsFocusLayer;public Restrictions InputRestrictions=new Restrictions(); }
     public class ScreenBase {
         public bool IsFinalized;
