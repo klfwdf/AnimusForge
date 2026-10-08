@@ -1,3 +1,8 @@
+<a id="mission-photo-review-fixes-20261008"></a>
+### 自由取景UI接线修复导航（2026-10-08）
+
+产品 `2664d3382` 在原ShoutTextInputPopup保护取景焦点，MissionPhotoOverlay管理旧层鼠标请求，MissionScreenshotIllustration隔离展示故障与后台生成。源码坐标、验证与回滚集中于[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mission-photo-review-fixes-20261008)。未新增框架/public API；实机未验。
+
 <a id="mission-free-photo-20261008"></a>
 ### 场景／战斗自由取景导航（2026-10-08）
 

@@ -1,3 +1,9 @@
+# 当前交接：自由取景审查问题修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `2664d3382`：原喊话弹窗不再把合法取景焦点当系统打断；暂存/压制/恢复旧层鼠标显示；等待卡片故障不取消已启动的后台生成。补充下方基础自由取景实现，保留真正离场与其他窗口处理。
+- 采集184、owner/焦点21、旧版焦点预期失败、两DLL各135、原双API/Bootstrap/双接缝PASS。实机鼠标/HUD/窗口焦点与真实生成未验；未部署/打包/推送。
+- [唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mission-photo-review-fixes-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#mission-photo-review-fixes-20261008)。证据 `artifacts/mission-photo-review-fixes-20261008/receipt.json`；仅 `git revert 2664d3382` 回滚本次修复。
+
 # 当前交接：场景／战斗玩家自由取景（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `f4f7bcf46`：冻结现场隐藏旧UI，玩家自由移动旋转/缩放，Enter截1至2张；第一张后生成/继续，第二张后生成/重拍，Esc重拍/取消。确认后才启动后台生图，导演自主构图；恢复原镜头/UI/暂停，保留连续生成与画廊。
