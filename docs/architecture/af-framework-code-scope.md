@@ -1,3 +1,10 @@
+<a id="migration-defect-package-20261009"></a>
+### 当前职责导航：迁移缺陷修复与177文件有限审计
+
+产品树 `65b6b5c4c` 的caller/owner、source一基范围、生命周期与未覆盖责任统一见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#migration-defect-package-20261009)。Diplomacy orchestration拥有原作者/回应国资格与followup终态；notification拥有相关文书队列；SceneTradeController及NativeAdmissionApplicationAdapter继续是唯一状态权威，UI/Xihai读取其当前端口或forwarding属性。Panorama budget只控制环境采集降级，inline bulletin仅移除具名入口。无新的framework/public API或默认交互路由。
+
+177/177源责任矩阵与27端口/55事件/25键保留检查不等于算法全分支或实机通过；最终双DLL、持久化/接缝、双构建和安装hash的覆盖层及私有证据位置均读主台账，历史表不自动迁成当前全覆盖。
+
 <a id="remote-owner-migration-integration-20261009"></a>
 ### 当前迁移整合职责导航
 

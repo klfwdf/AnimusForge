@@ -1,3 +1,67 @@
+<a id="migration-defect-package-20261009"></a>
+## 迁移后缺陷修复与177文件有限审计（2026-10-09，DUAL_DLL_AND_DEPLOYMENT_VERIFIED）
+
+本条为本次工作包当前状态，产品树绑定 `65b6b5c4c`；包含 `2b155aee7`、`a48a2c5f6`、`ab7d4f7c4`、`177b71dae`、`9ca781be8`、`c20c58013`、`b8660d3ec` 的修复。上次 `15a34515d` 交付史保留，本次源码与安装状态以本条为准。用户持续授权本包编译、提交、部署和普通推送；未更改一键流程、内容闸门、默认路由或玩家live数据。
+
+### 任务结果与保留行为
+
+- **外交后续回应/API/通知风暴**：实际日志中的原玩家国 `new_kingdom` 已失去独立外交资格；旧调度只检查回应国，非法动作反复repair失败，再由followup无条件carry重建形成循环。现在调度/API gate都核验原声明作者国和回应国；无资格义务变 `unavailable` 并只解释一次，不映射承诺到宗主国，资格恢复也不复活旧声明。合法未发布回应留在同一followup，下一游戏日才重试，沿既有硬期限等待；超时保留 `unanswered` 证据及一次可见终结。followup不再递归carry，也不沿普通relay withdraw/circuit重启；兼容读档清理旧普通queued jobs，保留 `closed_disabled` 语义。
+- **本国外交通知图标**：只对已送达、未读且未正式展示的相关文书处理右侧图标。foreign作者的主target、addressees或多action target包含本国时也属于本国事项；自发文书仍去重，无关foreign保留原文字通知。旧 `FormalNoticeShown=true` 不补弹历史图标。
+- **给予/展示资源为0及喊话UI接缝**：InlineTradeBridge不再反射已迁移的宿主private字段，绑定唯一 `SceneTradeController`；同步inquiry capture接缝只在当前请求内使用并finally恢复。ShoutUiAdapter对真实input/trade owner安装Harmony，并读取当前forwarding属性，保留flow revision、completion、epoch和当前owner校验，未创建第二份交易状态或执行器。
+- **生图环境超过1024物件**：现场/资源两来源都抛专用budget异常；仅此异常降级为跳过环境采集并继续人物/文字生图。保留本请求已取得的截图，不另发截图、不发送不完整环境副本；dispose/finally/retire清锁和pending snapshot。其他异常不吞成成功。
+- **快报面板inline插画入口**：删掉“重绘（基于本图）”按钮、VM可执行绑定和inline attach callback；Attach/Close显式清空保留的废弃callback字段，shared editor拒绝bulletin slot。普通周报overlay/gallery/native/scene入口保持；没有重写全局输入框。
+- **主动NPC接触重试**：领主与同伴原开场在准入时已消费，前处理失败后点击手动retry再次消费返回null。当前admission adapter保留最多一份本会话payload，busy拒绝不消费，manager/token/hero/character/mission/epoch/generation和owner全部匹配才复用。成功ready、接受raw正文的标签效果前、未知异常、结束及读档/reset都会退休；已知前处理/provider拒绝可再次手动尝试。不新增自动retry或save key。用户“首次进入无正文”没有可复现现场证据；本包证明并修复的是手动retry断链，不能宣称首开空白全部解决。
+- **迁移全量有限审计**：对 `c629e866c -> a7d842142` 的177个src/extensions迁移文件逐项记录旧caller、当前owner、实际consumer、capture/commit/reset/persist和动态反射接缝；23类、177/177归类，27个端口装配零未解释缺口，MyBehavior50和ShoutBehavior5个CampaignEvents注册顺序一致，基线25个literal/const存档键保留。177份当前source SHA与最终产品输入全部一致。此数量只覆盖该迁移集合，不表示全仓/所有算法分支或实机通过。
+
+### 运行频率与性能边界
+
+外交在既有调度、日切、API准入与读档边界核验，合法失败每游戏日至多再次调度，不新增网络空转或Tick全量扫描；通知沿既有队列每poll最多3项，只检查当前文书目标。UI/compat反射元数据在cold安装时缓存，交易临时capture限定单请求。主动retry仅请求准入分配一个有界payload，不在Tick序列化或扫描游戏对象。Panorama保留既有分批复制/1024上限，仅改变budget失败的退出语义，不靠放大预算或省略既有规则通过。
+
+### 行为与产物验证
+
+| 验证 | 结果与边界 |
+| --- | --- |
+| 外交真实owner recovery / 全套 | 24 PASS / 4000 PASS；旧 `fa53bac` 实际owner编译成功但来源资格反例FAIL，未替换成mock算法 |
+| 通知真实application/presentation | 104 PASS；旧owner已编译后行为FAIL；真实右侧widget NOT-RUN |
+| 交易/Harmony及UI lifecycle | 63 / 103 PASS；最终实际1.3、1.4 DLL均通过HostContract、真实Harmony.Install及controller入口，游戏物资实际转移/绘制 NOT-RUN |
+| Panorama budget/capture/cleanup | 36 PASS；原生renderer、GPU和付费生图pipeline NOT-RUN |
+| Native opening / turn / persona | 76 / 112 / 169 PASS；persona最终证据是 `channel-persona-fixed/run.log`，不是旧fixture编译失败日志 |
+| routing/effects/speech/continuation/import | 12 / 10 / 7 / 5 / 57+41 PASS；受控game/provider/dispatcher叶，范围见专项回执 |
+| Xihai最终实际DLL | 两版各4 PASS：field/property、current owner、Harmony install/uninstall、异步speech admission；未启动游戏/LLM |
+| save chunk helper/civil-war | 实际helper与civil-war UTF8、legacy、missing/corrupt边界回放PASS；没有修复玩家坏档 |
+| 最终实际DLL持久化 | 两版各103 PASS，WarStats v1/pre-v6/v6/archive/null/malformed/idempotence、CivilWar inline/chunks/UTF8/current-owner-default、Coup四键/拒绝载荷保留；合成IDataStore，不是 `.sav` 引擎读取 |
+| 最终官方双构建 | 原 `build_single_module.ps1` Debug：1.3 pinned v1.3.15.110062、1.4 overlay v1.4.6.115628、Bootstrap、双coup接缝、Stage全部PASS |
+| 候选新鲜度 | 编译前后1807个输入SHA无变化（含新budget文件）；两版portable PDB各1394个产品document checksum一致，包含最终admission及reset清理 |
+| 实际部署 | 原 `deploy_module.ps1` success，24受管文件更新；3381个Stage文件与安装逐项SHA一致；Recovery complete，24份旧备份与24份新hash通过 |
+
+正确命令 `python -B tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --chunk-contract-only` 仍NOT-PASS：`tests/af2_terminal_migration_review.py:252` 的 `persistence_catalog_storage_sources()` 要求 `_catalog_active` 的历史 `PERSISTENCE_CATALOG_D0` ContextVar，但独立chunk CLI未进入该context，不是缺命令行profile参数或新增业务key。没有刷新历史physical inventory/hash、catalog或oracle来凑通过。新增 `retryNotBeforeDay` 是int，`failureReason` 只来自有限reason/status集合，均在既有player-response JSON中并沿原chunk存储；没有新增save key/type identity。既有外交JSON serialize/load重试恢复回放通过；上述实际DLL持久化覆盖相关系统，但不替代未通过的静态catalog完整认证。
+
+首次最终构建Stage被旧 `GUI/Prefabs/WorldBulletinPanel.xml` 不一致闸门拒绝；完整旧Stage移入仓内证据目录后由原脚本重建。随后源码冻结核验发现reset新增清理尚未进入旧DLL，已重新运行同一官方双构建，最终PDB/接缝/Stage均重验。HostContract首次按名称找重载出现AmbiguousMatch，测试探针改为完整签名；Xihai工具隔离obj的重复AssemblyInfo改用原工程中间目录构建；都没有更改产品行为或弱化断言。存档回放工具新增显式既有SDK/permissions/dependency输入，仅复制到隔离回放目录，不安装runtime或修改游戏依赖。
+
+### 核实源码坐标（修订 `65b6b5c4c`）
+
+| 当前路径:一基范围 | 符号与当前责任 | 实际消费者 / 未覆盖责任 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Scheduling.cs:222–359,441–473` | `PlayerResponseUnavailableReason`、`MaintainPlayerFollowup`、`SchedulePlayerResponseWork`、`CarryUnansweredPlayerResponses`：来源资格、日切延后、硬期限终结 | Dispatch、load reconcile、AdvanceRelay及ScheduleNextRelayHop共享入口；真实LLM与外交战役事件未验 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs:45–57,135–153` | `ConcernsPlayerKingdom`、formal queue：本国target/addressee/action判定 | 既有Notification sink；Gauntlet显示未验 |
+| `extensions/AnimusForge.DialogueUI/src/Native/InlineTradeBridge.cs:17–39,52–65,89–125` | `Install`、`Load`：唯一controller反射缓存与同步inquiry capture | native inline VM/原交易flow；实际游戏资产转移未验 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneTradeController.cs:61–67,192,310` | `InlineInquiryCapture`、`PresentTradeInquiry`交易询问生产端口 | InlineTradeBridge当前请求；原提交/审计规则仍由controller保持 |
+| `extensions/AnimusForge.DialogueUI/src/Shout/ShoutUiAdapter.cs:35–82,238–260` | `Install`、`ResolveBehavior`、`FieldReader`：真实owner绑定/field-property读者 | Direct/Trade input Harmony prefix；真实焦点与绘制未验 |
+| `extensions/AnimusForge.Illustrator/src/Engine/PanoramaGeometryBudget.cs:5–22`、`SceneReferenceCapture.cs:260–273` | `BeforeCopy`、专用budget catch：上限拒绝/保留既有截图并继续 | runtime/resource snapshot copy两来源；native/GPU未验 |
+| `extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs:534–559` | `TryBindTargetingContextAccessor`、`ReadTargetingContext`：读取current authoritative owner | Xihai兼容Harmony observers；第三方实机组合未验 |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs:28–80,118–144,203–225` | `NativeOpeningRetry`、`RetireOpeningForAcceptedReply`、Submit/Capture：有界手动retry | lord/companion router与NativeTurn typed port；首开空白未复现 |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs:45–56`、`Channels/Scene/ShoutBehavior.cs:1390–1399` | 已接受raw正文动作前退休；`ResetInstanceTransientRuntimeForLoadedSave`清理当前admission | 原生四阶段/读档和campaign teardown；真实旧sav未验 |
+| `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:346,484–486,753`、`content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml` | inline不绑定本图重绘、清理遗留callback；shared editor拒绝slot | 快报slot VM/prefab；其他入口保持，真实UI未验 |
+
+完整177文件consumer/坐标/SHA矩阵保留在 `artifacts/migration-chain-audit-20261009/coverage-177.json` 和 `.md`；本包聚焦源码坐标机读校验见 `artifacts/migration-defect-package-20261009/code-map.json`。HANDOFF与职责导航只链接本条，不复制矩阵。
+
+### 交付证据、回滚与未验证
+
+- 最终实现1.3 SHA256 `62aa815e8321671c3aae74507bbc0bf3dadc8df1bc8967f512d726167fed60b2`；1.4 `b094f5677c0762246777a8a63ba2ef0b034639275a00eeff2f49e57d0fa7b5bf`；Bootstrap `b8a77ad6ad178a297b4fcf6f71912983a15d03fe545071b09605a7502006f079`。只输出统一 `Modules/AnimusForge`，两实现不同时加载；如游戏已运行，需重启才载入新DLL。
+- 最终证据目录 `artifacts/migration-defect-package-20261009/`：build-final.log、source-after-build-compare.json、pdb-source-checksums.json、双trade/Xihai日志、deploy-final.log、deployment-verification.json、receipt.json；外交/通知/交易/Panorama/full-audit专项及最终actual-DLL persistence证据分别保留具名目录。初次失败与旧候选日志保留，不记为负控PASS。
+- 游戏恢复点为 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy/deploy-75c7a90a20504367998687d4e6f275b8/` manifest/files，complete。源码回滚逐一对上述具名产品commit作focused inverse/revert，依赖slice逆序处理；不hard reset/改写历史、不回滚其他作者工作。保留两个既有NuGet目录。
+- 未验证：本轮真实Campaign/Mission、NPC首开空白、右侧通知widget、交易资产/UI焦点、GPU/付费生图、真实网络/LLM质量、真实 `.sav` 与坏档修复、第三方组合、完整177文件算法分支/全仓、帧性能；实际DLL103项未单独断言新 `FailureReason` 字段，外交JSON回放只明确断言 `RetryNotBeforeDay` 读回；未打包ZIP。有限source/fixture/实际DLL/部署证据分层，均不等于实机验收。普通推送与真实远端HEAD比对见本包最终交付回执，禁止force/rewrite或上传私有日志/附件。
+
 <a id="remote-owner-migration-integration-20261009"></a>
 ## 跟随远端职责迁移，保留本地增量与接力修复
 
