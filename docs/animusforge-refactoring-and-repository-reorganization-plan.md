@@ -1,3 +1,14 @@
+<a id="illustrator-prompt-persistence-20261008"></a>
+# 生图MCM大文本编辑保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户反馈画风提示词编辑后退出重进复原。检查点 `45aeed8`，产品 `32a7de4e8`。真实MCM反编译确认BaseSettingsJsonConverter只序列化注册字段；画风/负面词/导演文本只有按钮、未注册正文，旧画风与负面词回调也未SaveCurrentSettings。MCM复制页面还复制绑定源对象的按钮委托；仅补保存不足以防确认页面覆盖旧值。
+- 复用同一MCM配置身份/模块Configs/Illustrator目录，新增IllustratorPromptSettingsPersistence仅对IllustratorSettings扩充SaveJson与TryLoadFromJson的三个既有同名字符串键，并在SettingsUtils.OverrideValues真实复制体同步文本/重绑三个编辑按钮。该真实复制体覆盖CopyAsNew、确认和恢复默认，避开OverrideSettings小包装的内联风险；没有新增普通文本框或侧车配置。画风/负面词回调和既有导演回调均立即走SaveCurrentSettings。
+- 旧配置缺键保留初始化默认；明确空字符串往返不复原默认；非法值类型保留当前文本。普通API设置和其他模组设置不受改写。已被旧版丢弃的文本无法自动恢复，修复后需重新保存一次。无sav键/模型请求/Tick变更，JSON处理只在保存/加载事件，固定3字段，复制O(1)。
+- 源码坐标（产品修订，一基）：`extensions/AnimusForge.Illustrator/src/Settings/IllustratorPromptSettingsPersistence.cs:14–24` 安装，`:27–48` 保存/读取与旧键资格，`:50–60` 复制/重绑；同目录 `IllustratorSettingsStorage.cs:44` 既有初始化接线；`IllustratorSettings.cs:46–54` 编辑器绑定，`:603,624,645` 三回调立即保存。消费者仍由原IllustrationOptions捕获，生图prompt业务未改。
+- 双候选实际AnimusForge.dll各38项真实MCM/Harmony专项PASS：实际属性发现/SaveJson/LoadFromJson/CopyAsNew/OverrideSettings与生产三个编辑器回调，验证重开、即时保存、live/page一致、磁盘重读新对象、普通字段、空值/缺键/非法类型、多行Unicode/引号/长文本、确认/默认以及其他settings隔离。UI表面和provider文件边界为替身，storage初始化在专项中拦截防写游戏目录；实际游戏MCM未验。初次专项抓到按钮委托误绑定与小包装内联，修正后PASS；初次独立扩展csproj因历史同DLL接口不可见失败，核实真实AnimusForge.csproj集成后使用原统一构建，无构建入口更改。
+- 原scripts/build/build_single_module.ps1当前共享树Release最终exit0：1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap、双DLL接缝均PASS，无Stage/Deploy。证据 `artifacts/illustrator-prompt-persistence-20261008/receipt.json`、source-inputs.json、build-verified.log、test-1.3/1.4.log；产物在bin/Release/single_module_artifacts。三产品源SHA核对构建后未变，两个候选DLLSHA与build marker一致。
+- NOT-RUN：游戏内MCM编辑/关闭重开/退出游戏再启动、玩家旧配置与真实生图。未部署、打包、推送；本条不延用1.5.6历史发布授权。回滚仅 `git revert 32a7de4e8`，保留其他作者。
+
 <a id="release-v156-20261008"></a>
 # 1.5.6 编译、部署、打包与累计玩家公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 

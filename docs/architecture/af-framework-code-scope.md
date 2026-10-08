@@ -1,3 +1,8 @@
+<a id="illustrator-prompt-persistence-20261008"></a>
+### 生图提示词MCM持久化导航（2026-10-08）
+
+产品 `32a7de4e8` 的IllustratorPromptSettingsPersistence补充既有MCM JSON与复制边界，IllustratorSettings保留大文本编辑器并立即保存。真实接线/源码坐标、两DLL各38检查、双API构建及实机未验范围见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-persistence-20261008)。不新增框架/public API职责。
+
 <a id="meeting-lifecycle-fixes-20261008"></a>
 ### 会面放行与投降生命周期导航（2026-10-08）
 

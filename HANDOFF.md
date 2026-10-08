@@ -1,3 +1,9 @@
+# 当前交接：生图MCM提示词保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `32a7de4e8`，检查点 `45aeed8`。画风、负面词、导演大文本保存到原MCM JSON，编辑立即落盘，MCM复制/确认/默认同步文本并重绑按钮。旧版丢失文本需重新保存。
+- 两实际候选DLL各38真实MCM/Harmony往返专项PASS；原双API/Bootstrap/双接缝构建PASS。真实游戏MCM/玩家配置未验，未部署/打包/推送。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-persistence-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#illustrator-prompt-persistence-20261008)。证据 `artifacts/illustrator-prompt-persistence-20261008/receipt.json`；回滚 `git revert 32a7de4e8`。
+
 # 当前交接：1.5.6 已部署、打包、推送与累计公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户授权完整交付并确认以正式1.5.5公告为基线；产品源码 `fe40e43f9`，公告 `8ab6045a9`。双API/Bootstrap/接缝及最终DLL专项通过；部署27文件、3,380安装文件和27份备份SHA通过。启动器与ZIP版本统一v1.5.6，包含此前所有已提交会话改动；本条替代这些改动的“未部署”状态，实机边界保持。
