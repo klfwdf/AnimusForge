@@ -104,6 +104,17 @@ internal static class DocumentExecutionReplay
     private static (Port p, Orch orch) Fixture(Action<Port> init = null) { var p = new Port(); init?.Invoke(p); return (p, new Orch(p)); }
     internal static void Run()
     {
+        foreach (bool stateBlocked in new[] { false, true })
+        {
+            var (blockedPort, blockedOrch) = Fixture(p => { p.Legal.Clear(); p.InvalidTarget = stateBlocked ? "b" : null; });
+            var blockedDocument = Document("b");
+            blockedDocument.IsPlayerAuthored = true;
+            Run(blockedPort, blockedOrch, blockedDocument);
+            string expected = "final_live_legal_action_guard" + (stateBlocked ? ":changed" : "");
+            Test.True(blockedPort.Effects == 0 && blockedPort.Events.Contains("reject:" + expected)
+                && blockedPort.Events.Any(x => x.StartsWith("log:final diplomacy action rejected") && x.Contains("reason=" + expected)),
+                "rejected player war preserves specific state reason or contextual fallback");
+        }
         var frozenDocument = Document("b");
         frozenDocument.RoundId = "round-1";
         frozenDocument.SourceDocumentId = "source-1";

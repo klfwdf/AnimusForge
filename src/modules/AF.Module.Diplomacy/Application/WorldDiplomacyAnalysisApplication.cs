@@ -425,6 +425,13 @@ internal static class WorldDiplomacyAnalysisApplication
 	internal static string DescribeRejectedPlayerMechanic(string reason)
 	{
 		string code = reason ?? "";
+		const string warPrefix = "declare_war_not_legal:";
+		int warReasonIndex = code.IndexOf(warPrefix, StringComparison.Ordinal);
+		if (warReasonIndex >= 0)
+		{
+			string warReason = code.Substring(warReasonIndex + warPrefix.Length).Trim();
+			if (!string.IsNullOrWhiteSpace(warReason)) return "宣战未执行：" + warReason;
+		}
 		string detail =
             code.Contains("source_not_available") || code.Contains("source_not_known")
                 ? "原提案尚未送达本国、已失效或不存在，不能执行这次回应。"
