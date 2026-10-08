@@ -1,4 +1,10 @@
-# 当前交接：最新快报与截图修复已部署并推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
+# 当前交接：场景／战斗连续生图与画廊按钮（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `7a3fcdccc`：仅场景喊话与战斗在截图完成后即可再发起独立后台生图，四种面板增加画廊入口；相机采集仍串行，原4 worker／8 scope保护及其他模式限制保持。旧任务结束不会清除新任务状态。
+- 原双API／Bootstrap／双接缝、实际DLL各129项、UI生命周期103项、任务隔离11项通过；构建快照与11个产品输入一致。实机连续点击、原生相机与画廊显示未验；未部署/推送，游戏安装仍为下方最近部署记录。本条作为当前开发入口，下方交接均为历史交付记录。
+- [唯一台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-multi-image-20261008)，证据 `artifacts/scene-multi-image-20261008/receipt.json`。友军误识别与坡地遮挡尚未修复，不属于本包完成项；回滚仅 `git revert 7a3fcdccc`。
+
+# 历史交接：最新快报与截图修复已部署并推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
 - 用户授权部署；源码`5790cd60`包含截图修复/黑图拦截、快报按大事件组抽选配图、外交结盟45/解盟40/宣言30。原双API/Bootstrap/接缝已过，5582输入与构建一致，部署9文件，3380安装SHA和9备份PASS。已覆盖游戏；用户追加授权后8个提交已推送并确认远端438180a9，本交接同步随后推送；实机仍待复测。
 - [唯一部署记录与恢复路径](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-and-capture-deploy-20261008)，证据 `artifacts/news-and-capture-deploy-20261008/receipt.json`。下方对应“未部署”状态由本条取代，不改变尚未实机验收的边界。
