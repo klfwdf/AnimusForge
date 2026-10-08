@@ -23,6 +23,9 @@ internal static class AfTerminalMapBarIconSprite
 
     private const string IconBrushName = "MapBar.Left.Icons";
 
+    // A texture's pixel resolution is not a widget size. The native icon slot is 60 x 40.
+    private const int LogicalIconSize = 40;
+
     private static BannerlordUiSprite _sprite;
 
     private static bool _loadFailed;
@@ -39,12 +42,18 @@ internal static class AfTerminalMapBarIconSprite
                 return;
             }
             BannerlordUiSprite sprite = GetOrCreateSprite();
-            if (sprite == null || ReferenceEquals(layer.Sprite, sprite))
+            if (sprite != null && !ReferenceEquals(layer.Sprite, sprite))
             {
-                return;
+                // Style layers read through to this source layer unless they override the sprite themselves.
+                layer.Sprite = sprite;
             }
-            // Style layers read through to this source layer unless they override the sprite themselves.
-            layer.Sprite = sprite;
+            // Apply even for a cached sprite or the native fallback: inherited Original policies
+            // must not turn the texture resolution into an oversized map-bar icon.
+            layer.WidthPolicy = BrushLayerSizePolicy.StretchToTarget;
+            layer.HeightPolicy = BrushLayerSizePolicy.StretchToTarget;
+            layer.ImageFitType = ImageFit.ImageFitTypes.Contain;
+            layer.ImageFitHorizontalAlignment = ImageFit.ImageHorizontalAlignments.Center;
+            layer.ImageFitVerticalAlignment = ImageFit.ImageVerticalAlignments.Center;
         }
         catch (Exception ex)
         {
@@ -89,9 +98,7 @@ internal static class AfTerminalMapBarIconSprite
             {
                 // Native texture validity can be reported lazily while still rendering correctly later.
             }
-            int width = engineTexture.Width > 0 ? engineTexture.Width : 128;
-            int height = engineTexture.Height > 0 ? engineTexture.Height : 128;
-            _sprite = new RuntimeTextureSprite(SpriteName, new BannerlordUiTexture(new EngineTexture(engineTexture)), width, height);
+            _sprite = new RuntimeTextureSprite(SpriteName, new BannerlordUiTexture(new EngineTexture(engineTexture)));
             UIResourceManager.SpriteData.Sprites[SpriteName] = _sprite;
             return _sprite;
         }
@@ -107,8 +114,8 @@ internal static class AfTerminalMapBarIconSprite
     {
         private readonly BannerlordUiTexture _texture;
 
-        public RuntimeTextureSprite(string name, BannerlordUiTexture texture, int width, int height)
-            : base(name, width, height, TaleWorlds.TwoDimension.SpriteNinePatchParameters.Empty)
+        public RuntimeTextureSprite(string name, BannerlordUiTexture texture)
+            : base(name, LogicalIconSize, LogicalIconSize, TaleWorlds.TwoDimension.SpriteNinePatchParameters.Empty)
         {
             _texture = texture;
         }
