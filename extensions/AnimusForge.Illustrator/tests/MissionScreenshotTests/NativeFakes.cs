@@ -15,7 +15,8 @@ namespace TaleWorlds.Library
         public static Vec3 operator -(Vec3 a, Vec3 b) => new Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
         public static Vec3 operator *(Vec3 a, float s) => new Vec3(a.x * s, a.y * s, a.z * s);
     }
-    public struct MatrixFrame { public Vec3 origin; }
+    public struct Mat3 { public Vec3 u; }
+    public struct MatrixFrame { public Vec3 origin; public Mat3 rotation; }
     public static class Debug { public static void Print(string text) { } }
 }
 namespace TaleWorlds.Engine
@@ -37,11 +38,15 @@ namespace TaleWorlds.Engine
         public bool Released;
         public static int Created, ReleasedCount;
         public float Far => 1000;
+        public float Fov = 0.7f;
         public float GetAspectRatio() => 16f / 9f;
-        public void SetFovVertical(float fov, float aspect, float near, float far) { }
+        public void SetFovVertical(float fov, float aspect, float near, float far) { Fov = fov; }
         public static Camera CreateCamera() { Created++; return new Camera(); }
-        public void FillParametersFrom(Camera other) { Frame = other.Frame; }
-        public void LookAt(Vec3 position, Vec3 target, Vec3 up) { Frame = new MatrixFrame { origin = position }; }
+        public void FillParametersFrom(Camera other) { Frame = other.Frame; Fov = other.Fov; }
+        public void LookAt(Vec3 position, Vec3 target, Vec3 up) {
+            Vec3 backward = position - target;
+            Frame = new MatrixFrame { origin = position, rotation = new Mat3 { u = backward * (1f / backward.Length) } };
+        }
         public void ReleaseCamera() { if (Released) throw new Exception("camera double release"); Released = true; ReleasedCount++; }
     }
     public sealed class SceneView { public Camera Camera; public void SetCamera(Camera camera) { Camera = camera; } }

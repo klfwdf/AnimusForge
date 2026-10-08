@@ -46,15 +46,15 @@ internal static class Program
                 Check(pair.Length == 2, "exactly two viewpoints");
                 var front = pair.GetValue(0); var rear = pair.GetValue(1);
                 Check(Near(C(front, "z"), 3) && Near(C(rear, "z"), 3), "both viewpoints are level with pivot");
-                Check(Near(C(front, "x"), 10) && Near(C(rear, "x"), 10), "body forward defines axis");
-                Check(C(front, "y") > 20 && C(rear, "y") < 20, "front and rear ordering");
+                Check(Near(C(front, "x"), 10) && Near(C(rear, "x"), 10), "camera horizontal view defines axis");
+                Check(C(front, "y") < 20 && C(rear, "y") > 20, "A looks along player camera yaw, B reverses");
                 Check(Near(C(front, "y") + C(rear, "y"), 40), "opposite 180-degree viewpoints");
                 var tilted = Build(0, 8, 99);
                 Check(Near(C(tilted.GetValue(0), "y"), C(front, "y")) && Near(C(tilted.GetValue(0), "z"), 3), "pitch and vector magnitude do not tilt or zoom framing");
                 var east = Build(1, 0, 0);
-                Check(C(east.GetValue(0), "x") > 10 && Near(C(east.GetValue(0), "y"), 20), "body turn rotates rig");
-                Check(C(Build(0, 1, 0, 6).GetValue(0), "y") > C(front, "y"), "larger interaction region increases framing distance");
-                Check(C(Build(0, 1, 0, 1.6f, 0.6f).GetValue(0), "y") > C(front, "y"), "narrow screen retains horizontal coverage");
+                Check(C(east.GetValue(0), "x") < 10 && Near(C(east.GetValue(0), "y"), 20), "camera yaw rotates rig");
+                Check(C(Build(0, 1, 0, 6).GetValue(0), "y") < C(front, "y"), "larger interaction region increases framing distance");
+                Check(C(Build(0, 1, 0, 1.6f, 0.6f).GetValue(0), "y") < C(front, "y"), "narrow screen retains horizontal coverage");
                 foreach (var invalid in new[] { new[] { 0f, 0f, 1f, 1.6f, 1f }, new[] { float.NaN, 1f, 0f, 1.6f, 1f }, new[] { 0f, 1f, 0f, 1.6f, 0f } })
                 {
                     bool rejected = false;
