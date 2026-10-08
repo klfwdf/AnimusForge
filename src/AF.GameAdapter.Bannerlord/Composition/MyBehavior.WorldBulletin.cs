@@ -936,7 +936,7 @@ public partial class MyBehavior
 
 	// ---------- hourly scheduling ----------
 
-	private void OnWorldBulletinHourlyTick() => WorldBulletinState.OnWorldBulletinHourlyTick();
+	private void OnWorldBulletinHourlyTick() { SynchronizeNewsCollectionMode(); TryStartRestartedWeeklyCollection(); WorldBulletinState.OnWorldBulletinHourlyTick(); }
 
 	private static void PruneWorldBulletinWeeklyStability(WorldBulletinSaveState state, int currentWeek) => WorldBulletinStateOwner.PruneWorldBulletinWeeklyStability(state, currentWeek);
 
@@ -1014,6 +1014,7 @@ public partial class MyBehavior
 		{
 			if (dataStore.IsSaving)
 			{
+                SynchronizeNewsCollectionMode();
                 string json = WorldBulletinState.ExportJson();
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, WorldBulletinStorageKey, json, "WorldBulletin");
 				return;

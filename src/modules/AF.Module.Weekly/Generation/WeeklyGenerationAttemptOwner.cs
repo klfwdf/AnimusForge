@@ -11,7 +11,9 @@ internal async Task<WeeklyReportRequestResult> GenerateWeeklyReportGroupWithRetr
 		string text4 = displayLabel;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await port.CallGroup(text, text2);
+			if (port.IsCurrent?.Invoke() == false) return weeklyReportRequestResult;
+            ApiCallResult apiCallResult = await port.CallGroup(text, text2);
+            if (port.IsCurrent?.Invoke() == false) return weeklyReportRequestResult;
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			port.LogExchange(text4 + " [尝试 " + i + "/" + maxAttempts + "]", text3, text5);
 			if (!apiCallResult.Success)
@@ -71,7 +73,7 @@ internal async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWit
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_attempt"))
+			if (port.IsCurrent?.Invoke() == false || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_attempt")))
 			{
 				weeklyReportBatchRequestResult.Success = false;
 				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -79,7 +81,7 @@ internal async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWit
 				return weeklyReportBatchRequestResult;
 			}
 			ApiCallResult apiCallResult = await port.CallBatch(text, text2, runtimeGeneration, i == 1);
-			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt"))
+			if (port.IsCurrent?.Invoke() == false || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt")))
 			{
 				weeklyReportBatchRequestResult.Success = false;
 				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -139,4 +141,4 @@ internal async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWit
 		return weeklyReportBatchRequestResult;
 	}
 }
-internal sealed class WeeklyGenerationAttemptPort {internal Func<string,string,Task<ApiCallResult>> CallGroup;internal Func<string,string,long,bool,Task<ApiCallResult>> CallBatch;internal Action<string,string,string> LogExchange;internal Action<string,string> Log;internal Func<int,Task> Delay;}
+internal sealed class WeeklyGenerationAttemptPort {internal Func<bool> IsCurrent;internal Func<string,string,Task<ApiCallResult>> CallGroup;internal Func<string,string,long,bool,Task<ApiCallResult>> CallBatch;internal Action<string,string,string> LogExchange;internal Action<string,string> Log;internal Func<int,Task> Delay;}

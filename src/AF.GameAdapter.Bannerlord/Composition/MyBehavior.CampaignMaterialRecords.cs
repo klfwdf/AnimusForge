@@ -79,7 +79,7 @@ public partial class MyBehavior
             SnapshotText = text, StableKey = stableKey, KingdomId = kingdomId, SettlementId = settlementId,
             ActorHeroId = normalizedActorHeroId, ActorKingdomId = actorKingdomId,
             IncludeInWorld = includeInWorld, IncludeInKingdom = includeInKingdom
-        }, () => ++_npcActionGlobalOrderCounter, _weeklyReportMaterialRevisions.MarkDay);
+        }, () => ++_npcActionGlobalOrderCounter, _ => _weeklyReportMaterialRevisions.MarkRuntimeChange(), _weeklyReportMaterialRevisions.MarkAppend);
         CaptureCivilNewsMaterial(normalizedMaterialKind, stableKey, label, text,
             kingdomId, actorKingdomId, actorHeroId, day, includeInWorld);
     }
@@ -102,7 +102,7 @@ public partial class MyBehavior
                 () => ++_npcActionGlobalOrderCounter,
                 (normalizedText, normalizedKey, day, order, sequence) =>
                     CreateNpcActionEntry(hero, normalizedText, normalizedKey, day, order, sequence, facts, isMajor),
-                _weeklyReportMaterialRevisions.MarkAll, _weeklyReportMaterialRevisions.MarkDay);
+                _weeklyReportMaterialRevisions.MarkRuntimeChange, _weeklyReportMaterialRevisions.MarkDay, _weeklyReportMaterialRevisions.MarkAppend);
 		}
 		catch (Exception ex)
 		{

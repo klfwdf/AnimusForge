@@ -1,0 +1,29 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+internal class Program {
+ static int Main(string[] args) {
+  using(var resolver=new OfflineAssemblyResolver(args.Skip(1).Prepend(Path.GetDirectoryName(args[0])).ToArray())) {
+   var assembly=Assembly.LoadFrom(args[0]);var type=assembly.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner",true);
+   const BindingFlags f=BindingFlags.NonPublic|BindingFlags.Public|BindingFlags.Instance;
+   object owner=Activator.CreateInstance(type,true);int n=0;
+   object Call(string name,params object[] a)=>type.GetMethod(name,f).Invoke(owner,a);
+   bool Current(object x)=>(bool)Call("IsCurrent",x);
+   void Check(bool b,string s){if(!b)throw new Exception(s);n++;}
+   object frozen=Call("CaptureForCollection",10,17,true),live=Call("Capture",10,17);
+   Call("MarkAppend",17);Check(Current(frozen)&&!Current(live),"append isolation");
+   frozen=Call("CaptureForCollection",10,17,true);live=Call("Capture",10,17);
+   Call("MarkRuntimeChange");Check(Current(frozen)&&!Current(live),"world and retention isolation");
+   Call("MarkDay",17);Check(!Current(frozen),"explicit fact edit invalidates");
+   frozen=Call("CaptureForCollection",10,17,true);Call("MarkAll");Check(!Current(frozen),"import/reset invalidates");
+   frozen=Call("CaptureForCollection",10,17,true);Call("MarkOpening");Check(!Current(frozen),"opening edit invalidates");
+   frozen=Call("CaptureForCollection",10,17,true);Call("MarkDay",18);Check(Current(frozen),"next-period edit does not invalidate");
+   var policy=assembly.GetType("AnimusForge.NewsCollectionPolicy",true);
+   var due=policy.GetMethod("IsWeeklyDue",BindingFlags.Static|BindingFlags.NonPublic);
+   Check(!(bool)due.Invoke(null,new object[]{245.5,413.49}),"before seven days");
+   Check((bool)due.Invoke(null,new object[]{245.5,413.5}),"at seven days");
+   Console.WriteLine("PASS "+n+" actual-DLL news timing/revision checks; native campaign NOT-RUN.");
+  }return 0;
+ }
+}

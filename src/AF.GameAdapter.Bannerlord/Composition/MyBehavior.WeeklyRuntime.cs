@@ -3,10 +3,11 @@ namespace AnimusForge;
 public partial class MyBehavior
 {
  private WeeklyReportRuntimeOwner _weeklyRuntime;
- private WeeklyReportRuntimeOwner WeeklyRuntime => _weeklyRuntime ??= new WeeklyReportRuntimeOwner(new WeeklyReportRuntimePort {
-  IsMainThread = TWParallel.IsMainThread, IsCurrentOwner = () => ReferenceEquals(Instance,this),
+ private WeeklyReportRuntimeOwner WeeklyRuntime => _weeklyRuntime ??= CreateWeeklyRuntime();
+ private WeeklyReportRuntimeOwner CreateWeeklyRuntime() { int epoch = System.Threading.Volatile.Read(ref _newsCollectionEpoch); return new WeeklyReportRuntimeOwner(new WeeklyReportRuntimePort {
+  IsMainThread = TWParallel.IsMainThread, IsCurrentOwner = () => ReferenceEquals(Instance,this) && epoch == System.Threading.Volatile.Read(ref _newsCollectionEpoch),
   CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrentGeneration = SaveRuntimeGuard.IsCurrentGeneration,
-  IsStale = (generation,phase) => SaveRuntimeGuard.IsStale(generation,phase), IsKingdomEligible = IsKingdomEligibleForWeeklyReport,
+  IsStale = (generation,phase) => epoch != System.Threading.Volatile.Read(ref _newsCollectionEpoch) || SaveRuntimeGuard.IsStale(generation,phase), IsKingdomEligible = IsKingdomEligibleForWeeklyReport,
   BatchSize = GetWeeklyReportBatchSize, RequestsPerMinute = GetWeeklyReportRequestsPerMinute,
   CurrentDay = GetCurrentGameDayIndexSafe, CurrentDate = GetCurrentGameDateTextSafe,
   DisplayMessage = text => InformationManager.DisplayMessage(new InformationMessage(text)),
@@ -16,8 +17,8 @@ public partial class MyBehavior
   ProductState = BuildPublishedWorldWeeklyProductState, ApplyStability = ApplyWeeklyReportStabilityDelta,
   NotifyProduct = NotifyPublishedWorldWeeklyProductChanged, SanitizeRecords = SanitizeEventRecordEntries,
   ResolveNearestKingdom = ResolveNearestWeeklyReportKingdomId, QueueNotice = QueueWeeklyReportMapNotice,
-  QueueFailurePopup = QueueWeeklyReportFailurePopup, LaunchWave = EnqueueWeeklyWaveLaunchAsync
- },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue);
+  QueueFailurePopup = (context, immediate) => { if (epoch == System.Threading.Volatile.Read(ref _newsCollectionEpoch)) QueueWeeklyReportFailurePopup(context, immediate); }, LaunchWave = EnqueueWeeklyWaveLaunchAsync
+ },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue); }
  private static int CaptureWeeklyReportLengthPreset() { try { return DuelSettings.GetSettings()?.WeeklyReportLengthPreset ?? 2; } catch { return 2; } }
  private static string CaptureWeeklyReportWritingRequirements() { try { return DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? ""; } catch { return ""; } }
 private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs) => WeeklyReportRuntimeOwner.IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs);

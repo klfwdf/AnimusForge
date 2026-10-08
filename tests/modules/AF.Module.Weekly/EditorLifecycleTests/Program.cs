@@ -99,3 +99,14 @@ Check(mergedArchive.All(c=>c.Reports.All(r=>!r.EventId.EndsWith(":brief"))),"con
 var orphanIssue=mergedArchive.Single(c=>c.CountryId=="orphan").Reports.Single();
 Check(ui.OpenArchivedReport(orphanIssue.EventId)&&DevWeeklyReportPopup.Body.Contains("regional complete text"),"orphan weekly consolidation remains reopenable without discarding text");
 Console.WriteLine($"PASS: {n} total production editor assertions including archive reopen/fallback.");
+
+ui.QueueWeeklyReportFailurePopup(Context(),true);
+var beforeSwitch = TaleWorlds.Library.InformationManager.Inquiry;
+int retryBeforeSwitch=retries;
+ui.CancelForNewsModeChange();
+beforeSwitch.Confirm();ui.ProcessWeeklyReportUiResume();
+Check(ui.RetryContext==null && ui.UiStage==WeeklyReportUiStage.None && retries==retryBeforeSwitch,"mode switch clears failure and rejects stale dialog callback");
+pending=new();ui.QueueWeeklyReportFailurePopup(Context(),true);TaleWorlds.Library.InformationManager.Inquiry.Confirm();
+int markedBeforeSwitch=markedWeek;ui.CancelForNewsModeChange();pending.SetResult(new(){Completed=true});await Task.Delay(5);ui.ProcessPendingWeeklyReportManualRetryResult();
+Check(ui.RetryContext==null && !ui.PendingManualRetryResult && markedWeek==markedBeforeSwitch,"late retry completion cannot advance new mode or resurrect popup");
+Console.WriteLine($"PASS {n} total editor lifecycle checks including news mode switch.");

@@ -14,7 +14,7 @@ internal sealed class CampaignMaterialRecordOwner
     internal readonly EventSourceMaterialIndex<EventSourceMaterialEntry> Binding =
         new EventSourceMaterialIndex<EventSourceMaterialEntry>(x => x.Day, x => x.StableKey, BuildEventSourceMaterialIndexKey);
 
-    internal void Record(EventSourceMaterialEntry capture, Func<int> nextSequence, Action<int> markDay)
+    internal void Record(EventSourceMaterialEntry capture, Func<int> nextSequence, Action<int> markDay, Action<int> markAppend = null)
     {
         if (capture == null || string.IsNullOrWhiteSpace(capture.SnapshotText)) return;
         Materials ??= new List<EventSourceMaterialEntry>();
@@ -43,7 +43,7 @@ internal sealed class CampaignMaterialRecordOwner
         capture.ActorHeroId = (capture.ActorHeroId ?? "").Trim();
         capture.ActorKingdomId = (capture.ActorKingdomId ?? "").Trim();
         Materials.Add(capture);
-        markDay(capture.Day);
+        (markAppend ?? markDay)(capture.Day);
         Index[indexKey] = capture;
         // Publish binding only after both writes; an exception leaves it stale.
         Binding.Bind(Materials, Index);

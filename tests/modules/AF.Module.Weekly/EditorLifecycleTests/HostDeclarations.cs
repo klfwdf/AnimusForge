@@ -5,6 +5,7 @@ public partial class MyBehavior
 {
 	internal sealed class EventRecordEntry
 	{
+        public string BulletinAnecdote;
 		public string EventId;
 
 		public int WeekIndex;

@@ -85,6 +85,10 @@ internal sealed class WorldBulletinScopeState
 // Everything the bulletin system persists, saved as one JSON chunk.
 internal sealed class WorldBulletinSaveState
 {
+    // Optional, within the existing chunked JSON. Old saves adopt the current mode without replay.
+    public bool? CollectionBulletinMode;
+    public double WeeklyCollectionStartHour = -1;
+    public int WeeklyCollectionStartSequence = -1;
 	// Recovery copy only; never interpreted as current facts or injected into prompts.
 	// Optional JSON field keeps the existing save key and old valid states compatible.
 	public string PreservedUnreadableState;

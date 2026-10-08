@@ -10,7 +10,7 @@ internal sealed class NpcActionRecordOwner
     internal void Record(Dictionary<string, List<NpcActionEntry>> storage, string heroKey, string text,
         string stableKey, int currentDay, bool keepOnlyRecentWindow, bool dedupeAcrossWindow,
         int maxEntries, Func<int> nextSequence, Func<string, string, int, int, int, NpcActionEntry> capture,
-        Action markAll, Action<int> markDay)
+        Action markAll, Action<int> markDay, Action<int> markAppend = null)
     {
 			string npcActionHeroKey = heroKey;
 			string text2 = NpcActionLedger.NormalizeText(text);
@@ -53,7 +53,7 @@ internal sealed class NpcActionRecordOwner
 				markAll();
 			}
 			NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareTimeline);
-			markDay(currentGameDayIndexSafe);
+			(markAppend ?? markDay)(currentGameDayIndexSafe);
 			if (keepOnlyRecentWindow)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);

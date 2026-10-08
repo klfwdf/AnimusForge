@@ -15,6 +15,7 @@ namespace AnimusForge;
 
 internal class WeeklyEditorDisplayPort
 {
+ internal Func<int,string> FormatNewsDate;
  internal Func<string> PromptProfileLabel;
  internal delegate string ResolveHeroDisplayCapability(string heroId);
  internal ResolveHeroDisplayCapability ResolveHeroDisplay;
@@ -93,7 +94,7 @@ internal static class WeeklyEditorProjection
 				WeekIndex = Math.Max(0, x.WeekIndex),
 				Title = text3,
 				BodyText = body.Length == 0 ? "当前这期周报还没有正文。" : body,
-				CreatedDate = (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : ("\u7b2c " + Math.Max(0, x.CreatedDay) + " \u65e5")),
+				CreatedDate = port.FormatNewsDate != null && x.CreatedDay >= 0 ? port.FormatNewsDate(x.CreatedDay) : (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : "日期未知"),
 				CreatedDay = Math.Max(0, x.CreatedDay),
 				TagText = (x.TagText ?? "").Trim(),
 				HasFullReport = !string.IsNullOrWhiteSpace(x.Summary)
@@ -105,14 +106,14 @@ internal static class WeeklyEditorProjection
 	{
 		if (string.Equals((eventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
 		{
-			return "\u4e16\u754c\u7b2c" + Math.Max(0, weekIndex) + "\u5468\u5468\u62a5";
+			return "世界周报 · " + (port.FormatNewsDate?.Invoke(Math.Max(0, weekIndex * 7 - 1)) ?? "日期未知");
 		}
 		string text = port.ResolveKingdomDisplay(scopeKingdomId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = "\u738b\u56fd";
 		}
-		return text + "\u7b2c" + Math.Max(0, weekIndex) + "\u5468\u5468\u62a5";
+		return text + "周报 · " + (port.FormatNewsDate?.Invoke(Math.Max(0, weekIndex * 7 - 1)) ?? "日期未知");
 	}
 
 	internal static string BuildWeeklyReportPromptPreviewText(WeeklyEditorDisplayPort port, WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
