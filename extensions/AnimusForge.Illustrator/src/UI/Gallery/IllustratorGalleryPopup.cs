@@ -17,6 +17,9 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly IllustrationScope _scope;
         private bool _closed;
         private bool _refreshQueued;
+        private bool _editingImage, _redrawing;
+        private string _redrawDraft = "";
+        private IllustrationScope _redrawJob;
 
         private IllustratorGalleryPopup(ScreenBase screen)
         {
@@ -25,6 +28,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             try
             {
             _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey, () => _scope.IsCurrent);
+            _dataSource.RedrawSelected = OpenCurrentImageEditor;
             var layer = new MovableGauntletLayer("IllustratorGalleryPopup", 4020, false);
             _layer = layer;
             var movieIdentifier = layer.LoadMovie("IllustratorGalleryPopup", _dataSource);
@@ -76,9 +80,51 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
         }
 
+        private void OpenCurrentImageEditor(Engine.CachedIllustrationItem selected)
+        {
+            if (_closed || _editingImage || _redrawing || selected == null) return;
+            IllustrationRedrawPromptEditor.Show(_redrawDraft,
+                () => !_closed && _scope.IsCurrent && !_redrawing && ReferenceEquals(_dataSource.SelectedImage, selected),
+                prompt => {
+                    _redrawDraft = prompt;
+                    var options = IllustratorRuntime.CaptureOptions();
+                    if (selected.Category == "weekly_report" || selected.GenerationMode == "battle_screenshots" || selected.GenerationMode == "scene_shout_screenshots")
+                        options = options?.WithSceneImageSize();
+                    IllustrationScope job = null;
+                    job = new IllustrationScope(_screen, selected.Category, () => {
+                        if (!_closed && ReferenceEquals(_redrawJob, job)) { _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false); }
+                    }, campaignOwned: true, missionOwned: TaleWorlds.CampaignSystem.Campaign.Current == null);
+                    _redrawJob = job;
+                    _redrawing = true;
+                    _dataSource.SetRedrawing(true);
+                    _dataSource.StatusText = "正在基于所选画卷重绘，可关闭画廊等待。";
+                    try
+                    {
+                        CurrentImageRedraw.Start(job, selected.CopyMetadata(), prompt, options, null, result => {
+                            job.Close();
+                            if (_closed) return;
+                            _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false);
+                            if (result.Saved != null) _dataSource.SelectByKey(result.Saved.Key);
+                            _dataSource.StatusText = result.Saved != null ? "重绘完成，已保存新画卷。" : "重绘失败：" + result.Result?.ErrorMessage;
+                        }, error => {
+                            job.Close();
+                            if (_closed) return;
+                            _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false);
+                            _dataSource.StatusText = "重绘失败：" + error;
+                        });
+                    }
+                    catch { job.Close(); _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false); throw; }
+                }, status => { if (!_closed) _dataSource.StatusText = status; }, editing => {
+                    if (_closed) return;
+                    _editingImage = editing;
+                    _layer.UIContext.Root.IsVisible = !editing;
+                    _dataSource.SetRedrawing(editing || _redrawing);
+                }, basedOnImage: true);
+        }
+
         private void OnGenerationUpdated(IllustrationGenerationUpdate update)
         {
-            if (_closed || update.Saved == null || update.CampaignKey != _scope.CampaignKey || _refreshQueued) return;
+            if (_closed || _editingImage || update.Saved == null || update.CampaignKey != _scope.CampaignKey || _refreshQueued) return;
             _refreshQueued = true;
             // Coalesce completions, and release the generation worker before admitting a gallery refresh.
             IllustratorRuntime.PostCritical(() =>

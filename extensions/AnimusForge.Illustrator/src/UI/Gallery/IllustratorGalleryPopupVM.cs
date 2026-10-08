@@ -74,6 +74,16 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private int _refreshVersion;
         private readonly Func<bool> _isCurrent;
         private bool _rpConversionOpen;
+        private bool _redrawing, _settingDefault;
+        internal Action<CachedIllustrationItem> RedrawSelected;
+        private string _pendingSelectionKey;
+        internal CachedIllustrationItem SelectedImage => _selectedItem?.Item;
+        [DataSourceProperty] public bool CanRedrawBasedOnImage => !_disposed && !_redrawing && !_rpConversionOpen && HasSelection && !string.IsNullOrEmpty(SelectedSpriteName);
+        internal void SetRedrawing(bool value) { _redrawing = value; OnPropertyChanged(nameof(CanRedrawBasedOnImage)); }
+        public void ExecuteRedrawBasedOnImage()
+        {
+            if (CanRedrawBasedOnImage && _isCurrent()) RedrawSelected?.Invoke(_selectedItem.Item);
+        }
         // Last directory snapshot; the favorites tab filters it in memory instead of re-reading disk.
         private System.Collections.Generic.List<CachedIllustrationItem> _cached = new System.Collections.Generic.List<CachedIllustrationItem>();
         private bool _showFavorites;
@@ -119,6 +129,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     OnPropertyChangedWithValue(value, nameof(HasSelection));
                     OnPropertyChanged(nameof(HasNoSelection));
                     OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
                 }
             }
         }
@@ -137,6 +148,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     _selectedSpriteName = value;
                     OnPropertyChangedWithValue(value, nameof(SelectedSpriteName));
                     OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
                 }
             }
         }
@@ -214,6 +226,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private void RefreshItems(bool forceRefresh)
         {
             IllustratorRuntime.AssertMainThread();
+            string keepKey = _pendingSelectionKey ?? _selectedItem?.Item?.Key;
             int version = ++_refreshVersion;
             _previewLoader.Cancel();
             ReleasePreviewSprite();
@@ -233,7 +246,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                         StatusText = "画廊操作失败：" + error.Message;
                         return;
                     }
-                    try { ApplyCachedItems(cached); }
+                    try { ApplyCachedItems(cached, _pendingSelectionKey ?? keepKey); _pendingSelectionKey = null; }
                     catch (Exception ex)
                     {
                         HasSelection = false;
@@ -341,6 +354,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
 
             _selectedItem = selected;
+            _pendingSelectionKey = null;
             OnPropertyChanged(nameof(FavoriteButtonText));
             _previewLoader.Cancel();
             ReleasePreviewSprite();
@@ -381,6 +395,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         public void SelectByKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return;
+            _pendingSelectionKey = key;
             foreach (var item in Items)
             {
                 if (string.Equals(item.SpriteName, key, StringComparison.OrdinalIgnoreCase) ||
@@ -405,12 +420,14 @@ namespace AnimusForge.Illustrator.UI.Gallery
             var rewardOwner = RewardSystemBehavior.Instance;
             _rpConversionOpen = true;
             OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
             bool opened = CourierLetterInputPopup.Show("转为 RP 物品", GalleryRpItemConverter.ItemName(image),
                 "确认画卷介绍后加入背包。向 NPC 展示时会读取这段介绍；可在此修正画面内容。",
                 GalleryRpItemConverter.BuildIntroduction(image), description =>
                 {
                     _rpConversionOpen = false;
                     OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
                     if (_disposed || !_isCurrent() || !ReferenceEquals(campaign, TaleWorlds.CampaignSystem.Campaign.Current) ||
                         !ReferenceEquals(rewardOwner, RewardSystemBehavior.Instance)) return;
                     try
@@ -423,12 +440,14 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 {
                     _rpConversionOpen = false;
                     OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
                     if (!_disposed) StatusText = "已取消转换，未添加物品。";
                 });
             if (!opened)
             {
                 _rpConversionOpen = false;
                 OnPropertyChanged(nameof(CanConvertToRpItem));
+                    OnPropertyChanged(nameof(CanRedrawBasedOnImage));
                 StatusText = "无法打开画卷介绍编辑框。";
             }
         }
@@ -441,16 +460,27 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         private void ExecuteSetDefaultCore()
         {
-            if (_selectedItem?.Item == null) return;
-            if (DiskImageCacheManager.SetDefault(_selectedItem.Item, _campaignKey))
-            {
-                StatusText = "已设为该主题的默认画卷";
-                RefreshItems();
-            }
-            else
-            {
-                StatusText = "设为默认失败";
-            }
+            if (_disposed || !_isCurrent() || _settingDefault || _selectedItem?.Item == null) return;
+            var selected = _selectedItem.Item.CopyMetadata();
+            _settingDefault = true;
+            StatusText = "正在重新读取本地图并设置默认…";
+            if (!IllustratorRuntime.Start(() => Task.Run(() => {
+                // Re-read the selected file even when its path/key is unchanged after an external replacement.
+                selected.ImageData = ImagePayload.ReadFile(selected.FilePath);
+                return selected;
+            }), (loaded, error) => {
+                _settingDefault = false;
+                if (_disposed || !_isCurrent()) return;
+                if (error != null) { StatusText = "读取本地图失败，默认图未变更：" + error.Message; return; }
+                try
+                {
+                    if (!DiskImageCacheManager.SetDefault(loaded, _campaignKey)) { StatusText = "设为默认失败，请保留图片原名及同名 JSON。"; return; }
+                    IllustratorRuntime.PublishDefaultImageChanged(loaded);
+                    _pendingSelectionKey = loaded.Key;
+                    RefreshItems();
+                }
+                catch (Exception ex) { StatusText = "设为默认失败：" + ex.Message; }
+            })) { _settingDefault = false; StatusText = "图片读取忙碌，请稍后重试。"; }
         }
 
         public void ExecuteDelete()
