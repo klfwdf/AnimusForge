@@ -1,3 +1,36 @@
+<a id="migration-functional-review-20261009"></a>
+## 迁移后的六类真实功能审查（2026-10-09，OFFLINE_REVIEW_WITH_OPEN_PERSISTENCE_RISK）
+
+用户要求对迁移后的功能走真实入口深审。本条接续、补足下方177文件有限审计；177个文件归类、端口数量和存档键保留不能代替功能执行。工作区实际为 `F:/AnimusForge-main` / `main`，审计基线 `b41587eca`，本轮读/执行源码 `5d0bba545`，生产冻结候选 `6e9c6a74f`。本组只改测试和记录；产品两项为 `303e44c48` 删除外交左下传闻提示、`6e9c6a74f` 修人物菜单旧 Hero 回调。后续用户追加的外交闭环审查仍独立进行，本条不表示其已全通过，不复用历史部署/推送授权。
+
+### 六类责任与实际覆盖
+
+| 责任组 | 已执行的当前链路与结论 | 保留的边界 |
+| --- | --- | --- |
+| 场景交互、资源、连续回复与受众 | 当前 hotkey producer→SceneShoutInputController→真实菜单/Wheel47、目标释放22；资源六种模式的真实 controller/adapter 回调纳入121生命周期；连续输出54及同源码绑定68、受众30通过 | Agent、物资/资产实际所有权变更、真实按键/音频/GPU/两轮完整LLM仍未实机；不是整个Scene端到端通过 |
+| Native 玩家/Overlay/主动首次开口与结束 | current facade/router/真实Illustrator Harmony回调91，NativeTurn112、当前phase producer71、effect10与prompt69通过；旧票据/owner/generation/target/重复完成失效有执行证据 | 整个NativeTurn全部phase串过真实网络和权威历史未执行；Courier完整回合与三渠道live等价未验 |
+| 动态UI与反射接缝 | real inquiry→Wheel、current Native callback→Illustrator；最终实际1.3/1.4 DLL真实TriggerShout/current classifier/ShowPrefix及trade Harmony接缝通过；Persona实际DLL IL中两回调使用Hero+generation guard | 其他UI/bridge装配部分为SOURCE_REVIEW；Gauntlet/GPU/第三方组合未验。反射MethodInfo存在本身不算执行 |
+| Memory导入、编辑、recall与prompt | 当前parser/single/bulk入口57+owner41、每日编辑40；真实direct-file import→authority→detached history→当前Native前缀/role assembly→LLM adapter/gateway与OpenAI/Anthropic请求体121通过；丢总览、错owner、丢前缀3项运行负控有效 | 目录自动发现受控；整个summary/overview API队列commit/reset仅源码审读与现有局部owner证据，未新跑完整异步链；Scene/Courier导入下游完整消费者未执行 |
+| Weekly/新闻的采集、调度、发布、日期与存取 | RuntimeClosure真实runtime/commit/prompt通过；NewsCollection27、真实date adapter7、F4当前owner90通过；epoch/save generation/开关关闭/正常日期/notice一次发布已执行，去epoch守卫负控有效；source material及开局/记录/WorldBulletin实际adapter roundtrip通过 | 四类campaign事件全整链与standalone WeekZero旧fixture未通过；真实API/实机弹窗/Illustrator/原生calendar mod未验 |
+| Persona/Patience/Kingdom/Records/宿主与存档权威 | Persona413、人物菜单真实39、Patience effect order与failure、Kingdom domain/rebellion回放通过；host constructor/event/retire/Coup调用到当前owner已审读；直接Memory/Weekly persistence31 roundtrip/schema通过 | Character/Battle/Political/TownStat当前事件链只SOURCE_REVIEW；旧综合campaign harness编译NOT-PASS；损坏存档保留风险见下，不称全部持久化安全 |
+
+逐项caller→owner→consumer、一基源码范围、修订/source hash和covered/uncovered责任读[当前代码范围图](architecture/af-framework-code-scope.md#migration-functional-review-20261009)。交互完整矩阵为本地 `artifacts/migration-functional-review-20261009/interaction/{functional-matrix.md,receipt.json}`，人物/王国/宿主为 `kingdom-host/review.md`，本组新增/复用结果、边界与源绑定为 `memory-weekly/{review.md,receipt.json,code-evidence.json,reused-source-binding.json}`。这些记录包含具名范围，不能以断言总数作全仓绿灯。
+
+### 持久化保护风险与失效测试入口
+
+- 新直接回放链接当前 `CampaignMemoryPersistenceAdapter`、`CampaignWeeklyRecordPersistenceAdapter`、`CampaignMaterialPersistenceAdapter`、`CampaignWorldBulletinPersistenceAdapter`、真实UTF8 chunk helper/codec/DTO/sanitizer，以及从当前owner提取的同一store字段。合成IDataStore使用真实Newtonsoft且跨新owner恢复：Memory五域长Unicode、三队列/旧raw、开局/周报/material图、WorldBulletin状态/unread/mode/corruptRaw，共31正常roundtrip/schema检查通过；每块≤12000 UTF8字节、长值不写整份旧raw已执行。无 `.sav` 读写。
+- **损坏保留NOT-PASS**：Memory坏JSON加载时隔离在scratch，但下一次保存清scratch后丢弃；Weekly缺chunk不发布半截record图，却加载为空且owner不保存原损坏证据。没有截断业务数据，也没有把这些观察写成保护PASS。当前Memory adapter、chunk helper/codec，以及Weekly/material的static Save/Load方法与 `c629e866c` normalized source相同，因此这两项不是本次职责迁移新引入的算法差异；仍是当前实际产品风险，未修复、未修坏档。比较证据 `memory-weekly/corruption-origin-comparison.json`。
+- 旧 `CampaignMemoryPersistenceAdapterTests` 先缺私有 `weekzero-original-methods.json`，用核实Git源码补入口后仍缺NewsEpoch、archive policy、Army/Clan等当前fixture叶，未进入综合执行，保留真实NOT-PASS。试验patch已撤回，没有提交“局部修通”冒充通过；新窄回放不替代它的四类event、summary全链覆盖。standalone `WeekZeroMaintenanceTests` 仍因已迁移controller/owner fixture不同步NOT-PASS。
+- 正确chunk命令仍NOT-PASS：`python -B tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --chunk-contract-only` → `tests/af2_terminal_migration_review.py:252` 必须绑定历史D0 ContextVar，而plain CLI没有进入严格scope。不是缺profile参数；未刷新physical inventory/hash/catalog/oracle。
+
+### 候选构建、频率与交付边界
+
+统一冻结 `6e9` 官方 Debug双API（引用1.3.15.110062 / 1.4.6.115628）、Bootstrap、双Coup seam、clean Stage与两实际DLL探针通过；2010个产品输入编译前后不变，回执 `artifacts/migration-functional-review-20261009/final-build/receipt.json`。1.3 SHA `19365847e6a0928e2eae6f82ca6103d9d4494fd1613df76f461d6d7f82247430`，1.4 `90205f99ffdfd1b042704a4624132d86fd1bd21da7a867e7fc6ac59f5ba3a77f`，Bootstrap `6746745e0d19f3f226d091dd0f3860bd7eab2f95d0313601faa4ab946be5ff19`。Stage仅加载Bootstrap并保留versions/1.3与1.4单模块输出。本条构建不等于追加外交最终验收；未因本审计部署、打包或推送。
+
+新增工作均为隔离测试，不新增产品Tick、序列化、反射、扫描或网络。当前identity/capture在主线程、recall work使用detached输入；news mode在既有Tick O(1)，source材料为现有事件频率及index，发布回写既有每次最多四action，save/load仅SyncData边界。本轮未测实机帧耗时。
+
+回滚只针对本包测试/文档提交作focused inverse；产品分别revert `303e44c48` / `6e9c6a74f`，不能reset其他作者历史。原有NEW-10/GCCZ、NuGet目录与其他作者改动保留。真实Campaign/Mission/玩家存档、LLM/ONNX/TTS/GPU/其他MOD、完整三渠道、坏档修复与追加外交闭环未验证；后续按实际责任分别验收，不把历史HOLD或当前某项PASS扩成全绿。
+
 <a id="scene-regression-package-20261009"></a>
 ## 场景轮盘、连续回复可见性和受众名录修复（DUAL_DLL_AND_DEPLOYMENT_VERIFIED）
 

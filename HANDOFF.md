@@ -1,3 +1,10 @@
+# 当前交接：六类真实功能补审（2026-10-09，OFFLINE_WITH_OPEN_PERSISTENCE_RISK）
+
+- 原迁移177文件inventory已补真实caller→owner→consumer审查；当前候选产品 `6e9c6a74f`，包含外交左下传闻提示删除 `303e44c48` 和Persona旧Hero菜单回调修复。当前Native导入121、3运行负控、Memory/Weekly实际adapter roundtrip31、news27/date7/Weekly owner90 PASS；Scene/Native/UI与Persona/Patience/Kingdom专项范围见台账，不称整链/全仓全绿。
+- 原官方1.3/1.4/Bootstrap/双Coup seam/Stage/两实际DLL探针PASS，2010输入冻结；回执 `artifacts/migration-functional-review-20261009/final-build/receipt.json`。本轮未部署/推送，安装仍是历史候选；用户追加的外交完整闭环审查独立进行，本条不授予或代表其最终验收。
+- **保留风险**：坏Memory JSON下一保存会丢scratch证据，缺Weekly chunk为空且owner不留原损坏载荷，保护NOT-PASS；已与 `c629e866c` 同算法绑定，未修坏档。D0 plain chunk CLI仍缺严格ContextVar，旧campaign/WeekZero综合fixture仍NOT-PASS；未刷新oracle。真实Campaign/Mission/存档/网络/TTS/GPU、三渠道live、四类campaign事件全执行未验。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#migration-functional-review-20261009)、[当前源码范围图](docs/architecture/af-framework-code-scope.md#migration-functional-review-20261009)；本地三组报告在 `artifacts/migration-functional-review-20261009/{interaction,kingdom-host,memory-weekly}`。回滚仅对应产品/测试文档提交的focused inverse，不reset其他作者、NuGet、NEW-10/GCCZ。以下历史部署/推送与当前状态分别看所属receipt。
+
 # 当前交接：场景轮盘、连续回复可见性与名录动画
 
 产品`f634a8c03`组合修复菜单迁移owner断链、TTSoff文本feed延迟、名录主体贴顶及0.25秒卷收；外交第三方消息文案/路由日志澄清。轮盘21、sink68、生命周期117/54/30、UI125、通知107 PASS；最终两DLL真实TriggerShout→分类→ShowPrefix及trade契约、官方双API/Bootstrap/双coup接缝/Stage PASS。2010产品输入冻结，其后测试提交不改变产品。

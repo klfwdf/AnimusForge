@@ -1,0 +1,57 @@
+using System.Text;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using AnimusForge;
+namespace TaleWorlds.CampaignSystem {public interface IDataStore {bool IsSaving{get;}bool IsLoading{get;}bool SyncData<T>(string key,ref T value);}}
+namespace TaleWorlds.Library {public static class TWParallel {public static bool IsMainThread()=>true;}public static class MBMath {public static int ClampInt(int n,int a,int b)=>Math.Clamp(n,a,b);}}
+namespace AnimusForge {internal static class Logger {internal static bool IsModLogicEnabled=>true;internal static List<string> Messages=new();internal static void Log(string area,string text)=>Messages.Add(area+":"+text);}}
+internal sealed class Store:IDataStore {
+ public bool IsSaving{get;set;} public bool IsLoading=>!IsSaving;
+ public Dictionary<string,string> Data=new();public List<string> Keys=new();
+ public bool SyncData<T>(string key,ref T value){Keys.Add(key);if(IsSaving){Data[key]=JsonConvert.SerializeObject(value);return true;}if(!Data.TryGetValue(key,out string text))return false;value=JsonConvert.DeserializeObject<T>(text);return true;}
+ internal Store Copy()=>new(){IsSaving=IsSaving,Data=new(Data)};
+ internal T Read<T>(string key)=>JsonConvert.DeserializeObject<T>(Data[key]);
+ internal void Put<T>(string key,T value)=>Data[key]=JsonConvert.SerializeObject(value);
+}
+internal static class Program {
+ static int checks;static void Check(bool pass,string label){checks++;if(!pass)throw new Exception("ASSERT: "+label);}
+ static string Huge=string.Concat(Enumerable.Repeat("中😀é漢字",8000));
+ static void Main(){
+  var memory=new MemoryBusinessStateOwner();
+  memory.History["hero"]=new(){new(){GameDayIndex=17,GameDate="日",Lines=new(){Huge}}};
+  memory.Drafts["hero"]=new(){new(){HeroId="hero",HeroName="NPC",GameDayIndex=17,HasLlmDialogue=true,Lines=new(){new(){GameDayIndex=17,GameHour=4,Speaker="player",Text=Huge,IsLlmDialogue=true}}}};
+  memory.Blocks["hero"]=new(){new(){Id="hero:16",HeroId="hero",GameDayIndex=16,Summary=Huge,RichTitle="旧记忆"}};
+  memory.Overviews["hero"]=new(){HeroId="hero",Summary=Huge,IncludedBlockIds=new(){"hero:16"}};
+  memory.MajorSummaries["hero"]=new(){HeroId="hero",Summary=Huge};
+  memory.DailyQueue.Add(new(){HeroId="hero",GameDayIndex=17});memory.OverviewQueue.Add(new(){HeroId="hero"});memory.MajorQueue.Add(new(){HeroId="hero"});
+  var save=new Store{IsSaving=true};var adapter=new CampaignMemoryPersistenceAdapter(memory);adapter.Save(save,_=>{},_=>false);
+  Check(memory.History["hero"][0].Lines[0]==Huge&&memory.Drafts["hero"][0].Lines[0].Text==Huge,"save retains authoritative memory payload");
+  foreach(string key in new[]{"_dialogueHistory_v2","_af_dailyMemoryDrafts_v1","_af_compressedMemoryBlocks_v1","_af_memoryOverviewStates_v1","_af_npcMajorActionSummaries_v1"}){
+   var values=save.Read<Dictionary<string,string>>(key);Check(values.ContainsKey("__af_chunkcount__:hero"),key+" chunks long owner values");
+   Check(values.Where(x=>x.Key.StartsWith("__af_chunk__:")).All(x=>Encoding.UTF8.GetByteCount(x.Value)<=12000),key+" byte bound");
+   Check(!values.ContainsKey("hero")||values["hero"].Length==0,key+" has no full raw duplicate");
+  }
+  var restored=new MemoryBusinessStateOwner();restored.History["stale"]=new();var held=restored.History;int historyCallbacks=0,dailyCallbacks=0;
+  save.IsSaving=false;new CampaignMemoryPersistenceAdapter(restored).Load(save,()=>historyCallbacks++,()=>dailyCallbacks++);
+  Check(ReferenceEquals(held,restored.History)&&!restored.History.ContainsKey("stale"),"load updates same authoritative history dictionary");
+  Check(restored.History["hero"][0].Lines[0]==Huge&&restored.Drafts["hero"][0].Lines[0].Text==Huge&&restored.Blocks["hero"][0].Summary==Huge,"all memory domains roundtrip complete Unicode");
+  Check(restored.Overviews["hero"].Summary==Huge&&restored.MajorSummaries["hero"].Summary==Huge,"overview and major summary recover to current owner");
+  Check(restored.DailyQueue.Count==1&&restored.OverviewQueue.Count==1&&restored.MajorQueue.Count==1&&historyCallbacks==1&&dailyCallbacks==1,"queues and rebuild callbacks restore once");
+  var legacy=save.Copy();legacy.Put("_af_dailyMemoryDrafts_v1",new Dictionary<string,string>{{" HERO ",JsonConvert.SerializeObject(memory.Drafts["hero"])}});legacy.Put("_af_memorySummaryQueue_v1__af_chunk_count",0);legacy.Put("_af_memorySummaryQueue_v1",JsonConvert.SerializeObject(memory.DailyQueue));
+  var old=new MemoryBusinessStateOwner();new CampaignMemoryPersistenceAdapter(old).Load(legacy,()=>{},()=>{});Check(old.Drafts["hero"][0].Lines[0].Text==Huge&&old.DailyQueue.Count==1,"old raw dictionary and raw queue remain compatible");
+  var bad=save.Copy();bad.Put("_af_compressedMemoryBlocks_v1",new Dictionary<string,string>{{"bad","{broken"},{"hero",JsonConvert.SerializeObject(memory.Blocks["hero"])}});var damaged=new MemoryBusinessStateOwner();new CampaignMemoryPersistenceAdapter(damaged).Load(bad,()=>{},()=>{});
+  Check(damaged.Blocks.ContainsKey("hero")&&!damaged.Blocks.ContainsKey("bad")&&damaged.BlockStorage["bad"]=="{broken","malformed owner JSON isolated from valid neighbor; scratch retains evidence before next save");
+  bad.IsSaving=true;new CampaignMemoryPersistenceAdapter(damaged).Save(bad,_=>{},_=>false);bool memoryCorruptSurvives=CampaignSaveChunkHelper.RestoreStringDictionary(bad.Read<Dictionary<string,string>>("_af_compressedMemoryBlocks_v1")).ContainsKey("bad");
+  Console.WriteLine("CORRUPTION_OBSERVATION memory_bad_json_survives_next_save="+memoryCorruptSurvives);
+  var weekly=new WeeklyEventRecordStateOwner();weekly.WorldOpening=Huge;weekly.KingdomOpenings["empire"]=Huge;weekly.Records.Add(new(){EventId="weekly_report:world:2",EventKind="world",WeekIndex=2,Summary=Huge,CreatedDay=14,Materials=new(){new(){SnapshotText=Huge,MaterialType="fact"}}});
+  var ws=new Store{IsSaving=true};var wp=new CampaignWeeklyRecordPersistenceAdapter(weekly);wp.SaveOpenings(ws);wp.SaveRecords(ws,_=>{});Check(wp.RecordJsonStorage=="","weekly JSON scratch released after save");
+  ws.IsSaving=false;var wr=new WeeklyEventRecordStateOwner();var openingDict=wr.KingdomOpenings;var readAdapter=new CampaignWeeklyRecordPersistenceAdapter(wr);readAdapter.LoadOpenings(ws);readAdapter.LoadRecords(ws,_=>{});
+  Check(wr.WorldOpening==Huge&&wr.KingdomOpenings["empire"]==Huge&&ReferenceEquals(openingDict,wr.KingdomOpenings),"world and kingdom opening owner roundtrip");
+  Check(wr.Records[0].Summary==Huge&&wr.Records[0].Materials[0].SnapshotText==Huge&&readAdapter.RecordJsonStorage=="","weekly record and material graph recover untruncated");
+  var material=new CampaignMaterialRecordOwner();material.Materials.Add(new(){Day=17,Sequence=3,StableKey="FACT:3",SnapshotText=Huge,Label="事实",IncludeInWorld=true});var ms=new Store{IsSaving=true};new CampaignMaterialPersistenceAdapter(material).Save(ms);ms.IsSaving=false;var mr=new CampaignMaterialRecordOwner();new CampaignMaterialPersistenceAdapter(mr).Load(ms);Check(mr.Materials.Count==1&&mr.Materials[0].SnapshotText==Huge&&mr.Materials[0].StableKey=="fact:3","source material owner roundtrip and stable identity");
+  var bulletin=new WorldBulletinStateOwner{State=new(){Events=new(){new(){Key="fact",Day=17,Sentence=Huge}},PendingNoticeEventIds=new(){"unread"},CollectionBulletinMode=true,WeeklyCollectionStartHour=400.5}};var bs=new Store{IsSaving=true};int resets=0;CampaignWorldBulletinPersistenceAdapter.Sync(bs,bulletin,()=>resets++);Check(resets==0,"bulletin saving does not reset current runtime");bs.IsSaving=false;var br=new WorldBulletinStateOwner();CampaignWorldBulletinPersistenceAdapter.Sync(bs,br,()=>resets++);Check(resets==1&&br.State.Events[0].Sentence==Huge&&br.State.PendingNoticeEventIds[0]=="unread"&&br.State.WeeklyCollectionStartHour==400.5,"bulletin state/unread/mode cutover roundtrip");
+  var unreadable=new Store();unreadable.Put("_af_worldBulletin_v1","{bad bulletin");var corrupt=new WorldBulletinStateOwner();CampaignWorldBulletinPersistenceAdapter.Sync(unreadable,corrupt,()=>{});Check(corrupt.State==null&&corrupt.CorruptRaw=="{bad bulletin","bulletin malformed JSON kept out of live facts with exact corrupt raw");unreadable.IsSaving=true;CampaignWorldBulletinPersistenceAdapter.Sync(unreadable,corrupt,()=>{});unreadable.IsSaving=false;Check(CampaignSaveChunkHelper.LoadChunkedString(unreadable,"_af_worldBulletin_v1")=="{bad bulletin","bulletin corrupted raw preserved on later save");
+  var missing=ws.Copy();missing.Data.Remove("_eventRecordEntries_v1__af_chunk_0");var partial=new WeeklyEventRecordStateOwner();new CampaignWeeklyRecordPersistenceAdapter(partial).LoadRecords(missing,_=>{});bool partialAccepted=partial.Records.Count>0;Check(!partialAccepted,"missing chunk never publishes truncated record graph");Console.WriteLine("CORRUPTION_OBSERVATION missing_weekly_chunk_live_record_count="+partial.Records.Count+" raw_evidence_in_owner=false");
+  Console.WriteLine("PASS "+checks+" current adapter roundtrip/schema checks; corruption retention gaps are OBSERVED, not passed protection; LIVE/SAV=NOT_RUN.");
+ }
+}

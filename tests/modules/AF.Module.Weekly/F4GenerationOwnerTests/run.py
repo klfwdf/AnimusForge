@@ -1,9 +1,10 @@
 from pathlib import Path
-import sys, json, hashlib, subprocess, re
+import sys, json, hashlib, subprocess, re, argparse
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
-out=new_run_root(ROOT,'f4-weekly-generation',None)
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);parser.add_argument('--mutate',choices=['ignore-bulletin-epoch']);args=parser.parse_args()
+out=new_run_root(ROOT,'f4-weekly-generation',args.run_root)
 paths=['src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs','src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs','src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs','src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationRules.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationModels.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationAttemptOwner.cs','src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']
 import importlib.util
 paths.append('src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs')
@@ -21,10 +22,16 @@ spans=[ex.declaration(retry,'public static string BuildFailureDetail('),ex.decla
 with (out/'Guards.cs').open('a',encoding='utf-8') as settings:
  settings.write('namespace AnimusForge { internal sealed class DuelSettings { internal bool UseWorldBulletin=true,AutoGenerateWeeklyReports=true; internal static DuelSettings GetSettings()=>new(); }}')
 newtonsoft=ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
-links=''.join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)+ '<Compile Include="'+str(HERE/'Program.cs')+'"/><Compile Include="Guards.cs"/><Compile Include="PanelData.cs"/>'
+linked_paths=[ROOT/path for path in paths]
+if args.mutate:
+ original=ROOT/'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs'
+ text=original.read_text(encoding='utf-8-sig');marker='if (epoch != _collectionEpoch)'
+ assert text.count(marker)==1
+ modified=out/'WorldBulletinStateOwner.Mutated.cs';modified.write_text(text.replace(marker,'if (false && epoch != _collectionEpoch)'),encoding='utf-8');linked_paths[linked_paths.index(original)]=modified
+links=''.join('<Compile Include="'+str(path)+'"/>' for path in linked_paths)+ '<Compile Include="'+str(HERE/'Program.cs')+'"/><Compile Include="Guards.cs"/><Compile Include="PanelData.cs"/>'
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-(out/'manifest.json').write_text(json.dumps({str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths},indent=2),encoding='utf-8')
+(out/'manifest.json').write_text(json.dumps({'sources':{str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths},'tests':{name:hashlib.sha256((HERE/name).read_bytes()).hexdigest() for name in ['run.py','Program.cs']},'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'mutation':args.mutate,'provider':'STUBBED','game':'STUBBED','liveSav':'NOT_RUN'},indent=2),encoding='utf-8')
 dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 for key in ('DOTNET_CLI_HOME','USERPROFILE','APPDATA','LOCALAPPDATA','TEMP','TMP'):
     if key in env: Path(env[key]).mkdir(parents=True,exist_ok=True)
