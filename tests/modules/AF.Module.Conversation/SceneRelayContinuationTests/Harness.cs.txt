@@ -1,0 +1,158 @@
+using System.Text;
+using System.Text.RegularExpressions;
+using AnimusForge.SiegeAftermathIntervention;
+
+class NpcDataPacket { public int AgentIndex; public string Name; public bool IsHero; }
+class Hero { }
+class Color { public Color(float r, float g, float b) { } }
+class Receipt { public void Fail(string reason) { } }
+class SceneRelayEligibilitySnapshot { public List<NpcDataPacket> Candidates = new(); }
+enum ScenePostprocessStatus { Succeeded, Failed, TargetUnavailable }
+class ScenePostprocessOutcome {
+    public ScenePostprocessStatus Status;
+    public int RelayTargetAgentIndex;
+    public bool Succeeded => Status == ScenePostprocessStatus.Succeeded;
+}
+class Dispatcher {
+    public Task<T> RunAsync<T>(string name, string npc, int id, Func<T> call, T fallback) {
+        if (name == F.StaleAt) F.Current = false;
+        if (name == F.UnavailableAt) return Task.FromResult(fallback);
+        return Task.FromResult(call());
+    }
+}
+class Ports {
+    public void QueueSceneInfoMessage(string text, Color color, int epoch, string sound = null) {
+        F.Messages.Add(text);
+    }
+}
+static class Logger { public static void Log(string owner, string text) { F.Logs.Add(text); } }
+class PostprocessRuleEntry { public string Tag, Description, SingleFramedNpcDescription; }
+static class AIConfigHandler {
+    public static List<PostprocessRuleEntry> Rules;
+    public static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id) => Rules;
+}
+static class AfGcczShoutBridge {
+    public static bool ShouldUseTownNpcResponseBudgetForExternal() => F.Town;
+    public static bool TryClaimNpcResponseForExternal(string eventId, int id, SiegeNpcResponseEventOrigin origin, int available, int pendingRequestCount, string source, out SiegeNpcResponseDecision decision) {
+        F.Claims.Add(id);
+        decision = F.Budget.TryClaim(eventId, id.ToString(), origin, false, 1, available, pendingRequestCount);
+        return decision.Allowed;
+    }
+}
+static class F {
+    public static List<NpcDataPacket> People;
+    public static List<int> Speakers = new(), Claims = new();
+    public static List<int[]> CandidateSets = new();
+    public static List<string> Messages = new(), Logs = new();
+    public static SiegeNpcResponseEventBudget Budget;
+    public static bool Town, Current, End, Suppressed, EmptyHistory;
+    public static string StaleAt, UnavailableAt, Mode;
+    public static int Step;
+    public static void Reset(int count = 2, bool town = false, string mode = "alternate") {
+        People = Enumerable.Range(0, count).Select(i => new NpcDataPacket { AgentIndex = 17 + i * 10, Name = "npc" + i }).ToList();
+        Speakers.Clear(); Claims.Clear(); CandidateSets.Clear(); Messages.Clear(); Logs.Clear();
+        Budget = new(); Budget.BeginScene(); Town = town; Current = true;
+        End = Suppressed = EmptyHistory = false; StaleAt = UnavailableAt = ""; Mode = mode; Step = 0;
+        AIConfigHandler.Rules = null;
+    }
+    public static string Raw(int current, List<NpcDataPacket> candidates) => Mode switch {
+        "self" => "[RELAY:" + current + "]", "missing" => "", "invalid" => "[RELAY:999]",
+        "third" => "[RELAY:" + (Step == 1 ? 27 : Step == 2 ? 17 : 37) + "]",
+        _ => "[RELAY:" + (current == 17 ? 27 : 17) + "]"
+    };
+    public static Task<ScenePostprocessOutcome> Postprocess(int current, List<NpcDataPacket> candidates) {
+        string tag = Relay.NormalizeAutoGroupRelayPostprocessTagsForScene(Raw(current, candidates), candidates, current);
+        int id = string.IsNullOrEmpty(tag) ? -1 : int.Parse(Regex.Match(tag, @"\d+").Value);
+        return Task.FromResult(new ScenePostprocessOutcome { Status = Mode == "failed" ? ScenePostprocessStatus.Failed : Mode == "target-unavailable" ? ScenePostprocessStatus.TargetUnavailable : ScenePostprocessStatus.Succeeded, RelayTargetAgentIndex = id });
+    }
+}
+class Relay {
+    @@CONSTANT@@
+    const string AutoGroupRelayNegativeSoundEvent = "negative", AutoGroupRelayPositiveSoundEvent = "positive";
+    const string AutoGroupRelayRuleId = "relay", AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
+    Dispatcher _dispatcher = new(); Ports _ports = new();
+    bool IsCurrentModuleGroup() => F.Current;
+    bool IsSceneConversationEpochCurrent(int epoch) => F.Current;
+    NpcDataPacket ResolveLiveSceneRelayTarget(object scope, Dictionary<int, NpcDataPacket> audience, Dictionary<int, Hero> heroes, int epoch, int id) => audience.GetValueOrDefault(id);
+    SceneRelayEligibilitySnapshot BuildSceneRelayEligibilitySnapshot(object scope, Dictionary<int, NpcDataPacket> audience, Dictionary<int, Hero> heroes, int epoch) => new() { Candidates = F.People.ToList() };
+    Task WaitForScenePostprocessGateAsync(string name) { if (F.StaleAt == "scene_relay_gate") F.Current = false; return Task.CompletedTask; }
+    string BuildAutoGroupRelayThinkingInfoMessage(NpcDataPacket npc) => "thinking:" + npc.AgentIndex;
+    static string BuildSceneRelayNpcListLineForPostprocess(NpcDataPacket npc, bool primary, bool speaker) => npc.Name + ":" + npc.AgentIndex;
+    @@NORMALIZER@@
+    @@PROMPT@@
+    @@RULES@@
+    public async Task Run() {
+        var speakableCandidates = F.People;
+        var primaryNpc = F.People[0];
+        var currentSpeaker = primaryNpc;
+        var audienceByAgentIndex = F.People.ToDictionary(n => n.AgentIndex);
+        var resolvedHeroes = new Dictionary<int, Hero>();
+        var engagedAgentIndices = new HashSet<int>();
+        var roundNpcSpeakerIndices = new HashSet<int>();
+        object conversationScope = null; int conversationEpoch = 1;
+        Receipt receipt = null;
+        @@SETUP@@
+            if (!IsCurrentModuleGroup()) return;
+            @@ADMISSION@@
+            F.Speakers.Add(currentSpeaker.AgentIndex); F.Step++;
+            if (!F.EmptyHistory) roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
+            bool suppressBattleSpeechFollowups = F.Suppressed, endRequested = F.End;
+            bool relayPostprocessSelected = false, relayRequested = false;
+            int relayTargetAgentIndex = -1, resolvedRelayTargetAgentIndex = -1;
+            string cleaned = "visible reply";
+            var relayCandidatesForNextTurn = new List<NpcDataPacket>(); NpcDataPacket nextSpeaker = null;
+            @@CANDIDATES@@
+            F.CandidateSets.Add(relayCandidatesForNextTurn.Select(n => n.AgentIndex).ToArray());
+            Task<ScenePostprocessOutcome> postprocessTask = F.Postprocess(currentSpeaker.AgentIndex, relayCandidatesForNextTurn);
+            @@SELECTION@@
+            @@TAIL@@
+        }
+    }
+}
+class Program {
+    static int tests;
+    static void Check(bool ok, string name) { if (!ok) throw new Exception("FAIL " + name); tests++; Console.WriteLine("PASS " + name); }
+    static async Task Play() => await new Relay().Run();
+    static int Stops => F.Messages.Count(m => !m.StartsWith("thinking:"));
+    static async Task Main() {
+        F.Reset(); await Play();
+        Check(F.Speakers.SequenceEqual(new[] {17,27,17,27,17,27,17,27}), "two people can alternate eight utterances");
+        Check(F.CandidateSets[1].Contains(17), "A remains eligible after A to B");
+        Check(Stops == 1 && F.Messages.Last().Contains("发言次数上限"), "one limit stop notification");
+        F.Reset(town:true); await Play();
+        Check(F.Speakers.Count == 8 && F.Claims.SequenceEqual(new[] {17,27}), "town repeat speakers consume no new-person claim");
+        F.Reset(3, true, "third"); await Play();
+        Check(F.Speakers.SequenceEqual(new[] {17,27,17}) && F.Claims.SequenceEqual(new[] {17,27,37}), "town rejects new C after A B A");
+        Check(Stops == 1 && F.Messages.Last().Contains("回应人数预算"), "town budget stop is shown once");
+        F.Reset(town:true); F.EmptyHistory = true; await Play();
+        Check(F.Claims.Count == 2 && F.Speakers.Count == 8, "budget admission does not depend on visible history count");
+        foreach (var mode in new[] {"self", "missing", "invalid", "failed", "target-unavailable"}) {
+            F.Reset(mode:mode); await Play();
+            Check(F.Speakers.Count == 1 && Stops == 1, mode + " terminates once");
+        }
+        F.Reset(1); await Play(); Check(Stops == 1 && F.Speakers.Count == 1, "no candidates terminates once");
+        foreach (var boundary in new[] {"scene_relay_turn_validate", "scene_relay_next_validate"}) {
+            F.Reset(); F.UnavailableAt = boundary; await Play();
+            Check(Stops == 1 && F.Speakers.Count <= 1, boundary + " unavailable notification");
+        }
+        foreach (var boundary in new[] {"scene_relay_turn_validate", "scene_relay_next_candidates", "scene_relay_next_validate", "scene_relay_gate"}) {
+            F.Reset(); F.StaleAt = boundary; await Play();
+            Check(Stops == 0 && F.Speakers.Count <= 1, boundary + " stale context has no late effect");
+        }
+        F.Reset(town:true); F.Budget.EndScene(); await Play();
+        Check(F.Speakers.Count == 0 && Stops == 1 && !F.Messages[0].Contains("人数") && F.Logs.Any(s => s.Contains("InactiveScene")), "inactive budget keeps actual reason");
+        F.Reset(); F.End = true; await Play(); Check(Stops == 1 && F.Speakers.Count == 1, "explicit end does not run relay");
+        F.Reset(); F.Suppressed = true; await Play(); Check(Stops == 0 && F.Speakers.Count == 1, "battle speech suppression preserved");
+        F.Reset(); var candidates = F.People.Skip(1).ToList();
+        Check(Relay.NormalizeAutoGroupRelayPostprocessTagsForScene("[RELAY:17]", candidates, 17) == "[RELAY:17]", "normalizer permits self stop outside candidate list");
+        Check(Relay.NormalizeAutoGroupRelayPostprocessTagsForScene("[RELAY:999][relay:27][RELAY:17]", candidates, 17) == "[RELAY:27]", "normalizer chooses first valid tag only");
+        Check(Relay.NormalizeAutoGroupRelayPostprocessTagsForScene("[RELAY:999]", candidates, 17) == "", "normalizer rejects invented id");
+        string prompt = Relay.BuildSceneRelayTargetListForPostprocess(candidates, 17, 27);
+        Check(prompt.Contains("已经发言的人仍可再次接话") && prompt.Contains("[RELAY:17]"), "runtime prompt permits repeats and explicit self stop");
+        var fallback = Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false);
+        Check(fallback[0].Description.Contains("接力选择协议") && fallback[0].Description.Contains("接力终止"), "fallback prompt uses the same protocol");
+        AIConfigHandler.Rules = new() { new() { Tag="[RELAY:接力编号]", Description="custom", SingleFramedNpcDescription="single-custom" } };
+        Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description == "custom" && Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description == "single-custom", "existing custom rules retained");
+        Console.WriteLine("PASS " + tests + " production relay boundary assertions; no live game or network");
+    }
+}
