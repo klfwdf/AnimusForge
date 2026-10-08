@@ -10,10 +10,19 @@ paths=['src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplic
 for path in paths:(out/Path(path).name).write_bytes((ROOT/path).read_bytes())
 read=lambda path:(ROOT/path).read_text(encoding='utf-8-sig')
 shape='src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs'
+facade='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs'
 lord='src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs';companion='src/modules/AF.Module.Conversation/Proactive/CompanionProactiveChatBehavior.cs'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf8')
 for token,path,signature in [('@@ADMISSION@@',shape,'internal sealed class NativeConversationAdmission'),('@@ERROR@@',shape,'internal sealed class NativeConversationAdmissionException'),('@@LORD_CONSUME@@',lord,'private bool TryConsumePendingOpening('),('@@COMPANION_CONSUME@@',companion,'private bool TryConsumePendingOpening(')]:
  code=code.replace(token,ex.declaration(read(path),signature))
+producer='\n'.join(ex.declaration(read(path),signature) for path,signature in [
+ (facade,'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)'),
+ (facade,'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)'),
+ (shape,'private Task<string> SubmitNativeConversationAdmittedAsync('),
+ (shape,'internal sealed class NativeConversationPresentationScope'),
+ (shape,'internal static NativeConversationPresentationScope CaptureNativeConversationPresentationScopeForOverlay('),
+ (shape,'internal static Task<string> SubmitNativeConversationForOverlayAsync(')])
+code=code.replace('@@PRODUCER@@',producer)
 # Production producer must retire the obligation before any accepted raw reply effects.
 presentation=read('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs')
 assert presentation.index('_ports.RetireOpeningForAcceptedReply?.Invoke(admission);') < presentation.index('TryProcessNativeConversationRawMeetingTauntTags(')
@@ -25,7 +34,7 @@ assert '@@' not in code
 (out/'Program.cs').write_text(code,encoding='utf8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',encoding='utf8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf8')
-manifest={path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths+[shape,lord,companion]};(out/'sources.json').write_text(json.dumps(manifest,indent=2),encoding='utf8')
+manifest={path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths+[shape,facade,lord,companion]};(out/'sources.json').write_text(json.dumps(manifest,indent=2),encoding='utf8')
 dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 p=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf8',errors='replace',timeout=120)
 log=p.stdout+p.stderr;(out/'run.log').write_text(log,encoding='utf8');print(log,end='');raise SystemExit(p.returncode)
