@@ -1,4 +1,10 @@
-﻿# 当前交接：周报切换／新档重新收集与历法日期（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：画廊主题完整保留与滚动（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品`152c93d85`、检查点`c1a838e62`：取消画作主题36字硬截断，画廊右侧说明自动换行并可滚动；日期固定，标题/行动/图片正文保持。旧缓存已丢的文字不会自动补回。
+- 双API/Bootstrap/双DLL接缝、实际DLL每版7主题检查、XML绑定PASS；旧安装版同测复现42字只存36字。实机换行/滚动未验，未部署/打包/推送。
+- [唯一台账与代码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gallery-theme-truncation-20261008)。证据`artifacts/gallery-theme-truncation-20261008/verification-receipt.json`；回滚仅`git revert 152c93d85`，其他会话改动保留。
+
+# 当前交接：周报切换／新档重新收集与历法日期（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `1241b702d`：切换取消旧收集/重试，周报从切换或新档起满7游戏日生成；档案保留，旧回包不污染新周期。正常新增/世界事件/清理不再使冻结自动周报整批失效，显式编辑/导入与目标保护保持。
 - 时间显示改用游戏CampaignTime日期接口，不再显示累计千周；适配365天等接入游戏日期接口的历法，真实模组未验。新周期27、editor50、归档193、记录42、日期7、两DLL各8、波次/分块及原双API/Bootstrap/接缝PASS。未实机/部署/打包/推送。
