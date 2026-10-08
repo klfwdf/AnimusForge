@@ -24,7 +24,7 @@ namespace TaleWorlds.Library
 }
 namespace TaleWorlds.CampaignSystem
 {
-    public class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(); }
+    public class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(); public AnimusForge.ShoutBehavior Behavior; public T GetCampaignBehavior<T>() where T:class => Behavior as T; }
     public class CharacterObject { public bool IsHero; }
     public class ConversationManager { public bool IsConversationInProgress; public CharacterObject OneToOneConversationCharacter; public void EndConversation() { IsConversationInProgress = false; } }
 }
@@ -52,10 +52,13 @@ namespace AnimusForge
     public class NpcDataPacket { public int AgentIndex; }
     public class ShoutBehavior
     {
+        internal readonly SceneShoutInputController _j17SceneShoutInputController = new();
+        internal readonly SceneTradeController _j17SceneTradeController = new();
         public static int SceneIllustrationVersionForExternal => 0;
-        private object _shoutTradeTargetNpc, _activeShoutTargetingContext = new();
-        private TaleWorlds.MountAndBlade.Agent _shoutTradeTargetAgentSnapshot;
-        private bool _shoutTradeActionOnly;
+        private object _shoutTradeTargetNpc => _j17SceneTradeController.Target;
+        private object _activeShoutTargetingContext { get; } = new();
+        private TaleWorlds.MountAndBlade.Agent _shoutTradeTargetAgentSnapshot => _j17SceneTradeController.Agent;
+        private bool _shoutTradeActionOnly => _j17SceneTradeController.ActionOnly;
         private int _sceneConversationEpoch { get; set; }
         public void AdvanceEpoch() { _sceneConversationEpoch++; }
         private void OpenShoutTextInput(NpcDataPacket packet, string title, string subtitle) { }
@@ -63,6 +66,8 @@ namespace AnimusForge
         private static int GetCurrentSceneHistorySessionIdForExternal() => 1;
         private static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int agent, int limit) => new() { "history" };
     }
+    internal sealed class SceneShoutInputController { private void OpenShoutTextInput(NpcDataPacket packet, string title, string subtitle) {} }
+    internal sealed class SceneTradeController { internal object Target; internal TaleWorlds.MountAndBlade.Agent Agent; internal bool ActionOnly; private void ShowShoutTradeChatInput() {} }
     public class ShoutTextInputPopup { private object _dataSource; private void Close(bool silent) { } }
     public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public bool IsIllustrationVisible => false; public bool CanIllustrate => false; public string IllustrationButtonText => ""; public void ExecuteIllustrate() { } public void ExecuteOpenGallery() { } public void ExecuteSubmit() { } public void ExecuteCancel() { } }
     public static class AnimusForgeNativeConversationOverlay { public static void CloseActive() { } }

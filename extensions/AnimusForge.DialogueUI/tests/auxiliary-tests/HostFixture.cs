@@ -44,34 +44,50 @@ namespace AnimusForge
     }
     public sealed class ShoutBehavior
     {
-        private sealed class ShoutTradeResourceOption
+        internal sealed class ShoutTradeResourceOption
         {
             public string Name,ItemId; public int AvailableAmount,InventoryUnitValue; public bool IsGold;
             public MyBehavior.PartyTransferPromptEntry PartyEntry;
             public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
         }
-        private sealed class ShoutPendingTradeItem
+        internal sealed class ShoutPendingTradeItem
         {
             public int Amount; public bool IsGold; public string ItemId;
             public MyBehavior.PartyTransferPromptEntry PartyEntry;
             public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
         }
-        private List<ShoutTradeResourceOption> _shoutTradeOptions = new();
-        private List<ShoutPendingTradeItem> _shoutPendingTradeItems = new();
+        internal readonly SceneTradeController _j17SceneTradeController = new();
+        public static bool OpenNativeConversationGiveShowForExternal(Action done)
+        {
+            Campaign.Current.Behavior._j17SceneTradeController.OpenMenu(done);
+            return true;
+        }
+    }
+    internal sealed class SceneTradeController
+    {
+        private List<ShoutBehavior.ShoutTradeResourceOption> _shoutTradeOptions = new();
+        private List<ShoutBehavior.ShoutPendingTradeItem> _shoutPendingTradeItems = new();
         private int _shoutPendingTradeItemIndex;
         private bool _shoutTradeActionOnly;
         private Action _shoutTradeActionOnlyFinished;
+        internal Func<MultiSelectionInquiryData, bool> InlineInquiryCapture;
+        private long _uiRevision;
+        private void PresentTradeInquiry(MultiSelectionInquiryData data)
+        {
+            if (InlineInquiryCapture?.Invoke(data) == true) return;
+            MBInformationManager.ShowMultiSelectionInquiry(data);
+        }
         public int Commits,Cancels,NativeAmounts; public bool InjectUnrelated,CorruptOrder,RefuseCategory,ThrowBeforeCommit;
         public string Mode; public int[] LastAmounts; public string[] LastIds; public Action DuringCommit;
-        public static bool OpenNativeConversationGiveShowForExternal(Action done)
+        internal void OpenMenu(Action done)
         {
-            var self=Campaign.Current.Behavior;
+            var self=this;
+            long revision = ++_uiRevision;
             self._shoutTradeActionOnly=true; self._shoutTradeActionOnlyFinished=done;
-            MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData {
+            PresentTradeInquiry(new MultiSelectionInquiryData {
                 MaxSelectableOptionCount=1,
                 InquiryElements=new[] {"give","show","give_troops","give_prisoners","give_settlements"}.Select(m=>new InquiryElement(m,m)).ToList(),
-                AffirmativeAction=selected=>self.Begin((string)selected[0].Identifier), NegativeAction=_=>self.CancelHost() });
-            return true;
+                AffirmativeAction=selected=>{ if(revision==_uiRevision) self.Begin((string)selected[0].Identifier); }, NegativeAction=_=>{ if(revision==_uiRevision) self.CancelHost(); } });
         }
         private void Begin(string mode)
         {
@@ -86,13 +102,14 @@ namespace AnimusForge
             { option.AvailableAmount=1; option.SettlementEntry=new(){GuidePriceDenars=1000,TypeLabel="asset"}; }
             if(mode=="give_troops" || mode=="give_prisoners") foreach(var option in _shoutTradeOptions)
                 option.PartyEntry=new(){HirePriceDenarsPerUnit=100,BuyPriceDenarsPerUnit=200};
-            MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData {
+            long revision = _uiRevision;
+            PresentTradeInquiry(new MultiSelectionInquiryData {
                 MaxSelectableOptionCount=2,InquiryElements=new(){new InquiryElement(0,"gold"),new InquiryElement(1,"grain")},
-                AffirmativeAction=OnShoutTradeResourcesSelected,NegativeAction=_=>CancelHost() });
+                AffirmativeAction=selected=>{ if(revision==_uiRevision) OnShoutTradeResourcesSelected(selected); },NegativeAction=_=>{ if(revision==_uiRevision) CancelHost(); } });
         }
         private void OnShoutTradeResourcesSelected(List<InquiryElement> selected)
         {
-            _shoutPendingTradeItems=selected.Select(e=>_shoutTradeOptions[(int)e.Identifier]).Select(o=>new ShoutPendingTradeItem {
+            _shoutPendingTradeItems=selected.Select(e=>_shoutTradeOptions[(int)e.Identifier]).Select(o=>new ShoutBehavior.ShoutPendingTradeItem {
                 IsGold=o.IsGold,ItemId=o.ItemId,PartyEntry=o.PartyEntry,SettlementEntry=o.SettlementEntry,Amount=o.SettlementEntry==null?0:1 }).ToList();
             if(ThrowBeforeCommit) throw new InvalidOperationException("fixture commit error");
             if(CorruptOrder) _shoutPendingTradeItems.Reverse();
@@ -109,5 +126,6 @@ namespace AnimusForge
         private void Finish() { var done=_shoutTradeActionOnlyFinished; _shoutTradeActionOnlyFinished=null; _shoutTradeActionOnly=false; done?.Invoke(); }
         public void ReplaceOptions() => _shoutTradeOptions=new();
         public void SupersedeOwner() { _shoutTradeActionOnlyFinished=()=>{}; }
+        public void InvalidateUi() { _uiRevision++; }
     }
 }

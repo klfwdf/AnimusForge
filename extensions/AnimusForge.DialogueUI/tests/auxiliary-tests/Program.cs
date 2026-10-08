@@ -10,15 +10,18 @@ static class Program
     static int checks;
     static void Check(bool condition,string label) { checks++; if(!condition) throw new Exception(label); }
     static void Reject(Action action,string label) { bool rejected=false; try{action();}catch{rejected=true;} Check(rejected,label); }
-    static ShoutBehavior Fresh() { Campaign.Current=new(); return Campaign.Current.Behavior; }
+    static SceneTradeController Fresh() { Campaign.Current=new(); return Campaign.Current.Behavior._j17SceneTradeController; }
     static void Main()
     {
         var harmony=new Harmony("DialogueUI.ManagedBridgeTests");
         InlineTradeBridge.Install(harmony);
+        Check(InlineTradeBridge.Available, "current controller contract installs");
+        Check(HarmonyLib.AccessTools.Field(typeof(ShoutBehavior), "_shoutTradeOptions") == null, "legacy host fields are absent in migration fixture");
         foreach(string mode in new[]{"give","show","give_troops","give_prisoners","give_settlements"})
         {
             var host=Fresh(); using var bridge=new InlineTradeBridge(); int before=MBInformationManager.NativeInquiries;
             Check(bridge.Load(mode),mode+" loads"); Check(MBInformationManager.NativeInquiries==before,"no menu popup");
+            Check(host.InlineInquiryCapture == null, "capture released after synchronous option load");
             var first=bridge.Options[1]; var second=bridge.Options[0];
             var choices=new[]{new TradeChoice(first,mode=="give_settlements"?1:7),new TradeChoice(second,mode=="give_settlements"?1:15)};
             bridge.Commit(choices);
@@ -39,6 +42,7 @@ static class Program
         { var host=Fresh(); host.RefuseCategory=true; using var b=new InlineTradeBridge(); Check(!b.Load("give_troops"),"host eligibility rejection retained"); Check(b.Options.Count==0 && host.Cancels==1,"rejected flow cleared once"); }
         { var host=Fresh(); using var b=new InlineTradeBridge(); b.Load("give"); var choice=new[]{new TradeChoice(b.Options[0],2)}; host.DuringCommit=()=>Reject(()=>b.Commit(choice),"reentrant commit"); b.Commit(choice); Check(host.Commits==1,"reentry cannot transfer twice"); }
         { var host=Fresh(); var b=new InlineTradeBridge(); b.Dispose(); Check(!b.Load("give"),"disposed panel cannot open flow"); }
+        { var host=Fresh(); using var b=new InlineTradeBridge(); b.Load("give"); var c=new TradeChoice(b.Options[0],2); host.InvalidateUi(); b.Commit(new[]{c}); Check(host.Commits==0,"captured original callback retains revision guard and cannot transfer stale UI choices"); }
         harmony.UnpatchAll(harmony.Id);
         Console.WriteLine("PASS: "+checks+" managed bridge assertions with real Harmony. Game transfer/rendering still needs live acceptance.");
     }
