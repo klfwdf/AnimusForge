@@ -1921,3 +1921,9 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 当前生产边界 28 项 PASS，修复前源码负控按预期 FAIL；Debug 双 API、Bootstrap、双接缝 PASS。统一模块部署 success，3381 个 Stage 文件与安装哈希一致，24 文件更新且私有 Recovery complete。未验证实机/LLM/实档，两个旧专项被历史 binding 门禁挡住而未进入断言。
 - **推送尚未完成**：`main` 与 `origin/main=a7d842142` 分叉，共同祖先 `c629e866c`；只读 merge preview 有九个跨文档、Campaign/Weekly/Scene 宿主冲突。未合并、强推或改写历史。需整合并重新验证后再普通快进推送。
 - [唯一主台账、真实代码职责与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-continuation-20261008)；本地证据 `artifacts/scene-relay-continuation-20261008/receipt.json`，源码及部署恢复位置见该条。旧记录保留其当时状态。
+
+
+## 宣战拒绝原因修复（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `b51bf5b88`：宣战最终合法性拦截保留具体原因，显示冷却/保护剩余天数及战争数量；未改变宣战规则。外交回放4007断言、双API/Bootstrap/双接缝PASS。未实机、部署、打包或推送。
+- [主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#war-rejection-diagnostics-20261009)，证据 `artifacts/war-rejection-20261009/`；回滚 `git revert b51bf5b88`。其他会话修改保留。
