@@ -55,9 +55,13 @@ internal static partial class PropagationApplicationReplay
                 string receiverId = _host.ResolvePropagationReceiverId(arrival.KingdomId, arrival.SettlementId);
                 if (receiverId == null) return;
                 WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, receiverId, day,
-                    () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
+                    () => _host.IsPlayerAffiliatedParty(receiverId), () =>
+                    {
+                        arrival.CourtEffectPending = true;
+                        ProcessCourtArrival(receiverId, document);
+                    }, arrival.CourtEffectPending);
             },
-            _host.ResolveSettlementId);
+            _host.ResolveSettlementId, _host.Log);
     }
 
         private WorldDiplomacyStorage Storage => _storage;
@@ -75,6 +79,7 @@ internal static partial class PropagationApplicationReplay
             private readonly Harness _h;
             internal FixtureHost(Harness harness) { _h = harness; }
             internal int CurrentDay() => _h.CurrentDay();
+            internal void Log(string text) { }
             internal int MaxPropagationArrivalsPerDay() => Harness.MaxPropagationArrivalsPerDay;
             internal string ResolvePropagationReceiverId(string kingdomId, string settlementId)
                 => _h.ResolveKingdom(kingdomId)?.StringId ?? _h.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom?.StringId;

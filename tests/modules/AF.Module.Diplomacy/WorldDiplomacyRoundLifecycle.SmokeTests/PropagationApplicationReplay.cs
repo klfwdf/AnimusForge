@@ -76,10 +76,7 @@ internal static partial class PropagationApplicationReplay
                           && h.State.KingdomKnowledge[0].DocumentIds.Count == 128
                           && h.State.NobleKnowledge[0].DocumentIds.Count == 128,
             "real knowledge rules preserve location and kingdom retention limits"));
-        Compare("exception-after-dequeue", s => s.PropagationArrivals.AddRange(new[] { Arrival("d", "court", "npc"), Arrival("d", "village") }),
-            h => Test.True(h.Error == "receipt-failed" && h.State.PropagationArrivals.Count == 0 && h.State.SettlementKnowledge.Count == 0,
-                "exception preserves original already-dequeued prefix and does not silently continue"),
-            h => h.OnReceipt = _ => throw new InvalidOperationException("receipt-failed"));
+        PropagationFailureClosureReplay.Run();
         Compare("reentrant-enqueue", s => s.PropagationArrivals.Add(Arrival("d", "court", "npc")),
             h => Test.True(h.State.PropagationArrivals.Count == 1 && h.State.SettlementKnowledge.Count == 0,
                 "work enqueued by a receipt waits for the next daily pass"),
