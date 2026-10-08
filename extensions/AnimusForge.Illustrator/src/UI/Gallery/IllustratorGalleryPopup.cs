@@ -16,6 +16,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly IllustratorGalleryPopupVM _dataSource;
         private readonly IllustrationScope _scope;
         private bool _closed;
+        private IDisposable _redrawEditor;
         private bool _refreshQueued;
         private bool _editingImage, _redrawing;
         private string _redrawDraft = "";
@@ -83,7 +84,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private void OpenCurrentImageEditor(Engine.CachedIllustrationItem selected)
         {
             if (_closed || _editingImage || _redrawing || selected == null) return;
-            IllustrationRedrawPromptEditor.Show(_redrawDraft,
+            _redrawEditor = IllustrationRedrawPromptEditor.Show(_redrawDraft,
                 () => !_closed && _scope.IsCurrent && !_redrawing && ReferenceEquals(_dataSource.SelectedImage, selected),
                 prompt => {
                     _redrawDraft = prompt;
@@ -119,7 +120,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     _editingImage = editing;
                     _layer.UIContext.Root.IsVisible = !editing;
                     _dataSource.SetRedrawing(editing || _redrawing);
-                }, basedOnImage: true);
+                }, basedOnImage: true, inputOwner: _layer, isInputOwnerAlive: () => !_closed);
         }
 
         private void OnGenerationUpdated(IllustrationGenerationUpdate update)
@@ -138,6 +139,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             if (_closed) return;
             _closed = true;
+            try { _redrawEditor?.Dispose(); } catch (Exception ex) { Debug.Print("[Illustrator] Editor cleanup failed: " + ex.Message); } finally { _redrawEditor = null; }
             try
             {
                 IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;

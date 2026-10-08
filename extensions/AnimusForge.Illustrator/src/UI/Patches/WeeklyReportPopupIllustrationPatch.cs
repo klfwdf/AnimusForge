@@ -207,6 +207,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static string _playerRedrawDraft = string.Empty;
         private static string _imageEditDraft = string.Empty;
         private static bool _editingRedrawPrompt;
+        private static IDisposable _redrawEditor;
         private static string _activeSpriteName;
         private static bool _closing;
         private static int _redrawCount;
@@ -485,7 +486,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (_bulletinSlot != null || _editingRedrawPrompt || _scope == null || _sink == null || _sink.IsLoading || !_sink.HasIllustration || _activeItem == null) return;
             var owner = _scope; var sink = _sink; var source = _activeItem;
-            IllustrationRedrawPromptEditor.Show(_imageEditDraft,
+            _redrawEditor = IllustrationRedrawPromptEditor.Show(_imageEditDraft,
                 () => ReferenceEquals(owner, _scope) && owner.IsCurrent && ReferenceEquals(sink, _sink) &&
                     ReferenceEquals(source, _activeItem) && !sink.IsLoading,
                 prompt => {
@@ -507,7 +508,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                     _editingRedrawPrompt = editing;
                     if (_overlayLayer?.UIContext?.Root != null) _overlayLayer.UIContext.Root.IsVisible = !editing;
                     _bulletinSlot?.SetPromptEditing?.Invoke(editing);
-                }, basedOnImage: true);
+                }, basedOnImage: true, inputOwner: _overlayLayer,
+                isInputOwnerAlive: () => !_closing && ReferenceEquals(owner, _scope));
         }
 
         private static void OpenRedrawPromptEditor()
@@ -516,7 +518,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             var owner = _scope;
             var sink = _sink;
             var context = _currentContext;
-            IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
+            _redrawEditor = IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
                 () => ReferenceEquals(owner, _scope) && owner.IsCurrent && ReferenceEquals(sink, _sink) &&
                     ReferenceEquals(context, _currentContext) && context != null && !sink.IsLoading,
                 prompt => { _playerRedrawDraft = prompt; TriggerRegenerate(prompt); },
@@ -527,7 +529,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                     _editingRedrawPrompt = editing;
                     if (_overlayLayer?.UIContext?.Root != null) _overlayLayer.UIContext.Root.IsVisible = !editing;
                     _bulletinSlot?.SetPromptEditing?.Invoke(editing);
-                });
+                }, inputOwner: _overlayLayer,
+                isInputOwnerAlive: () => !_closing && ReferenceEquals(owner, _scope));
         }
 
         private static IllustrationScope _joinedGeneration;
@@ -729,6 +732,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (_closing) return;
             _closing = true;
+            try { _redrawEditor?.Dispose(); } catch (Exception ex) { Debug.Print("[Illustrator] Editor cleanup failed: " + ex.Message); } finally { _redrawEditor = null; }
             try
             {
                 IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;

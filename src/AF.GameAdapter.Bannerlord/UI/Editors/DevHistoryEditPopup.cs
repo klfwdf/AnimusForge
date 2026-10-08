@@ -6,7 +6,7 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-public sealed class DevHistoryEditPopup
+public sealed class DevHistoryEditPopup : IDisposable
 {
 	private static DevHistoryEditPopup _activePopup;
 
@@ -21,45 +21,72 @@ public sealed class DevHistoryEditPopup
 	private readonly Action _onCancel;
 
 	private bool _isClosed;
+    private readonly ScreenLayer _inputOwner;
+    private readonly Func<bool> _isInputOwnerAlive;
+    private readonly Action _onDismissed;
+    private DevPopupInputLease _parentInput;
+    private bool _screenEventsRegistered;
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText)
+	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText, ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed)
 	{
 		_screen = screen;
 		_onSave = onSave;
 		_onCancel = onCancel;
+        _inputOwner = inputOwner;
+        _isInputOwnerAlive = isInputOwnerAlive;
+        _onDismissed = onDismissed;
 		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested, inputHintText, saveText, cancelText);
-		_layer = new GauntletLayer("DevHistoryEditPopup", 4000, false);
+		// Owned nested editors sit just above their parent; ordinary history editors retain their original order.
+        int order = inputOwner == null ? 4000 : Math.Max(4000, inputOwner.InputRestrictions.Order + 1);
+        _layer = new GauntletLayer("DevHistoryEditPopup", order, false);
 	}
 
 	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText = null, string saveText = null, string cancelText = null)
 	{
-		ScreenBase topScreen = ScreenManager.TopScreen;
-		if (topScreen == null)
-		{
-			return false;
-		}
-		try
-		{
-			_activePopup?.Close(silent: true);
-			DevHistoryEditPopup devHistoryEditPopup = new DevHistoryEditPopup(topScreen, titleText, dateText, originalContentText, editedText, onSave, onCancel, inputHintText, saveText, cancelText);
-			devHistoryEditPopup.Open();
-			_activePopup = devHistoryEditPopup;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("DevHistoryPopup", "[ERROR] Failed to open popup: " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
-			return false;
-		}
-	}
+        return TryShowOwned(titleText, dateText, originalContentText, editedText, onSave, onCancel,
+            inputHintText, saveText, cancelText, null, null, null, out _);
+    }
+
+    internal static bool TryShowOwned(string titleText, string dateText, string originalContentText, string editedText,
+        Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText,
+        ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed, out IDisposable session)
+    {
+        session = null;
+        ScreenBase topScreen = ScreenManager.TopScreen;
+        if (topScreen == null || topScreen.IsFinalized) return false;
+        if (inputOwner != null && (inputOwner.IsFinalized || !inputOwner.IsActive
+            || !topScreen.HasLayer(inputOwner) || isInputOwnerAlive?.Invoke() == false)) return false;
+        DevHistoryEditPopup popup = null;
+        try
+        {
+            _activePopup?.Close(silent: true);
+            popup = new DevHistoryEditPopup(topScreen, titleText, dateText, originalContentText, editedText,
+                onSave, onCancel, inputHintText, saveText, cancelText, inputOwner, isInputOwnerAlive, onDismissed);
+            _activePopup = popup;
+            popup.Open();
+            session = popup;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("DevHistoryPopup", "[ERROR] Failed to open popup: " + ex);
+            popup?.Close(silent: true);
+            return false;
+        }
+    }
 
 	private void Open()
 	{
-		_layer.LoadMovie("DevHistoryEditPopup", _dataSource);
+        _parentInput = new DevPopupInputLease(_screen, _inputOwner, _isInputOwnerAlive);
+        if (_onDismissed != null)
+        {
+            ScreenManager.OnPushScreen += OnScreenChanged;
+            ScreenManager.OnPopScreen += OnScreenChanged;
+            _screenEventsRegistered = true;
+        }
+        _layer.LoadMovie("DevHistoryEditPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
 		{
@@ -75,26 +102,42 @@ public sealed class DevHistoryEditPopup
 
 	private void HandleSaveRequested(string editedText)
 	{
-		Close(silent: true);
+		if (_isClosed) return;
+        Close(silent: true, notifyDismissed: false);
 		_onSave?.Invoke(editedText ?? "");
 	}
 
 	private void HandleCancelRequested()
 	{
-		Close(silent: true);
+		if (_isClosed) return;
+        Close(silent: true, notifyDismissed: false);
 		_onCancel?.Invoke();
 	}
 
-	private void Close(bool silent)
+	public void Dispose() => HandleCancelRequested();
+
+    private void OnScreenChanged(ScreenBase screen)
+    {
+        if (ReferenceEquals(screen, _screen) || !ReferenceEquals(ScreenManager.TopScreen, _screen)) Dispose();
+    }
+
+	private void Close(bool silent, bool notifyDismissed = true)
 	{
 		if (_isClosed)
 		{
 			return;
 		}
-		_isClosed = true;
+        _isClosed = true;
+        if (_screenEventsRegistered)
+        {
+            ScreenManager.OnPushScreen -= OnScreenChanged;
+            ScreenManager.OnPopScreen -= OnScreenChanged;
+            _screenEventsRegistered = false;
+        }
 		try
 		{
-			_layer.IsFocusLayer = false;
+			_layer.InputRestrictions.ResetInputRestrictions();
+            _layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
 		}
 		catch
@@ -111,10 +154,13 @@ public sealed class DevHistoryEditPopup
 				Logger.Log("DevHistoryPopup", "[WARN] Failed to remove popup layer: " + ex.Message);
 			}
 		}
-		_dataSource?.OnFinalize();
+        try { _dataSource?.OnFinalize(); } catch { }
+        try { _parentInput?.Dispose(); } catch (Exception ex) { Logger.Log("DevHistoryPopup", "[WARN] Parent input restore failed: " + ex.Message); }
+        _parentInput = null;
 		if (ReferenceEquals(_activePopup, this))
 		{
 			_activePopup = null;
 		}
+        if (notifyDismissed) _onDismissed?.Invoke();
 	}
 }

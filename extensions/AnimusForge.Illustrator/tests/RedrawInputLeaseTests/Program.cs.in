@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TaleWorlds.InputSystem;
+using TaleWorlds.ScreenSystem;
+namespace TaleWorlds.InputSystem { [Flags] public enum InputUsageMask { Invalid=0, MouseButtons=1, MouseWheels=2, All=3 } }
+namespace TaleWorlds.ScreenSystem {
+public abstract class ScreenLayer { public string Name; public InputUsageMask InputUsageMask=>InputRestrictions.InputUsageMask; public InputRestrictions InputRestrictions=new(); public bool LastActiveState=true,IsFinalized,IsActive,IsFocusLayer; public static event Action<ScreenLayer> OnLayerActiveStateChanged; public ScreenLayer(string n,int order){Name=n;InputRestrictions.Order=order;} public void Activate(){IsActive=true;OnLayerActiveStateChanged?.Invoke(this);} public void Deactivate(){IsActive=false;OnLayerActiveStateChanged?.Invoke(this);} }
+public sealed class InputRestrictions { public int Order; public bool MouseVisibility; public InputUsageMask InputUsageMask; public void SetInputRestrictions(bool isMouseVisible=true,InputUsageMask mask=InputUsageMask.All){MouseVisibility=isMouseVisible;InputUsageMask=mask;} public void ResetInputRestrictions(){MouseVisibility=false;InputUsageMask=InputUsageMask.Invalid;} }
+public abstract class ScreenBase { public bool IsFinalized; public List<ScreenLayer> Layers=new(); public bool HasLayer(ScreenLayer x)=>Layers.Contains(x); public bool IsActive=true; }
+public static class ScreenManager { public static ScreenBase TopScreen; public static ScreenLayer FocusedLayer; public static void SetSuspendLayer(ScreenLayer l,bool isSuspended){if(isSuspended)l.Deactivate();else l.Activate();l.LastActiveState=!isSuspended;} public static void TryLoseFocus(ScreenLayer l){if(ReferenceEquals(FocusedLayer,l))FocusedLayer=null;} public static void TrySetFocus(ScreenLayer l){if(l.IsActive)FocusedLayer=l;} }
+}
+@@LEASE@@
+namespace AnimusForge {
+public static class Test { public static int N; public static void C(bool b,string x){N++;if(!b)throw new Exception(x);} }
+public sealed class FakeLayer:ScreenLayer{public FakeLayer(string n,int order):base(n,order){}}
+public static class Program {
+ static void Main(){
+  var screen=new FakeScreen(); ScreenManager.TopScreen=screen; var parent=new FakeLayer("Gallery",4020);screen.Layers.Add(parent);parent.Activate();parent.IsFocusLayer=true;parent.InputRestrictions.SetInputRestrictions(true,InputUsageMask.All);ScreenManager.FocusedLayer=parent;
+  using(var lease=new DevPopupInputLease(screen,parent,()=>true)){Test.C(!parent.IsActive&&parent.InputUsageMask==InputUsageMask.Invalid&&ScreenManager.FocusedLayer==null,"parent suspended and released");var child=new FakeLayer("Editor",Math.Max(4000,parent.InputRestrictions.Order+1));child.Activate();child.IsFocusLayer=true;ScreenManager.FocusedLayer=child;Test.C(child.IsActive&&ScreenManager.FocusedLayer==child,"child receives focus and remains active");}
+  Test.C(parent.IsActive&&parent.InputUsageMask==InputUsageMask.All&&parent.InputRestrictions.MouseVisibility&&parent.IsFocusLayer,"submit restores parent mask and focus eligibility");
+  ScreenManager.FocusedLayer=parent;using(var lease=new DevPopupInputLease(screen,parent,()=>true)){lease.Dispose();}Test.C(parent.IsActive&&parent.InputUsageMask==InputUsageMask.All,"cancel is idempotent");
+  ScreenManager.FocusedLayer=parent;using(var lease=new DevPopupInputLease(screen,parent,()=>true)){var other=new FakeScreen();ScreenManager.TopScreen=other;parent.Deactivate();Test.C(!parent.IsActive,"push deactivates old parent");}Test.C(!parent.IsActive&&parent.InputUsageMask==InputUsageMask.All,"screen change restores old mask without stealing activation");
+  ScreenManager.TopScreen=screen;parent.Activate();Test.C(parent.InputUsageMask==InputUsageMask.All,"pop reactivation keeps restored mask");
+  parent.Activate();using(var lease=new DevPopupInputLease(screen,parent,()=>true)){parent.Deactivate();}Test.C(!parent.IsActive&&parent.InputUsageMask==InputUsageMask.All,"external suspension is not undone");
+  Console.WriteLine("PASS RedrawInputLease cases="+Test.N+" original ScreenManager active/focus/dispatch rules modeled; live=NOT_RUN");
+ }
+ private sealed class FakeScreen:ScreenBase{}
+}
+}

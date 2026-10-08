@@ -10,13 +10,15 @@ using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Overlays;
 using Engine=AnimusForge.Illustrator.Engine;
-class ScreenBase {}
+public class ScreenBase { public bool IsFinalized; public System.Collections.Generic.List<TaleWorlds.ScreenSystem.ScreenLayer> Layers=new(); public bool HasLayer(TaleWorlds.ScreenSystem.ScreenLayer x)=>true; }
+namespace TaleWorlds.InputSystem { [Flags] public enum InputUsageMask { Invalid=0, MouseButtons=1, MouseWheels=2, All=3 } }
+namespace TaleWorlds.ScreenSystem { using TaleWorlds.InputSystem; public abstract class ScreenLayer { public static Action<ScreenLayer> OnLayerActiveStateChanged; public bool IsFinalized,IsActive,IsFocusLayer,LastActiveState=true; public InputRestrictions InputRestrictions=new(); public InputUsageMask InputUsageMask=>InputRestrictions.InputUsageMask; } public sealed class InputRestrictions { public int Order; public bool MouseVisibility; public InputUsageMask InputUsageMask; public void SetInputRestrictions(bool b=true,InputUsageMask m=InputUsageMask.All){MouseVisibility=b;InputUsageMask=m;} public void ResetInputRestrictions(){InputUsageMask=InputUsageMask.Invalid;MouseVisibility=false;} } public static class ScreenManager { public static ScreenLayer FocusedLayer; public static ScreenBase TopScreen; public static void TryLoseFocus(ScreenLayer x){if(ReferenceEquals(FocusedLayer,x))FocusedLayer=null;} public static void TrySetFocus(ScreenLayer x){FocusedLayer=x;} public static void SetSuspendLayer(ScreenLayer x,bool isSuspended){x.IsActive=!isSuspended;ScreenLayer.OnLayerActiveStateChanged?.Invoke(x);} } }
 class Root { public bool IsVisible=true; }
 class Context { public Root Root=new Root(); }
-class Layer { public Context UIContext=new Context(); }
+class Layer : TaleWorlds.ScreenSystem.ScreenLayer { public Context UIContext=new Context(); public Layer(){IsActive=true;InputRestrictions.Order=4020;} }
 static class DevTextEditorHelper {
  public static Action<string> Save;public static Action Cancel;public static int Opens;
- public static void ShowLongTextEditor(string a,string b,string c,string draft,Action<string> save,Action cancel,string x,string y){Save=save;Cancel=cancel;Opens++;}
+ public static void ShowLongTextEditor(string a,string b,string c,string draft,Action<string> save,Action cancel,string x,string y){Save=save;Cancel=cancel;Opens++;} public static IDisposable ShowOwnedLongTextEditor(string a,string b,string c,string draft,Action<string> save,Action cancel,TaleWorlds.ScreenSystem.ScreenLayer owner,Func<bool> alive,string x="保存",string y="返回"){var lease=new AnimusForge.DevPopupInputLease(TaleWorlds.ScreenSystem.ScreenManager.TopScreen,owner,alive);Save=t=>{lease.Dispose();save?.Invoke(t);};Cancel=()=>{lease.Dispose();cancel?.Invoke();};Opens++;return lease;}
 }
 namespace TaleWorlds.Library {public static class Debug {public static void Print(string s){}}}
 namespace TaleWorlds.CampaignSystem {public class Campaign {public static Campaign Current=new Campaign();}}
@@ -51,15 +53,23 @@ namespace AnimusForge.Illustrator.Core {
  }
 }
 class VM {
- public CachedIllustrationItem SelectedImage;public string StatusText,SelectedKey;public bool Busy;
+ public CachedIllustrationItem SelectedImage;public string StatusText,SelectedKey;public bool Busy;public bool IsLoading;
  public void SetRedrawing(bool b){Busy=b;}public void SelectByKey(string s){SelectedKey=s;}
 }
 class Gallery {
- public bool _closed,_editingImage,_redrawing;public string _redrawDraft="";public IllustrationScope _redrawJob;
+ public static Gallery _activeInstance; public IDisposable _redrawEditor;
+ public bool _closed,_editingImage,_redrawing,_editingRedrawPrompt; public string _category="encyclopedia"; public string _playerRedrawDraft="";public string _redrawDraft="";public IllustrationScope _redrawJob;
  public ScreenBase _screen=new ScreenBase();public Layer _layer=new Layer();public VM _dataSource=new VM();
  public IllustrationScope _scope=new IllustrationScope(null,null,null);
+ public bool IsLoading=>false;
+ private void ApplyControlsVisibility(){}
+ private string ConversationSessionOwnerKey()=>null;
+ private void Regenerate(string prompt){_redrawing=true;}
+
+ public void OpenPrompt(){OpenRedrawPromptEditor();}
  __OPEN__
- public void Open(CachedIllustrationItem i){_dataSource.SelectedImage=i;OpenCurrentImageEditor(i);}
+ __OPEN_PROMPT__
+ public void Open(CachedIllustrationItem i){_activeInstance=this;_dataSource.SelectedImage=i;OpenCurrentImageEditor(i);}
 }
 class SelectedItem {public CachedIllustrationItem ItemData;public CachedIllustrationItem Item=>ItemData;}
 class DefaultVM {
