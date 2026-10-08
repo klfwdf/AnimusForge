@@ -19,6 +19,8 @@
             var nativeHistoryMessages = new List<ConversationMessage> { new ConversationMessage { Role = "user", Content = promptPlayerText, TargetAgentIndex = nativeTargetAgentIndex, EventSequence = 1 } };
             var persistentMemoryRoleMessages = dailyMessages ?? new List<ConversationMessage>();
             var pendingNativeCurrentAfefFacts = new List<ConversationMessage>();
+            persistentMemoryRoleMessages = NativeMemoryHistoryMergeOwner.Merge(persistentMemoryRoleMessages, nativeHistoryMessages, 1, "Player");
+            var admission = new { MeetingElapsedContext = "" };
             List<object> messages;
             @@NATIVE_PREFIX@@
             string output = await CallNativeConversationApiAsync(messages, null);

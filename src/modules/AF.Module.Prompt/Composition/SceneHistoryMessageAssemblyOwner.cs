@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -194,7 +194,9 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 		bool isAfefFact = TryNormalizeAfefFactLineForPrompt(text2, out var afefFactLine);
 		bool isAfefNpcFact = afefFactLine.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 		bool isAfefPlayerFact = afefFactLine.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal);
-		bool isCurrentAfefFact = isAfefFact && currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildConversationMessageDedupeKey(msg, context.SpeechTextOptions));
+		bool isCurrentAfefFact = isAfefFact && (msg.PromptFactScopeCaptured
+            ? msg.PromptIsCurrentFact
+            : currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildConversationMessageDedupeKey(msg, context.SpeechTextOptions)));
 		if (text.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
 			string text3 = NormalizeStrictSceneAssistantContent(text2, msg.SpeakerName);

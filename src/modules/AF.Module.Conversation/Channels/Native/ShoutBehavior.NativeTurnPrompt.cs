@@ -199,15 +199,20 @@ namespace AnimusForge;
                 targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex,
                 includeCurrentActiveSession: true);
             StampNativePendingPromptMemorySession(nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, nativeHistoryMessages);
+            string currentPromptMemorySessionKey = MyBehavior.CaptureCurrentPromptMemorySessionKey();
+            foreach (var fact in pendingNativeCurrentAfefFacts)
+                if (fact != null && string.IsNullOrWhiteSpace(fact.PromptMemorySessionKey))
+                    fact.PromptMemorySessionKey = currentPromptMemorySessionKey;
             persistentMemoryRoleMessages = NativeMemoryHistoryMergeOwner.Merge(
-                persistentMemoryRoleMessages, nativeHistoryMessages, nativePendingPlayerHistoryEventSequence, playerName);
+                persistentMemoryRoleMessages, nativeHistoryMessages, nativePendingPlayerHistoryEventSequence, playerName,
+                pendingNativeCurrentAfefFacts);
             nativeHistoryDisplayName = GetSceneNpcHistoryNameForPrompt(npc);
             string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(nativeHistoryDisplayName, false, minTokens, maxTokens, playerName);
             string nativeSceneActionInstruction = SceneActionsRuntimeHost.BuildNativeConversationActionInstruction();
             string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, nativeSceneActionInstruction, ctx?.PreprocessExcludedRuleBlock);
             layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
             string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
-        string[] nativePromptPrefixSections = new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) };
+        string[] nativePromptPrefixSections = new string[5] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock), admission.MeetingElapsedContext };
         string[] nativePromptSuffixSections = new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" };
         messages = _ports.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: null, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
         nativeDetachedMainPromptSections = null;

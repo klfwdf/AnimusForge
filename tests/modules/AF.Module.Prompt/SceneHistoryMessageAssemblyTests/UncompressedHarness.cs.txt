@@ -19,7 +19,7 @@ public class FixtureState {
 }
 // Complete current capture declarations are inserted below. These are only controlled engine/query leaves.
 internal sealed class FixtureMemoryReadPort {
- readonly FixtureState source;internal FixtureMemoryReadPort(FixtureState value){source=value;}
+ internal int _activeNativeConversationMemorySessionId=-1;readonly FixtureState source;internal FixtureMemoryReadPort(FixtureState value){source=value;}
  internal List<DailyMemoryDraft> LoadDrafts(string id)=>source.Drafts;
  internal bool HasCompressedMemoryBlock(string id,int day)=>source.Compressed.Contains(day);
  internal int GetCurrentNativeConversationMemorySessionIdForSuppression(Func<bool> active)=>source.NativeSession;
@@ -33,12 +33,13 @@ internal static class MemoryEntityIdentityBannerlordAdapter {
 }
 internal static class CampaignCharacterRecordCaptureAdapter {internal static string GetMemoryHeroId(Hero hero)=>hero.StringId;}
 internal static class ShoutUtils {internal static bool IsInValidScene()=>true;}
-internal static class ShoutBehavior {internal static int GetCurrentSceneHistorySessionIdForExternal()=>MemoryEntityIdentityBannerlordAdapter.Current.SceneSession;}
+internal static class ShoutBehavior {internal static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence()=>-1;internal static int GetCurrentSceneHistorySessionIdForExternal()=>MemoryEntityIdentityBannerlordAdapter.Current.SceneSession;}
 internal sealed class MemoryHistoryCommitBannerlordAdapter : FixtureState {
  readonly FixtureMemoryReadPort _memory;internal MemoryHistoryCommitBannerlordAdapter(FixtureState state){_memory=new(state);}
  @@ACTUAL_HISTORY_CAPTURE@@
 }
 public partial class MyBehavior : FixtureState {
+ internal static MyBehavior Instance;private readonly FixtureMemoryReadPort _memoryBusinessState=new(new FixtureState());
  readonly MemoryHistoryCommitBannerlordAdapter _memoryHistoryCommit;
  public MyBehavior(){_memoryHistoryCommit=new(this);}
 

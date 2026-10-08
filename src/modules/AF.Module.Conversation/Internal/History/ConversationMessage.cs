@@ -6,6 +6,7 @@ public class ConversationMessage
 {
 	// Request-only provenance; never part of the persisted/public JSON contract.
 	internal string PromptMemorySessionKey = "";
+    internal bool PromptFactScopeCaptured, PromptIsCurrentFact;
 
 	public long EventSequence { get; set; }
 

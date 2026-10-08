@@ -20,7 +20,10 @@ for sig in signatures:
  original=original.replace('DailyMemoryLine line, string memoryName, int targetAgentIndex)','DailyMemoryLine line, string memoryName, int targetAgentIndex, int currentDay, string currentScene)').replace('MBMath.ClampInt(line.GameHour, 0, 23)','Math.Max(0, Math.Min(23, line.GameHour))').replace('ResolveMemoryLineSceneForPrompt(line)','ResolveMemoryLineSceneForPrompt(line, currentDay, currentScene)')
  original=original.replace('IsLikelyPlayerHistorySpeaker(speaker)','ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(speaker)').replace('FindDialogueHistorySpeakerDelimiter(body)','ConversationRoleClassificationOwner.FindDialogueHistorySpeakerDelimiter(body)')
  target=role if sig.startswith('int FindDialogue') or sig.startswith('bool IsLikelyPlayer') else assembly
- assert target.count(original)==1,sig
+ # Public role/text behavior is unchanged; prompt-only session provenance is an approved additive scalar.
+ comparison=target.replace('PromptMemorySessionKey = line.MemorySessionKey ?? "",\n            ','')
+ assert comparison.count(original)==1,sig
+assert 'PromptMemorySessionKey = line.MemorySessionKey ?? ""' in assembly
 adapter=(R/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.UncompressedMemoryPrompt.cs').read_text(encoding='utf-8-sig')
 history_path='src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs'
 history=(R/history_path).read_text(encoding='utf-8-sig')
