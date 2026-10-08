@@ -1,5 +1,11 @@
 # AnimusForge Codex Instructions
 
+## AF-ENGLISH localization skill
+
+- For AnimusForge English localization, Chinese hardcoded-text triage, translation conventions or localization review, read `.agents/skills/af-english-localization/SKILL.md` and select its task mode. Do not apply it to unrelated development.
+- Worldbook bodies remain deferred unless the user explicitly expands scope; editor/loader UI is still in scope. Preserve protocol/save identities and distinguish static inventory, offline checks and live acceptance.
+- This repository routing does not install a global skill, authorize product edits or publication, or guarantee that already-loaded thread context refreshes. Current user authorization still selects workspace, batch and push/deployment scope.
+
 ## AF skill coordination
 
 - For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.

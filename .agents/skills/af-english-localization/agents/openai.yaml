@@ -1,0 +1,4 @@
+interface:
+  display_name: "AF 英化规范与审查"
+  short_description: "AF 专用英化流程：排除世界书、保留协议与存档、分批审查和验收"
+  default_prompt: "使用 $af-english-localization 按当前授权完成 AnimusForge 英化或审查，排除世界书正文并分别报告改动、验证与未验证项。"

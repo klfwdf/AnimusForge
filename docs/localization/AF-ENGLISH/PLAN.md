@@ -69,3 +69,9 @@ GCCZ 如涉及可复用规则或集成契约修改，先在本工作区形成独
 - 完整静态清单与摘要：`docs/localization/AF-ENGLISH/inventory/`。
 - 本轮离线证据和限制写入现有唯一主台账，HANDOFF 保留短入口。
 - 未交付：译文、英化 DLL、游戏安装、实机/LLM 验收；这些属于后续批次。
+
+## 可复用 Skill
+
+英化和审查使用仓库级 [af-english-localization](../../../.agents/skills/af-english-localization/SKILL.md)，详细规范与审查门槛按需加载；当前计划/计数和每轮证据仍保存在本目录及主台账，不复制到 Skill 作为永久状态。
+
+该路由不做全局安装，不保证已打开线程热刷新；Skill 创建本身不开始产品译文或赋予未来推送、部署权限。

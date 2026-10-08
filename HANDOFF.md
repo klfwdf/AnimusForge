@@ -1,3 +1,10 @@
+# AF-ENGLISH 交接：英化 Skill 与审查规范（2026-10-09）
+
+- 用户要求创建 Skill 并推到 GitHub；本轮沿用 `AF-ENGLISH`，新增 [.agents/skills/af-english-localization](.agents/skills/af-english-localization/SKILL.md)，不做全局安装或产品译文实现。
+- 含翻译/分类规范、世界书正文延期、协议/存档/占位符保护、真实加载/三渠道、工程师与英语玩家两视角审查及发布边界；`AGENTS.md` 增加英化专用路由。
+- [唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-english-skill-20261009)与[结构/引用/真实样本自审证据](docs/localization/AF-ENGLISH/VERIFICATION.md#af-english-skill-review-20261009)。结构检查不等于产品功能或独立评审通过。
+- 原清单与产品文件未改，世界书仍延期；未部署、未进行真实翻译批次/游戏/LLM 验收。下方保留前一轮盘点与 main 历史，不赋予未来发布授权。
+
 # AF-ENGLISH 交接：静态提取完成，翻译尚未开始（2026-10-09）
 
 - 用户批准的英化工作区 `G:\AFMOD\AF-ENGLISH`，专用分支 `AF-ENGLISH`；起点 `a7d8421425cf96a52208c5019ecdbeb311ad8e48`，不混入旧试验或本地专用历史。

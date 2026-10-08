@@ -1,3 +1,16 @@
+<a id="af-english-skill-20261009"></a>
+## AF-ENGLISH：英化规范与审查 Skill（2026-10-09）
+
+状态 **SKILL_STRUCTURALLY_VALIDATED / SELF_REVIEWED / PRODUCT_TRANSLATION_NOT_STARTED**。用户明确要求创建带规范、审查的 Skill 并推到 GitHub；目标沿用已授权的 `AF-ENGLISH`，不做全局安装或产品英化实现。
+
+- 入口 [af-english-localization](../.agents/skills/af-english-localization/SKILL.md)，按需加载翻译规范和审查门槛，保留标准 `agents/openai.yaml` UI 元数据。仓库 `AGENTS.md` 仅增加英化/英化审查的窄范围路由；未修改其他 Skill、全局配置或宿主 hooks。
+- 将当前方案的稳定方法固化为可复用规则：世界书正文及跨容器正文延期、展示/匹配/协议区分、术语/占位符/格式、真实加载/回退与用户内容优先级、三渠道和双 API 边界、工程师自审 → 英语玩家验收、相关缺口与发布条件。当前数量、源码 revision 和交付状态留在台账/清单，不写成永久技能状态。
+- 使用 bundled `skill-creator` 初始化/结构验证，按 `adaptive-system-prompt` 只迁移可移植规则到项目级表面，不发明全局或热刷新集成。正常隐式发现未禁用，但是否发现由实际宿主/项目上下文决定。
+- 在真实清单中审查 `不要召集`、`'十'`、语言 ID、世界书注入标题、AFEF prompt 标记及跨上下文的 `座`；所得只是规范自审/源码推演，不是独立子代理评估或产品运行验证。结构、链接、路由和行为边界的结果见 [VERIFICATION](localization/AF-ENGLISH/VERIFICATION.md#af-english-skill-review-20261009)。
+- 本轮只改 Skill 和项目说明。原始清单、产品代码/资源/构建入口、其他 AF/GCCZ 工作树均未改；不需要重跑无关游戏构建。无新运行时 helper/bridge，未发现由本轮替换掉的旧产品路径。
+
+Skill 更新不豁免译文批次的实际加载/解析、必要构建和实机条件；本轮 GitHub 推送许可也不成为未来自动发布许可。源提交与最终远端 SHA 以实际 Git/API 确认为准，不在此制造自引用提交号。
+
 <a id="af-english-inventory-20261009"></a>
 ## AF-ENGLISH：静态提取与英化计划（2026-10-09）
 
