@@ -1,3 +1,8 @@
+<a id="scene-regression-package-20261009"></a>
+### 当前导航：场景轮盘/可见输出与受众名录
+
+产品`f634a8c03`的SceneShoutInputController拥有exact菜单lease，SceneWheel只读当前owner；ScenePresentationController经typed immediate-feed端口调用唯一SceneSpeechOutputQueueController sink，保留音频时序及上下文退休。独立AFSceneAudienceDocketWidget只拥有clip视觉，本地VM/业务状态不迁移；外交通知只澄清第三方文字并记录route，不扩大图标资格。源码一基坐标、实际consumer、证据和未覆盖责任统一见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#scene-regression-package-20261009)，不复制全表或宣称新增framework/public API。
+
 <a id="migration-defect-package-20261009"></a>
 ### 当前职责导航：迁移缺陷修复与177文件有限审计
 

@@ -1,3 +1,9 @@
+# 当前交接：场景轮盘、连续回复可见性与名录动画
+
+产品`f634a8c03`组合修复菜单迁移owner断链、TTSoff文本feed延迟、名录主体贴顶及0.25秒卷收；外交第三方消息文案/路由日志澄清。轮盘21、sink68、生命周期117/54/30、UI125、通知107 PASS；最终两DLL真实TriggerShout→分类→ShowPrefix及trade契约、官方双API/Bootstrap/双coup接缝/Stage PASS。2010产品输入冻结，其后测试提交不改变产品。
+
+原脚本已实际部署10文件，3381 Stage/安装SHA一致，10份Recovery旧备份complete；普通推送的真实远端状态以本包最终receipt为准。GPU/游戏内真实可见性和新动画仍未验，不能宣称全部正常。详细caller/owner/一基源码坐标、scope、证据、回滚及未验项统一见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-regression-package-20261009)，证据`artifacts/scene-regression-package-20261009/receipt.json`。本条更新当前入口并保留下面各作者历史。
+
 # 当前交接：玩家宣战放行（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `dd1216d4a82b6daa2a8174258acb167923467d4c`：仅 `IsPlayerAuthored` 玩家文书跳过主动开战冷却、同时战争数量上限及待处理通牒等待；目标/独立外交权/已交战/同盟/和平保护期/内战限制保留。AI、NPC 发文及其他意图保持，发布初检、批量复检与真实即时动作端口已接通。

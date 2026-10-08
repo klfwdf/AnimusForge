@@ -1,3 +1,27 @@
+<a id="scene-regression-package-20261009"></a>
+## 场景轮盘、连续回复可见性和受众名录修复（DUAL_DLL_AND_DEPLOYMENT_VERIFIED）
+
+当前产品绑定 `f634a8c03`，包含轮盘 `3a48f947e`、名录动画 `818afee5d`、外交消息澄清 `35a47f4f0`。轮盘后续 `0dbbaed81`/`0c3934695`/`288a411bf` 仅更新真实DLL探针，不另改产品。本条接续此前44510c91f编译部署状态，保留各作者历史记录；本包持续授权合包编译、部署及普通推送。
+
+- **场景轮盘回归原菜单**：迁移后菜单生产者是SceneShoutInputController，旧closure分类仍认ShoutBehavior。现在producer拥有exact inquiry/callback、mission/current controller和revision lease，Wheel读取唯一owner；合法菜单由真实host生产并执行，关闭/换mission/旧owner/clone inquiry不误接，不恢复旧字段或第二菜单算法。cold编译delegate，打开时常量引用守卫，沿既有原生fallback。
+- **模型已返回正文但玩家不能即刻读到**：日志中valid agent23、TTSoff、lipsync未请求、797/1103字符的bubble创建成功，message feed却等39.85/55.15个mission秒；固定mission clock的真实旧controller/queue回放复现2bubbles/0messages。现在TTS关闭、拒绝或bubble失败经显式唯一message sink即时显示一次；accepted attached/detached音频保留原时序、typing/interaction timeout。pending feed带mission/generation/epoch，旧audio真实event guard不消费新reply；每callback只deque一个head，每agent每Tick只处理一个entry。未证明真实气泡renderer丢字，也不改变模型合法自选停止接力。
+- **名录贴顶/卷起**：只改AFSceneSessionScroll及专用Widget，top clip585，固定640内容整体PositionYOffset=-55，木轴、文字、点击同移，下轴保留；共享PNG和Folio未改。ExecuteToggleDocket仍是原VM本地bool，0.25秒eased top clip逐渐收起，反向展开/途中反转/resize保持，不缩放文字或每帧重建名录；settled无height写入。卷名录不调用收起整个会话。未发现已有reduced-motion设置，未加新MCM范围。
+- **外交消息截图**：已核文书author=battania/addressed=nord，递送new_kingdom为direct=False，属于第三方消息，文字路由正确；不能把泛用“宣言送达”当成发给玩家。仅改文字为“第三方外交消息”，formal log增加route map/text、author、主target/targets/addressed/player，不打印正文，不扩大图标资格或重放旧通知。后来direct=True文书的实际右widget仍未现场确认，新日志便于定位。
+
+验证：轮盘producer21 PASS、旧classifier实际编译后反例FAIL；最终两API实际DLL均通过TriggerShout→current classifier→ShowPrefix/style/exact identity/once-session callback及trade Harmony契约，GPU factory是受控leaf。新producer→可见sink68 PASS，旧source基线复现；既有生命周期117、speech output54、audience toggle30 PASS。动画/Native lifecycle/XML125 PASS（新增22），notification真实application107 PASS（新增route/no-body3）。原Debug双API（1.3 pinned1.3.15.110062、1.4 overlay1.4.6.115628）/Bootstrap/双coup接缝/Stage PASS。2010产品输入冻结；其后只有测试提交。首次actual wheel探针缺MCMv5，在进入行为断言前失败，补入现有官方MCM/UIExtender/ButterLib依赖优先目录后两版重跑通过，失败日志保留，没有改产品/断言。旧Stage因名录XML不同完整保留到仓内artifacts，由原脚本重新生成，不改闸门。
+
+| 核实当前源码（产品f634a8c03） | 符号/责任与实际消费者 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs:67–88`；`extensions/AnimusForge.DialogueUI/src/Scene/SceneWheel.cs:26–86` | OwnsShoutModeInquiry/exact lease与ShowPrefix，真实TriggerShout菜单→Wheel，不拥有业务动作算法 |
+| `src/AF.GameAdapter.Bannerlord/Scene/ScenePresentationController.cs:168–193,817–821`；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAudio.cs:23–27` | PublishFeedImmediately生产端口及真实host绑定；accepted音频保留ScheduleFeed |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneSpeechOutputQueueController.cs:320–359,515–537,575–596` | IsCurrentDialogueFeed/PublishNpcSpeechToMessageFeedImmediately/有界queue回写，唯一message sink |
+| `extensions/AnimusForge.DialogueUI/src/Scene/AFSceneAudienceDocketWidget.cs:9–82`；同扩展`GUI/Prefabs/AFSceneSessionScroll.xml` | RollOpen/FullHeight/OnUpdate，现有VM bool→clip视觉；不改SceneSessionPanel/state/persist |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs:166–172`；`World/WorldDiplomacyBehavior.Presentation.cs:26–33` | bounded formal queue route诊断与ShowNotice文字；原delivery/unread/de-dup规则保持 |
+
+最终候选SHA：1.3 `aed99ed6079db9041a7c5cd674cf26f747bbc13b2d964edd1e28ffa8e5c26ed1`；1.4 `4b6dae44d88b0d9da619622741b1096fd7ccdf17ba66e55c8b36ac6cab2a9d42`；Bootstrap `dd1ac35d4678a2476921f960f73cd90b09161c58ba0af31f2dd4dd919e27dc72`。原deploy_module.ps1实际部署success，10受管文件更新，3381 Stage/安装逐项SHA一致；Recovery `deploy-95f60f0ef88944c1809fa751796b517d` complete，10份旧备份及新hash完整。冻结DLL/markers/PDB和最终构建、actual probe、部署、Recovery及普通推送回执集中 `artifacts/scene-regression-package-20261009/`；专项分别在scene-wheel-migration、scene-speech-regression、scene-audience-roll-20261009。HANDOFF只链接本条。
+
+未验：真实Gauntlet/GPU轮盘、名录木轴/动画/焦点和缩放；实际camera/长文气泡/无TTS回显；真实网络、旧sav/第三方组合、全部代码分支和帧性能；未打包。fixture/真实DLL/安装验证分层，不能说实机链路全部正常。新增feed字段是runtime-only，没有新sav键或序列化身份。回滚对本条具名产品提交作focused inverse/revert，游戏恢复按最终receipt中的私有Recovery manifest/files；不reset/rewrite或覆盖其他作者。游戏已运行时重启才加载本包DLL。
+
 <a id="player-war-pacing-20261009"></a>
 ## 玩家宣战放行（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
