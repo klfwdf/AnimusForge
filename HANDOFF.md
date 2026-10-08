@@ -1,3 +1,9 @@
+# 当前交接：政变大厅原版攻守部署点（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `4df26683b`：政变大厅加载siege层，玩家/攻方与守军使用原版attacker/defender标记，不限制视线/玩家距离；国王导航高度修正，生成后偏位单次纠正，失败技术退出。保留政变结算，不移植原版攻城MapEvent控制器。
+- 大厅41、街道保护13、政变契约145、双API/Bootstrap/双接缝PASS；真实大厅和第三方场景未验，未部署/打包/推送。
+- [唯一台账与代码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-native-hall-20261008)。证据 `artifacts/coup-native-hall-20261008/`；回滚仅 `git revert 4df26683b`。其他会话修改保持。
+
 # 当前交接：YJ 引导三线路测速（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `943f22227`：www/yjapi/asia 三线路先测速，再进入单/多分组选择；两种引导入口一致，支持超时/取消/迟到保护；新域名思考参数兼容。
