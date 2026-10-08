@@ -71,7 +71,9 @@ namespace AnimusForge.Illustrator.Core
                         ReadSceneFraming(result, match.Groups[2].Value, label == "环境辅助取景");
                         return string.Empty;
                     }
-                    string value = CleanLabel(match.Groups[2].Value, label == "画作标题" ? 18 : label == "画作主题" ? 36 : 160);
+                    // Theme is shown in a wrapping/scrolling viewport. Keep its full sentence
+                    // in metadata instead of permanently cutting it off before disk save.
+                    string value = CleanLabel(match.Groups[2].Value, label == "画作标题" ? 18 : label == "画作主题" ? int.MaxValue : 160);
                     if (label == "画作标题") result.Title = value;
                     else if (label == "画作主题") result.Theme = value;
                     else result.ActionSummary = value;

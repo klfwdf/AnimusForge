@@ -97,7 +97,20 @@
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="546" MarginTop="40">
                               <Children>
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@SelectedDate" DoNotAcceptEvents="true" />
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="15" Text="@SelectedTheme" CanBreakWords="true" DoNotAcceptEvents="true" />
+                                <ScrollablePanel Id="GalleryThemeScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="32" MarginRight="22" ClipRect="ThemeClip" InnerPanel="ThemeClip\ThemeInner" MouseScrollAxis="Vertical" AutoHideScrollBars="true" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true" VerticalScrollbar="..\ThemeScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="ThemeClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true" DoNotAcceptEvents="true">
+                                      <Children>
+                                        <Widget Id="ThemeInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
+                                          <Children>
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="15" Text="@SelectedTheme" CanBreakWords="true" DoNotAcceptEvents="true" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Standard.VerticalScrollbar Id="ThemeScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="32" MarginBottom="8" MarginRight="4" />
                               </Children>
                             </Widget>
                           </Children>
