@@ -1,3 +1,13 @@
+<a id="gccz-town-player-manual-20261009"></a>
+## GCCZ 城镇说明书改为玩家操作教程（2026-10-09，OFFLINE_VERIFIED）
+
+- 用户确认七页教程并授权替换源码、推送；产品仅修改 `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownManual.zh-CN.json:12-43` 的标题和正文。版本、七个页面 ID、窗口占位符和按钮不变；改为操作步骤、对白例句和后果提醒，清除旧版/候选动作/账本/快照等开发术语。原生 Inquiry 使用普通文字和分行，不嵌入 Markdown 加粗或执行标签。
+- 真实入口仍是 `GcczTownManualMcmBridge.OpenGcczTownManual` → `GcczTownManualInquiryPresenter.Open` → `GcczTownManualResourceProvider.GetCatalog` → `TownManualCatalog.GetPage`；现有外部资源加载、内嵌默认值、英文容错、进程内缓存、打包映射均不改。未改 LLM 提示词、战斗、士气、结算或存档。
+- 独立镜像为 `G:/AFMOD/GCCZ/ModuleData/GcczTownManual.zh-CN.json`，提交 `75ceef2`；本次融合目录为 `G:/AFMOD/AF-GCCZ-TOWN-20261007`。历史 `G:/AFMOD/new-` 不存在，未另建旧目录。仅更新独立 `Town/TownTests.cs` 中过时的教程文案断言，保留导航、城镇范围与本地化测试，并增加纯文本检查；既有 dirty `Program.cs`、Council/UI 等资料均保留且不提交。
+- 验证：独立 Release 测试 2510 项 PASS；两份资源内容一致、JSON 解析、七页 ID/版本/窗口属性保留、内嵌资源与 content-map 注册、废弃术语与冲突标记搜索及 `git diff --check` PASS。两端 `TownManualCatalog` 仅换行符有别。每页正文 192–328 字符。玩家视角仅静态复核进城→操作→停手/离场提醒；游戏内折行、翻页显示和已安装模块未实测。
+- 本次没有生产 C# 或 API 改动，未重跑双版本游戏构建，也未 Stage、部署、打包或调用 LLM。原始日志在本地 `artifacts/town-manual-rewrite-20261009/standalone-tests.log`；不把资源和核心测试当作实机通过。
+- Git：独立检查点 `10acb95`；首次融合候选 `ef377d3c` 在旧施工分支保留。两次 fetch 因 GitHub 443 超时失败，之后连接恢复、首次普通推送因远端前进安全拒绝；成功 fetch 到 `15a34515` 后创建 `codex/gccz-town-manual-main-20261009`，只移入教程与本条记录。教程/加载器/核心在新基线未变，复用独立测试并重验资源；不推旧施工历史或其他未提交工作。最终推送输出与远端 SHA 留在本地同目录收据。回滚仅 focused revert 本次教程提交，不改写历史。
+
 <a id="remote-owner-migration-integration-20261009"></a>
 ## 跟随远端职责迁移，保留本地增量与接力修复
 
