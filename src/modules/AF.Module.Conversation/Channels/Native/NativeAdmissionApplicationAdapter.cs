@@ -32,7 +32,7 @@ internal sealed class NativeAdmissionApplicationAdapter
     internal void CaptureMeetingElapsedBoundary(NativeConversationAdmission admission, string key, Func<NativeMeetingElapsedSnapshot> capture)
     {
         if (!_isMainThread() || !IsNativeConversationAdmissionCurrent(admission, out _)) return;
-        admission.MeetingElapsedBoundary = _meetingElapsed.Capture(admission.Generation, admission.ConversationEpoch, key, capture);
+        admission.MeetingElapsedBoundary = _meetingElapsed.Capture(admission.Generation, admission.ConversationEpoch, admission.ConversationManager, key, capture);
     }
     internal void ConfirmMeetingElapsedBoundary(NativeConversationAdmission admission)
     {
@@ -89,7 +89,7 @@ internal sealed class NativeAdmissionApplicationAdapter
     internal bool IsBusy() => IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current,out _);
     internal bool IsBusyForUi()
     { var a=_nativeAdmissionOwner.Current;return a!=null&&a.Lifetime?.Token.IsCancellationRequested!=true&&_nativeAdmissionOwner.Owns(a)&&IsNativeConversationContextStampCurrent(a); }
-    internal void EndConversation() { Interlocked.Exchange(ref _openingRetry, null);_nativeAdmissionOwner.Current?.Lifetime?.Retire();_nativeAdmissionOwner.EndConversation(); }
+    internal void EndConversation() { _meetingElapsed.Clear(); Interlocked.Exchange(ref _openingRetry, null);_nativeAdmissionOwner.Current?.Lifetime?.Retire();_nativeAdmissionOwner.EndConversation(); }
     internal PresentationLease CapturePresentation()
     {
         if(!_isMainThread()||!_canSubmit()||!_isCurrentOwner()) return null;

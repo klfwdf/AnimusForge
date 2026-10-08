@@ -1,0 +1,22 @@
+"""Whole elapsed owners/capture + real DTOs and exact admission bridge methods; game/storage validation leaves."""
+from pathlib import Path
+import argparse,hashlib,importlib.util,json,subprocess,sys
+ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path,required=True);a=p.parse_args();out=new_run_root(ROOT,'native-meeting-elapsed',a.run_root)
+spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+paths=['src/modules/AF.Module.Conversation/Channels/Native/NativeMeetingElapsedOwner.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeMeetingElapsedHistoryProjection.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs','src/AF.GameAdapter.Bannerlord/Prompt/NativeMeetingElapsedCaptureAdapter.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.NativeMeetingElapsed.cs']
+for path in paths:(out/Path(path).name).write_bytes((ROOT/path).read_bytes())
+models='src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs';source=(ROOT/models).read_text(encoding='utf8');paths.append(models)
+(out/'Dtos.cs').write_text('using System;using System.Linq;using System.Collections.Generic;namespace AnimusForge;'+''.join(ex.declaration(source,s) for s in ['internal sealed class DailyMemoryLine','internal sealed class DailyMemoryDraft','internal sealed class CompressedMemoryBlock'])+'internal sealed class WeeklyMemoryMaterialTrigger {internal WeeklyMemoryMaterialTrigger CopyForSummary()=>this;}',encoding='utf8')
+adapter='src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs';admission='src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs';paths.extend([adapter,admission]);current=(ROOT/adapter).read_text(encoding='utf8')
+code=(HERE/'Harness.cs.txt').read_text(encoding='utf8').replace('@@BRIDGE@@',''.join(ex.declaration(current,s) for s in ['internal void CaptureMeetingElapsedBoundary(', 'internal void ConfirmMeetingElapsedBoundary('])).replace('@@TICKET@@',ex.declaration((ROOT/admission).read_text(encoding='utf8'),'internal sealed class NativeConversationAdmission'))
+roles='src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs';paths.append(roles);code=code.replace('@@ROLE@@',ex.declaration((ROOT/roles).read_text(encoding='utf8'),'internal static bool IsLikelyPlayerHistorySpeaker('))
+# Current source seam checks are declared separately from runtime scope.
+prepare=(ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs').read_text(encoding='utf8');assert 'ports.Admissions.CaptureMeetingElapsedBoundary(admission, meetingHistoryKey,' in prepare
+presentation=(ROOT/'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs').read_text(encoding='utf8');assert presentation.index('_ports.IsNativeConversationAdmissionCurrent(admission')<presentation.index('_ports.ConfirmMeetingElapsedBoundary?.Invoke(admission);')
+catch=ex.declaration(current,'internal async Task<string> SubmitNativeConversationAdmittedAsync(');assert 'ConfirmMeetingElapsedBoundary' not in catch
+(out/'Program.cs').write_text(code,encoding='utf8');(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',encoding='utf8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf8')
+(out/'source-manifest.json').write_text(json.dumps({'scope':__doc__,'wholeAndExtractedSources':{path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths},'sourceSeams':['prepare captures once','validated main reply confirms','catch does not confirm']},indent=2),encoding='utf8')
+dotnet=resolve_dotnet(ROOT);r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf8',errors='replace',timeout=120);log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf8');print(log,end='');raise SystemExit(r.returncode)
