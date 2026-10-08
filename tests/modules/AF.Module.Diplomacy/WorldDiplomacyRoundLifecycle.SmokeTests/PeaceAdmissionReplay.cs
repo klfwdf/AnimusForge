@@ -2,7 +2,7 @@ using AnimusForge;
 using Newtonsoft.Json.Linq;
 internal static class PeaceAdmissionReplay
 {
-    private sealed class Port : IWorldDiplomacyPeaceAdmissionPort
+    internal sealed class Port : IWorldDiplomacyPeaceAdmissionPort
     {
         internal bool War = true, Ruler = true;
         internal int Reads, Count = 3, Cap = 100;

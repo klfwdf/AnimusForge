@@ -27,6 +27,9 @@ public sealed class WorldDiplomacyDocumentAction
 
 public sealed class WorldDiplomacyDocument
 {
+	[JsonProperty("subjectReleaseTokens", NullValueHandling = NullValueHandling.Ignore)]
+	public Dictionary<string, string> SubjectReleaseTokens { get; set; }
+
 	[JsonIgnore] internal Action NotificationSelectionChanged;
 	private bool _hasReachedPlayerCourt;
 	private string _documentId = "";

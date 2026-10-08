@@ -2,7 +2,7 @@ using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
 
-internal readonly struct DiplomacyOralTagSource : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource
+internal readonly struct DiplomacyOralTagSource : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource, IDiplomacySubjectReleaseTagSource
 {
     private readonly Hero _npc;
     internal DiplomacyOralTagSource(Hero npc) => _npc = npc;
@@ -10,6 +10,7 @@ internal readonly struct DiplomacyOralTagSource : IDiplomacyOralTagSource, IDipl
     public bool IsAvailable => DiplomacyBehavior.Instance != null
         || Campaign.Current?.GetCampaignBehavior<DiplomacyBehavior>() != null;
     public string SpeakerHeroId => _npc.StringId;
+    public string ReleaseSubject(string payload) => WorldDiplomacyBehavior.SubmitPlayerSubjectRelease(_npc, payload);
     public string SpeakerKingdomId => _npc?.Clan?.Kingdom?.StringId ?? "";
     public bool UseFormalCommitments => WorldDiplomacyBehavior.UseFormalDiplomacyForConversation;
     public string SubmitCommitment(string payload) => WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(_npc, payload);

@@ -18,6 +18,11 @@ internal interface IDiplomacyOralTagSource
     void Log(string message);
 }
 
+internal interface IDiplomacySubjectReleaseTagSource
+{
+    string ReleaseSubject(string payload);
+}
+
 internal static class DiplomacyOralTagApplication
 {
     private static readonly Regex TagRegex = new Regex(
@@ -57,6 +62,8 @@ internal static class DiplomacyOralTagApplication
             var formal = source is IDiplomacyCommitmentTagSource candidate && candidate.UseFormalCommitments ? candidate : null;
             switch (action.ToUpperInvariant())
             {
+                case "RELEASE_SUBJECT": return source is IDiplomacySubjectReleaseTagSource release
+                    ? release.ReleaseSubject(payload) : "释放未执行：臣属系统不可用。";
                 case "COMMIT": return formal != null ? formal.SubmitCommitment(payload)
                     : source is IDiplomacyCommitmentTagSource direct
                         ? DiplomacyNativeCommitmentApplication.Execute(source, direct.SpeakerKingdomId, payload) : "";

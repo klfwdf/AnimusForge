@@ -237,8 +237,11 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 && !owner.ValidateFormalTreatyDeclaration(document, intent, input.Materialize().TreatyTerms,
                     author, target, input.RespondingToOfferDocumentId, input.RespondingToOfferActionId, out string treatyReason))
             { orchestration.SuppressInvalidDocumentBeforePropagation(document, treatyReason); return; }
+            bool playerRelease = command.IsPlayerAuthored && intent == "release_subject"
+                && orchestration is WorldDiplomacyOrchestration releaseOwner
+                && releaseOwner.ValidatePlayerSubjectRelease(document, author, target, out _);
             if (!input.Exists || target == null || target == author || port.IsEliminated(target)
-                || !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)) || !uniqueTargets.Add(target))
+                || (!playerRelease && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target))) || !uniqueTargets.Add(target))
             {
                 orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy
                     ? "final_live_state_guard:diplomatic_action_has_no_live_target" : "multi_action_has_invalid_or_duplicate_target");
@@ -266,7 +269,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_legal_action_guard");
 				return;
 			}
-			if (round?.ResultSettlementPending == true && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target))
+			if (!playerRelease && round?.ResultSettlementPending == true && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target))
 			{
 				if (!CanUseResultSettlementTarget(port, round, author, target))
 				{

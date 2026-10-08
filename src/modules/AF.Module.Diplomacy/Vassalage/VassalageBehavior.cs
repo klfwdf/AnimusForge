@@ -53,6 +53,9 @@ internal sealed class VassalageAgreement
 
 	public bool FormalInitialSynchronizationPending { get; set; }
 
+	// Persisted incarnation: the legacy pair-based AgreementId repeats after re-signing.
+	public string ReleaseIdentity { get; set; } = Guid.NewGuid().ToString("N");
+
 	[JsonIgnore]
 	public string AgreementId => BuildAgreementId(SuzerainKingdomId, VassalKingdomId);
 
@@ -1106,6 +1109,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			try
 			{
 				VassalageAgreement agreement = JsonConvert.DeserializeObject<VassalageAgreement>(item.Value ?? "");
+                if (agreement != null && string.IsNullOrWhiteSpace(agreement.ReleaseIdentity))
+                    agreement.ReleaseIdentity = Guid.NewGuid().ToString("N");
 				if (agreement != null && agreement.IsValid())
 				{
 					_agreementsByVassalId[agreement.VassalKingdomId.Trim()] = agreement;
@@ -4111,6 +4116,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			_garrisonObedienceStorage.Remove(obedienceKey);
 		}
 		existing.Type = newType;
+        existing.ReleaseIdentity = Guid.NewGuid().ToString("N");
 		existing.CreatedDay = newCreatedDay;
 		existing.NegotiatedByHeroId = negotiatedWith?.StringId ?? "";
 		if (UsesSubjectIndependence(newType))
@@ -5033,7 +5039,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				}
 				continue;
 			}
-			string syncReason = "agreement_sync_subject_war";
+			var sourceAgreement = GetAnyVassalAgreement(targetKingdom);
+			string syncReason = "agreement_sync_subject_war@" + targetKingdom.StringId + "@" + sourceAgreement?.ReleaseIdentity;
 			int pendingBefore = _pendingDiplomacySyncs.Count;
 			bool declaredNow = DeclareWarIfNeeded(playerKingdom, enemy, syncReason, forceQueue);
 			bool queuedOrScheduled = !declaredNow && HasPendingDeclareWarSync(playerKingdom, enemy, syncReason);
@@ -5721,6 +5728,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		switch ((reason ?? "").Trim())
 		{
+		case "suzerain_released_subject":
+			return "宗主国主动释放，臣属国恢复独立";
 		case "player_broke_subject_agreement":
 			return "宗主国主动撕毁臣属誓约";
 		case "tributary_protection_refused":
@@ -5887,7 +5896,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				}
 				string kingdom1Id = (parts[1] ?? "").Trim();
 				string kingdom2Id = (parts[2] ?? "").Trim();
-				if (!string.Equals(kingdom1Id, vassalId, StringComparison.OrdinalIgnoreCase)
+				bool sourceAgreementMatches = parts.Length >= 4 && parts[3] == "agreement_sync_subject_war@" + vassalId + "@" + agreement.ReleaseIdentity;
+				if (!sourceAgreementMatches && !string.Equals(kingdom1Id, vassalId, StringComparison.OrdinalIgnoreCase)
 					&& !string.Equals(kingdom2Id, vassalId, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
@@ -6257,6 +6267,14 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				});
 				continue;
 			}
+			if (string.Equals(action, "declare_war", StringComparison.OrdinalIgnoreCase)
+                && !IsSubjectWarSyncCurrent(reason, kingdom1, kingdom2))
+            {
+                _pendingDiplomacySyncs.Remove(item.Key);
+                VassalageDiagnosticLog.Event("pending_diplomacy.drop", new Dictionary<string, object>
+                { ["pendingKey"] = item.Key, ["reason"] = "stale_subject_war_source", ["syncReason"] = reason });
+                continue;
+            }
 			if (string.Equals(action, "declare_war", StringComparison.OrdinalIgnoreCase)
 				&& ShouldBlockInternalWarForCurrentVassalage(kingdom1, kingdom2, out string vassalageBlockReason, out var declaringAgreement, out var targetAgreement))
 			{
