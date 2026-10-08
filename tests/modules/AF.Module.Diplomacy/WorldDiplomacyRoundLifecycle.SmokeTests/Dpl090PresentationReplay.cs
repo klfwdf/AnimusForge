@@ -112,6 +112,7 @@ internal static class Dpl090PresentationReplay
         public readonly List<string> Notices = new();
         public readonly List<WorldDiplomacyNotice> RoutedNotices = new();
         public readonly List<string> Rumors = new();
+        public readonly List<string> Logs = new();
         public Action? BeforeNotice;
         public bool CanPublishMapNotification() { Probes++; return Ready; }
         public bool EnsureMapNotificationRegistered() { Registrations++; return Registered; }
@@ -127,7 +128,7 @@ internal static class Dpl090PresentationReplay
             Notices.Add(notice.DocumentId);
             RoutedNotices.Add(notice);
         }
-        public void Log(string text) { }
+        public void Log(string text) => Logs.Add(text);
     }
 
     private static void Notifications()
@@ -227,7 +228,7 @@ internal static class Dpl090PresentationReplay
         var domestic = Document("domestic", 1); domestic.AuthorKingdomId = "PLAYER";
         var foreign = Document("foreign", 2); foreign.TargetKingdomId = "player";
         var unrelated = Document("unrelated", 3); unrelated.TargetKingdomId = "other";
-        unrelated.Body = "player"; // Body mentions are not notification eligibility.
+        unrelated.Body = "player PRIVATE_BODY_DO_NOT_LOG"; // Body mentions are not notification eligibility.
         var playerWritten = Document("self", 4); playerWritten.AuthorKingdomId = "player"; playerWritten.IsPlayerAuthored = true;
         var notArrived = Document("not-arrived", 5); notArrived.TargetKingdomId = "player"; notArrived.HasReachedPlayerCourt = false;
         routed.Documents.AddRange(new[] { domestic, foreign, unrelated, playerWritten, notArrived });
@@ -238,6 +239,10 @@ internal static class Dpl090PresentationReplay
         Test.True(!routeSink.RoutedNotices.Single().ShowOnMap && !domestic.FormalNoticeShown && !foreign.FormalNoticeShown,
             "author and explicit player target both remain retryable until the widget registers");
         Equal(1, routeSink.Registrations, "widget registration is probed once for both player-realm notices in a poll");
+        Test.True(routeSink.Logs.Any(s => s.Contains("document=unrelated") && s.Contains("route=text")
+            && s.Contains("author=author") && s.Contains("targets=other") && s.Contains("player=player")),
+            "third-party text route records its author, targets and current player realm");
+        Test.True(routeSink.Logs.All(s => !s.Contains("PRIVATE_BODY_DO_NOT_LOG")), "route diagnostics never log document body");
         int routeBuilds = routeOwner.RebuildCount;
         routeOwner.Poll(routed, now.AddSeconds(1), routeSink);
         Equal(routeBuilds, routeOwner.RebuildCount, "deferred widget retries do not rescan document storage");
@@ -246,6 +251,8 @@ internal static class Dpl090PresentationReplay
         Test.True(domestic.FormalNoticeShown && foreign.FormalNoticeShown
             && routeSink.RoutedNotices.Where(n => n.DocumentId != "unrelated").All(n => n.ShowOnMap),
             "same-country author and foreign player target both restore right icons on registration recovery, ignoring ID case");
+        Test.True(routeSink.Logs.Any(s => s.Contains("document=foreign") && s.Contains("route=map")
+            && s.Contains("targets=player") && s.Contains("player=player")), "direct player map publication has a distinguishable route diagnostic");
         Test.True(!playerWritten.FormalNoticeShown && !notArrived.FormalNoticeShown,
             "existing self-authored exclusion and court-delivery gates remain");
         routeOwner.ResetView(); routeOwner.Poll(routed, now.AddSeconds(3), routeSink);
