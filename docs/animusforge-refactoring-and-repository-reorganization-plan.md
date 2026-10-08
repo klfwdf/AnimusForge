@@ -1,3 +1,15 @@
+﻿<a id="coup-native-hall-20261008"></a>
+## 政变大厅改用原版攻城部署标记（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `4df26683b`，检查点 `f0baca1`。用户要求大厅按原版攻城进大厅生成，不受玩家不可见规则影响。调查确认此前大厅已排除街道视线过滤，但使用玩家/王座周围环形候选、3米敌方距离限制；补生国王另将王座高度改为ground height且未检验导航。
+- 对照原版 `SandBoxMissions.OpenSiegeLordsHallFightMission`、`LordsHallFightMissionController.MissionSide.SpawnTroops`、`DefaultMissionDeploymentPlan`：采用siege场景层及attacker_infantry/attacker_archer、defender_infantry/defender_archer标记；守军不绑定野战阵形，玩家按attacker_infantry入口。只在已登记的政变大厅接线中启用，不启动依赖MapEvent的整场攻城控制器，不改政变名单、国王制服条件或政治结算，也未移植原版FightArea分区撤退AI。
+- 国王补生保留室内导航高度，王座缺失时使用守军标记；大厅不再限制玩家视线或3米距离。每侧先使用原始标记，再有限扩展以容纳所选人数；可达性、防重叠保持。无合法点保留未生成记录并沿用15秒技术退出。每个新Agent仅生成时核对实际位置，偏离时纠正一次，失败技术退出而不留下场外胜利目标。
+- 性能：每侧最多192次导航/路径探测、160候选，成功后缓存；标记最多48个。缺失候选沿用有界重试/超时，不新增逐帧场景或人物全扫描；生成后检查仅运行一次。
+- 核实代码范围（产品修订）：`src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:252-256`（补丁注册）、`:1638-1651`（玩家/场景层gate）、`:3006-3031`（国王生成）、`:6971-7090`（原版标记、验证及失败处理）；`extensions/AnimusForge.Coup/src/CoupSystem/CoupMissionBehavior.cs:145-150`（无王座时守军候选）。
+- PASS：CoupHallDeploymentTests 41项（实际生产方法抽取，Scene/Agent替身；包括三米内可见守军直接生成、缺标记不造点、偏位纠正、纠正失败技术退出）、CoupSpawnSafetyTests 13项、Coup.ContractTests 145项；原build_single_module.ps1双API/Bootstrap/双接缝。最终本任务4文件SHA256与构建快照一致。证据 `artifacts/coup-native-hall-20261008/`（build-final.log、hall-tests.log、street-tests.log、contracts.log、source-hashes.json）。
+- NOT-RUN：真实游戏各文化大厅、实际场景层/标记加载、第三方自定义大厅、实际卡人复现和恢复；已有异常场景没有原地修档。无原版攻守标记的自定义大厅不会退回场外生成，需实机确认提示/技术退出。未部署、打包或推送。
+- 回滚仅 `git revert 4df26683b`。验证结束时其他会话开始修改NativeSessionOwnerTests，未纳入本提交/构建结论；两份NuGet缓存保留。
+
 <a id="native-history-and-scene-exit-20261008"></a>
 # 自由对话单行历史同步与退出后场景动作（2026-10-08，ACTIVE）
 
