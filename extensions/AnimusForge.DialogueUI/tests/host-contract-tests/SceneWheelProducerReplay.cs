@@ -13,6 +13,8 @@ internal static class SceneWheelProducerReplay
 {
     private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     private static readonly List<object> Values = new List<object>();
+    private static readonly Dictionary<MethodBase,MethodInfo> PrefixFactories = new Dictionary<MethodBase,MethodInfo>();
+    public static MethodInfo PrefixFactory(MethodBase original) => PrefixFactories[original];
     private static object _menu;
     private static int _sessions;
     private static readonly HashSet<int> FactoryValues = new HashSet<int>();
@@ -34,7 +36,8 @@ internal static class SceneWheelProducerReplay
         il.Emit(OpCodes.Call, typeof(SceneWheelProducerReplay).GetMethod(nameof(Value), All));
         il.Emit(method.ReturnType.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, method.ReturnType);
         il.Emit(OpCodes.Stobj, method.ReturnType); il.Emit(OpCodes.Ldc_I4_0); il.Emit(OpCodes.Ret);
-        harmony.Patch(method, prefix: new HarmonyMethod(prefix));
+        PrefixFactories[method]=prefix;
+        harmony.Patch(method, prefix: new HarmonyMethod(typeof(SceneWheelProducerReplay),nameof(PrefixFactory)));
     }
     private static void PrepareTarget(Harmony harmony, MethodInfo method, object packet)
     {
@@ -46,11 +49,12 @@ internal static class SceneWheelProducerReplay
         il.Emit(OpCodes.Ldarg_1); il.Emit(OpCodes.Ldc_I4,index); il.Emit(OpCodes.Call,typeof(SceneWheelProducerReplay).GetMethod(nameof(Value),All));
         il.Emit(OpCodes.Castclass,argument.GetElementType()); il.Emit(OpCodes.Stobj,argument.GetElementType());
         il.Emit(OpCodes.Ldarg_0); il.Emit(OpCodes.Ldc_I4_1); il.Emit(OpCodes.Stind_I1); il.Emit(OpCodes.Ldc_I4_0); il.Emit(OpCodes.Ret);
-        harmony.Patch(method,prefix:new HarmonyMethod(prefix));
+        PrefixFactories[method]=prefix;
+        harmony.Patch(method,prefix:new HarmonyMethod(typeof(SceneWheelProducerReplay),nameof(PrefixFactory)));
     }
     internal static void Run(Assembly host,Harmony harmony)
     {
-        Values.Clear(); FactoryValues.Clear(); _factories=0; _sessions=0; _menu=null;
+        Values.Clear(); FactoryValues.Clear(); PrefixFactories.Clear(); _factories=0; _sessions=0; _menu=null;
         Type behavior=host.GetType("AnimusForge.ShoutBehavior",true);
         FieldInfo ownerField=behavior.GetField("_j17SceneShoutInputController",All); Type ownerType=ownerField.FieldType;
         object owner=FormatterServices.GetUninitializedObject(ownerType);
@@ -60,8 +64,11 @@ internal static class SceneWheelProducerReplay
         object campaignObject=FormatterServices.GetUninitializedObject(campaign),missionObject=FormatterServices.GetUninitializedObject(mission);
         Constant(harmony,campaign.GetProperty("Current",All).GetGetMethod(true),campaignObject);
         Constant(harmony,campaign.GetProperty("ConversationManager",All).GetGetMethod(true),null);
-        MethodInfo getBehavior=campaign.GetMethods(All).Single(x=>x.Name=="GetCampaignBehavior"&&x.IsGenericMethodDefinition&&x.GetParameters().Length==0).MakeGenericMethod(behavior);
-        Constant(harmony,getBehavior,shout);
+        Type managerType=campaign.Assembly.GetType("TaleWorlds.CampaignSystem.CampaignBehaviors.CampaignBehaviorManager",true);
+        object manager=FormatterServices.GetUninitializedObject(managerType);
+        FieldInfo behaviors=managerType.GetField("_campaignBehaviors",All);
+        var behaviorList=(IList)Activator.CreateInstance(behaviors.FieldType);behaviorList.Add(shout);behaviors.SetValue(manager,behaviorList);
+        campaign.GetField("_campaignBehaviorManager",All).SetValue(campaignObject,manager);
         Constant(harmony,mission.GetProperty("Current",All).GetGetMethod(true),missionObject);
         Constant(harmony,mission.GetProperty("IsMissionEnding",All).GetGetMethod(true),false);
         Type mode=mission.GetProperty("Mode",All).PropertyType;
@@ -77,7 +84,9 @@ internal static class SceneWheelProducerReplay
         wheel.GetMethod("Install",All).Invoke(null,new object[]{harmony});
         Type panel=host.GetType("AnimusForge.DialogueUI.Scene.SceneSessionPanel",true);
         Constant(harmony,panel.GetProperty("IsAvailable",All).GetGetMethod(true),false);
-        Type inquiryType=ownerType.GetMethod("OwnsShoutModeInquiry",All).GetParameters()[0].ParameterType;
+        MethodInfo ownership=ownerType.GetMethod("OwnsShoutModeInquiry",All);
+        Check(ownership!=null,"candidate predates the migrated scene menu ownership fix");
+        Type inquiryType=ownership.GetParameters()[0].ParameterType;
         Type info=inquiryType.Assembly.GetType("TaleWorlds.Core.MBInformationManager",true);
         harmony.Patch(info.GetMethod("ShowMultiSelectionInquiry",All),prefix:new HarmonyMethod(typeof(SceneWheelProducerReplay),nameof(Capture)));
         ownerType.GetMethod("TriggerShout",All).Invoke(owner,null);

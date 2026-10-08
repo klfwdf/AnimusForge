@@ -15,7 +15,10 @@ internal static class Program
         {
             // Dependency/type-load failures must be distinguishable from contract failures.
             for (Exception item = error; item != null; item = item.InnerException)
+            {
                 Console.Error.WriteLine(item.GetType().FullName + ": " + item.Message);
+                Console.Error.WriteLine(item.StackTrace);
+            }
             return 1;
         }
     }
