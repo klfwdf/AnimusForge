@@ -9,7 +9,7 @@
   <Brush Name="AFTerminal.MapBar.Left.Icons" OverrideBrush="MapBar.Left.Icons">
     <Layers>
       <!-- Sprite is replaced at runtime by GUI/SpriteParts/af_terminal/af_terminal_icon.png (AfTerminalMapBarIconSprite.cs); WarIcon is the fallback. -->
-      <BrushLayer Name="af_terminal" Sprite="SPGeneral\MapOverlay\Encounter\WarIcon" ExtendTop="-2" ExtendBottom="-2" ExtendLeft="-2" ExtendRight="-2" ImageFit.Type="Contain" ImageFit.VerticalAlignment="Center" ImageFit.HorizontalAlignment="Center" />
+      <BrushLayer Name="af_terminal" Sprite="SPGeneral\MapOverlay\Encounter\WarIcon" WidthPolicy="StretchToTarget" HeightPolicy="StretchToTarget" ExtendTop="-2" ExtendBottom="-2" ExtendLeft="-2" ExtendRight="-2" ImageFit.Type="Contain" ImageFit.VerticalAlignment="Center" ImageFit.HorizontalAlignment="Center" />
     </Layers>
   </Brush>
 </Brushes>

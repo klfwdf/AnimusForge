@@ -1,0 +1,79 @@
+using System.Reflection;
+using TaleWorlds.GauntletUI;
+using TaleWorlds.TwoDimension;
+using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
+using AFWarStatsTerminal.UI;
+
+namespace TaleWorlds.Library {
+ public readonly struct Vec2 {public readonly float X,Y;public Vec2(float x,float y){X=x;Y=y;} public static Vec2 Zero=>new(0,0);public static Vec2 One=>new(1,1);}
+}
+namespace TaleWorlds.Engine {
+ public class Texture { public static int Creates;public static int NativeWidth=128,NativeHeight=128;public string Name;public int Width=>NativeWidth;public int Height=>NativeHeight;
+  public static Texture CreateFromMemory(byte[] data){Creates++;return new();}public void SetTextureAsAlwaysValid(){}public void PreloadTexture(bool preload){} }
+}
+namespace TaleWorlds.TwoDimension {
+ public struct SpriteNinePatchParameters {public static SpriteNinePatchParameters Empty=>default;}
+ public abstract class Sprite {public int Width,Height;public string Name;protected Sprite(string name,int width,int height,SpriteNinePatchParameters p){Name=name;Width=width;Height=height;}public abstract Texture Texture {get;}public abstract TaleWorlds.Library.Vec2 GetMinUvs();public abstract TaleWorlds.Library.Vec2 GetMaxUvs();}
+ public class Texture {public Engine.GauntletUI.EngineTexture Source;public Texture(Engine.GauntletUI.EngineTexture t){Source=t;}}
+}
+namespace TaleWorlds.GauntletUI {
+ public class UIContext {}
+ public enum BrushLayerSizePolicy {StretchToTarget,Original,Overriden}
+ public class ImageFit {public enum ImageFitTypes {StretchToFit,Cover,Contain}public enum ImageHorizontalAlignments {Left,Center,Right}public enum ImageVerticalAlignments {Top,Center,Bottom}}
+ public class BrushLayer {public Sprite Sprite;public string Name;public BrushLayerSizePolicy WidthPolicy,HeightPolicy;public ImageFit.ImageFitTypes ImageFitType;public ImageFit.ImageHorizontalAlignments ImageFitHorizontalAlignment;public ImageFit.ImageVerticalAlignments ImageFitVerticalAlignment;
+  public void FillFrom(BrushLayer s){Sprite=s.Sprite;WidthPolicy=s.WidthPolicy;HeightPolicy=s.HeightPolicy;ImageFitType=s.ImageFitType;ImageFitHorizontalAlignment=s.ImageFitHorizontalAlignment;ImageFitVerticalAlignment=s.ImageFitVerticalAlignment;} }
+ public class Brush {public List<BrushLayer> Layers=new();public Sprite Sprite;public BrushLayer GetLayer(string n)=>Layers.FirstOrDefault(x=>x.Name==n);}
+}
+namespace TaleWorlds.GauntletUI.BaseTypes {
+ public class ButtonWidget {public Brush Brush;public float SuggestedWidth,SuggestedHeight;public ButtonWidget(UIContext c){}protected void OnPropertyChanged<T>(T value,string name){}}
+}
+namespace TaleWorlds.Engine.GauntletUI {
+ public class EngineTexture {public Engine.Texture Native;public EngineTexture(Engine.Texture texture){Native=texture;}}
+ public class BrushFactory {public Brush Source;public Brush GetBrush(string name)=>Source;}
+ public class SpriteData {public Dictionary<string,Sprite> Sprites=new();}
+ public static class UIResourceManager {public static BrushFactory BrushFactory;public static SpriteData SpriteData;}
+}
+namespace AnimusForge {
+ public static class AnimusForgeModulePaths {public static string Root;public static string GetCurrentModuleRoot()=>Root;}
+ public static class Logger {public static void Log(string category,string message){}}
+}
+namespace AFWarStatsTerminal.UI {
+ public static class AfWarStatsMapNavigationEntry {public const string ItemId="af_terminal";}
+}
+internal class FallbackSprite : Sprite {
+ public FallbackSprite():base("native-fallback",60,40,default){}public override Texture Texture=>null;public override TaleWorlds.Library.Vec2 GetMinUvs()=>TaleWorlds.Library.Vec2.Zero;public override TaleWorlds.Library.Vec2 GetMaxUvs()=>TaleWorlds.Library.Vec2.One;
+}
+internal static class Program {
+ static int Passed;static string Root;
+ static void Check(bool ok,string label){if(!ok)throw new Exception(label);Passed++;Console.WriteLine("PASS "+label);}
+ static BrushLayer Reset(bool missing=false){
+  var t=typeof(AfTerminalMapBarIconSprite);t.GetField("_sprite",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,null);t.GetField("_loadFailed",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,false);
+  AnimusForge.AnimusForgeModulePaths.Root=missing?Root+"/missing":Root;
+  TaleWorlds.Engine.Texture.Creates=0;
+  UIResourceManager.SpriteData=new();var layer=new BrushLayer{Name="af_terminal",Sprite=new FallbackSprite(),WidthPolicy=BrushLayerSizePolicy.Original,HeightPolicy=BrushLayerSizePolicy.Original,ImageFitType=ImageFit.ImageFitTypes.Cover};
+  UIResourceManager.BrushFactory=new(){Source=new(){Layers=new(){layer}}};return layer;
+ }
+ static IconBrushWidget Widget(bool originalSize){
+  var w=new IconBrushWidget(new()){SuggestedWidth=60,SuggestedHeight=40,Brush=new(){Layers=new(){new BrushLayer{Name="Default"}}}};
+  w.IconBrush=UIResourceManager.BrushFactory.Source;w.IconID="af_terminal";w.UseStylesFromSourceIcon=true;w.UseIconSize=originalSize;return w;
+ }
+ static void Main(string[] args){Root=args[0];
+  var layer=Reset();AfTerminalMapBarIconSprite.EnsureApplied();var source=layer.Sprite;var w=Widget(true);
+  Check(w.SuggestedWidth<=60 && w.SuggestedHeight<=40,"skin-use-original-sprite-size-stays-inside-native-icon-slot");
+  Check(source.Width==40 && source.Height==40,"logical-sprite-size-separated-from-128px-texture");
+  Check(((Texture)source.Texture).Source.Native.Width==128,"texture-resolution-preserved");
+  Check(layer.WidthPolicy==BrushLayerSizePolicy.StretchToTarget && layer.HeightPolicy==BrushLayerSizePolicy.StretchToTarget && layer.ImageFitType==ImageFit.ImageFitTypes.Contain,"source-layer-overrides-inherited-original-and-cover");
+  Check(w.Brush.Layers[0].WidthPolicy==BrushLayerSizePolicy.StretchToTarget && w.Brush.Layers[0].ImageFitType==ImageFit.ImageFitTypes.Contain,"vanilla-widget-copies-sizing-policy");
+  w=Widget(false);Check(w.SuggestedWidth==60 && w.SuggestedHeight==40,"ordinary-native-widget-size-unchanged");
+  Check(source.GetMinUvs().X==0 && source.GetMaxUvs().Y==1,"full-texture-uvs-preserved");
+  AfTerminalMapBarIconSprite.EnsureApplied();Check(ReferenceEquals(source,layer.Sprite) && TaleWorlds.Engine.Texture.Creates==1,"repeat-apply-no-texture-reload");
+  layer.WidthPolicy=BrushLayerSizePolicy.Original;layer.HeightPolicy=BrushLayerSizePolicy.Original;AfTerminalMapBarIconSprite.EnsureApplied();Check(layer.WidthPolicy==BrushLayerSizePolicy.StretchToTarget && layer.HeightPolicy==BrushLayerSizePolicy.StretchToTarget,"cached-sprite-still-repairs-source-policy");
+  var replacement=new BrushLayer{Name="af_terminal",Sprite=new FallbackSprite(),WidthPolicy=BrushLayerSizePolicy.Original};UIResourceManager.BrushFactory=new(){Source=new(){Layers=new(){replacement}}};AfTerminalMapBarIconSprite.EnsureApplied();Check(ReferenceEquals(replacement.Sprite,source) && TaleWorlds.Engine.Texture.Creates==1,"resource-brush-replacement-reuses-cached-texture");
+  foreach(int nativeSize in new[]{0,256,512}) {TaleWorlds.Engine.Texture.NativeWidth=nativeSize;TaleWorlds.Engine.Texture.NativeHeight=nativeSize;layer=Reset();AfTerminalMapBarIconSprite.EnsureApplied();Check(layer.Sprite.Width==40 && layer.Sprite.Height==40,"native-texture-size-independent-"+nativeSize);}
+  TaleWorlds.Engine.Texture.NativeWidth=128;TaleWorlds.Engine.Texture.NativeHeight=128;
+  layer=Reset(true);var fallback=layer.Sprite;AfTerminalMapBarIconSprite.EnsureApplied();AfTerminalMapBarIconSprite.EnsureApplied();Check(ReferenceEquals(layer.Sprite,fallback) && TaleWorlds.Engine.Texture.Creates==0,"missing-png-keeps-native-fallback-without-retry");Check(layer.ImageFitType==ImageFit.ImageFitTypes.Contain && layer.HeightPolicy==BrushLayerSizePolicy.StretchToTarget,"fallback-sizing-policy-normalized");
+  layer=Reset();UIResourceManager.BrushFactory.Source.Layers.Clear();AfTerminalMapBarIconSprite.EnsureApplied();Check(TaleWorlds.Engine.Texture.Creates==0,"missing-source-layer-does-not-load-texture");
+  Console.WriteLine("MapBarIconSizing PASS="+Passed+" FAIL=0 LIVE=NOT_RUN");
+ }
+}
