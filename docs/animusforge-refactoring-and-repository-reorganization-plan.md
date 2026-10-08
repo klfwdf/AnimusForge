@@ -1,4 +1,15 @@
-﻿<a id="mission-free-photo-20261008"></a>
+﻿<a id="mission-photo-review-fixes-20261008"></a>
+## 自由取景审查三项修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `2664d3382`，检查点 `4c6b70c`，补充 `f4f7bcf46` 的真实UI集成。用户授权修复审查发现的原弹窗误关、鼠标显示请求残留、等待面板失败取消worker三项。
+- `src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopup.cs:369–376`：系统打断检查仅豁免同一Screen上活动取景的AFMissionPhoto焦点；真实离场、失去窗口焦点、无活动采集及其他窗口仍沿原处理。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/MissionPhotoOverlay.cs:20,40–60,98–104`：缓存当前/新增层的鼠标显示状态，取景期间压制旧层请求，决定按钮保留本层鼠标，重拍隐藏，退出逐层恢复，跳过已finalized层。复用活动采集Tick与缓存引用，无场景/Agent扫描、反射或网络；成本与当前Screen的层数相关，不按帧重新枚举全局层。
+- `extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs:196–217`：worker准入后调用独立TryShowProgress；源面板回调或等待卡片加载失败只提示后台继续，不调用Finish/Close、不取消或重发生成。生成本身失败的原路径保持。
+- PASS：生产采集/UI VM/codec/rules加native/Gauntlet替身184项；生产方法抽取owner/等待面板/原弹窗焦点21项；旧f4f7bcf46焦点方法在同一fixture到达预期失败。原build_single_module.ps1双API、Bootstrap、双接缝成功；最终两DLL各135请求断言、全HTTP内存拦截。三个产品输入SHA与构建快照一致，git diff --check通过。证据 `artifacts/mission-photo-review-fixes-20261008/receipt.json` 与同目录build.log、capture-final.log、owner.log、request-1.3.log/request-1.4.log、old-focus-counterexample.log。
+- 首次新增鼠标测试错误选中“最后加入的层”而非取景层，已修为按VM身份选取；最终184通过。此测试修正不更改产品。旧版反例首次异常输出未能打印信息，补显式断言输出后核实预期失败，非产品异常。
+- NOT-RUN：原生游戏鼠标/窗口焦点/渲染HUD和真实生成效果；未实机、外部API、Stage、部署、打包或推送。回滚仅 `git revert 2664d3382`，基础自由取景实现继续保留。两个未跟踪NuGet目录未动。
+
+<a id="mission-free-photo-20261008"></a>
 ## 场景喊话／战斗玩家自由取景（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户确认至少一张、最多两张，冻结现场、隐藏原UI、Enter截取，截图后决定生成或继续；Esc提供重新截取/取消。产品 `f4f7bcf46`，检查点 `4aee39746`。本条明确替代本领域此前强制自动前后双平视机位；不改变其他生图模式或导演最终构图职责。
