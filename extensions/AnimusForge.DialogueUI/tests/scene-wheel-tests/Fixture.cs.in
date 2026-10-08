@@ -1,0 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using HarmonyLib;
+using TaleWorlds.Core;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.MountAndBlade;
+using AnimusForge;
+using AnimusForge.DialogueUI.Scene;
+using AnimusForge.Refactor.Runtime;
+static class Program {
+ static int n;static void Check(bool x,string s){n++;if(!x)throw new Exception(s);}
+ static SceneShoutInputController Fresh(){SceneWheel.Shutdown();Campaign.Current=new();Mission.Current=new();Agent.Main=new();SceneSessionPanel.IsAvailable=true;DialogueUiSprites.Ready=true;SceneWheel.Install(H);return Campaign.Current.Behavior._j17SceneShoutInputController;}
+ static readonly Harmony H=new("DialogueUI.SceneWheel.ProductionMenuReplay");
+ static void Main(){try{Run();}catch(Exception error){Console.Error.WriteLine(error.GetType().FullName+": "+error.Message);Environment.ExitCode=1;}}
+ static void Run(){
+  var owner=Fresh();owner.TriggerShout();var menu=owner.Menu;var layer=WheelLayer.Last;
+  Check(SceneWheel.IsOpen&&layer!=null&&MBInformationManager.Last!=menu,"real migrated closure -> Harmony show-prefix -> wheel factory");
+  Check(menu.AffirmativeAction.Method.DeclaringType.DeclaringType==typeof(SceneShoutInputController),"actual migrated closure belongs to controller");
+  layer.Choose("normal");menu.AffirmativeAction(new(){menu.InquiryElements[0]});menu.NegativeAction(new());
+  Check(owner.Sessions==1&&owner.Inputs==0&&owner.Cancels==0,"normal opens persistent session once; duplicate affirmative/cancel do nothing");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;WheelLayer.Last.Cancel();menu.NegativeAction(new());Check(owner.Cancels==1,"cancel executes original host exactly once");
+  foreach(string mode in new[]{"give","show","give_troops","give_prisoners","give_settlements"}){owner=Fresh();owner.TriggerShout();WheelLayer.Last.Choose(mode);Check(owner.Trades==1&&owner.LastMode==mode&&owner.FallbackTrades==0,"wheel choice enters session trade "+mode);}
+  owner=Fresh();int factories=WheelLayer.Factories;var third=new MultiSelectionInquiryData("third","",new(){new("normal","normal",null,true,""),new("give","give",null,true,"")},true,1,1,"","",_=>{},_=>{});MBInformationManager.ShowMultiSelectionInquiry(third,true);
+  Check(MBInformationManager.Last==third&&WheelLayer.Factories==factories,"same structure third-party menu remains native");
+  var legacy=Campaign.Current.Behavior.LegacyLookalike();MBInformationManager.ShowMultiSelectionInquiry(legacy,true);Check(MBInformationManager.Last==legacy,"legacy lookalike without live producer ownership is not hijacked");
+  owner=Fresh();Campaign.Current.ConversationManager.IsConversationInProgress=true;owner.TriggerShout();Check(MBInformationManager.Last==owner.Menu&&!SceneWheel.IsOpen,"native conversation not intercepted");
+  owner=Fresh();SceneSessionPanel.IsAvailable=false;owner.TriggerShout();Check(MBInformationManager.Last==owner.Menu&&!SceneWheel.IsOpen,"disabled style retains native host menu");owner.Menu.AffirmativeAction(new(){owner.Menu.InquiryElements[0]});Check(owner.Inputs==1&&owner.Sessions==0,"disabled style keeps original one-shot path");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;Mission.Current=new();factories=WheelLayer.Factories;MBInformationManager.ShowMultiSelectionInquiry(menu,true);menu.AffirmativeAction(new(){menu.InquiryElements[0]});Check(WheelLayer.Factories==factories&&owner.Sessions==0,"old mission rejected before classification/selection");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;Campaign.Current.Behavior=new();factories=WheelLayer.Factories;MBInformationManager.ShowMultiSelectionInquiry(menu,true);menu.NegativeAction(new());Check(WheelLayer.Factories==factories&&owner.Cancels==0,"old controller rejected");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;owner.TriggerShout();menu.AffirmativeAction(new(){menu.InquiryElements[0]});Check(owner.Sessions==0&&SceneWheel.IsOpen,"new menu revision supersedes old callbacks");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;SaveRuntimeGuard.Generation++;menu.AffirmativeAction(new(){menu.InquiryElements[0]});Check(owner.Sessions==0,"old save generation rejected");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;owner.Epoch++;menu.NegativeAction(new());Check(owner.Cancels==0,"new conversation epoch rejects old cancellation");
+  owner=Fresh();owner.TriggerShout();menu=owner.Menu;menu.AffirmativeAction=_=>owner.Sessions++;factories=WheelLayer.Factories;MBInformationManager.ShowMultiSelectionInquiry(menu,true);Check(WheelLayer.Factories==factories,"modified callback identity does not pass owner contract");
+  H.UnpatchAll(H.Id);Console.WriteLine("PASS "+n+" actual producer/classification/real-Harmony/wheel-factory/once/session/mission/owner/style checks; GPU render NOT-RUN");
+ }
+}
+namespace TaleWorlds.Core {
+ public sealed class InquiryElement{public object Identifier;public string Title;public bool IsEnabled;public InquiryElement(object id,string title,object image=null,bool isEnabled=true,string hint=""){Identifier=id;Title=title;IsEnabled=isEnabled;}}
+ public sealed class MultiSelectionInquiryData{public List<InquiryElement> InquiryElements;public int MaxSelectableOptionCount;public Action<List<InquiryElement>> AffirmativeAction,NegativeAction;public MultiSelectionInquiryData(string title,string text,List<InquiryElement> e,bool isExitShown,int min,int max,string ok,string cancel,Action<List<InquiryElement>> yes,Action<List<InquiryElement>> no,string sound="",bool isSeachAvailable=false){InquiryElements=e;MaxSelectableOptionCount=max;AffirmativeAction=yes;NegativeAction=no;}}
+ public static class MBInformationManager {public static MultiSelectionInquiryData Last;[MethodImpl(MethodImplOptions.NoInlining)]public static void ShowMultiSelectionInquiry(MultiSelectionInquiryData data,bool pauseGameActiveState=true){Last=data;}}
+}
+namespace TaleWorlds.CampaignSystem {public sealed class Campaign{public static Campaign Current;public ShoutBehavior Behavior=new();public ConversationManager ConversationManager=new();public T GetCampaignBehavior<T>()where T:class=>Behavior as T;}public sealed class ConversationManager{public bool IsConversationInProgress;}}
+namespace TaleWorlds.MountAndBlade {public enum MissionMode{StartUp,Conversation}public sealed class Mission{public static Mission Current;public bool IsMissionEnding;public MissionMode Mode;}public sealed class Agent{public static Agent Main;public bool IsActive()=>true;}}
+namespace AnimusForge.Refactor.Runtime {public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}}
+namespace AnimusForge {
+ public sealed class NpcDataPacket{public string Name="NPC";}public sealed class ShoutTargetingContext{}
+ public enum ShoutChatMode{Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements}
+ public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
+ internal static class MyBehavior{internal static bool IsDevDataManagementEnabledForExternal()=>false;}
+ internal static class BattleSpeechRuntimeHost{internal static bool CanOpenSpeechMenu(Mission m)=>false;}
+ internal sealed class SceneShoutInputController {
+  __FIELDS__
+  internal MultiSelectionInquiryData Menu=>_modeInquiry;internal ShoutTargetingContext _activeShoutTargetingContext=new();internal int Epoch,Sessions,Cancels,Inputs,Trades,FallbackTrades;internal string LastMode;private int _sceneConversationEpoch=>Epoch;
+  private bool TryPrepareShoutTarget(out NpcDataPacket data){data=new();return true;}
+  private List<Agent> GetAgentsForShoutTargetingContext(ShoutTargetingContext c)=>new();private Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext c,List<Agent>a)=>null;private bool IsPlayerSideBattleSpeechTarget(Mission m,Agent main,Agent target)=>false;
+  private void ResumeGame(){}private bool TryOpenPresentationSessionFromWheel(){if(!SceneSessionPanel.IsAvailable)return false;Sessions++;return true;}
+  private bool TryOpenPresentationTradeFromWheel(string mode){if(!SceneSessionPanel.IsAvailable)return false;LastMode=mode;Trades++;return true;}
+  private void BeginShoutTradeFlow(NpcDataPacket p,ShoutChatMode mode){FallbackTrades++;}
+  private void OpenShoutTextInput(NpcDataPacket p,string a,string b){Inputs++;}private void OpenShoutTagTestInput(NpcDataPacket p){}private void OpenBattleSpeechFromShoutMenu(bool npc,Agent a,List<Agent>b,int epoch){}private void OnShoutCancelled(){Cancels++;}
+  __PRODUCER__
+ }
+}
+namespace AnimusForge.DialogueUI.Native {}
+namespace AnimusForge.DialogueUI.Scene {
+ internal static class DialogueUiRuntime{internal static void LogOnce(string key,string message){Console.WriteLine(message);}}
+ internal static class DialogueUiSprites{internal static bool Ready=true;internal static bool EnsureSceneLoaded()=>Ready;}
+ internal static class SceneSessionPanel{internal static bool IsAvailable=true;}
+ internal sealed class WheelLayer{internal static WheelLayer Last;internal static int Factories;private MultiSelectionInquiryData data;private bool closed;internal static WheelLayer TryOpen(MultiSelectionInquiryData d){Factories++;return Last=new(){data=d};}internal void Tick(){}internal void Close(bool invokeCancel){if(closed)return;closed=true;SceneWheel.Released(this);if(invokeCancel)data.NegativeAction(new());}internal void Choose(string id){if(closed)return;Close(false);data.AffirmativeAction(new(){data.InquiryElements.Single(x=>(string)x.Identifier==id)});}internal void Cancel()=>Close(true);}
+ __WHEEL__
+}

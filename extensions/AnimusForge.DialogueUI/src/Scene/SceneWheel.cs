@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -14,18 +15,31 @@ using AnimusForge.DialogueUI.Native;
 
 namespace AnimusForge.DialogueUI.Scene;
 
-// Presents the host's own scene action menu (ShoutBehavior.TriggerShout) as the Pen radial wheel.
+// Presents the current SceneShoutInputController's exact scene action menu as the Pen radial wheel.
 // The host still builds every entry, decides eligibility and runs each choice; this only replaces
 // the native multi-selection popup, only for that menu, only when a session panel style is active.
 internal static class SceneWheel
 {
     private static WheelLayer _open;
     private static bool _installed;
+    private static readonly Func<ShoutBehavior, MultiSelectionInquiryData, bool> OwnsMenu = BuildOwnershipProbe();
+
+    private static Func<ShoutBehavior, MultiSelectionInquiryData, bool> BuildOwnershipProbe()
+    {
+        var owner = AccessTools.Field(typeof(ShoutBehavior), "_j17SceneShoutInputController");
+        var owns = owner == null ? null : AccessTools.Method(owner.FieldType, "OwnsShoutModeInquiry", new[] { typeof(MultiSelectionInquiryData) });
+        if (owns == null) return null;
+        var behavior = Expression.Parameter(typeof(ShoutBehavior), "behavior");
+        var data = Expression.Parameter(typeof(MultiSelectionInquiryData), "data");
+        return Expression.Lambda<Func<ShoutBehavior, MultiSelectionInquiryData, bool>>(
+            Expression.Call(Expression.Field(behavior, owner), owns, data), behavior, data).Compile();
+    }
 
     internal static bool IsOpen => _open != null;
 
     internal static void Install(Harmony harmony)
     {
+        if (OwnsMenu == null) throw new MissingMemberException("Scene wheel requires the current scene menu ownership contract.");
         var show = AccessTools.Method(typeof(MBInformationManager), nameof(MBInformationManager.ShowMultiSelectionInquiry));
         if (show == null) throw new MissingMethodException("MBInformationManager.ShowMultiSelectionInquiry");
         harmony.Patch(show, prefix: new HarmonyMethod(typeof(SceneWheel), nameof(ShowPrefix)));
@@ -65,9 +79,13 @@ internal static class SceneWheel
             give |= id == "give";
         }
         if (!normal || !give) return false;
-        for (Type type = data.AffirmativeAction.Method.DeclaringType; type != null; type = type.DeclaringType)
-            if (type == typeof(ShoutBehavior)) return true;
-        return false;
+        return IsCurrentOwnedMenu(data);
+    }
+
+    internal static bool IsCurrentOwnedMenu(MultiSelectionInquiryData data)
+    {
+        var behavior = Campaign.Current?.GetCampaignBehavior<ShoutBehavior>();
+        return behavior != null && OwnsMenu != null && OwnsMenu(behavior, data);
     }
 
     internal static void Tick() => _open?.Tick();
@@ -148,6 +166,11 @@ internal sealed class WheelLayer
 
     internal void Tick()
     {
+        if (!SceneWheel.IsCurrentOwnedMenu(_data))
+        {
+            Close(invokeCancel: false);
+            return;
+        }
         if (_closed) return;
         // Deferred so the choice never runs inside the Gauntlet click dispatch that produced it.
         if (_pendingChoice != null)

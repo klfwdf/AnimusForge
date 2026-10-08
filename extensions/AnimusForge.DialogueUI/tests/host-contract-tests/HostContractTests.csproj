@@ -4,6 +4,7 @@
   <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
   <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath></Reference>
   <Compile Include="Program.cs" />
+  <Compile Include="SceneWheelProducerReplay.cs" />
  </ItemGroup>
  <Target Name="CheckHarmony" BeforeTargets="PrepareForBuild"><Error Condition="'$(HarmonyPath)' == '' Or !Exists('$(HarmonyPath)')" Text="Pass the real HarmonyPath." /></Target>
 </Project>
