@@ -102,6 +102,7 @@ internal static class PropagationFailureClosureReplay
         fairHost.CurrentDayValue = 21; fairOwner.ProcessPropagationArrivals();
         Test.True(fair.Documents[1].HasReachedPlayerCourt && fair.PropagationArrivals.Count == 2 && fair.PropagationArrivals.Last().DueDay == 22,
             "permanent first failure cannot starve healthy arrival on following bounded pass");
+        PlayerResponseRecoveryReplay.VerifyPropagationResponseRetry();
         var oldArrival = JsonConvert.DeserializeObject<WorldDiplomacyPropagationArrival>("{\"documentId\":\"old\",\"scope\":\"court\"}");
         Test.True(!oldArrival.CourtEffectPending, "old saved arrival missing new JSON field remains ordinary and deduplicated");
     }

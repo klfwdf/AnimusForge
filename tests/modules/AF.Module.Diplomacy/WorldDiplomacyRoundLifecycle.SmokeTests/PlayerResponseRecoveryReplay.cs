@@ -8,6 +8,13 @@ internal static class PlayerResponseRecoveryReplay
     private sealed class Host : ConcurrentOralMigrationReplay.Host
     {
         internal readonly HashSet<string> Unqualified = new();
+        internal string FailCourtLogOnce;
+        public override void Log(string message)
+        {
+            if (FailCourtLogOnce != null && message.StartsWith("court received document=" + FailCourtLogOnce + " ", StringComparison.Ordinal))
+            { FailCourtLogOnce = null; throw new InvalidOperationException("court log failed after response registration"); }
+        }
+
         public override bool HasIndependentAuthority(string id) => !Unqualified.Contains(id) && base.HasIndependentAuthority(id);
         public override IWorldDiplomacyPromptWorld PromptWorld() => new PromptWorldFixture();
         public override IWorldDiplomacyJobPreparationPort JobPreparation() => new Preparation(this);
@@ -28,6 +35,27 @@ internal static class PlayerResponseRecoveryReplay
         public void LogProfile(WorldDiplomacyJob job,string prompt) { }
 
     }
+    internal static void VerifyPropagationResponseRetry()
+    {
+        var f = Fixture();
+        f.o.CurrentStorage.KingdomKnowledge.Clear(); f.o.CurrentStorage.NobleKnowledge.Clear(); f.r.PlayerResponses.Clear();
+        f.d.PropagationStarted = f.d.PropagationCompleted = true;
+        f.h.FailCourtLogOnce = f.d.DocumentId;
+        f.o.CurrentStorage.PropagationArrivals.Add(new WorldDiplomacyPropagationArrival
+            { DocumentId = f.d.DocumentId, RoundId = f.r.RoundId, KingdomId = "a", SettlementId = "court-a", Scope = "court", DueDay = f.h.CurrentDayValue });
+        f.o.ProcessPropagationArrivals();
+        var response = f.o.CurrentStorage.Jobs.Single(j => j.Kind == "generate" && j.AuthorKingdomId == "a");
+        int committedFacts = f.h.Facts.Count;
+        Test.True(f.r.PlayerResponses.Count == 1 && f.o.CurrentStorage.PropagationArrivals.Single().CourtEffectPending,
+            "actual player court failure follows RegisterPlayerResponseWork and preserves one job/obligation plus pending ticket");
+        f.h.CurrentDayValue++;
+        f.o.ProcessPropagationArrivals();
+        Test.True(f.o.CurrentStorage.PropagationArrivals.Count == 0 && f.r.PlayerResponses.Count == 1
+            && f.o.CurrentStorage.Jobs.Count(j => j.Kind == "generate" && j.AuthorKingdomId == "a") == 1
+            && f.o.CurrentStorage.Jobs.Contains(response) && f.h.Facts.Count == committedFacts,
+            "actual player court forced retry keeps original response job and single obligation without re-writing memory facts");
+    }
+
     private static object Invoke(WorldDiplomacyOrchestration o, string name, params object[] args) =>
         typeof(WorldDiplomacyOrchestration).GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(o, args)!;
     private static (Host h, WorldDiplomacyOrchestration o, WorldDiplomacyRound r, WorldDiplomacyDocument d) Fixture(bool followup = false)
