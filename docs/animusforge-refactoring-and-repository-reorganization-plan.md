@@ -1,4 +1,11 @@
-﻿<a id="mission-photo-review-fixes-20261008"></a>
+<a id="terminal-map-icon-size-20261008"></a>
+# 终端地图图标尺寸兼容（2026-10-08，ACTIVE）
+
+- 用户截图显示终端图标越过正常导航按钮边界，仅部分玩家遇到。本包核实PNG128×128、runtime Sprite直接使用纹理像素尺寸与原版IconBrushWidget.UseIconSize/BrushRenderer.Original行为；没有玩家模板/配置，具体触发方尚未确认。
+- 范围仅 WarStats/AfTerminalMapBarIconSprite.cs 与 content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml：纹理分辨率与逻辑40×40图标分离，显式Source层Contain/StretchToTarget策略；保持背景、ItemId、导航位置、热键、点击和 fallback。只在导航入口插入/开关时更新，缓存纹理，不新增Tick。
+- 完成门：旧逻辑尺寸反例、生产类链接的原始尺寸/容器缩放/缓存/fallback边界、内容映射核对、隔离已提交源码加本次修改运行原双API/Bootstrap/接缝。实机/玩家冲突模板未验；不部署、打包、推送。其他作者外交/生图dirty及NuGet缓存保留。
+
+<a id="mission-photo-review-fixes-20261008"></a>
 ## 自由取景审查三项修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `2664d3382`，检查点 `4c6b70c`，补充 `f4f7bcf46` 的真实UI集成。用户授权修复审查发现的原弹窗误关、鼠标显示请求残留、等待面板失败取消worker三项。
