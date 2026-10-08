@@ -8469,7 +8469,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 
 <a id="gallery-theme-truncation-20261008"></a>
-# 画廊主题硬截断修复（2026-10-08，ACTIVE）
+# 画廊主题硬截断修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户截图“密林霸主之落”主题止于“俘获并”，并明确要求修复。核实SplitMetadata在主题36字符处直接Substring；保存与画廊原样使用截后字段。仅修改IllustrationDirection.cs的主题长度处理和IllustratorGalleryPopup.xml右侧滚动，标题/行动摘要/导演正文/生图请求不变，不恢复其他会话改动。
 - 验收：新主题完整保存/显示，清理富文本标记和元数据与画面正文分离保持，长说明可滚动；按既有入口双API/Bootstrap/接缝构建，实际DLL反射验证主题完整性、旧标题限制和正文分离，XML路径与布局检查。每次导演返回解析一次、画廊选择时绑定一次，无新增Tick扫描或网络调用。未部署/打包/推送；历史缓存的已截主题不能自动恢复。
+
+- 产品`152c93d856311b9a17f989846cd2ab31e055df40`，检查点`c1a838e62`。坐标绑定产品修订：`extensions/AnimusForge.Illustrator/src/Core/IllustrationDirection.cs:62–83`的SplitMetadata主题取消36字符截取，保留CleanLabel的标记清理及标题18/行动160限制；`extensions/AnimusForge.Illustrator/GUI/Prefabs/IllustratorGalleryPopup.xml:96–117`右侧说明改成有界Scroll/Clip/Inner/Scrollbar，日期固定、主题按内容换行增高。旧JSON截后字段无法自动恢复，未重写玩家缓存。
+- 原统一Debug构建双API1.3.15.110062 / 1.4.6.115628、Bootstrap、两DLL接缝PASS，`artifacts/gallery-theme-truncation-20261008/build.log`。两版实际DLL各7主题专项检查PASS：完整42字符句子、1200字符主题、标记清理、旧标题/行动限额、元数据从图片prompt剥离及无元数据兼容；`metadata-13.log/14.log`。旧游戏安装DLL同测EXPECTED FAIL“expected42 actual36”，`baseline-installed.log`。初次未加载依赖的反射调用失败已补齐既有C# resolver，记录在`old-metadata.log`，不把环境失败当旧源码反例。
+- XML解析、Clip/Inner相对路径、Scrollbar模板路径沿用原列表、唯一日期/主题绑定、有界视口、正文CoverChildren PASS，`xml-check.log`；原画廊已使用InputUsageMask.All接收滚轮。源码前后hash一致、3DLL SHA及结果绑定`verification-receipt.json`，`git diff --check`PASS。每次导演解析/画廊选择按需运行，不新增Tick扫描/反射/网络。未运行既有Illustrator离线审计脚本或调用付费API。
+- NOT-RUN：真实Gauntlet换行/滚轮/拖拽/缩放与分辨率、真实导演/生图；未部署/打包/推送。候选`bin/Debug/single_module_artifacts`，源码回滚仅`git revert 152c93d85`，保留其他作者新闻采集改动。
