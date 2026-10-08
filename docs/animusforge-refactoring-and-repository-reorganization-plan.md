@@ -1,4 +1,17 @@
-﻿<a id="coup-native-hall-20261008"></a>
+﻿<a id="mission-free-photo-20261008"></a>
+## 场景喊话／战斗玩家自由取景（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户确认至少一张、最多两张，冻结现场、隐藏原UI、Enter截取，截图后决定生成或继续；Esc提供重新截取/取消。产品 `f4f7bcf46`，检查点 `4aee39746`。本条明确替代本领域此前强制自动前后双平视机位；不改变其他生图模式或导演最终构图职责。
+- 采集owner：`extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:59–130` 初始化/入口守卫/暂停与Tick，`:131–198`自由移动旋转缩放、移动时碰撞射线与每张8秒导出，`:199–283`继续/重拍/Esc/确认和独立资源恢复。使用独立CustomCamera，不启动原版滤镜或人物隐藏功能；取景本身无超时，每次原生导出仍等待4帧且250ms，并保留完整文件验证，不把该等待视为GPU完成证据。
+- UI owner：`extensions/AnimusForge.Illustrator/src/UI/Overlays/MissionPhotoOverlay.cs:21–105` 隐藏并缓存既有/新增UI根、提示/决策、精确恢复可见性；仅原Screen与焦点仍归本层时恢复旧焦点，离场不抢新屏输入；`:107–124` VM按钮防重复执行。`GUI/Prefabs/MissionPhotoOverlay.xml:1–25`布局，`content/content-map.json:1128–1132`新增正式资源映射，避免部署漏文件。`src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopup.cs:118,252`取景期间保护源喊话面板免受同一Esc关闭。
+- 消费者：`extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs:60–78,97–199`先取景后显式确认，确认前不占生成worker、不发API；所选1/2图全部传给导演与带图生图，采完沿用有界后台多请求、画廊与owner保护。`:220–249`清理；`MissionScreenshotRules.cs:9–43`一至两图契约、现场资料与导演构图区分。`VisualDirectorEngine.cs:222`等相关文案同步。重复图/采集或接口失败继续停止，无自动付费重试。
+- 性能：仅活动采集按既有应用Tick处理输入/相机与缓存UI根，移动时至多一次相机碰撞射线，不扫描场景/Agent；两张上限，主线程不解码大图，文件读取仅导出阶段，转换和HTTP在原有有界worker。无新存档键、公共API或采样参数。
+- PASS：真实生产采集/UI VM/codec/rules配native/Gauntlet替身178断言；生产owner方法抽取12项；两最终实际DLL各135项请求断言，HTTP均内存拦截；原`build_single_module.ps1` Debug双API/Bootstrap/双接缝，引用1.3 v1.3.15.110062、1.4 v1.4.6.115628。八个产品输入与最终构建快照SHA一致，资源映射/XML/按钮绑定及git diff --check通过。证据 `artifacts/mission-free-photo-20261008/receipt.json`，日志 `capture-final.log`、`owner-final.log`、`request-final-1.3.log`、`request-final-1.4.log`、`build-final-verified.log`。
+- 构建准备失败保留于`build-final.log`：Windows tar.exe误解中文路径，使独立候选误编译乱码目录的原版源码；改用Python在全新候选解包后原脚本通过，未为此更改产品或构建入口。
+- NOT-RUN：真实原生GPU帧/HUD、窗口焦点、按键及相机手感、场景冻结/恢复、真实导演和生成效果；没有实机启动/付费API/Stage/部署/打包/推送。仅离线验证，不能宣称已做进游戏安装。
+- 回滚仅 `git revert f4f7bcf46`。候选产物 `artifacts/mission-free-photo-20261008/source-verified/bin/Debug/single_module_artifacts/`；保留其他会话提交及两个未跟踪NuGet目录。
+
+<a id="coup-native-hall-20261008"></a>
 ## 政变大厅改用原版攻城部署标记（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `4df26683b`，检查点 `f0baca1`。用户要求大厅按原版攻城进大厅生成，不受玩家不可见规则影响。调查确认此前大厅已排除街道视线过滤，但使用玩家/王座周围环形候选、3米敌方距离限制；补生国王另将王座高度改为ground height且未检验导航。

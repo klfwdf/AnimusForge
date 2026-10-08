@@ -1,3 +1,9 @@
+# 当前交接：场景／战斗玩家自由取景（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `f4f7bcf46`：冻结现场隐藏旧UI，玩家自由移动旋转/缩放，Enter截1至2张；第一张后生成/继续，第二张后生成/重拍，Esc重拍/取消。确认后才启动后台生图，导演自主构图；恢复原镜头/UI/暂停，保留连续生成与画廊。
+- 采集178、owner12、两实际DLL各135项及原双API/Bootstrap/双接缝PASS；八产品输入SHA与候选绑定，资源映射已补。实机GPU/HUD/按键/真实模型未验；未部署、打包、推送。
+- [唯一台账、源码及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mission-free-photo-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#mission-free-photo-20261008)。证据 `artifacts/mission-free-photo-20261008/receipt.json`；回滚仅 `git revert f4f7bcf46`。本条替代旧自动双平视采集规则，保留其他包交接和作者修改。
+
 # 当前交接：自由对话单行历史与退出动作修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `3238cf542`：删除/编辑单行匹配失败不会重建当天全部Native缓存；整日开发编辑保持。退出事件只标记动作就绪，后续Mission Tick检查退出收尾及原场景/会话/Agent再执行；立即重开、读档和离场取消旧待执行动作。
