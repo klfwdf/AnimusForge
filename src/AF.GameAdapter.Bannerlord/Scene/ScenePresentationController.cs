@@ -168,15 +168,25 @@ internal sealed class ScenePresentationController
 		}
 		float num3 = port.EstimateTypingDuration(text);
 		sceneSpeechPlaybackInfo.VisualDurationSeconds = num3;
-		if (!port.ShowBubble(liveAgent, text, num3))
-		{
-			Logger.Log("FloatingText", "[Fallback] bubble unavailable, use message: npc=" + npcDisplayName);
-		}
+        bool bubbleShown = port.ShowBubble(liveAgent, text, num3);
+        if (!bubbleShown)
+        {
+            Logger.Log("FloatingText", "[Fallback] bubble unavailable, use message: npc=" + npcDisplayName);
+        }
 		if (interactionToken != 0L)
 		{
 			port.ArmInteractionTimeout(num, interactionToken, num3);
 		}
-		port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+        // Text fallback must be visible even while mission time is paused or the
+        // speaker's head is outside the camera. Audio acceptance keeps its timing.
+        if (!flag || !bubbleShown)
+        {
+            port.PublishFeedImmediately(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+        }
+        else
+        {
+            port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+        }
 		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 		port.Report("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
 		return sceneSpeechPlaybackInfo;
@@ -807,6 +817,7 @@ internal sealed class SceneSpeechOutputPort
  internal Action<int,long> EnqueueCompletionToken;
  internal Action<int,Agent,string,string,float> EnqueueBubble;
  internal Action<int,string,string,SceneSpeechPlaybackInfo> ScheduleFeed;
+ internal Action<int,string,string,SceneSpeechPlaybackInfo> PublishFeedImmediately;
  internal Func<Agent,string,float,bool> ShowBubble;
  internal Action<int,long,float> ArmInteractionTimeout;
 }
