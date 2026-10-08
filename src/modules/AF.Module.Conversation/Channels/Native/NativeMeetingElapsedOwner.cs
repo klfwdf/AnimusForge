@@ -24,21 +24,23 @@ internal sealed class NativeMeetingElapsedBoundary
 internal sealed class NativeMeetingElapsedOwner
 {
     private long _generation = long.MinValue, _epoch = long.MinValue;
+    private object _conversation;
     private readonly Dictionary<string, NativeMeetingElapsedBoundary> _boundaries = new(StringComparer.OrdinalIgnoreCase);
-    private void Scope(long generation, long epoch)
+    private void Scope(long generation, long epoch, object conversation)
     {
-        if (_generation == generation && _epoch == epoch) return;
-        _boundaries.Clear(); _generation = generation; _epoch = epoch;
+        if (_generation == generation && _epoch == epoch && ReferenceEquals(_conversation, conversation)) return;
+        _boundaries.Clear(); _generation = generation; _epoch = epoch; _conversation = conversation;
     }
-    internal NativeMeetingElapsedBoundary Capture(long generation, long epoch, string key, Func<NativeMeetingElapsedSnapshot> capture)
+    internal NativeMeetingElapsedBoundary Capture(long generation, long epoch, object conversation, string key, Func<NativeMeetingElapsedSnapshot> capture)
     {
-        Scope(generation, epoch);
+        Scope(generation, epoch, conversation);
         if (string.IsNullOrWhiteSpace(key)) return null;
         if (_boundaries.TryGetValue(key, out var existing)) return existing;
         var value = new NativeMeetingElapsedBoundary(generation, epoch, key, BuildContext(capture()));
         _boundaries.Add(key, value);
         return value;
     }
+    internal void Clear() { _boundaries.Clear(); _conversation = null; _generation = long.MinValue; _epoch = long.MinValue; }
     internal void Confirm(NativeMeetingElapsedBoundary boundary)
     {
         if (boundary == null || boundary.Generation != _generation || boundary.Epoch != _epoch) return;
@@ -50,7 +52,7 @@ internal sealed class NativeMeetingElapsedOwner
         const string boundary = "本次是新的对话；";
         const string ending = "保留既有经历，不把过去动作当成本轮正在发生。";
         bool nowKnown = !double.IsNaN(value.NowHours) && !double.IsInfinity(value.NowHours) && value.NowHours >= 0;
-        if (value.TimeUnknown || !nowKnown || value.Day < 0) return boundary + "无法准确计算距上次与你交流的游戏时间。" + ending;
+        if (value.TimeUnknown || !nowKnown || value.Day < 0) return boundary + (value.HasPriorDialogue ? "无法准确计算距上次与你交流的游戏时间。" : "现有记忆记录不足以确认先前交流的时刻。") + ending;
         if (value.HasMemoryRecord)
         {
             int days = (int)Math.Floor(value.NowHours / 24d) - value.Day;
