@@ -1,3 +1,13 @@
+<a id="scene-multi-image-20261008"></a>
+# 场景喊话／战斗连续后台生图与画廊入口（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户确认上一张后台生成期间允许再次截图发起独立任务，后续明确仅场景喊话和战斗开放。检查点 `a95297ed`，产品 `7a3fcdccc`；百科、普通对话、快报的重复生成限制保持。面板新增画廊，短暂相机采集仍串行，截图完成即恢复按钮，沿用全局4 worker／8 scope容量；不新增无限队列、自动重试或付费调用。
+- 代码范围（产品修订 `7a3fcdccc`）：`extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs:28–35,59–71,90–94,132–134` 的 Install/TickCapture/Request 只以未完成capture占用按钮与相机；每次请求继续冻结独立subject、facts、dialogue和双图。`:209–229` Finish/ScopeClosed保留scope身份检查，旧任务收尾不清除新任务状态。注册scope由现有IllustratorRuntime生命周期管理，完成通知和画廊刷新走原PublishGeneration；关闭窗口后后台存图语义保持。
+- UI接线：`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneIllustration.cs:15–19` 同DLL internal画廊钩子；`src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopupVM.cs:22–25`、`extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionVM.cs:26–28`、`src/Shout/ShoutPresentationVM.cs:24–26` 提供命令（最后一路径相对DialogueUI扩展）。`extensions/AnimusForge.DialogueUI/tools/build_scene_layouts.py:297,350–351,410` 生成卷轴/手札/暂停卷轴及原版兜底共四个prefab，画廊不绑定busy禁用；手札状态行让出按钮位置。无新增版本化公共API、存档字段或采样设置。
+- 性能：既有每帧采集入口只检查一个当前capture，完成后清引用并通知一次UI；后台仍使用原有有界worker，每次点击冻结一次输入，无新增Agent扫描、游戏对象后台读取或Tick序列化。连续请求增加实际生成工作，但不会无界堆积。
+- 验证：原build_single_module.ps1隔离构建1.3／1.4、Bootstrap与两接缝PASS；两实现实际DLL各129项（HTTP全内存拦截）、UI生命周期103项、真实生产方法的晚完成/清理隔离11项PASS。11个变更产品输入与成功构建快照逐文件一致；四个布局生成器幂等、画廊命令及可用性绑定通过，三DLL哈希记录。测试最初因旧断言仍匹配“玩家居中”而停止，已改为现有前后平视/采集构图非最终构图的等价边界，再跑两版通过；产品提示词未改。早期测试失败日志保留。
+- 证据 `artifacts/scene-multi-image-20261008/receipt.json`、build.log、request-1.3-final.log、request-1.4-final.log、lifecycle-final.log、owner-tests.log。NOT-RUN：真实GPU连续采集/相机恢复、原生面板点击/画廊遮挡、离场后台完成与真实模型；未部署、打包或推送，不运行Illustrator旧离线审计。此前友军识别信息缺失和坡地参考遮挡仅调查，未在本包修复。源码回滚仅 `git revert 7a3fcdccc`，保留其他作者与两个NuGet本地标记。
+
 <a id="news-and-capture-deploy-20261008"></a>
 # 截图修复、随机配图与外交降分已部署并推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
