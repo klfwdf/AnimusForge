@@ -153,9 +153,9 @@ internal sealed class PersonaEditorController
 			list.Add(new InquiryElement("set_voice", "设置/修改音色ID", null));
 			list.Add(new InquiryElement("clear_persona", "清空个性、历史背景与音色ID", null));
 			list.Add(new InquiryElement("back", "返回", null));
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑个性/历史背景 - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "执行", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑个性/历史背景 - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "执行", "返回", selected => { if (IsEditorCurrent(npc, editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
 			{
-				if (!_port.IsCurrent(editorGeneration)) return;
+				if (!IsEditorCurrent(npc, editorGeneration)) return;
 				ReturnFromDevPersonaMenu(npc);
 			});
 			MBInformationManager.ShowMultiSelectionInquiry(data);
