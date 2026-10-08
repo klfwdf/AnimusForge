@@ -145,8 +145,17 @@ internal static class WorldDiplomacyPropagationApplication
                      (storage.Documents ?? new List<WorldDiplomacyDocument>())
                          .Where(x => x != null && x.IsReadyForPublication && !x.PropagationCompleted)).Take(8))
         {
-            if (!resolveAuthor(document.AuthorKingdomId)) continue;
-            try { startPropagation(document); }
+            try
+            {
+                if (!resolveAuthor(document.AuthorKingdomId))
+                {
+                    // A disappeared author cannot publish later; retain its archive without starving the next batch.
+                    document.PropagationCompleted = true;
+                    log("deferred propagation retired document=" + document.DocumentId + " author=" + document.AuthorKingdomId + " reason=author_unavailable");
+                    continue;
+                }
+                startPropagation(document);
+            }
             catch (Exception ex)
             {
                 log("deferred propagation retry failed document=" + document.DocumentId + " error=" + ex.Message);
@@ -338,7 +347,8 @@ internal static class WorldDiplomacyPropagationApplication
         int maximumArrivals,
         Func<string, WorldDiplomacyDocument> resolveDocument,
         Action<WorldDiplomacyPropagationArrival, WorldDiplomacyDocument, int> deliverCourt,
-        Func<string, string> resolveSettlementId)
+        Func<string, string> resolveSettlementId,
+        Action<string> log = null)
     {
         var arrivals = storage.PropagationArrivals;
         int count = 0;
@@ -351,22 +361,49 @@ internal static class WorldDiplomacyPropagationApplication
         if (count == 0) return;
 
         var due = arrivals.GetRange(0, count);
-        // Preserve dequeue-before-effects, including exception/reentrant-enqueue behavior.
+        // Remove the bounded prefix first so reentrant work remains outside this pass.
         arrivals.RemoveRange(0, count);
+        List<WorldDiplomacyPropagationArrival> retry = null;
         foreach (WorldDiplomacyPropagationArrival arrival in due)
         {
-            WorldDiplomacyDocument document = resolveDocument(arrival.DocumentId);
-            if (document == null) continue;
-            if (WorldDiplomacyStructureRules.IsCourtArrival(arrival))
+            try
             {
-                deliverCourt(arrival, document, day);
-                continue;
+                WorldDiplomacyDocument document = resolveDocument(arrival.DocumentId);
+                if (document == null) continue;
+                if (WorldDiplomacyStructureRules.IsCourtArrival(arrival))
+                {
+                    deliverCourt(arrival, document, day);
+                    arrival.CourtEffectPending = false;
+                    continue;
+                }
+                string settlementId = resolveSettlementId(arrival.SettlementId);
+                if (settlementId != null)
+                    WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(
+                        storage.SettlementKnowledge, settlementId, document.DocumentId, day);
             }
-            string settlementId = resolveSettlementId(arrival.SettlementId);
-            if (settlementId != null)
-                WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(
-                    storage.SettlementKnowledge, settlementId, document.DocumentId, day);
+            catch (Exception ex)
+            {
+                // Knowledge may already be committed. The same persisted arrival owns the remaining court effect.
+                // The court adapter marks pending only when the effect actually starts; preserve that flag on capture failures.
+                arrival.DueDay = day < int.MaxValue ? day + 1 : day;
+                (retry ??= new List<WorldDiplomacyPropagationArrival>()).Add(arrival);
+                try { log?.Invoke("propagation arrival retry deferred document=" + arrival.DocumentId
+                    + " receiver=" + arrival.KingdomId + " dueDay=" + arrival.DueDay.ToString(CultureInfo.InvariantCulture)
+                    + " error=" + ex.Message); }
+                catch { } // Diagnostics must not strand the remaining due siblings.
+            }
         }
+        if (retry == null) return;
+        var pending = storage.PropagationArrivals;
+        // Failed items all move to tomorrow behind existing work at that date; no backlog scan or sort.
+        int low = 0, high = pending.Count;
+        while (low < high)
+        {
+            int middle = low + (high - low) / 2;
+            if (pending[middle] == null || pending[middle].DueDay > retry[0].DueDay) high = middle;
+            else low = middle + 1;
+        }
+        pending.InsertRange(low, retry);
     }
 
     internal static void ReceiveCourt(
@@ -375,13 +412,14 @@ internal static class WorldDiplomacyPropagationApplication
         string receiverId,
         int day,
         Func<bool> isPlayerAffiliated,
-        Action processCourtArrival)
+        Action processCourtArrival,
+        bool forcePending = false)
     {
         WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(
             storage.NobleKnowledge, receiverId, document.DocumentId, day);
         bool newlyKnown = WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(
             storage.KingdomKnowledge, receiverId, document.DocumentId, day);
-        if (newlyKnown || (isPlayerAffiliated() && !document.HasReachedPlayerCourt))
+        if (forcePending || newlyKnown || (isPlayerAffiliated() && !document.HasReachedPlayerCourt))
             processCourtArrival();
     }
 }

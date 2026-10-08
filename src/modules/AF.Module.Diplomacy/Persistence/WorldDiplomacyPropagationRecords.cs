@@ -29,6 +29,8 @@ public sealed class WorldDiplomacyPropagationArrival
 	[JsonProperty("kingdomId")] public string KingdomId { get; set; } = "";
 	[JsonProperty("scope")] public string Scope { get; set; } = "civilian";
 	[JsonProperty("dueDay")] public int DueDay { get; set; }
+	// Retry only the failed court effect; absent in old saves means an ordinary arrival.
+	[JsonProperty("courtEffectPending")] public bool CourtEffectPending { get; set; }
 }
 
 public sealed class WorldDiplomacySettlementKnowledge

@@ -122,6 +122,20 @@ internal static class PropagationLifecycleReplay
                 && failures.Count == 1 && failures[0].Contains("retry-3", StringComparison.Ordinal),
             "daily deferred retry keeps the chronological eight-document cap and isolates one failed publication");
 
+        var vanishedStorage = new WorldDiplomacyStorage();
+        for (int i = 0; i < 8; i++) vanishedStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "gone-" + i, AuthorKingdomId = "gone", Day = i, IsReadyForPublication = true, Body = "retained archive" });
+        var nextLive = new WorldDiplomacyDocument { DocumentId = "live", AuthorKingdomId = "live", Day = 9, IsReadyForPublication = true };
+        vanishedStorage.Documents.Add(nextLive);
+        int liveAttempts = 0;
+        WorldDiplomacyPropagationApplication.RetryDeferred(vanishedStorage, id => id == "live", _ => liveAttempts++, _ => { });
+        Test.True(liveAttempts == 0 && vanishedStorage.Documents.Take(8).All(x => x.PropagationCompleted && x.Body == "retained archive"),
+            "vanished authors retire only the capped eight propagation tickets, retaining published archive");
+        WorldDiplomacyPropagationApplication.RetryDeferred(vanishedStorage, id => id == "live", _ => liveAttempts++, _ => { });
+        Test.True(liveAttempts == 1, "next daily batch reaches valid document behind vanished authors");
+        WorldDiplomacyPropagationApplication.RetryDeferred(vanishedStorage, _ => throw new InvalidOperationException("resolver transient"), _ => liveAttempts++, _ => { });
+        Test.True(!nextLive.PropagationCompleted && liveAttempts == 1, "resolver exception keeps live propagation retryable rather than claiming author disappeared");
+
         DirectoryInfo root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "AnimusForge.csproj"))) root = root.Parent;
         Test.True(root != null, "repository located for propagation lifecycle boundary");
