@@ -262,11 +262,19 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 					port.ResolveDocument(command.SourceDocumentId));
 			if (!finalLiveIntents.Contains(intent, StringComparer.OrdinalIgnoreCase))
 			{
+				// Recover the concrete war admission failure only on rejection. Keep the
+				// legal-list guard when the failure is contextual rather than world state.
+				string rejectionReason = "final_live_legal_action_guard";
+				if (intent == "declare_war"
+					&& orchestration.TryGetDiplomaticStateViolation(intent, author, target, out string warBlockReason)
+					&& !string.IsNullOrWhiteSpace(warBlockReason))
+					rejectionReason += ":" + warBlockReason;
 				port.Log("final diplomacy action rejected document=" + command.DocumentId
 					+ " round=" + command.RoundId + " author=" + author + " target=" + target
 					+ " intent=" + intent + " offer=" + input.RespondingToOfferDocumentId
-					+ " offerAction=" + input.RespondingToOfferActionId + " legal=" + string.Join(",", finalLiveIntents));
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_legal_action_guard");
+					+ " offerAction=" + input.RespondingToOfferActionId + " legal=" + string.Join(",", finalLiveIntents)
+					+ " reason=" + rejectionReason);
+				orchestration.SuppressInvalidDocumentBeforePropagation(document, rejectionReason);
 				return;
 			}
 			if (!playerRelease && round?.ResultSettlementPending == true && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target))

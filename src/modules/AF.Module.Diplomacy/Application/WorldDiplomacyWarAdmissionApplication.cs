@@ -35,7 +35,7 @@ internal static class WorldDiplomacyWarAdmissionApplication
         int day = port.CurrentDay;
         int protectionDays = port.PeaceProtectionDays;
         if (protectionDays > 0 && port.TryGetLastPeaceDay(out int lastPeaceDay) && day - lastPeaceDay < protectionDays)
-        { reason = "仍处于和平保护期"; return false; }
+        { reason = "仍处于和平保护期，剩余" + (protectionDays - (day - lastPeaceDay)) + "天"; return false; }
         return true;
     }
 
@@ -51,9 +51,11 @@ internal static class WorldDiplomacyWarAdmissionApplication
         int day = port.CurrentDay;
         int cooldownDays = port.OffensiveWarCooldownDays;
         if (port.TryGetLastOffensiveWarDay(out int lastWarDay) && day - lastWarDay < cooldownDays)
-        { reason = "主动战争冷却尚未结束"; return false; }
-        if (port.ActiveWars >= port.MaxConcurrentOffensiveWars)
-        { reason = "当前同时战争数量过多"; return false; }
+        { reason = "主动战争冷却尚未结束，剩余" + (cooldownDays - (day - lastWarDay)) + "天"; return false; }
+        int activeWars = port.ActiveWars;
+        int maxWars = port.MaxConcurrentOffensiveWars;
+        if (activeWars >= maxWars)
+        { reason = "当前同时战争数量过多（" + activeWars + "/" + maxWars + "，包含被动战争），不能新增主动战争"; return false; }
         return true;
     }
 }

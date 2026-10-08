@@ -89,6 +89,21 @@ internal static class WarAdmissionReplay
         Test.True(WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref boundary, out _), "protection and cooldown expire exactly at their boundary");
         var threatOnly = new Port { PendingThreatDecision = true, Wars = 2 };
         Test.True(WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref threatOnly, out _) && threatOnly.Scans == 0, "threat query never reads pacing state or scans wars");
+        var cooldown = new Port { WarDay = 41 };
+        Test.True(!WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref cooldown, out string cooldownReason)
+            && cooldownReason.Contains("剩余9天") && cooldown.Scans == 0, "cooldown explains remaining days without scanning wars");
+        var peace = new Port { PeaceDay = 41 };
+        Test.True(!WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref peace, out string peaceReason)
+            && peaceReason.Contains("剩余9天"), "peace protection explains remaining days");
+        var capacity = new Port { Wars = 3 };
+        Test.True(!WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref capacity, out string capacityReason)
+            && capacityReason.Contains("3/2") && capacityReason.Contains("被动战争") && capacity.Scans == 1,
+            "capacity explains all active wars using one scan");
+        Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(
+            "final_live_legal_action_guard:declare_war_not_legal:" + cooldownReason) == "宣战未执行：" + cooldownReason,
+            "nested legal guard exposes the concrete war reason");
+        Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("final_live_legal_action_guard").Contains("可执行"),
+            "context-only guard retains fallback");
         RunStateWiring();
         RunThreatWiring();
     }
