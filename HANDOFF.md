@@ -1,3 +1,9 @@
+# 当前交接：自由对话单行历史与退出动作修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `3238cf542`：删除/编辑单行匹配失败不会重建当天全部Native缓存；整日开发编辑保持。退出事件只标记动作就绪，后续Mission Tick检查退出收尾及原场景/会话/Agent再执行；立即重开、读档和离场取消旧待执行动作。
+- 历史492、退出生命周期21、移动19、原双API/Bootstrap/双接缝PASS；两个旧版行为反例和历史变异均到达预期失败。实机与玩家闪退堆栈未验，未部署/打包/推送；立即F重开撤销尚未执行的旧命令，需重新下达。
+- [唯一台账与代码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-history-and-scene-exit-20261008)，证据 `artifacts/native-history-scene-exit-20261008/verification-receipt.json`；回滚仅 `git revert 3238cf542`。以下其他包交接与作者提交均保留。
+
 # 当前交接：政变大厅原版攻守部署点（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `4df26683b`：政变大厅加载siege层，玩家/攻方与守军使用原版attacker/defender标记，不限制视线/玩家距离；国王导航高度修正，生成后偏位单次纠正，失败技术退出。保留政变结算，不移植原版攻城MapEvent控制器。
