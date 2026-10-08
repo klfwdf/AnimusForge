@@ -1,3 +1,9 @@
+# 当前交接：终端地图图标尺寸兼容（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `a97b3067e`：保留128×128 PNG，将runtime逻辑图标固定40×40；源Brush/fallback明确StretchToTarget、Contain和居中，缓存命中也修正尺寸策略。原导航位置/开关/点击/纹理缓存保持，不新增Tick。
+- 真实生产类+原版控件回放16、旧版原尺寸模板失败反例、资源映射、隔离双API/Bootstrap/接缝、两实际DLL40×40检查PASS。实机与玩家具体模板/缩放/模组组合未验，未部署/打包/推送；不能据图确定唯一触发方。
+- [唯一台账与代码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-map-icon-size-20261008)，证据 `artifacts/terminal-map-icon-size-20261008/verification-receipt.json`；回滚仅 `git revert a97b3067e`。其他会话外交/生图dirty保留且未纳入本候选。
+
 # 当前交接：玩家宗主主动释放直属臣属国（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `8df12216e`：聊天专用释放标签与玩家宣言 `release_subject` 接通；无需臣属同意/独立外交权。重验玩家国王、直属方向及提交时条约凭证，重复/迟到/改订和重新立约受保护；保留其他条约与既有战争。
