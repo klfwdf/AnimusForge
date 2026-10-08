@@ -8558,3 +8558,34 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原统一Debug构建双API1.3.15.110062 / 1.4.6.115628、Bootstrap、两DLL接缝PASS，`artifacts/gallery-theme-truncation-20261008/build.log`。两版实际DLL各7主题专项检查PASS：完整42字符句子、1200字符主题、标记清理、旧标题/行动限额、元数据从图片prompt剥离及无元数据兼容；`metadata-13.log/14.log`。旧游戏安装DLL同测EXPECTED FAIL“expected42 actual36”，`baseline-installed.log`。初次未加载依赖的反射调用失败已补齐既有C# resolver，记录在`old-metadata.log`，不把环境失败当旧源码反例。
 - XML解析、Clip/Inner相对路径、Scrollbar模板路径沿用原列表、唯一日期/主题绑定、有界视口、正文CoverChildren PASS，`xml-check.log`；原画廊已使用InputUsageMask.All接收滚轮。源码前后hash一致、3DLL SHA及结果绑定`verification-receipt.json`，`git diff --check`PASS。每次导演解析/画廊选择按需运行，不新增Tick扫描/反射/网络。未运行既有Illustrator离线审计脚本或调用付费API。
 - NOT-RUN：真实Gauntlet换行/滚轮/拖拽/缩放与分辨率、真实导演/生图；未部署/打包/推送。候选`bin/Debug/single_module_artifacts`，源码回滚仅`git revert 152c93d85`，保留其他作者新闻采集改动。
+
+
+<a id="player-subject-release-20261008"></a>
+
+## 玩家宗主主动释放直属臣属国（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 需求：玩家作为宗主国当前国王，通过聊天或玩家宣言主动终止直属臣属条约并让该国独立；无需臣属同意，也无需臣属先有独立外交权。此条取代历史臣属审查关于“尚无释放执行链”的结论；臣属单方面叛离和其他历史风险不在本次完成范围。
+- 产品提交 `8df12216edda73f5a5237f42917078403b4ca178`；本地意图检查点 `06c005b`。新增专用 `[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=...;agreement=...]`、绑定型 `release_subject` 宣言意图；自由对话、场景喊话、信使复用现有作用域和标签执行器，只有当前NPC为目标国家当前国王时提供运行时凭证。实际关系变更由 `VassalageBehavior.TryReleasePlayerSubject` 所属owner执行。
+- 创建玩家公文时捕获作者与条约凭证，异步分析完成后重验。旧 `AgreementId` 仍是国家对；新增有界 `ReleaseIdentity` 随原有条约JSON保存，新立约/改订均换凭证。缺少凭证的旧公文不能释放当前条约；旧正常条约加载时补凭证。枚举、程序集及存档键身份保持，沿用世界外交分块与臣属字典flatten边界，没有新存档键。
+- 释放复用 `BreakAgreement` 的关系、独立度、贡赋、保护战争、待同步与政策清理；本轮真实游戏清理副作用未验。新“宗主跟随臣属战争”待执行任务绑定源条约凭证，释放精准移除该源任务；执行前重验来源，保留其他臣属任务及已存在的原版战争。旧无来源队列仅在待执行时按当前合法臣属战争重验。
+- 正文与后处理规则同步更新；不把BreakAlliance/Alliance当释放。聊天发布确定的公开解除声明，不外泄私聊正文；确认结果写共同外交历史和个人AFEF，成功回执不因后续记忆回调异常消失。个人事实写入故障仅记录诊断，本包未新增其重试队列；外交历史沿原有重试owner处理。
+- 性能：常规准入/释放按臣属ID字典查询；手动公文创建时枚举现存条约并捕获有界token，释放清理仅运行一次。无新增Tick任务、后台游戏对象读取或轮询。旧队列来源校验只在现有待执行工作入口运行；主线程适配器执行前验证 `TWParallel.IsMainThread()`。
+- PASS：真实标签/分析/执行/公文回放46项（包含在外交全量3995项内）；链接生产释放owner28项（Campaign及既有BreakAgreement为替身，不能据此声称已验实际清理）；路由89、记忆18；PersistenceChunkReplayTests、chunk-only规范19个分块键/47个flatten字典、任务差异格式校验。原 `build_single_module.ps1` 最终1.3（参考v1.3.15）/1.4（参考v1.4.6）/Bootstrap及两实际DLL接缝门禁PASS；17个任务产品文件SHA与构建前快照一致。完整命令及DLL快照：`artifacts/player-subject-release-20261008/receipt.json`、`build-final.log`、`dll/`。
+- 保留项：全仓代码图校验遇到非本任务 `ModuleFrameworkRuntime.cs` 来源记录过期而FAIL，未改写其他owner坐标冒充全仓通过。实际玩家存档、实际LLM标签输出、场景/信使延迟送达和完整游戏通知/贡赋/政策清理未验；未Stage、部署、打包或推送。保护其他会话生图/UI/地图图标与NuGet改动。
+- 回滚仅对产品提交执行 `git revert 8df12216edda73f5a5237f42917078403b4ca178`；本记录提交单独回滚。未复写历史或回滚他人改动。
+
+本次代码责任与定位（源码修订统一为 `8df12216edda73f5a5237f42917078403b4ca178`；原有清理仍归同一Campaign owner，未迁移其完整实现）：
+
+|源码路径|一基行号|符号/消费者|已覆盖责任|
+|---|---|---|---|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.SubjectRelease.cs`|10–33|`internal string GetPlayerSubjectReleaseToken`|玩家国王及直属关系准入；无独立外交权检查|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.SubjectRelease.cs`|35–54|`internal bool TryReleasePlayerSubject`|真实臣属owner调用BreakAgreement并读回关系|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.SubjectRelease.cs`|56–73|`private bool IsSubjectWarSyncCurrent`|新任务按国家ID及条约凭证查询；旧队列仅在有待处理工作时重验来源|
+|`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SubjectRelease.cs`|35–78|`internal string SubmitPlayerSubjectRelease`|三渠道共同标签输入、定向校验、实际回执、公文及个人事实|
+|`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SubjectRelease.cs`|80–105|`internal bool ValidatePlayerSubjectRelease`|宣言作者与提交时条约凭证重验；实际释放执行|
+|`src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs`|65–66|`case "RELEASE_SUBJECT"`|共同后处理标签解析与可见标签剥离|
+|`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs`|240–250|`bool playerRelease =`|仅已绑定的玩家释放动作绕过目标独立外交权|
+|`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs`|2442–2443|`if (isPlayerAuthored) created.SubjectReleaseTokens`|公文创建时捕获快照；异步模型无权填写凭证|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs`|57–59|`public string ReleaseIdentity`|有界唯一凭证保存；保留旧AgreementId、enum及存档键|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs`|4119–4121|`existing.ReleaseIdentity =`|改订条约旋转凭证；旧结果不落到新约|
+|`src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs`|5899–5907|`bool sourceAgreementMatches =`|清除由本条约产生的宗主待参战工作|

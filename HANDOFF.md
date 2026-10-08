@@ -1,3 +1,9 @@
+# 当前交接：玩家宗主主动释放直属臣属国（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `8df12216e`：聊天专用释放标签与玩家宣言 `release_subject` 接通；无需臣属同意/独立外交权。重验玩家国王、直属方向及提交时条约凭证，重复/迟到/改订和重新立约受保护；保留其他条约与既有战争。
+- 释放专项46、外交全量3995、链接owner28、路由89、记忆18、存档分块/规范、最终原双API/Bootstrap/双接缝PASS；17产品输入匹配构建快照。完整游戏清理/真实存档/真实LLM未验；全仓代码图另有非本任务来源记录过期。未部署/打包/推送，其他会话改动保留。
+- [唯一台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-subject-release-20261008)；[现有全仓代码图（其过期项未修）](docs/architecture/af-framework-code-scope.md)。证据 `artifacts/player-subject-release-20261008/receipt.json`；候选DLL在该目录 `dll/`。仅 `git revert 8df12216e` 回滚产品；下方交接是历史交付记录，不构成部署/推送授权。
+
 # 当前交接：画廊基于本图重绘与本地默认图刷新（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `f21c03a3b`：画廊新增重绘（基于本图），复用单图编辑、不调导演，关闭画廊继续后台保存；默认图点击重读玩家覆盖PNG并刷新匹配的空闲插画面板，每次发布唯一纹理名。用户确认保留同名JSON，不处理无JSON/改名图的主题绑定。
