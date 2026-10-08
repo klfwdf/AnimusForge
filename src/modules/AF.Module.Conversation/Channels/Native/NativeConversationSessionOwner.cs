@@ -139,9 +139,10 @@ internal sealed class NativeConversationSessionOwner
         try { output.Append("nativeHistoryKeys=").Append(_history.Count).Append(" nativeHistoryEntries=").Append(_history.Values.Sum(x=>x?.Count ?? 0)).Append(" nativeDedupKeys=").Append(_recordedDialog.Count); }
         finally { Monitor.Exit(_gate); }
     }
-    internal string SyncDay(string key, int dayIndex, IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries, IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries, ConversationSpeechTextOptions options = default)
+    internal string SyncDay(string key, int dayIndex, IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries, IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries, ConversationSpeechTextOptions options = default, bool completeDaySnapshot = true)
     {
-List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(previousEntries, dayIndex);
+        // UI line edits supply a delta, not an authoritative replacement for the whole day.
+			List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(previousEntries, dayIndex);
 			List<AnimusForgeDialogueHistoryEntry> newSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(currentEntries, dayIndex);
 			List<AnimusForgeDialogueHistoryEntry> removed = BuildNativeConversationHistoryEditDelta(oldSnapshot, newSnapshot, options);
 			List<AnimusForgeDialogueHistoryEntry> added = BuildNativeConversationHistoryEditDelta(newSnapshot, oldSnapshot, options);
@@ -163,6 +164,7 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 				int pairedCount = Math.Min(removed.Count, added.Count);
 				List<Tuple<int, AnimusForgeDialogueHistoryEntry>> replacements = new List<Tuple<int, AnimusForgeDialogueHistoryEntry>>();
 				List<int> removalIndexes = new List<int>();
+				List<int> missingReplacementIndexes = new List<int>();
 				HashSet<int> reservedIndexes = new HashSet<int>();
 
 				if (hadAffectedDayEntries)
@@ -173,29 +175,27 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 						if (index < 0)
 						{
 							exactMatchFailed = true;
-							break;
+							missingReplacementIndexes.Add(i);
+							continue;
 						}
 						reservedIndexes.Add(index);
 						replacements.Add(Tuple.Create(index, added[i]));
 					}
 
-					if (!exactMatchFailed)
+					for (int i = pairedCount; i < removed.Count; i++)
 					{
-						for (int i = pairedCount; i < removed.Count; i++)
+						int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes, options);
+						if (index < 0)
 						{
-							int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes, options);
-							if (index < 0)
-							{
-								exactMatchFailed = true;
-								break;
-							}
-							reservedIndexes.Add(index);
-							removalIndexes.Add(index);
+							exactMatchFailed = true;
+							continue;
 						}
+						reservedIndexes.Add(index);
+						removalIndexes.Add(index);
 					}
 				}
 
-				if (exactMatchFailed)
+				if (exactMatchFailed && completeDaySnapshot)
 				{
 					working = RebuildNativeConversationSessionHistoryDayForDailyMemoryEdit(existing, newSnapshot, dayIndex);
 					rebuilt = true;
@@ -217,6 +217,15 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 						working.RemoveAt(index);
 						removedCount++;
 					}
+					// A missing old row may have been trimmed. Add its edited replacement without
+					// deleting any unrelated rows; deletion of an absent row is a no-op.
+					foreach (int index in missingReplacementIndexes)
+					{
+						AnimusForgeDialogueHistoryEntry entry = CloneNativeConversationHistoryEntry(added[index]);
+						entry.EventSequence = _nextEventSequence();
+						working.Add(entry);
+						addedCount++;
+					}
 					int firstAddedIndex = hadAffectedDayEntries ? pairedCount : 0;
 					for (int i = firstAddedIndex; i < added.Count; i++)
 					{
@@ -237,7 +246,7 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 					_history[key] = working;
 				}
 			}
-        return "replaced=" + replacedCount + " removed=" + removedCount + " added=" + addedCount + " rebuilt=" + rebuilt;
+        return "replaced=" + replacedCount + " removed=" + removedCount + " added=" + addedCount + " rebuilt=" + rebuilt + " completeDaySnapshot=" + completeDaySnapshot;
     }
 private AnimusForgeDialogueHistoryEntry CloneNativeConversationHistoryEntry(AnimusForgeDialogueHistoryEntry entry)
 	{

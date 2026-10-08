@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
+
+internal class Mission { public static Mission Current; public List<Agent> Agents=new(); public MissionMode Mode; public bool IsMissionEnding; }
+internal enum MissionMode { Normal, Conversation }
+internal class Campaign { public static Campaign Current; public ConversationManager ConversationManager=new(); }
+internal class ConversationManager { public bool IsConversationInProgress;public bool IsConversationFlowActive;public List<Agent> ConversationAgents=new(); }
+internal class Agent { public int Index;public bool Active=true;public bool IsActive()=>Active; }
+internal class CharacterObject { }
+internal class NpcDataPacket {public int AgentIndex;}
+internal class SceneSummonPromptTarget { }
+internal class SceneGuidePromptTarget { }
+internal static class SceneMovementController {
+ public static List<SceneSummonPromptTarget> CloneSceneSummonPromptTargets(List<SceneSummonPromptTarget> x)=>x;
+ public static List<SceneGuidePromptTarget> CloneSceneGuidePromptTargets(List<SceneGuidePromptTarget> x)=>x;
+}
+internal static class Logger {public static void Log(string area,string text) {}}
+internal class ShoutBehavior {
+ public static ShoutBehavior CurrentInstance;
+ private readonly object _pendingNativeSceneMechanismActionLock=new();
+ private readonly Queue<PendingNativeSceneMechanismAction> _pendingNativeSceneMechanismActions=new();
+ private volatile bool _nativeSceneMechanismActionsReady;
+ private static long _nativeSceneMechanismConversationGeneration;
+ private static long _nativeIllustrationHistoryBoundary, _currentConversationEventSequence;
+ private object _shoutTradeNativeManager, _shoutTradeNativeMission, _shoutTradeNativeAgent;
+ private ConcurrentQueue<Action> _mainThreadActions=new();
+ public int Executed,Fallbacks,CloseCount;public bool Handle=true;
+ private static bool ContainsOpenLordsHallActionTag(string text)=>text.Contains("OPEN_LORDS_HALL");
+ private static string ExtractSceneMechanismActionTagsForScene(string text)=>text.Contains("[ACTION:")?text:"";
+ private static string StripSceneMechanismActionTagsForScene(string text)=>"visible";
+ private static NpcDataPacket CloneNpcDataPacket(NpcDataPacket n)=>new(){AgentIndex=n.AgentIndex};
+ private static List<NpcDataPacket> CloneNpcDataSnapshot(List<NpcDataPacket> n)=>n;
+ private static void ShowNativeSceneMechanismPendingExitPrompt(int count) { }
+ private static void CloseNativeConversationInput(bool clearSessionHistory) {CurrentInstance.CloseCount++;}
+ private bool TryExecuteNativeSceneMechanismActionTagsDirectly(NpcDataPacket n,List<SceneSummonPromptTarget> s,List<SceneGuidePromptTarget> g,string t) {Executed++;return Handle;}
+ private void EnqueueSpeechLineWithOptions(NpcDataPacket n,string tags,List<NpcDataPacket> context,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> s,List<SceneGuidePromptTarget> g,object scope=null) {Fallbacks++;}
+ private void TryDrainNativeConversationQueuedActions(string reason) {while(_mainThreadActions.TryDequeue(out var action))action();}
+ @@METHODS@@
+ @@BASELINE_TICK@@
+ public void Begin() {CaptureNativeIllustrationHistoryBoundary();Campaign.Current.ConversationManager.IsConversationInProgress=true;Campaign.Current.ConversationManager.IsConversationFlowActive=true;}
+ public bool Queue(string tags="[ACTION:SCENE_FOLLOW]") {string content=tags;return TryQueueNativeSceneMechanismActionAfterConversationExit(new(){AgentIndex=7},new(),new(),new(),ref content);}
+ public void EndEvent() {Campaign.Current.ConversationManager.IsConversationInProgress=false;OnNativeConversationEnded(Array.Empty<CharacterObject>());}
+ public void FinishCleanup() {Campaign.Current.ConversationManager.IsConversationFlowActive=false;Campaign.Current.ConversationManager.ConversationAgents.Clear();Mission.Current.Mode=MissionMode.Normal;}
+ public void Tick()=>TickPendingNativeSceneMechanismActions();
+ public void Reset(string reason)=>ClearPendingNativeSceneMechanismActions(reason);
+ public void OldWorkAfterBegin() {var old=_pendingNativeSceneMechanismActions.Peek();Begin();FinishCleanup();Campaign.Current.ConversationManager.IsConversationInProgress=false;ExecutePendingNativeSceneMechanismAction(old,"detached_late_work");}
+}
+internal static class Program {
+ static int Passed;
+ static void Check(bool ok,string label) {if(!ok)throw new Exception(label);Passed++;Console.WriteLine("PASS "+label);}
+ static ShoutBehavior New() {Mission.Current=new();Mission.Current.Agents.Add(new(){Index=7});Campaign.Current=new();var b=new ShoutBehavior();ShoutBehavior.CurrentInstance=b;b.Begin();return b;}
+ static void End(ShoutBehavior b) {b.EndEvent();b.FinishCleanup();}
+ static void Main() {
+  var b=New();b.Queue();Campaign.Current.ConversationManager.ConversationAgents.Add(Mission.Current.Agents[0]);b.EndEvent();
+  Check(b.Executed==0 && b.Fallbacks==0,"native-end-event-does-not-execute-or-drain");
+  b.Tick();Check(b.Executed==0,"native-flow-cleanup-blocks-actions");
+  Campaign.Current.ConversationManager.IsConversationFlowActive=false;b.Tick();Check(b.Executed==0,"native-agent-list-cleanup-blocks-actions");
+  Campaign.Current.ConversationManager.ConversationAgents.Clear();Mission.Current.Mode=MissionMode.Conversation;b.Tick();Check(b.Executed==0,"native-mission-mode-cleanup-blocks-actions");
+  b.FinishCleanup();b.Tick();Check(b.Executed==1,"post-cleanup-tick-executes");b.Tick();b.EndEvent();b.Tick();Check(b.Executed==1,"deferred-action-executes-once");
+  b=New();b.Queue();End(b);b.Begin();End(b);b.Tick();Check(b.Executed==0,"esc-then-immediate-f-cancels-old-action");
+  b=New();b.Queue();End(b);Mission.Current=new();Mission.Current.Agents.Add(new(){Index=7});b.Tick();Check(b.Executed==0,"same-index-new-mission-rejects-old-action");
+  b=New();b.Queue();End(b);Mission.Current.Agents[0]=new(){Index=7};b.Tick();Check(b.Executed==0,"same-index-replacement-agent-rejected");
+  b=New();b.Queue();End(b);Mission.Current.Agents[0].Active=false;b.Tick();Check(b.Executed==0,"inactive-speaker-rejected");
+  b=New();b.Queue();End(b);Mission.Current.IsMissionEnding=true;b.Tick();Check(b.Executed==0,"ending-mission-rejected");
+  b=New();b.Queue();End(b);Campaign.Current=new();b.Tick();Check(b.Executed==0,"loaded-campaign-rejects-old-action");
+  b=New();b.Queue();End(b);Campaign.Current.ConversationManager=new();b.Tick();Check(b.Executed==0,"replaced-conversation-owner-rejected");
+  b=New();b.Queue();End(b);b.Reset("loaded_save");b.Tick();Check(b.Executed==0,"save-reset-clears-armed-actions");
+  b=New();b.Queue();End(b);b.Reset("mission_ended");b.Tick();Check(b.Executed==0,"mission-reset-clears-armed-actions");
+  b=New();b.Queue();b.Tick();Check(b.Executed==0,"active-conversation-unarmed-actions-held");
+  b=New();b.Queue();b.OldWorkAfterBegin();Check(b.Executed==0,"new-conversation-generation-rejects-detached-old-work");
+  b=New();b.Queue();b.Handle=false;End(b);b.Tick();b.Tick();Check(b.Executed==1 && b.Fallbacks==0,"unhandled-action-does-not-retry-with-unbound-epoch");
+  b=New();b.Queue();b.Queue();b.Queue();End(b);b.Tick();Check(b.Executed==2,"per-tick-action-budget");b.Tick();Check(b.Executed==3,"remaining-action-next-tick");
+  b=New();Check(!b.Queue("[ACTION:OPEN_LORDS_HALL]"),"lords-hall-immediate-channel-preserved");
+  Console.WriteLine("NativeSceneExitLifecycle PASS="+Passed+" FAIL=0 LIVE=NOT_RUN");
+ }
+}

@@ -330,6 +330,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				{
 					_parent.DrainMainThreadActionsForMissionTick();
 				}
+				_parent.TickPendingNativeSceneMechanismActions();
 				// Before the conversation early-return below so a native conversation ends the session.
 				_parent.TickPresentationSession(dt);
 				using (FreezeWatchdog.Scope("ShoutMissionBehavior.TryTriggerPendingProactiveSceneOpening"))
@@ -1774,6 +1775,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Queue<PendingNativeSceneMechanismAction> _pendingNativeSceneMechanismActions = new Queue<PendingNativeSceneMechanismAction>();
 
+	private volatile bool _nativeSceneMechanismActionsReady;
+
+	private static long _nativeSceneMechanismConversationGeneration;
+
 	private const float NativeSceneTauntFightDelaySeconds = 10f;
 
 	private readonly object _pendingNativeSceneTauntFightLock = new object();
@@ -2066,6 +2071,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 			}
 			ClearPendingCurrentAfefFacts();
+			ClearPendingNativeSceneMechanismActions("loaded_save:" + (reason ?? ""));
 			_staringAgents.Clear();
 			_staringAgentAnchors.Clear();
 			_staringUseConversationAgents.Clear();
@@ -7562,6 +7568,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static void CaptureNativeIllustrationHistoryBoundary()
 	{
+		Interlocked.Increment(ref _nativeSceneMechanismConversationGeneration);
+		CurrentInstance?.ClearPendingNativeSceneMechanismActions("conversation_started");
 		Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, Interlocked.Read(ref _currentConversationEventSequence));
 	}
 
@@ -7573,7 +7581,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, Interlocked.Read(ref _currentConversationEventSequence));
 		CloseNativeConversationInput(clearSessionHistory: false);
 		ExecutePendingNativeSceneMechanismActionsAfterConversationExit("native_conversation_ended");
-		TryDrainNativeConversationQueuedActions("native_conversation_ended");
+		// EndConversation still owns its agent list and handler until this event returns.
 	}
 
 	private void OnMissionStarted(IMission mission)
@@ -10164,6 +10172,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries,
 		string reason)
 	{
+		SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(targetHero, targetCharacter, npcName, dayIndex, previousEntries, currentEntries, reason, completeDaySnapshot: true);
+	}
+
+	public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		string npcName,
+		int dayIndex,
+		IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries,
+		IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries,
+		string reason,
+		bool completeDaySnapshot)
+	{
 		try
 		{
 			if (targetHero == null)
@@ -10185,7 +10206,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return;
 			}
 
-			string result = _nativeSessionOwner.SyncDay(key, dayIndex, previousEntries, currentEntries, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
+			string result = _nativeSessionOwner.SyncDay(key, dayIndex, previousEntries, currentEntries, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()), completeDaySnapshot);
 			if (!string.IsNullOrEmpty(result)) Logger.Log("NativeConversationHistory", "manual_daily_memory_sync key=" + key + " day=" + dayIndex + " " + result + " reason=" + (reason ?? ""));
 		}
 		catch (Exception ex)
@@ -12419,17 +12440,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private sealed class PendingNativeSceneMechanismAction
 	{
-		public NpcDataPacket Speaker;
+		public Mission OriginMission;
 
-		public List<NpcDataPacket> Context;
+		public Campaign OriginCampaign;
+
+		public ConversationManager OriginManager;
+
+		public Agent SpeakerAgent;
+
+		public long ConversationGeneration;
+
+		public NpcDataPacket Speaker;
 
 		public List<SceneSummonPromptTarget> SummonTargets;
 
 		public List<SceneGuidePromptTarget> GuideTargets;
 
 		public string Tags;
-
-		public long CreatedUtcTicks;
 	}
 
 	private sealed class PendingNativeSceneTauntFight
@@ -12462,14 +12489,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		content = StripSceneMechanismActionTagsForScene(content);
+		Mission mission = Mission.Current;
 		PendingNativeSceneMechanismAction pending = new PendingNativeSceneMechanismAction
 		{
+			OriginMission = mission,
+			OriginCampaign = Campaign.Current,
+			OriginManager = Campaign.Current?.ConversationManager,
+			SpeakerAgent = mission?.Agents?.FirstOrDefault(a => a != null && a.Index == npc.AgentIndex),
+			ConversationGeneration = Interlocked.Read(ref _nativeSceneMechanismConversationGeneration),
 			Speaker = CloneNpcDataPacket(npc),
-			Context = CloneNpcDataSnapshot(allNpcData),
 			SummonTargets = SceneMovementController.CloneSceneSummonPromptTargets(sceneSummonTargets),
 			GuideTargets = SceneMovementController.CloneSceneGuidePromptTargets(sceneGuideTargets),
-			Tags = text,
-			CreatedUtcTicks = DateTime.UtcNow.Ticks
+			Tags = text
 		};
 		int pendingCount;
 		lock (_pendingNativeSceneMechanismActionLock)
@@ -12496,27 +12527,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ExecutePendingNativeSceneMechanismActionsAfterConversationExit(string reason)
 	{
-		List<PendingNativeSceneMechanismAction> pendingActions = new List<PendingNativeSceneMechanismAction>();
+		// The native event precedes agent-list clearing, flow deactivation and handler uninstall.
+		// Arm only: execute from a later Mission Tick after all native cleanup has returned.
 		lock (_pendingNativeSceneMechanismActionLock)
 		{
-			while (_pendingNativeSceneMechanismActions.Count > 0)
-			{
-				pendingActions.Add(_pendingNativeSceneMechanismActions.Dequeue());
-			}
+			_nativeSceneMechanismActionsReady = _pendingNativeSceneMechanismActions.Count > 0;
 		}
-		if (pendingActions.Count == 0)
+	}
+
+	private void TickPendingNativeSceneMechanismActions()
+	{
+		if (!_nativeSceneMechanismActionsReady)
 		{
 			return;
 		}
-		foreach (PendingNativeSceneMechanismAction pending in pendingActions)
+		Mission mission = Mission.Current;
+		ConversationManager manager = Campaign.Current?.ConversationManager;
+		if (manager?.IsConversationInProgress == true || manager?.IsConversationFlowActive == true
+			|| manager?.ConversationAgents?.Count > 0 || mission?.Mode == MissionMode.Conversation)
 		{
-			_mainThreadActions.Enqueue(delegate
-			{
-				ExecutePendingNativeSceneMechanismAction(pending, reason);
-			});
+			return;
 		}
-		Logger.Log("ShoutBehavior", "[NativeConversation] queued deferred scene mechanism actions after manual exit count=" + pendingActions.Count + " reason=" + (reason ?? ""));
-		TryDrainNativeConversationQueuedActions("scene_mechanism_after_conversation_exit");
+		// Bound work per tick. No polling/scanning of agents when there is no pending action.
+		for (int i = 0; i < 2; i++)
+		{
+			PendingNativeSceneMechanismAction pending;
+			lock (_pendingNativeSceneMechanismActionLock)
+			{
+				if (!_nativeSceneMechanismActionsReady || _pendingNativeSceneMechanismActions.Count == 0)
+				{
+					_nativeSceneMechanismActionsReady = false;
+					return;
+				}
+				pending = _pendingNativeSceneMechanismActions.Dequeue();
+				_nativeSceneMechanismActionsReady = _pendingNativeSceneMechanismActions.Count > 0;
+			}
+			ExecutePendingNativeSceneMechanismAction(pending, "mission_tick_after_native_exit");
+		}
 	}
 
 	private void ExecutePendingNativeSceneMechanismAction(PendingNativeSceneMechanismAction pending, string reason)
@@ -12527,13 +12574,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
-			if (TryExecuteNativeSceneMechanismActionTagsDirectly(pending.Speaker, pending.SummonTargets, pending.GuideTargets, pending.Tags))
+			Mission mission = Mission.Current;
+			ConversationManager manager = Campaign.Current?.ConversationManager;
+			if (mission == null || mission.IsMissionEnding || !ReferenceEquals(mission, pending.OriginMission)
+				|| !ReferenceEquals(Campaign.Current, pending.OriginCampaign) || !ReferenceEquals(manager, pending.OriginManager)
+				|| pending.ConversationGeneration != Interlocked.Read(ref _nativeSceneMechanismConversationGeneration)
+				|| manager?.IsConversationInProgress == true || manager?.IsConversationFlowActive == true
+				|| manager?.ConversationAgents?.Count > 0 || mission.Mode == MissionMode.Conversation
+				|| pending.SpeakerAgent == null || !pending.SpeakerAgent.IsActive()
+				|| !ReferenceEquals(pending.SpeakerAgent, mission.Agents?.FirstOrDefault(a => a != null && a.Index == pending.Speaker.AgentIndex)))
 			{
-				Logger.Log("ShoutBehavior", "[NativeConversation] executed deferred scene mechanism action agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? "") + " tags=" + pending.Tags.Replace("\r", "\\r").Replace("\n", "\\n"));
+				Logger.Log("ShoutBehavior", "[NativeConversation] discarded stale deferred scene mechanism action agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? ""));
 				return;
 			}
-			EnqueueSpeechLineWithOptions(pending.Speaker, pending.Tags, pending.Context, commitHistory: false, suppressStare: true, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, pending.SummonTargets, pending.GuideTargets, null);
-			Logger.Log("ShoutBehavior", "[NativeConversation] queued deferred scene mechanism action fallback agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? "") + " tags=" + pending.Tags.Replace("\r", "\\r").Replace("\n", "\\n"));
+			bool handled = TryExecuteNativeSceneMechanismActionTagsDirectly(pending.Speaker, pending.SummonTargets, pending.GuideTargets, pending.Tags);
+			Logger.Log("ShoutBehavior", "[NativeConversation] deferred scene mechanism action handled=" + handled + " agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? ""));
+			// Do not retry through the speech queue with epoch=0: it can outlive this mission/agent.
 		}
 		catch (Exception ex)
 		{
@@ -12550,6 +12606,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				count = _pendingNativeSceneMechanismActions.Count;
 				_pendingNativeSceneMechanismActions.Clear();
+				_nativeSceneMechanismActionsReady = false;
 			}
 			if (count > 0)
 			{
