@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using System.Linq;
+﻿using System;using System.Collections.Generic;using System.Linq;
 namespace AnimusForge;
 // Detached request-frequency values only; this is not an authoritative memory store.
 internal sealed class UncompressedMemoryPromptSnapshot {
@@ -115,7 +115,8 @@ internal static ConversationMessage BuildUncompressedMemoryConversationMessage(D
 		}
 		return new ConversationMessage
 		{
-			GameDayIndex = line.GameDayIndex,
+			PromptMemorySessionKey = line.MemorySessionKey ?? "",
+            GameDayIndex = line.GameDayIndex,
 			GameDate = line.GameDate ?? "",
 			GameHour = Math.Max(0, Math.Min(23, line.GameHour)),
 			Scene = ResolveMemoryLineSceneForPrompt(line, currentDay, currentScene),

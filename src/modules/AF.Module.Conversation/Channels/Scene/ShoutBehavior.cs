@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -3243,9 +3243,9 @@ public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExterna
 		return SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero, targetAgentIndex);
 	}
 
-	internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex)
+	internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, bool includeCurrentActiveSession = false)
 	{
-		return SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero, targetCharacter, npc, targetAgentIndex);
+		return SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero, targetCharacter, npc, targetAgentIndex, includeCurrentActiveSession);
 	}
 
 	// An NPC-initiated opening begins a new native conversation.  Its short-lived

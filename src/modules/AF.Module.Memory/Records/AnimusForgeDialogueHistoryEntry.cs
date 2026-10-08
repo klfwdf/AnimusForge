@@ -1,7 +1,10 @@
-namespace AnimusForge;
+﻿namespace AnimusForge;
 
 public sealed class AnimusForgeDialogueHistoryEntry
 {
+	// Request-only provenance; never part of the persisted/public JSON contract.
+	internal string PromptMemorySessionKey = "";
+
 	public long EventSequence { get; set; }
 
 	public int GameDayIndex { get; set; }

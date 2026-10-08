@@ -28,6 +28,17 @@ internal sealed class NativeAdmissionApplicationAdapter
     // At most one admitted opening payload. Its source is consumed only once; a
     // manual retry before a ready reply may reuse it within the same conversation.
     private NativeOpeningRetry _openingRetry;
+    private readonly NativeMeetingElapsedOwner _meetingElapsed = new();
+    internal void CaptureMeetingElapsedBoundary(NativeConversationAdmission admission, string key, Func<NativeMeetingElapsedSnapshot> capture)
+    {
+        if (!_isMainThread() || !IsNativeConversationAdmissionCurrent(admission, out _)) return;
+        admission.MeetingElapsedBoundary = _meetingElapsed.Capture(admission.Generation, admission.ConversationEpoch, key, capture);
+    }
+    internal void ConfirmMeetingElapsedBoundary(NativeConversationAdmission admission)
+    {
+        if (_isMainThread() && IsNativeConversationAdmissionCurrent(admission, out _))
+            _meetingElapsed.Confirm(admission.MeetingElapsedBoundary);
+    }
     private sealed class NativeOpeningRetry
     {
         internal readonly long Generation, Epoch;

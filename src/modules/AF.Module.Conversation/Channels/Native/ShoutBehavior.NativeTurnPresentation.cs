@@ -49,6 +49,7 @@ namespace AnimusForge;
                     // an opening retry before its raw tags can apply any effects,
                     // even when sanitizing those tags leaves no visible text.
                     _ports.RetireOpeningForAcceptedReply?.Invoke(admission);
+                    _ports.ConfirmMeetingElapsedBoundary?.Invoke(admission);
                     TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawMeetingTauntEscalated);
                     if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(postprocessReply))
                     {

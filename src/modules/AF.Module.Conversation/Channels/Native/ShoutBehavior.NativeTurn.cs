@@ -184,6 +184,7 @@ public partial class ShoutBehavior
     {
         ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync,
         RetireOpeningForAcceptedReply = NativeAdmissions.RetireOpeningForAcceptedReply,
+        ConfirmMeetingElapsedBoundary = NativeAdmissions.ConfirmMeetingElapsedBoundary,
         PromptDispatcher = _conversationGameThreadDispatcher,
         IsPromptOwnerAvailable = static () => MyBehavior.Instance != null,
         CapturePromptRoutingWork = static request =>

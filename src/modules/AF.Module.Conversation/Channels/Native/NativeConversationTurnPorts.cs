@@ -14,6 +14,7 @@ internal sealed class NativeConversationTurnPorts
     internal ApplyNativeConversationGameActionsOnMainThreadAsyncCapability ApplyNativeConversationGameActionsOnMainThreadAsync;
 
     internal Action<NativeConversationAdmission> RetireOpeningForAcceptedReply;
+    internal Action<NativeConversationAdmission> ConfirmMeetingElapsedBoundary;
     internal ConversationGameThreadDispatcher PromptDispatcher;
     internal Func<bool> IsPromptOwnerAvailable;
     internal Func<NativePromptCaptureRequest, SharedPromptRoutingWork> CapturePromptRoutingWork;
