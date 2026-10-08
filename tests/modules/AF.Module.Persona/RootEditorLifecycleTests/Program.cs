@@ -25,6 +25,7 @@ var saveSettings=new RootSaveSettingsFixture();DeveloperRootEditorController.Try
 DeveloperRootEditorController.TryPersistMcmSettings(null);DeveloperRootEditorController.TryPersistMcmSettings(new object());saveSettings.Throw=true;DeveloperRootEditorController.TryPersistMcmSettings(saveSettings);Check(saveSettings.Saves==2,"root MCM missing/null/throw retains original no-op/catch protocol");
 int clampReads=0;Check(DeveloperRootEditorController.ReadHistoryReturnCap(()=>null,v=>{clampReads++;return v;})==4&&clampReads==0&&DeveloperRootEditorController.ReadHistoryReturnCap(()=>throw new Exception("controlled settings unavailable"),v=>v)==4,"root history cap missing/exception default4 skips clamp");
 Check(DeveloperRootEditorController.ReadHistoryReturnCap(()=>8,v=>{clampReads++;return v+1;})==9&&clampReads==1,"root history cap captures then dispatches same narrow clamp once");
-Console.WriteLine($"PASS: {n} actual Root/NpcAction/Dialog editor lifecycle assertions (game/domain declarations fixture, no save/file mutation).");
+PersonaMenuLifecycleReplay.Run(Check);
+Console.WriteLine($"PASS: {n} actual Root/Persona/NpcAction/Dialog editor lifecycle assertions (game/domain declarations fixture, no save/file mutation).");
 
 internal sealed class RootSaveSettingsFixture {internal int Saves;internal bool Throw;public void Save(){Saves++;if(Throw)throw new Exception("controlled save unavailable");}}
