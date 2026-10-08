@@ -110,6 +110,8 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	public Action OnRegenerate;
 
 	public Action OnRegenerateWithPrompt;
+	// Retained only so recycled slots can clear an old inline edit callback.
+	public Action OnRegenerateBasedOnImage;
 
 	internal Action<bool> SetPromptEditing;
 
