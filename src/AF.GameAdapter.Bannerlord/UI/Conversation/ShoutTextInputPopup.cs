@@ -115,6 +115,7 @@ public sealed class ShoutTextInputPopup
 
 	public static bool CancelActiveForEscapeMenu()
 	{
+		if (ShoutBehavior.IsSceneIllustrationBusyForExternal) return false;
 		return CancelActiveForSystemMenu();
 	}
 
@@ -248,6 +249,7 @@ public sealed class ShoutTextInputPopup
 
 	private bool ShouldCancelForEscapeKey()
 	{
+		if (ShoutBehavior.IsSceneIllustrationBusyForExternal) return false;
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
 		{
 			return false;

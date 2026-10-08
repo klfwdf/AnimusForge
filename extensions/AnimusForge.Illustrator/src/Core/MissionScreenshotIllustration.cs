@@ -43,6 +43,7 @@ namespace AnimusForge.Illustrator.Core
                 ShoutBehavior.NotifySceneIllustrationChangedForExternal();
             }
             TickCapture();
+            if (_capture != null) return;
             // Campaign owns its existing hotkeys. Custom battles have no CampaignBehavior owner.
             if (Campaign.Current != null || Mission.Current == null || !IllustratorRuntime.IsEnabled()
                 || !ShoutBehavior.IsSceneIllustrationBattleForExternal || ShoutTextInputPopup.IsOpen
@@ -62,11 +63,17 @@ namespace AnimusForge.Illustrator.Core
             if (_capture?.Completion.IsCompleted != true) return;
             // Only native capture owns the camera gate. Each admitted scope keeps its own
             // immutable screenshots and continues independently on the existing bounded workers.
+            var capture = _capture;
+            var scope = _scope;
             _capture = null;
             Action open = _openProgress; _openProgress = null;
             ShoutBehavior.NotifySceneIllustrationChangedForExternal();
+            if (capture.Completion.IsCanceled)
+            { Finish(scope, capture, _statusMission, "本次取景已取消，未发送生图请求。"); return; }
+            if (capture.Completion.IsFaulted)
+            { Finish(scope, capture, _statusMission, "取景失败：" + capture.Completion.Exception.GetBaseException().Message); return; }
             try { open?.Invoke(); }
-            catch (Exception ex) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败：" + ex.Message)); }
+            catch (Exception ex) { Finish(scope, capture, _statusMission, "生图启动失败：" + ex.Message); }
         }
 
         private static void OpenCustomBattleInput()
@@ -74,7 +81,7 @@ namespace AnimusForge.Illustrator.Core
             Mission mission = Mission.Current;
             float speed = mission.Scene.TimeSpeed;
             Action restore = () => { if (ReferenceEquals(Mission.Current, mission) && mission.Scene != null) mission.Scene.TimeSpeed = speed; };
-            ShoutTextInputPopup.Show("战斗现场", "点击生图：采集当前与反向机位，再由导演推演一幅插画。", "当前模式只提供截图生图，不发送 NPC 喊话。", "",
+            ShoutTextInputPopup.Show("战斗现场", "点击生图：自由取景，Enter 截取一至两张，确认后由导演推演插画。", "当前模式只提供截图生图，不发送 NPC 喊话。", "",
                 _ => { restore(); InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 当前自定义战斗没有可用的交流链路。")); }, restore,
                 enableIllustration: true);
         }
@@ -106,19 +113,12 @@ namespace AnimusForge.Illustrator.Core
                 if (string.IsNullOrWhiteSpace(options.ApiBaseUrl)) throw new InvalidOperationException("请先配置生图 API。");
                 Agent player = mission.MainAgent;
                 Agent target = ShoutBehavior.GetScenePresentationWheelTargetForExternal();
-                Vec3 pivot = player.Position + Vec3.Up * 1.3f;
-                float subjectRadius = 1.6f;
-                if (target != null && target.IsActive() && target.Mission == mission && (target.Position - player.Position).Length < 30f)
-                {
-                    pivot = (player.Position + target.Position) * 0.5f + Vec3.Up * 1.3f;
-                    subjectRadius += (target.Position - player.Position).Length * 0.5f;
-                }
                 facts = CaptureFacts(player, target, battle);
                 dialogue = battle ? "" : ShoutBehavior.CaptureSceneIllustrationDialogueForExternal();
                 subject = "mission_" + Guid.NewGuid().ToString("N");
                 // Admit the lifetime before acquiring native resources; cleanup is transactional.
                 scope = new IllustrationScope(ScreenManager.TopScreen, "general", () => ScopeClosed(scope, capture, mission), campaignOwned: true, missionOwned: true);
-                capture = new MissionScreenshotCapture(mission, pivot, subjectRadius, options.AutoCleanTempFiles);
+                capture = new MissionScreenshotCapture(mission, options.AutoCleanTempFiles);
             }
             catch (Exception ex)
             {
@@ -131,37 +131,45 @@ namespace AnimusForge.Illustrator.Core
 
             _capture = capture;
             _scope = scope;
-            SetStatus(mission, "正在采集两张截图，完成后恢复原画面…");
-            // Open only after capture restores the UI/camera. Never put the waiting card into a screenshot.
+            SetStatus(mission, "自由取景：Enter 截图，最多两张；确认后才发送生成请求。");
+            // No worker/API admission while the player composes or chooses another shot.
             _openProgress = () => {
-                if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded
-                    && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
-                    IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, "双截图采集已结束，正在准备画卷…");
+                var pair = capture.Completion.GetAwaiter().GetResult();
+                StartGeneration(scope, capture, mission, originScreen, panelStillOpen, subject, facts, dialogue, battle, options, pair);
             };
+        }
+
+        private static void StartGeneration(IllustrationScope scope, MissionScreenshotCapture capture, Mission mission,
+            ScreenBase originScreen, Func<bool> panelStillOpen, string subject, string facts, string dialogue, bool battle,
+            IllustrationOptions options, MissionScreenshotPair captured)
+        {
             try
             {
                 bool started = scope.RunGeneration(subject, null, async token =>
                 {
                     using (token.Register(() => IllustratorRuntime.PostCritical(() => capture.Cancel("截图生图请求已取消。"))))
                     {
-                        MissionScreenshotPair pair = await capture.Completion.ConfigureAwait(false);
+                        MissionScreenshotPair pair = captured; captured = null;
                         token.ThrowIfCancellationRequested();
                         // Hash and decode large native files only inside the bounded worker.
-                        if (MissionScreenshotImageCodec.SameImage(pair.Current, pair.Reverse))
-                            throw new InvalidOperationException("两张截图相同，未取得有效反向画面；已停止生成。");
+                        if (pair.Reverse != null && MissionScreenshotImageCodec.SameImage(pair.Current, pair.Reverse))
+                            throw new InvalidOperationException("两张截图相同，请重新取景；已停止生成。");
                         GenerationDiagnostics.Current?.RecordStage("mission_screenshots_complete", new Newtonsoft.Json.Linq.JObject {
-                            ["viewCount"] = 2, ["source"] = "native_bmp_exclusive_file", ["gpu_frame_identity_verified"] = false,
-                            ["firstRawBytes"] = pair.Current.Length, ["secondRawBytes"] = pair.Reverse.Length });
+                            ["viewCount"] = pair.Count, ["source"] = "native_bmp_exclusive_file", ["gpu_frame_identity_verified"] = false,
+                            ["firstRawBytes"] = pair.Current.Length, ["secondRawBytes"] = pair.Reverse?.Length ?? 0 });
                         byte[] current = MissionScreenshotImageCodec.ToPng(pair.Current, token);
-                        byte[] reverse = MissionScreenshotImageCodec.ToPng(pair.Reverse, token);
                         string contract = MissionScreenshotRules.Contract(battle);
-                        var references = new[] {
-                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：沿点击时玩家镜头的水平方向观察人物区域的独立平视机位，只提供现场资料，不规定最终构图。" + contract, IllustrationReferenceKind.MissionScreenshot),
-                            new IllustrationReferenceImage(Convert.ToBase64String(reverse), "截图B：同一冻结瞬间，从人物区域对侧平视回望，与A朝向相差180度的辅助机位，不规定最终构图。与A是同一组人物、同一场景。" + contract, IllustrationReferenceKind.MissionScreenshot)
+                        var references = new System.Collections.Generic.List<IllustrationReferenceImage> {
+                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：玩家自由取景的现场参考，不规定最终构图。" + contract, IllustrationReferenceKind.MissionScreenshot)
                         };
-                        pair = null; current = null; reverse = null;
+                        if (pair.Reverse != null)
+                        {
+                            byte[] additional = MissionScreenshotImageCodec.ToPng(pair.Reverse, token);
+                            references.Add(new IllustrationReferenceImage(Convert.ToBase64String(additional), "截图B：玩家补充拍摄的同一冻结现场，不要求与A反向；不是另一个时间或另一组人物，不规定最终构图。" + contract, IllustrationReferenceKind.MissionScreenshot));
+                        }
+                        pair = null; current = null;
                         var plan = new IllustrationPromptPlan(battle ? MissionScreenshotRules.BattleMode : MissionScreenshotRules.ShoutMode, facts, contract, dialogue);
-                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, "两张截图已取得，导演正在推演…"); });
+                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, "现场截图已确认，导演正在推演…"); });
                         var direction = await VisualDirectorEngine.CreateDirectionAsync(plan, references, options, token).ConfigureAwait(false);
                         IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, "导演已完成，正在生成插画；可关闭面板…"); });
                         var image = await UniversalOpenAiImageClient.GenerateImageAsync(direction.Prompt, references, options, token).ConfigureAwait(false);
@@ -185,7 +193,10 @@ namespace AnimusForge.Illustrator.Core
                 {
                     Finish(scope, capture, mission, "插画已保存到画廊。");
                 }, error => Finish(scope, capture, mission, "生图失败：" + error), value => value, _ => "成图保存失败。");
-                if (!started) Finish(scope, capture, mission, "生图任务繁忙，请等待已有任务完成。");
+                if (!started) { Finish(scope, capture, mission, "生图任务繁忙，请等待已有任务完成。"); return; }
+                if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded
+                    && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
+                    IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, "现场截图已确认，正在准备画卷…");
             }
             catch (Exception ex) { Finish(scope, capture, mission, "生图失败：" + ex.Message); }
         }
@@ -193,7 +204,7 @@ namespace AnimusForge.Illustrator.Core
         private static string CaptureFacts(Agent player, Agent target, bool battle)
         {
             var facts = new StringBuilder();
-            facts.AppendLine(battle ? "战斗：固定双截图采集瞬间的动作，不能推演后续战果。" : "场景喊话：已发生对白动作优先，截图提供现场关系。");
+            facts.AppendLine(battle ? "战斗：固定取景冻结瞬间的动作，不能推演后续战果。" : "场景喊话：已发生对白动作优先，截图提供现场关系。");
             facts.AppendLine("玩家：" + player.Name);
             facts.AppendLine("玩家现场朝向向量：" + Format(player.LookDirection.x) + "," + Format(player.LookDirection.y) + "," + Format(player.LookDirection.z));
             if (target != null && target.IsActive() && target.Mission == player.Mission)
@@ -208,7 +219,7 @@ namespace AnimusForge.Illustrator.Core
         private static string Format(float value) => value.ToString("0.###", CultureInfo.InvariantCulture);
         private static void Finish(IllustrationScope scope, MissionScreenshotCapture capture, Mission mission, string status)
         {
-            capture.Cancel("双截图采集已结束。");
+            capture.Cancel("自由取景已结束。");
             if (ReferenceEquals(_scope, scope))
             {
                 SetStatus(mission, status);

@@ -35,6 +35,8 @@ internal static class Program
     { if (!passed) throw new Exception(name); _assertions++; }
     private static void Reject(Action action, string name)
     { try { action(); } catch (Exception) { _assertions++; return; } throw new Exception("Expected rejection: " + name); }
+    private static AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM Photo =>
+        (AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM)_screen.Layers.OfType<TaleWorlds.Engine.GauntletUI.GauntletLayer>().Last().VM;
     private static void Setup(bool paused = false)
     {
         IllustratorRuntime.OwnerThread = Thread.CurrentThread.ManagedThreadId;
@@ -46,132 +48,100 @@ internal static class Program
         if (paused) Game.Current.GameStateManager.RegisterActiveStateDisableRequest("prior_ui");
         _screen = new MissionScreen { Mission = _mission };
         _screen.CombatCamera.Frame = new MatrixFrame { origin = new Vec3(0, -4, 1.3f), rotation = new Mat3 { u = new Vec3(0, -1, 0) } };
-        ScreenManager.TopScreen = _screen;
+        ScreenManager.TopScreen = _screen;ScreenManager.FocusedLayer=null;
         MBDebug.DisableAllUI = false;
-        int shots = 0;
-        Utilities.Export = path => File.WriteAllBytes(path, BitmapBytes(++shots == 1 ? Color.Red : Color.Blue));
+        TaleWorlds.InputSystem.Input.Keys.Clear();TaleWorlds.InputSystem.Input.MouseMoveX=0;TaleWorlds.InputSystem.Input.MouseMoveY=0;TaleWorlds.InputSystem.Input.DeltaMouseScroll=0;
+        int shots=0;Utilities.Export = path => File.WriteAllBytes(path, BitmapBytes(++shots == 1 ? Color.Red : Color.Blue));
     }
-    private static void Pump(MissionScreenshotCapture capture)
+    private static void Key(MissionScreenshotCapture capture,TaleWorlds.InputSystem.InputKey key)
     {
-        for (int i = 0; i < 500 && !capture.Completion.IsCompleted; i++)
-        { IllustratorRuntime.ApplicationFrame++; capture.Tick(); Thread.Sleep(3); }
-        Check(capture.Completion.IsCompleted, "finite capture completion");
+        TaleWorlds.InputSystem.Input.Keys.Clear();capture.Tick();
+        TaleWorlds.InputSystem.Input.Keys.Add(key);capture.Tick();
+        TaleWorlds.InputSystem.Input.Keys.Clear();capture.Tick();
     }
-    private static void Restored(bool paused, string caseName, bool checkTime = true)
+    private static void Shoot(MissionScreenshotCapture capture)
     {
-        Check(_screen.CustomCamera == null, caseName + ": original custom camera");
-        Check(_screen.CombatCamera.Position.y == -4, caseName + ": original combat frame");
-        Check(!MBDebug.DisableAllUI, caseName + ": UI restored");
-        Check(_screen.LayerWatchers == 0, caseName + ": layer subscription removed");
-        Check(MissionState.Current.Paused == paused, caseName + ": original pause retained");
-        if (checkTime) Check(_mission.Scene.TimeSpeed == (paused ? 0 : 0.75f), caseName + ": original time speed");
-        Check(_mission.RequestCount == 0, caseName + ": own pause removed");
-        Check(Game.Current.GameStateManager.Count == (paused ? 1 : 0), caseName + ": prior disable owner retained");
-        Check(Camera.Created == Camera.ReleasedCount, caseName + ": cameras released once");
+        Key(capture,TaleWorlds.InputSystem.InputKey.Enter);
+        for(int i=0;i<500&&!Photo.ChoicesVisible&&!capture.Completion.IsCompleted;i++)
+        {IllustratorRuntime.ApplicationFrame++;capture.Tick();Thread.Sleep(3);}
+        Check(Photo.ChoicesVisible,"native export completes to explicit decision");
+    }
+    private static void Restored(bool paused,string label)
+    {
+        Check(_screen.CustomCamera==null&&_screen.CombatCamera.Position.y==-4,label+": camera restored");
+        Check(!MBDebug.DisableAllUI,label+": UI restored");
+        Check(_screen.LayerWatchers==0&&_screen.Layers.Count==0,label+": overlay/subscription removed");
+        Check(MissionState.Current.Paused==paused&&_mission.Scene.TimeSpeed==(paused?0:0.75f),label+": original pause retained");
+        Check(_mission.RequestCount==0&&Game.Current.GameStateManager.Count==(paused?1:0),label+": prior owners preserved");
+        Check(Camera.Created==Camera.ReleasedCount,label+": native cameras released once");
     }
     private static void CaptureCases()
     {
-        Setup();
-        // Active custom view looks east and steeply down, from a remote/zoomed position.
-        // The capture must use only its horizontal direction, not body/combat yaw or its framing.
-        var custom = _screen.CustomCamera = new Camera {
-            Frame = new MatrixFrame { origin = new Vec3(40, 50, 60), rotation = new Mat3 { u = new Vec3(-0.3f, 0, 0.9f) } }, Fov = 0.2f
-        };
-        int viewShots = 0;
-        Utilities.Export = path => {
-            Check(++viewShots == 1 ? _screen.CombatCamera.Position.x < -4 : _screen.CombatCamera.Position.x > 4, "active camera yaw defines A/B, not combat/body direction");
-            Check(Math.Abs(_screen.CombatCamera.Position.y) < 0.001f && Math.Abs(_screen.CombatCamera.Position.z - Pivot.z) < 0.001f, "camera position and pitch do not displace or tilt level rig");
-            Check(Math.Abs(_screen.CombatCamera.Fov - (float)Math.PI / 3f) < 0.001f, "player zoom does not replace fixed capture FOV");
-            Check(Math.Abs(_screen.CombatCamera.Frame.rotation.u.z) < 0.001f, "both capture views remain level");
-            File.WriteAllBytes(path, BitmapBytes(viewShots == 1 ? Color.Red : Color.Blue));
-        };
-        var cameraYaw = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true); Pump(cameraYaw);
-        Check(!cameraYaw.Completion.IsFaulted && viewShots == 2, "both player-yaw references acquired");
-        Check(_screen.CustomCamera == custom && !custom.Released && custom.Position.z == 60 && custom.Fov == 0.2f, "original custom camera unmodified and restored");
-        Check(_screen.CombatCamera.Position.y == -4 && _screen.CombatCamera.Frame.rotation.u.y == -1 && _screen.CombatCamera.Fov == 0.7f, "original combat orientation and zoom restored");
-        Setup();
-        _screen.CombatCamera.Frame = new MatrixFrame { origin = new Vec3(0, -4, 1.3f), rotation = new Mat3 { u = Vec3.Up } };
-        Reject(() => new MissionScreenshotCapture(_mission, Pivot, 1.6f, true), "vertical camera without horizontal heading rejects before mutation"); Restored(false, "vertical view");
-        Setup();
-        var ui = new TaleWorlds.Engine.GauntletUI.GauntletLayer(); _screen.AddLayer(ui);
-        int earlyShots = 0;
-        Utilities.Export = path => { earlyShots++; File.WriteAllBytes(path, BitmapBytes(Color.Red)); };
-        var warming = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        Check(ui.TwoDimensionView.Clears == 1 && ui.TwoDimensionPlatform.Clears == 1 && ui.IsActive, "clear cached UI without changing layer activation");
-        IllustratorRuntime.ApplicationFrame = 1; warming.Tick();
-        Check(earlyShots == 0, "first application frame cannot export old UI frame");
-        Thread.Sleep(270); warming.Tick();
-        Check(earlyShots == 0, "elapsed time alone does not skip frame warmup");
-        IllustratorRuntime.ApplicationFrame = 4; warming.Tick();
-        Check(earlyShots == 1, "export only after both frame and time warmup");
-        warming.Cancel("fixture end"); Restored(false, "warmup");
-        Setup();
-        var changedUi = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        _screen.AddLayer(new TaleWorlds.Engine.GauntletUI.GauntletLayer()); changedUi.Tick();
-        Check(changedUi.Completion.IsFaulted, "new UI during capture rejects request"); Restored(false, "new UI");
-
-        foreach (bool paused in new[] { false, true })
+        foreach(bool paused in new[]{false,true})
         {
-            Setup(paused);
-            int shots = 0;
-            Utilities.Export = path => {
-                Check(MBDebug.DisableAllUI && MissionState.Current.Paused && _mission.Scene.TimeSpeed == 0, "freeze before each export");
-                Check(++shots == 1 ? _screen.CombatCamera.Position.y < -4 : _screen.CombatCamera.Position.y > 4, "A follows player camera yaw; B observes from opposite side");
-                File.WriteAllBytes(path, BitmapBytes(shots == 1 ? Color.Red : Color.Blue));
-            };
-            var capture = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-            Reject(() => new MissionScreenshotCapture(_mission, Pivot, 1.6f, true), "native stage prevents duplicate capture");
-            Pump(capture);
-            var pair = capture.Completion.GetAwaiter().GetResult();
-            Check(!MissionScreenshotImageCodec.SameImage(pair.Current, pair.Reverse), "two distinct raw references");
-            Check(shots == 2, "exactly two exports");
-            Check(_mission.Scene.LastExclude == (TaleWorlds.Engine.BodyFlags.CameraCollisionRayCastExludeFlags | TaleWorlds.Engine.BodyFlags.DontCollideWithCamera), "use original game camera collision filters, not player body/AI barriers");
-            Restored(paused, "success");
-            capture.Cancel("late cancel"); Restored(paused, "idempotent completion");
+            Setup(paused);int shots=0;Utilities.Export=path=>{shots++;Check(MBDebug.DisableAllUI,"hint/UI hidden during native export");File.WriteAllBytes(path,BitmapBytes(Color.Red));};
+            var capture=new MissionScreenshotCapture(_mission,true);
+            Check(_mission.Scene.TimeSpeed==0&&MissionState.Current.Paused,"freeze on entry");
+            Check(Photo.Hint.Contains("Enter")&&!Photo.ChoicesVisible,"only Enter hint before screenshot");
+            Reject(()=>new MissionScreenshotCapture(_mission,true),"capture gate serializes native resources");
+            for(int i=0;i<10;i++){IllustratorRuntime.ApplicationFrame++;capture.Tick();}
+            Check(shots==0&&!capture.Completion.IsCompleted,"no automatic capture or submit");
+            Shoot(capture);Check(shots==1&&!capture.Completion.IsCompleted,"first shot still awaits confirmation");
+            var submitVm=Photo;submitVm.ExecuteFirst();submitVm.ExecuteFirst();
+            Check(capture.Completion.GetAwaiter().GetResult().Count==1,"one shot submits once without second reference");
+            Restored(paused,"single submit");capture.Cancel("late");Restored(paused,"idempotent");
         }
-        Setup();
-        var cancel = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        cancel.Cancel("explicit cancellation");
-        Reject(() => cancel.Completion.GetAwaiter().GetResult(), "cancel surfaces failure"); Restored(false, "cancel");
-        Setup();
-        var leaving = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        Mission.Current = new Mission(); leaving.Tick();
-        Reject(() => leaving.Completion.GetAwaiter().GetResult(), "leave before completion cancels");
-        Check(Mission.Current.Scene.TimeSpeed == 1, "leave never mutates replacement scene");
-        Mission.Current = _mission; Restored(false, "leave", checkTime: false);
-        Setup();
-        var takeover = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        var other = _screen.CustomCamera = new Camera { Frame = new MatrixFrame { origin = new Vec3(20, 30, 40) } };
-        _screen.CombatCamera.FillParametersFrom(other); takeover.Tick();
-        Reject(() => takeover.Completion.GetAwaiter().GetResult(), "other camera takeover stops capture");
-        Check(_screen.CustomCamera == other && _screen.CombatCamera.Position.y == 30 && !other.Released, "never overwrite or release other's camera");
-        Check(!MBDebug.DisableAllUI && _mission.RequestCount == 0, "takeover still releases UI/time");
-        Setup();
-        Utilities.Export = path => { throw new IOException("native export failed"); };
-        var exportFailure = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true); Pump(exportFailure);
-        Reject(() => exportFailure.Completion.GetAwaiter().GetResult(), "export failure explicit"); Restored(false, "export failure");
-        Setup(); _mission.Scene.HitDistance = 0.2f;
-        Reject(() => new MissionScreenshotCapture(_mission, Pivot, 1.6f, true), "both camera paths checked before capture"); Restored(false, "blocked view");
-        Setup(); _screen.Rendered = false;
-        Reject(() => new MissionScreenshotCapture(_mission, Pivot, 1.6f, true), "not rendered, reject before mutation"); Restored(false, "not rendered");
-        Setup();
-        var unknown = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        IllustratorRuntime.ApplicationFrame++; unknown.Tick();
-        _screen.IsFinalized = true; unknown.Tick();
-        Reject(() => unknown.Completion.GetAwaiter().GetResult(), "finalized screen retires capture");
-        Check(!MBDebug.DisableAllUI && _mission.RequestCount == 0, "finalized native handles untouched; reversible globals released");
-        Setup(true);
-        var priorCamera = _screen.CustomCamera = new Camera { Frame = _screen.CombatCamera.Frame };
-        MBDebug.DisableAllUI = true;
-        var alreadyHidden = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true); Pump(alreadyHidden);
-        Check(!alreadyHidden.Completion.IsFaulted && _screen.CustomCamera == priorCamera && !priorCamera.Released, "prior custom camera preserved");
-        Check(MBDebug.DisableAllUI && MissionState.Current.Paused && Game.Current.GameStateManager.Count == 1, "prior hidden UI and pause kept");
-        Setup();
-        Utilities.Export = path => { /* Simulate native export never producing a file. */ };
-        var timeout = new MissionScreenshotCapture(_mission, Pivot, 1.6f, true);
-        IllustratorRuntime.ApplicationFrame++; timeout.Tick(); Thread.Sleep(8100); timeout.Tick();
-        Check(timeout.Completion.IsFaulted && timeout.Completion.Exception.InnerException.Message.Contains("超时"), "8-second total capture deadline, no export retry");
-        Restored(false, "deadline");
+        Setup();var pair=new MissionScreenshotCapture(_mission,true);Shoot(pair);Photo.ExecuteSecond();
+        Check(!Photo.ChoicesVisible&&!pair.Completion.IsCompleted,"continue returns to free camera");
+        TaleWorlds.InputSystem.Input.MouseMoveX=30;TaleWorlds.InputSystem.Input.MouseMoveY=20;TaleWorlds.InputSystem.Input.DeltaMouseScroll=120;
+        Key(pair,TaleWorlds.InputSystem.InputKey.W);TaleWorlds.InputSystem.Input.MouseMoveX=0;TaleWorlds.InputSystem.Input.MouseMoveY=0;TaleWorlds.InputSystem.Input.DeltaMouseScroll=0;
+        Check(_screen.CustomCamera.Frame.rotation.u.x!=0&&_screen.CustomCamera.Frame.rotation.u.z!=0,"player changes yaw and pitch freely");
+        Check(_screen.CustomCamera.Fov!=0.7f,"scroll zoom applies only to photo camera");
+        Shoot(pair);Check(Photo.SecondText=="重新截取","second shot cannot add a third");
+        Photo.ExecuteFirst();var data=pair.Completion.GetAwaiter().GetResult();
+        Check(data.Count==2&&!MissionScreenshotImageCodec.SameImage(data.Current,data.Reverse),"both player shots retained");Restored(false,"two submit");
+        Setup();var retake=new MissionScreenshotCapture(_mission,true);Shoot(retake);Photo.ExecuteSecond();
+        Key(retake,TaleWorlds.InputSystem.InputKey.Escape);
+        Check(Photo.FirstText=="重新截取"&&Photo.SecondText=="取消"&&!retake.Completion.IsCompleted,"Esc presents restart/cancel rather than silently submitting");
+        Photo.ExecuteFirst();Shoot(retake);Photo.ExecuteFirst();
+        Check(retake.Completion.GetAwaiter().GetResult().Count==1,"retake starts again from first, discarding previous reference");Restored(false,"retake");
+        Setup();var cancel=new MissionScreenshotCapture(_mission,true);Key(cancel,TaleWorlds.InputSystem.InputKey.Escape);Photo.ExecuteSecond();
+        Check(cancel.Completion.IsCanceled,"explicit cancel yields no generation");Restored(false,"cancel");
+        Setup();var exportCancel=new MissionScreenshotCapture(_mission,true);Key(exportCancel,TaleWorlds.InputSystem.InputKey.Enter);Key(exportCancel,TaleWorlds.InputSystem.InputKey.Escape);Photo.ExecuteSecond();
+        Check(exportCancel.Completion.IsCanceled,"Esc works during export warmup");Restored(false,"export cancel");
+        Setup();var oldUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();var hiddenUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();hiddenUi.UIContext.Root.IsVisible=false;
+        _screen.AddLayer(oldUi);_screen.AddLayer(hiddenUi);ScreenManager.TrySetFocus(oldUi);
+        var visibility=new MissionScreenshotCapture(_mission,true);
+        Check(!oldUi.UIContext.Root.IsVisible&&!hiddenUi.UIContext.Root.IsVisible,"prior UI hidden without losing prior visibility");
+        oldUi.UIContext.Root.IsVisible=true;visibility.Tick();
+        Check(!oldUi.UIContext.Root.IsVisible,"later UI updates remain hidden during aiming");
+        var addedUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(addedUi);
+        Check(!addedUi.UIContext.Root.IsVisible,"layers added during capture are hidden");
+        _screen.RemoveLayer(oldUi);oldUi.IsFinalized=false;_screen.AddLayer(oldUi);
+        visibility.Cancel("test");Check(oldUi.UIContext.Root.IsVisible&&!hiddenUi.UIContext.Root.IsVisible&&ScreenManager.FocusedLayer==oldUi,"exact prior UI/focus restored");
+        Check(addedUi.UIContext.Root.IsVisible,"newly added UI regains original visibility");
+        Setup();var originUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(originUi);ScreenManager.TrySetFocus(originUi);
+        var replacedScreen=new MissionScreenshotCapture(_mission,true);
+        var nextScreen=new ScreenBase();var nextFocus=new TaleWorlds.Engine.GauntletUI.GauntletLayer();nextScreen.AddLayer(nextFocus);
+        ScreenManager.TopScreen=nextScreen;ScreenManager.TrySetFocus(nextFocus);replacedScreen.Tick();
+        Check(replacedScreen.Completion.IsFaulted&&ScreenManager.FocusedLayer==nextFocus,"leaving does not restore focus over the replacement screen");
+        Check(originUi.UIContext.Root.IsVisible&&_screen.LayerWatchers==0&&_screen.Layers.Count==1,"leaving still restores origin UI and releases overlay");
+        Setup();var beforeFocus=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(beforeFocus);ScreenManager.TrySetFocus(beforeFocus);
+        var focusOwner=new MissionScreenshotCapture(_mission,true);var otherFocus=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(otherFocus);ScreenManager.TrySetFocus(otherFocus);
+        focusOwner.Cancel("test");Check(ScreenManager.FocusedLayer==otherFocus,"another UI focus owner is not overwritten on cancel");
+        Setup();var leaving=new MissionScreenshotCapture(_mission,true);Mission.Current=new Mission();leaving.Tick();
+        Check(leaving.Completion.IsFaulted&&Mission.Current.Scene.TimeSpeed==1,"leaving aborts and leaves replacement scene alone");
+        Check(_mission.RequestCount==0&&!MBDebug.DisableAllUI,"leaving releases own pause/UI");
+        Setup();var takeover=new MissionScreenshotCapture(_mission,true);var other=_screen.CustomCamera=new Camera();takeover.Tick();
+        Check(takeover.Completion.IsFaulted&&_screen.CustomCamera==other&&!other.Released,"camera takeover not overwritten");
+        Setup();Utilities.Export=path=>{throw new IOException("export failed");};var failure=new MissionScreenshotCapture(_mission,true);
+        Key(failure,TaleWorlds.InputSystem.InputKey.Enter);
+        for(int i=0;i<150&&!failure.Completion.IsCompleted;i++){IllustratorRuntime.ApplicationFrame++;failure.Tick();Thread.Sleep(3);}
+        Check(failure.Completion.IsFaulted,"export failure explicit");Restored(false,"export failure");
+        Setup();Utilities.Export=path=>{};var timeout=new MissionScreenshotCapture(_mission,true);
+        Key(timeout,TaleWorlds.InputSystem.InputKey.Enter);Thread.Sleep(8100);timeout.Tick();
+        Check(timeout.Completion.IsFaulted,"shot deadline finite");Restored(false,"timeout");
+        Setup();_screen.Rendered=false;Reject(()=>new MissionScreenshotCapture(_mission,true),"unrendered mission rejects before mutation");
     }
     private static void CodecCases()
     {
@@ -218,7 +188,8 @@ internal static class Program
         var refs = new[] { new IllustrationReferenceImage("encodedA", "A", IllustrationReferenceKind.MissionScreenshot), new IllustrationReferenceImage("encodedB", "B", IllustrationReferenceKind.MissionScreenshot) };
         MissionScreenshotRules.RequireReferences(refs);
         Reject(() => MissionScreenshotRules.RequireReferences(null), "screenshots mandatory");
-        Reject(() => MissionScreenshotRules.RequireReferences(new[] { refs[0] }), "one screenshot rejected");
+        MissionScreenshotRules.RequireReferences(new[] { refs[0] });
+        Check(true, "single reference accepted");
         Reject(() => MissionScreenshotRules.RequireReferences(new[] { refs[0], refs[1], refs[0] }), "third reference rejected");
         Reject(() => MissionScreenshotRules.RequireReferences(new[] { refs[0], new IllustrationReferenceImage("x", "portrait", IllustrationReferenceKind.Character) }), "portrait/panorama cannot replace screenshot");
         Check(MissionScreenshotRules.IsMode(MissionScreenshotRules.BattleMode) && !MissionScreenshotRules.IsMode("百科肖像"), "mode isolation");

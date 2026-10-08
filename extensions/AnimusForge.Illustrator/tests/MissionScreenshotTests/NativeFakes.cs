@@ -9,6 +9,7 @@ namespace TaleWorlds.Library
     {
         public float x, y, z;
         public Vec3(float a, float b, float c) { x = a; y = b; z = c; }
+        public static Vec3 Zero => new Vec3(0,0,0);
         public static Vec3 Up => new Vec3(0, 0, 1);
         public float Length => (float)Math.Sqrt(x * x + y * y + z * z);
         public static Vec3 operator +(Vec3 a, Vec3 b) => new Vec3(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -39,6 +40,7 @@ namespace TaleWorlds.Engine
         public static int Created, ReleasedCount;
         public float Far => 1000;
         public float Fov = 0.7f;
+        public float GetFovVertical() => Fov;
         public float GetAspectRatio() => 16f / 9f;
         public void SetFovVertical(float fov, float aspect, float near, float far) { Fov = fov; }
         public static Camera CreateCamera() { Created++; return new Camera(); }
@@ -67,6 +69,7 @@ namespace TaleWorlds.Core
 namespace TaleWorlds.MountAndBlade
 {
     using TaleWorlds.Engine;
+    public static class GameNetwork {public static bool IsMultiplayer;}
     public static class MBDebug { public static bool DisableAllUI; }
     public sealed class MissionState { public static MissionState Current; public bool Paused; }
     public sealed class Mission
@@ -84,15 +87,19 @@ namespace TaleWorlds.MountAndBlade
 }
 namespace TaleWorlds.ScreenSystem
 {
-    public class ScreenLayer { public bool IsFinalized, IsActive = true; }
+    public enum InputUsageMask {All, Mouse}
+    public sealed class Restrictions {public bool Mouse;public void SetInputRestrictions(bool mouse,InputUsageMask mask){Mouse=mouse;}public void ResetInputRestrictions(){}}
+    public class ScreenLayer { public bool IsFinalized, IsActive = true, IsFocusLayer;public Restrictions InputRestrictions=new Restrictions(); }
     public class ScreenBase {
         public bool IsFinalized;
         public readonly List<ScreenLayer> Layers = new List<ScreenLayer>();
         public event Action<ScreenLayer> OnAddLayer;
         public int LayerWatchers => OnAddLayer?.GetInvocationList().Length ?? 0;
         public void AddLayer(ScreenLayer layer) { Layers.Add(layer); OnAddLayer?.Invoke(layer); }
+        public void RemoveLayer(ScreenLayer layer){Layers.Remove(layer);layer.IsFinalized=true;}
     }
-    public static class ScreenManager { public static ScreenBase TopScreen; }
+    public static class ScreenManager { public static ScreenBase TopScreen;public static ScreenLayer FocusedLayer;
+        public static void TrySetFocus(ScreenLayer l){FocusedLayer=l;}public static void TryLoseFocus(ScreenLayer l){if(ReferenceEquals(FocusedLayer,l))FocusedLayer=null;} }
 }
 namespace TaleWorlds.MountAndBlade.View.Screens
 {
@@ -103,7 +110,7 @@ namespace TaleWorlds.MountAndBlade.View.Screens
         public Mission Mission;
         public Camera CombatCamera = new Camera(), CustomCamera;
         public SceneView SceneView = new SceneView();
-        public bool Rendered = true;
+        public bool Rendered = true, IsPhotoModeEnabled;
         public bool MissionStartedRendering() => Rendered;
     }
 }
@@ -128,9 +135,19 @@ namespace AnimusForge.Illustrator.Core
 namespace Newtonsoft.Json.Linq { public class JObject : Dictionary<string, object> { } }
 namespace TaleWorlds.Engine.GauntletUI {
     public sealed class FakeUiView { public int Clears; public void Clear() { Clears++; } }
+    public sealed class Context { public TaleWorlds.GauntletUI.BaseTypes.Widget Root=new TaleWorlds.GauntletUI.BaseTypes.Widget(); }
     public sealed class GauntletLayer : TaleWorlds.ScreenSystem.ScreenLayer {
         public FakeUiView TwoDimensionView = new FakeUiView(), TwoDimensionPlatform = new FakeUiView();
+        public Context UIContext=new Context();public object VM;
+        public GauntletLayer(string name="fixture",int order=0){}
+        public void LoadMovie(string name,object vm){VM=vm;}
     }
+}
+namespace TaleWorlds.GauntletUI.BaseTypes { public class Widget {public bool IsVisible=true;} }
+namespace TaleWorlds.Library { public class ViewModel {public void OnPropertyChanged(string n){}public virtual void OnFinalize(){}}public class DataSourcePropertyAttribute:Attribute{} }
+namespace TaleWorlds.InputSystem {
+    public enum InputKey {W,A,S,D,E,Q,Enter,NumpadEnter,Escape,LeftShift}
+    public static class Input {public static HashSet<InputKey> Keys=new HashSet<InputKey>();public static float MouseMoveX,MouseMoveY,DeltaMouseScroll;public static bool IsKeyDown(InputKey k)=>Keys.Contains(k);}
 }
 namespace AnimusForge.Illustrator.Engine
 {

@@ -4,12 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator.Engine
 {
@@ -17,46 +18,45 @@ namespace AnimusForge.Illustrator.Engine
     {
         internal readonly byte[] Current, Reverse;
         internal MissionScreenshotPair(byte[] current, byte[] reverse) { Current = current; Reverse = reverse; }
+        internal int Count => Reverse == null ? 1 : 2;
     }
-
     public static partial class ScreenCaptureHelper
     {
         internal static bool TryAcquireMissionScreenshotStage() => _stageLock.Wait(0);
         internal static void ReleaseMissionScreenshotStage() => _stageLock.Release();
     }
 
-    // One request, two native exports. Tick touches only this held mission/camera and task state.
-    // File completion is a unique, exclusively readable, validated native BMP, NOT a guessed GPU fence.
+    // Interactive free camera: no game ticks/scans or generation worker while the player composes.
+    // Each Enter has a finite native file-export deadline; a user-controlled session has no aim timeout.
     internal sealed class MissionScreenshotCapture
     {
         private const int PauseRequestId = 2147482007;
         private const int CaptureBudgetMs = 8000;
-        private const int WarmupFrames = 4;
-        private const int WarmupMilliseconds = 250;
         private readonly Mission _mission;
         private readonly MissionScreen _screen;
         private readonly MissionState _missionState;
         private readonly GameStateManager _states;
         private readonly Camera _oldCustom;
         private Camera _backup, _captureCamera;
+        private MissionPhotoOverlay _overlay;
         private readonly bool _oldHideUi, _oldPaused;
         private readonly float _oldTimeSpeed;
-        private readonly Vec3 _pivot, _frontPosition, _rearPosition;
         private readonly bool _clean;
-        private readonly string[] _paths;
-        private readonly CancellationTokenSource _cancel = new CancellationTokenSource();
         private readonly TaskCompletionSource<MissionScreenshotPair> _done = new TaskCompletionSource<MissionScreenshotPair>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly Stopwatch _clock = Stopwatch.StartNew();
+        private long _lastCameraMs, _exportStart, _exportFrame;
         private Task<byte[]> _read;
-        private byte[] _first;
-        private int _index;
-        private long _notBeforeFrame;
-        private long _notBeforeMs;
-        private bool _watchingLayers, _layersChanged;
+        private CancellationTokenSource _shotCancel;
+        private string _shotPath;
+        private byte[] _first, _second;
+        private float _yaw, _pitch;
+        // Aim, Export, Decide, CancelChoice. Buttons are guarded by their matching phase.
+        private int _phase;
+        private bool _keysReleased;
         private bool _closed, _ownsStage, _ownsPause, _ownsStateDisable, _changedUi, _changedCamera, _changedPaused;
         internal Task<MissionScreenshotPair> Completion => _done.Task;
 
-        internal MissionScreenshotCapture(Mission mission, Vec3 pivot, float subjectRadius, bool clean)
+        internal MissionScreenshotCapture(Mission mission, bool clean)
         {
             IllustratorRuntime.AssertMainThread();
             _mission = mission;
@@ -64,17 +64,15 @@ namespace AnimusForge.Illustrator.Engine
             _missionState = MissionState.Current;
             _states = Game.Current?.GameStateManager;
             if (_mission?.Scene == null || _screen?.CombatCamera == null || _screen.SceneView == null || !ReferenceEquals(_screen.Mission, mission)
-                || !_screen.MissionStartedRendering() || mission.MissionEnded)
-                throw new InvalidOperationException("当前任务尚无可采集的游戏画面。");
+                || !_screen.MissionStartedRendering() || mission.MissionEnded || GameNetwork.IsMultiplayer)
+                throw new InvalidOperationException("当前任务尚无可采集的单人游戏画面。");
+            // A different custom/photo camera remains its owner's responsibility.
+            if (_screen.IsPhotoModeEnabled) throw new InvalidOperationException("请先退出原版摄影模式，再从生图按钮开始取景。");
             _oldCustom = _screen.CustomCamera;
             _oldHideUi = MBDebug.DisableAllUI;
             _oldPaused = _missionState?.Paused == true;
             _oldTimeSpeed = mission.Scene.TimeSpeed;
-            _pivot = pivot;
             _clean = clean;
-            string root = IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.TempDirectory);
-            string id = Guid.NewGuid().ToString("N");
-            _paths = new[] { System.IO.Path.Combine(root, "mission_" + id + "_a.bmp"), System.IO.Path.Combine(root, "mission_" + id + "_b.bmp") };
             try
             {
                 _ownsStage = ScreenCaptureHelper.TryAcquireMissionScreenshotStage();
@@ -83,45 +81,26 @@ namespace AnimusForge.Illustrator.Engine
                 _backup = Camera.CreateCamera();
                 _backup.FillParametersFrom(_screen.CombatCamera);
                 _captureCamera = Camera.CreateCamera();
-                // Preserve native camera setup, then replace pose/projection below.
-                _captureCamera.FillParametersFrom(_backup);
-                float aspect = _backup.GetAspectRatio();
-                // Only use the active player's horizontal viewing direction. Keep the independent
-                // level rig and fixed FOV; mouse pitch, camera position and zoom do not set framing.
-                Vec3 viewForward = (_oldCustom ?? _backup).Frame.rotation.u * -1f;
-                Vec3[] positions = BuildLevelPositions(pivot, viewForward, subjectRadius, aspect);
-                _frontPosition = ResolveCameraCollision(positions[0]);
-                _rearPosition = ResolveCameraCollision(positions[1]);
-                // Fixed perspective: the original camera is only a restore snapshot.
-                _captureCamera.SetFovVertical((float)Math.PI / 3f, aspect, 0.05f, Math.Max(1000f, _backup.Far));
-                _captureCamera.LookAt(_frontPosition, _pivot, Vec3.Up);
+                _captureCamera.FillParametersFrom(_oldCustom ?? _backup);
+                Vec3 forward = _captureCamera.Frame.rotation.u * -1f;
+                _yaw = (float)Math.Atan2(forward.x, forward.y);
+                _pitch = (float)Math.Asin(Math.Max(-1f, Math.Min(1f, forward.z)));
                 mission.AddTimeSpeedRequest(new Mission.TimeSpeedRequest(0f, PauseRequestId));
                 _ownsPause = true;
                 _states?.RegisterActiveStateDisableRequest(this);
                 _ownsStateDisable = _states != null;
                 if (_missionState != null) { _missionState.Paused = true; _changedPaused = true; }
                 mission.Scene.TimeSpeed = 0f;
-                MBDebug.DisableAllUI = true;
                 _changedUi = true;
-                foreach (var layer in _screen.Layers)
-                    if (layer is GauntletLayer gauntlet && layer.IsActive && !layer.IsFinalized)
-                    {
-                        // Clear already-submitted UI commands as vanilla deactivation does.
-                        // Keep layer activation/visibility ownership with the original UI.
-                        gauntlet.TwoDimensionPlatform.Clear();
-                        gauntlet.TwoDimensionView.Clear();
-                    }
-                _screen.OnAddLayer += OnLayerAdded;
-                _watchingLayers = true;
+                MBDebug.DisableAllUI = false; // Only our hint/buttons remain; previous Gauntlet roots are hidden.
                 _changedCamera = true;
                 _screen.CustomCamera = _captureCamera;
+                _overlay = new MissionPhotoOverlay(_screen, Submit, Continue, Restart, () => Cancel("本次取景已取消。"));
+                ResumeAim();
                 ApplyCamera();
-                BeginWarmup();
-                _cancel.CancelAfter(CaptureBudgetMs);
             }
-            catch { Restore(); _cancel.Dispose(); throw; }
+            catch { Restore(); throw; }
         }
-
         internal void Tick()
         {
             IllustratorRuntime.AssertMainThread();
@@ -130,138 +109,173 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (!ReferenceEquals(Mission.Current, _mission) || !ReferenceEquals(ScreenManager.TopScreen, _screen)
                     || _screen.IsFinalized || _mission.MissionEnded)
-                    throw new InvalidOperationException("双截图尚未完成时已离开场景，采集已终止。");
-                if (_cancel.IsCancellationRequested || _clock.ElapsedMilliseconds >= CaptureBudgetMs)
-                    throw new TimeoutException("双截图采集超时，已恢复原画面；未开始导演或生图。");
+                    throw new InvalidOperationException("取景尚未完成时已离开场景，采集已终止。");
                 if (!ReferenceEquals(_screen.CustomCamera, _captureCamera))
-                    throw new InvalidOperationException("采集期间相机被其他功能接管，已终止采集。");
-                if (!MBDebug.DisableAllUI || _layersChanged)
-                    throw new InvalidOperationException("截图期间界面发生变化，已停止采集，未发送生图请求。");
-                // Keep the fixed pose/FOV despite native zoom handling, without scanning scene agents.
+                    throw new InvalidOperationException("取景期间相机被其他功能接管，已终止采集。");
+                _overlay.HideOtherUi();
+                bool enter = Input.IsKeyDown(InputKey.Enter) || Input.IsKeyDown(InputKey.NumpadEnter);
+                bool escape = Input.IsKeyDown(InputKey.Escape);
+                if (!enter && !escape) _keysReleased = true;
+                else if (_keysReleased)
+                {
+                    _keysReleased = false;
+                    if (escape) Escape();
+                    else if (_phase == 0) BeginExport();
+                }
+                if (_phase == 0) MoveCamera();
                 ApplyCamera();
-                if (_read == null)
-                {
-                    if (IllustratorRuntime.ApplicationFrame < _notBeforeFrame || _clock.ElapsedMilliseconds < _notBeforeMs) return;
-                    // More than the vanilla photo-mode UI warmup; still not a GPU completion fence.
-                    Utilities.TakeScreenshot(_paths[_index]);
-                    string path = _paths[_index];
-                    CancellationToken token = _cancel.Token;
-                    _read = Task.Run(() => MissionScreenshotImageCodec.ReadCompleteAsync(path, token), token);
-                    return;
-                }
-                if (!_read.IsCompleted) return;
-                byte[] raw = _read.GetAwaiter().GetResult();
-                _read = null;
-                if (_index == 0)
-                {
-                    _first = raw;
-                    _index = 1;
-                    _captureCamera.LookAt(_rearPosition, _pivot, Vec3.Up);
-                    ApplyCamera();
-                    BeginWarmup();
-                    return;
-                }
-                var pair = new MissionScreenshotPair(_first, raw);
-                _first = null;
-                Restore();
-                _done.TrySetResult(pair);
+                if (_phase == 1) ProcessExport();
             }
-            catch (Exception ex) { Cancel(ex.Message); }
+            catch (Exception ex) { Fail(ex.Message); }
         }
-
-        // Pure geometry, once per click. Only camera yaw controls the level pair.
-        internal static Vec3[] BuildLevelPositions(Vec3 pivot, Vec3 viewForward, float subjectRadius, float aspect)
+        private void MoveCamera()
         {
-            Vec3 forward = new Vec3(viewForward.x, viewForward.y, 0f);
-            float length = forward.Length;
-            if (float.IsNaN(length) || float.IsInfinity(length) || length < 0.001f
-                || float.IsNaN(aspect) || float.IsInfinity(aspect) || aspect <= 0f
-                || float.IsNaN(subjectRadius) || float.IsInfinity(subjectRadius) || subjectRadius < 0f)
-                throw new InvalidOperationException("镜头水平方向或截图视野无效，请稍微调整镜头后再试。");
-            forward *= 1f / length;
-            // Fit the subject region using the narrower screen dimension, with near-side depth margin.
-            float radius = Math.Max(1.6f, subjectRadius);
-            float halfFovTangent = (float)Math.Tan(Math.PI / 6) * Math.Min(1f, aspect);
-            float distance = radius + radius / halfFovTangent;
-            // A looks along the player's horizontal view; B looks back from the opposite side.
-            return new[] { pivot - forward * distance, pivot + forward * distance };
-        }
-
-        private Vec3 ResolveCameraCollision(Vec3 position)
-        {
-            Vec3 ray = position - _pivot;
-            float distance = ray.Length;
-            if (_mission.Scene.RayCastForClosestEntityOrTerrain(_pivot, position, out float hitDistance, 0.2f,
+            long now = _clock.ElapsedMilliseconds;
+            float dt = Math.Min(0.05f, Math.Max(0f, (now - _lastCameraMs) / 1000f));
+            _lastCameraMs = now;
+            _yaw += Input.MouseMoveX * 0.0025f;
+            _pitch = Math.Max(-1.5f, Math.Min(1.5f, _pitch - Input.MouseMoveY * 0.0025f));
+            Vec3 forward = new Vec3((float)Math.Sin(_yaw) * (float)Math.Cos(_pitch), (float)Math.Cos(_yaw) * (float)Math.Cos(_pitch), (float)Math.Sin(_pitch));
+            Vec3 right = new Vec3((float)Math.Cos(_yaw), -(float)Math.Sin(_yaw), 0f);
+            Vec3 movement = Vec3.Zero;
+            if (Input.IsKeyDown(InputKey.W)) movement += forward;
+            if (Input.IsKeyDown(InputKey.S)) movement -= forward;
+            if (Input.IsKeyDown(InputKey.D)) movement += right;
+            if (Input.IsKeyDown(InputKey.A)) movement -= right;
+            if (Input.IsKeyDown(InputKey.E)) movement += Vec3.Up;
+            if (Input.IsKeyDown(InputKey.Q)) movement -= Vec3.Up;
+            float speed = Input.IsKeyDown(InputKey.LeftShift) ? 9f : 3f;
+            if (movement.Length > 1f) movement *= 1f / movement.Length;
+            Vec3 position = _captureCamera.Position;
+            Vec3 next = position + movement * (speed * dt);
+            // Camera collision only, never an Agent query. No movement means no collision ray.
+            if (movement.Length > 0.001f && _mission.Scene.RayCastForClosestEntityOrTerrain(position, next, out float hit, 0.15f,
                 BodyFlags.CameraCollisionRayCastExludeFlags | BodyFlags.DontCollideWithCamera))
             {
-                if (hitDistance < 0.8f) throw new InvalidOperationException("前后平视机位被场景结构遮挡，已停止截图。");
-                position = _pivot + ray * (Math.Min(distance, hitDistance - 0.3f) / distance);
+                float distance = (next - position).Length;
+                next = position + (next - position) * Math.Max(0f, Math.Min(1f, (hit - 0.15f) / Math.Max(0.001f, distance)));
             }
-            return position;
+            _captureCamera.LookAt(next, next + forward, Vec3.Up);
+            if (Input.DeltaMouseScroll != 0f)
+                _captureCamera.SetFovVertical(Math.Max(0.25f, Math.Min(1.6f, _captureCamera.GetFovVertical() - Input.DeltaMouseScroll * 0.0005f)),
+                    _backup.GetAspectRatio(), 0.05f, _backup.Far);
         }
-
-        private void OnLayerAdded(ScreenLayer layer) { if (layer is GauntletLayer) _layersChanged = true; }
-
-        private void BeginWarmup()
-        {
-            _notBeforeFrame = IllustratorRuntime.ApplicationFrame + WarmupFrames;
-            _notBeforeMs = _clock.ElapsedMilliseconds + WarmupMilliseconds;
-        }
-
         private void ApplyCamera()
         {
-            _captureCamera.SetFovVertical((float)Math.PI / 3f, _backup.GetAspectRatio(), 0.05f, Math.Max(1000f, _backup.Far));
             _screen.CombatCamera.FillParametersFrom(_captureCamera);
             _screen.SceneView.SetCamera(_screen.CombatCamera);
         }
-
+        private void BeginExport()
+        {
+            if (_phase != 0 || _second != null) return;
+            _phase = 1;
+            _overlay.Capturing();
+            MBDebug.DisableAllUI = true;
+            _exportStart = _clock.ElapsedMilliseconds;
+            _exportFrame = IllustratorRuntime.ApplicationFrame;
+        }
+        private void ProcessExport()
+        {
+            if (_clock.ElapsedMilliseconds - _exportStart >= CaptureBudgetMs) throw new TimeoutException("截图导出超时，已恢复原画面；未发送生图请求。");
+            if (_read == null)
+            {
+                if (IllustratorRuntime.ApplicationFrame - _exportFrame < 4 || _clock.ElapsedMilliseconds - _exportStart < 250) return;
+                _shotPath = System.IO.Path.Combine(IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.TempDirectory), "mission_" + Guid.NewGuid().ToString("N") + ".bmp");
+                _shotCancel = new CancellationTokenSource(CaptureBudgetMs);
+                var path = _shotPath;
+                var token = _shotCancel.Token;
+                Utilities.TakeScreenshot(path);
+                _read = Task.Run(() => MissionScreenshotImageCodec.ReadCompleteAsync(path, token), token);
+                return;
+            }
+            if (!_read.IsCompleted) return;
+            byte[] raw = _read.GetAwaiter().GetResult();
+            ClearReader();
+            if (_first == null) _first = raw; else _second = raw;
+            _phase = 2;
+            MBDebug.DisableAllUI = false;
+            _overlay.Decision(_second == null ? 1 : 2);
+        }
+        private void Continue()
+        {
+            if (_closed || _phase != 2 || _first == null || _second != null) return;
+            ResumeAim();
+        }
+        private void Restart()
+        {
+            if (_closed || (_phase != 2 && _phase != 3)) return;
+            ClearReader();
+            _first = _second = null;
+            ResumeAim();
+        }
+        private void ResumeAim()
+        {
+            _phase = 0;
+            _keysReleased = false;
+            _lastCameraMs = _clock.ElapsedMilliseconds;
+            MBDebug.DisableAllUI = false;
+            _overlay.Aim(_first == null ? 0 : 1);
+        }
+        private void Escape()
+        {
+            ClearReader();
+            _first = _second = null;
+            _phase = 3;
+            MBDebug.DisableAllUI = false;
+            _overlay.CancelChoice();
+        }
+        private void Submit()
+        {
+            if (_closed || _phase != 2 || _first == null) return;
+            var result = new MissionScreenshotPair(_first, _second);
+            Restore();
+            _done.TrySetResult(result);
+        }
         internal void Cancel(string reason)
         {
             IllustratorRuntime.AssertMainThread();
             if (_closed) return;
             Restore();
+            _done.TrySetCanceled();
+        }
+        private void Fail(string reason)
+        {
+            Restore();
             _done.TrySetException(new InvalidOperationException(reason));
         }
-
+        private void ClearReader()
+        {
+            var reader = _read; var source = _shotCancel; var path = _shotPath;
+            _read = null; _shotCancel = null; _shotPath = null;
+            source?.Cancel();
+            Action cleanup = () => {
+                if (_clean && path != null) RestorePart(() => { if (System.IO.File.Exists(path)) System.IO.File.Delete(path); }, "temp_file");
+                source?.Dispose();
+            };
+            if (reader == null || reader.IsCompleted) { var observed = reader?.Exception; cleanup(); }
+            else reader.ContinueWith(t => { var observed = t.Exception; cleanup(); }, TaskScheduler.Default);
+        }
         private void Restore()
         {
             if (_closed) return;
             _closed = true;
-            _cancel.Cancel();
-            _first = null;
-            if (_watchingLayers) { _screen.OnAddLayer -= OnLayerAdded; _watchingLayers = false; }
-            // Restore each owned resource independently, including failure/mission exit.
+            ClearReader();
+            _first = _second = null;
+            RestorePart(() => _overlay?.Dispose(), "photo_ui");
             if (_changedCamera && !_screen.IsFinalized && ReferenceEquals(_screen.CustomCamera, _captureCamera))
             {
                 RestorePart(() => _screen.CustomCamera = _oldCustom, "custom_camera");
-                RestorePart(() => {
-                    _screen.CombatCamera.FillParametersFrom(_backup);
-                    _screen.SceneView.SetCamera(_screen.CombatCamera);
-                    SoundManager.SetListenerFrame(_backup.Frame);
-                }, "combat_camera");
+                RestorePart(() => { _screen.CombatCamera.FillParametersFrom(_backup); _screen.SceneView.SetCamera(_screen.CombatCamera); SoundManager.SetListenerFrame(_backup.Frame); }, "combat_camera");
             }
             if (_changedUi) MBDebug.DisableAllUI = _oldHideUi;
             if (_ownsPause) RestorePart(() => { if (_mission.GetRequestedTimeSpeed(PauseRequestId, out float _)) _mission.RemoveTimeSpeedRequest(PauseRequestId); }, "time_request");
             if (_changedPaused && ReferenceEquals(MissionState.Current, _missionState)) _missionState.Paused = _oldPaused;
-            if (ReferenceEquals(Mission.Current, _mission) && _mission.Scene != null)
-                RestorePart(() => _mission.Scene.TimeSpeed = _oldTimeSpeed, "scene_time");
+            if (ReferenceEquals(Mission.Current, _mission) && _mission.Scene != null) RestorePart(() => _mission.Scene.TimeSpeed = _oldTimeSpeed, "scene_time");
             if (_ownsStateDisable) RestorePart(() => _states.UnregisterActiveStateDisableRequest(this), "state_disable");
             if (_captureCamera != null) RestorePart(() => _captureCamera.ReleaseCamera(), "capture_camera_release");
             if (_backup != null) RestorePart(() => _backup.ReleaseCamera(), "backup_camera_release");
             if (_ownsStage) { ScreenCaptureHelper.ReleaseMissionScreenshotStage(); _ownsStage = false; }
-            CleanTempFiles();
-            // Dispose the token owner after the file reader has observed cancellation.
-            Task reader = _read;
-            if (reader == null || reader.IsCompleted) _cancel.Dispose();
-            else reader.ContinueWith(t => { var observed = t.Exception; CleanTempFiles(); _cancel.Dispose(); }, TaskScheduler.Default);
         }
-
-        private void CleanTempFiles()
-        {
-            if (_clean && _paths != null)
-                foreach (string path in _paths) RestorePart(() => { if (System.IO.File.Exists(path)) System.IO.File.Delete(path); }, "temp_file");
-        }
-
         private static void RestorePart(Action action, string part)
         {
             try { action(); }

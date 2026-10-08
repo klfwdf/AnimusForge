@@ -49,11 +49,11 @@ internal static class Program
         Set(options, "UsePlayer2ImageApi", player2); Set(options, "_player2Resolved", true);
         return options;
     }
-    private static Array References(string kind = "MissionScreenshot")
+    private static Array References(string kind = "MissionScreenshot", int count = 2)
     {
-        Array array = Array.CreateInstance(_reference, 2);
+        Array array = Array.CreateInstance(_reference, count);
         array.SetValue(Activator.CreateInstance(_reference, new object[] { _pngA, "截图A原始机位：保持站位距离朝向", Enum.Parse(_kind, kind) }), 0);
-        array.SetValue(Activator.CreateInstance(_reference, new object[] { _pngB, "截图B反侧回望：同一冻结现场", Enum.Parse(_kind, kind) }), 1);
+        if (count > 1) array.SetValue(Activator.CreateInstance(_reference, new object[] { _pngB, "截图B补充取景：同一冻结现场", Enum.Parse(_kind, kind) }), 1);
         return array;
     }
     private static object Await(object task)
@@ -117,17 +117,24 @@ internal static class Program
             Check(Get<bool>(result, "Success"), route + " success with references disabled in ordinary settings");
             Check(handler.Records.Count == 1 && handler.Records[0].Images == 2, route + " exactly one request with two separate screenshots");
             string text = handler.Records[0].Text;
-            Check(text.Contains("截图A") && text.Contains("截图B") && text.Contains("两个相反观察机位"), route + " independent A/B labels and spatial contract");
+            Check(text.Contains("截图A") && text.Contains("截图B") && text.Contains("玩家自由取景"), route + " independent A/B labels and spatial contract");
             Check(!text.Contains("不得把身份图的姿势") && !text.Contains("允许自定义服装装备"), route + " no portrait pose or free-equipment override");
             Check(text.Contains("正方形1:1"), route + " output size constraint retained");
             handler.Reset("{\"error\":{\"message\":\"image inputs not supported\"}}", HttpStatusCode.BadRequest);
             result = Generate(options, refs);
             Check(!Get<bool>(result, "Success") && handler.Records.Count == 1, route + " failed input never retries or drops images");
         }
+        foreach (string route in new[] { "edits", "chat", "player2" })
+        {
+            handler.Reset(success);
+            Check(Get<bool>(Generate(Options(route == "chat", route == "player2"), References(count: 1)), "Success")
+                && handler.Records.Count == 1 && handler.Records[0].Images == 1, route + " optional second screenshot is not invented");
+        }
         handler.Reset(success); var exact = Options(); Set(exact, "UseExactEndpointUrl", true); Set(exact, "ApiBaseUrl", "http://fixture.invalid/v1/images/generations");
         Check(!Get<bool>(Generate(exact, refs), "Success") && handler.Records.Count == 0, "text-only exact endpoint rejected before send");
         handler.Reset(success); var missing = Array.CreateInstance(_reference, 1); missing.SetValue(refs.GetValue(0), 0);
-        Check(!Get<bool>(Generate(Options(), missing), "Success") && handler.Records.Count == 0, "missing second screenshot rejected before HTTP");
+        Check(Get<bool>(Generate(Options(), missing), "Success") && handler.Records.Count == 1 && handler.Records[0].Images == 1, "single screenshot reaches generation unchanged");
+        handler.Reset(success);
         Check(!Get<bool>(Generate(Options(), References("Character")), "Success") && handler.Records.Count == 0, "ordinary character references cannot replace screenshots");
         var damaged = References(); damaged.SetValue(Activator.CreateInstance(_reference, new object[] { "not-valid-base64", "B", Enum.Parse(_kind, "MissionScreenshot") }), 1);
         Check(!Get<bool>(Generate(Options(), damaged), "Success") && handler.Records.Count == 0, "malformed second image never silently dropped");
@@ -236,7 +243,7 @@ internal static class Program
     }
     private static object Direction(object options, Array refs, HttpClient client)
     {
-        object plan = Activator.CreateInstance(_plan, new object[] { "场景喊话双截图插画", "玩家与目标相距2米。", "保持相对站位距离朝向。", "玩家：对白完整原文。\nNPC甲：动作已经发生。\nNPC乙：完整多人回应。" });
+        object plan = Activator.CreateInstance(_plan, new object[] { "场景喊话自由取景插画", "玩家与目标相距2米。", "保持相对站位距离朝向。", "玩家：对白完整原文。\nNPC甲：动作已经发生。\nNPC乙：完整多人回应。" });
         MethodInfo method = _director.GetMethod("CreateDirectionWithClientAsync", AllStatic);
         return Await(method.Invoke(null, new[] { plan, (object)refs, options, client, CancellationToken.None }));
     }
@@ -251,12 +258,16 @@ internal static class Program
         handler.Reset(reply(direction)); object options = Options();
         object result = Direction(options, References(), http);
         Check(!Get<bool>(result, "UsedLocalFallback") && handler.Records.Count == 1 && handler.Records[0].Images == 2, "vision director mandatory and receives exactly two screenshots");
+        handler.Reset(reply(direction));
+        result = Direction(options, References(count: 1), http);
+        Check(handler.Records.Count == 1 && handler.Records[0].Images == 1, "single player screenshot reaches vision director without supplement");
+
         string request = handler.Records[0].Text;
         Check(request.Contains("完整多人回应") && request.Contains("对白完整原文") && request.Contains("只有对白明确发生的空间变化"), "full frozen dialogue and action priority reach director");
         Check(!request.Contains("允许自定义服装装备"), "screenshot identities remain fixed with ordinary equipment switch off");
         string finalPrompt = Get<string>(result, "Prompt");
         Check(!finalPrompt.Contains("对白完整原文") && finalPrompt.Contains("玩家与目标相距2米")
-            && finalPrompt.Contains("玩家镜头水平方向") && finalPrompt.Contains("前后平视机位")
+            && finalPrompt.Contains("玩家可自由选择参考图视角") && finalPrompt.Contains("一张或两张")
             && finalPrompt.Contains("参考图的居中与透视只是采集构图，不是最终画面的固定要求")
             && finalPrompt.Contains("没有一张图指定最终主视角") && finalPrompt.Contains("自行推演机位、景别和构图"),
             "final image uses direction/facts/contract, never raw dialogue or forced player centering");
