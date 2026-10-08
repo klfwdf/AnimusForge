@@ -70,6 +70,7 @@ internal static class Program
             Require(Harmony.GetPatchInfo(inputOwner.GetMethod("OpenShoutTextInput", Flags))?.Prefixes.Any(p => p.owner == harmony.Id) == true
                 && Harmony.GetPatchInfo(owner.GetMethod("ShowShoutTradeChatInput", Flags))?.Prefixes.Any(p => p.owner == harmony.Id) == true,
                 "scene input Harmony hooks target both new owners");
+            SceneWheelProducerReplay.Run(host, harmony);
             Console.WriteLine("PASS actual DLL trade contract + Harmony.Install + scene entries: " + dll);
             return 0;
         }

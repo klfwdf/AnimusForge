@@ -54,6 +54,43 @@ internal sealed class SceneShoutInputController
     private readonly SceneShoutInputControllerPorts _ports;
     internal SceneShoutInputController(SceneShoutInputControllerPorts ports) { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); }
 
+    private MultiSelectionInquiryData _modeInquiry;
+    private Mission _modeInquiryMission;
+    private Campaign _modeInquiryCampaign;
+    private ShoutTargetingContext _modeInquiryTargeting;
+    private long _modeInquiryRevision, _modeInquiryGeneration;
+    private int _modeInquiryEpoch;
+    private Action<List<InquiryElement>> _modeInquiryAffirmative, _modeInquiryNegative;
+
+    // Exact menu ownership, not a compiler-generated closure name. Queried only on
+    // presentation/selection; no tick scan, reflection, or second menu state machine.
+    internal bool OwnsShoutModeInquiry(MultiSelectionInquiryData data)
+    {
+        return data != null && ReferenceEquals(_modeInquiry, data)
+            && ReferenceEquals(_modeInquiryCampaign, Campaign.Current)
+            && ReferenceEquals(Campaign.Current?.GetCampaignBehavior<ShoutBehavior>()?._j17SceneShoutInputController, this)
+            && ReferenceEquals(_modeInquiryMission, Mission.Current) && Mission.Current != null && !Mission.Current.IsMissionEnding
+            && Mission.Current.Mode != MissionMode.Conversation
+            && Campaign.Current?.ConversationManager?.IsConversationInProgress != true
+            && SaveRuntimeGuard.IsCurrentGeneration(_modeInquiryGeneration)
+            && _modeInquiryEpoch == _sceneConversationEpoch
+            && ReferenceEquals(_modeInquiryTargeting, _activeShoutTargetingContext)
+            && ReferenceEquals(data.AffirmativeAction, _modeInquiryAffirmative)
+            && ReferenceEquals(data.NegativeAction, _modeInquiryNegative);
+    }
+
+    private bool ConsumeShoutModeInquiry(MultiSelectionInquiryData data, long revision)
+    {
+        if (revision != _modeInquiryRevision || !OwnsShoutModeInquiry(data)) return false;
+        _modeInquiry = null;
+        _modeInquiryMission = null;
+        _modeInquiryCampaign = null;
+        _modeInquiryTargeting = null;
+        _modeInquiryAffirmative = null;
+        _modeInquiryNegative = null;
+        return true;
+    }
+
 	internal bool _isProcessingShout = false;
 
 	internal float _shoutProcessingStartedAt = -1f;
@@ -1405,6 +1442,8 @@ internal sealed class SceneShoutInputController
 
 	internal void TriggerShout()
 	{
+        long menuRevision = ++_modeInquiryRevision;
+        _modeInquiry = null;
 		if (!TryPrepareShoutTarget(out var primaryDataPacket))
 		{
 			return;
@@ -1456,8 +1495,10 @@ internal sealed class SceneShoutInputController
 					"让当前框选的己方主目标发表演讲。"));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+        MultiSelectionInquiryData data = null;
+		data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
+            if (!ConsumeShoutModeInquiry(data, menuRevision)) return;
 			if (selected == null || selected.Count == 0)
 			{
 				ResumeGame();
@@ -1510,8 +1551,17 @@ internal sealed class SceneShoutInputController
 			}
 		}, delegate
 		{
+            if (!ConsumeShoutModeInquiry(data, menuRevision)) return;
 			OnShoutCancelled();
 		}, "", isSeachAvailable: true);
+        _modeInquiry = data;
+        _modeInquiryMission = Mission.Current;
+        _modeInquiryCampaign = Campaign.Current;
+        _modeInquiryTargeting = _activeShoutTargetingContext;
+        _modeInquiryGeneration = SaveRuntimeGuard.CaptureGeneration();
+        _modeInquiryEpoch = _sceneConversationEpoch;
+        _modeInquiryAffirmative = data.AffirmativeAction;
+        _modeInquiryNegative = data.NegativeAction;
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
 
