@@ -35,7 +35,7 @@ public partial class MyBehavior
   BatchPreview = BuildWeeklyBatchPromptPreviewText,
   WaveLaunchQueue = _weeklyWaveLaunchQueue, BatchApiAttemptQueue = _weeklyBatchApiAttemptQueue,
   CallApi = CallWeeklyReportApiDetailed, GenerationAttempt = _weeklyGenerationAttemptOwner, AttemptPort = CreateWeeklyGenerationAttemptPort
- },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue);
+ },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue); }
  private static int CaptureWeeklyReportLengthPreset() { try { return DuelSettings.GetSettings()?.WeeklyReportLengthPreset ?? 2; } catch { return 2; } }
  private static string CaptureWeeklyReportWritingRequirements() { try { return DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? ""; } catch { return ""; } }
 private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs) => WeeklyReportRuntimeOwner.IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs);

@@ -7474,6 +7474,13 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 
 	private Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(string systemPrompt, string userPrompt, long runtimeGeneration, bool firstAttempt) => WeeklyRuntime.CallWeeklyReportBatchApiAttemptAsync(systemPrompt, userPrompt, runtimeGeneration, firstAttempt);
 
+	private Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(string systemPrompt, string userPrompt, long runtimeGeneration, bool firstAttempt, int expectedNewsEpoch)
+	{
+		if (expectedNewsEpoch != System.Threading.Volatile.Read(ref _newsCollectionEpoch))
+			return Task.FromResult(new ApiCallResult { ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText() });
+		return WeeklyRuntime.CallWeeklyReportBatchApiAttemptAsync(systemPrompt, userPrompt, runtimeGeneration, firstAttempt);
+	}
+
 	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L) => await _weeklyGenerationAttemptOwner.GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts, runtimeGeneration, BuildWeeklyReportBatchDisplayLabel(batch), CreateWeeklyGenerationAttemptPort());
 
 	private static void CaptureWeeklyReportBatchAttemptFailureMetadata(WeeklyReportBatchRequestResult result, ApiCallResult attempt) => WeeklyGenerationRules.CaptureWeeklyReportBatchAttemptFailureMetadata(result, attempt);
@@ -7562,6 +7569,7 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 
 	private string BuildWeeklyReportUserPrompt(WeeklyEventMaterialPreviewGroup group, int weekIndex, int startDay, int endDay)
 	{
+        return WeeklyPromptCaptureAdapter.BuildWeeklyReportUserPrompt(WeeklyRequestPromptCapturePorts, group, weekIndex, startDay, endDay);
     }
 
 	private string GetPreviousWeeklyReportText(WeeklyEventMaterialPreviewGroup group, int currentWeekIndex) => _weeklyEventRecords.GetPreviousWeeklyReportText(group, currentWeekIndex, FormatNewsCalendarDate);
@@ -7580,6 +7588,7 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 
 	private string BuildWeeklyBatchReportUserPrompt(WeeklyReportBatchRequest batch)
 	{
+        return WeeklyPromptCaptureAdapter.BuildWeeklyBatchReportUserPrompt(WeeklyRequestPromptCapturePorts, batch);
     }
 
 	private string BuildWeeklyBatchPromptInputBlock(WeeklyEventMaterialPreviewGroup group, int weekIndex)
