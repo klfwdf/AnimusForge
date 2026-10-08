@@ -467,9 +467,9 @@ internal sealed partial class SceneConversationSessionRuntime
 			bool firstTurn = true;
 			bool battleSpeechClaimedRound = false;
 			bool useTownResponseBudget = AfGcczShoutBridge.ShouldUseTownNpcResponseBudgetForExternal();
-			int remainingTurns = useTownResponseBudget
-				? Math.Min(SiegeNpcResponseEventBudget.MaxPendingRequests, speakableCandidates.Count)
-				: Math.Min(AUTO_GROUP_CHAT_MAX_LINES, speakableCandidates.Count);
+			HashSet<int> townBudgetAdmittedAgentIndices = useTownResponseBudget ? new HashSet<int>() : null;
+			// Bound utterances, not distinct people: two NPCs may hand the conversation back.
+			int remainingTurns = AUTO_GROUP_CHAT_MAX_LINES;
 			string responseEventId = "player_utterance:" + conversationEpoch;
 			while (currentSpeaker != null && remainingTurns-- > 0)
 			{
@@ -498,20 +498,29 @@ internal sealed partial class SceneConversationSessionRuntime
 				if (validatedCurrentSpeaker == null)
 				{
 					receipt?.Fail("scene.target_unavailable");
+					_ports.QueueSceneInfoMessage("本轮接力已结束：当前接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					break;
 				}
 				currentSpeaker = validatedCurrentSpeaker;
-				if (useTownResponseBudget
-					&& !AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+				if (useTownResponseBudget && !townBudgetAdmittedAgentIndices.Contains(currentSpeaker.AgentIndex))
+				{
+					if (!AfGcczShoutBridge.TryClaimNpcResponseForExternal(
 						responseEventId,
 						currentSpeaker.AgentIndex,
 						firstTurn ? SiegeNpcResponseEventOrigin.DirectPlayerReply : SiegeNpcResponseEventOrigin.PlayerUtterance,
 						Math.Max(0, speakableCandidates.Count - 1),
 						pendingRequestCount: 0,
 						source: "group_shout_independent",
-						out _))
-				{
-					break;
+						out var responseBudgetDecision))
+					{
+						Logger.Log("ShoutBehavior", "[SceneRelay] budget_rejected agent=" + currentSpeaker.AgentIndex + " reason=" + responseBudgetDecision.Reason);
+						string budgetStopMessage = responseBudgetDecision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
+							? "本轮接力已结束：已达到场景回应人数预算"
+							: "本轮接力已结束：场景回应预算未允许继续接话";
+						_ports.QueueSceneInfoMessage(budgetStopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+						break;
+					}
+					townBudgetAdmittedAgentIndices.Add(currentSpeaker.AgentIndex);
 				}
 				engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 				if (personaPreparedAgentIndices.Add(currentSpeaker.AgentIndex))
@@ -962,8 +971,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						if (!IsCurrentModuleGroup()) return;
 						relayCandidatesForNextTurn = nextEligibility.Candidates
 							.Where(candidate => candidate != null
-								&& candidate.AgentIndex != currentSpeaker.AgentIndex
-								&& !roundNpcSpeakerIndices.Contains(candidate.AgentIndex))
+								&& candidate.AgentIndex != currentSpeaker.AgentIndex)
 							.ToList();
 					}
 				relayPostprocessSelected = !suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
@@ -1001,12 +1009,14 @@ internal sealed partial class SceneConversationSessionRuntime
 							if (postprocessOutcome?.Status == ScenePostprocessStatus.TargetUnavailable)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] stopped because the current postprocess target became unavailable agent=" + currentSpeaker.AgentIndex);
+								_ports.QueueSceneInfoMessage("本轮接力已结束：当前发言者已无法继续回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (postprocessOutcome?.Succeeded != true)
 							{
 								receipt?.Fail("scene.postprocess_unconfirmed");
 								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
+								_ports.QueueSceneInfoMessage("本轮接力已中断：行为处理失败或超时", new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex < 0)
@@ -1018,6 +1028,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] current speaker selected itself; relay stopped agent=" + currentSpeaker.AgentIndex);
+								_ports.QueueSceneInfoMessage("本轮接力已结束", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else
@@ -1036,6 +1047,17 @@ internal sealed partial class SceneConversationSessionRuntime
 					nextSpeaker = await _dispatcher.RunAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);
 					if (!IsCurrentModuleGroup()) return;
 					resolvedRelayTargetAgentIndex = nextSpeaker?.AgentIndex ?? (-1);
+					if (nextSpeaker == null)
+					{
+						_ports.QueueSceneInfoMessage("本轮接力已结束：选中的接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+					}
+				}
+				if (!relayPostprocessSelected && !suppressBattleSpeechFollowups && !string.IsNullOrWhiteSpace(cleaned))
+				{
+					string stopMessage = endRequested ? "本轮接力已结束"
+						: remainingTurns <= 0 ? "本轮接力已结束：已达到发言次数上限"
+						: "本轮接力已结束：当前无人可接话";
+					_ports.QueueSceneInfoMessage(stopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				}
 			if (relayPostprocessSelected && !string.IsNullOrWhiteSpace(cleaned))
 			{

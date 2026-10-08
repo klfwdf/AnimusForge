@@ -1400,7 +1400,7 @@ internal static List<PostprocessRuleEntry> BuildAutoGroupRelayPostprocessRulesFo
 			new PostprocessRuleEntry
 			{
 				Tag = AutoGroupRelayTagTemplate,
-				Description = "仅当根据<latest_reply>中NPC本轮发言后需要决定是否继续接话时输出。接力编号必须来自运行时补充事实里的【站在你旁边的人】；选择当前发言者自己的编号表示结束接力，此后不再有人发言。不要编造列表外编号，最多输出一个。"
+				Description = "按运行时补充事实里的【接力选择协议】只输出一个接力标签。接话者编号必须来自【站在你旁边的人】，允许已经发言的人再次接话；话题结束或没有合适接话者时，按【接力终止】输出当前发言者自己的编号。不要编造编号或省略标签。"
 			}
 		};
 	}
@@ -1787,7 +1787,8 @@ internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDa
 			}
 			if (currentSpeakerAgentIndex >= 0)
 			{
-				sb.AppendLine("【接力终止】选择当前发言者自己的接力编号（" + currentSpeakerAgentIndex + "）表示结束接力，此后不会再有NPC发言。");
+				sb.AppendLine("【接力选择协议】只输出一个[RELAY:接力编号]。优先选择最新对话中被询问、被递话或有明确回应理由的人；候选中已经发言的人仍可再次接话，未发言仅作同等条件下的优先项。不要为了凑人数强迫士兵或平民插话。");
+				sb.AppendLine("【接力终止】若本轮话题已结束、明确告别或没有合适的接话者，输出[RELAY:" + currentSpeakerAgentIndex + "]表示结束本轮接力；这是当前发言者自己的编号，不是让其再次发言。结束时也应输出此标签，不要用省略标签表达结束。");
 			}
 			return sb.ToString().TrimEnd();
 		}
