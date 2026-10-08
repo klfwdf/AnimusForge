@@ -7,11 +7,11 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge {
 // Game/UI leaves only; actual controller state and callback lifecycle are linked from production.
 internal static class SceneInteractionContract {
- internal static SceneTradeController Create(ScenePresentationController panel, Func<List<ShoutBehavior.ShoutTradeResourceOption>> options, Action effects, Action<string,string,int?> accept, Func<bool> targetValid, Func<bool,string> facts=null) {
+ internal static SceneTradeController Create(ScenePresentationController panel, Func<List<ShoutBehavior.ShoutTradeResourceOption>> options, Action effects, Action<string,string,int?> accept, Func<bool> targetValid, Func<bool,string> facts=null, Action shown=null) {
   return new SceneTradeController(new SceneTradeControllerPorts {
    GetPresentation=()=>panel, BuildShoutTradeOptions_L14160=()=>options(), GetShoutTradeTargetIneligibility_L33=mode=>null,
    EnsureShoutTradePrimaryTargetValidForCommit_L14056=require=>targetValid(), ApplyShoutGiveTransfer_L14619=()=>effects(),
-   BuildShoutTradeFactText_L15241=give=>facts?.Invoke(give)??"observed", RecordShoutShownResources_L16847=()=>{}, EstimateShoutPendingShowTotalValue_L15395=()=>0,
+   BuildShoutTradeFactText_L15241=give=>facts?.Invoke(give)??"observed", RecordShoutShownResources_L16847=()=>shown?.Invoke(), EstimateShoutPendingShowTotalValue_L15395=()=>0,
    ShowShoutPendingDisplayValueMessage_L15421=value=>{}, OnShoutConfirmedWithContext_L17001=(text,fact,target)=>accept(text,fact,target),
    PauseGame_L21301=()=>{},ResumeGame_L21311=()=>{}, OnShoutCancelled_L21322=()=>{},
    RecordNativeConversationTradeActionFact_L14519=fact=>{}, BuildShoutTargetEncyclopediaAction_L13863=npc=>null,
@@ -237,8 +237,9 @@ public partial class ShoutBehavior {
  internal static bool IsNativeConversationSelfTarget(Hero h,CharacterObject c)=>h!=null&&h==Hero.MainHero;
 }
 internal static partial class MyBehavior {
- internal static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(Hero h,CharacterObject c,int i)=>new();
- internal static List<SettlementTransferPromptEntry> BuildSettlementTransferPromptEntriesForExternal(Hero h,CharacterObject c)=>new();
+ internal static List<PartyTransferPromptEntry> PartyEntries=new();internal static List<SettlementTransferPromptEntry> AssetEntries=new();
+ internal static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(Hero h,CharacterObject c,int i)=>new(PartyEntries);
+ internal static List<SettlementTransferPromptEntry> BuildSettlementTransferPromptEntriesForExternal(Hero h,CharacterObject c)=>new(AssetEntries);
  internal static bool IsSettlementTransferEntryValidForExternal(SettlementTransferPromptEntry e)=>true;
  internal static string GetSettlementTransferAssetDisplayNameForExternal(SettlementTransferPromptEntry e)=>"asset";
  internal static int GetRemainingShowableGoldForExternal(Hero h,string key,int count)=>count;
@@ -248,11 +249,11 @@ internal static partial class MyBehavior {
  internal static bool IsPartyTransferLordEligibleForExternal(Hero h,CharacterObject c)=>true;
  internal static bool IsSettlementTransferLeaderEligibleForExternal(Hero h,CharacterObject c)=>true;
  internal static TaleWorlds.CampaignSystem.Party.PartyBase ResolvePartyTransferCounterpartyForExternal(Hero h,CharacterObject c,int i)=>new();
- internal static void RecordShownResourcesForExternal(Hero h,string key,int gold,Dictionary<string,int> items){}
+ internal static int ShowCalls,ShownGold;internal static Dictionary<string,int> ShownItems;internal static void RecordShownResourcesForExternal(Hero h,string key,int gold,Dictionary<string,int> items){ShowCalls++;ShownGold=gold;ShownItems=items;}
  internal static void AppendExternalDialogueHistory(Hero h,string player,string reply,string fact){}
  internal static int RemoveItemsFromRosterByStringId(TaleWorlds.CampaignSystem.Roster.ItemRoster roster,string id,int amount,out TaleWorlds.Core.ItemObject item){item=System.Linq.Enumerable.FirstOrDefault(roster.Items.Keys,x=>x.StringId==id);if(item==null)return 0;int removed=Math.Min(amount,roster.GetItemNumber(item));roster.AddToCounts(item,-removed);return removed;}
  internal sealed class TestPartyEffect {internal int Delivered;}
- internal static TestPartyEffect TransferPlayerPartyEntryWithObservedEffects(Hero h,CharacterObject c,int i,PartyTransferPromptEntry entry,int amount)=>new(){Delivered=amount};
+ internal static int PartyTransferCalls,PartyTransferAmount;internal static PartyTransferPromptEntry LastPartyTransfer;internal static Hero LastPartyRecipient;internal static TestPartyEffect TransferPlayerPartyEntryWithObservedEffects(Hero h,CharacterObject c,int i,PartyTransferPromptEntry entry,int amount){PartyTransferCalls++;PartyTransferAmount=amount;LastPartyTransfer=entry;LastPartyRecipient=h;return new(){Delivered=amount};}
 }
 internal static class PartyTransferExecutionOwner {internal static string BuildPartialEffectFact(MyBehavior.PartyTransferPromptEntry e,MyBehavior.TestPartyEffect effect)=>"";}
 internal static class AfGcczShoutBridge {
@@ -264,7 +265,7 @@ internal sealed class RewardSystemBehavior {
  internal bool Merchant,ThrowOnMerchantCapture;internal int RecordedGold;internal List<string> MerchantFacts=new();internal static RewardSystemBehavior Instance;internal enum SettlementMerchantKind {None,Merchant}
  internal bool TryGetSettlementMerchantKind(CharacterObject c,out SettlementMerchantKind kind){if(ThrowOnMerchantCapture)throw new Exception("synthetic capture exception");kind=Merchant?SettlementMerchantKind.Merchant:SettlementMerchantKind.None;return Merchant;}
  internal int GetInventoryActualItemUnitValueForExternal(TaleWorlds.Core.EquipmentElement e)=>1;
- internal bool TryApplyPlayerSettlementTransferForExternal(Hero h,MyBehavior.SettlementTransferPromptEntry e,out string status){status="";return true;}
+ internal int AssetTransferCalls;internal MyBehavior.SettlementTransferPromptEntry LastAsset;internal bool TryApplyPlayerSettlementTransferForExternal(Hero h,MyBehavior.SettlementTransferPromptEntry e,out string status){AssetTransferCalls++;LastAsset=e;status="";return true;}
  internal void RecordPlayerPrepaidTransfer(Hero h,int gold,string id,int amount){}
  internal int TransferGoldToSettlement(TaleWorlds.CampaignSystem.Settlements.Settlement s,Hero h,int amount){TaleWorlds.CampaignSystem.Actions.GiveGoldAction.ApplyBetweenCharacters(h,null,amount,true);return amount;}
  internal int TransferGoldToParty(TaleWorlds.CampaignSystem.Party.PartyBase p,Hero h,int amount)=>0;

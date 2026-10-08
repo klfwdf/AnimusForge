@@ -21,7 +21,7 @@ namespace AnimusForge {
  internal static class PlayerEncounterCompat { internal static bool IsInPostBattleResultFlow()=>false; }
  internal sealed class CoreDialogueOperation { internal void MarkOwnerAdmitted(){} }
  internal static class LlmNonStreamingTransport { internal static IDisposable PushOwnerCancellation(CancellationToken token)=>new Scope(); private sealed class Scope:IDisposable { public void Dispose(){} } }
- public partial class ShoutBehavior { @@ADMISSION@@ @@ERROR@@ }
+ public partial class ShoutBehavior { internal static ShoutBehavior CurrentInstance;internal NativeAdmissionApplicationAdapter NativeAdmissions;@@ADMISSION@@ @@ERROR@@ @@PRODUCER@@ }
  public sealed partial class ProactiveNpcRequestBehavior {
   private sealed class PendingOpeningFact { internal string SessionId,HeroId,ExtraFact,PromptText; internal float CreatedAtHours; }
   private sealed class Session { internal string Id; }
@@ -58,7 +58,7 @@ internal sealed class Fixture {
  internal readonly NativeAdmissionApplicationAdapter Adapter;
  internal bool Current=true,CanSubmit=true,Available=true;
  internal int Runs,Visible;
- internal string Mode="fail";
+ internal string Mode="fail",LastInput,LastDialog;internal bool LastOpening;
  internal Admission Last;
  internal Action<string,Hero,CharacterObject> LateReady;
  internal TaskCompletionSource<bool> Hold=new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -67,14 +67,15 @@ internal sealed class Fixture {
   ProactiveNpcRequestBehavior.Instance=new();CompanionProactiveChatBehavior.Instance=new();
   Adapter=new(Owner,()=>true,()=>Current,()=>CanSubmit,action=>action(),100,
    Resolve,(hero,character)=>-1,Target,Run);
+  ShoutBehavior.CurrentInstance=new(){NativeAdmissions=Adapter};
  }
  private bool Resolve(out Hero hero,out CharacterObject character,out string name){hero=Hero;character=Character;name="speaker";return true;}
  private bool Target(int index,Hero hero,CharacterObject character,out string reason){reason=Available?"":"target-unavailable";return Available;}
  private async Task<string> Run(Admission admission,string input,Action<string> stream,string dialog,Action<string> post,Action<string,Hero,CharacterObject> ready,bool opening){
-  Runs++;Last=admission;LateReady=ready;
+  Runs++;Last=admission;LateReady=ready;LastInput=input;LastDialog=dialog;LastOpening=opening;
   if(Mode=="hold")await Hold.Task;
   if(Mode=="fail")return "preprocess-unavailable";
-  ready("body",Hero,Character);return "body";
+  stream?.Invoke("chunk");post?.Invoke("speaker");ready("body",Hero,Character);return "body";
  }
  internal void Open(string source){if(source=="lord")ProactiveNpcRequestBehavior.Instance.Open(Hero);else CompanionProactiveChatBehavior.Instance.Open(Hero);}
  internal int Consumed=>ProactiveNpcRequestBehavior.Instance.Consumed+CompanionProactiveChatBehavior.Instance.Consumed;
@@ -86,6 +87,16 @@ internal static class Program {
  private static void Check(bool value,string name){Checks++;if(!value)throw new InvalidOperationException(name);}
  private static async Task WaitFor(Func<bool> predicate){for(int i=0;i<1000&&!predicate();i++)await Task.Delay(1);Check(predicate(),"worker-started");}
  static async Task Main(){
+  var entry=new Fixture{Mode="ready"};int streams=0,posts=0,readyCalls=0;Hero seenHero=null;CharacterObject seenCharacter=null;
+  Action<string> stream=t=>{Check(t=="chunk","facade keeps stream callback text");streams++;};Action<string> post=t=>posts++;Action<string,Hero,CharacterObject> ready=(text,hero,character)=>{readyCalls++;seenHero=hero;seenCharacter=character;};
+  Check(await ShoutBehavior.SubmitNativeConversationTextForExternalAsync("first player input",stream,"original dialog",post,ready)=="body","public player producer reaches actual admission/worker");
+  Check(entry.LastInput=="first player input"&&entry.LastDialog=="original dialog"&&!entry.LastOpening&&streams==1&&posts==1&&readyCalls==1&&ReferenceEquals(seenHero,entry.Hero)&&ReferenceEquals(seenCharacter,entry.Character),"public player facade preserves all callback and dialog identities");
+  var presentation=ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();Check(presentation!=null,"real overlay producer captures lease after prior completion");
+  Check(await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentation,"second player input",stream,"overlay dialog",post,ready,false)=="body"&&entry.Runs==2&&streams==2&&posts==2&&readyCalls==2,"real overlay facade crosses admission and preserves second-turn callbacks");
+  bool scopeReused=false;try{await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentation,"duplicate",stream,"",post,ready,false);}catch(ShoutBehavior.NativeConversationAdmissionException error){scopeReused=error.ReasonCode=="native.presentation_scope_reused";}
+  Check(scopeReused&&entry.Runs==2,"same overlay producer lease cannot replay a turn");
+  presentation=ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();Mission.Current=new();Check(await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentation,"old scene",stream,"",post,ready,false)==""&&entry.Runs==2,"stale overlay facade rejected before callbacks and worker");
+  foreach(string producerSource in new[]{"lord","companion"}){entry=new Fixture();entry.Open(producerSource);Check(await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(stream,"opening dialog",post,ready)=="preprocess-unavailable"&&entry.Consumed==1,"public NPC producer crosses "+producerSource+" obligation owner");entry.Mode="ready";int beforeReady=readyCalls;Check(await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(stream,"retry dialog",post,ready)=="body"&&entry.Consumed==1&&entry.LastOpening&&entry.LastDialog=="retry dialog"&&readyCalls==beforeReady+1&&!entry.HasRetry(),"public NPC retry preserves callback and consumes source exactly once "+producerSource);}
   foreach(string source in new[]{"lord","companion"}) {
    var f=new Fixture();f.Open(source);
    Check(await f.Submit()=="preprocess-unavailable",source+" first attempt failed without body");
@@ -135,6 +146,6 @@ internal static class Program {
    f=new Fixture();f.Open(source);f.Available=false;Check(await f.Submit()==""&&f.Consumed==0,source+" initial target rejected before consume");
    f.Available=true;f.Mode="ready";Check(await f.Submit()=="body"&&f.Consumed==1,source+" target recovery first body");
   }
-  Console.WriteLine("PASS NativeOpeningRetry checks="+Checks+"; current full admission adapter/owner/router, production lord+companion consume statements; game/UI/network leaves are fixtures, no live opening acceptance");
+  Console.WriteLine("PASS NativeOpeningRetry checks="+Checks+"; current public/overlay producers + admission adapter/owner/router + production lord/companion consume statements; game/UI/full turn/network leaves are fixtures, no live opening acceptance");
  }
 }
