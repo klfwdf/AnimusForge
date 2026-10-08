@@ -1,12 +1,12 @@
 <a id="release-v156-20261008"></a>
-# 1.5.6 编译、部署、打包与累计玩家公告（2026-10-08，DEPLOYED_PACKAGED_LIVE_PENDING）
+# 1.5.6 编译、部署、打包与累计玩家公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确授权编译、部署、提交推送、打包与累计公告；随后确认以上次正式1.5.5公告为基线。基线 `a1755fa7ab7fea5cc320f92c50e2429522796a3b`，开始远端 `7fdb439f974c0f9d19fcb47c236e6a67071387f8`，本地 `f25a3a57`，初次fetch后领先6/落后0；临推再次fetch仍无远端新提交。累计公告覆盖基线之后已经合入远端和本地的最终产品行为，不把中间被替代方案/检查点计为新功能。
 - 检查点 `bdae1292`；模块显示版本提交 `fe40e43f9` 将 `AnimusForge/SubModule.xml:4` 从v1.5.4改为v1.5.6，启动器、Stage、ZIP统一；程序集身份/存档类型和原构建脚本不变。固定构建源码 `fe40e43f942dd54fab5f63fba30ebb15838df690` 包含当前全部已提交会话改动，保留两个NuGet本地空标记。原build_single_module.ps1双API/Bootstrap/双接缝与Stage exit0；1.3引用v1.3.15.110062，1.4引用v1.4.6.115628，Debug。30,891个跟踪代码/资源/构建输入与固定快照一致；源码比较首轮Windows默认GBK解码失败，显式UTF-8重跑通过。
 - 验证与部署：最终两生产DLL各129项请求/导演/历史检查和15项几何/亮度检查PASS（HTTP内存拦截）。原deploy_module.ps1 exit0，更新27文件；3,380个Stage与安装文件逐项SHA一致，27份旧文件Recovery备份均核对。安装目录 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；恢复目录 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-bb4fbd919b754bf2bcc0232f8aea3d4c`，complete。仅覆盖Stage列出的文件，原版DLL/未知安装文件不在覆盖范围。
 - 原package_mod.ps1以NoBump生成一个统一ZIP：`一键编译覆盖推送/packages/AnimusForge_v1.5.6_20261008_085444_131.zip`，85,930,972字节，SHA256 `f706f68aa3e2a01665c7de5c88d1acac683173f7650d79a667c7279c9622aa64`。包中3,380文件与Stage/游戏安装字节一致，唯一AnimusForge根、Bootstrap唯一入口、双实现及标记验证通过，无ONNX/玩家Configs/Logs/Cache。旧包保留，不更改默认脚本流程。
 - 公告提交 `8ab6045a9`：[玩家公告](releases/AnimusForge_1.5.6_累计更新公告_20261008.md)及同名txt；另复制到packages目录便于取用。涵盖快报轶闻与设置、外交回应/通知、场景双图与后台任务、画卷配置/API、对话滚动/会面、处决/城堡/记忆/设置。明确最终机位仅跟随玩家镜头水平朝向，导演自主构图；坡地遮挡和敌我误识别未修复，不冒充完成。没有代发玩家群或创建GitHub Release。
-- 出站检查在公告提交时确认9个待推提交、31个历史blob，无生成物/ZIP/sav/明确排除的本地交接文件或明显密钥模式；只普通推送main，不推备份分支、不重写历史。实际推送和远端SHA结果写入同证据目录push.log、remote-confirmation.json与delivery-receipt.json，交接记录后续补齐。
+- 出站检查在公告提交时确认9个待推提交、31个历史blob，无生成物/ZIP/sav/明确排除的本地交接文件或明显密钥模式；仅后续增加本条交付文档。10个提交已普通推送main，独立ls-remote确认远端 `50833e3af656cba0c5166ca9544ccc0f7146007c`；不推备份分支、不重写历史。本条结果同步作为后续文档提交同样推送，最终SHA和退出码写入同证据目录push-final.log、remote-confirmation.json与delivery-receipt.json。
 - 证据 `artifacts/release-v1.5.6-20261008/`：source-comparison.json、publication-audit.json、cumulative-commits.txt、remote-diff-stat.txt、build/deploy/package日志与退出码、delivery-receipt.json、final-verify.log、stage-sha256.json。NOT-RUN：实机GPU/UI、真实模型、玩家旧档及第三方组合。部署回滚按Recovery manifest逐文件验证并恢复；源码显示版本只定向revert `fe40e43f9`，功能回滚用各自产品提交，不reset其他作者。
 
 <a id="player-camera-direction-20261008"></a>

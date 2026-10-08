@@ -1,8 +1,8 @@
-# 当前交接：1.5.6 已部署打包与累计公告（2026-10-08，DEPLOYED_PACKAGED_LIVE_PENDING）
+# 当前交接：1.5.6 已部署、打包、推送与累计公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户授权完整交付并确认以正式1.5.5公告为基线；产品源码 `fe40e43f9`，公告 `8ab6045a9`。双API/Bootstrap/接缝及最终DLL专项通过；部署27文件、3,380安装文件和27份备份SHA通过。启动器与ZIP版本统一v1.5.6，包含此前所有已提交会话改动；本条替代这些改动的“未部署”状态，实机边界保持。
 - 包：`一键编译覆盖推送/packages/AnimusForge_v1.5.6_20261008_085444_131.zip`；[累计玩家公告](docs/releases/AnimusForge_1.5.6_累计更新公告_20261008.md)及同名txt也放在包旁。ZIP3,380项与安装一致，不含ONNX/个人配置/日志。
-- [唯一台账、远端比较与恢复点](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-v156-20261008)，证据 `artifacts/release-v1.5.6-20261008/delivery-receipt.json`。普通推送结果随后按远端回执补记；坡地遮挡、敌我识别、真实GPU/模型/旧档仍未验。下方为历史记录，不构成未来交付授权。
+- [唯一台账、远端比较与恢复点](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-v156-20261008)，证据 `artifacts/release-v1.5.6-20261008/delivery-receipt.json`。10个提交已普通推送origin/main，独立确认远端50833e3af；本条结果同步随后推送，最终SHA见remote-confirmation.json。坡地遮挡、敌我识别、真实GPU/模型/旧档仍未验。下方为历史记录，不构成未来交付授权。
 
 # 历史交接：双平视机位跟随玩家镜头方向（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
