@@ -22,6 +22,7 @@ static class Program {
   Check(menu.AffirmativeAction.Method.DeclaringType.DeclaringType==typeof(SceneShoutInputController),"actual migrated closure belongs to controller");
   layer.Choose("normal");menu.AffirmativeAction(new(){menu.InquiryElements[0]});menu.NegativeAction(new());
   Check(owner.Sessions==1&&owner.Inputs==0&&owner.Cancels==0,"normal opens persistent session once; duplicate affirmative/cancel do nothing");
+  owner=Fresh();Campaign.Current.Behavior.TriggerShout();Check(SceneWheel.IsOpen&&owner.Menu!=null,"still-live legacy facade forwards into the same current controller menu");
   owner=Fresh();owner.TriggerShout();menu=owner.Menu;WheelLayer.Last.Cancel();menu.NegativeAction(new());Check(owner.Cancels==1,"cancel executes original host exactly once");
   foreach(string mode in new[]{"give","show","give_troops","give_prisoners","give_settlements"}){owner=Fresh();owner.TriggerShout();WheelLayer.Last.Choose(mode);Check(owner.Trades==1&&owner.LastMode==mode&&owner.FallbackTrades==0,"wheel choice enters session trade "+mode);}
   owner=Fresh();int factories=WheelLayer.Factories;var third=new MultiSelectionInquiryData("third","",new(){new("normal","normal",null,true,""),new("give","give",null,true,"")},true,1,1,"","",_=>{},_=>{});MBInformationManager.ShowMultiSelectionInquiry(third,true);
@@ -49,7 +50,7 @@ namespace AnimusForge.Refactor.Runtime {public static class SaveRuntimeGuard{pub
 namespace AnimusForge {
  public sealed class NpcDataPacket{public string Name="NPC";}public sealed class ShoutTargetingContext{}
  public enum ShoutChatMode{Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements}
- public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
+ public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();__LEGACY_ENTRY__ internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
  internal static class MyBehavior{internal static bool IsDevDataManagementEnabledForExternal()=>false;}
  internal static class BattleSpeechRuntimeHost{internal static bool CanOpenSpeechMenu(Mission m)=>false;}
  internal sealed class SceneShoutInputController {
