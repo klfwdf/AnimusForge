@@ -11,7 +11,7 @@ using TaleWorlds.MountAndBlade;
 using Admission = AnimusForge.ShoutBehavior.NativeConversationAdmission;
 
 namespace TaleWorlds.CampaignSystem {
- public sealed class Hero { public string StringId; }
+ public sealed class Hero { public string StringId; public string Name=>StringId; }
  public sealed class CharacterObject { }
  public sealed class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(){ IsConversationInProgress=true, ActiveToken=1 }; }
 }
@@ -19,23 +19,38 @@ namespace TaleWorlds.CampaignSystem.Conversation { public sealed class Conversat
 namespace TaleWorlds.MountAndBlade { public sealed class Mission { public static Mission Current = new(); } }
 namespace AnimusForge.Refactor.Modules { }
 namespace AnimusForge {
+ internal static class Logger {internal static readonly List<string> Entries=new();internal static void Log(string area,string message){Entries.Add(message);}}
  internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long generation)=>generation==Generation; }
  internal static class PlayerEncounterCompat { internal static bool IsInPostBattleResultFlow()=>false; }
  internal sealed class CoreDialogueOperation { internal void MarkOwnerAdmitted(){} }
  internal static class LlmNonStreamingTransport { internal static IDisposable PushOwnerCancellation(CancellationToken token)=>new Scope(); private sealed class Scope:IDisposable { public void Dispose(){} } }
- public partial class ShoutBehavior { internal static ShoutBehavior CurrentInstance;internal NativeAdmissionApplicationAdapter NativeAdmissions;@@ADMISSION@@ @@ERROR@@ @@PRODUCER@@ }
+ public partial class ShoutBehavior { internal static Hero TargetHero; public static Hero GetNativeConversationTargetHeroForExternal()=>TargetHero;internal static bool ForceBusy;internal static bool IsNativeConversationBackendBusy()=>ForceBusy; internal static ShoutBehavior CurrentInstance;internal NativeAdmissionApplicationAdapter NativeAdmissions;@@ADMISSION@@ @@ERROR@@ @@PRODUCER@@ }
  public sealed partial class ProactiveNpcRequestBehavior {
   private sealed class PendingOpeningFact { internal string SessionId,HeroId,ExtraFact,PromptText; internal float CreatedAtHours; }
-  private sealed class Session { internal string Id; }
+  private sealed class Session { internal string Id,HeroId,Stage; }
+  private sealed class SessionLeaf {internal void MarkConversationOpening(bool native){}}
+  private readonly SessionLeaf _sessionOwner=new();
   private readonly ProactiveOpeningOwner _openingOwner = new();
   private Session _activeSession;
   internal static ProactiveNpcRequestBehavior Instance = new();
   internal int Consumed;
-  internal void Open(Hero hero) { _activeSession=new(){Id="lord-session"};_openingOwner.Open(true,_activeSession.Id,hero.StringId,"lord-fact","lord-prompt",1); }
-  private static string GetHeroKey(Hero hero)=>hero.StringId;
+  internal void Open(Hero hero) { Start(hero); MarkConversationOpeningInternal(hero,true); }
+  internal void Start(Hero hero) { _activeSession=new(){Id="lord-session",HeroId=hero.StringId}; }
+  private bool IsActiveHero(Hero hero)=>hero!=null&&_activeSession?.HeroId==hero.StringId;
+  private string BuildTriggerSourceOpeningFact(Hero hero)=>"lord-fact";
+  private string BuildOpeningFact(Hero hero)=>"";
+  private string BuildOpeningPrompt(object needs)=>"lord-prompt";
+  private object GetActiveNeedTypes()=>null;
+  private static float NowHours()=>1;
+  @@LORD_MARK@@
+  @@LORD_MENU@@
+  @@LORD_LOG@@
+  @@LORD_LOG_STATE@@
+  private OpeningStateObservation _menuOpeningObservation,_markOpeningObservation,_consumeOpeningObservation;
+  private static string GetHeroKey(Hero hero)=>(hero?.StringId??"").Trim();
   private void CompleteActiveForHeroInternal(Hero hero,string reason) { Consumed++;_activeSession=null;_openingOwner.Clear(); }
   public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,true,out fact,out prompt);
-  public static bool HasPendingNativeOpeningForCurrentConversation()=>false;
+  @@LORD_HAS@@
   @@LORD_CONSUME@@
  }
  public sealed class CompanionProactiveChatBehavior {
@@ -50,9 +65,17 @@ namespace AnimusForge {
   private void RecordInteraction(Hero hero)=>Recorded++;
   private void ConsumePendingSession(string reason) { Consumed++;_storage.PendingSession=null; }
   public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,out fact,out prompt);
-  public static bool HasPendingNativeOpeningForCurrentConversation()=>false;
+  @@COMPANION_HAS@@
+  @@COMPANION_MATCH@@
   @@COMPANION_CONSUME@@
  }
+}
+internal sealed class OpeningGateLeaf {
+ internal bool _isClosed,_isSubmitting,_npcOpeningAutoStarted;internal int Starts,Shown;internal Func<Task<string>> Submit;internal Task Pending;
+ private void SetInputVisible(bool visible){if(visible)Shown++;}
+ private Task SubmitNpcInitiatedOpeningAsync(){Starts++;Pending=Submit();return Pending;}
+ internal void Tick()=>TryStartPendingNpcOpening();
+ @@AUTO_GATE@@
 }
 internal sealed class Fixture {
  internal Hero Hero=new(){StringId="speaker"}; internal CharacterObject Character=new();
@@ -65,7 +88,7 @@ internal sealed class Fixture {
  internal Action<string,Hero,CharacterObject> LateReady;
  internal TaskCompletionSource<bool> Hold=new(TaskCreationOptions.RunContinuationsAsynchronously);
  internal Fixture() {
-  Campaign.Current=new();Mission.Current=new();SaveRuntimeGuard.Generation=1;
+  Campaign.Current=new();Mission.Current=new();SaveRuntimeGuard.Generation=1;ShoutBehavior.TargetHero=Hero;
   ProactiveNpcRequestBehavior.Instance=new();CompanionProactiveChatBehavior.Instance=new();
   Adapter=new(Owner,()=>true,()=>Current,()=>CanSubmit,action=>action(),100,
    Resolve,(hero,character)=>-1,Target,Run);
@@ -90,6 +113,24 @@ internal static class Program {
  private static async Task WaitFor(Func<bool> predicate){for(int i=0;i<1000&&!predicate();i++)await Task.Delay(1);Check(predicate(),"worker-started");}
  static async Task Main(){try{await Run();}catch(Exception error){Console.WriteLine("FAIL "+error.GetType().FullName+": "+error.Message);Console.WriteLine(error.StackTrace);Environment.ExitCode=1;}}
  static async Task Run(){
+  var provenance=new Fixture{Mode="ready"};
+  Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"ordinary intercepted/native encounter has no proactive opening obligation");
+  Check(!ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out _,out _),"no active request cannot display wants-talk promise");
+  int unchangedLogCount=Logger.Entries.Count;for(int i=0;i<20;i++)ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out _,out _);
+  Check(Logger.Entries.Count==unchangedLogCount,"repeated unchanged menu initialization emits no log flood");
+  ProactiveNpcRequestBehavior.Instance.Start(provenance.Hero);
+  Check(ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out var title,out var body)&&body.Contains("有事想找你谈谈"),"actual menu producer promises talk only for matching active hero");
+  Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"menu promise precedes explicitly marked native opening");
+  ProactiveNpcRequestBehavior.Instance.Open(provenance.Hero);
+  Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"actual mark -> opening owner -> pending gate remains visible");
+  ShoutBehavior.TargetHero=new Hero{StringId="different"};Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"pending opening refuses mismatched target rather than creating wrong NPC dialogue");
+  ShoutBehavior.TargetHero=provenance.Hero;Check(await provenance.Submit()=="body"&&provenance.Runs==1&&provenance.Visible==1,"matching pending producer -> current admission -> worker -> visible reply");
+  Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"consumed pending no duplicate automatic start");
+  var autoFixture=new Fixture{Mode="ready"};var auto=new OpeningGateLeaf{Submit=()=>autoFixture.Submit()};
+  auto.Tick();Check(auto.Starts==0,"actual UI automatic-start gate does not create unmarked encounter request");
+  autoFixture.Open("lord");ShoutBehavior.ForceBusy=true;auto.Tick();Check(auto.Starts==0&&NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"actual auto gate busy retains marked obligation");
+  ShoutBehavior.ForceBusy=false;auto.Tick();await auto.Pending;Check(auto.Starts==1&&auto.Shown==1&&autoFixture.Visible==1,"actual pending UI gate invokes real current admission and displays one ready reply");
+  auto.Tick();Check(auto.Starts==1,"actual automatic-start flag prevents repeated submissions");
   var realHarmony=new Harmony("AF.Native.CurrentProducer.Illustrator");ConversationIllustrationPatch.Install(realHarmony);
   var entry=new Fixture{Mode="ready"};int streams=0,posts=0,readyCalls=0;Hero seenHero=null;CharacterObject seenCharacter=null;
   Action<string> stream=t=>{Check(t=="chunk","facade keeps stream callback text");streams++;};Action<string> post=t=>posts++;Action<string,Hero,CharacterObject> ready=(text,hero,character)=>{readyCalls++;seenHero=hero;seenCharacter=character;};
@@ -152,6 +193,10 @@ internal static class Program {
    f=new Fixture();f.Open(source);f.Available=false;Check(await f.Submit()==""&&f.Consumed==0,source+" initial target rejected before consume");
    f.Available=true;f.Mode="ready";Check(await f.Submit()=="body"&&f.Consumed==1,source+" target recovery first body");
   }
+  Check(Logger.Entries.Exists(x=>x.Contains("opening_state stage=menu")&&x.Contains("no_matching_request")),"single menu diagnostic distinguishes no matching request");
+  Check(Logger.Entries.Exists(x=>x.Contains("opening_state stage=mark")&&x.Contains("pending_created")),"single mark diagnostic records pending creation");
+  Check(Logger.Entries.Exists(x=>x.Contains("opening_state stage=consume")&&x.Contains("pending_consumed")),"single consume diagnostic records obligation retirement");
+  Check(!Logger.Entries.Exists(x=>x.Contains("lord-fact")||x.Contains("lord-prompt")),"diagnostics expose identities/state without prompt or fact bodies");
   Console.WriteLine("PASS NativeOpeningRetry checks="+Checks+"; current public/overlay producers + admission adapter/owner/router + production lord/companion consume statements; game/UI/full turn/network leaves are fixtures, no live opening acceptance");
  }
 }
