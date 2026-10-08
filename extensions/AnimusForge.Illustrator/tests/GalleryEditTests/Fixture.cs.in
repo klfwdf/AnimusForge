@@ -1,0 +1,126 @@
+using System;
+using TaleWorlds.Library;
+using System.IO;
+using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI.Overlays;
+using Engine=AnimusForge.Illustrator.Engine;
+class ScreenBase {}
+class Root { public bool IsVisible=true; }
+class Context { public Root Root=new Root(); }
+class Layer { public Context UIContext=new Context(); }
+static class DevTextEditorHelper {
+ public static Action<string> Save;public static Action Cancel;public static int Opens;
+ public static void ShowLongTextEditor(string a,string b,string c,string draft,Action<string> save,Action cancel,string x,string y){Save=save;Cancel=cancel;Opens++;}
+}
+namespace TaleWorlds.Library {public static class Debug {public static void Print(string s){}}}
+namespace TaleWorlds.CampaignSystem {public class Campaign {public static Campaign Current=new Campaign();}}
+namespace AnimusForge.Illustrator.Engine {
+ static class IllustratorStoragePaths {public static string ImageDirectory;public static string EnsureDirectory(string p){Directory.CreateDirectory(p);return p;}}
+}
+namespace AnimusForge.Illustrator.Core {
+ class GenerationDiagnostics {public static GenerationDiagnostics Current=>null;public void RecordStage(string s,Newtonsoft.Json.Linq.JObject o){}public void Finish(string a,string b=null){}}
+ class IllustrationOptions {public int MaxCacheCount=200;public bool Wide;public string StyleFingerprint="test";public IllustrationOptions WithSceneImageSize(){Wide=true;return this;}public IllustrationOptions ForCurrentImageEdit()=>this;}
+ class ImageGenerationResult {public bool Success;public byte[] ImageBytes;public string ResolvedPrompt,ErrorMessage;public string DiagnosticId;}
+ static class VisualDirectorEngine {public static void RequirePlayerRedrawDirector(string s,IllustrationOptions o){throw new Exception("director must not run");}}
+ static class UniversalOpenAiImageClient {
+ public static int Calls;public static bool Fail;public static byte[] Input;
+ public static Task<ImageGenerationResult> GenerateImageAsync(string s,System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> refs,IllustrationOptions o,CancellationToken t){
+ Calls++;Input=Convert.FromBase64String(refs[0].Base64Image);
+ Program.Check(refs.Count==1&&refs[0].Kind==IllustrationReferenceKind.GeneratedImage,"one generated image, no scene references");
+ return Task.FromResult(new ImageGenerationResult{Success=!Fail,ImageBytes=Fail?null:Input,ResolvedPrompt=s,ErrorMessage="fixture failure"});}
+ }
+ class IllustrationScope {
+ public bool Closed; public bool IsCurrent=>!Closed;public string CampaignKey="test";public static Action Worker;
+ public IllustrationScope(ScreenBase screen,string category,Action closed,bool campaignOwned=false,bool missionOwned=false){}
+ public void Close(){Closed=true;}
+ public bool RunGeneration<T>(string subject,string session,Func<CancellationToken,Task<T>> work,Action<T> complete,Action<string> fail,Func<T,CachedIllustrationItem> saved,Func<T,string> error){
+ Worker=()=>{try{complete(work(CancellationToken.None).GetAwaiter().GetResult());}catch(Exception ex){fail(ex.Message);}};return true;}
+ }
+ static class IllustratorRuntime {
+ public static event Action<CachedIllustrationItem> DefaultImageChanged;
+ public static void AssertMainThread(){} public static IllustrationOptions CaptureOptions()=>new IllustrationOptions();
+ public static bool Defer; public static Action Complete;
+ public static bool Start<T>(Func<Task<T>> work,Action<T,Exception> complete){Action a=()=>{T value=default(T);Exception error=null;try{value=work().GetAwaiter().GetResult();}catch(Exception ex){error=ex;}complete(value,error);};if(Defer) Complete=a;else a();return true;}
+ __PUBLISH__
+ }
+}
+class VM {
+ public CachedIllustrationItem SelectedImage;public string StatusText,SelectedKey;public bool Busy;
+ public void SetRedrawing(bool b){Busy=b;}public void SelectByKey(string s){SelectedKey=s;}
+}
+class Gallery {
+ public bool _closed,_editingImage,_redrawing;public string _redrawDraft="";public IllustrationScope _redrawJob;
+ public ScreenBase _screen=new ScreenBase();public Layer _layer=new Layer();public VM _dataSource=new VM();
+ public IllustrationScope _scope=new IllustrationScope(null,null,null);
+ __OPEN__
+ public void Open(CachedIllustrationItem i){_dataSource.SelectedImage=i;OpenCurrentImageEditor(i);}
+}
+class SelectedItem {public CachedIllustrationItem ItemData;public CachedIllustrationItem Item=>ItemData;}
+class DefaultVM {
+ public bool _disposed,_settingDefault;public Func<bool> _isCurrent=()=>true;public SelectedItem _selectedItem;public string _campaignKey="test",_pendingSelectionKey,StatusText;public int Refreshes;
+ void RefreshItems(){Refreshes++;}
+ __DEFAULT__
+ public void Set()=>ExecuteSetDefaultCore();
+}
+class Sink {public bool IsLoading;public string StatusText;public void SetReady(string s){StatusText=s;}}
+class Card {
+ public bool _closed;public IllustrationScope _scope=new IllustrationScope(null,null,null);
+ public static Card _activeInstance;public Sink _dataSource=new Sink();public string _category="encyclopedia";
+ public CachedIllustrationItem _displayedImage;public int _cacheLoadVersion,Publishes;public byte[] Bytes;
+ bool PublishImage(CachedIllustrationItem i){Publishes++;Bytes=i.ImageData;return true;}
+ __CARD_DEFAULT__
+ public void Notify(CachedIllustrationItem i)=>OnDefaultImageChanged(i);
+}
+static class Weekly {
+ public static IllustrationScope _scope=new IllustrationScope(null,null,null);public static Sink _sink=new Sink();
+ public static string _currentEventKey="week1";public static int _redrawCount,Publishes;
+ static bool Publish(CachedIllustrationItem i,string prompt){Publishes++;return true;}
+ __WEEKLY_DEFAULT__
+ public static void Notify(CachedIllustrationItem i)=>OnDefaultImageChanged(i);
+}
+class Program {
+ static int checks;
+ public static void Check(bool ok,string s){if(!ok)throw new Exception(s);checks++;}
+ static byte[] Png(Color c){using(var b=new Bitmap(8,6))using(var m=new MemoryStream()){using(var g=Graphics.FromImage(b))g.Clear(c);b.Save(m,ImageFormat.Png);return m.ToArray();}}
+ static int Main(string[] args){try{
+ IllustratorStoragePaths.ImageDirectory=args[0];
+ var red=Png(Color.Red);var blue=Png(Color.Blue);
+ var first=DiskImageCacheManager.SaveImage("Hero_A",red,"p","A","encyclopedia","test",200);
+ Check(first!=null,"saved initial metadata pair");
+ var meta=File.ReadAllBytes(Path.ChangeExtension(first.FilePath,".json"));
+ File.WriteAllBytes(first.FilePath,blue);
+ Check(meta.SequenceEqual(File.ReadAllBytes(Path.ChangeExtension(first.FilePath,".json"))),"external replacement preserves JSON");
+ CachedIllustrationItem notified=null;int notices=0;
+ IllustratorRuntime.DefaultImageChanged += item=>{notified=item;notices++;};
+ var vm=new DefaultVM{_selectedItem=new SelectedItem{ItemData=first}};vm.Set();
+ Check(notices==1&&notified.ImageData.SequenceEqual(ImagePayload.Normalize(blue)),"set default publishes freshly replaced bytes");
+ var card=new Card{_displayedImage=first};Card._activeInstance=card;card.Notify(notified);
+ Check(card.Publishes==1&&card.Bytes.SequenceEqual(notified.ImageData),"open matching card receives new bytes");
+ var unrelated=notified.CopyMetadata();unrelated.SubjectKey="Hero_B";card.Notify(unrelated);Check(card.Publishes==1,"other subject card not overwritten");
+ card._dataSource.IsLoading=true;card.Notify(notified);Check(card.Publishes==1,"active generation not overwritten by default notification");
+ var weekly=notified.CopyMetadata();weekly.Category="weekly_report";weekly.SubjectKey="week1";weekly.ImageData=notified.ImageData;
+ Weekly.Notify(weekly);Check(Weekly.Publishes==1,"weekly and bulletin shared consumer accepts matching default");weekly.CampaignKey="other";Weekly.Notify(weekly);Check(Weekly.Publishes==1,"other campaign notification ignored");
+ Check(DiskImageCacheManager.LoadImage("Hero_A","test","encyclopedia").ImageData.SequenceEqual(notified.ImageData),"reopen loads replacement as default");
+ File.WriteAllText(first.FilePath,"broken");vm.Set();Check(notices==1&&vm.StatusText.Contains("失败"),"bad replacement cannot publish success");
+ File.WriteAllBytes(first.FilePath,blue);IllustratorRuntime.Defer=true;vm.Set();vm._disposed=true;IllustratorRuntime.Complete();Check(notices==1,"closed gallery drops pending default completion");IllustratorRuntime.Defer=false;
+ var gallery=new Gallery();gallery.Open(first);Check(gallery._editingImage&&!gallery._layer.UIContext.Root.IsVisible,"gallery hides behind editor");
+ DevTextEditorHelper.Cancel();Check(!gallery._editingImage&&gallery._layer.UIContext.Root.IsVisible&&UniversalOpenAiImageClient.Calls==0,"cancel restores gallery and sends no API");
+ gallery.Open(first);DevTextEditorHelper.Save("  edit sky  ");DevTextEditorHelper.Save("duplicate");
+ Check(gallery._redrawing&&UniversalOpenAiImageClient.Calls==0,"one admitted job waits for background execution");
+ gallery._closed=true;IllustrationScope.Worker();
+ Check(UniversalOpenAiImageClient.Calls==1&&UniversalOpenAiImageClient.Input.SequenceEqual(ImagePayload.Normalize(blue)),"redraw uses replacement and continues after closing gallery");
+ var saved=DiskImageCacheManager.GetAllCachedIllustrations("test",true).First(i=>i.GenerationMode=="current_image_edit");
+ Check(saved.SourceImageKey==first.Key&&saved.EditInstruction=="edit sky"&&saved.Key!=first.Key,"new version retains source and instruction");
+ Check(File.ReadAllBytes(first.FilePath).SequenceEqual(blue),"source image preserved");
+ var stale=new Gallery();stale.Open(first);stale._dataSource.SelectedImage=saved;DevTextEditorHelper.Save("wrong target");Check(!stale._redrawing,"selection change while editing prevents submission");
+ var failed=new Gallery();failed.Open(first);DevTextEditorHelper.Save("retry draft");UniversalOpenAiImageClient.Fail=true;IllustrationScope.Worker();
+ Check(!failed._redrawing&&failed._redrawDraft=="retry draft"&&failed._dataSource.StatusText.Contains("失败"),"failure preserves draft and re-enables gallery");
+ Console.WriteLine("PASS "+checks+" gallery edit/default assertions; production cache/image/editor/redraw and extracted UI methods, fake native/HTTP");return 0;
+ }catch(Exception e){Console.WriteLine(e.Message);return 1;}}
+}

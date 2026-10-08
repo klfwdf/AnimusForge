@@ -302,6 +302,16 @@ namespace AnimusForge.Illustrator.Core
 
         // Event-driven, at most eight scopes. Never scan the disk cache or game world per frame.
         internal static event Action<IllustrationGenerationUpdate> GenerationUpdated;
+        internal static event Action<CachedIllustrationItem> DefaultImageChanged;
+        internal static void PublishDefaultImageChanged(CachedIllustrationItem image)
+        {
+            AssertMainThread();
+            var listeners = DefaultImageChanged;
+            if (image?.ImageData == null || listeners == null) return;
+            foreach (Action<CachedIllustrationItem> listener in listeners.GetInvocationList())
+                try { listener(image); }
+                catch (Exception ex) { Debug.Print("[Illustrator] Default image subscriber failed: " + ex.GetType().Name); }
+        }
 
         internal static IllustrationScope FindGenerating(string category, string subjectKey, string sessionKey = null)
         {

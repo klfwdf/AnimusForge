@@ -313,6 +313,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             topScreen.AddLayer(_overlayLayer);
 
             IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
+            IllustratorRuntime.DefaultImageChanged += OnDefaultImageChanged;
             if (!JoinPendingGeneration()) BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
         }
 
@@ -348,6 +349,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
                 slot.IsAvailable = true;
                 slot.NotifyHandlersChanged();
+                IllustratorRuntime.DefaultImageChanged += OnDefaultImageChanged;
                 Debug.Print($"[Illustrator] World bulletin panel slot attached: '{title}' context={(_currentContext != null)}");
                 BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext,
                     generateOnCacheMiss: IllustratorSettings.Instance?.AutoGenerateWeeklyReportIllustration == true);
@@ -688,11 +690,19 @@ namespace AnimusForge.Illustrator.UI.Patches
                 "保留所选事件的参与方、地点关联和已知结果；不能为变化编造新事件，不能用更换领主展示姿势代替事件叙事。旧作品与人物参考不是发生事实，身份装备只在对应人物实际入画时生效。";
         }
 
+        private static void OnDefaultImageChanged(CachedIllustrationItem image)
+        {
+            if (_scope?.IsCurrent != true || _sink == null || _sink.IsLoading || image.Category != "weekly_report" ||
+                image.CampaignKey != _scope.CampaignKey || image.SubjectKey != _currentEventKey) return;
+            ++_redrawCount;
+            if (Publish(image, image.Prompt)) _sink.StatusText = "已显示新设置的默认画卷。";
+        }
+
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
         {
             if (item == null && imageBytes == null) return false;
             string previousSprite = _activeSpriteName;
-            string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly";
+            string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly_" + Guid.NewGuid().ToString("N");
             var bytes = imageBytes ?? item.ImageData;
             var publishClock = System.Diagnostics.Stopwatch.StartNew();
             GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_texture_begin", "bytes=" + (bytes?.Length ?? 0));
@@ -722,6 +732,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             try
             {
                 IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
+                IllustratorRuntime.DefaultImageChanged -= OnDefaultImageChanged;
                 _joinedGeneration = null;
                 if (_scope != null && !_scope.DetachWindowIfGenerating()) _scope.Close();
                 if (!string.IsNullOrEmpty(_activeSpriteName))

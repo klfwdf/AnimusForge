@@ -156,6 +156,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close, missionOwned: missionScreenshot);
             IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
+            IllustratorRuntime.DefaultImageChanged += OnDefaultImageChanged;
 
             try
             {
@@ -250,6 +251,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 prompt => { _playerRedrawDraft = prompt; Regenerate(prompt); },
                 status => _dataSource.StatusText = status,
                 editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } });
+        }
+
+        private void OnDefaultImageChanged(CachedIllustrationItem image)
+        {
+            if (_closed || !_scope.IsCurrent || !ReferenceEquals(_activeInstance, this) || _dataSource.IsLoading ||
+                image.CampaignKey != _scope.CampaignKey || image.Category != _category ||
+                image.SubjectKey != _displayedImage?.SubjectKey) return;
+            ++_cacheLoadVersion;
+            if (PublishImage(image)) _dataSource.SetReady("已显示新设置的默认画卷。");
         }
 
         private void OnGenerationUpdated(IllustrationGenerationUpdate update)
@@ -1017,7 +1027,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool PublishImage(CachedIllustrationItem item, byte[] imageBytes, string prompt)
         {
             string spriteName = !string.IsNullOrWhiteSpace(item?.Key)
-                ? item.Key + "_" + _instanceId
+                ? item.Key + "_" + _instanceId + "_" + Guid.NewGuid().ToString("N")
                 : "Illustration_" + Guid.NewGuid().ToString("N");
 
             // 无缓存条目的试采使用唯一纹理名；注册失败时保留原来的正式插画。
@@ -1162,6 +1172,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             try
             {
                 IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
+                IllustratorRuntime.DefaultImageChanged -= OnDefaultImageChanged;
                 _joinedGeneration = null;
                 if (_scope != null && !_scope.DetachWindowIfGenerating()) _scope.Close();
             }
