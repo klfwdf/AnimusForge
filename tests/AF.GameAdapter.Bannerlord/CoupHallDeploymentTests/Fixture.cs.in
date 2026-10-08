@@ -8,10 +8,10 @@ struct Vec3 {
 struct MatrixFrame {public Vec3 origin;}
 class GameEntity {public Vec3 Position;public GameEntity(Vec3 p){Position=p;}public MatrixFrame GetGlobalFrame()=>new MatrixFrame{origin=Position};}
 class Scene {
- public bool NavReady=true,Reachable=true,ThrowPath,ThrowTags;public Vec3 Projection;
+ public bool NavReady=true,Reachable=true,ThrowPath,ThrowTags,MissingMarkers;public float DefenderX=9;public Vec3 Projection;
  public int Paths,MarkerReads,SightCalls;public bool Disconnected;
  public bool Contains(Vec3 p)=>NavReady&&p.x>=-.25f&&p.x<=12&&Math.Abs(p.y)<=4;
- public IEnumerable<GameEntity> FindEntitiesWithTag(string tag){MarkerReads++;if(ThrowTags)throw new Exception("scene warming");return tag=="sp_throne"?new[]{new GameEntity(new Vec3(9,0))}:Array.Empty<GameEntity>();}
+ public IEnumerable<GameEntity> FindEntitiesWithTag(string tag){MarkerReads++;if(ThrowTags)throw new Exception("scene warming");return MissingMarkers?Array.Empty<GameEntity>():tag=="defender_infantry"?new[]{new GameEntity(new Vec3(DefenderX,0))}:tag=="attacker_infantry"?new[]{new GameEntity(new Vec3(0,0))}:Array.Empty<GameEntity>();}
  public bool GetPathDistanceBetweenPositions(ref WorldPosition a,ref WorldPosition b,float radius,out float distance){Paths++;distance=(float)Math.Sqrt(a.Position.DistanceSquared(b.Position));if(ThrowPath)throw new Exception("nav warming");return Reachable&&(!Disconnected||a.Position.x<=5);}
  public bool CheckPointCanSeePoint(Vec3 a,Vec3 b,float d){SightCalls++;return true;} // An entirely open, visible room: old hidden logic cannot deploy anyone.
 }
@@ -20,7 +20,7 @@ struct WorldPosition {
  public UIntPtr GetNearestNavMesh()=>scene.Contains(Position)?(UIntPtr)1:UIntPtr.Zero;
  public Vec3 GetNavMeshVec3()=>Position+scene.Projection;
 }
-class Agent {public static Agent Main;public int Index;public bool IsHuman=true,Active=true;public Vec3 Position;public bool IsActive()=>Active;}
+class Agent {public static Agent Main;public int Index;public bool IsHuman=true,Active=true;public Vec3 Position;public bool IsActive()=>Active;public bool RejectTeleport;public void TeleportToPosition(Vec3 p){if(!RejectTeleport)Position=p;}}
 class Mission {public Scene Scene;public Agent MainAgent;public float CurrentTime;public List<Agent> Agents=new List<Agent>();public int Ends;public void EndMission(){Ends++;}}
 class BaseLogic {public Mission Mission;}
 class Team {}
@@ -40,7 +40,7 @@ class Owner:BaseLogic {
  public bool _armedCoup=true;public string _entryLocationId="lordshall";
  bool IsCoupHall=>_armedCoup&&string.Equals(_entryLocationId,LordHallLocationId,StringComparison.OrdinalIgnoreCase);
  public string _settlementId="town";public SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
- public List<Vec3> _coupHallSpawnCandidates;public List<Vec3> _coupHallOccupiedSpawns=new List<Vec3>();
+ public List<Vec3> _coupHallSpawnCandidates;public List<Vec3> _coupHallDefenderSpawnCandidates;public List<Vec3> _coupHallOccupiedSpawns=new List<Vec3>();
  public bool _coupStreetReinforcementsStopped,_coupHallDeploymentFailed,_spawnedAllies,_alliedSpawnPrepared,_publicExecutionEscortsHeld,_isOwnSettlement;
  public float _coupHallAllyBlockedSince=-1,_coupHallDefenderBlockedSince=-1,_nextArmedCoupSpawnDeferLogTime;
  public Team _playerTeam=new Team(),_enemyTeam=new Team();public TroopRoster _selectedRoster=new TroopRoster();public int _limit=40;
@@ -55,6 +55,7 @@ class Owner:BaseLogic {
  public void Allies(int n){_selectedRoster.Troops=Enumerable.Range(0,n).Select(i=>new CharacterObject("ally_"+i)).ToList();}
  public void Guards(int n){_remainingDefenderReserve=Enumerable.Range(0,n).Select(i=>new DefenderReserveEntry{Character=new CharacterObject("guard_"+i)}).ToList();}
  public void TryAllies()=>TrySpawnSelectedAllies("test");public void SpawnWave()=>SpawnDefenderReserveWave();public void Timed()=>TrySpawnTimedDefenderReserveWave();public void Stop()=>StopCoupStreetReinforcements();
+ public bool Validate(Agent a,Vec3 intended)=>ValidateCoupHallSpawn(a,intended);
  public List<Vec3> Slots()=>GetCoupHallSpawnCandidates(Mission,Mission.MainAgent);
  public static bool Project(Scene scene,Vec3 player,Vec3 point,out Vec3 result)=>TryProjectCoupHallSpawnPosition(scene,player,point,out result);
  void EnsurePlayerTeam(Mission m,Agent a,bool requireCommandTeam){}void EnsureEnemyTeam(Mission m){}
@@ -93,11 +94,12 @@ static class Program {
   Check(o.Created.Count(x=>x.Enemy)==20&&o._remainingDefenderReserve.Count==0,"open visible hall deploys all 20 guards without hidden-anchor deadlock");
   Check(o.Mission.Scene.SightCalls==0,"indoor deployment never requires LOS occlusion");
   Check(o.Created.Where(x=>x.Enemy).All(x=>x.Position.DistanceSquared(o.Mission.MainAgent.Position)>=9),"defenders retain 3m safety margin");
-  Check(o.Mission.Scene.Paths==paths,"shared navmesh candidates cached across both teams");
+  Check(o.Mission.Scene.Paths>paths,"each side discovers its own native deployment markers");
+  paths=o.Mission.Scene.Paths;o.SpawnWave();Check(o.Mission.Scene.Paths==paths,"repeated deployment reuses side cache");
   Check(o.CountArmedCoupRole("HallGuard")==20,"spawned guards remain real objectives, not automatically defeated");
   foreach(var a in o._enemyAgentsByIndex.Values)a.Active=false;
   Check(o.CountArmedCoupRole("HallGuard")==0,"role clears only after live guards fall");
-  Check(o.Mission.Scene.Paths<=192&&o.Slots().Count<=160,"bounded discovery work and cache size");
+  Check(o.Mission.Scene.Paths<=384&&o.Slots().Count<=160,"bounded discovery work and cache size");
   Check(o.Created.All(x=>Math.Abs(x.Position.z)<=.001),"navigation mesh floor height retained");
   Check(o.TechnicalFailures==0&&o.Mission.Ends==0,"successful placement does not neutral-stop mission");
   o=new Owner();o.Allies(20);o.FailAlliesOnce=true;o.TryAllies();o.Mission.CurrentTime=1;o.TryAllies();
@@ -123,6 +125,14 @@ static class Program {
   o=new Owner();o.Guards(20);o.Mission.Scene.NavReady=false;
   for(int i=0;i<=15;i++){o.Mission.CurrentTime=i;o.SpawnWave();}
   Check(o.TechnicalFailures==1&&o._remainingDefenderReserve.Count==20,"failed defender deployment preserves every real objective record");
+  o=new Owner();o.Mission.Scene.DefenderX=1;o.Guards(1);o.SpawnWave();
+  Check(o.Created.Count==1&&o.Created[0].Position.x==1,"native defender point visible and within three metres is accepted directly");
+  o=new Owner();o.Guards(1);o.Mission.Scene.MissingMarkers=true;o.SpawnWave();
+  Check(o.Created.Count==0&&o._remainingDefenderReserve.Count==1,"missing native markers do not invent player-centred or outdoor spawns");
+  o=new Owner();var misplaced=new Agent{Position=new Vec3(100,0)};
+  Check(o.Validate(misplaced,new Vec3(8,0))&&misplaced.Position.x==8,"engine position mismatch corrected once to validated indoor point");
+  misplaced.Position=new Vec3(100,0);misplaced.RejectTeleport=true;
+  Check(!o.Validate(misplaced,new Vec3(8,0))&&o.TechnicalFailures==1&&o.Mission.Ends==1,"failed correction ends technically rather than leaving an unreachable objective");
   Vec3 projected;var scene=new Scene();
   Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(100,0),out projected),"no outside-room navmesh accepted");
   scene.Disconnected=true;Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(8,0),out projected),"disconnected candidate rejected");

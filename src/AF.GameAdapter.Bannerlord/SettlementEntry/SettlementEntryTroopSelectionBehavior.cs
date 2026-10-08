@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -249,6 +249,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEncounterEntry(harmony, typeof(VillageEncounter), nameof(VillageEncounter.CreateAndOpenMissionController), nameof(VillageCreateAndOpenMissionControllerPrefix), "village-center");
 		PatchEndMissionGuard(harmony, typeof(BasicLeaveMissionLogic), nameof(BasicLeaveMissionLogic.OnEndMissionRequest), "basic-leave");
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
+        harmony.Patch(AccessTools.Method(typeof(SandBoxHelpers.MissionHelper), nameof(SandBoxHelpers.MissionHelper.SpawnPlayer),
+                new[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(string) }),
+            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallPlayerSpawnPrefix)));
+        harmony.Patch(AccessTools.Method(typeof(SandBoxMissions), nameof(SandBoxMissions.OpenIndoorMission)),
+            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallSceneLayerPrefix)));
 		PatchSetsUsableProtection(harmony);
 		PatchSetsEntryDamage(harmony);
 		PatchNativeAlleyCompatibility(harmony);
@@ -1630,6 +1635,20 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+    private static void CoupHallPlayerSpawnPrefix(ref string spawnTag)
+    {
+        Mission mission = Mission.Current;
+        if (mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>()?.IsArmedCoupHall == true)
+            spawnTag = "attacker_infantry";
+    }
+
+    private static void CoupHallSceneLayerPrefix(Location location, ref string sceneLevels)
+    {
+        string settlementId = PlayerEncounter.LocationEncounter?.Settlement?.StringId;
+        if (location?.StringId == LordHallLocationId && IsArmedCoupEntry(settlementId, LordHallLocationId))
+            sceneLevels = "siege";
+    }
+
 	private static bool TownCreateAndOpenMissionControllerPrefix(TownEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
 		Settlement town = __instance?.Settlement;
@@ -2842,6 +2861,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, float> _armedCoupWallSentryHealth = new Dictionary<int, float>();
 		private readonly string _entryLocationId;
 		private List<Vec3> _coupHallSpawnCandidates;
+        private List<Vec3> _coupHallDefenderSpawnCandidates;
 		private readonly List<Vec3> _coupHallOccupiedSpawns = new List<Vec3>();
 		private bool _coupStreetReinforcementsStopped, _coupHallDeploymentFailed;
 		private float _coupHallAllyBlockedSince = -1f, _coupHallDefenderBlockedSince = -1f;
@@ -2989,7 +3009,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			Mission mission = base.Mission;
 			if (character == null || _enemyTeam == null || mission == null) return null;
 			Vec3 position = frame.origin;
-			if (mission.Scene != null) position.z = mission.Scene.GetGroundHeightAtPosition(position);
+			// Indoor floors must come from the scene/navmesh, never a ground-height rewrite.
+            if (!TryProjectCoupHallSpawnPosition(mission.Scene, mission.MainAgent.Position, position, out position)
+                && !TryGetCoupHallSpawnPosition(mission, mission.MainAgent, true, out position)) return null;
 			Vec3 direction = frame.rotation.f;
 			direction.z = 0f;
 			if (direction.LengthSquared < 0.01f) direction = Vec3.Forward;
@@ -3002,7 +3024,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				.Controller(AgentControllerType.AI).CivilianEquipment(false).NoHorses(true)
 				.TroopOrigin(origin);
 			Agent agent = mission.SpawnAgent(buildData, false);
-			if (agent == null) return null;
+			if (agent == null || !ValidateCoupHallSpawn(agent, position)) return null;
+            _coupHallOccupiedSpawns.Add(agent.Position);
 			MarkEnemyAgent(agent);
 			return agent;
 		}
@@ -3630,6 +3653,7 @@ if (_spawnedAllies
 			_armedCoupUsedWallSlots.Clear();
 			_armedCoupWallPositions = null;
 			_coupHallSpawnCandidates = null;
+            _coupHallDefenderSpawnCandidates = null;
 			_coupHallOccupiedSpawns.Clear();
 			ClearSetsUsableProtectionState("sets_mission_end");
 			ClearSetsSelectedFollowerState("sets_mission_end");
@@ -6814,7 +6838,7 @@ if (_spawnedAlliedCount > 0)
 				}
 				PartyBase originParty = defenderEntry?.SourceParty ?? fallbackOriginParty;
 				FormationClass formationClass = asEnemy ? FormationClass.Infantry : ResolveSetsFollowerFormationClass(troop);
-				Formation formation = team.GetFormation(formationClass);
+				Formation formation = IsCoupHall && asEnemy ? null : team.GetFormation(formationClass);
 				int agentFormationSpawnCount = asEnemy ? formationSpawnCount : CountAlliedFormationTroops(troops, formationClass);
 				int agentFormationSpawnIndex = asEnemy ? i : CountAlliedFormationTroops(troops, formationClass, i);
 				int row = i / SpawnGridColumns;
@@ -6897,6 +6921,7 @@ if (_spawnedAlliedCount > 0)
 					}
 					if (IsCoupHall)
 					{
+                        if (!ValidateCoupHallSpawn(spawnedAgent, position)) break;
 						_coupHallOccupiedSpawns.Add(position);
 						SettlementEntryTroopSelectionLog.Log("Coup hall agent spawned. side=" + (asEnemy ? "defender" : "ally") + ", troop=" + SafeCharacterId(troop)
 							+ ", record=" + defenderEntry?.ArmedCoupRecordId + ", agent=" + spawnedAgent.Index + ", requestedPosition=" + position + ", actualPosition=" + spawnedAgent.Position);
@@ -6941,64 +6966,58 @@ if (_spawnedAlliedCount > 0)
 			return spawned;
 		}
 
-		// One discovery per loaded hall: at most 192 navmesh/path probes and 160 distinct slots.
+		// One discovery per side and loaded hall: at most 192 navmesh/path probes and 160 slots.
 		// Use authored guard/throne anchors and compact rings; never an outdoor grid behind the door.
-		private List<Vec3> GetCoupHallSpawnCandidates(Mission mission, Agent main)
-		{
-			if (_coupHallSpawnCandidates != null) return _coupHallSpawnCandidates;
-			List<Vec3> slots = new List<Vec3>();
-			Scene scene = mission?.Scene;
-			if (!IsCoupHall || scene == null || main?.IsActive() != true) return slots;
-			WorldPosition playerWorld = new WorldPosition(scene, main.Position);
-			if (playerWorld.GetNearestNavMesh() == UIntPtr.Zero) return slots;
-			Vec3 player = playerWorld.GetNavMeshVec3();
-			List<Vec3> centers = new List<Vec3> { player };
-			int markers = 0;
-			foreach (string tag in new[] { "sp_throne", "sp_king", "sp_guard", "sp_guard_castle", "sp_guard_with_spear" })
-			{
-				foreach (GameEntity entity in scene.FindEntitiesWithTag(tag))
-				{
-					if (++markers > ArmedCoupSpawnMaxAnchors || centers.Count >= 12) break;
-					if (entity == null) continue;
-					Vec3 point = entity.GetGlobalFrame().origin;
-					bool duplicate = false;
-					for (int i = 0; i < centers.Count; i++)
-						if (centers[i].DistanceSquared(point) < 1f) { duplicate = true; break; }
-					if (!duplicate) centers.Add(point);
-				}
-				if (markers >= ArmedCoupSpawnMaxAnchors || centers.Count >= 12) break;
-			}
-			int probes = 0;
-			foreach (Vec3 center in centers)
-			{
-				for (int ring = 0; ring <= 4 && probes < 192 && slots.Count < 160; ring++)
-				{
-					int sectors = ring == 0 ? 1 : 12;
-					for (int sector = 0; sector < sectors && probes < 192 && slots.Count < 160; sector++)
-					{
-						probes++;
-						float angle = sector * (2f * (float)Math.PI / sectors);
-						Vec3 candidate = center + new Vec3((float)Math.Cos(angle) * ring * 0.95f, (float)Math.Sin(angle) * ring * 0.95f, 0f);
-						if (!TryProjectCoupHallSpawnPosition(scene, player, candidate, out Vec3 projected)) continue;
-						bool duplicate = false;
-						for (int i = 0; i < slots.Count; i++)
-							if (slots[i].DistanceSquared(projected) < ArmedCoupHallSpawnSpacing * ArmedCoupHallSpawnSpacing) { duplicate = true; break; }
-						if (!duplicate) slots.Add(projected);
-					}
-				}
-				if (probes >= 192 || slots.Count >= 160) break;
-			}
-			// No empty cache: the native navigation mesh may not be ready on the first tick.
-			if (slots.Count > 0)
-			{
-				slots.Sort((a, b) => a.DistanceSquared(player).CompareTo(b.DistanceSquared(player)));
-				_coupHallSpawnCandidates = slots;
-				foreach (Agent agent in mission.Agents)
-					if (agent?.IsActive() == true && agent.IsHuman) _coupHallOccupiedSpawns.Add(agent.Position);
-				SettlementEntryTroopSelectionLog.Log("Prepared reachable coup hall spawn slots. settlement=" + _settlementId + ", candidates=" + slots.Count + ", navProbes=" + probes + ", occupied=" + _coupHallOccupiedSpawns.Count);
-			}
-			return slots;
-		}
+        private List<Vec3> GetCoupHallSpawnCandidates(Mission mission, Agent main, bool asEnemy = false)
+        {
+            var cached = asEnemy ? _coupHallDefenderSpawnCandidates : _coupHallSpawnCandidates;
+            if (cached != null) return cached;
+            var slots = new List<Vec3>();
+            Scene scene = mission?.Scene;
+            if (!IsCoupHall || scene == null || main?.IsActive() != true) return slots;
+            WorldPosition playerWorld = new WorldPosition(scene, main.Position);
+            if (playerWorld.GetNearestNavMesh() == UIntPtr.Zero) return slots;
+            Vec3 player = playerWorld.GetNavMeshVec3();
+            var centers = new List<Vec3>();
+            // Same authored deployment markers as the native siege hall. No hidden/remote spawns.
+            foreach (string tag in asEnemy
+                ? new[] { "defender_infantry", "defender_archer" }
+                : new[] { "attacker_infantry", "attacker_archer" })
+            {
+                foreach (GameEntity entity in scene.FindEntitiesWithTag(tag))
+                {
+                    if (centers.Count >= ArmedCoupSpawnMaxAnchors) break;
+                    if (entity == null) continue;
+                    Vec3 point = entity.GetGlobalFrame().origin;
+                    if (!centers.Any(p => p.DistanceSquared(point) < 0.01f)) centers.Add(point);
+                }
+            }
+            int probes = 0;
+            // Use every authored point before bounded expansion for larger player-selected cohorts.
+            for (int ring = 0; ring <= 4 && probes < 192 && slots.Count < 160; ring++)
+                foreach (Vec3 center in centers)
+                {
+                    int sectors = ring == 0 ? 1 : 12;
+                    for (int sector = 0; sector < sectors && probes < 192 && slots.Count < 160; sector++)
+                    {
+                        probes++;
+                        float angle = sector * (2f * (float)Math.PI / sectors);
+                        Vec3 candidate = center + new Vec3((float)Math.Cos(angle) * ring * 0.95f, (float)Math.Sin(angle) * ring * 0.95f, 0f);
+                        if (!TryProjectCoupHallSpawnPosition(scene, player, candidate, out Vec3 projected)) continue;
+                        if (!slots.Any(p => p.DistanceSquared(projected) < ArmedCoupHallSpawnSpacing * ArmedCoupHallSpawnSpacing)) slots.Add(projected);
+                    }
+                }
+            if (slots.Count > 0)
+            {
+                if (_coupHallSpawnCandidates == null && _coupHallDefenderSpawnCandidates == null)
+                    foreach (Agent agent in mission.Agents)
+                        if (agent?.IsActive() == true && agent.IsHuman) _coupHallOccupiedSpawns.Add(agent.Position);
+                if (asEnemy) _coupHallDefenderSpawnCandidates = slots; else _coupHallSpawnCandidates = slots;
+                SettlementEntryTroopSelectionLog.Log("Prepared native coup hall spawn slots. side=" + (asEnemy ? "defender" : "attacker")
+                    + ", settlement=" + _settlementId + ", markers=" + centers.Count + ", candidates=" + slots.Count + ", navProbes=" + probes);
+            }
+            return slots;
+        }
 
 		private static bool TryProjectCoupHallSpawnPosition(Scene scene, Vec3 player, Vec3 candidate, out Vec3 projected)
 		{
@@ -7009,7 +7028,7 @@ if (_spawnedAlliedCount > 0)
 				WorldPosition candidateWorld = new WorldPosition(scene, candidate);
 				if (playerWorld.GetNearestNavMesh() == UIntPtr.Zero || candidateWorld.GetNearestNavMesh() == UIntPtr.Zero) return false;
 				projected = candidateWorld.GetNavMeshVec3();
-				return projected.DistanceSquared(candidate) <= 1.5625f && Math.Abs(projected.z - player.z) <= 2.5f
+				return projected.DistanceSquared(candidate) <= 1.5625f
 					&& scene.GetPathDistanceBetweenPositions(ref candidateWorld, ref playerWorld, 0.45f, out float distance);
 			}
 			catch { return false; }
@@ -7020,11 +7039,10 @@ if (_spawnedAlliedCount > 0)
 			position = main.Position;
 			try
 			{
-				List<Vec3> candidates = GetCoupHallSpawnCandidates(mission, main);
+				List<Vec3> candidates = GetCoupHallSpawnCandidates(mission, main, asEnemy);
 				for (int n = 0; n < candidates.Count; n++)
 				{
-					Vec3 point = candidates[asEnemy ? candidates.Count - n - 1 : n];
-					if (asEnemy && point.DistanceSquared(main.Position) < ArmedCoupHallEnemyMinDistance * ArmedCoupHallEnemyMinDistance) continue;
+					Vec3 point = candidates[n];
 					bool occupied = false;
 					for (int i = 0; i < _coupHallOccupiedSpawns.Count; i++)
 						if (_coupHallOccupiedSpawns[i].DistanceSquared(point) < ArmedCoupHallSpawnSpacing * ArmedCoupHallSpawnSpacing) { occupied = true; break; }
@@ -7043,6 +7061,27 @@ if (_spawnedAlliedCount > 0)
 			}
 			return false;
 		}
+
+        private bool ValidateCoupHallSpawn(Agent agent, Vec3 intended)
+        {
+            // One validation/correction at spawn, never a recurring scan of agents.
+            try
+            {
+            Scene scene = base.Mission.Scene;
+            Vec3 player = base.Mission.MainAgent.Position;
+            if (agent.Position.DistanceSquared(intended) <= 0.25f
+                && TryProjectCoupHallSpawnPosition(scene, player, agent.Position, out _)) return true;
+            agent.TeleportToPosition(intended);
+            if (agent.Position.DistanceSquared(intended) <= 0.25f
+                && TryProjectCoupHallSpawnPosition(scene, player, agent.Position, out _)) return true;
+            }
+            catch (Exception ex) { SettlementEntryTroopSelectionLog.Log("Coup hall position correction failed: " + ex.Message); }
+            _coupHallDeploymentFailed = true;
+            SettlementEntryTroopSelectionLog.Log("Coup hall actual spawn invalid. requested=" + intended + ", actual=" + agent.Position);
+            try { _coupTechnicalFailure?.Invoke(base.Mission, "大厅人物未能落在有效出生点，已中止本次部署，未判定胜利。"); }
+            finally { base.Mission.EndMission(); }
+            return false;
+        }
 
 		private void ObserveCoupHallDeployment(bool enemy, int spawned, bool stillPending)
 		{

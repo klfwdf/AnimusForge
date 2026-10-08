@@ -16,7 +16,7 @@ methods=['private void TrySpawnSelectedAllies(','private void TrySpawnTimedDefen
  'private int CountActiveDefenderReserveWaves(','private void SpawnDefenderReserveWave(',
  'private void RemoveDefenderReserveEntries(','internal int CountArmedCoupRole(',
  'private List<Vec3> GetCoupHallSpawnCandidates(','private static bool TryProjectCoupHallSpawnPosition(',
- 'private bool TryGetCoupHallSpawnPosition(','private void ObserveCoupHallDeployment(','internal void StopCoupStreetReinforcements(']
+ 'private bool TryGetCoupHallSpawnPosition(','private bool ValidateCoupHallSpawn(', 'private void ObserveCoupHallDeployment(','internal void StopCoupStreetReinforcements(']
 # Engine spawn itself is a double; verify its real loop obeys the tested prefix/final-position contract.
 spawn=method('private int SpawnAgentsNearPlayer(')
 assert 'asEnemy && !IsCoupHall && TryGetEnemyReserveSpawnFrames' in spawn
@@ -24,6 +24,13 @@ assert 'TryGetCoupHallSpawnPosition(mission, main, asEnemy, out position)' in sp
 assert 'if (!asEnemy) break;' in spawn
 assert 'if (IsCoupHall && !asEnemy) break;' in spawn
 assert 'wallSlot < 0 && !IsCoupHall' in spawn
+assert 'IsCoupHall && asEnemy ? null : team.GetFormation' in spawn
+assert 'spawnTag = "attacker_infantry"' in method('private static void CoupHallPlayerSpawnPrefix(')
+assert 'IsArmedCoupHall == true' in method('private static void CoupHallPlayerSpawnPrefix(')
+assert 'sceneLevels = "siege"'  in method('private static void CoupHallSceneLayerPrefix(')
+assert 'IsArmedCoupEntry(settlementId, LordHallLocationId)' in method('private static void CoupHallSceneLayerPrefix(')
+assert 'GetGroundHeightAtPosition' not in method('internal Agent SpawnArmedCoupKing(')
+assert 'TryProjectCoupHallSpawnPosition' in method('internal Agent SpawnArmedCoupKing(')
 assert 'if (_armedCoup && asEnemy && !IsCoupHall' in spawn
 assert spawn.index('mission.SpawnAgent(buildData, false)') < spawn.index('_coupHallOccupiedSpawns.Add(position);')
 assert 'LocationId = nextLocation?.StringId' in text and '_entryLocationId = entry?.LocationId' in text
