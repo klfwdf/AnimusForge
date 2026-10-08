@@ -5,6 +5,7 @@ internal static class WarAdmissionReplay
     private sealed class Port : IWorldDiplomacyWarAdmissionPort
     {
         internal int Scans;
+        public bool InvolvesPlayer { get; set; }
         public bool ValidPair { get; set; } = true;
         public bool HasIndependentAuthority { get; set; } = true;
         public bool AtWar { get; set; }
@@ -26,6 +27,7 @@ internal static class WarAdmissionReplay
         internal Port Admission;
         public override int CurrentDay() => Admission.CurrentDay;
         public override bool HasIndependentAuthority(string id) => Admission.HasIndependentAuthority;
+        public override bool IsEliminatedParty(string id) => !Admission.ValidPair && id == "empire_s";
         public override bool PartiesAtWar(string firstId, string secondId) => Admission.AtWar;
         public override bool PartiesAllied(string firstId, string secondId) => Admission.Allied;
         public override IWorldDiplomacyWarAdmissionPort WarAdmission(string firstId, string secondId)
@@ -108,13 +110,21 @@ internal static class WarAdmissionReplay
         foreach (string blocker in new[] { "none", "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity" })
         {
             var playerPort = AdmissionFor(blocker);
-            bool expected = blocker is "none" or "pending" or "cooldown" or "capacity";
+            bool expected = blocker != "invalid";
             bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref playerPort, out _, isPlayerAuthored: true);
-            Test.True(allowed == expected && playerPort.Scans == 0, "player bypasses pacing only without war scan: " + blocker);
+            Test.True(allowed == expected && playerPort.Scans == 0, "player bypasses AI policy without war scan: " + blocker);
             var owner = new WorldDiplomacyOrchestration(new Host { Admission = playerPort }, new WorldDiplomacyRuntimeState());
             var document = new WorldDiplomacyDocument { IsPlayerAuthored = true };
             bool rejected = owner.TryGetPlayerWorldStateIntentViolation(document, "declare_war", "binding", "empire_w", "empire_s", out _);
-            Test.True(rejected == !expected, "player validation reaches shared admission: " + blocker);
+            Test.True(rejected == !expected, "player validation retains real party identity: " + blocker);
+        }
+        foreach (string blocker in new[] { "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity", "none", "invalid" })
+        {
+            Port player = AdmissionFor(blocker); player.InvolvesPlayer = true;
+            bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref player, out string why);
+            Test.True(allowed == (blocker != "invalid"), "player pair bypasses AI policy: " + blocker);
+            Test.True(player.Scans == 0, "player admission never scans world wars: " + blocker);
+            Test.True(allowed == string.IsNullOrEmpty(why), "invalid identity keeps diagnostic");
         }
         RunStateWiring();
         RunThreatWiring();

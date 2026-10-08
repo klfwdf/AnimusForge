@@ -25,6 +25,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     }
     internal void PrepareSharedRequest(WorldDiplomacyJob job)
     {
+        // Refresh restored jobs and manual retries at the main-thread request boundary.
+        if (job.Kind == "analyze" || (job.Kind == "generate" && IsPlayerDiplomacyJob(job))) job.MaxTokens = _host.AnalysisMaxTokens();
         var round = ResolveRound(job.RoundId);
         bool frozenRepair = job.SemanticRepairAttempts > 0 && round != null && job.RoundConversationRevision == round.ConversationRevision;
         if (frozenRepair) return;

@@ -16462,7 +16462,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(", StringComparison.Ordinal)
             && actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(", StringComparison.Ordinal)
-            && actionSelectionSource.Contains("() => BuildPotentialDiplomaticActionIntents(author, target), _port.ResolveDocument", StringComparison.Ordinal),
+            && actionSelectionSource.Contains("() => playerDiplomacy ? PlayerPotentialIntents() : BuildPotentialDiplomaticActionIntents(author, target), _port.ResolveDocument, playerDiplomacy", StringComparison.Ordinal),
             "the host must bind legal-intent ports through thin adapters");
         Test.True(!behaviorSource.Contains("ownOpenProposalIntents", StringComparison.Ordinal)
             && !behaviorSource.Contains("openPeaceOffers", StringComparison.Ordinal)
@@ -16521,7 +16521,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the player world-state violation chain must live in the validation rules behind probe ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(", StringComparison.Ordinal)
             && behaviorSource.Contains("bool partiesEligible = document != null", StringComparison.Ordinal)
-            && behaviorSource.Contains("_host.HasIndependentAuthority(authorId)", StringComparison.Ordinal),
+            && behaviorSource.Contains("!_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId)", StringComparison.Ordinal)
+            && behaviorSource.Contains("IsPlayerDiplomacyDocument(document)", StringComparison.Ordinal),
             "the host must collapse live-party eligibility and bind violation probes");
         Test.True(!behaviorSource.Contains("player_action_has_no_eligible_parties", StringComparison.Ordinal)
             && !behaviorSource.Contains("player_compliance_missing_source_threat", StringComparison.Ordinal)

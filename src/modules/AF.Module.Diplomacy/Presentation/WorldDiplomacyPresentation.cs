@@ -37,20 +37,6 @@ internal static class WorldDiplomacyPresentation
                 pauseGameActiveState: true);
             return false;
         }
-        if (!player.Independent)
-        {
-            InformationManager.ShowInquiry(new InquiryData(
-                "无法发布外交宣言",
-                "我国的外交事务目前由" + player.RepresentativeName + "掌管，不能独立发布外交宣言。",
-                true,
-                false,
-                "知道了",
-                "",
-                onClose,
-                null),
-                pauseGameActiveState: true);
-            return false;
-        }
         return WorldDiplomacyComposePopup.Show(
             "撰写外交宣言",
             "",

@@ -49,7 +49,8 @@ public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
                 string.Empty,
                 result?.PromptTokens ?? 0,
                 result?.CompletionTokens ?? 0,
-                result?.BudgetDeferred == true ? "world_diplomacy_request_budget_deferred" : "world_diplomacy_domain_failure",
+                result?.BudgetDeferred == true ? "world_diplomacy_request_budget_deferred"
+                    : result?.IsOutputTruncated == true ? "world_diplomacy_output_truncated" : "world_diplomacy_domain_failure",
                 metadata);
         }
         catch (OperationCanceledException)

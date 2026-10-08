@@ -16,11 +16,30 @@ internal interface IWorldDiplomacyPlayerWorld
 
 internal static class WorldDiplomacyPlayerApplication
 {
+    // Evaluated at request/commit boundaries over this document and round only.
+    internal static bool InvolvesPlayer(WorldDiplomacyDocument document, WorldDiplomacyRound round,
+        Func<string, bool> isPlayer)
+    {
+        if (document?.IsPlayerAuthored == true || document?.AnsweredPlayerDocumentIds?.Count > 0) return true;
+        if (document != null)
+        {
+            if (isPlayer(document.AuthorKingdomId) || isPlayer(document.TargetKingdomId)) return true;
+            if (document.AddressedKingdomIds != null)
+                foreach (string id in document.AddressedKingdomIds) if (isPlayer(id)) return true;
+            if (document.Actions != null)
+                foreach (var action in document.Actions) if (action != null && isPlayer(action.TargetKingdomId)) return true;
+        }
+        if (round?.IsPlayerInsertion == true) return true;
+        if (round?.RelayRouteKingdomIds != null)
+            foreach (string id in round.RelayRouteKingdomIds) if (isPlayer(id)) return true;
+        return false;
+    }
+
     internal static bool CanRetryAnalysis(WorldDiplomacyDocument document, WorldDiplomacyPlayerContext player)
         => document?.IsPlayerAuthored == true && document.IsReadyForPublication
             && document.AnalysisStatus == "analysis_failed" && !document.PlayerAnalysisCommitted
             && !document.ChangedDiplomaticState && !document.HistoryResultRecorded
-            && player?.IsRuler == true && player.Independent && player.KingdomId == document.AuthorKingdomId;
+            && player?.IsRuler == true && player.KingdomId == document.AuthorKingdomId;
     internal static string Execute(IWorldDiplomacyPlayerWorld world, WorldDiplomacyPlayerDocumentCommand command,
         IWorldDiplomacyOrchestration orchestration)
     {
@@ -45,10 +64,6 @@ internal static class WorldDiplomacyPlayerApplication
         if (!player.IsRuler)
         {
             return "你当前不再是王国统治者，外交宣言没有发布。";
-        }
-        if (!player.Independent)
-        {
-            return "我国的外交事务由" + player.RepresentativeName + "掌管，外交宣言没有发布。";
         }
         WorldDiplomacyRound round = orchestration.EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
         WorldDiplomacyDocument document = orchestration.CreateDocument(
@@ -90,14 +105,7 @@ internal static class WorldDiplomacyPlayerApplication
         if (!context.IsRuler) return "你当前不再是王国统治者，外交回应没有发布。";
         string player = context.KingdomId;
         string target = world.KingdomExists(sourceDocument.AuthorKingdomId) ? sourceDocument.AuthorKingdomId : null;
-        if (player == null || target == null || !context.Independent)
-        {
-            if (player != null && !context.Independent)
-            {
-                return "我国的外交事务由" + context.RepresentativeName + "掌管，不能独立回应外交宣言。";
-            }
-            return "";
-        }
+        if (player == null || target == null) return "";
         if (!WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
         {
             string previousRoundId = round.RoundId;

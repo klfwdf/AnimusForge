@@ -1,18 +1,29 @@
-# 当前交接：外交闭环三类异常修复（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前合并边界：远端外交提交与本地 Native WIP（2026-10-09，MERGE_SOURCE_AND_REPLAY_VERIFIED）
+
+- 远端 `8f7e38e6f` 与本地保护点 `5c13cc419` 保留双方历史；本轮用户已授权拉取合并和功能实现。只处理语义合并与去重，未继承历史推送、部署授权。Native 原文连续性及时间提示仍为 WIP，尚未验收。
+- 下列外交交接保留各自原始产品/验证范围；合并候选的外交 round lifecycle、实际效果回读、持久化 adapter 专项均退出0；源内保留 CourtEffectPending、损坏隔离与配置分析预算。独立语义去重复核及统一构建仍待本轮验收。
+
+# 已合并本地交接：外交闭环三类异常修复（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `fe29282a1` 将坏外交域改为当前owner隔离、完整primitive证据分块保存与新store重载，拒绝损坏/不完整证据和旧缓存提交，formal配置与health分离；传播 `39b461813`、`6f00d3a8a` 修失效作者占槽、逐arrival异常及持久化CourtEffectPending。真实response job/obligation/事实retry去重已回放。保留前轮传闻提示 `303e44c48`、人物菜单 `6e9c6a74f`；只签收这三类异常的有限离线闭环。
 - 当前外交4069、strict227、adapter14、传播129、效果182、独立native两版各8和最终实际DLL pinned1.3/1.4各37 PASS；原双API/Bootstrap/双Coup seams/单模块Stage exit0。1.3引用MVID4b87、1.4MVID1d6c；初次1.3误取安装native日志仅历史观察。回执 `artifacts/diplomacy-closure-audit-20261009/final-build/receipt.json` 绑定产品/三产物SHA，PDB两版各1395源码匹配；完整2010构建前快照未重采集，Stage输出 `bin/Debug/single_module_stage/AnimusForge`；未部署、打包、推送。
 - **保留边界**：catalog当前20键与strict两键精确读写门已过，随后civil-war JSON binding缺失/重复而整体NOT-PASS，未刷新oracle。坏Memory JSON下次Save/Weekly缺块证据仍NOT-PASS；历史D0/旧巨集失败不改绿。严格拒存仅证实未进入MBSaveLoad，真实Save Error UI/队列恢复、Campaign/.sav/坏档修复/LLM/GPU未验。
 - [唯一主台账、产物SHA及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-closure-audit-20261009)、[源码职责范围](docs/architecture/af-framework-code-scope.md#diplomacy-closure-audit-20261009)；本地报告/receipt位于 `artifacts/diplomacy-closure-audit-20261009/`。回滚按依赖逆序focused revert本包产品/文档，保留其他作者、NEW-10/GCCZ及原NuGet目录。以下六类与历史部署/推送记录仍按原证据，不授予本轮外部写入。
 
-# 当前交接：六类真实功能补审（2026-10-09，OFFLINE_WITH_OPEN_PERSISTENCE_RISK）
+# 已合并本地交接：六类真实功能补审（2026-10-09，OFFLINE_WITH_OPEN_PERSISTENCE_RISK）
 
 - 原迁移177文件inventory已补真实caller→owner→consumer审查；当前候选产品 `6e9c6a74f`，包含外交左下传闻提示删除 `303e44c48` 和Persona旧Hero菜单回调修复。当前Native导入121、3运行负控、Memory/Weekly实际adapter roundtrip31、news27/date7/Weekly owner90 PASS；Scene/Native/UI与Persona/Patience/Kingdom专项范围见台账，不称整链/全仓全绿。
 - 原官方1.3/1.4/Bootstrap/双Coup seam/Stage/两实际DLL探针PASS，2010输入冻结；回执 `artifacts/migration-functional-review-20261009/final-build/receipt.json`。本轮未部署/推送，安装仍是历史候选；用户追加的外交完整闭环审查独立进行，本条不授予或代表其最终验收。
 - **保留风险**：坏Memory JSON下一保存会丢scratch证据，缺Weekly chunk为空且owner不留原损坏载荷，保护NOT-PASS；已与 `c629e866c` 同算法绑定，未修坏档。D0 plain chunk CLI仍缺严格ContextVar，旧campaign/WeekZero综合fixture仍NOT-PASS；未刷新oracle。真实Campaign/Mission/存档/网络/TTS/GPU、三渠道live、四类campaign事件全执行未验。
 - [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#migration-functional-review-20261009)、[当前源码范围图](docs/architecture/af-framework-code-scope.md#migration-functional-review-20261009)；本地三组报告在 `artifacts/migration-functional-review-20261009/{interaction,kingdom-host,memory-weekly}`。回滚仅对应产品/测试文档提交的focused inverse，不reset其他作者、NuGet、NEW-10/GCCZ。以下历史部署/推送与当前状态分别看所属receipt。
 
-# 当前交接：场景轮盘、连续回复可见性与名录动画
+# 已合并远端交接：玩家外交与解析截断修复整合远端主分支（2026-10-09）
+
+- 产品 `04f07b12c`，从最新远端 `b41587eca` 在独立 `codex/bugfix-main-20261009` 整合；保留远端回应恢复、具体拒绝原因及通知修复。玩家相关外交豁免AI节奏/独立外交权/动作限制，支持废约后宣战等顺序多动作；解析使用对应API输出预算，截断停止重复请求并保留原文/重新解析入口。
+- 最终外交4088、回应恢复26、实际生产端口效果回读182、实际DLL HTTP与精确宣战授权回归，以及1.4构建PASS。1.5因远端旧构建基线仍不支持而未验证；实机/真实服务未验。用户已授权推送origin/main；原本地1.5适配目录不修改，不部署游戏。
+- [唯一台账、源码坐标与验证限制](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-diplomacy-analysis-fix-20261009)、[现有代码导航](docs/architecture/af-framework-code-scope.md)。本地收据 `artifacts/player-diplomacy-analysis-fix-20261009/integration-receipt.json`；产品回滚仅focused revert `04f07b12c`。下方其他交付记录保持。
+
+# 历史交接：场景轮盘、连续回复可见性与名录动画
 
 产品`f634a8c03`组合修复菜单迁移owner断链、TTSoff文本feed延迟、名录主体贴顶及0.25秒卷收；外交第三方消息文案/路由日志澄清。轮盘21、sink68、生命周期117/54/30、UI125、通知107 PASS；最终两DLL真实TriggerShout→分类→ShowPrefix及trade契约、官方双API/Bootstrap/双coup接缝/Stage PASS。2010产品输入冻结，其后测试提交不改变产品。
 

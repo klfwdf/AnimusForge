@@ -32,6 +32,7 @@ public sealed partial class WorldDiplomacyBehavior
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
         public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer) => WorldDiplomacyBehavior.FindRequiredPeaceOfferResponse(round, ResolveParty(author), slot, external, sourceId, requireAnyOpenPeaceOffer);
         public bool IsAtWar(string author, string target) => TaleWorlds.CampaignSystem.FactionManager.IsAtWarAgainstFaction(ResolveParty(author), ResolveParty(target));
+        public bool IsPlayerAffiliated(string id) => IsPlayerAffiliatedKingdom(ResolveParty(id));
         public bool IsPlayerKingdom(string id) => WorldDiplomacyBehavior.IsPlayerKingdom(ResolveParty(id));
         public string NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);
         public WarPressureEntry FindWarPressure(string source, string target) => _owner._orchestration.FindWarPressure(source, target);

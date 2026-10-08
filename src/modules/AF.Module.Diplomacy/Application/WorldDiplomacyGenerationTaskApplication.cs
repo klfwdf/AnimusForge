@@ -124,7 +124,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
         Action<WorldDiplomacyJob, string, string, string> abandonGeneration,
         Func<string, string, bool> isAtWar,
         Action<WorldDiplomacyJob> enqueue,
-        Action<string> log)
+        Action<string> log, bool playerDiplomacy = false)
 	{
 		if (string.IsNullOrWhiteSpace(authorId) || (string.IsNullOrWhiteSpace(targetId) && !allowUntargeted))
 		{
@@ -242,7 +242,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
 		}
 		if (owningRound != null)
 		{
-			if (!playerPriorityResponse && !isResultSettlementTurn
+			if (!playerDiplomacy && !playerPriorityResponse && !isResultSettlementTurn
 				&& (owningRound.AutomaticCircuitBreakerTripped || owningRound.AutomaticDocumentsStarted >= maxAutomaticDocumentsPerRound))
 			{
 				TripAutomaticRoundCircuitBreaker(storage, owningRound, "automatic_document_limit", log);
