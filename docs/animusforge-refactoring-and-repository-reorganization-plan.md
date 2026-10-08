@@ -1,3 +1,15 @@
+<a id="gallery-redraw-default-20261008"></a>
+## 画廊基于本图重绘与本地覆盖默认图刷新（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户授权画廊加入“重绘（基于本图）”，追加默认图问题并确认是覆盖原PNG、保留同名JSON。产品 `f21c03a3b`，检查点 `dc2c9b6`。本轮只处理该替换方式，不将无JSON孤立PNG、改名/换后缀或任意图指定到任意NPC算作已修。
+- 调查：DiskImageCacheManager.LoadImage本来会重新读取PNG，保留JSON时SetDefault也能写指向；缺口是画廊设默认未通知已有插画面板，卡片/周报重复发布同Key还复用sprite名称。未取得玩家原始文件/日志，所述反馈不冒充实机复现。
+- 入口与生命周期：`extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopup.cs:83–125` OpenCurrentImageEditor复用现有多行编辑器与CurrentImageRedraw，冻结选择身份，绕过导演，独立campaign-owned生成scope、单图编辑，关闭画廊仍后台保存；旧job清理按引用检查，不覆盖新job。失败保留草稿/原图，成功新版本保持来源Key/指令；沿原主题默认提升规则。`IllustratorGalleryPopupVM.cs:76–86,229–250,354–400`按钮资格及异步刷新选中项保持。XML底部新增200宽按钮，文字不抢事件，现有1360宽面板内总按钮宽度约1110。
+- 默认图：`IllustratorGalleryPopupVM.cs:461–485`显式点击后有界worker只读/验证所选文件，再在主线程检查owner并设置原默认指向；错误图不发布成功，保留已有默认指向。`Core/IllustratorRuntime.cs:305–314`内部事件仅此显式操作发布已读字节，不触发生成成功通知。`UI/Overlays/IllustrationCardPopup.cs:256–264`与`UI/Patches/WeeklyReportPopupIllustrationPatch.cs:693–700`仅当前存档/分类/主题的空闲面板接受刷新，生成中的面板不抢占。两Publish方法改每次唯一sprite名称，注册成功后释放旧纹理，防同名覆盖仍引用失效旧对象；订阅随面板退出解除。
+- 性能：新增仅按钮点击、编辑提交、生成完成及默认图事件运行；无Tick、文件监视器、磁盘轮询或全场扫描。图片读取/规范化沿有界后台worker，主线程仅原有metadata设置和GPU注册。没有存档键/公开API/采样参数变更，也未改变其他生图模式。
+- PASS：GalleryEditTests 21项（生产cache/image/redraw/editor，提取真实UI/default通知方法，native/HTTP替身），覆盖替换PNG保留JSON、读新字节、重开默认、坏图拒发、关闭后默认回包丢弃、对应卡片/周报接受及其他主题/存档拒绝、编辑取消/重复/切换目标/失败/关闭画廊后台保存；XML按钮绑定。最终原build_single_module.ps1双API/Bootstrap/双接缝成功；两最终DLL各135请求断言，全部HTTP内存拦截。六产品输入SHA与快照一致。证据 `artifacts/gallery-redraw-default-20261008/receipt.json`、build-final.log、tests-final.log、request-1.3.log/request-1.4.log。
+- 隔离快照来自checkpoint HEAD，仅覆盖本任务产品输入，省略项目本就排除编译的原版反编译参考目录；未签收其他会话尚未提交的外交修改。测试首次因fixture类型与成员同名编译失败，改名后通过，未为测试更改产品行为。
+- NOT-RUN：实际游戏画廊布局/按钮/GPU刷新、玩家原图问题复现、真实生图API；未调用付费API、Stage、部署、打包或推送。回滚仅 `git revert f21c03a3b`；候选位于证据目录source/bin/Debug/single_module_artifacts。保留其他会话外交修改及NuGet目录。
+
 <a id="terminal-map-icon-size-20261008"></a>
 # 终端地图图标尺寸兼容（2026-10-08，ACTIVE）
 

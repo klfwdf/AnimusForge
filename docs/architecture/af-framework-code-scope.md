@@ -1,3 +1,8 @@
+<a id="gallery-redraw-default-20261008"></a>
+### 画廊重绘与默认图刷新导航（2026-10-08）
+
+产品 `f21c03a3b`：GalleryPopup接已有CurrentImageRedraw，GalleryVM重读本地默认图，IllustratorRuntime内部事件通知匹配卡片/周报消费者。源码坐标、21项专项、两DLL各135和原双API构建、未验证范围见[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gallery-redraw-default-20261008)。无公共API/存档扩展，未签收并行外交整树。
+
 <a id="mission-photo-review-fixes-20261008"></a>
 ### 自由取景UI接线修复导航（2026-10-08）
 

@@ -1,3 +1,9 @@
+# 当前交接：画廊基于本图重绘与本地默认图刷新（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `f21c03a3b`：画廊新增重绘（基于本图），复用单图编辑、不调导演，关闭画廊继续后台保存；默认图点击重读玩家覆盖PNG并刷新匹配的空闲插画面板，每次发布唯一纹理名。用户确认保留同名JSON，不处理无JSON/改名图的主题绑定。
+- 专项21、XML绑定、两实际DLL各135及原双API/Bootstrap/双接缝PASS。实际游戏/玩家原图/真实API未验，未部署/打包/推送。其他会话外交修改保留且未混入本候选。
+- [唯一台账/代码与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gallery-redraw-default-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#gallery-redraw-default-20261008)。证据 `artifacts/gallery-redraw-default-20261008/receipt.json`；仅 `git revert f21c03a3b` 回滚。
+
 # 当前交接：自由取景审查问题修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `2664d3382`：原喊话弹窗不再把合法取景焦点当系统打断；暂存/压制/恢复旧层鼠标显示；等待卡片故障不取消已启动的后台生成。补充下方基础自由取景实现，保留真正离场与其他窗口处理。
