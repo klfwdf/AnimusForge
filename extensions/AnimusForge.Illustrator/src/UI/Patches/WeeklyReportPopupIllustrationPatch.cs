@@ -343,6 +343,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.TitleText = title ?? "";
                 slot.StatusText = "正在为本期快报绘制新插画...";
                 slot.OnRegenerate = TriggerRegenerate;
+                slot.OnRegenerateBasedOnImage = null;
                 slot.OnRegenerateWithPrompt = () => { if (ReferenceEquals(ownerScope, _scope)) OpenRedrawPromptEditor(); };
                 slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
@@ -749,7 +750,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             finally
             {
-                if (_bulletinSlot != null) _bulletinSlot.OnRegenerateWithPrompt = null;
+                if (_bulletinSlot != null) { _bulletinSlot.OnRegenerateWithPrompt = null; _bulletinSlot.OnRegenerateBasedOnImage = null; }
                 _imageEditDraft = string.Empty;
                 _playerRedrawDraft = string.Empty;
                 _editingRedrawPrompt = false;
