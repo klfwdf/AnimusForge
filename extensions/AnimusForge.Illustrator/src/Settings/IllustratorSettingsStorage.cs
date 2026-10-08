@@ -41,6 +41,7 @@ namespace AnimusForge.Illustrator
                 var jsonPrefix = new HarmonyMethod(typeof(IllustratorSettingsStorage), nameof(RouteJson));
                 harmony.Patch(load, prefix: jsonPrefix);
                 harmony.Patch(save, prefix: jsonPrefix);
+                IllustratorPromptSettingsPersistence.Install(harmony, format);
                 _installed = true;
             }
         }
