@@ -1,4 +1,15 @@
-﻿<a id="news-mode-restart-calendar-20261008"></a>
+﻿<a id="yj-endpoint-selection-20261008"></a>
+## YJ 引导三线路测速（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品提交 `943f22227`；检查点 `ead2857`。保留现有 www，新增 `https://yjapi.shenlanqaq.com/v1`、`https://asia.shenlanqaq.com/v1`。点击 YJ 后并行测试三线路，每条两次无认证 `/models` 响应头请求，选择成功样本平均延迟最低者，再进入单/多分组菜单；全部失败留原选择，不覆盖配置。
+- 性能：仅显式点击触发，最多6次请求、每次3.5秒超时，三线路并行；不调用模型、不后台定时重测。完成回写主线程，返回/关闭/切换预设取消并拒绝迟到结果。原版 fallback 使用现有 OnEngineTick，避免暂停战役阻塞结果。
+- 核实代码范围（产品修订）：`src/modules/AF.Module.Onboarding/YjEndpointProbe.cs:12-70`（网络候选及测速）；`src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs:578-611`（新版入口及取消）；`src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs:116-167`、`:392-405`（原版入口及暂停时调度）；`src/modules/AF.Module.Llm/Protocol/YjThinkingCompat.cs:16-35`（新域名精确匹配）。不变更公开API、存档键和现有玩家配置。
+- PASS：实际 helper HTTP fixture 与实际 VM 的三线路、均值选择、无Key、错误/HTML排除、超时、取消、重复点击、单/多分组、迟到结果和全失败；YjThinkingCompat 专项；仓库原 build_single_module.ps1 双API(1.3/1.4)、Bootstrap、双接缝。最终源码与构建快照逐文件SHA256一致，证据 `artifacts/yj-endpoint-selection-20261008/`（build-final.log、yj-probe-tests.log、yj-thinking-tests.log、source-hashes.json）。
+- 综合 DialogueOnboardingRegressionTests 在本次专项通过后，旧卷轴文案断言 Program.cs:199 失败：测试仍找“历史记录/赠送物品/人物图鉴”，当前XML是“历史/赠送/图鉴”；未为本功能修改无关UI。该综合回归不声称通过。
+- NOT-RUN：真实站点网络测速、实际游戏的引导和原版fallback交互。头响应延迟不代表生成吞吐/账号可用性；后续仍保留Key/模型连接验证。未部署、打包或推送。
+- 回滚：仅 `git revert 943f22227`，保留其他会话改动和 NuGet 缓存。
+
+<a id="news-mode-restart-calendar-20261008"></a>
 # 周报切换／新档重新收集与历法日期（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户确认切换后周报重新累计7个游戏日；追加新档“第3588周目标已变更”截图，并要求游戏年月日与365天历法兼容。检查点 `c62a5d6db`，产品 `1241b702d`。本机日志19:53:11发出298年冬季第三周wave1/3，多个Gateway 200 success=True后19:55:31明确报素材/目标变化；证实提交守卫拒绝，旧日志不能定位具体revision调用。累计周号来自世界绝对日数/7，不是游玩时长。
