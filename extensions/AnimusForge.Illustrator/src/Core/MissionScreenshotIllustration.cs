@@ -118,7 +118,7 @@ namespace AnimusForge.Illustrator.Core
                 subject = "mission_" + Guid.NewGuid().ToString("N");
                 // Admit the lifetime before acquiring native resources; cleanup is transactional.
                 scope = new IllustrationScope(ScreenManager.TopScreen, "general", () => ScopeClosed(scope, capture, mission), campaignOwned: true, missionOwned: true);
-                capture = new MissionScreenshotCapture(mission, pivot, player.Frame.rotation.f, subjectRadius, options.AutoCleanTempFiles);
+                capture = new MissionScreenshotCapture(mission, pivot, subjectRadius, options.AutoCleanTempFiles);
             }
             catch (Exception ex)
             {
@@ -156,8 +156,8 @@ namespace AnimusForge.Illustrator.Core
                         byte[] reverse = MissionScreenshotImageCodec.ToPng(pair.Reverse, token);
                         string contract = MissionScreenshotRules.Contract(battle);
                         var references = new[] {
-                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：以玩家身体朝向为前方，从人物区域前方水平回望的独立机位，不是玩家当前镜头。" + contract, IllustrationReferenceKind.MissionScreenshot),
-                            new IllustrationReferenceImage(Convert.ToBase64String(reverse), "截图B：同一冻结瞬间，从人物区域后方水平回望，与A朝向相差180度。与A是同一组人物、同一场景。" + contract, IllustrationReferenceKind.MissionScreenshot)
+                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：沿点击时玩家镜头的水平方向观察人物区域的独立平视机位，只提供现场资料，不规定最终构图。" + contract, IllustrationReferenceKind.MissionScreenshot),
+                            new IllustrationReferenceImage(Convert.ToBase64String(reverse), "截图B：同一冻结瞬间，从人物区域对侧平视回望，与A朝向相差180度的辅助机位，不规定最终构图。与A是同一组人物、同一场景。" + contract, IllustrationReferenceKind.MissionScreenshot)
                         };
                         pair = null; current = null; reverse = null;
                         var plan = new IllustrationPromptPlan(battle ? MissionScreenshotRules.BattleMode : MissionScreenshotRules.ShoutMode, facts, contract, dialogue);

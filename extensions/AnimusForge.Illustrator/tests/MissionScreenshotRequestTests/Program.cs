@@ -256,7 +256,9 @@ internal static class Program
         Check(!request.Contains("允许自定义服装装备"), "screenshot identities remain fixed with ordinary equipment switch off");
         string finalPrompt = Get<string>(result, "Prompt");
         Check(!finalPrompt.Contains("对白完整原文") && finalPrompt.Contains("玩家与目标相距2米")
-            && finalPrompt.Contains("前后平视机位") && finalPrompt.Contains("参考图的居中与透视只是采集构图，不是最终画面的固定要求"),
+            && finalPrompt.Contains("玩家镜头水平方向") && finalPrompt.Contains("前后平视机位")
+            && finalPrompt.Contains("参考图的居中与透视只是采集构图，不是最终画面的固定要求")
+            && finalPrompt.Contains("没有一张图指定最终主视角") && finalPrompt.Contains("自行推演机位、景别和构图"),
             "final image uses direction/facts/contract, never raw dialogue or forced player centering");
         handler.Reset(reply("")); RejectDirection(options, References(), http, "empty director output");
         Check(handler.Records.Count == 1, "empty director fails without local substitute or retry");

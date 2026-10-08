@@ -56,7 +56,7 @@ namespace AnimusForge.Illustrator.Engine
         private bool _closed, _ownsStage, _ownsPause, _ownsStateDisable, _changedUi, _changedCamera, _changedPaused;
         internal Task<MissionScreenshotPair> Completion => _done.Task;
 
-        internal MissionScreenshotCapture(Mission mission, Vec3 pivot, Vec3 bodyForward, float subjectRadius, bool clean)
+        internal MissionScreenshotCapture(Mission mission, Vec3 pivot, float subjectRadius, bool clean)
         {
             IllustratorRuntime.AssertMainThread();
             _mission = mission;
@@ -86,7 +86,10 @@ namespace AnimusForge.Illustrator.Engine
                 // Preserve native camera setup, then replace pose/projection below.
                 _captureCamera.FillParametersFrom(_backup);
                 float aspect = _backup.GetAspectRatio();
-                Vec3[] positions = BuildLevelPositions(pivot, bodyForward, subjectRadius, aspect);
+                // Only use the active player's horizontal viewing direction. Keep the independent
+                // level rig and fixed FOV; mouse pitch, camera position and zoom do not set framing.
+                Vec3 viewForward = (_oldCustom ?? _backup).Frame.rotation.u * -1f;
+                Vec3[] positions = BuildLevelPositions(pivot, viewForward, subjectRadius, aspect);
                 _frontPosition = ResolveCameraCollision(positions[0]);
                 _rearPosition = ResolveCameraCollision(positions[1]);
                 // Fixed perspective: the original camera is only a restore snapshot.
@@ -166,21 +169,22 @@ namespace AnimusForge.Illustrator.Engine
             catch (Exception ex) { Cancel(ex.Message); }
         }
 
-        // Pure geometry, evaluated once per click. No mouse camera position, pitch or zoom input.
-        internal static Vec3[] BuildLevelPositions(Vec3 pivot, Vec3 bodyForward, float subjectRadius, float aspect)
+        // Pure geometry, once per click. Only camera yaw controls the level pair.
+        internal static Vec3[] BuildLevelPositions(Vec3 pivot, Vec3 viewForward, float subjectRadius, float aspect)
         {
-            Vec3 forward = new Vec3(bodyForward.x, bodyForward.y, 0f);
+            Vec3 forward = new Vec3(viewForward.x, viewForward.y, 0f);
             float length = forward.Length;
             if (float.IsNaN(length) || float.IsInfinity(length) || length < 0.001f
                 || float.IsNaN(aspect) || float.IsInfinity(aspect) || aspect <= 0f
                 || float.IsNaN(subjectRadius) || float.IsInfinity(subjectRadius) || subjectRadius < 0f)
-                throw new InvalidOperationException("人物朝向或截图视野无效，无法建立前后平视机位。");
+                throw new InvalidOperationException("镜头水平方向或截图视野无效，请稍微调整镜头后再试。");
             forward *= 1f / length;
             // Fit the subject region using the narrower screen dimension, with near-side depth margin.
             float radius = Math.Max(1.6f, subjectRadius);
             float halfFovTangent = (float)Math.Tan(Math.PI / 6) * Math.Min(1f, aspect);
             float distance = radius + radius / halfFovTangent;
-            return new[] { pivot + forward * distance, pivot - forward * distance };
+            // A looks along the player's horizontal view; B looks back from the opposite side.
+            return new[] { pivot - forward * distance, pivot + forward * distance };
         }
 
         private Vec3 ResolveCameraCollision(Vec3 position)
