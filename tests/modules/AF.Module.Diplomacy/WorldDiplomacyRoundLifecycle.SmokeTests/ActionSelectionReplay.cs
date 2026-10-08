@@ -25,6 +25,7 @@ internal static class ActionSelectionReplay
     {
         private readonly bool _permit;
         internal Admission(bool permit) => _permit = permit;
+        public bool InvolvesPlayer { get; set; }
         public bool ValidPair => true;
         public bool HasIndependentAuthority => _permit;
         public bool AtWar => false;

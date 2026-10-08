@@ -7,6 +7,7 @@ internal static class ImmediateActionReplay
         internal readonly List<string> Events = new();
         internal bool Allowed = true;
         public WorldDiplomacyStorage Storage { get; } = new();
+        public bool IsPlayerDiplomacy(WorldDiplomacyDocument document) => false;
         public int CurrentDay => 42;
         public bool CanAiAuthor(string id, out string reason) { Events.Add("authority"); reason = "blocked"; return Allowed; }
         public WorldDiplomacyImmediateActionReceipt DeclareWar(string a, string t, WorldDiplomacyDocument d) { Events.Add("war"); return new(true, "war ok"); }

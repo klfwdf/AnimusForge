@@ -45,7 +45,7 @@ internal static class WorldDiplomacyLlmApplication
             result.Success = generated.Status == LlmResultStatus.Succeeded;
             result.Content = generated.RawText ?? "";
             result.Error = generated.Status == LlmResultStatus.Succeeded ? "" : (generated.ErrorCode ?? "world_diplomacy_gateway_failure");
-            result.IsServiceFailure = metadata.IsTimeout || metadata.IsRateLimit || metadata.IsQuotaLimit || metadata.IsAuthFailure || generated.Status != LlmResultStatus.Succeeded;
+            result.IsServiceFailure = !metadata.IsOutputTruncated && (metadata.IsTimeout || metadata.IsRateLimit || metadata.IsQuotaLimit || metadata.IsAuthFailure || generated.Status != LlmResultStatus.Succeeded);
             result.IsOutputTruncated = metadata.IsOutputTruncated;
             result.PromptTokens = generated.PromptTokens;
             result.CompletionTokens = generated.CompletionTokens;

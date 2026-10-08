@@ -52,7 +52,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int GenerationMaxTokens = 1800;
 	private const int MaxConsecutiveTechnicalGenerationFailuresPerRound = 3;
 	private const int MaxDiplomaticActionsPerDocument = 4;
-	private const int AnalysisMaxTokens = 900;
 	private const int CompressionOutputTokenReserve = 1024;
 	private const int CompressionJobPriority = 1000;
 	private const int MaxStoredDocuments = 420;

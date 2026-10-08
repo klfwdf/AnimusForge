@@ -53,7 +53,7 @@ internal static class PermanentAllianceGuard
 		.GetField("_alliances", BindingFlags.Instance | BindingFlags.NonPublic);
 	private static readonly HashSet<string> ExplicitBreakSources = new HashSet<string>(StringComparer.Ordinal)
 	{
-		"world_diplomacy_break_alliance",
+		"world_diplomacy_break_alliance", "world_diplomacy_declare_war",
 		"diplomacy_break_alliance"
 	};
 	private static readonly object LogSync = new object();
@@ -137,6 +137,11 @@ internal static class PermanentAllianceGuard
 		return new AuthorizationScope(authorization);
 	}
 
+    // Only the synchronous, explicit document effect for this exact pair gets this scope.
+    internal static bool IsPlayerDeclarationWarAuthorized(IFaction first, IFaction second) =>
+        first is Kingdom a && second is Kingdom b
+        && IsAuthorizedBySource(a, b, "world_diplomacy_declare_war");
+
 	internal static bool ShouldAllowDeclareWar(
 		IFaction first,
 		IFaction second,
@@ -146,7 +151,8 @@ internal static class PermanentAllianceGuard
 		IAllianceCampaignBehavior alliances = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
 		if (alliances?.IsAllyWithKingdom(firstKingdom, secondKingdom) != true) return true;
 		if (detail == DeclareWarAction.DeclareWarDetail.CausedByKingdomDecision
-			&& IsAuthorizedBySource(firstKingdom, secondKingdom, KingdomVoteWarSource))
+			&& (IsAuthorizedBySource(firstKingdom, secondKingdom, KingdomVoteWarSource)
+                || IsAuthorizedBySource(firstKingdom, secondKingdom, "world_diplomacy_declare_war")))
 		{
 			return true;
 		}

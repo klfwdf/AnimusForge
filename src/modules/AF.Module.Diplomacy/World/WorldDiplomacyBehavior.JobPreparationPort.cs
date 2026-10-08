@@ -9,7 +9,7 @@ public sealed partial class WorldDiplomacyBehavior
         internal JobPreparationPort(WorldDiplomacyBehavior owner) { _owner = owner; }
         public WorldDiplomacyStorage Storage => _owner._storage;
         public int GenerationMaxTokens => WorldDiplomacyBehavior.GenerationMaxTokens;
-        public int AnalysisMaxTokens => WorldDiplomacyBehavior.AnalysisMaxTokens;
+        public int AnalysisMaxTokens => WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit();
         public (int minimum, int maximum) CharacterRange() { GetDiplomaticDeclarationCharacterRange(out int min, out int max); return (min, max); }
         public bool KingdomExists(string id) => ResolveKingdom(id) != null;
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);

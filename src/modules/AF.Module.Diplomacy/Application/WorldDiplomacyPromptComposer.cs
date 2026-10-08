@@ -13,6 +13,14 @@ namespace AnimusForge;
 // this port; nothing here retains a Campaign object or dispatches background work.
 internal static class WorldDiplomacyPromptComposer
 {
+    private static void AppendPlayerContext(StringBuilder sb, IWorldDiplomacyOrchestration orchestration,
+        string author, string target, WorldDiplomacyRound round, WorldDiplomacyDocument source = null)
+    {
+        if (source?.IsPlayerAuthored == true || (orchestration is WorldDiplomacyOrchestration owner
+            && owner.IsPlayerDiplomacyContext(author, target, round, source)))
+            sb.AppendLine("player_diplomacy=true；玩家相关外交：自主AI的冷却、战争数量、内战、回合轮次、动作数量、单对象单动作与强制先答某案限制不适用。保留全部明确动作及其先后，不得因这些限制拒绝发文或改变诉求。真实目标与原案来源仍须准确。");
+    }
+
     internal static string BilateralStateLabel(IWorldDiplomacyPromptWorld world, string authorId, string targetId)
     {
         if (world.ResolveKingdom(authorId) == null || world.ResolveKingdom(targetId) == null) return "未知";
@@ -33,6 +41,7 @@ internal static class WorldDiplomacyPromptComposer
 		IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument root, List<string> candidateIds)
 	{
 		StringBuilder sb = new StringBuilder();
+        AppendPlayerContext(sb, orchestration, root.AuthorKingdomId, root.TargetKingdomId, world.ResolveRound(root.RoundId), root);
 		string vassalageSnapshot = world.BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot))
 		{
@@ -76,6 +85,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		orchestration.PruneInvalidOffers(round);
 		StringBuilder sb = new StringBuilder();
+        AppendPlayerContext(sb, orchestration, author, previous, round, prioritySource);
 		List<string> legalTargetIds = round?.ResultSettlementPending == true
 			? orchestration.GetResultSettlementActionableTargetIds(round, author)
 			: (round?.RelayRouteKingdomIds ?? new List<string>())
@@ -210,6 +220,7 @@ internal static class WorldDiplomacyPromptComposer
 		StringBuilder sb = new StringBuilder();
 		AppendDiplomaticAuthorDecisionContext(sb, world, author, roundId);
 		WorldDiplomacyRound round = world.ResolveRound(roundId);
+        AppendPlayerContext(sb, orchestration, author, null, round);
 		if (!string.IsNullOrWhiteSpace(round?.ExternalOpeningContext))
 		{
 		sb.AppendLine("【已经发生的外部外交事件】");
@@ -272,6 +283,7 @@ internal static class WorldDiplomacyPromptComposer
 		if (activeRound?.RelayRouteKingdomIds != null) relevantKingdomIds.AddRange(activeRound.RelayRouteKingdomIds);
 		string gatheringSnapshot = world.BuildGatheringSnapshot(relevantKingdomIds, 3);
 		StringBuilder sb = new StringBuilder();
+        AppendPlayerContext(sb, orchestration, author, target, activeRound, sourceDocument);
 		AppendDiplomaticAuthorDecisionContext(sb, world, author, resolvedRoundId);
 	sb.AppendLine("【本篇对象与合法动作】");
 	sb.AppendLine("主要对象国：" + world.KingdomName(target) + "（ID=" + targetId + "），统治者：" + world.RulerName(target));

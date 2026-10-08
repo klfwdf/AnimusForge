@@ -29,8 +29,23 @@ internal sealed partial class WorldDiplomacyOrchestration
         && !string.Equals(round.EventSourceType, "dialogue_commitment", StringComparison.OrdinalIgnoreCase)
         && !string.Equals(round.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase));
 
+    internal bool IsPlayerDiplomacyContext(string author, string target, WorldDiplomacyRound round, WorldDiplomacyDocument source = null) =>
+        _host.IsPlayerAffiliatedParty(author) || _host.IsPlayerAffiliatedParty(target)
+        || WorldDiplomacyPlayerApplication.InvolvesPlayer(source, round, _host.IsPlayerAffiliatedParty);
+    internal bool IsPlayerDiplomacyDocument(WorldDiplomacyDocument document) =>
+        WorldDiplomacyPlayerApplication.InvolvesPlayer(document, ResolveRound(document?.RoundId), _host.IsPlayerAffiliatedParty);
+    internal bool IsPlayerGeneratedEnvelope(WorldDiplomacyJob job, Newtonsoft.Json.Linq.JObject json) =>
+        IsPlayerDiplomacyJob(job) || (json?["actions"] is Newtonsoft.Json.Linq.JArray actions
+            && actions.OfType<Newtonsoft.Json.Linq.JObject>().Any(x => _host.IsPlayerAffiliatedParty(
+                WorldDiplomacyEnvelopeJsonRules.ReadString(x, "target_kingdom_id", "primary_target_kingdom_id", "target"))));
+    internal bool IsPlayerDiplomacyJob(WorldDiplomacyJob job) => job != null &&
+        (job.PlayerResponseSourceIds?.Count > 0 || _host.IsPlayerAffiliatedParty(job.AuthorKingdomId)
+         || _host.IsPlayerAffiliatedParty(job.TargetKingdomId)
+         || IsPlayerDiplomacyDocument(ResolveDocument(job.DocumentId))
+         || IsPlayerDiplomacyDocument(ResolveDocument(job.SourceDocumentId))
+         || WorldDiplomacyPlayerApplication.InvolvesPlayer(null, ResolveRound(job.RoundId), _host.IsPlayerAffiliatedParty));
     private bool IsDirectPlayerSchedulingJob(WorldDiplomacyJob job) => job != null &&
-        (job.PlayerResponseSourceIds?.Count > 0
+        (IsPlayerDiplomacyJob(job)
          || ((job.Kind == "analyze" || job.Kind == "round_plan") && ResolveDocument(job.DocumentId)?.IsPlayerAuthored == true)
          || (job.Kind == "generate" && (ResolveRound(job.RoundId)?.PlayerResponses?.Any(x => x != null
              && x.Status == "pending" && x.KingdomId == job.AuthorKingdomId
@@ -187,12 +202,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         var receivers = GetDocumentTargetIds(document)
             .Concat(document.AddressedKingdomIds ?? Enumerable.Empty<string>()).Select(_host.ResolvePartyId)
             .Select(_host.ResolveRepresentativeId).Where(x => x != null && !_host.IsPlayerParty(x)
-                && _host.HasIndependentAuthority(x)).Distinct().ToList();
+                && !_host.IsEliminatedParty(x)).Distinct().ToList();
         if (receivers.Count == 0)
         {
             // Existing event participants first; deterministic rotation breaks
             // ties for a wholly independent, untargeted declaration.
-            receivers = _host.AllKingdomIds().Where(id => _host.HasIndependentAuthority(id) && _host.CanAiAuthorParty(id, out _)).OrderByDescending(x => RoundContainsKingdom(round, x))
+            receivers = _host.AllKingdomIds().Where(id => !_host.IsEliminatedParty(id) && !_host.IsPlayerAffiliatedParty(id)).OrderByDescending(x => RoundContainsKingdom(round, x))
                 .ThenByDescending(x => document.MentionedKingdomIds?.Contains(x, StringComparer.OrdinalIgnoreCase) == true)
                 .ThenByDescending(x => _host.PartiesAtWar(document.AuthorKingdomId, x))
                 .ThenBy(x => x, StringComparer.OrdinalIgnoreCase).Take(1).ToList();
@@ -225,11 +240,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (source?.IsPlayerAuthored != true || !source.IsReadyForPublication) return "source_unavailable";
         // Resolve the original parties only. A changed suzerain never inherits this declaration.
         string author = _host.ResolvePartyId(source.AuthorKingdomId);
-        if (author == null || _host.IsEliminatedParty(author) || !_host.HasIndependentAuthority(author))
-            return "source_author_no_independent_authority";
+        if (author == null || _host.IsEliminatedParty(author))
+            return "source_author_unavailable";
         string receiver = _host.ResolvePartyId(receiverId);
-        if (receiver == null || _host.IsEliminatedParty(receiver) || !_host.HasIndependentAuthority(receiver))
-            return "receiver_no_independent_authority";
+        if (receiver == null || _host.IsEliminatedParty(receiver))
+            return "receiver_unavailable";
         return "";
     }
 
@@ -247,9 +262,9 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (firstReason.Length > 0)
         {
             _diplomacyWorkNeedsReconcile = true;
-            _host.Notify(firstReason == "source_author_no_independent_authority"
-                ? "你的原宣言所属王国已失去独立外交资格，尚未答复的外交回应已停止；恢复资格后请重新发布宣言，旧承诺不会转给宗主国。"
-                : "原宣言或回应国已不具备外交回应资格，尚未完成的回应已停止。请查看原公文与当前外交局势。");
+            _host.Notify(firstReason == "source_author_unavailable"
+                ? "你的原宣言所属王国已不存在，尚未答复的外交回应已停止；旧承诺不会转给宗主国。"
+                : "原宣言或回应国已不存在，尚未完成的回应已停止。请查看原公文与当前外交局势。");
         }
     }
 
@@ -318,10 +333,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             && x.Status == "pending" && x.RetryNotBeforeDay <= _host.CurrentDay()).GroupBy(x => x.KingdomId).OrderBy(x => x.Min(y => y.CreatedDay)))
         {
             string receiver = ResolveDialogueParty(group.Key);
-            if (receiver == null || _host.IsEliminatedParty(receiver) || !_host.HasIndependentAuthority(receiver))
+            if (receiver == null || _host.IsEliminatedParty(receiver))
             {
                 foreach (var item in group) item.Status = "unavailable";
-                _host.Notify("宣言的原回应国已失去独立外交资格；该国回应无法继续。");
+                _host.Notify("宣言的原回应国已不存在；该国回应无法继续。");
                 continue;
             }
             var received = group.Where(x => DialogueDocumentKnown(receiver, x.SourceDocumentId)).ToList();

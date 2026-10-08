@@ -140,7 +140,7 @@ internal static class WorldDiplomacyLlmClient
 				cancellationToken, admitRequest);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
-			if (result.Success || result.BudgetDeferred || result.IsAuthFailure || result.IsQuotaLimit
+			if (result.Success || result.BudgetDeferred || result.IsOutputTruncated || result.IsAuthFailure || result.IsQuotaLimit
 				|| IsNonRetryableClientError(result) || attempt >= attempts)
 			{
 				return result;

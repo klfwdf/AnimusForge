@@ -21,7 +21,7 @@ public sealed partial class WorldDiplomacyBehavior
         public string LastCacheAffinityKey => _owner._runtime.LastLlmCacheAffinityKey;
         public void SetLastCacheAffinityKey(string value) => _owner._runtime.LastLlmCacheAffinityKey = value;
         public string GetAuthorBlockReason(WorldDiplomacyJob job)
-        { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out reason) ? null : reason; }
+        { if (_owner._orchestration.IsPlayerDiplomacyJob(job)) return null; string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out reason) ? null : reason; }
         public string GetLlmConfigError() { string error; return WorldDiplomacyLlmClient.IsConfigured(out error) ? null : error; }
         public bool TryConsumeRequestBudget(bool consume) => _owner.TryConsumeDiplomacyLlmRequestBudget(consume);
         public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _owner._orchestration.BuildCanonicalHistoryBlock);
