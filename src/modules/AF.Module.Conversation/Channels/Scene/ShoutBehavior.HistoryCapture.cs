@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using AnimusForge.Refactor.Adapters;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +38,16 @@ public partial class ShoutBehavior
     private SceneConversationHistoryOwner SceneHistoryOwner
     {
         get { lock (_historyLock) { return _sceneConversationHistoryOwner ??= new SceneConversationHistoryOwner(_historyLock); } }
+    }
+    internal static void StampNativePendingPromptMemorySession(string historyKey, long sequence, List<ConversationMessage> messages)
+    {
+        string sessionKey = MyBehavior.CaptureCurrentPromptMemorySessionKey();
+        if (sequence <= 0 || string.IsNullOrWhiteSpace(sessionKey)) return;
+        _nativeSessionOwner.StampPromptSessionForEvent(historyKey, sequence, sessionKey);
+        if (messages != null)
+            foreach (var message in messages)
+                if (message != null && message.EventSequence == sequence)
+                { message.PromptMemorySessionKey = sessionKey; break; }
     }
     private static string CaptureNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null)
     {

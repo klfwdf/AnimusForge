@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesFor
 		return BuildUncompressedMemoryRoleMessagesForPrompt(hero, null, null, targetAgentIndex);
 	}
 
-internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex)
+internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, bool includeCurrentActiveSession = false)
 	{
 		try
 		{
@@ -33,7 +33,7 @@ internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesFor
 			}
 			if (hero != null)
 			{
-				return MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
+				return MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, targetAgentIndex, includeCurrentActiveSceneSession: includeCurrentActiveSession) ?? new List<ConversationMessage>();
 			}
 			NpcDataPacket resolvedNpc = npc;
 			CharacterObject resolvedCharacter = targetCharacter;
@@ -50,7 +50,7 @@ internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesFor
 			}
 			if (SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory(resolvedNpc, null, resolvedCharacter, targetAgentIndex, out var memoryId, out var memoryName))
 			{
-				List<ConversationMessage> messages = MyBehavior.BuildNonHeroUncompressedMemoryRoleMessagesForExternal(memoryId, memoryName, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
+				List<ConversationMessage> messages = MyBehavior.BuildNonHeroUncompressedMemoryRoleMessagesForExternal(memoryId, memoryName, targetAgentIndex, includeCurrentActiveSceneSession: includeCurrentActiveSession) ?? new List<ConversationMessage>();
 				// 读档后原生短期会话历史会清空，非 hero 必须从同一个 af_nonhero 记忆 ID 注入未压缩长期记忆。
 				SceneAgentIdentityPromptCaptureAdapter.LogNonHeroMemoryTrace("stage=uncompressed_inject agent=" + targetAgentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " messages=" + messages.Count);
 				return messages;
@@ -1046,7 +1046,9 @@ internal void AppendNativeConversationSessionLineToSceneHistoryCaptured(Hero tar
             int day = 0; string date = ""; int hour = -1; string scene = "";
             try { day = (int)CampaignTime.Now.ToDays; date = CampaignTime.Now.ToString(); hour = PersonaIdentityPromptCaptureAdapter.GetCurrentMemoryGameHourForExternal(); scene = SceneLocationPromptCaptureAdapter.ResolveCurrentMemorySceneLabel(); } catch { }
             if (eventSequence <= 0L) eventSequence = SceneConversationHistoryOwner.NextEventSequence();
-            nativeSessions.Append(key, NativeHistoryIdentityProjectionOwner.BuildEntry(eventSequence, day, date, hour, scene, npcName, speaker, text, kind, targetAgentIndex, playerTargetAgentIndex, playerTargetName));
+            var entry = NativeHistoryIdentityProjectionOwner.BuildEntry(eventSequence, day, date, hour, scene, npcName, speaker, text, kind, targetAgentIndex, playerTargetAgentIndex, playerTargetName);
+            entry.PromptMemorySessionKey = MyBehavior.CaptureCurrentPromptMemorySessionKey();
+            nativeSessions.Append(key, entry);
             if (bridgeToSceneHistory)
                 currentSceneCapture()?.AppendNativeConversationSessionLineToSceneHistoryCaptured(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, targetAgentIndex, npc, playerTargetAgentIndex, playerTargetName);
         }
@@ -1132,6 +1134,9 @@ internal static NativeConversationPreparationSnapshot CaptureNativeConversationP
 		List<NpcDataPacket> presentNpcs = new List<NpcDataPacket> { npc };
 		string cultureId = npc.CultureId ?? "neutral";
 		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(ports.Sessions, targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
+        string meetingHistoryKey = CaptureNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
+        ports.Admissions.CaptureMeetingElapsedBoundary(admission, meetingHistoryKey,
+            () => NativeMeetingElapsedCaptureAdapter.Capture(targetHero, targetCharacter, npc, nativeTargetAgentIndex));
 		string nativeMeetingTauntRuleBlock = "";
 		PartyBase nativeMeetingTauntParty = null;
 		if (targetHero == null)

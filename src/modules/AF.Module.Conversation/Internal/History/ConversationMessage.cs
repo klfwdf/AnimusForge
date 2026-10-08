@@ -1,9 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AnimusForge;
 
 public class ConversationMessage
 {
+	// Request-only provenance; never part of the persisted/public JSON contract.
+	internal string PromptMemorySessionKey = "";
+
 	public long EventSequence { get; set; }
 
 	public int GameDayIndex { get; set; } = -1;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +44,17 @@ internal sealed class NativeConversationSessionOwner
             if (!_history.TryGetValue(key, out var entries) || entries == null) _history[key] = entries = new List<AnimusForgeDialogueHistoryEntry>();
             entries.Add(CloneNativeConversationHistoryEntry(entry));
             TrimNativeConversationSessionHistory(entries);
+        }
+    }
+    internal void StampPromptSessionForEvent(string key, long sequence, string sessionKey)
+    {
+        if (sequence <= 0 || string.IsNullOrWhiteSpace(sessionKey)) return;
+        lock (_gate)
+        {
+            if (!_history.TryGetValue(key, out var entries) || entries == null) return;
+            foreach (var entry in entries)
+                if (entry != null && entry.EventSequence == sequence && string.IsNullOrWhiteSpace(entry.PromptMemorySessionKey))
+                { entry.PromptMemorySessionKey = sessionKey; break; }
         }
     }
     internal void RollbackPlayerEvent(string key, long sequence)
@@ -131,7 +142,7 @@ internal sealed class NativeConversationSessionOwner
     }
     private static ConversationMessage CloneMessage(ConversationMessage x)
     {
-        return x == null ? null : new ConversationMessage { EventSequence=x.EventSequence,GameDayIndex=x.GameDayIndex,GameDate=x.GameDate,GameHour=x.GameHour,Scene=x.Scene,Role=x.Role,Content=x.Content,SpeakerName=x.SpeakerName,SpeakerAgentIndex=x.SpeakerAgentIndex,SpeakerHeroId=x.SpeakerHeroId,TargetAgentIndex=x.TargetAgentIndex,TargetName=x.TargetName,TargetHeroId=x.TargetHeroId,PlayerDistanceMeters=x.PlayerDistanceMeters,VisibleAgentIndices=new List<int>(x.VisibleAgentIndices ?? new List<int>()),VisibleHeroIds=new List<string>(x.VisibleHeroIds ?? new List<string>()) };
+        return x == null ? null : new ConversationMessage { EventSequence=x.EventSequence,PromptMemorySessionKey=x.PromptMemorySessionKey,GameDayIndex=x.GameDayIndex,GameDate=x.GameDate,GameHour=x.GameHour,Scene=x.Scene,Role=x.Role,Content=x.Content,SpeakerName=x.SpeakerName,SpeakerAgentIndex=x.SpeakerAgentIndex,SpeakerHeroId=x.SpeakerHeroId,TargetAgentIndex=x.TargetAgentIndex,TargetName=x.TargetName,TargetHeroId=x.TargetHeroId,PlayerDistanceMeters=x.PlayerDistanceMeters,VisibleAgentIndices=new List<int>(x.VisibleAgentIndices ?? new List<int>()),VisibleHeroIds=new List<string>(x.VisibleHeroIds ?? new List<string>()) };
     }
     internal void AppendDiagnostics(StringBuilder output)
     {
@@ -265,7 +276,8 @@ private AnimusForgeDialogueHistoryEntry CloneNativeConversationHistoryEntry(Anim
 			TargetName = entry.TargetName ?? "",
 			Text = entry.Text ?? "",
 			Kind = entry.Kind ?? "",
-			EventSequence = entry.EventSequence
+			EventSequence = entry.EventSequence,
+            PromptMemorySessionKey = entry.PromptMemorySessionKey
 		};
 	}
 
@@ -445,6 +457,7 @@ internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForg
 						list.Add(new ConversationMessage
 						{
 							EventSequence = entry.EventSequence,
+                            PromptMemorySessionKey = entry.PromptMemorySessionKey,
 							GameDayIndex = entry.GameDayIndex,
 							GameDate = entry.GameDate ?? "",
 							GameHour = entry.GameHour,
@@ -462,6 +475,7 @@ internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForg
 					list.Add(new ConversationMessage
 					{
 						EventSequence = entry.EventSequence,
+                            PromptMemorySessionKey = entry.PromptMemorySessionKey,
 						GameDayIndex = entry.GameDayIndex,
 						GameDate = entry.GameDate ?? "",
 						GameHour = entry.GameHour,
@@ -476,6 +490,7 @@ internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForg
 				list.Add(new ConversationMessage
 				{
 					EventSequence = entry.EventSequence,
+                            PromptMemorySessionKey = entry.PromptMemorySessionKey,
 					GameDayIndex = entry.GameDayIndex,
 					GameDate = entry.GameDate ?? "",
 					GameHour = entry.GameHour,

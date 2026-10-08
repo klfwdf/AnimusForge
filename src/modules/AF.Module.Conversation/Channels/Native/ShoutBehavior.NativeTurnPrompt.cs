@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -192,13 +192,15 @@ namespace AnimusForge;
         private void CapturePromptMessages()
         {
             bool useSharedDailyMemoryForNpcOpening = npcInitiatedOpening;
-            List<ConversationMessage> persistentMemoryRoleMessages = (useSharedDailyMemoryForNpcOpening || !hadNativeConversationSessionHistoryBeforeTurn)
-                ? BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex)
-                : new List<ConversationMessage>();
-            if (useSharedDailyMemoryForNpcOpening && persistentMemoryRoleMessages.Count > 0 && nativeHistoryMessages.Count > 0)
-            {
-                nativeHistoryMessages = RemoveNativeMessagesAlreadyInPersistentMemory(nativeHistoryMessages, persistentMemoryRoleMessages);
-            }
+            // Native tails are transient and may cover only conversations since the last load.
+            // Capture current-session raw too; exact request overlap, rather than session-wide suppression,
+            // decides what this request already contains. Scene/Courier keep their existing capture defaults.
+            List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(
+                targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex,
+                includeCurrentActiveSession: true);
+            StampNativePendingPromptMemorySession(nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, nativeHistoryMessages);
+            persistentMemoryRoleMessages = NativeMemoryHistoryMergeOwner.Merge(
+                persistentMemoryRoleMessages, nativeHistoryMessages, nativePendingPlayerHistoryEventSequence, playerName);
             nativeHistoryDisplayName = GetSceneNpcHistoryNameForPrompt(npc);
             string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(nativeHistoryDisplayName, false, minTokens, maxTokens, playerName);
             string nativeSceneActionInstruction = SceneActionsRuntimeHost.BuildNativeConversationActionInstruction();
@@ -207,7 +209,7 @@ namespace AnimusForge;
             string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
         string[] nativePromptPrefixSections = new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) };
         string[] nativePromptSuffixSections = new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" };
-        messages = _ports.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
+        messages = _ports.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: null, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
         nativeDetachedMainPromptSections = null;
         if (NativeConversationDetachedPromptParityLoggingEnabled)
         {

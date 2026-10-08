@@ -32,6 +32,8 @@ public partial class ShoutBehavior
         internal string OpeningExtraFact = "";
         internal string OpeningPrompt = "";
         internal string OpeningSource = "";
+        internal NativeMeetingElapsedBoundary MeetingElapsedBoundary;
+        internal string MeetingElapsedContext => MeetingElapsedBoundary?.Accepted == false ? MeetingElapsedBoundary.Context : "";
     }
 
     internal sealed class NativeConversationAdmissionException : InvalidOperationException
