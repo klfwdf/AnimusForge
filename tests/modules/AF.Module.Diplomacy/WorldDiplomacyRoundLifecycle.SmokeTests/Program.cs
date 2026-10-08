@@ -27,6 +27,12 @@ internal static class Program
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--propagation-closure")
+        {
+            PropagationLifecycleReplay.Run(); PropagationApplicationReplay.Run();
+            Console.WriteLine($"Diplomacy propagation closure passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--player-response-recovery")
         {
             PlayerResponseRecoveryReplay.Run();
