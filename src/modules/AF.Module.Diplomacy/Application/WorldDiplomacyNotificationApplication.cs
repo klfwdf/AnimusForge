@@ -106,8 +106,8 @@ internal sealed class WorldDiplomacyNotificationApplication
             _updatingOwnFlags = true;
             WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor);
             _updatingOwnFlags = false;
-            sink.ShowRumor(WorldDiplomacyTextRules.BuildDiplomacyRumor(rumor, sink.KingdomName));
-            sink.Log("diplomacy-rumor.shown document=" + rumor.DocumentId + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
+            // Consume legacy rumor flags without displaying the removed player hint.
+            sink.Log("diplomacy-rumor.consumed document=" + rumor.DocumentId + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
         }
         bool enabled = sink.MapNotificationsEnabled;
         if (!enabled)

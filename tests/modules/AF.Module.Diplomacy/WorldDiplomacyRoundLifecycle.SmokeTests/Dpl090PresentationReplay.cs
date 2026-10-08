@@ -191,8 +191,8 @@ internal static class Dpl090PresentationReplay
         Test.True(!deferred.FormalNoticeShown, "undelivered declaration not formally notified");
         deferred.RumorNotified = false;
         owner.Poll(storage, now.AddSeconds(7), sink);
-        Test.True(deferred.RumorNotified && !deferred.FormalNoticeShown, "published rumor separate from court receipt");
-        Equal(1, sink.Rumors.Count, "rumor displayed once");
+        Test.True(deferred.RumorNotified && !deferred.FormalNoticeShown, "published rumor consumed without changing court receipt");
+        Equal(0, sink.Rumors.Count, "rumor hint is suppressed while delivery remains pending");
         deferred.HasReachedPlayerCourt = true;
         owner.Poll(storage, now.AddSeconds(8), sink);
         Test.True(deferred.FormalNoticeShown, "later formal receipt still shows notice after rumor");
