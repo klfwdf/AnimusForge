@@ -29,7 +29,7 @@ public sealed partial class WorldDiplomacyBehavior
                 MBInformationManager.AddNotice(new WorldDiplomacyMapNotification(notice.DocumentId, notice.Title, notice.Description));
             else
                 InformationManager.DisplayMessage(new InformationMessage(
-                    "【外交宣言送达】" + notice.Title + "。可在王国公告中查看全文。", Colors.Yellow));
+                    "【第三方外交消息】" + notice.Title + "。消息已传至本国，可在王国公告中查看全文。", Colors.Yellow));
         }
         public void Log(string text) => WorldDiplomacyBehavior.Log(text);
     }

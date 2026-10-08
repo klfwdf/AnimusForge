@@ -163,8 +163,12 @@ internal sealed class WorldDiplomacyNotificationApplication
                 _updatingOwnFlags = true;
                 document.FormalNoticeShown = true;
                 _updatingOwnFlags = false;
-                sink.Log("formal-court-notice.shown document=" + document.DocumentId + " realm=" + sink.PlayerKingdomId
-                    + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
+                sink.Log("formal-court-notice.shown document=" + document.DocumentId + " realm=" + playerKingdomId
+                    + " route=" + (showOnMap ? "map" : "text") + " author=" + document.AuthorKingdomId
+                    + " target=" + document.TargetKingdomId
+                    + " targets=" + string.Join(",", WorldDiplomacyStructureRules.GetDocumentTargetIds(document))
+                    + " addressed=" + string.Join(",", document.AddressedKingdomIds ?? Enumerable.Empty<string>())
+                    + " player=" + playerKingdomId + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
             }
             catch (Exception ex)
             {
