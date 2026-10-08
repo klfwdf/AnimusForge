@@ -104,19 +104,20 @@ def extract_call_arguments(source: str, name: str):
                     break
 
 
-def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
+def resolve_storage_call_keys(name: str, argument_index: int, *, current: bool = False) -> set[str]:
     resolved: set[str] = set()
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
-    source_paths = list(persistence_catalog_storage_sources())
+    source_texts = list(current_json_source_texts()) if current else [
+        (str(path), path.read_text(encoding="utf-8")) for path in persistence_catalog_storage_sources()
+    ]
     constant_values: dict[str, set[str]] = {}
-    for source_path in source_paths:
-        for const_name, value in constant_pattern.findall(source_path.read_text(encoding="utf-8")):
+    for _, source in source_texts:
+        for const_name, value in constant_pattern.findall(source):
             constant_values.setdefault(const_name, set()).add(value)
     globally_unique_constants = {
         const_name: next(iter(values)) for const_name, values in constant_values.items() if len(values) == 1
     }
-    for source_path in source_paths:
-        source = source_path.read_text(encoding="utf-8")
+    for _, source in source_texts:
         constants = dict(globally_unique_constants)
         constants.update(dict(constant_pattern.findall(source)))
         for body in extract_call_arguments(source, name):
@@ -186,21 +187,33 @@ def validate_direct_json_hazards(catalog: dict) -> int:
     return len(found)
 
 
-def validate_chunk_contract(catalog: dict) -> dict:
+def validate_chunk_contract(catalog: dict, *, current: bool = False) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
-    # +1 _af_worldBulletin_v1 (MyBehavior.WorldBulletin.cs SyncWorldBulletinData via SaveChunkedString/LoadChunkedString).
-    assert_true(len(expected_chunked) == 19, "chunked string key catalog must contain 19 keys")
+    # Diplomacy opt-in adds one evidence key while retaining its canonical key.
+    assert_true(len(expected_chunked) == 20, "chunked string key catalog must contain 20 keys")
+    strict = catalog["optInStrictChunkedStringStorage"]
+    strict_keys = {"_af_world_diplomacy_v1", "_af_world_diplomacy_quarantine_v1"}
+    assert_true(set(strict["keys"]) == strict_keys and len(strict["keys"]) == 2,
+                "diplomacy strict key contract drifted")
+    assert_true(strict["owner"] == "src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs"
+                and strict["reader"] == "CampaignSaveChunkHelper.LoadChunkedStringStrict"
+                and strict["writer"] == "CampaignSaveChunkHelper.SaveChunkedStringStrict",
+                "diplomacy strict owner/reader/writer contract drifted")
     # 982a5861: +Execution transcript storage and existing GCCZ town-memory key now flattened.
     assert_true(len(expected_flattened) == 47, "flattened dictionary key catalog must contain 47 keys")
-    actual_saves = resolve_storage_call_keys("SaveChunkedString", 1)
-    actual_loads = resolve_storage_call_keys("LoadChunkedString", 1)
+    actual_strict_saves = resolve_storage_call_keys("SaveChunkedStringStrict", 1, current=current)
+    actual_strict_loads = resolve_storage_call_keys("LoadChunkedStringStrict", 1, current=current)
+    assert_true(actual_strict_saves == strict_keys, "strict save key wiring drifted")
+    assert_true(actual_strict_loads == strict_keys, "strict load key wiring drifted")
+    actual_saves = resolve_storage_call_keys("SaveChunkedString", 1, current=current) | actual_strict_saves
+    actual_loads = resolve_storage_call_keys("LoadChunkedString", 1, current=current) | actual_strict_loads
     actual_chunked = actual_saves | actual_loads
     assert_true(actual_saves == expected_chunked, "chunked save key catalog drifted")
     assert_true(actual_loads == expected_chunked, "chunked load key catalog drifted")
     validate_json_bindings(catalog)
     known_direct_json = validate_direct_json_hazards(catalog)
-    actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
+    actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1, current=current)
     # The helper's own overloads have no persisted key and are intentionally absent.
     assert_true(actual_chunked == expected_chunked, f"chunked key mismatch: missing={sorted(expected_chunked - actual_chunked)} extra={sorted(actual_chunked - expected_chunked)}")
     assert_true(actual_flattened == expected_flattened, f"flattened dictionary key mismatch: missing={sorted(expected_flattened - actual_flattened)} extra={sorted(actual_flattened - expected_flattened)}")
@@ -429,7 +442,7 @@ def main() -> int:
     try:
         persistence_catalog = load_json(FIXTURE_DIR / "persistence-catalog.json")
         if args.chunk_contract_only:
-            result = validate_chunk_contract(persistence_catalog)
+            result = validate_chunk_contract(persistence_catalog, current=True)
             print(json.dumps({"status": "PASS", "scope": "current-chunk-contract-only", **result}, sort_keys=True))
             return 0
         persistence = validate_persistence(persistence_catalog)

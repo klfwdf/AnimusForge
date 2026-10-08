@@ -8,6 +8,7 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     public void ApplyExternalPrestigeDelta(string kingdomId, int delta, string reason)
     {
         var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+        if (owner?.IsPersistenceAvailable != true) return;
         owner?.Orchestration.ApplyNationalPrestigeDelta(kingdomId, delta, null, reason ?? "");
     }
     public bool OpenComposeFromTerminal(System.Action onClose = null) => WorldDiplomacyPresentation.OpenComposeFromTerminal(onClose);
@@ -75,6 +76,7 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     public IWorldDiplomacyPresentationPort Presentation => WorldDiplomacyBehavior.ResolvePresentationPort();
     public void OnLifecycle(WorldDiplomacyLifecycleEvent lifecycle)
     {
+        if (lifecycle != WorldDiplomacyLifecycleEvent.NewGame && WorldDiplomacyBehavior.Instance?.IsPersistenceAvailable != true) return;
         var source = new WorldDiplomacyBehavior.LifecycleSource(WorldDiplomacyBehavior.Instance);
         WorldDiplomacyLifecycleApplication.Run(lifecycle, WorldDiplomacyBehavior.Instance?.Orchestration, ref source);
     }

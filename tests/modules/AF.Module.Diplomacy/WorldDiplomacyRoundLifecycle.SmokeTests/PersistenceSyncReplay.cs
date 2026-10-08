@@ -108,7 +108,8 @@ internal static class PersistenceSyncReplay
             && host.Norm.Events.Contains("trim:signals"),
             "save must normalize the canonical record once and write it without loading or resetting");
 
-        // Load: replace the canonical record, surface the error, reset runtime, normalize.
+        // A rejected load is not a successful empty domain. Never normalize it
+        // or merge partial data/previous campaign state into the current owner.
         var loaded = new WorldDiplomacyStorage
         {
             ServiceCooldownUntilHour = 77,
@@ -122,19 +123,27 @@ internal static class PersistenceSyncReplay
             storage => events.Add("save"),
             message => events.Add("log:" + message),
             () => events.Add("reset"));
-        Test.True(ReferenceEquals(orch.CurrentStorage, loaded)
-            && orch.CurrentStorage.ServiceCooldownUntilHour == 77,
-            "load must replace the single canonical record with the deserialized storage");
+        Test.True(!ReferenceEquals(orch.CurrentStorage, loaded)
+            && !orch.IsPersistenceHealthy && orch.CurrentStorage.ServiceCooldownUntilHour != 77,
+            "rejected load must isolate the domain and discard partial/prior campaign live state");
         int loadIx = events.IndexOf("load");
-        int logIx = events.IndexOf("log:load failed: io-error");
+        int logIx = events.IndexOf("log:load rejected; diplomacy quarantined: io-error");
         int resetIx = events.IndexOf("reset");
         Test.True(loadIx == 0 && logIx == 1 && resetIx == 2
-            && host.Norm.Events.Contains("trim:signals"),
-            "load must replace, report the error, reset the runtime, then normalize");
+            && host.Norm.Events.Count == 0,
+            "rejected load reports the error and resets runtime without normalizing invalid storage");
         Test.True(!host.Norm.Events.Any(e => e.StartsWith("capture:")),
             "load-time normalization without world validation must not enumerate live world ids");
         Test.True(!events.Contains("save"),
             "the load lane must never invoke the save adapter");
+        host.Norm.Events.Clear();events.Clear();
+        orch.ProcessCompletedJobs();orch.TryStartNextLlmJob();orch.PollNotifications();orch.NormalizeStorage(true);
+        Test.True(host.Norm.Events.Count == 0 && !orch.IsPersistenceHealthy,
+            "quarantined owner rejects cached job/notice/normalization entry points");
+        bool rejectedWriter=false;
+        orch.SyncData(true,false,null,null,_=>rejectedWriter=true,_=>{},()=>{});
+        Test.True(rejectedWriter&&host.Norm.Events.Count==0,
+            "quarantined Save calls the evidence writer without canonical normalization or budget snapshot");
 
         // Neither flag set and both flags set must be no-ops for the write lane.
         events.Clear();
@@ -146,7 +155,7 @@ internal static class PersistenceSyncReplay
         events.Clear();
         orch.SyncData(false, true, () => reloaded, () => null, s => { }, e => { }, () => { });
         Test.True(ReferenceEquals(orch.CurrentStorage, reloaded)
-            && orch.CurrentStorage.ServiceCooldownUntilHour == 5,
+            && orch.IsPersistenceHealthy && orch.CurrentStorage.ServiceCooldownUntilHour == 5,
             "a second load must replace the canonical record, not merge a second store");
 
         // Null loaded storage falls back to a fresh canonical record.

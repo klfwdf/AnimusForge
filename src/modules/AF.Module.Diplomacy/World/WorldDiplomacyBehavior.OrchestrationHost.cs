@@ -25,7 +25,7 @@ public sealed partial class WorldDiplomacyBehavior
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public void Notify(string message) => TaleWorlds.Library.InformationManager.DisplayMessage(new TaleWorlds.Library.InformationMessage(message));
         public int EstimateTokens(string text) => Logger.EstimateTokens(text);
-        public bool WorldDiplomacyEnabled() => WorldDiplomacyBehavior.IsWorldDiplomacyEnabled();
+        public bool WorldDiplomacyEnabled() => _owner.IsLiveCampaign && WorldDiplomacyBehavior.IsWorldDiplomacyEnabled();
         public bool LlmRequestRunning() => _owner._llmRequestLease.IsRunning;
         public void AdvanceWorldMessageTimelineRevision() => _owner.AdvanceWorldMessageTimelineRevision();
 
