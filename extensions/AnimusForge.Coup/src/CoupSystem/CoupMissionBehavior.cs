@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Helpers;
 using SandBox;
@@ -143,9 +143,10 @@ internal sealed class CoupMissionBehavior : MissionLogic
             }
             if (_king == null)
             {
-                GameEntity throne = Mission.Scene.FindEntityWithTag("sp_throne");
+                GameEntity throne = Mission.Scene.FindEntityWithTag("sp_throne")
+                    ?? Mission.Scene.FindEntityWithTag("defender_infantry");
                 CharacterObject kingCharacter = Hero.FindFirst(hero => hero.StringId == _session.KingId)?.CharacterObject;
-                if (throne == null || kingCharacter == null) throw new InvalidOperationException("领主大厅没有国王或王座生成点。");
+                if (throne == null || kingCharacter == null) throw new InvalidOperationException("领主大厅没有国王或有效的王座/守军生成点。");
                 _king = SettlementEntryTroopSelectionBehavior.SpawnCoupKing(Mission, kingCharacter, throne.GetGlobalFrame());
             }
             if (_king == null) throw new InvalidOperationException("国王无法在大厅生成。");
