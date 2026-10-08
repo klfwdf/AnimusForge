@@ -83,7 +83,7 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public string ApiBaseUrl { get; set; } = "https://api.siliconflow.cn/v1";
+        public string ApiBaseUrl { get; set; } = "https://yjapi.shenlanqaq.com/v1";
 
         [SettingPropertyBool("使用完整调用 URL (不自动拼接后缀)", HintText = "开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径；Google原生勾选后必须填写完整 :generateContent 地址，实际模型以URL为准。", Order = 2, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
