@@ -1,3 +1,20 @@
+<a id="migration-functional-review-20261009"></a>
+### 当前职责导航：六类真实链路补审
+
+本轮产品冻结 `6e9c6a74f`，源码执行 `5d0bba545`；有限覆盖与未覆盖、全部命令/结论/风险只在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#migration-functional-review-20261009)。本导航绑定真实符号与一基范围，不以177文件inventory推导功能PASS。完整方法hash位于本地 `artifacts/migration-functional-review-20261009/memory-weekly/code-evidence.json`；交互source地图在 `interaction/code-evidence.json`，Persona/Records/Kingdom/host地图在 `kingdom-host/review.md`，共享构建为 `final-build/receipt.json`。
+
+| 当前源码（一基范围） | 权威、实际消费者与边界 |
+| --- | --- |
+| `ImportExport/MemoryHistoryImportExportAdapter.cs:50–170`；`modules/AF.Module.Memory/ImportExport/MemoryImportExportOwner.cs:37–48` | direct-file/schema→ApplyToAuthority同一Memory owner；57+41和121执行，目录发现stub，不新建第二状态 |
+| `modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs:847–902`；`Prompt/SharedPromptCaptureBannerlordAdapter.cs:497–539` | overview/recall→detached capture；当前owner/generation guard与121消费者执行；summary异步全队列不在121范围 |
+| `Prompt/SceneHistoryPromptCaptureAdapter.cs:261–302,590–615`；`Memory/MemoryHistoryCommitBannerlordAdapter.cs:893–957` | Native前缀和daily role capture→SceneHistoryMessageAssemblyOwner→当前LLM adapter；hero直接导入已执行，三渠道完整live未验 |
+| `modules/AF.Module.Llm/Application/NativeConversationLlmApplicationAdapter.cs:16–98` | 真request lifetime/cancel/API wrapper；gateway为stub，真实payload跨OpenAI/Anthropic转换已执行，真实provider未验 |
+| `Persistence/CampaignMemoryPersistenceAdapter.cs:21–236`；`CampaignWeeklyRecordPersistenceAdapter.cs:78–100`；`CampaignMaterialPersistenceAdapter.cs:32–50`；`CampaignWorldBulletinPersistenceAdapter.cs:7–32` | SyncData的现有owner/codec/chunk投影31 roundtrip；Memory坏JSON下一save与Weekly缺chunk的原始证据保留NOT-PASS |
+| `Composition/MyBehavior.NewsCollection.cs:19–60`；`modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:190–219,236–316`；`Prompt/WeeklyPromptCaptureAdapter.cs:20–25` | O(1)collection epoch→queued guarded commit→frozen fact/record/notice；27/90/7执行且epoch负控有效，真实campaign事件/renderer未验 |
+| `UI/Editors/PersonaEditorController.cs:156–159`；`modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs` | Persona顶层菜单按Hero+generation守卫；传闻消费保留但ShowRumor移除；分别39/4051回放，额外外交闭环另审 |
+
+表中未带前缀的 `ImportExport/Memory/Prompt/Persistence/Composition/UI` 均位于 `src/AF.GameAdapter.Bannerlord/`；`modules/` 均位于 `src/modules/`。同DLL internal端口与独立versioned public API仍分别管理，本轮未新增接口或改默认路由。
+
 <a id="scene-regression-package-20261009"></a>
 ### 当前导航：场景轮盘/可见输出与受众名录
 

@@ -5,6 +5,50 @@ internal static class Program {
  static int n;static void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
  static string Body(string title="title")=>"[TITLE]"+title+"[SHORT]summary[REPORT]report[TAGS]STAB_FLAT";
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
+ static async Task TestBulletinDelayedCompletion()
+ {
+     foreach(string mode in new[]{"epoch","generation","disabled","success"})
+     {
+         var records=new List<EventRecordEntry>();var api=new TaskCompletionSource<ApiCallResult>();
+         int cancelled=0,notices=0;bool publishing=true;
+         var owner=new WorldBulletinStateOwner();
+         owner.Bind(new WorldBulletinPort {
+             Enabled=()=>true,PublishingEnabled=()=>publishing,CurrentDay=()=>4,CurrentHour=()=>102,
+             CurrentDate=()=>"卡拉迪亚1084年秋季21日",Render=x=>x,Focus=()=>new(),
+             Records=()=>records,FindRecord=id=>records.FirstOrDefault(r=>r.EventId==id),
+             ProductState=r=>r?.Summary??"",NotifyProductChanged=(before,after)=>{},NotifyTimeline=()=>{},
+             ResolveKingdom=id=>id,QueueNotice=id=>notices++,PrepareIssue=id=>{},
+             CallApi=(system,user)=>api.Task,CancelIllustration=plan=>cancelled++,Log=(area,text)=>{}
+         });
+         var state=owner.EnsureWorldBulletinState();state.World.WindowEndHour=102;
+         state.Events.Add(new WorldBulletinEvent {Key="confirmed-fact",Kind="war_declared",Day=4,Hour=100,Score=100,Sentence="确定发生的事实。",Group="fact"});
+         var selection=WorldBulletinPolicy.Select(state.Events,state.World,new(),102);
+         var template=WorldBulletinPolicy.BuildTemplate(selection);
+         long generation=SaveRuntimeGuard.CaptureGeneration();owner.InFlight=true;
+         var pending=owner.RunWorldBulletinRequestAsync(102,generation,selection,template,"system","user",null);
+         Check(records.Count==0&&owner.MainThreadActions.IsEmpty,"background request does not publish before result "+mode);
+         if(mode=="epoch") {
+             owner.RestartCollection(101);
+             // Equal numeric windows do not identify the same collection after a restart.
+             state.World.WindowEndHour=102;owner.InFlight=true;
+         }
+         if(mode=="generation")SaveRuntimeGuard.AdvanceGeneration("bulletin delayed save switch");
+         if(mode=="disabled")publishing=false;
+         api.SetResult(new ApiCallResult {Success=true,Content="{bad response"});await pending;
+         Check(records.Count==0&&owner.MainThreadActions.Count==1,"completed worker only enqueues commit "+mode);
+         owner.ProcessWorldBulletinMainThreadActions();
+         if(mode=="epoch")Check(records.Count==0&&cancelled==1&&owner.InFlight&&state.World.WindowEndHour==102,"old epoch cannot publish or retire new equal-window request");
+         if(mode=="generation")Check(records.Count==0&&notices==0,"old save generation cannot publish records or notices");
+         if(mode=="disabled")Check(records.Count==0&&cancelled==1&&!owner.InFlight&&state.World.WindowEndHour<0,"disabled publishing closes window without records");
+         if(mode=="success") {
+             var issue=records.Single(r=>WeeklyReportArchivePolicy.IsBulletin(r.EventId));
+             Check(issue.CreatedDay==4&&issue.CreatedDate=="卡拉迪亚1084年秋季21日"&&notices==1&&!owner.InFlight,"accepted commit uses current campaign calendar and releases one notice");
+             Check(issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"accepted commit retains factual source graph after provider parse failure");
+             owner.CompleteWorldBulletin(102,generation,selection,template,null,null);
+             Check(records.Count==1&&notices==1,"completed window cannot duplicate publication or notice");
+         }
+     }
+ }
  static void TestRegionalNewsAttachment()
  {
      int notices=0,changed=0,plans=0; double hour=312; int day=13;
@@ -128,7 +172,7 @@ internal static class Program {
      notices=new(); owner.State.PendingNoticeEventIds.Add(id);owner.ResetRuntime("new_game_created");owner.ProcessWorldBulletinMainThreadActions();
      Check(owner.State==null&&notices.Unread.Count==0&&owner.MainThreadActions.IsEmpty,"new game does not recover prior campaign notices");
  }
- static async Task Main(){TestBulletinNoticeRecovery();var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
+ static async Task Main(){await TestBulletinDelayedCompletion();TestBulletinNoticeRecovery();var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
  Check(rules.TryParseWeeklyBatchResponse(Block("world",Body()),batch,out var blocks,out var missing,out var error)&&missing.SequenceEqual(new[]{"kingdom:k"}),"partial block retains missing");
  Check(rules.TryParseWeeklyBatchResponse(Block("world","invalid")+Block("world",Body())+Block("kingdom:k",Body()),batch,out blocks,out missing,out error)&&missing.Count==0&&blocks.Count==3,"valid duplicate wins expected identity");
  Check(!rules.TryParseWeeklyBatchResponse(Block("unknown",Body()),batch,out blocks,out missing,out error)&&missing.Count==2,"unexpected identity not accepted");
