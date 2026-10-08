@@ -171,10 +171,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		body = "";
 		try
 		{
-			if (Instance?.IsActiveHero(hero) != true)
-			{
-				return false;
-			}
+			bool active = Instance?.IsActiveHero(hero) == true;
+            Instance?.LogOpeningState("menu", hero, true, active ? "active_request" : "no_matching_request");
+			if (!active) return false;
 			string name = hero?.Name?.ToString() ?? "这位领主";
 			title = "NPC主动接触";
 			body = name + "的队伍主动追上了你。他似乎有事想找你谈谈。";
@@ -900,6 +899,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		if (!IsActiveHero(hero))
 		{
+            LogOpeningState("mark", hero, nativeConversation, "no_matching_request");
 			return;
 		}
 		string fact = BuildTriggerSourceOpeningFact(hero);
@@ -911,7 +911,38 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string prompt = BuildOpeningPrompt(GetActiveNeedTypes());
 		_openingOwner.Open(nativeConversation, _activeSession.Id, GetHeroKey(hero), fact, prompt, NowHours());
 		_sessionOwner.MarkConversationOpening(nativeConversation);
+        LogOpeningState("mark", hero, nativeConversation, "pending_created");
 	}
+
+    private sealed class OpeningStateObservation
+    {
+        internal string Hero, ActiveHero, Session, SessionStage, Reason;
+        internal bool Native, Pending;
+        internal bool Matches(string hero, string activeHero, string session, string sessionStage, string reason, bool native, bool pending)
+            => Hero == hero && ActiveHero == activeHero && Session == session && SessionStage == sessionStage && Reason == reason && Native == native && Pending == pending;
+    }
+    private OpeningStateObservation _menuOpeningObservation, _markOpeningObservation, _consumeOpeningObservation;
+    // Observe only changed menu/click/consume state; repeat menu initialization is allocation-free.
+    private void LogOpeningState(string stage, Hero hero, bool native, string reason)
+    {
+        try
+        {
+            string heroId = GetHeroKey(hero);
+            var session = _activeSession;
+            string activeHero = session?.HeroId ?? "", sessionId = session?.Id ?? "", sessionStage = session?.Stage ?? "";
+            bool pending = _openingOwner.Matches(native, sessionId, heroId);
+            var previous = stage == "menu" ? _menuOpeningObservation : stage == "mark" ? _markOpeningObservation : _consumeOpeningObservation;
+            if (previous?.Matches(heroId, activeHero, sessionId, sessionStage, reason, native, pending) == true) return;
+            var observation = new OpeningStateObservation { Hero = heroId, ActiveHero = activeHero, Session = sessionId, SessionStage = sessionStage, Reason = reason, Native = native, Pending = pending };
+            if (stage == "menu") _menuOpeningObservation = observation;
+            else if (stage == "mark") _markOpeningObservation = observation;
+            else _consumeOpeningObservation = observation;
+            Logger.Log("ProactiveNpcRequest", "opening_state stage=" + stage + " channel=" + (native ? "native" : "scene")
+                + " reason=" + reason + " hero=" + heroId + " activeHero=" + activeHero
+                + " session=" + sessionId + " sessionStage=" + sessionStage + " pendingMatch=" + pending);
+        }
+        catch { /* Optional diagnostics cannot consume or invalidate an opening. */ }
+    }
 
 	private string BuildTriggerSourceOpeningFact(Hero hero)
 	{
@@ -940,8 +971,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		promptText = "";
 		if (hero == null || !_openingOwner.TryConsume(nativeConversation, _activeSession?.Id, GetHeroKey(hero), out extraFact, out promptText))
 		{
+            LogOpeningState("consume", hero, nativeConversation, "pending_not_matched");
 			return false;
 		}
+        LogOpeningState("consume", hero, nativeConversation, "pending_consumed");
 		CompleteActiveForHeroInternal(hero, nativeConversation ? "native_opening_consumed" : "scene_opening_consumed");
 		return !string.IsNullOrWhiteSpace(extraFact);
 	}
