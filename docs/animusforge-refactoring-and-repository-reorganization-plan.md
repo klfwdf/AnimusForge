@@ -1,4 +1,4 @@
-<a id="illustrator-prompt-persistence-20261008"></a>
+﻿<a id="illustrator-prompt-persistence-20261008"></a>
 # 生图MCM大文本编辑保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户反馈画风提示词编辑后退出重进复原。检查点 `45aeed8`，产品 `32a7de4e8`。真实MCM反编译确认BaseSettingsJsonConverter只序列化注册字段；画风/负面词/导演文本只有按钮、未注册正文，旧画风与负面词回调也未SaveCurrentSettings。MCM复制页面还复制绑定源对象的按钮委托；仅补保存不足以防确认页面覆盖旧值。
@@ -8455,3 +8455,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 固定产品`95b784c2a`候选已沿原build_single_module.ps1完整构建：1.3.15.110062、1.4.6.115628、Bootstrap和两个实际DLL接缝PASS，`build-isolated.log`；该候选包含`8ad1a214d`等待卡片修复，不含另一会话未提交机位/喊话变更。候选两个DLL协议检查各123 PASS，`requests-isolated-13.log/14.log`；UI生命周期103 PASS，`lifecycle.log`。源码与3个DLL哈希绑定`verification-receipt.json`；候选位于本证据目录`candidate/bin/Debug/single_module_artifacts`，未覆盖游戏。
 - 用户追加“审查”：复核两个产品提交的真实鼠标层命中/原版ScreenManager焦点路径、三入口继续命令守卫、系统UI恢复、截图完成后开卡、scope结束/GenerationUpdated顺序、图像字节传递与关闭后后台保存；未发现新增明确缺陷。测试不覆盖原生拖拽距离、真实键盘帧序、GPU/网络和渲染，不能替代实机。回滚正文/焦点仅`git revert 95b784c2a`；前包单独`git revert 8ad1a214d`，不改其他作者历史。
 - GPU包交付前复核：文件现名为`artifacts/reranker-gpu-player-20261008/release/ONNX_GPU（可选）.zip`，SHA256与最初包收据一致，`delivery-location.json`记录当前可用路径；不改旧收据原始文件名记录。
+
+
+<a id="gallery-theme-truncation-20261008"></a>
+# 画廊主题硬截断修复（2026-10-08，ACTIVE）
+
+- 用户截图“密林霸主之落”主题止于“俘获并”，并明确要求修复。核实SplitMetadata在主题36字符处直接Substring；保存与画廊原样使用截后字段。仅修改IllustrationDirection.cs的主题长度处理和IllustratorGalleryPopup.xml右侧滚动，标题/行动摘要/导演正文/生图请求不变，不恢复其他会话改动。
+- 验收：新主题完整保存/显示，清理富文本标记和元数据与画面正文分离保持，长说明可滚动；按既有入口双API/Bootstrap/接缝构建，实际DLL反射验证主题完整性、旧标题限制和正文分离，XML路径与布局检查。每次导演返回解析一次、画廊选择时绑定一次，无新增Tick扫描或网络调用。未部署/打包/推送；历史缓存的已截主题不能自动恢复。
