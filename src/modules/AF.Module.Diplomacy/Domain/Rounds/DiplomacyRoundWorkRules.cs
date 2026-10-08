@@ -10,9 +10,9 @@ namespace AnimusForge;
 // identity, coalescing, coverage and the shared-event request tail.
 public static class DiplomacyRoundWorkRules
 {
-    public static List<string> PendingSources(WorldDiplomacyRound round, string author) =>
+    public static List<string> PendingSources(WorldDiplomacyRound round, string author, int currentDay = int.MaxValue) =>
         (round?.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>())
-            .Where(x => x != null && x.KingdomId == author && x.Status == "pending" && string.IsNullOrWhiteSpace(x.AnswerDocumentId))
+            .Where(x => x != null && x.KingdomId == author && x.Status == "pending" && x.RetryNotBeforeDay <= currentDay && string.IsNullOrWhiteSpace(x.AnswerDocumentId))
             .Select(x => x.SourceDocumentId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
     public static void MergeQueuedSpeaker(WorldDiplomacyJob job, IEnumerable<string> sources)
@@ -34,13 +34,13 @@ public static class DiplomacyRoundWorkRules
             { receipt.AnswerDocumentId = document.DocumentId; receipt.Status = "answered"; }
     }
 
-    public static List<string> SelectResponseBatch(WorldDiplomacyRound round, string author, IEnumerable<WorldDiplomacyDocument> documents)
+    public static List<string> SelectResponseBatch(WorldDiplomacyRound round, string author, IEnumerable<WorldDiplomacyDocument> documents, int currentDay = int.MaxValue)
     {
         var index = documents.Where(x => x != null).GroupBy(x => x.DocumentId)
             .ToDictionary(x => x.Key, x => x.First(), StringComparer.OrdinalIgnoreCase);
         var selected = new List<string>();
         int characters = 0;
-        foreach (string id in PendingSources(round, author))
+        foreach (string id in PendingSources(round, author, currentDay))
         {
             if (!index.TryGetValue(id, out var document)) continue;
             int cost = (document.Body ?? "").Length + id.Length + 100;

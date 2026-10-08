@@ -7,5 +7,7 @@ public sealed class WorldDiplomacyPlayerResponse
     [JsonProperty("originalRoundId")] public string OriginalRoundId { get; set; } = "";
     [JsonProperty("answerDocumentId")] public string AnswerDocumentId { get; set; } = "";
     [JsonProperty("status")] public string Status { get; set; } = "pending";
+    [JsonProperty("retryNotBeforeDay")] public int RetryNotBeforeDay { get; set; } = -1;
+    [JsonProperty("failureReason")] public string FailureReason { get; set; } = "";
     [JsonProperty("createdDay")] public int CreatedDay { get; set; }
 }

@@ -1138,6 +1138,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void AbandonRejectedGeneration(WorldDiplomacyJob job, string authorId, string targetId, string reason)
     {
+        DeferUnpublishedPlayerResponses(job);
         WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(
             job,
             authorId,
@@ -1509,6 +1510,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         foreach (var round in GetLiveRounds().ToList())
         {
+            if (MaintainPlayerFollowup(round)) continue;
             if (Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && (x.Status == "accepted" || x.Status == "deferred"))) continue;
             WorldDiplomacyRoundApplication.ProcessRoundLifecycle(Storage, _host.CurrentDay, ResolveDocument,
                 EnqueueRoundPlanJob, ScheduleNextResultSettlementTurn, r => ScheduleNextRelayHop(r),
@@ -1534,6 +1536,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately = false)
     {
+        if (MaintainPlayerFollowup(round)) return;
         WorldDiplomacyRoundApplication.AdvanceRelay(round, scheduleImmediately, _host.CurrentDay,
             ScheduleNextResultSettlementTurn, reason => CloseRound(reason, round), ScheduleNextRelayHop);
     }
@@ -1562,6 +1565,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ScheduleNextRelayHop(WorldDiplomacyRound round, bool scheduleImmediately = false)
     {
+        if (MaintainPlayerFollowup(round)) return;
         WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             round,
             scheduleImmediately,
@@ -1651,6 +1655,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         RecoverRoundSchedulingAfterLoad();
         foreach (var round in GetLiveRounds().ToList())
         {
+            if (MaintainPlayerFollowup(round)) continue;
             if (Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && (x.Status == "accepted" || x.Status == "deferred"))) continue;
             WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(Storage, _host.CurrentDay,
                 ScheduleNextResultSettlementTurn, r => ScheduleNextRelayHop(r, true),
