@@ -1,3 +1,18 @@
+<a id="remote-owner-migration-integration-20261009"></a>
+### 当前迁移整合职责导航
+
+坐标绑定 `e9f378842` 的最终产品源码；详细状态/产物/未验范围统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#remote-owner-migration-integration-20261009)。保留下面各作者的历史导航，旧hash不自动代表当前树已全面验收。
+
+| 当前源码一基范围 | 符号入口 | 已覆盖职责 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneNativeMechanismController.cs:59–198` | `internal void OnNativeConversationStarted` | 退出动作真实状态/预算/身份复验，宿主薄桥 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/NativePendingHistoryApplicationAdapter.cs:143–184` | `internal static void SyncNativeConversationSessionHistoryForDailyMemoryEditExternal` | 完整/局部日快照标志穿透 |
+| `src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs:1271–1308` | `internal bool RemoveMatchingDraftLine` | 单条删除与false消费者 |
+| `src/modules/AF.Module.Weekly/Generation/WeeklyReportRuntimeOwner.cs:1271–1319` | `internal async Task GenerateAutoWeeklyReportsAsync` | 旧epoch拒绝与主线程完成回写 |
+| `src/AF.GameAdapter.Bannerlord/Records/CampaignCharacterRecordCaptureAdapter.cs:947–996` | `internal void RecordEventSourceMaterial` | 材料runtime/append修订与采集窗口 |
+| `src/AF.GameAdapter.Bannerlord/Weekly/CampaignDailyMaintenanceController.cs:120–147` | `internal void QueueDeferredAutoWeeklyReportsForWeek` | 重启采集与既有预算队列 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:401–531` | `internal async Task HandleGroupResponsePerHeroIndependent` | 接力最多八次、当前目标重验及新人物预算 |
+
 <a id="gallery-redraw-default-20261008"></a>
 ### 画廊重绘与默认图刷新导航（2026-10-08）
 
