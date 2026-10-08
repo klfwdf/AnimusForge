@@ -1896,3 +1896,10 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 # 重绘（基于本图）完成待授权（2026-10-08）
 - 五个生图入口已接当前图编辑，无导演，新版本留存。双API/Bootstrap/双接缝及重建Stage通过；未实机、API测试或部署/打包/推送。
 - [主台账、代码与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#current-image-redraw-20261008)。本轮结束等待用户授权，场景喊话/战斗生图未实施。
+
+
+# 场景接力回接修复与部署（2026-10-08）
+- 产品 `8cda28fbe`：已发言候选可再次接话，最多八次发言；城镇重复人物不重 claim，新人物仍受预算约束；补齐自选/无人/失效/失败/上限反馈，保留自定义规则。
+- 当前生产边界 28 项 PASS，修复前源码负控按预期 FAIL；Debug 双 API、Bootstrap、双接缝 PASS。统一模块部署 success，3381 个 Stage 文件与安装哈希一致，24 文件更新且私有 Recovery complete。未验证实机/LLM/实档，两个旧专项被历史 binding 门禁挡住而未进入断言。
+- **推送尚未完成**：`main` 与 `origin/main=a7d842142` 分叉，共同祖先 `c629e866c`；只读 merge preview 有九个跨文档、Campaign/Weekly/Scene 宿主冲突。未合并、强推或改写历史。需整合并重新验证后再普通快进推送。
+- [唯一主台账、真实代码职责与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-continuation-20261008)；本地证据 `artifacts/scene-relay-continuation-20261008/receipt.json`，源码及部署恢复位置见该条。旧记录保留其当时状态。
