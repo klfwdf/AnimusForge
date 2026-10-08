@@ -9,6 +9,8 @@ static void Check(bool value, string message)
 }
 
 string[] urls = {
+    "https://asia.shenlanqaq.com/v1",
+    "https://yjapi.shenlanqaq.com/v1",
     "https://www.shenlanqaq.com/v1/chat/completions",
     "https://WWW.SHENLANQAQ.COM/v1",
     "https://yjapi.manqiaotechnology.com/v1/chat/completions"
@@ -29,7 +31,7 @@ foreach (string url in urls)
     Check(YjThinkingCompat.TryApply(disabled, url, "gemini-other", false, "high", out _)
         && (string)disabled["reasoning_effort"] == "none", "ordinary Gemini disabled behavior changed");
 }
-foreach (string url in new[] { "https://api.openai.com/v1", "https://www.shenlanqaq.com.evil.test/v1", "https://evil.test/www.shenlanqaq.com", "not-a-url", "", null })
+foreach (string url in new[] { "https://asia.shenlanqaq.com.evil.test/v1", "https://yjapi.shenlanqaq.com.evil.test/v1", "https://api.openai.com/v1", "https://www.shenlanqaq.com.evil.test/v1", "https://evil.test/www.shenlanqaq.com", "not-a-url", "", null })
 {
     JObject payload = new JObject { ["thinking"] = new JObject { ["type"] = "enabled" } };
     string before = payload.ToString();
@@ -57,8 +59,8 @@ foreach (string url in new[] { "https://api.anthropic.com/v1/messages", "https:/
     Check(string.Join("", request.Headers.GetValues("anthropic-version")) == "2023-06-01", "Anthropic version mismatch");
     Check(request.Headers.Contains("Authorization") == url.Contains("relay.example"), "Anthropic official/relay auth mismatch");
 }
-Check(LlmApiCompat.GetEffectiveChatApiUrl("https://www.shenlanqaq.com/v1") == urls[0], "preset chat URL mismatch");
-Check(LlmApiCompat.BuildModelListApiUrl(urls[0]) == "https://www.shenlanqaq.com/v1/models", "preset model list URL mismatch");
+Check(LlmApiCompat.GetEffectiveChatApiUrl("https://www.shenlanqaq.com/v1") == "https://www.shenlanqaq.com/v1/chat/completions", "preset chat URL mismatch");
+Check(LlmApiCompat.BuildModelListApiUrl("https://www.shenlanqaq.com/v1/chat/completions") == "https://www.shenlanqaq.com/v1/models", "preset model list URL mismatch");
 JObject openAi = new JObject {
     ["model"] = "synthetic-model", ["max_tokens"] = 4096, ["temperature"] = 0.8,
     ["messages"] = new JArray { new JObject { ["role"] = "system", ["content"] = "system" },

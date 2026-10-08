@@ -113,7 +113,57 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private const string DeepSeekApiKeysUrl = "https://platform.deepseek.com/api_keys";
 
-	private const string YjApiBaseUrl = "https://www.shenlanqaq.com/v1";
+    private string YjApiBaseUrl = YjEndpointProbe.DefaultUrl;
+    private bool _yjEndpointSelected;
+    private CancellationTokenSource _yjEndpointCts;
+    private Task<YjEndpointProbe.Result> _yjEndpointTask;
+    private long _yjEndpointGeneration;
+
+    private void CancelYjEndpointSelection()
+    {
+        _yjEndpointCts?.Cancel();
+        _yjEndpointCts?.Dispose();
+        _yjEndpointCts = null; _yjEndpointTask = null;
+        _yjEndpointSelected = false;
+    }
+
+    private void BeginYjEndpointSelection()
+    {
+        if (_yjEndpointTask != null) return;
+        _yjEndpointGeneration = SaveRuntimeGuard.CaptureGeneration();
+        _yjEndpointCts = new CancellationTokenSource();
+        _activeOnboardingStage = OnboardingUiStage.None;
+        _welcomeInProgress = true;
+        _yjEndpointTask = YjEndpointProbe.SelectAsync(_yjEndpointCts.Token);
+        var expected = _yjEndpointTask;
+        InformationManager.ShowInquiry(new InquiryData("YJ 线路测速", "正在比较三条 YJ 线路，完成后进入接入方式选择。\n不携带 Key，不调用模型生成。",
+            isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "取消", null, () => {
+                if (!ReferenceEquals(_yjEndpointTask, expected)) return;
+                CancelYjEndpointSelection(); _welcomeInProgress = false;
+                ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+            }), pauseGameActiveState: true);
+    }
+
+    private void ProcessYjEndpointSelection()
+    {
+        if (_yjEndpointTask == null) return;
+        if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(_yjEndpointGeneration))
+        { CancelYjEndpointSelection(); _welcomeInProgress = false; return; }
+        if (!_yjEndpointTask.IsCompleted) return;
+        YjEndpointProbe.Result result = null;
+        try { result = _yjEndpointTask.GetAwaiter().GetResult(); } catch (Exception) { }
+        CancelYjEndpointSelection(); _welcomeInProgress = false;
+        InformationManager.HideInquiry();
+        if (result == null)
+        {
+            InformationManager.DisplayMessage(new InformationMessage("YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。"));
+            ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+            return;
+        }
+        YjApiBaseUrl = result.Url; _yjEndpointSelected = true;
+        InformationManager.DisplayMessage(new InformationMessage("YJ 已选线路：" + new Uri(result.Url).Host + "，响应约 " + Math.Round(result.Milliseconds) + " ms。"));
+        ShowYjApiSetupMenu();
+    }
 
 	private const string YjApiKeysUrl = "https://yjapi.manqiaotechnology.com/keys";
 
@@ -237,6 +287,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+        CancelYjEndpointSelection();
 		// Campaign behaviors can survive a return to the campaign setup flow. A new
 		// sandbox must never inherit the previous campaign's completed onboarding bit.
 		_setupDone = false;
@@ -247,6 +298,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+        CancelYjEndpointSelection();
 		MarkPendingStartupNotice();
 		if (!_setupDone)
 		{
@@ -312,6 +364,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+            ProcessYjEndpointSelection();
 			ProcessPendingBaseUrlValidationResult();
 			ProcessPendingApiValidationResult();
 			ProcessPendingModelFetchResult();
@@ -340,6 +393,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+            ProcessYjEndpointSelection();
 			ProcessPendingBaseUrlValidationResult();
 			ProcessPendingApiValidationResult();
 			ProcessPendingModelFetchResult();
@@ -637,7 +691,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void SetYjApiBaseUrlForAllTargets(DuelSettings settings)
+	private void SetYjApiBaseUrlForAllTargets(DuelSettings settings)
 	{
 		SetApiUrlForTarget(settings, ApiSetupTarget.Primary, YjApiBaseUrl);
 		SetApiUrlForTarget(settings, ApiSetupTarget.Auxiliary, YjApiBaseUrl);
@@ -1219,6 +1273,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void ShowSetupModeChoicePopup(bool fromGate, bool ignoreSuppress)
 	{
+        CancelYjEndpointSelection();
 		try
 		{
 			if (AnimusForgeApiOnboardingPopup.IsOpen)
@@ -1286,7 +1341,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			};
 			if (showYjApiSetupOption)
 			{
-				list.Insert(1, new InquiryElement("yj_api", "使用 YJ API 中转站进行游玩", null, isEnabled: true, "固定接入 YJ API 中转站；可选择单分组或多分组 API Key 配置。"));
+				list.Insert(1, new InquiryElement("yj_api", "使用 YJ API 中转站进行游玩", null, isEnabled: true, "先测速选择响应较快的 YJ 线路；可选择单分组或多分组 API Key 配置。"));
 			}
 			if (!_apiOnlySetupFlowActive)
 			{
@@ -1372,6 +1427,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+            if (!_yjEndpointSelected) { BeginYjEndpointSelection(); return; }
 			_activeOnboardingStage = OnboardingUiStage.YjApiChoice;
 			_welcomeInProgress = true;
 			string yjBackLabel = _apiOnlySetupFlowActive ? "返回 API 重新配置菜单" : "返回首次引导菜单";
@@ -1530,7 +1586,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			bool singleGroup = _yjApiSetupMode == YjApiSetupMode.SingleGroup;
 			string title = singleGroup ? "填写 YJ API 单分组 Key" : "填写 YJ API " + CurrentApiKeyDisplayName();
 			string text = singleGroup
-				? "请输入一个 YJ API Key。确认后会将固定 Base URL 和该 Key 写入主API、前处理API、后处理API、周报与叛乱API；随后会依次拉取四次模型列表并为每条 API 选择模型。"
+				? "请输入一个 YJ API Key。确认后会将测速选中的 Base URL 和该 Key 写入主API、前处理API、后处理API、周报与叛乱API；随后会依次拉取四次模型列表并为每条 API 选择模型。"
 				: "请输入当前 " + CurrentApiDisplayName() + " 所属分组的 YJ API Key。确认后只会写入当前 API，并拉取该 Key 可用的模型。";
 			InformationManager.ShowTextInquiry(new TextInquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
 			{

@@ -24,6 +24,8 @@ internal static class YjThinkingCompat
 			if (Uri.TryCreate((apiUrl ?? string.Empty).Trim(), UriKind.Absolute, out Uri uri))
 			{
 				return string.Equals(uri.Host, YjHost, StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(uri.Host, "yjapi.shenlanqaq.com", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(uri.Host, "asia.shenlanqaq.com", StringComparison.OrdinalIgnoreCase)
 					|| string.Equals(uri.Host, LegacyYjHost, StringComparison.OrdinalIgnoreCase);
 			}
 		}

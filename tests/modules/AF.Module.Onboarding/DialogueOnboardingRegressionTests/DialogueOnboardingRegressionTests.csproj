@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NuGetAudit>false</NuGetAudit><UseAppHost>false</UseAppHost></PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Onboarding/YjEndpointProbe.cs" Link="YjEndpointProbe.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs" Link="AnimusForgeNativeConversationOverlayVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" Link="AnimusForgeTextInputSanitizer.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs" Link="AnimusForgeApiOnboardingVM.cs" />
