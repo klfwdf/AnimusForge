@@ -1,0 +1,118 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.Engine;
+using Newtonsoft.Json.Linq;
+using TaleWorlds.Library;
+
+internal static class Program {
+ static int checks;
+ static void Check(bool value,string label) { checks++; if(!value)throw new Exception(label); }
+ static async Task Main() {
+  foreach(var scenario in new[]{(1024,0,false),(1025,0,true),(1023,1,false),(1024,1,true)}) {
+   ScreenCaptureHelper.Reset(scenario.Item1,scenario.Item2);
+   var source=new ScreenCaptureHelper.ConversationSceneCaptureSource();
+   var result=await ScreenCaptureHelper.Capture(source,CancellationToken.None,"saved-shot");
+   int generationRequests=0; var refs=new List<IllustrationReferenceImage>(result.References);
+   refs.Add(new IllustrationReferenceImage("portrait","person",IllustrationReferenceKind.Character));
+   string facts="known player facts"+result.NearbyPropFacts; generationRequests++;
+   Check(generationRequests==1&&refs.Any(x=>x.Kind==IllustrationReferenceKind.Character)&&facts.StartsWith("known player facts"),"generation continuation retains characters and hard facts");
+   Check(refs.Any(x=>x.Kind==IllustrationReferenceKind.ScenePanorama)!=scenario.Item3,"1024 accepted / 1025 skips entire panorama for both producers");
+   Check(ScreenCaptureHelper.LastSnapshot.CopiedRoots<=1024,"no larger geometry scan/copy");
+   if(scenario.Item3) {
+    Check(refs.Single(x=>x.Kind==IllustrationReferenceKind.Scene).Base64Image=="saved-shot","already captured image retained");
+    Check(result.StatusText.Contains("已跳过")&&string.IsNullOrEmpty(result.NearbyPropFacts),"skip visible and partial geometry facts never published");
+    Check(ScreenCaptureHelper.Exports.Count==0&&IsolatedPanoramaRenderer.Created==0,"no partial panorama renderer/export");
+   }
+   Check(ScreenCaptureHelper.LastSnapshot.Disposed&&ScreenCaptureHelper.LastSnapshot.HandlesReleased,"snapshot and source/template handles retired");
+   Check(ScreenCaptureHelper.LocksReleased&&ScreenCaptureHelper.ObservationReleased,"both locks and frame stats released");
+   Check(ScreenCaptureHelper.Exports.All(path=>!File.Exists(path)&&!File.Exists(path+".png")),"export files retired");
+  }
+  ScreenCaptureHelper.Reset(1025,0);
+  var empty=await ScreenCaptureHelper.Capture(new(),CancellationToken.None,null);
+  Check(empty.References.Count==0&&empty.DirectorNote.Contains("文字事实"),"no new screenshot or invented panorama on missing references");
+  ScreenCaptureHelper.Reset(1025,0);var changed=new ScreenCaptureHelper.ConversationSceneCaptureSource();ScreenCaptureHelper.OnLimit=()=>changed.Current=false;
+  bool rejected=false;try{await ScreenCaptureHelper.Capture(changed,CancellationToken.None,"saved-shot");}catch(InvalidOperationException){rejected=true;}
+  Check(rejected&&ScreenCaptureHelper.LocksReleased,"scene replacement cannot take soft fallback");
+  ScreenCaptureHelper.Reset(1025,0);using var cancelled=new CancellationTokenSource();ScreenCaptureHelper.OnLimit=cancelled.Cancel;
+  rejected=false;try{await ScreenCaptureHelper.Capture(new(),cancelled.Token,"saved-shot");}catch(OperationCanceledException){rejected=true;}
+  Check(rejected&&ScreenCaptureHelper.LocksReleased,"user cancellation not swallowed");
+  ScreenCaptureHelper.Reset(1,0);ScreenCaptureHelper.SnapshotError=new InvalidOperationException("native copy failed");
+  rejected=false;try{await ScreenCaptureHelper.Capture(new(),CancellationToken.None);}catch(InvalidOperationException ex){rejected=ex.Message=="native copy failed";}
+  Check(rejected&&ScreenCaptureHelper.LocksReleased,"ordinary snapshot errors not downgraded");
+  ScreenCaptureHelper.Reset(1,0);ScreenCaptureHelper.SnapshotError=new OperationCanceledException();
+  rejected=false;try{await ScreenCaptureHelper.Capture(new(),CancellationToken.None);}catch(TimeoutException){rejected=true;}
+  Check(rejected&&ScreenCaptureHelper.LocksReleased,"internal deadline remains timeout rather than soft fallback");
+  ScreenCaptureHelper.Reset(1,0);IsolatedPanoramaRenderer.ThrowOnCreate=true;
+  rejected=false;try{await ScreenCaptureHelper.Capture(new(),CancellationToken.None);}catch(InvalidOperationException){rejected=true;}
+  Check(rejected&&ScreenCaptureHelper.LastSnapshot.Disposed&&ScreenCaptureHelper.LocksReleased,"renderer failure still fails and retires snapshot");
+  Console.WriteLine("PASS "+checks+" production budget/capture/fallback/cleanup checks; native renderer and paid pipeline NOT-RUN");
+ }
+}
+namespace Newtonsoft.Json.Linq { public class JObject:Dictionary<string,object>{} public class JArray {public JArray(params object[] x){} } }
+namespace TaleWorlds.Library {
+ public struct Vec3 {public float x,y,z;public float Distance(Vec3 x)=>0;}
+ public struct MatrixFrame {public Vec3 origin;}
+ public static class Debug {public static void Print(string text){} }
+}
+namespace AnimusForge.Illustrator.Core {
+ internal sealed class IllustratorSettings {public static IllustratorSettings Instance=new();public int PanoramaCaptureTimeoutSeconds=40,PanoramaFaceExportTimeoutSeconds=6;}
+ public enum IllustrationReferenceKind {Scene,ScenePanorama,Character}
+ public sealed class IllustrationReferenceImage {public string Base64Image;public IllustrationReferenceKind Kind;public IllustrationReferenceImage(string image,string label,IllustrationReferenceKind kind){Base64Image=image;Kind=kind;}}
+ internal sealed class GenerationDiagnostics {public static GenerationDiagnostics Current;public void RecordStage(string stage,JObject data=null){}public void RecordPanoramaFace(int face,byte[] bytes){} }
+}
+namespace AnimusForge.Illustrator.Engine {
+ internal static class IllustratorRuntime {internal static void PostCritical(Action action)=>action();internal static Task AfterFramesAsync(int frames,CancellationToken token)=>Task.CompletedTask;}
+ internal sealed class Mission {internal object Scene=new();internal Agent MainAgent;}
+ internal sealed class Agent {internal Vec3 Position;internal bool IsActive()=>true;internal Vec3 GetEyeGlobalPosition()=>default;}
+ internal sealed class MissionScreen {internal Mission Mission;internal Camera CombatCamera=new();internal bool MissionStartedRendering()=>true;}
+ internal sealed class Camera {internal MatrixFrame Frame;}
+ internal sealed class PanoramaSceneSnapshot {
+  internal int CopiedRoots,ResourceCopiedComponents,InspectedNodes,SkippedNonGeometry,SkippedByRadius,SkippedInvalidBounds,SkippedAnimated,SourceRoots,Batches;
+  internal bool CenterFromPlayer,TerrainOmitted,Disposed,HandlesReleased;
+  internal double TotalMilliseconds,MaxBatchMilliseconds;internal string Notes="",NearbyPropFacts="complete static facts";
+  private readonly TaskCompletionSource<bool> retired=new();internal Task Retirement=>retired.Task;
+  internal void DisposeUnrendered(){Disposed=true;HandlesReleased=true;retired.TrySetResult(true);}
+ }
+ internal sealed class IsolatedPanoramaRenderer {
+  internal static int Created;internal static bool ThrowOnCreate;private PanoramaSceneSnapshot snapshot;
+  private readonly TaskCompletionSource<bool> retired=new();internal Task Retired=>retired.Task;
+  internal bool IsReady=>true;internal JObject ObservationLightingDiagnostics=new(),CameraDiagnostics=new();
+  internal static IsolatedPanoramaRenderer Create(PanoramaSceneSnapshot snap,List<MatrixFrame> frames,int size,float fov){if(ThrowOnCreate)throw new InvalidOperationException("render failed");Created++;return new(){snapshot=snap};}
+  internal bool SelectFace(int face)=>true;internal void StopExport(){}internal JObject DescribeExportState()=>new();
+  internal string RequestExport(int face){string path=Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString("N"));File.WriteAllText(path,"fixture");File.WriteAllText(path+".png","fixture");ScreenCaptureHelper.Exports.Add(path);return path;}
+  internal void Restore(){snapshot.DisposeUnrendered();retired.TrySetResult(true);}
+ }
+ internal static class PanoramaProjection {internal const int FaceCount=6;internal static List<MatrixFrame> BuildCameraFrames(MatrixFrame frame)=>new();internal static byte[] ComposeWithCancellation(List<byte[]> raw,int w,int h,CancellationToken token)=>new byte[]{1,2,3};}
+ public static partial class ScreenCaptureHelper {
+  internal const int PanoramaCaptureTimeoutMs=40000,PanoramaFaceFileTimeoutMs=6000,PanoramaSnapshotMaxCopies=1024;internal const float PanoramaCaptureRadius=30;
+  private static readonly SemaphoreSlim SceneCaptureLock=new(1),_stageLock=new(1);
+  private static IsolatedPanoramaRenderer _activeIsolatedPanorama;private static PanoramaSceneSnapshot _pendingPanoramaSnapshot;private static PanoramaFrameStats _activePanoramaFrameStats;
+  private static readonly string[] PanoramaDirections={"front","right","back","left","up","down"};
+  private sealed class PanoramaFrameStats {internal int Count;internal double MaxMs,TotalMs;}
+  internal sealed class ConversationSceneCaptureSource {internal Mission Mission=new();internal MissionScreen MissionScreen;internal bool Current=true;internal ConversationSceneCaptureSource(){MissionScreen=new(){Mission=Mission};}internal void EnsureCurrent(CancellationToken token){token.ThrowIfCancellationRequested();if(!Current)throw new InvalidOperationException("scene replaced");}}
+  internal sealed class ConversationSceneReferenceCapture {internal IReadOnlyList<IllustrationReferenceImage> References;internal string DirectorNote,StatusText,NearbyPropFacts;internal ConversationSceneReferenceCapture(IReadOnlyList<IllustrationReferenceImage> r,string n,string s,string f=""){References=r;DirectorNote=n;StatusText=s;NearbyPropFacts=f;}}
+  internal static int RuntimeCopies,ResourceCopies;internal static Action OnLimit;internal static Exception SnapshotError;internal static PanoramaSceneSnapshot LastSnapshot;internal static List<string> Exports=new();
+  internal static bool LocksReleased=>SceneCaptureLock.CurrentCount==1&&_stageLock.CurrentCount==1;internal static bool ObservationReleased=>_activePanoramaFrameStats==null;
+  internal static void Reset(int runtime,int resources){RuntimeCopies=runtime;ResourceCopies=resources;OnLimit=null;SnapshotError=null;Exports.Clear();IsolatedPanoramaRenderer.Created=0;IsolatedPanoramaRenderer.ThrowOnCreate=false;}
+  internal static Task<ConversationSceneReferenceCapture> Capture(ConversationSceneCaptureSource source,CancellationToken token,string shot=null)=>CaptureMissionSceneReferencesAsync(source,token,shot);
+  private static Task<T> RunOnGameThreadAsync<T>(Func<T> action,CancellationToken token){token.ThrowIfCancellationRequested();return Task.FromResult(action());}
+  private static string CaptureUnobstructedConversationSceneBase64(out string reason){reason="disabled";return null;}
+  private static Task<byte[]> ReadPanoramaFaceAsync(string path,int timeout,CancellationToken token)=>Task.FromResult(new byte[]{1,2,3});
+  private static Task<PanoramaSceneSnapshot> CreatePanoramaSnapshotAsync(Mission mission,CancellationToken token){
+   var snap=LastSnapshot=new PanoramaSceneSnapshot();
+   try{
+    if(SnapshotError!=null)throw SnapshotError;
+    for(int i=0;i<RuntimeCopies;i++){PanoramaGeometryBudget.BeforeCopy(snap.CopiedRoots,PanoramaSnapshotMaxCopies,"runtime");snap.CopiedRoots++;}
+    for(int i=0;i<ResourceCopies;i++){PanoramaGeometryBudget.BeforeCopy(snap.CopiedRoots,PanoramaSnapshotMaxCopies,"runtime_and_resources");snap.CopiedRoots++;snap.ResourceCopiedComponents++;}
+    return Task.FromResult(snap);
+   }catch(PanoramaGeometryBudgetExceededException){OnLimit?.Invoke();snap.DisposeUnrendered();throw;}catch{snap.DisposeUnrendered();throw;}
+  }
+  __METHODS__
+ }
+}

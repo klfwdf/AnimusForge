@@ -192,8 +192,7 @@ namespace AnimusForge.Illustrator.Engine
             { _duplicates++; Record("already_present", name, null); return; }
             if (!ScreenCaptureHelper.IntersectsPanoramaRadius(bounds.min, bounds.max, _snapshot.CaptureCenter))
             { _outside++; Record("outside_radius_or_invalid_bounds", name, null); return; }
-            if (_snapshot.CopiedRoots >= ScreenCaptureHelper.PanoramaSnapshotMaxCopies)
-                throw new InvalidOperationException("现场与资源补齐合计超过1024个网格组件预算。");
+            PanoramaGeometryBudget.BeforeCopy(_snapshot.CopiedRoots, ScreenCaptureHelper.PanoramaSnapshotMaxCopies, "runtime_and_resources");
             MetaMesh copy = original.CreateCopy();
             if (copy == null || copy.Pointer == UIntPtr.Zero || copy.Pointer == original.Pointer)
                 throw new InvalidOperationException("无法取得资源网格的独立副本。");

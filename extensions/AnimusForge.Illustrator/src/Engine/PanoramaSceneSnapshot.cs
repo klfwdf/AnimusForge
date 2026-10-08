@@ -147,6 +147,7 @@ namespace AnimusForge.Illustrator.Engine
             if (_disposed || _rendered) return;
             AssertPrivateScene();
             _disposed = true;
+            if (ReferenceEquals(ScreenCaptureHelper._pendingPanoramaSnapshot, this)) ScreenCaptureHelper._pendingPanoramaSnapshot = null;
             Scene owned = Scene;
             Scene = null;
             try { ReleaseSourceHandles?.Invoke(); }
@@ -496,8 +497,7 @@ namespace AnimusForge.Illustrator.Engine
                                 entry.MissingComponents > 0 ? "finished_with_missing_components" : "copied";
                             _nodeIndex++; _meshIndex = 0; continue;
                         }
-                        if (Snapshot.CopiedRoots >= PanoramaSnapshotMaxCopies)
-                            throw new InvalidOperationException("环境快照超过1024个静态网格副本，已停止，不能将局部覆盖标为完整全景。");
+                        PanoramaGeometryBudget.BeforeCopy(Snapshot.CopiedRoots, PanoramaSnapshotMaxCopies, "runtime");
                         if (_meshIndex == 0)
                         {
                             BoundingBox bounds = source.GetGlobalBoundingBox();
