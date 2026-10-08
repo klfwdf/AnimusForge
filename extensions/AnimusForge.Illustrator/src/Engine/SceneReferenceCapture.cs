@@ -48,6 +48,14 @@ namespace AnimusForge.Illustrator.Engine
             return Array.Empty<IllustrationReferenceImage>();
         }
 
+        private static IReadOnlyList<IllustrationReferenceImage> PreserveBudgetFallbackScreenshot(string image)
+        {
+            if (string.IsNullOrWhiteSpace(image)) return Array.Empty<IllustrationReferenceImage>();
+            // Keep only a screenshot already handed to this request; never start another capture.
+            return new[] { new IllustrationReferenceImage(image,
+                "本次已取得的当前现场截图；环境物件超预算，未提供环境全景或任何不完整副本。环境未知部分不得补造。", IllustrationReferenceKind.Scene) };
+        }
+
         internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
             ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null, bool scenePanoramaEnabled = true)
         {
@@ -97,6 +105,7 @@ namespace AnimusForge.Illustrator.Engine
             var rawFaces = new List<byte[]>(PanoramaProjection.FaceCount);
             bool composed = false;
             string calibrationReason = "not_attempted";
+            string fallbackScene = preCapturedScene;
             PanoramaFrameStats frameStats = null;
             try
             {
@@ -147,6 +156,7 @@ namespace AnimusForge.Illustrator.Engine
                     return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(sourceFrame), calibration, cameraOriginSource);
                 }, captureToken).ConfigureAwait(false);
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
+                fallbackScene = context.Item3;
                 GenerationDiagnostics.Current?.RecordStage("scene_calibration", new JObject
                 { ["attempt"] = 1, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(context.Item3) });
                 snapshot = await CreatePanoramaSnapshotAsync(context.Item1, captureToken).ConfigureAwait(false);
@@ -246,6 +256,20 @@ namespace AnimusForge.Illustrator.Engine
                     (context.Item4 == "player_eye" ? "本次以玩家眼位为零附加偏移视点。" : "未取得有效玩家眼位，本次保留当前相机位置并已记录回退。") +
                     "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前截图如有附加，仅用于当前位置与环境定位。",
                     "任务场景：附近30米全景参考可用" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前位置截图未取得" : string.Empty), snapshot.NearbyPropFacts);
+            }
+            catch (PanoramaGeometryBudgetExceededException ex)
+            {
+                // CreatePanoramaSnapshotAsync retires any partial copy before throwing.
+                // Recheck the original scene and cancellation; neither permits a fallback.
+                bool current = await RunOnGameThreadAsync(() => { source.EnsureCurrent(captureToken); return true; }, captureToken).ConfigureAwait(false);
+                if (!current) throw new InvalidOperationException("场景状态校验调度已停止，不能继续本次插画。");
+                var references = PreserveBudgetFallbackScreenshot(fallbackScene);
+                GenerationDiagnostics.Current?.RecordStage("panorama_skipped_geometry_budget", new JObject
+                { ["phase"] = ex.Phase, ["limit"] = ex.Limit, ["panorama"] = false, ["currentScreenshot"] = references.Count > 0 });
+                return new ConversationSceneReferenceCapture(references,
+                    "附近环境物件超过采集预算，本次没有环境全景；不使用任何不完整副本。" +
+                    (references.Count > 0 ? "仅保留已取得的当前位置截图，环境未知部分不得补造。" : "环境只依据已有文字事实，不补造未知建筑与陈设。"),
+                    "环境物件超过" + ex.Limit + "个预算，已跳过环境采集，继续绘制");
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
             { throw new TimeoutException("环境全景采集超过时间预算，已停止；没有发送不完整环境图。"); }
