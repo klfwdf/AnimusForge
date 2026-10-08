@@ -1,4 +1,10 @@
-﻿# 当前交接：画廊主题完整保留与滚动（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+# 当前交接：YJ 引导三线路测速（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `943f22227`：www/yjapi/asia 三线路先测速，再进入单/多分组选择；两种引导入口一致，支持超时/取消/迟到保护；新域名思考参数兼容。
+- 测速与VM专项、域名专项、原双API/Bootstrap/双接缝PASS；综合旧UI断言失败另记。真实网络/实机未验，未部署、打包、推送。
+- [唯一台账与代码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-endpoint-selection-20261008)；证据 `artifacts/yj-endpoint-selection-20261008/`。回滚仅 `git revert 943f22227`。
+
+# 当前交接：画廊主题完整保留与滚动（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品`152c93d85`、检查点`c1a838e62`：取消画作主题36字硬截断，画廊右侧说明自动换行并可滚动；日期固定，标题/行动/图片正文保持。旧缓存已丢的文字不会自动补回。
 - 双API/Bootstrap/双DLL接缝、实际DLL每版7主题检查、XML绑定PASS；旧安装版同测复现42字只存36字。实机换行/滚动未验，未部署/打包/推送。
