@@ -13,6 +13,7 @@ internal sealed class NativeConversationTurnPorts
     internal delegate Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsyncCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission, NativeConversationCompletionRequest completion = null);
     internal ApplyNativeConversationGameActionsOnMainThreadAsyncCapability ApplyNativeConversationGameActionsOnMainThreadAsync;
 
+    internal Action<NativeConversationAdmission> RetireOpeningForAcceptedReply;
     internal ConversationGameThreadDispatcher PromptDispatcher;
     internal Func<bool> IsPromptOwnerAvailable;
     internal Func<NativePromptCaptureRequest, SharedPromptRoutingWork> CapturePromptRoutingWork;

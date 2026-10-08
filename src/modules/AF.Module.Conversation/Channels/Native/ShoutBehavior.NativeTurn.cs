@@ -183,6 +183,7 @@ public partial class ShoutBehavior
     private NativeConversationTurnPorts CreateNativeConversationTurnPorts() => new NativeConversationTurnPorts
     {
         ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync,
+        RetireOpeningForAcceptedReply = NativeAdmissions.RetireOpeningForAcceptedReply,
         PromptDispatcher = _conversationGameThreadDispatcher,
         IsPromptOwnerAvailable = static () => MyBehavior.Instance != null,
         CapturePromptRoutingWork = static request =>

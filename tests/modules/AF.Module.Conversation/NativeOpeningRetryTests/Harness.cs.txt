@@ -1,0 +1,140 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+using Admission = AnimusForge.ShoutBehavior.NativeConversationAdmission;
+
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Hero { public string StringId; }
+ public sealed class CharacterObject { }
+ public sealed class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(){ IsConversationInProgress=true, ActiveToken=1 }; }
+}
+namespace TaleWorlds.CampaignSystem.Conversation { public sealed class ConversationManager { public bool IsConversationInProgress; public int ActiveToken; } }
+namespace TaleWorlds.MountAndBlade { public sealed class Mission { public static Mission Current = new(); } }
+namespace AnimusForge.Refactor.Modules { }
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long generation)=>generation==Generation; }
+ internal static class PlayerEncounterCompat { internal static bool IsInPostBattleResultFlow()=>false; }
+ internal sealed class CoreDialogueOperation { internal void MarkOwnerAdmitted(){} }
+ internal static class LlmNonStreamingTransport { internal static IDisposable PushOwnerCancellation(CancellationToken token)=>new Scope(); private sealed class Scope:IDisposable { public void Dispose(){} } }
+ public partial class ShoutBehavior { @@ADMISSION@@ @@ERROR@@ }
+ public sealed partial class ProactiveNpcRequestBehavior {
+  private sealed class PendingOpeningFact { internal string SessionId,HeroId,ExtraFact,PromptText; internal float CreatedAtHours; }
+  private sealed class Session { internal string Id; }
+  private readonly ProactiveOpeningOwner _openingOwner = new();
+  private Session _activeSession;
+  internal static ProactiveNpcRequestBehavior Instance = new();
+  internal int Consumed;
+  internal void Open(Hero hero) { _activeSession=new(){Id="lord-session"};_openingOwner.Open(true,_activeSession.Id,hero.StringId,"lord-fact","lord-prompt",1); }
+  private static string GetHeroKey(Hero hero)=>hero.StringId;
+  private void CompleteActiveForHeroInternal(Hero hero,string reason) { Consumed++;_activeSession=null;_openingOwner.Clear(); }
+  public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,true,out fact,out prompt);
+  public static bool HasPendingNativeOpeningForCurrentConversation()=>false;
+  @@LORD_CONSUME@@
+ }
+ public sealed class CompanionProactiveChatBehavior {
+  private const string StateOpening="opening";
+  private sealed class CompanionChatSession { internal string State,HeroId,ExtraFact,PromptText; }
+  private sealed class Storage { internal CompanionChatSession PendingSession; }
+  private Storage _storage = new();
+  internal static CompanionProactiveChatBehavior Instance = new();
+  internal int Consumed,Recorded;
+  internal void Open(Hero hero) { _storage.PendingSession=new(){State=StateOpening,HeroId=hero.StringId,ExtraFact="companion-fact",PromptText="companion-prompt"}; }
+  private static bool HeroMatchesId(Hero hero,string id)=>hero?.StringId==id;
+  private void RecordInteraction(Hero hero)=>Recorded++;
+  private void ConsumePendingSession(string reason) { Consumed++;_storage.PendingSession=null; }
+  public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,out fact,out prompt);
+  public static bool HasPendingNativeOpeningForCurrentConversation()=>false;
+  @@COMPANION_CONSUME@@
+ }
+}
+internal sealed class Fixture {
+ internal Hero Hero=new(){StringId="speaker"}; internal CharacterObject Character=new();
+ internal readonly NativeConversationAdmissionOwner<Admission> Owner=new();
+ internal readonly NativeAdmissionApplicationAdapter Adapter;
+ internal bool Current=true,CanSubmit=true,Available=true;
+ internal int Runs,Visible;
+ internal string Mode="fail";
+ internal Admission Last;
+ internal Action<string,Hero,CharacterObject> LateReady;
+ internal TaskCompletionSource<bool> Hold=new(TaskCreationOptions.RunContinuationsAsynchronously);
+ internal Fixture() {
+  Campaign.Current=new();Mission.Current=new();SaveRuntimeGuard.Generation=1;
+  ProactiveNpcRequestBehavior.Instance=new();CompanionProactiveChatBehavior.Instance=new();
+  Adapter=new(Owner,()=>true,()=>Current,()=>CanSubmit,action=>action(),100,
+   Resolve,(hero,character)=>-1,Target,Run);
+ }
+ private bool Resolve(out Hero hero,out CharacterObject character,out string name){hero=Hero;character=Character;name="speaker";return true;}
+ private bool Target(int index,Hero hero,CharacterObject character,out string reason){reason=Available?"":"target-unavailable";return Available;}
+ private async Task<string> Run(Admission admission,string input,Action<string> stream,string dialog,Action<string> post,Action<string,Hero,CharacterObject> ready,bool opening){
+  Runs++;Last=admission;LateReady=ready;
+  if(Mode=="hold")await Hold.Task;
+  if(Mode=="fail")return "preprocess-unavailable";
+  ready("body",Hero,Character);return "body";
+ }
+ internal void Open(string source){if(source=="lord")ProactiveNpcRequestBehavior.Instance.Open(Hero);else CompanionProactiveChatBehavior.Instance.Open(Hero);}
+ internal int Consumed=>ProactiveNpcRequestBehavior.Instance.Consumed+CompanionProactiveChatBehavior.Instance.Consumed;
+ internal Task<string> Submit(bool opening=true)=>Adapter.SubmitNativeConversationAdmittedAsync(opening?"":"player",null,"",null,(text,hero,character)=>{if(!string.IsNullOrWhiteSpace(text))Visible++;},opening);
+ internal bool HasRetry()=>typeof(NativeAdmissionApplicationAdapter).GetField("_openingRetry",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(Adapter)!=null;
+}
+internal static class Program {
+ private static int Checks;
+ private static void Check(bool value,string name){Checks++;if(!value)throw new InvalidOperationException(name);}
+ private static async Task WaitFor(Func<bool> predicate){for(int i=0;i<1000&&!predicate();i++)await Task.Delay(1);Check(predicate(),"worker-started");}
+ static async Task Main(){
+  foreach(string source in new[]{"lord","companion"}) {
+   var f=new Fixture();f.Open(source);
+   Check(await f.Submit()=="preprocess-unavailable",source+" first attempt failed without body");
+   Check(f.Consumed==1&&f.Runs==1&&f.HasRetry(),source+" first consumes once and keeps obligation");
+   Check(f.Last.OpeningExtraFact==source+"-fact"&&f.Last.OpeningPrompt==source+"-prompt",source+" source content captured");
+   f.LateReady("",f.Hero,f.Character);Check(f.HasRetry(),source+" empty presentation callback preserves obligation");
+   f.Mode="ready";Check(await f.Submit()=="body",source+" manual retry body");
+   Check(f.Consumed==1&&f.Runs==2&&f.Visible==1&&!f.HasRetry(),source+" retry no duplicate source consume, ready clears");
+   Check(await f.Submit()==""&&f.Runs==2,source+" ready opening not replayed");
+
+   f=new Fixture();f.Open(source);f.Mode="hold";Task<string> normal=f.Submit(false);await WaitFor(()=>f.Runs==1);
+   bool normalBusy=false;try{await f.Submit();}catch(ShoutBehavior.NativeConversationAdmissionException error){normalBusy=error.ReasonCode=="native.busy";}
+   Check(normalBusy&&f.Consumed==0,source+" normal request busy keeps unconsumed NPC opening");
+   f.Hold.SetResult(true);await normal;f.Mode="ready";Check(await f.Submit()=="body"&&f.Consumed==1,source+" opening remains after normal busy rejection");
+
+   f=new Fixture();f.Open(source);f.Mode="hold";Task<string> first=f.Submit();await WaitFor(()=>f.Runs==1);
+   bool busy=false;try{await f.Submit();}catch(ShoutBehavior.NativeConversationAdmissionException error){busy=error.ReasonCode=="native.busy";}
+   Check(busy&&f.Consumed==1,source+" busy refused before source consumption");
+   f.Hold.SetResult(true);await first;Check(!f.HasRetry(),source+" held ready clears");
+
+   foreach(string drift in new[]{"token","hero","character","mission","manager","generation","epoch","owner"}) {
+    f=new Fixture();f.Open(source);await f.Submit();Check(f.HasRetry(),source+" pre-drift retry exists");
+    switch(drift){
+     case "token":Campaign.Current.ConversationManager.ActiveToken++;break;
+     case "hero":f.Hero=new(){StringId="replacement"};break;
+     case "character":f.Character=new();break;
+     case "mission":Mission.Current=new();break;
+     case "manager":Campaign.Current.ConversationManager=new(){IsConversationInProgress=true,ActiveToken=1};break;
+     case "generation":SaveRuntimeGuard.Generation++;break;
+     case "epoch":f.Adapter.EndConversation();break;
+     case "owner":f.Current=false;break;
+    }
+    f.Mode="ready";Check(await f.Submit()==""&&f.Runs==1&&!f.HasRetry(),source+" rejects retry after "+drift);
+   }
+
+   f=new Fixture();f.Open(source);await f.Submit();var late=f.LateReady;var oldAdmission=f.Last;f.Adapter.EndConversation();
+   f.Open(source);await f.Submit();Check(f.HasRetry(),source+" new conversation holds own retry");
+   late("late",f.Hero,f.Character);Check(f.HasRetry(),source+" old ready cannot clear new obligation");
+   f.Adapter.RetireOpeningForAcceptedReply(oldAdmission);Check(f.HasRetry(),source+" old effect/exception retirement cannot clear new obligation");
+   Check(f.Adapter.CaptureNativeConversationAdmissionOnMainThread(oldAdmission.Generation,oldAdmission.ConversationEpoch,true)==null&&f.HasRetry(),source+" queued old admission cannot clear new obligation");
+   f.Mode="ready";Check(await f.Submit()=="body"&&f.Consumed==2,source+" replacement independently completes");
+
+   f=new Fixture();f.Open(source);await f.Submit();f.Adapter.RetireOpeningForAcceptedReply(f.Last);
+   Check(!f.HasRetry(),source+" accepted raw reply retires before effects even if visible text is empty");
+   Check(await f.Submit()==""&&f.Runs==1,source+" raw-action acceptance cannot replay opening");
+
+   f=new Fixture();f.Open(source);f.Available=false;Check(await f.Submit()==""&&f.Consumed==0,source+" initial target rejected before consume");
+   f.Available=true;f.Mode="ready";Check(await f.Submit()=="body"&&f.Consumed==1,source+" target recovery first body");
+  }
+  Console.WriteLine("PASS NativeOpeningRetry checks="+Checks+"; current full admission adapter/owner/router, production lord+companion consume statements; game/UI/network leaves are fixtures, no live opening acceptance");
+ }
+}
