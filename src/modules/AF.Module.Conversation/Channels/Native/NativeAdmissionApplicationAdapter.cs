@@ -25,6 +25,50 @@ internal sealed class NativeAdmissionApplicationAdapter
     private readonly Func<Hero,CharacterObject,int> _resolveAgent;
     private readonly NativeAdmissionTargetGuard _targetAvailable;
     private readonly NativeAdmissionTurn _runTurn;
+    // At most one admitted opening payload. Its source is consumed only once; a
+    // manual retry before a ready reply may reuse it within the same conversation.
+    private NativeOpeningRetry _openingRetry;
+    private sealed class NativeOpeningRetry
+    {
+        internal readonly long Generation, Epoch;
+        internal readonly Hero Hero;
+        internal readonly CharacterObject Character;
+        internal readonly ConversationManager Manager;
+        internal readonly int Token;
+        internal readonly Mission Mission;
+        internal readonly string Fact, Prompt, Source;
+        internal NativeOpeningRetry(NativeConversationAdmission admission)
+        {
+            Generation = admission.Generation; Epoch = admission.ConversationEpoch;
+            Hero = admission.Hero; Character = admission.Character;
+            Manager = admission.ConversationManager; Token = admission.ConversationToken;
+            Mission = admission.Mission;
+            Fact = admission.OpeningExtraFact; Prompt = admission.OpeningPrompt; Source = admission.OpeningSource;
+        }
+        internal bool Matches(NativeConversationAdmission admission) => admission != null
+            && Generation == admission.Generation && Epoch == admission.ConversationEpoch
+            && ReferenceEquals(Hero, admission.Hero) && ReferenceEquals(Character, admission.Character)
+            && ReferenceEquals(Manager, admission.ConversationManager) && Token == admission.ConversationToken
+            && ReferenceEquals(Mission, admission.Mission);
+        internal void Bind(NativeConversationAdmission admission)
+        { admission.OpeningExtraFact = Fact; admission.OpeningPrompt = Prompt; admission.OpeningSource = Source; }
+    }
+    private NativeOpeningRetry ReadOpeningRetry(NativeConversationAdmission admission, bool retireStale = false)
+    {
+        NativeOpeningRetry retry = Volatile.Read(ref _openingRetry);
+        if (retry != null && !retry.Matches(admission))
+        {
+            if (retireStale) Interlocked.CompareExchange(ref _openingRetry, null, retry);
+            return null;
+        }
+        return retry;
+    }
+    internal void RetireOpeningForAcceptedReply(NativeConversationAdmission admission)
+    {
+        NativeOpeningRetry retry = ReadOpeningRetry(admission);
+        if (retry != null) Interlocked.CompareExchange(ref _openingRetry, null, retry);
+    }
+
     internal NativeAdmissionApplicationAdapter(NativeConversationAdmissionOwner<NativeConversationAdmission> owner,
         Func<bool> isMainThread,Func<bool> isCurrentOwner,Func<bool> canSubmit,Action<Action> post,int timeoutMs,
         NativeAdmissionTargetResolver resolveTarget,Func<Hero,CharacterObject,int> resolveAgent,
@@ -34,11 +78,12 @@ internal sealed class NativeAdmissionApplicationAdapter
     internal bool IsBusy() => IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current,out _);
     internal bool IsBusyForUi()
     { var a=_nativeAdmissionOwner.Current;return a!=null&&a.Lifetime?.Token.IsCancellationRequested!=true&&_nativeAdmissionOwner.Owns(a)&&IsNativeConversationContextStampCurrent(a); }
-    internal void EndConversation() { _nativeAdmissionOwner.Current?.Lifetime?.Retire();_nativeAdmissionOwner.EndConversation(); }
+    internal void EndConversation() { Interlocked.Exchange(ref _openingRetry, null);_nativeAdmissionOwner.Current?.Lifetime?.Retire();_nativeAdmissionOwner.EndConversation(); }
     internal PresentationLease CapturePresentation()
     {
         if(!_isMainThread()||!_canSubmit()||!_isCurrentOwner()) return null;
         var snapshot=CaptureNativeConversationContext(SaveRuntimeGuard.CaptureGeneration(),_nativeAdmissionOwner.ConversationEpoch);
+        ReadOpeningRetry(snapshot, retireStale: true);
         return snapshot==null?null:new PresentationLease(this,snapshot);
     }
     internal sealed class PresentationLease
@@ -73,14 +118,27 @@ internal async Task<string> SubmitNativeConversationAdmittedAsync(string playerT
             admission.ModuleOperation = moduleOperation;
             moduleOperation?.MarkOwnerAdmitted();
             presentationScope?.Bind(admission);
+            NativeOpeningRetry openingRetry = ReadOpeningRetry(admission);
+            Action<string, Hero, CharacterObject> replyReady = (text, hero, character) =>
+            {
+                // A late callback can retire only the payload captured by this turn.
+                if (openingRetry != null && !string.IsNullOrWhiteSpace(text))
+                    Interlocked.CompareExchange(ref _openingRetry, null, openingRetry);
+                onMainReplyReady?.Invoke(text, hero, character);
+            };
             return await Task.Run(async delegate
             {
                 using IDisposable requestWorker = admission.Lifetime.Enter();
                 using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(admission.Lifetime.Token);
                 SynchronizationContext.SetSynchronizationContext(null);
                 return await _runTurn(admission, playerText, onStreamText,
-                    currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening).ConfigureAwait(false);
+                    currentDialogTextOverride, onPostprocessStarted, replyReady, npcInitiatedOpening).ConfigureAwait(false);
             }).ConfigureAwait(false);
+        }
+        catch
+        {
+            RetireOpeningForAcceptedReply(admission);
+            throw;
         }
         finally
         {
@@ -119,27 +177,47 @@ internal NativeConversationAdmission CaptureNativeConversationAdmissionOnMainThr
     {
         if (!_isMainThread())
             throw new InvalidOperationException("native.admission_requires_main_thread");
-        if (!_isCurrentOwner() || !SaveRuntimeGuard.IsCurrentGeneration(generation)
-            || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)
-            || !_canSubmit())
+        if (!_isCurrentOwner())
+        {
+            Interlocked.Exchange(ref _openingRetry, null);
             return null;
+        }
+        // An old queued capture must not clear a newer conversation's retry.
+        if (!SaveRuntimeGuard.IsCurrentGeneration(generation)
+            || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)) return null;
+        if (!_canSubmit()) return null;
         if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))
             throw new NativeConversationAdmissionException("native.busy", "上一轮对话仍在处理，请稍后再提交。");
         NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
         if (admission == null)
+        {
+            Interlocked.Exchange(ref _openingRetry, null);
             return null;
+        }
         _nativeAdmissionOwner.Current?.Lifetime?.Retire();
         admission.Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
         _nativeAdmissionOwner.ReserveCaptured(admission);
         try
         {
             // 主动开场与普通输入共用准入；拒绝 busy 之前绝不消费待开场状态。
-            if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
-                out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
+            NativeOpeningRetry openingRetry = ReadOpeningRetry(admission, retireStale: true);
+            if (npcInitiatedOpening)
             {
-                admission.Lifetime.Retire();
-                _nativeAdmissionOwner.Release(admission);
-                return null;
+                if (openingRetry != null)
+                {
+                    openingRetry.Bind(admission);
+                }
+                else
+                {
+                    if (!NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
+                        out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
+                    {
+                        admission.Lifetime.Retire();
+                        _nativeAdmissionOwner.Release(admission);
+                        return null;
+                    }
+                    Volatile.Write(ref _openingRetry, new NativeOpeningRetry(admission));
+                }
             }
             admission.PresentationRevision = _nativeAdmissionOwner.BeginPresentation();
             return admission;

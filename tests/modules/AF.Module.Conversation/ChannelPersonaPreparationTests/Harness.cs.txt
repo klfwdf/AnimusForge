@@ -24,6 +24,7 @@ namespace TaleWorlds.CampaignSystem {
  internal sealed class Campaign {internal static AnimusForge.MyBehavior Owner;internal static Campaign Current {get{Probe.Read();return new();}}internal T GetCampaignBehavior<T>() where T:class {Probe.Read();return Owner as T;}}
 }
 namespace AnimusForge {
+ internal static class AfGcczShoutBridge { internal static void CaptureOrdinarySpeakerPerception(ShoutBehavior.NpcDataPacket npc) { Probe.Read(); } }
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>g!=Generation;}
  internal static class Logger {internal static void Log(string c,string m){} }
  internal static class ShoutUtils {internal static bool TryGetUnnamedPersonaByKey(string k,out string p,out string b){Probe.Read();p="unnamedP";b="unnamedB";return true;} }

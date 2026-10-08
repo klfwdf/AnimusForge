@@ -45,6 +45,10 @@ namespace AnimusForge;
                     {
                         return false;
                     }
+                    // The main-reply stage accepted a nonempty raw reply. Retire
+                    // an opening retry before its raw tags can apply any effects,
+                    // even when sanitizing those tags leaves no visible text.
+                    _ports.RetireOpeningForAcceptedReply?.Invoke(admission);
                     TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawMeetingTauntEscalated);
                     if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(postprocessReply))
                     {

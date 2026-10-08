@@ -1391,6 +1391,7 @@ private Dictionary<int, PendingSceneAutonomyRestoreAfterSpeech> _pendingSceneAut
 	{
 		try
 		{
+            NativeAdmissions.EndConversation();
 			lock (_historyLock)
 			{
 				SceneHistoryOwner.Reset();
