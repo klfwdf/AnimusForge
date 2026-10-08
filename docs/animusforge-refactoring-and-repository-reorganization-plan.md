@@ -8658,3 +8658,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 证据 `artifacts/native-combat-resume-20261009/receipt.json`、continuation.log、boundary.log、release.log、hooks-1.3.log/hooks-1.4.log、negative.log、build-final.log；两个产品文件匹配构建快照，DLL留存在该目录dll/。回放原版菜单/战斗效果为替身，不代表真实Campaign验收；未实机、未部署、未打包、未推送。玩家具体新反馈仍需新日志确认所命中的分支。
 - 源码责任（修订 `27c28f99de8c6596a421fc5a5c56f6a36d9ca857`）：`src/AF.GameAdapter.Bannerlord/Encounter/NativeDialogueBattleContinuation.cs` 的 `HasConfirmedBattle`（110–119）、`Tick`（127–177）拥有接续/readback/限频；`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs` 的 `DiscardPeacefulCleanupForNativeCombat`（4746–4750）、`ValidatePeacefulCleanupScope`（4752–4763）、StartMeetingBattle内scope捕获（8640）、`PreparePlayerRequestedNativeConversationLeave`/`CanReturnFromNativeDialogueHandoff`（8755/8780）拥有清理与退出互斥。既有原版建战、开战场景加载及对话终结句语义未迁移。
 - 回滚仅 `git revert 27c28f99de8c6596a421fc5a5c56f6a36d9ca857`，保留其他作者与NuGet目录。
+
+
+<a id="war-rejection-diagnostics-20261009"></a>
+## 宣战拒绝原因贯通（2026-10-09）
+
+- 用户任务：修复外交宣言被拦截却只有 final_live_legal_action_guard 的链路诊断。工作区 F:/AnimusForge-main，main；本地 checkpoint `97ad799`。未修改玩家/AI 宣战资格、贸易动作结构、存档或部署流程。
+- 源码范围：`WorldDiplomacyDocumentExecutionApplication.cs:263-279` 拒绝宣战时恢复真实 state violation，并将原因同时传给日志和拒绝处理；`WorldDiplomacyAnalysisApplication.cs:425-435` 提取具体宣战原因显示给玩家；`WorldDiplomacyWarAdmissionApplication.cs:35-59` 显示保护/冷却剩余天数与包含被动战争的当前数量。
+- 性能：仅动作校验时运行；拒绝宣战时增加一次短路资格读取，不新增 Tick、后台游戏对象读取或额外全表诊断；单次资格检查仍最多一次战争统计。
+- 验收：真实生产源码外交回放4007断言通过，新增覆盖拒绝日志/处理原因一致、上下文拒绝fallback、剩余天数、战争计数及短路扫描次数。原build_single_module.ps1双API（1.3/1.4）、Bootstrap及双接缝检查PASS；产品提交 `b51bf5b88`。证据 `artifacts/war-rejection-20261009/`。
+- 未验：玩家实际存档、模组组合、实机提示；原玩家具体触发条件仍不能从Token日志唯一确定。未部署/打包/推送。回滚用本次产品提交的定向revert，不回滚其他作者Persistence测试改动。
