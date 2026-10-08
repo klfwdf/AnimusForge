@@ -1,4 +1,10 @@
-# 当前交接：生图MCM提示词保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：周报切换／新档重新收集与历法日期（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `1241b702d`：切换取消旧收集/重试，周报从切换或新档起满7游戏日生成；档案保留，旧回包不污染新周期。正常新增/世界事件/清理不再使冻结自动周报整批失效，显式编辑/导入与目标保护保持。
+- 时间显示改用游戏CampaignTime日期接口，不再显示累计千周；适配365天等接入游戏日期接口的历法，真实模组未验。新周期27、editor50、归档193、记录42、日期7、两DLL各8、波次/分块及原双API/Bootstrap/接缝PASS。未实机/部署/打包/推送。
+- [唯一台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#news-mode-restart-calendar-20261008)，证据 `artifacts/news-mode-restart-20261008/receipt.json`；回滚仅 `git revert 1241b702d`。保留并行画廊改动和下方MCM提示词持久化修复。
+
+# 历史交接：生图MCM提示词保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `32a7de4e8`，检查点 `45aeed8`。画风、负面词、导演大文本保存到原MCM JSON，编辑立即落盘，MCM复制/确认/默认同步文本并重绑按钮。旧版丢失文本需重新保存。
 - 两实际候选DLL各38真实MCM/Harmony往返专项PASS；原双API/Bootstrap/双接缝构建PASS。真实游戏MCM/玩家配置未验，未部署/打包/推送。
