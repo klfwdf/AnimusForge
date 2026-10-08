@@ -200,7 +200,7 @@ var movement=new SceneMovementController();var releaseTrace=new List<string>();
 SceneInteractionLifecycleController interaction=null;var outputDispatcher=new System.Collections.Concurrent.ConcurrentQueue<Action>();int shownBubbles=0;
 var currentOutput=new SceneSpeechOutputQueueController(new SceneSpeechOutputQueueControllerPorts {
  Get_mainThreadActions=()=>outputDispatcher,Set_mainThreadActions=v=>{},Get_sceneMovement=()=>movement,
- IsSceneConversationEpochCurrent_L223=e=>e==1,ClearInteractionTimeoutArms=()=>interaction.ClearInteractionTimeoutArms(),
+ IsSceneConversationEpochCurrent_L223=e=>e==1,CaptureConversationEpoch=()=>epoch,ClearInteractionTimeoutArms=()=>interaction.ClearInteractionTimeoutArms(),
  ResetSceneAudioRequestOwnership_L67=()=>audio.ResetRequestOwnership(),IsTtsPlaybackRequestCurrent_L73=(r,c)=>audio.IsTtsPlaybackRequestCurrent(r,c),
  LogTtsReport_L208=(stage,i,extra)=>{},TryShowNpcBubble_L2127=(agent,text,duration)=>{shownBubbles++;return true;}
 });
@@ -293,7 +293,7 @@ var actualShowPort=new SceneSpeechOutputPort {
  RemoveHostileInteraction=i=>{},CaptureInteractionToken=interaction.CaptureSpeechInteractionToken,Report=(s,i,e)=>{},
  ClearPendingBubble=currentOutput.ClearPendingTtsBubbleSyncForAgent,ClearPendingFeed=currentOutput.ClearPendingSceneDialogueFeedForAgent,
  EnqueueCompletionToken=currentOutput.EnqueuePendingSpeechCompletionToken,EnqueueBubble=currentOutput.EnqueuePendingNpcBubble,
- ScheduleFeed=currentOutput.ScheduleNpcSpeechToMessageFeed,ShowBubble=(a,t,d)=>{shownBubbles++;return true;},
+ ScheduleFeed=currentOutput.ScheduleNpcSpeechToMessageFeed,PublishFeedImmediately=currentOutput.PublishNpcSpeechToMessageFeedImmediately,ShowBubble=(a,t,d)=>{shownBubbles++;return true;},
  ArmInteractionTimeout=interaction.ScheduleInteractionTimeoutArm
 };
 interaction.TrackPlayerInteraction(ina);int beforeNormalBubble=shownBubbles,beforeNormalFeed=InformationManager.Messages;

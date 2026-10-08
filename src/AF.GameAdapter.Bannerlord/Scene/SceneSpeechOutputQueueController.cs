@@ -51,7 +51,11 @@ namespace AnimusForge;
 internal sealed class SceneSpeechOutputQueueController
 {
     private readonly SceneSpeechOutputQueueControllerPorts _ports;
-    internal SceneSpeechOutputQueueController(SceneSpeechOutputQueueControllerPorts ports) { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); }
+    internal SceneSpeechOutputQueueController(SceneSpeechOutputQueueControllerPorts ports)
+    {
+        _ports = ports ?? throw new ArgumentNullException(nameof(ports));
+        if (_ports.CaptureConversationEpoch == null) throw new ArgumentException("Conversation epoch capture is required.", nameof(ports));
+    }
 
 	internal readonly object _ttsBubbleSyncLock = new object();
 
@@ -181,7 +185,12 @@ internal sealed class SceneSpeechOutputQueueController
 			typingDurationSeconds = EstimateBubbleTypingDurationSeconds(bubble.UiContent);
 		}
 		LogTtsReport("PlaybackStarted.BubbleDispatchStart", agentIndex, $"bubbleAgent={(bubble.Agent?.Index ?? -1)};typingDuration={typingDurationSeconds:F2};fallback={(typingDurationSeconds == bubble.FallbackDurationSeconds)}");
-		TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDurationSeconds);
+        if (!TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDurationSeconds))
+        {
+            // Consume the already queued message now; playback completion then
+            // cannot publish it a second time.
+            FlushPendingSceneDialogueFeedAfterSpeech(agentIndex);
+        }
 		LogTtsReport("PlaybackStarted.BubbleDispatchEnd", agentIndex, $"typingDuration={typingDurationSeconds:F2}");
 		return true;
 	}
@@ -311,6 +320,9 @@ internal sealed class SceneSpeechOutputQueueController
 			}
 			value.Enqueue(new PendingSceneDialogueFeedEntry
 			{
+                SourceMission = Mission.Current,
+                RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
+                ConversationEpoch = _ports.CaptureConversationEpoch(),
 				SpeakerLabel = text2,
 				Content = text,
 				Color = color,
@@ -319,6 +331,11 @@ internal sealed class SceneSpeechOutputQueueController
 			});
 		}
 	}
+
+    private bool IsCurrentDialogueFeed(PendingSceneDialogueFeedEntry entry) => entry != null
+        && ReferenceEquals(Mission.Current, entry.SourceMission)
+        && SaveRuntimeGuard.IsCurrentGeneration(entry.RuntimeGeneration)
+        && (entry.ConversationEpoch < 0 || IsSceneConversationEpochCurrent(entry.ConversationEpoch));
 
 	internal bool TryDequeuePendingSceneDialogueFeed(int agentIndex, out PendingSceneDialogueFeedEntry entry)
 	{
@@ -331,7 +348,10 @@ internal sealed class SceneSpeechOutputQueueController
 		{
 			if (_pendingSceneDialogueFeedQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0)
 			{
-				entry = value.Dequeue();
+                // One queued entry per callback. Retiring an old entry never
+                // advances into a successor reply owned by a newer callback.
+                PendingSceneDialogueFeedEntry candidate = value.Dequeue();
+                if (IsCurrentDialogueFeed(candidate)) entry = candidate;
 				if (value.Count == 0)
 				{
 					_pendingSceneDialogueFeedQueues.Remove(agentIndex);
@@ -492,6 +512,13 @@ internal sealed class SceneSpeechOutputQueueController
 		});
 	}
 
+    internal void PublishNpcSpeechToMessageFeedImmediately(int agentIndex, string npcDisplayName, string content, SceneSpeechPlaybackInfo playbackInfo)
+    {
+        if (agentIndex < 0 || Mission.Current == null || string.IsNullOrWhiteSpace(content)) return;
+        RecordSceneDialogueToMessageFeed(npcDisplayName, content, new Color(1f, 0.8f, 0.2f));
+        LogTtsReport("ShowNpcSpeechOutput.ImmediateTextFeed", agentIndex, "contentLen=" + content.Length);
+    }
+
 	internal void ScheduleNpcSpeechToMessageFeed(int agentIndex, string npcDisplayName, string content, SceneSpeechPlaybackInfo playbackInfo)
 	{
 		Mission mission = Mission.Current;
@@ -548,7 +575,8 @@ internal sealed class SceneSpeechOutputQueueController
 					continue;
 				}
 				PendingSceneDialogueFeedEntry pendingSceneDialogueFeedEntry = value.Peek();
-				if (pendingSceneDialogueFeedEntry != null && !pendingSceneDialogueFeedEntry.WaitForPlaybackFinished && pendingSceneDialogueFeedEntry.ExecuteAtMissionTime >= 0f && currentTime >= pendingSceneDialogueFeedEntry.ExecuteAtMissionTime)
+				if (pendingSceneDialogueFeedEntry != null && (!IsCurrentDialogueFeed(pendingSceneDialogueFeedEntry)
+                    || (!pendingSceneDialogueFeedEntry.WaitForPlaybackFinished && pendingSceneDialogueFeedEntry.ExecuteAtMissionTime >= 0f && currentTime >= pendingSceneDialogueFeedEntry.ExecuteAtMissionTime)))
 				{
 					if (list == null)
 					{
@@ -629,5 +657,6 @@ internal sealed class SceneSpeechOutputQueueControllerPorts
     internal Func<SceneMovementController> Get_sceneMovement;
     internal delegate bool IsSceneConversationEpochCurrent_L223Callback(int epoch);
     internal IsSceneConversationEpochCurrent_L223Callback IsSceneConversationEpochCurrent_L223;
+    internal Func<int> CaptureConversationEpoch;
     internal Action ClearInteractionTimeoutArms;
 }

@@ -294,6 +294,7 @@ internal sealed class PendingNpcBubbleEntry
 	}
 internal sealed class PendingSceneDialogueFeedEntry
 	{
+ public Mission SourceMission; public long RuntimeGeneration; public int ConversationEpoch=-1;
 		public string SpeakerLabel;
 
 		public string Content;

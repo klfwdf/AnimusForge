@@ -23,6 +23,7 @@ public partial class ShoutBehavior
   Report = LogTtsReport, ClearPendingBubble = ClearPendingTtsBubbleSyncForAgent,
   ClearPendingFeed = ClearPendingSceneDialogueFeedForAgent, EnqueueCompletionToken = EnqueuePendingSpeechCompletionToken,
   EnqueueBubble = EnqueuePendingNpcBubble, ScheduleFeed = ScheduleNpcSpeechToMessageFeed,
+  PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, name, text, info),
   ShowBubble = TryShowNpcBubble, ArmInteractionTimeout = ScheduleInteractionTimeoutArm,
  };
 private void RemoveHostileSpeechInteraction(int agentIndex) => _j17SceneInteractionLifecycleController.RemoveHostileSpeechInteraction(agentIndex);

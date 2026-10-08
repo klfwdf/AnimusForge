@@ -295,6 +295,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	internal sealed class PendingSceneDialogueFeedEntry
 	{
+        public Mission SourceMission;
+        public long RuntimeGeneration;
+        public int ConversationEpoch = -1;
 		public string SpeakerLabel;
 
 		public string Content;
@@ -996,6 +999,7 @@ _j17SceneSpeechOutputQueueController = new SceneSpeechOutputQueueController(new 
     LogTtsReport_L208 = (string stage, int agentIndex, string extra) => LogTtsReport(stage, agentIndex, extra),
     Get_sceneMovement = () => _sceneMovement,
     IsSceneConversationEpochCurrent_L223 = (int epoch) => IsSceneConversationEpochCurrent(epoch),
+    CaptureConversationEpoch = () => _sceneConversationEpoch,
     ClearInteractionTimeoutArms = () => _j17SceneInteractionLifecycleController.ClearInteractionTimeoutArms(),
 });
 
