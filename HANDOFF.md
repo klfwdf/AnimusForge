@@ -1,4 +1,10 @@
-# 当前交接：场景／战斗连续生图与画廊按钮（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+# 当前交接：双平视机位跟随玩家镜头方向（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `23776e412`：按用户最终澄清，仅将身体朝向替换为玩家镜头水平朝向；仍是独立双平视机位、原距离和固定视野。A顺着镜头水平方向看，B反向，导演独立决定最终构图。此前连续生图/画廊保留。
+- 采集243、两版实际DLL各129及几何各15、原双API／Bootstrap／接缝PASS，8个变更文件匹配构建快照。[唯一台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-camera-direction-20261008)，证据 `artifacts/player-camera-pair-20261008/receipt.json`。
+- 实机GPU与导演效果未验，坡地遮挡和敌我识别仍待修；未部署/推送。源码回滚仅 `git revert 23776e412`。下方为历史交付记录。
+
+# 历史交接：场景／战斗连续生图与画廊按钮（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `7a3fcdccc`：仅场景喊话与战斗在截图完成后即可再发起独立后台生图，四种面板增加画廊入口；相机采集仍串行，原4 worker／8 scope保护及其他模式限制保持。旧任务结束不会清除新任务状态。
 - 原双API／Bootstrap／双接缝、实际DLL各129项、UI生命周期103项、任务隔离11项通过；构建快照与11个产品输入一致。实机连续点击、原生相机与画廊显示未验；未部署/推送，游戏安装仍为下方最近部署记录。本条作为当前开发入口，下方交接均为历史交付记录。
