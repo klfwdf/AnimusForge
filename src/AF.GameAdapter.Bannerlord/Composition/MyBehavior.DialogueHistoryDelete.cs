@@ -109,7 +109,7 @@ public partial class MyBehavior
 		{
 			ShoutBehavior.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(hero, hero.CharacterObject, hero.Name?.ToString(), gameDayIndex,
 				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(hero, new[] { removed }),
-				new List<AnimusForgeDialogueHistoryEntry>(), "dialogueui_delete");
+				new List<AnimusForgeDialogueHistoryEntry>(), "dialogueui_delete", completeDaySnapshot: false);
 		}
 		return true;
 	}

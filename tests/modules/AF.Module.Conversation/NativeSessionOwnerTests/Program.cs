@@ -14,6 +14,29 @@ owner.Append("hero",Entry(5,"npc","npc"));Check(owner.IsLastNpcLine("hero","npc"
 Check(owner.TryMarkDialog("hero","line") && !owner.TryMarkDialog("hero","line"),"current-dialog-dedup");owner.CloseInput(false);Check(owner.HasHistory("hero") && owner.TryMarkDialog("hero","line"),"close-keeps-history-clears-dedup");
 owner.Append("rollback",Entry(10,"player"));owner.Append("rollback",Entry(10,"fact","fact"));owner.RollbackPlayerEvent("rollback",10);Check(owner.GetTail("rollback",20).Single().Kind=="fact","tentative-rollback-exact-player-only");
 var old=Entry(20,"old","npc");owner.Append("edit",old);owner.SyncDay("edit",1,new[]{old},new[]{Entry(0,"new","npc")});Check(owner.GetTail("edit",20).Single().EventSequence==20,"manual-edit-preserves-sequence");
+var lineOwner=new NativeConversationSessionOwner(()=>++next,50);
+lineOwner.Append("line-delete",Entry(41,"keep-player"));
+lineOwner.Append("line-delete",Entry(42,"keep-npc","npc"));
+lineOwner.Append("line-delete",Entry(43,"keep-fact","fact"));
+lineOwner.Append("line-delete",Entry(44,"other-day","npc",2));
+lineOwner.Append("another-npc",Entry(45,"another-npc","npc"));
+// The deleted persistent row can already be absent from the bounded Native cache.
+lineOwner.SyncDay("line-delete",1,new[]{Entry(0,"absent-from-cache","npc")},Array.Empty<AnimusForgeDialogueHistoryEntry>(), completeDaySnapshot:false);
+Check(lineOwner.GetTail("line-delete",20).Select(x=>x.Text).SequenceEqual(new[]{"keep-player","keep-npc","keep-fact","other-day"}),"single-delete-cache-miss-preserves-day");
+Check(lineOwner.GetTail("another-npc",20).Single().Text=="another-npc","single-delete-preserves-other-npc");
+lineOwner.SyncDay("line-delete",1,new[]{Entry(0,"keep-npc","npc")},Array.Empty<AnimusForgeDialogueHistoryEntry>(),completeDaySnapshot:false);
+Check(lineOwner.GetTail("line-delete",20).Select(x=>x.Text).SequenceEqual(new[]{"keep-player","keep-fact","other-day"}),"single-delete-match-removes-only-one");
+lineOwner.SyncDay("line-delete",1,new[]{Entry(0,"trimmed-old","npc")},new[]{Entry(0,"edited-new","npc")},completeDaySnapshot:false);
+Check(lineOwner.GetTail("line-delete",20).Select(x=>x.Text).SequenceEqual(new[]{"keep-player","keep-fact","other-day","edited-new"}),"single-edit-cache-miss-preserves-unrelated");
+var editOld=lineOwner.GetTail("line-delete",20).Last();
+lineOwner.SyncDay("line-delete",1,new[]{editOld},new[]{Entry(0,"edited-again","npc")},completeDaySnapshot:false);
+Check(lineOwner.GetTail("line-delete",20).Last().EventSequence==editOld.EventSequence,"single-edit-match-keeps-sequence");
+lineOwner.Append("duplicates",Entry(51,"repeat","npc"));lineOwner.Append("duplicates",Entry(52,"repeat","npc"));
+lineOwner.SyncDay("duplicates",1,new[]{Entry(0,"repeat","npc")},Array.Empty<AnimusForgeDialogueHistoryEntry>(),completeDaySnapshot:false);
+Check(lineOwner.GetTail("duplicates",20).Single().EventSequence==52,"single-delete-only-one-duplicate");
+lineOwner.SyncDay("line-delete",1,new[]{Entry(0,"whole-day-old","npc")},new[]{Entry(0,"whole-day-new","npc")});
+Check(lineOwner.GetTail("line-delete",20).Select(x=>x.Text).SequenceEqual(new[]{"other-day","whole-day-new"}),"complete-day-snapshot-still-rebuilds-on-miss");
+
 owner.Append("edit",Entry(30,"next-day","npc",2));owner.Clear("edit",1);Check(owner.GetTail("edit",20).Single().GameDayIndex==2,"summary-day-clear-preserves-other-days");
 for(int i=0;i<14;i++)owner.QueueFact("hero",new ConversationMessage { EventSequence=i,Role="system",Content="fact"+i,SpeakerHeroId="h",TargetHeroId="target",VisibleAgentIndices=new List<int>{i} });
 var facts=owner.ConsumeFacts("hero");Check(facts.Count==12 && facts[0].EventSequence==2 && facts[11].VisibleAgentIndices.Single()==13 && facts[0].SpeakerHeroId=="h" && facts[0].TargetHeroId=="target","pending-afef-limit-metadata");Check(owner.ConsumeFacts("hero").Count==0,"pending-afef-consume-once");

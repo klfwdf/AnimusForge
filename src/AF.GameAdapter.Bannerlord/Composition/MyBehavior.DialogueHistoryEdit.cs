@@ -124,7 +124,7 @@ public partial class MyBehavior
 		{
 			ShoutBehavior.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(hero, hero.CharacterObject, hero.Name?.ToString(), gameDayIndex,
 				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(hero, previous),
-				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(hero, new[] { target }), "dialogueui_edit");
+				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(hero, new[] { target }), "dialogueui_edit", completeDaySnapshot: false);
 		}
 		return true;
 	}

@@ -5,7 +5,7 @@ from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet');p.add_argument('--mutate', choices=['fact-role','drop-distance','ignore-limit','ignore-preserve','history-stage-loss','drop-clear']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet');p.add_argument('--mutate', choices=['fact-role','drop-distance','ignore-limit','ignore-preserve','history-stage-loss','drop-clear','line-as-whole-day']);a=p.parse_args()
 out=new_run_root(ROOT,'native-session-owner',a.run_root);dotnet=resolve_dotnet(ROOT,a.dotnet)
 spec=importlib.util.spec_from_file_location('native_text_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
@@ -33,6 +33,7 @@ if a.mutate:
   'ignore-preserve':(rules,'if (!options.PreserveAsterisk)','if (true)'),
   'history-stage-loss':(rules,'string text2 = StripLeakedPromptContentForShout(text);','string text2 = StripStageDirectionsForPassiveShout(StripLeakedPromptContentForShout(text), default);'),
   'drop-clear':(target,'_history.Remove(key); _recordedDialog.Remove(key); return;','_recordedDialog.Remove(key); return;'),
+  'line-as-whole-day':(target,'if (exactMatchFailed && completeDaySnapshot)','if (exactMatchFailed)'),
  }
  target,before,after=mutations[a.mutate];text=target.read_text(encoding='utf-8-sig');assert text.count(before)==1,'Mutation anchor not unique'
  candidate=out/target.name;candidate.write_text(text.replace(before,after,1),encoding='utf-8');paths[paths.index(target)]=candidate
