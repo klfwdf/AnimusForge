@@ -12,7 +12,8 @@ internal static class WorldDiplomacyPublicationRoutingApplication
         WorldDiplomacyDocument document, string authorId)
     {
         if (document == null || document.PropagationCompleted || authorId == null) return;
-        if (!document.IsPlayerAuthored && !port.CanAiAuthor(authorId, out string reason))
+        bool playerDiplomacy = WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(document.RoundId), port.IsPlayerAffiliated);
+        if (!playerDiplomacy && !port.CanAiAuthor(authorId, out string reason))
         {
             orchestration.SuppressInvalidDocumentBeforePropagation(document, reason);
             return;
@@ -51,7 +52,8 @@ internal static class WorldDiplomacyPublicationRoutingApplication
         {
             string receiverId = port.ResolveKingdomId(kingdomId);
             if (receiverId == null || string.Equals(receiverId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-                || !port.HasAuthority(receiverId)) continue;
+                || (!WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(document.RoundId), port.IsPlayerAffiliated)
+                    && !port.HasAuthority(receiverId))) continue;
             bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>()).Contains(receiverId, StringComparer.OrdinalIgnoreCase)
                 || string.Equals(document.TargetKingdomId, receiverId, StringComparison.OrdinalIgnoreCase)
                 || port.RepresentsAddressedVassal(receiverId, document);

@@ -238,7 +238,7 @@ public static class WorldDiplomacyIntentVocabulary
         {
             return false;
         }
-        if (document.AutomaticReplyDepth >= maxAutomaticReplyDepth || IsTerminalResponseIntent(intent))
+        if ((!document.IsPlayerAuthored && document.AutomaticReplyDepth >= maxAutomaticReplyDepth) || IsTerminalResponseIntent(intent))
         {
             return false;
         }

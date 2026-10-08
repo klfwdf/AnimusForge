@@ -48,6 +48,7 @@ object settings = settingsType.GetMethod("GetSettings", BindingFlags.Public | Bi
 PropertyInfo eventUrl = settingsType.GetProperty("EventAndRebellionApiUrl");
 PropertyInfo eventKey = settingsType.GetProperty("EventAndRebellionApiKey");
 PropertyInfo eventModel = settingsType.GetProperty("EventAndRebellionModelName");
+PropertyInfo eventOutputLimit = settingsType.GetProperty("EventAndRebellionApiMaxTokens");
 AssertTrue(eventUrl != null && eventKey != null && eventModel != null, "EventAndRebellion settings properties are unavailable");
 
 void Configure(string endpoint)
@@ -57,23 +58,23 @@ void Configure(string endpoint)
     eventModel.SetValue(settings, "world-replay-model", null);
 }
 
-object BuildRequest(string endpoint, int timeoutMilliseconds)
+object BuildRequest(string endpoint, int timeoutMilliseconds, int maxTokens = 96)
 {
     object trace = Activator.CreateInstance(traceType, "world-replay-trace", 1L, 1L, "world-replay", "1.4");
-    object provider = Activator.CreateInstance(providerType, "world", endpoint, "world-replay-model", timeoutMilliseconds, 96);
+    object provider = Activator.CreateInstance(providerType, "world", endpoint, "world-replay-model", timeoutMilliseconds, maxTokens);
     Array messages = Array.CreateInstance(messageType, 2);
     messages.SetValue(Activator.CreateInstance(messageType, "system", "world replay system"), 0);
     messages.SetValue(Activator.CreateInstance(messageType, "user", "world replay user"), 1);
-    object prompt = Activator.CreateInstance(promptType, messages, 96, "world-replay-model");
+    object prompt = Activator.CreateInstance(promptType, messages, maxTokens, "world-replay-model");
     object mainReply = Enum.Parse(stageType, "MainReply");
     return Activator.CreateInstance(requestType, trace, provider, prompt, mainReply);
 }
 
-async Task<object> InvokeResultAsync(string endpoint, int timeoutMilliseconds, CancellationToken token)
+async Task<object> InvokeResultAsync(string endpoint, int timeoutMilliseconds, CancellationToken token, int maxTokens = 96)
 {
     object gateway = Activator.CreateInstance(gatewayType);
     MethodInfo method = gatewayType.GetMethod("GenerateAsync");
-    Task task = (Task)method.Invoke(gateway, new[] { BuildRequest(endpoint, timeoutMilliseconds), token });
+    Task task = (Task)method.Invoke(gateway, new[] { BuildRequest(endpoint, timeoutMilliseconds, maxTokens), token });
     await task.ConfigureAwait(false);
     return task.GetType().GetProperty("Result").GetValue(task, null);
 }
@@ -124,6 +125,56 @@ using (ReplayServer success = ReplayServer.Start(ReplayResponse.Json(200,
     AssertTrue(success.RequestCount == 1 && success.LastRequestBody.Contains("world replay system")
         && !success.LastRequestBody.Contains("world-replay-secret"), "single send and credential boundary");
 }
+using (ReplayServer truncated = ReplayServer.Start(ReplayResponse.Json(200,
+    "{\"choices\":[{\"message\":{\"content\":\"{\\\"intent\\\":\\\"declare_war\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":2660,\"completion_tokens\":900}}")))
+{
+    Configure(truncated.Url);
+    object result = await InvokeResultAsync(truncated.Url, 5000, CancellationToken.None);
+    AssertTrue(Property(result, "Status").ToString() == "NonRetryableFailure"
+        && (string)Property(result, "ErrorCode") == "world_diplomacy_output_truncated", "truncation carries its real failure reason");
+    AssertTrue((bool)Property(Property(result, "Metadata"), "IsOutputTruncated") && truncated.RequestCount == 1,
+        "truncated output stops identical-budget HTTP retries");
+}
+using (ReplayServer configuredBudget = ReplayServer.Start(ReplayResponse.Json(200,
+    "{\"choices\":[{\"message\":{\"content\":\"{}\"},\"finish_reason\":\"stop\"}]}")))
+{
+    Configure(configuredBudget.Url); eventOutputLimit.SetValue(settings, 12000);
+    Type client = animusForge.GetType("AnimusForge.WorldDiplomacyLlmClient", true);
+    int analysisBudget = (int)client.GetMethod("GetConfiguredOutputTokenLimit", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+    AssertTrue(analysisBudget == 12000, "analysis budget follows selected API configuration");
+    object result = await InvokeResultAsync(configuredBudget.Url, 5000, CancellationToken.None, analysisBudget);
+    using JsonDocument body = JsonDocument.Parse(configuredBudget.LastRequestBody);
+    AssertTrue(body.RootElement.GetProperty("max_tokens").GetInt32() == 12000
+        && Property(result, "Status").ToString() == "Succeeded", "real request does not silently cap configured budget to 900");
+}
+// Actual production authorization: exact pair, nested/exception cleanup, no lasting bypass.
+Type kingdomType = animusForge.GetType("AnimusForge.WorldDiplomacyBehavior", true).Assembly
+    .GetType("TaleWorlds.CampaignSystem.Kingdom", false)
+    ?? Assembly.Load("TaleWorlds.CampaignSystem").GetType("TaleWorlds.CampaignSystem.Kingdom", true);
+object NewKingdom(string id)
+{
+    object value = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(kingdomType);
+    kingdomType.GetProperty("StringId").SetValue(value, id);
+    return value;
+}
+object a = NewKingdom("scope-a"), b = NewKingdom("scope-b"), c = NewKingdom("scope-c");
+Type guard = animusForge.GetType("AnimusForge.PermanentAllianceGuard", true);
+MethodInfo authorize = guard.GetMethod("RunAuthorizedBreak", BindingFlags.Static | BindingFlags.NonPublic);
+MethodInfo authorized = guard.GetMethod("IsPlayerDeclarationWarAuthorized", BindingFlags.Static | BindingFlags.NonPublic);
+bool HasScope(object first, object second) => (bool)authorized.Invoke(null, new[] { first, second });
+AssertTrue(!HasScope(a, b), "war bypass absent outside explicit execution");
+authorize.Invoke(null, new object[] { "world_diplomacy_declare_war", a, b, (Action)(() => {
+    AssertTrue(HasScope(a, b) && HasScope(b, a) && !HasScope(a, c), "war bypass is bound to exact unordered pair");
+    authorize.Invoke(null, new object[] { "world_diplomacy_declare_war", a, c, (Action)(() => {
+        AssertTrue(HasScope(a, b) && HasScope(a, c), "nested scope retains prior pair");
+    }) });
+    AssertTrue(HasScope(a, b) && !HasScope(a, c), "nested scope removes only its own pair");
+}) });
+AssertTrue(!HasScope(a, b), "explicit war scope closes after success");
+try { authorize.Invoke(null, new object[] { "world_diplomacy_declare_war", a, b,
+    (Action)(() => throw new InvalidOperationException("scope replay")) }); }
+catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException) { }
+AssertTrue(!HasScope(a, b), "explicit war scope closes after native failure");
 using (ReplayServer auth = ReplayServer.Start(ReplayResponse.Json(401, "{\"error\":{\"message\":\"invalid api key\"}}")))
 {
     Configure(auth.Url);

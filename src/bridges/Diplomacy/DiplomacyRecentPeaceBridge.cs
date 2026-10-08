@@ -12,5 +12,6 @@ internal static class DiplomacyRecentPeaceBridge
     internal static bool ShouldBlockDeclareWar(IFaction first, IFaction second, DeclareWarAction.DeclareWarDetail detail, string source) =>
         ShouldBlockDeclareWar(first, second, source);
     internal static bool ShouldBlockDeclareWar(IFaction first, IFaction second, string source) =>
-        DiplomacyModuleServices.Module.RecentPeace.ShouldBlock(DiplomacyFactionSnapshot.Id(first), DiplomacyFactionSnapshot.Id(second), DateTime.UtcNow);
+        !PermanentAllianceGuard.IsPlayerDeclarationWarAuthorized(first, second)
+        && DiplomacyModuleServices.Module.RecentPeace.ShouldBlock(DiplomacyFactionSnapshot.Id(first), DiplomacyFactionSnapshot.Id(second), DateTime.UtcNow);
 }

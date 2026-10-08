@@ -11,7 +11,7 @@ internal static class DocumentExecutionReplay
         internal WorldDiplomacyOrchestration Owner;
         internal WorldDiplomacyDocument StoredDocument;
         internal bool AuthorAllowed = true, NoAction, ThrowEffect, ThrowHistory, AfterFirstEffect;
-        internal bool UnknownImmediate, UnknownOffer, PlayerStateBlocked;
+        internal bool UnknownImmediate, UnknownOffer, PlayerStateBlocked, IdentityInvalidAfterFirstEffect;
         internal bool RestrictRound;
         internal WorldDiplomacyRoundOffer RequiredPeace;
         internal int RequiredPeaceReads;
@@ -36,6 +36,8 @@ internal static class DocumentExecutionReplay
         public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer)
         { RequiredPeaceReads++; return RequiredPeace; }
         public bool IsAtWar(string author, string target) { return true; }
+        internal string PlayerKingdomId;
+        public bool IsPlayerAffiliated(string id) => id != null && id == PlayerKingdomId;
         public bool IsPlayerKingdom(string id) { return false; }
         public string NewId(string prefix) { return prefix + (++Id); }
         public WarPressureEntry FindWarPressure(string source, string target) { return null; }
@@ -56,7 +58,7 @@ internal static class DocumentExecutionReplay
             => _p.RestrictRound && round != null ? new() { "accept_peace", "reject_peace" } : _p.Legal;
         public override List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string author, string target, bool relay, string slot, bool external, WorldDiplomacyDocument source) { return _p.Legal; }
         public override bool TryGetDiplomaticStateViolation(string intent, string author, string target, out string reason) { _p.Events.Add("validate:" + target); reason = "changed"; return target == _p.InvalidTarget || (_p.AfterFirstEffect && _p.Effects > 0); }
-        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = "player-state-blocked"; return _p.PlayerStateBlocked || (_p.AfterFirstEffect && _p.Effects > 0); }
+        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = "player-state-blocked"; return _p.PlayerStateBlocked || (_p.IdentityInvalidAfterFirstEffect && _p.Effects > 0); }
         public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument doc, string reason) { _p.Events.Add("reject:" + reason); }
         public override WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string author, string target, string intent, WorldDiplomacyDocument doc)
         {
@@ -132,15 +134,15 @@ internal static class DocumentExecutionReplay
             blockedPlayerDocument.IsPlayerAuthored = true;
             if (flatPlayer) blockedPlayerDocument.Actions.Clear();
             Run(blockedPlayerPort, blockedPlayerOrch, blockedPlayerDocument);
-            Test.True(blockedPlayerPort.Effects == 0 && blockedPlayerPort.Events.Contains("reject:final_live_state_guard:player-state-blocked"),
-                "player admission cannot bypass retained live-state restrictions");
+            Test.True(blockedPlayerPort.Effects == 0 && blockedPlayerPort.Events.Contains("reject:player_action_not_executable:player-state-blocked"),
+                "player admission retains technical identity and source guards");
         }
-        var (batchPlayerPort, batchPlayerOrch) = Fixture(p => p.AfterFirstEffect = true);
+        var (batchPlayerPort, batchPlayerOrch) = Fixture(p => p.IdentityInvalidAfterFirstEffect = true);
         var batchPlayerDocument = Document("b", "c");
         batchPlayerDocument.IsPlayerAuthored = true;
         Run(batchPlayerPort, batchPlayerOrch, batchPlayerDocument);
         Test.True(batchPlayerPort.Effects == 1 && batchPlayerDocument.Actions[1].MechanicalResult.Contains("player-state-blocked"),
-            "player batch rechecks retained state before each effect");
+            "player batch rechecks technical identity and source before each effect");
         var frozenDocument = Document("b");
         frozenDocument.RoundId = "round-1";
         frozenDocument.SourceDocumentId = "source-1";

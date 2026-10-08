@@ -23,6 +23,7 @@ internal interface IWorldDiplomacyImmediateActionPort
     WorldDiplomacyStorage Storage { get; }
     int CurrentDay { get; }
     bool CanAiAuthor(string authorId, out string reason);
+    bool IsPlayerDiplomacy(WorldDiplomacyDocument document);
     WorldDiplomacyImmediateActionReceipt DeclareWar(string authorId, string targetId, WorldDiplomacyDocument document);
     WorldDiplomacyImmediateActionReceipt BreakAlliance(string authorId, string targetId, WorldDiplomacyDocument document);
     WorldDiplomacyImmediateActionReceipt CancelTrade(string authorId, string targetId, WorldDiplomacyDocument document);
@@ -35,7 +36,7 @@ internal static class WorldDiplomacyImmediateActionApplication
         IWorldDiplomacyImmediateActionPort port,
         string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
-        if (document != null && !document.IsPlayerAuthored && !port.CanAiAuthor(authorId, out string reason))
+        if (document != null && !document.IsPlayerAuthored && !port.IsPlayerDiplomacy(document) && !port.CanAiAuthor(authorId, out string reason))
         {
             document.MechanicalResult = "外交行动未执行：发文者当前没有有效的自主发文权限。";
             port.Log("AI diplomatic action blocked author=" + (authorId ?? "") + " document=" + (document.DocumentId ?? "") + " reason=" + reason);

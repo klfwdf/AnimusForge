@@ -15,6 +15,7 @@ internal interface IWorldDiplomacyDocumentExecutionPort
     WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer);
     bool IsAtWar(string author, string target);
     bool IsPlayerKingdom(string id);
+    bool IsPlayerAffiliated(string id);
     string NewId(string prefix);
     WarPressureEntry FindWarPressure(string source, string target);
     void AddWarPressure(string source, string target, int delta, string reason, string intent);

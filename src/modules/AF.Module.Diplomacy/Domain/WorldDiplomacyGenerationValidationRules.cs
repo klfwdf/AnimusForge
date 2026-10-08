@@ -333,12 +333,12 @@ public static class WorldDiplomacyGenerationValidationRules
         Func<WorldDiplomacyRound, WorldDiplomacyRoundOffer> resolveRequiredPeaceOffer,
         Func<string, WorldDiplomacyDocument> resolveDocument,
         out string generatedTargetKingdomId,
-        out string reason)
+        out string reason, bool playerDiplomacy = false)
     {
         generatedTargetKingdomId = null;
         reason = "";
         if (job == null || json == null || json["actions"] is not JArray actions
-            || actions.Count < 1 || actions.Count > maxDiplomaticActionsPerDocument)
+            || actions.Count < 1 || (!playerDiplomacy && actions.Count > maxDiplomaticActionsPerDocument))
         {
             reason = "diplomatic_actions_envelope_invalid";
             return true;
@@ -354,11 +354,12 @@ public static class WorldDiplomacyGenerationValidationRules
                 return true;
             }
             string targetId = WorldDiplomacyEnvelopeJsonRules.ReadString(action, "target_kingdom_id", "target");
-            if (string.IsNullOrWhiteSpace(targetId) || !targetIds.Add(targetId))
+            if (string.IsNullOrWhiteSpace(targetId) || (!playerDiplomacy && !targetIds.Add(targetId)))
             {
                 reason = "diplomatic_action_target_missing_or_duplicate";
                 return true;
             }
+            targetIds.Add(targetId);
             string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(action, "intent", "author_intent.intent"));
             if (intent == "statement") statementCount++;
             if (intent == "warning" || intent == "ultimatum") outgoingThreatCount++;
@@ -380,7 +381,7 @@ public static class WorldDiplomacyGenerationValidationRules
         WorldDiplomacyRound owningRound = resolveRound?.Invoke(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId));
         WorldDiplomacyRoundOffer requiredPeaceOffer =
             resolveRequiredPeaceOffer?.Invoke(owningRound);
-        if (!WorldDiplomacyOfferContractRules.GeneratedActionsContainRequiredPeaceOfferResponse(actions, requiredPeaceOffer))
+        if (!playerDiplomacy && !WorldDiplomacyOfferContractRules.GeneratedActionsContainRequiredPeaceOfferResponse(actions, requiredPeaceOffer))
         {
             reason = "required_peace_offer_response_missing";
             return true;
@@ -390,17 +391,17 @@ public static class WorldDiplomacyGenerationValidationRules
             reason = "multiple_peace_acceptances_have_cross_terms";
             return true;
         }
-        if ((statementCount > 0 && actions.Count != 1) || statementCount > 1)
+        if (!playerDiplomacy && ((statementCount > 0 && actions.Count != 1) || statementCount > 1))
         {
             reason = "statement_must_be_the_only_diplomatic_action";
             return true;
         }
-        if (outgoingThreatCount > 1)
+        if (!playerDiplomacy && outgoingThreatCount > 1)
         {
             reason = "multiple_outgoing_threats_not_supported";
             return true;
         }
-        if (WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job))
+        if (!playerDiplomacy && WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job))
         {
             HashSet<string> planned = new HashSet<string>(
                 WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "round_plan.selected_kingdom_ids"),
@@ -444,7 +445,7 @@ public static class WorldDiplomacyGenerationValidationRules
         Func<string, (bool Violation, string Reason)> realmIdentityViolation,
         Action<string> log,
         out string generatedTargetId,
-        out string reason)
+        out string reason, bool playerDiplomacy = false)
     {
 
             generatedTargetId = null;
@@ -501,12 +502,12 @@ public static class WorldDiplomacyGenerationValidationRules
             }
             if (string.Equals(generatedTargetId, authorId, StringComparison.OrdinalIgnoreCase)
                 || (generatedTargetId != null && kingdomEliminated(generatedTargetId))
-                || (generatedTargetId != null && !kingdomHasAuthority(generatedTargetId)))
+                || (!playerDiplomacy && generatedTargetId != null && !kingdomHasAuthority(generatedTargetId)))
             {
                 reason = "target_kingdom_not_eligible";
                 return true;
             }
-            if (!job.IsRelayTurn
+            if (!playerDiplomacy && !job.IsRelayTurn
                 && !WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job)
                 && !string.IsNullOrWhiteSpace(job.TargetKingdomId)
                 && !string.Equals(generatedTargetId, job.TargetKingdomId, StringComparison.OrdinalIgnoreCase))
@@ -516,20 +517,20 @@ public static class WorldDiplomacyGenerationValidationRules
             }
             WorldDiplomacyDocument responseSource = resolveDocument?.Invoke(job.SourceDocumentId);
             bool allowedRoundResponseNoAction = string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
-                && nonRootRelayNoActionAllowed(owningRound, generatedTargetId, responseSource);
-            if (!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !allowedRoundResponseNoAction)
+                && (playerDiplomacy || nonRootRelayNoActionAllowed(owningRound, generatedTargetId, responseSource));
+            if (!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !allowedRoundResponseNoAction && !playerDiplomacy)
             {
                 reason = "non_actionable_diplomatic_intent";
                 return true;
             }
             string negotiationMove = WorldDiplomacyIntentVocabulary.NormalizeNegotiationMove(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "negotiation_move"));
-            if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+            if (!playerDiplomacy && string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
                 && !WorldDiplomacyIntentVocabulary.IsSupportedNegotiationMove(negotiationMove))
             {
                 reason = "statement_missing_negotiation_move";
                 return true;
             }
-            if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+            if (!playerDiplomacy && string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
                 && WorldDiplomacyRoundLifecycleRules.ShouldForceTerminalMove(owningRound?.ConsecutiveNoActionPasses ?? 0)
                 && !WorldDiplomacyIntentVocabulary.IsTerminalNegotiationMove(negotiationMove))
             {
@@ -542,13 +543,13 @@ public static class WorldDiplomacyGenerationValidationRules
             {
                 string listedId = resolveKingdomId?.Invoke(id);
                 if (string.IsNullOrWhiteSpace(id) || listedId == null || string.Equals(listedId, authorId, StringComparison.OrdinalIgnoreCase) || kingdomEliminated(listedId)
-                    || !kingdomHasAuthority(listedId))
+                    || (!playerDiplomacy && !kingdomHasAuthority(listedId)))
                 {
                     reason = "referenced_kingdom_not_eligible";
                     return true;
                 }
             }
-            if (WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job))
+            if (!playerDiplomacy && WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job))
             {
                 HashSet<string> allowed = new HashSet<string>(job.CandidateKingdomIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
                 if ((generatedTargetId != null && !allowed.Contains(generatedTargetId))
@@ -606,7 +607,7 @@ public static class WorldDiplomacyGenerationValidationRules
                         && !string.Equals(id, generatedTargetScopeId, StringComparison.OrdinalIgnoreCase)
                         && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(owningRound, id))
                 : !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(owningRound, id));
-            if (job.IsRelayTurn && (generatedTargetOutsideScope || addressedOutsideScope))
+            if (!playerDiplomacy && job.IsRelayTurn && (generatedTargetOutsideScope || addressedOutsideScope))
             {
                 reason = resultSettlementRelay ? "kingdom_not_in_result_settlement_scope" : "kingdom_not_in_relay_route";
                 return true;
@@ -617,7 +618,7 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "diplomatic_action_has_no_target";
                 return true;
             }
-            if (generatedTargetId != null
+            if (!playerDiplomacy && generatedTargetId != null
                 && !buildLegalDeclarationIntents(owningRound, generatedTargetId, responseSource)
                     .Contains(intent, StringComparer.OrdinalIgnoreCase))
             {
@@ -625,7 +626,9 @@ public static class WorldDiplomacyGenerationValidationRules
                 return true;
             }
             (bool Violation, string Reason) structureResult = deriveStructure(owningRound, generatedTargetId, intent);
-            if (structureResult.Violation)
+            if (structureResult.Violation && (!playerDiplomacy || intent == "withdraw_offer"
+                || !string.IsNullOrEmpty(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent))
+                || intent == "comply_ultimatum"))
             {
                 reason = structureResult.Reason;
                 return true;
@@ -654,9 +657,9 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "non_compliance_claims_threat_source";
                 return true;
             }
-            (bool Violation, string Reason) stateResult = stateViolation(intent, generatedTargetId);
+            (bool Violation, string Reason) stateResult = playerDiplomacy ? (false, "") : stateViolation(intent, generatedTargetId);
             if (stateResult.Violation) { reason = stateResult.Reason; return true; }
-            (bool Violation, string Reason) threatResult = threatViolation(intent, generatedTargetId, claimedThreatDocumentId);
+            (bool Violation, string Reason) threatResult = playerDiplomacy && intent != "comply_ultimatum" ? (false, "") : threatViolation(intent, generatedTargetId, claimedThreatDocumentId);
             if (threatResult.Violation) { reason = threatResult.Reason; return true; }
 
             string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
@@ -724,13 +727,13 @@ public static class WorldDiplomacyGenerationValidationRules
             // Do not re-infer an action from literary wording: the structured intent is always
             // exposed to players through DocumentTypeLabel, while C# still owns legality and execution.
             (bool Violation, string Reason) disclosureResult = peaceDisclosureViolation(intent, visibleText, generatedTargetId);
-            if (disclosureResult.Violation) { reason = disclosureResult.Reason; return true; }
-            if (WorldDiplomacyTextRules.TryGetImmersionViolation(visibleText, out reason))
+            if (!playerDiplomacy && disclosureResult.Violation) { reason = disclosureResult.Reason; return true; }
+            if (!playerDiplomacy && WorldDiplomacyTextRules.TryGetImmersionViolation(visibleText, out reason))
             {
                 return true;
             }
             (bool Violation, string Reason) realmResult = realmIdentityViolation(visibleText);
-            if (realmResult.Violation)
+            if (!playerDiplomacy && realmResult.Violation)
             {
                 reason = realmResult.Reason;
                 return true;
@@ -741,7 +744,7 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "peace_intent_has_no_valid_target";
                 return true;
             }
-            if (!isAtWar(authorId, generatedTargetId))
+            if (!playerDiplomacy && !isAtWar(authorId, generatedTargetId))
             {
                 reason = "peace_intent_between_kingdoms_not_at_war";
                 return true;
@@ -780,7 +783,8 @@ public static class WorldDiplomacyGenerationValidationRules
                         document.SourceDocumentId),
                     ResultSettlementSlotId = document.ResultSettlementSlotId,
                     IsExternalResponseOnly = document.IsExternalResponseOnly,
-                    IsRelayTurn = document.IsRelayTurn
+                    IsRelayTurn = document.IsRelayTurn,
+                    AnsweredPlayerDocumentIds = document.AnsweredPlayerDocumentIds
                 };
                 if (!applySingleAction(
                     actionDocument,
@@ -840,7 +844,7 @@ public static class WorldDiplomacyGenerationValidationRules
             Func<WorldDiplomacyRound, string, string, string, bool, bool, WorldDiplomacyDocument, bool> isRoundResponseNoActionAllowed,
             Func<WorldDiplomacyRound, string, string, bool> canUseSettlementTarget,
             Func<JObject, string, string, WorldDiplomacyPeaceTerms> parsePeaceTerms,
-            Func<IEnumerable<string>, string, List<string>> normalizeIds)
+            Func<IEnumerable<string>, string, List<string>> normalizeIds, bool playerDiplomacy = false)
         {
             if (document == null || json == null
                 || !(json["author_intent"] is JObject)
@@ -873,31 +877,32 @@ public static class WorldDiplomacyGenerationValidationRules
             WorldDiplomacyRound envelopeRound = resolveRound(document.RoundId);
             WorldDiplomacyDocument responseSource = resolveDocument(document.SourceDocumentId);
             bool allowedRoundResponseNoAction = string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
-                && isRoundResponseNoActionAllowed(
+                && (playerDiplomacy || isRoundResponseNoActionAllowed(
                     envelopeRound,
                     document.ResultSettlementSlotId,
                     authorId,
                     targetId,
                     relayTurn,
                     document.IsExternalResponseOnly,
-                    responseSource);
+                    responseSource));
             bool allowedWarResponseNoAction = allowedRoundResponseNoAction
                 && WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(envelopeRound, document.ResultSettlementSlotId,
                     authorId, targetId, resolveDocument);
-            if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+            if (!playerDiplomacy && string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
                 && (!WorldDiplomacyIntentVocabulary.IsSupportedNegotiationMove(negotiationMove)
                     || (WorldDiplomacyRoundLifecycleRules.ShouldForceTerminalMove(envelopeRound?.ConsecutiveNoActionPasses ?? 0)
                         && !WorldDiplomacyIntentVocabulary.IsTerminalNegotiationMove(negotiationMove))))
             {
                 return false;
             }
-            if (!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !allowedRoundResponseNoAction)
+            if (!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !allowedRoundResponseNoAction
+                && !(playerDiplomacy && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent)))
             {
                 return false;
             }
             bool resultSettlementRelay = relayTurn && envelopeRound?.ResultSettlementPending == true
                 && !string.IsNullOrWhiteSpace(document.ResultSettlementSlotId);
-            if (relayTurn && targetId != null
+            if (!playerDiplomacy && relayTurn && targetId != null
                 && !(resultSettlementRelay
                     ? canUseSettlementTarget(envelopeRound, authorId, targetId)
                     : WorldDiplomacyStructureRules.RoundRouteContainsKingdom(envelopeRound, targetId))) return false;
@@ -910,7 +915,7 @@ public static class WorldDiplomacyGenerationValidationRules
             {
                 return false;
             }
-            if (relayTurn && addressed.Any(x => resultSettlementRelay
+            if (!playerDiplomacy && relayTurn && addressed.Any(x => resultSettlementRelay
                 ? !string.Equals(x, targetId, StringComparison.OrdinalIgnoreCase)
                     && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(envelopeRound, x)
                 : !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(envelopeRound, x))) return false;
@@ -925,7 +930,7 @@ public static class WorldDiplomacyGenerationValidationRules
             document.Confidence = Math.Max(0f, Math.Min(1f, WorldDiplomacyEnvelopeJsonRules.ReadFloat(json, "confidence")));
             document.RequiresResponse = allowedRoundResponseNoAction
                 ? false
-                : WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "requires_response"), maxAutomaticReplyDepth);
+                : WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "requires_response"), playerDiplomacy ? int.MaxValue : maxAutomaticReplyDepth);
             document.PeaceTerms = targetId == null ? document.PeaceTerms : (parsePeaceTerms(json, authorId, targetId) ?? document.PeaceTerms);
             document.AnalysisStatus = "generation_envelope";
             return true;

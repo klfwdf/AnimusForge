@@ -347,8 +347,10 @@ internal static class Dpl090PresentationReplay
         world.Player = new(42, "player", false, true, "宗主国");
         Test.True(Execute("正文").Contains("不再是王国统治者"), "authority revalidated at submission");
         world.Player = new(42, "player", true, false, "宗主国");
-        Test.True(Execute("正文").Contains("宗主国"), "dependent ruler denied with representative name");
-        Equal(0, world.Added.Count, "rejected declaration performs no effects");
+        Test.True(Execute("正文").StartsWith("外交宣言已经公开发布") && world.Added.Count == 1,
+            "player ruler publication bypasses AI independence policy");
+        Equal("add,publish,analysis", string.Join(",", world.Effects), "dependent ruler still publishes before analysis");
+        world.Added.Clear(); world.Effects.Clear();
         world.Player = new(42, "player", true, true, "宗主国");
         Test.True(Execute("  正文  ").StartsWith("外交宣言已经公开发布"), "declaration accepted");
         Equal("add,publish,analysis", string.Join(",", world.Effects), "publication precedes analysis");
