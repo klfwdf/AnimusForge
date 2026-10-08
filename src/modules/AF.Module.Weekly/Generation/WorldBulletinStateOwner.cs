@@ -5,6 +5,19 @@ internal sealed partial class WorldBulletinStateOwner {
  internal WorldBulletinSaveState State;internal string CorruptRaw;internal bool InFlight;internal string LatestEventId="";internal int LastPruneDay=-1;
  internal readonly ConcurrentQueue<Action> MainThreadActions=new();
  private const string WorldBulletinBulletinIdMarker=":bulletin:";
+ private int _collectionEpoch;
+ internal void RestartCollection(double hour)
+ {
+     _collectionEpoch++;
+     var state = EnsureWorldBulletinState();
+     InFlight = false;
+     // Keep historical facts/layouts; only publication eligibility starts fresh.
+     WorldBulletinPolicy.AbandonWindow(state.World);
+     state.World.CutoffHour = hour;
+     state.World.DeferredFactKeys.Clear();
+     state.World.PendingTrigger = false;
+     state.World.CooldownUntilHour = hour;
+ }
 internal WorldBulletinSaveState EnsureWorldBulletinState()
 	{
 		if (State == null)
@@ -176,6 +189,7 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
 	}
 internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt, WorldBulletinIllustrationPlan illustrationPlan)
 	{
+        int epoch = _collectionEpoch;
 		WorldBulletinText result = null;
 		try
 		{
@@ -199,6 +213,7 @@ internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long gene
 		}
 		MainThreadActions.Enqueue(delegate
 		{
+            if (epoch != _collectionEpoch) { _port.CancelIllustration(illustrationPlan); return; }
 			CompleteWorldBulletin(windowEndHour, generation, selection, template, result, illustrationPlan);
 		});
 	}

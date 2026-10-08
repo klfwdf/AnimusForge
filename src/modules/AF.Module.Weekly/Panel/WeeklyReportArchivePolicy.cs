@@ -220,6 +220,13 @@ internal static class WeeklyReportArchivePolicy
         int start=marker+":bulletin:".Length, end=id.IndexOf(':',start);
         return long.TryParse(end < 0 ? id.Substring(start) : id.Substring(start,end-start), NumberStyles.None,CultureInfo.InvariantCulture,out long issue) ? Math.Max(0,issue) : 0;
     }
-    internal static string PeriodLabel(string id, int week) => IsRecent(id) ? "王国近况 · 第 " + Math.Max(0,week) + " 周" : IsBulletin(id)
-        ? "即时快报" + (IssueNumber(id)>0 ? " · 第 " + IssueNumber(id) + " 期" : "") : "周报档案 · 第 " + Math.Max(0,week) + " 周";
+    internal static string PeriodLabel(string id, int week) => IsRecent(id) ? "王国近况" : IsBulletin(id)
+        ? "即时快报" + (IssueNumber(id)>0 ? " · 第 " + IssueNumber(id) + " 期" : "") : "周报档案";
+
+    internal static string CalendarDate(string gameFormattedDate)
+    {
+        string date = (gameFormattedDate ?? "").Trim();
+        if (date.Length == 0) return "日期未知";
+        return date.StartsWith("卡拉迪亚", StringComparison.Ordinal) ? date : "卡拉迪亚" + date;
+    }
 }

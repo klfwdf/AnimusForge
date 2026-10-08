@@ -382,3 +382,30 @@ Check(TaleWorlds.Core.MBInformationManager.Notices.Single().DocumentId=="own"&&T
 knowledgeOwner.ReplayShowNotice(new AnimusForge.Refactor.Contracts.WorldDiplomacyNotice("foreign","外国标题","描述",false));
 Check(TaleWorlds.Core.MBInformationManager.Notices.Count==1&&TaleWorlds.Library.InformationManager.Messages.Single().Contains("【外交宣言送达】外国标题"),"actual notification adapter sends foreign notice only to lower-left information manager");
 Console.WriteLine($"PASS: {count} final archive/save/UI/navigation/publication/diplomacy/prompt/knowledge assertions (game, regional aggregation, rendering and artwork lifecycle stubbed).");
+
+// Switching retires old responses even when a new window happens to have the same end hour.
+var lateApi=new TaskCompletionSource<ApiCallResult>();int canceledArt=0;
+news._port.CallApi=(s,u)=>lateApi.Task;news._port.CancelIllustration=_=>canceledArt++;
+news.State.World.WindowEndHour=120;news.InFlight=true;
+int recordsBeforeSwitch=published.Count;int sequenceBeforeSwitch=news.State.World.Sequence;
+var lateRun=news.RunWorldBulletinRequestAsync(120,SaveRuntimeGuard.CaptureGeneration(),newsSelection,templateNews,"system","user",null);
+news.State.CollectionBulletinMode=false;news.State.WeeklyCollectionStartHour=120.25;news.State.WeeklyCollectionStartSequence=55;
+news.RestartCollection(120.25);
+Check(news.State.World.WindowEndHour<0&&!news.State.World.PendingTrigger&&news.State.World.CutoffHour==120.25,"switch abandons old collection window and advances cutoff");
+Check(news.State.World.Sequence==sequenceBeforeSwitch&&published.Count==recordsBeforeSwitch,"switch preserves issue numbering and published archive");
+news.State.World.WindowEndHour=120;news.InFlight=true;
+lateApi.SetResult(new ApiCallResult{Success=false});await lateRun;news.ProcessWorldBulletinMainThreadActions();
+Check(news.InFlight&&published.Count==recordsBeforeSwitch&&canceledArt==1,"late old response cannot clear newer inflight or publish after switch");
+string restartJson=JsonConvert.SerializeObject(news.State);
+var reloadedRestart=JsonConvert.DeserializeObject<WorldBulletinSaveState>(restartJson);
+Check(reloadedRestart.CollectionBulletinMode==false&&reloadedRestart.WeeklyCollectionStartHour==120.25&&reloadedRestart.WeeklyCollectionStartSequence==55,"actual saved DTO preserves mode hour and sequence boundary");
+var legacyRestart=JsonConvert.DeserializeObject<WorldBulletinSaveState>("{}");
+Check(!legacyRestart.CollectionBulletinMode.HasValue&&legacyRestart.WeeklyCollectionStartHour==-1&&legacyRestart.WeeklyCollectionStartSequence==-1,"legacy absent fields retain opt-in migration defaults");
+Console.WriteLine($"PASS {count} total archive and mode-switch checks.");
+
+Check(WeeklyReportArchivePolicy.CalendarDate("1084年秋季21日")=="卡拉迪亚1084年秋季21日","game-formatted season date preserved");
+Check(WeeklyReportArchivePolicy.CalendarDate("1084年12月31日")=="卡拉迪亚1084年12月31日","365-day mod calendar formatting preserved without dividing by 84 or 21");
+Check(WeeklyReportArchivePolicy.CalendarDate("卡拉迪亚1085年1月1日")=="卡拉迪亚1085年1月1日","calendar prefix not duplicated");
+Check(WeeklyReportArchivePolicy.CalendarDate("")=="日期未知","calendar failure does not invent default calendar date");
+Check(!WeeklyReportArchivePolicy.PeriodLabel("weekly_report:world:3588",3588).Contains("3588"),"archive hides absolute week index");
+Console.WriteLine($"PASS {count} final archive, mode-switch and calendar display checks.");

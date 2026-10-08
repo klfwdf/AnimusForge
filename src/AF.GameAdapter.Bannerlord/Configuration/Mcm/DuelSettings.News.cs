@@ -17,7 +17,7 @@ public partial class DuelSettings
     private bool? _autoGenerateWorldBulletins;
 
     [SettingPropertyDropdown("主模式", Order = 0, RequireRestart = false,
-        HintText = "周报：每周汇总世界与各国事件。快报：发生大事后收集近期消息，再发布一期快报。两种模式互斥，默认快报；切换保留已有档案。")]
+        HintText = "周报：汇总世界与各国事件。快报：发生大事后收集近期消息，再发布一期快报。切换模式会从现在重新收集并取消旧重试；切到周报后累计7个游戏日再生成首期，已有档案保留。两种模式互斥，默认快报。")]
     [SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
     public Dropdown<string> NewsMode
     {
