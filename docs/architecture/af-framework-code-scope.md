@@ -1,3 +1,8 @@
+<a id="mission-free-photo-20261008"></a>
+### 场景／战斗自由取景导航（2026-10-08）
+
+产品 `f4f7bcf46`：MissionScreenshotCapture持有自由相机/暂停/采集状态，MissionPhotoOverlay持有提示与UI恢复，MissionScreenshotIllustration在玩家确认后启动原有后台导演/生图。源码坐标、178/12/双DLL各135检查、原双版本构建和实机未验边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mission-free-photo-20261008)。替代自动双平视采集，未扩展公共API或框架职责。
+
 <a id="illustrator-prompt-persistence-20261008"></a>
 ### 生图提示词MCM持久化导航（2026-10-08）
 
