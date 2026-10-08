@@ -63,6 +63,49 @@ namespace AnimusForge;
 
 internal static class PartyAssetTransferBannerlordAdapter
 {
+	internal static int TransferItemsFromRosterByStringId(ItemRoster sourceRoster, ItemRoster targetRoster, string itemId, int amount, out ItemObject transferredItem)
+	{
+		transferredItem = null;
+		if (sourceRoster == null || string.IsNullOrWhiteSpace(itemId) || amount <= 0)
+		{
+			return 0;
+		}
+		string text = itemId.Trim();
+		int num = amount;
+		int num2 = 0;
+		while (num > 0)
+		{
+			bool flag = false;
+			for (int i = 0; i < sourceRoster.Count; i++)
+			{
+				ItemRosterElement elementCopyAtIndex = sourceRoster.GetElementCopyAtIndex(i);
+				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+				ItemObject item = equipmentElement.Item;
+				if (item == null || elementCopyAtIndex.Amount <= 0 || !string.Equals(item.StringId ?? "", text, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				transferredItem = transferredItem ?? item;
+				int num3 = Math.Min(elementCopyAtIndex.Amount, num);
+				if (num3 <= 0)
+				{
+					continue;
+				}
+				sourceRoster.AddToCounts(equipmentElement, -num3);
+				targetRoster?.AddToCounts(equipmentElement, num3);
+				num -= num3;
+				num2 += num3;
+				flag = true;
+				break;
+			}
+			if (!flag)
+			{
+				break;
+			}
+		}
+		return num2;
+	}
+
 	internal static PartyBase ResolvePartyTransferCounterpartyInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
 	{
 		try

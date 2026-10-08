@@ -47,12 +47,19 @@ internal static class Program {
 '''
 scene=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneHistoryMessages.cs').read_text(encoding='utf-8-sig')
 capture=ex.declaration(scene,'internal List<string> CaptureVisibleSceneHistoryLinesForPrompt(')
-probe='''internal sealed class SceneProbe {
+capture_owner=ex.declaration((R/'src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig'),'internal List<string> CaptureVisibleSceneHistoryLinesForPrompt(')
+probe='''internal sealed class SceneCaptureProbe {
+ private readonly SceneProbe state; internal SceneCaptureProbe(SceneProbe value){state=value;} private SceneProbe _history()=>state;
+ private static class SceneAgentIdentityPromptCaptureAdapter {internal static string ResolveSceneHeroIdFromAgentIndex(int viewer)=>"hero";}
+ private static class SceneTradeBannerlordAdapter {internal static string GetPlayerDisplayNameForShout()=>"player";}
+ private static class SceneLimitSettings {internal static int GetDailyConversationHistoryLineLimitForExternal()=>10;}
+ '''+capture_owner.replace('DuelSettings.GetDailyConversationHistoryLineLimitForExternal()','SceneLimitSettings.GetDailyConversationHistoryLineLimitForExternal()')+'''}
+internal sealed class SceneProbe {
  internal object _historyLock=new(); internal List<string> _publicConversationHistory=new(); internal int Calls; internal bool Locked; internal int Viewer; internal string Name; internal bool Distance;
- private SceneProbe SceneHistoryOwner=>this;internal int PublicCount=>_publicConversationHistory.Count;
+ private SceneCaptureProbe SceneHistoryPromptCapture=>new(this);internal object Gate=>_historyLock;private SceneProbe SceneHistoryOwner=>this;internal int PublicCount=>_publicConversationHistory.Count;
  private static string ResolveSceneHeroIdFromAgentIndex(int viewer)=>"hero";private static string GetPlayerDisplayNameForShout()=>"player";
- private List<string> CaptureVisiblePublicLines(int viewer,string hero,string name,bool distance,string player,int limit)=>BuildVisibleSceneHistoryLines(_publicConversationHistory,viewer,name,distance);
- private static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal()=>10; }
+ internal List<string> CaptureVisiblePublicLines(int viewer,string hero,string name,bool distance,string player,int limit)=>BuildVisibleSceneHistoryLines(_publicConversationHistory,viewer,name,distance);
+ private static class SceneLimitSettings { internal static int GetDailyConversationHistoryLineLimitForExternal()=>10; }
 
  private List<string> BuildVisibleSceneHistoryLines(List<string> source,int viewer,string name,bool distance){Calls++;Locked=System.Threading.Monitor.IsEntered(_historyLock);Viewer=viewer;Name=name;Distance=distance;return source.ToList();}
 '''+capture+'}\n'
@@ -60,13 +67,29 @@ program=program.replace('internal static class Program {',probe+'internal static
  scene._publicConversationHistory.Add("line");var visible=scene.CaptureVisibleSceneHistoryLinesForPrompt(7,"viewer",true);
  C(scene.Locked&&scene.Viewer==7&&scene.Name=="viewer"&&scene.Distance,"scene scalar projection called under original lock");C(visible.SequenceEqual(new[]{"line"})&&!ReferenceEquals(visible,scene._publicConversationHistory),"detached list result");
  Console.WriteLine("PASS actual state lifecycle''')
-(out/'Program.cs').write_text(program,encoding='utf-8')
-paths=['src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
-(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS8632</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(R/p)+'" />' for p in paths)+'</ItemGroup></Project>',encoding='utf-8')
+# Reuse full real state declarations rather than extending a retired partial shim.
+import ast,re
+start=program.index('internal sealed class MemorySealingOwner')
+end=program.index('internal sealed class SceneCaptureProbe',start)
+program=(program[:start]+program[end:]).replace('internal static class MyBehavior','public partial class MyBehavior',1).replace('MajorActionOrderCounter','ActionGlobalOrderCounter').replace('var s=new MemoryBusinessStateOwner();','var s=new MemoryBusinessStateOwner();s.ActionGlobalOrderCounter=88;')
+tree=ast.parse((R/'tests/modules/AF.Module.Memory/F3BusinessStateOwnerTests/run.py').read_text(encoding='utf-8-sig'))
+paths=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='paths' for t in n.targets))
+files={Path(path).name:(R/path).read_text(encoding='utf-8-sig') for path in paths}
+files['Program.cs']=program
+files['ControlledLogger.cs']='namespace AnimusForge {internal static class Logger {internal static void Log(string area,string text){} internal static void Obs(params object[] args){} internal static void Metric(params object[] args){} internal static void Metric(string name, bool ok){} }}'
+sys.path.insert(0,str(R/'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests'))
+from business_owner_fixture_support import include
+files['ControlledUnusedQueueFacts.cs']='namespace AnimusForge {public partial class MyBehavior {private static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>throw new System.InvalidOperationException("Live eligibility outside lifecycle replay");private static int GetMemoryOverviewStartBlockCountFromSettings()=>throw new System.InvalidOperationException("Live settings outside lifecycle replay");private static int GetCurrentGameDayIndexSafe()=>throw new System.InvalidOperationException("Live clock outside lifecycle replay");}}'
+closure_manifest=[]
+include(R,files,closure_manifest,ex)
+for name,value in files.items(): (out/name).write_bytes(value.encode('utf-8'))
+(out/'closure-manifest.json').write_text(json.dumps(closure_manifest,indent=2),encoding='utf-8')
+paths=list(files)
+(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>CS0649;CS8632</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(out/p)+'" />' for p in paths)+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 d=R/'local/dotnet/8.0.425/dotnet.exe';r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(d,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr,end='')
-receipt={'owner_sha256':hashlib.sha256((R/paths[0]).read_bytes()).hexdigest(),'exit_code':r.returncode,'source_link':paths[0],'declaring_type':'AnimusForge.MemoryBusinessStateOwner'}
+receipt={'owner_sha256':hashlib.sha256((R/'src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs').read_bytes()).hexdigest(),'exit_code':r.returncode,'source_link':'src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs','declaring_type':'AnimusForge.MemoryBusinessStateOwner'}
 # Fixed original host segments read before the finite lifecycle move; no artifact dependency.
 patch={'main_patches': [{'old': '\t\tif (_dialogueHistory == null)\n'
                           '\t\t{\n'

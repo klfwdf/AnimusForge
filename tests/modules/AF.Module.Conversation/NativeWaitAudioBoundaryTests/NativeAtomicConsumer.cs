@@ -215,6 +215,6 @@ public partial class ShoutBehavior {
  Check(!newestWait.IsCompleted&&audio._ttsPausedByShoutUi&&ReferenceEquals(audio._agentSoundEvents[1],held)&&held.Stops==0&&!Trace.Contains("resume"),mode+" duplicate finish/cancel after current natural completion cannot change successor");
  audio.UnsubscribeTtsPlaybackEvents();CompleteNativeConversationTtsPlaybackWait(null,"fixture_done",true);
  }
- Console.WriteLine("PASS native-current-atoms/actual-whole-audio "+checks+" checks; engine/typing/sound are isolated sinks; no real audio/game/io");
+ Console.WriteLine("PASS native-historical-atoms/actual-whole-audio "+checks+" checks; engine/typing/sound are isolated sinks; no real audio/game/io");
  }
 }

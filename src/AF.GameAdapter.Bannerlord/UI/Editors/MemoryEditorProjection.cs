@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -346,4 +346,13 @@ internal static class MemoryEditorProjection
 	{
 		return MemoryDeveloperEditOwner.ParseLineList(input, maxCount, ignoreCase);
 	}
+internal static DailyMemoryLine FindDevDailyMemoryLine(DailyMemoryDraft draft, int lineIndex)
+	{
+		if (draft?.Lines == null || lineIndex < 0 || lineIndex >= draft.Lines.Count)
+		{
+			return null;
+		}
+		return draft.Lines[lineIndex];
+	}
+
 }

@@ -23,6 +23,9 @@ namespace TaleWorlds.MountAndBlade {
  public sealed class Mission { public static Mission Current=new(); public List<Agent> Agents=new(); }
 }
 namespace AnimusForge {
+ internal sealed class PreprocessFormatException : Exception {}
+ internal static class FreezeWatchdog {internal static void Mark(string name,string detail,bool immediate) {}}
+ @@DELEGATES@@
  internal static class Logger {internal static void Log(string area,string message) {}}
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long value)=>value==Generation;}
  internal static class AIConfigHandler {internal static string ActionPostprocessFallbackMoodTag="[ACTION:MOOD:NEUTRAL]";}
@@ -35,6 +38,13 @@ namespace AnimusForge {
  internal static class AfGcczShoutBridge {internal static bool ShouldRunPostprocessForActiveScene(){Program.MainOnly();return false;}}
  @@WORK@@
  public partial class ShoutBehavior {
+  @@TIMEOUT@@
+  public ShoutBehavior() {
+   var dispatcher=new ConversationGameThreadDispatcher(new PendingOperationRegistry(),Queue.Enqueue,()=>Environment.CurrentManagedThreadId==Program.MainId);
+   NativeDetachedPostprocesses=new NativeDetachedPostprocessApplicationAdapter(()=>ReferenceEquals(CurrentInstance,this),
+    TryResolveNativeConversationTarget,TryResolveNativeConversationAgentIndex,IsNativeConversationResponseTargetAvailableForActionDispatch,
+    TryGetNativeConversationPersistentHistoryTargetForExternal,dispatcher,CaptureFixtureWork,(work,raw)=>CompleteSceneUnifiedActionPostprocess(work,true,raw,null));
+  }
   internal static ShoutBehavior CurrentInstance;
   internal static Hero Target;
   internal static CharacterObject Character;
@@ -60,14 +70,17 @@ namespace AnimusForge {
   private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket npc){Program.MainOnly();return "NPC";}
   private static bool HasPreprocessRuleHit(List<string> hits,string id)=>hits?.Contains(id)==true;
   public static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleSelectorForExternal(int topN)=>new((a,b,c,d,e)=>new DetachedRuleLookupResult(new[]{"reward"}));
-  private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string op,string name,int index,Func<T> action,T fallback) {
-   if(Environment.CurrentManagedThreadId==Program.MainId)return Task.FromResult(action());
-   var result=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-   Queue.Enqueue(()=>{try{result.TrySetResult(action());}catch(Exception e){result.TrySetException(e);}});return result.Task;
-  }
   private static void RequireMainThread()=>Program.MainOnly();
   @@COMPLETE@@
-  @@PREPARE@@
+  // Original controlled domain-preparation leaf; admission, scheduling and completion are production source.
+  private static SceneActionPostprocessWorkItem CaptureFixtureWork(Hero hero,CharacterObject character,int index,InteractionEnvelope envelope,RuleSelection selection,string reply) {
+   Program.MainOnly();Prepared++;PreparedHits=selection.RuleIds.ToList();
+   if(Immediate)return new SceneActionPostprocessWorkItem("[ACTION:MOOD:NEUTRAL]");
+   string history=string.Join("\n",envelope.History.Select(m=>m.Role+": "+m.Content));
+   return new SceneActionPostprocessWorkItem("system",envelope.Snapshot.PlayerText+"|"+history+"|"+reply,reply,raw=>{
+    Program.MainOnly();Normalized++;return "[ACTION:GIVE_GOLD:7] [ACTION:UNAUTHORIZED:3]";
+   });
+  }
  }
 }
 internal static class Program {
@@ -104,6 +117,6 @@ internal static class Program {
   Reset();q=Request(false);Check(Pump(Prepare(q))==null,"native unbound context rejects");
   Reset();q=Request();using(var cancel=new CancellationTokenSource()){cancel.Cancel();bool cancelled=false;try{Pump(Prepare(q,cancel.Token));}catch(OperationCanceledException){cancelled=true;}Check(cancelled&&ShoutBehavior.Prepared==0,"native cancelled before prepare no effects");}
   ImmediateCases();
-  Console.WriteLine($"Native detached: {checks} checks, 0 failures; actual channel adapter/work-item/completion + real parser; domain preparation/scheduler fixtures; live NOT_RUN");return 0;
+  Console.WriteLine($"Native detached: {checks} checks, 0 failures; actual channel adapter/work-item/completion + real parser; controlled domain preparation; production application/dispatcher; live NOT_RUN");return 0;
  }catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }

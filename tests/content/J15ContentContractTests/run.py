@@ -570,7 +570,30 @@ COURIER_THEME_EXPECTED = {
     "GUI/SpriteParts/af_courier/af_courier_seal_nord.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_nord.png", "sha256": "0DA54FC85B49C404F07A39EC6687F126CC5FA41AE4AB3261AD106F55B2FEA7B2"},
     "GUI/SpriteParts/af_courier/af_courier_button_band.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_button_band.png", "sha256": "C1368261A84CAB434DCEEDA27421B34019CB51CDE361078E3AA2E171BBC965A9"},
 }
-EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED,
+# Explicit committed additions; no historical entry or digest is replaced.
+# SettlementBalancePopup is loaded by SettlementBalancePopup; the DialogueUI item
+# is referenced by AFDialogueConversation's ItemTemplate (Pen sizing/scrollbars).
+COMMITTED_CONTENT_ADDITIONS = {
+    # Incoming writing-requirements feature; keep all pre-existing resource pins unchanged.
+    "CustomPrompts/WorldBulletinWritingRequirements.json": {
+        "owner": "AF.Module.Weekly",
+        "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
+        "sha256": "4454114E5B5EB7221FC9A0A2F703955F3D64A81117AC3839C3BA0E1970103BA1",
+        "revision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+    },
+    "GUI/Prefabs/SettlementBalancePopup.xml": {
+        "owner": "PolicySystem", "source": "content/modules/PolicySystem/GUI/Prefabs/SettlementBalancePopup.xml",
+        "sha256": "02227E26CA025F8E678F4645E11CF48F9900C749573D17DE2F608E0F738E90B4",
+        "revision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+    },
+    "GUI/Prefabs/AFDialogueConversationItem.xml": {
+        "owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversationItem.xml",
+        "sha256": "DA324DECAFEB2CA5147C39119FCEBDC9F9A900733ED99B2AAA111E3C606B4350",
+        "revision": "0218ca82491c0a0fb5b85236b805e1863c82d02d",
+    },
+}
+
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
             **WORLD_BULLETIN_EXPECTED, **TERMINAL_MAPBAR_EXPECTED, **COURIER_THEME_EXPECTED,
             **BUILTIN_WORLDBOOK_EXPECTED}
 # ada9894a edited these J15b-migrated sources (SceneActions postprocess rule, Vengeance language
@@ -663,6 +686,102 @@ def verify_approved_remote_content(source: Path, before_digest: str, after_lf_di
               f"unreviewed current content delta: {relative}")
 
 
+# R2 explicitly reviewed current resource deltas; historical pins above remain unchanged.
+APPROVED_CURRENT_CONTENT = {'GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml': {'source': 'content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml',
+                                                          'historicalSha256': '5815C08A939707E059E3604093A05E6C5E432F7FF01BABB9DB30E7998F80B309',
+                                                          'normalizedSha256': '25D95C47512876B21DDF8AF7FC78661E305A53D0303FE5CB6E28CA1D54163CA8',
+                                                          'revision': '954a1551c990017f18091b056e6abc6d0cc907ab'},
+ 'GUI/Prefabs/CourierLetterReplyPopup.xml': {'source': 'content/modules/AF.Module.Conversation/GUI/Prefabs/CourierLetterReplyPopup.xml',
+                                             'historicalSha256': 'EEECF1C2DC8262836469C091F564642EC38C32199E8C5F5821047EF25D14EB56',
+                                             'normalizedSha256': 'BF776EDE4CB7DCDD0616E2B1EFDEE3523D4B55442908A33C96692E06189D4FCC',
+                                             'revision': '822dfa7312ad19caa1d1921c9f3f276ef62ab58a'},
+ 'GUI/Brushes/AFCourierLetterBrushes.xml': {'source': 'content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml',
+                                            'historicalSha256': '01A6E6C173C7F912C2182A6F07E99B8BCF141A11E044929D2C556A03C86FAA55',
+                                            'normalizedSha256': '9FE62163AB218557E40FFE739B125E7F538A6B9B0412C7D0C85BBFB568B684DB',
+                                            'revision': 'a1346a765622ba8b1fec5ffa70bf6ada657fb4f2'},
+ 'GUI/Prefabs/AnimusForgeTerminalPopup.xml': {'source': 'content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml',
+                                              'historicalSha256': '2ADD0334115222197AF191C03CED890A58384FFEF0384E807E8A61C02E39778B',
+                                              'normalizedSha256': '0DED98C5A9882C6A1F5B023FA8D4E3E5D84F8DBC9DEA81429A644A0EA36A37FC',
+                                              'revision': 'a1346a765622ba8b1fec5ffa70bf6ada657fb4f2'},
+ 'GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml': {'source': 'content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml',
+                                                   'historicalSha256': 'E64D6CDE0753125B38E6AFA1A4C73709C0CE393762F369F858D8B569B905111B',
+                                                   'normalizedSha256': '55DAB409BA943AC27D5A57AF6C7F2EFA4E678B73866D16FAFDF1AAD01A6CB208',
+                                                   'revision': '20cf96279c2e10ce8cb12fad8eb51d5b528621f0'},
+ 'GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml': {'source': 'content/modules/AF.Module.WorldEvents/GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml',
+                                                     'historicalSha256': 'E4BAE8BB20542E0F98E0D202ABA572F83C0824C832E66F9E0124415638A064CD',
+                                                     'normalizedSha256': '331FAF6597B78EA430271927A82B2C9CE3D8432B519E95AD7ED88228AD96EC8F',
+                                                      'revision': 'c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce'},
+ 'GUI/Prefabs/CustomPolicyHistoryPopup.xml': {'source': 'content/modules/PolicySystem/GUI/Prefabs/CustomPolicyHistoryPopup.xml',
+                                              'historicalSha256': '33D306EB9EE7A7AE08A7160E5A8AF76C0099A2CB3C7B15792E27AE5D88918C2F',
+                                              'normalizedSha256': '7D8455B382D031344CCB4251C48B26643DD22004DE34F6FD5FC8ABDA706EC5EB',
+                                               'revision': 'c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce'},
+ 'GUI/Prefabs/LocalPolicyHistoryPopup.xml': {'source': 'content/modules/PolicySystem/GUI/Prefabs/LocalPolicyHistoryPopup.xml',
+                                             'historicalSha256': '817ACE4E16D00CEE02F175CCA6BE29EBDE47C6BDC16682495A952736DDDF670A',
+                                             'normalizedSha256': '8528C406CD857D4525145FEB0EE5B9E478B66E747393507F8062344473BFA2D5',
+                                              'revision': 'c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce'},
+ 'CustomPrompts/NpcPersonaGenerationRequirements.json': {'source': 'content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json',
+                                                         'historicalSha256': '2D22EF667F1876FE5F9D034F53D4AC88E5252350ECA80DC5FD4315615DE23C46',
+                                                         'normalizedSha256': '3847C49D3B8B339DBB6FBB0AEA13C9FCB0BEAF3B56D9DACA66ACC6BC4E2980AE',
+                                                          'revision': 'c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce'},
+ 'GUI/Prefabs/AFDialogueConversation.xml': {'source': 'extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversation.xml',
+                                            'historicalSha256': '676414590946FD91E0E0ECFB22DDF18FAE2FA7B626912DC97F1190E82170F696',
+                                            'normalizedSha256': '393218E7519E19AA77B6C3C0D604158018003492703906FEB38176C356ACEE5E',
+                                            'revision': 'e57f9fc318b670d99814f8c116846f4290f171ed'},
+ 'GUI/Prefabs/AFDialogueNativeOverlay.xml': {'source': 'extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml',
+                                             'historicalSha256': 'CE9CD971A4402753A210ECDE4552062671F7DD4D5E6BC4CA559F6AD79E76A2DF',
+                                             'normalizedSha256': '97B4A1AF27DA16F6DD85C1C4A65C06251C1AE71376D311EB43CEC6088FEBFC49',
+                                             'revision': 'e57f9fc318b670d99814f8c116846f4290f171ed'},
+ 'GUI/Prefabs/AFSceneSessionScroll.xml': {'source': 'extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionScroll.xml',
+                                          'historicalSha256': '6EEDF5885A9C277D333C483CAA61D5D7E06C982DDC22B1412FA13D1D171505AB',
+                                          'normalizedSha256': '6C43E893D323C6927C5B9179C629DA861F4F9D8C938BE1C7E569C7CB8E679BDC',
+                                          'revision': 'e57f9fc318b670d99814f8c116846f4290f171ed'},
+ 'GUI/Prefabs/ConversationIllustrationFullscreenOverlay.xml': {'source': 'extensions/AnimusForge.Illustrator/GUI/Prefabs/ConversationIllustrationFullscreenOverlay.xml',
+                                                               'historicalSha256': '9683ED43A827AEC32BEC356FD78FEC630E5BE0DBAEEB6DD96149A4E2C901579E',
+                                                               'normalizedSha256': '9E60F4AD8DAFD57BDF5B90893AE5B73E05D948F988FEBFEA9AB1E7CB58D40487',
+                                                               'revision': '30147300678b580b8a33a25327a4cc0bda826973'},
+ 'GUI/Prefabs/ConversationIllustrationOverlay.xml': {'source': 'extensions/AnimusForge.Illustrator/GUI/Prefabs/ConversationIllustrationOverlay.xml',
+                                                     'historicalSha256': 'FD2BE51832D99E74A629B4CF2DA015155773723A54A790D089B62794A0A4679D',
+                                                     'normalizedSha256': 'A2ADF4D46F816591F7CF8742AE25B890C77A8788A8D78164A48B7AE25375C856',
+                                                     'revision': '30147300678b580b8a33a25327a4cc0bda826973'},
+ 'GUI/Prefabs/EncyclopediaIllustrationOverlay.xml': {'source': 'extensions/AnimusForge.Illustrator/GUI/Prefabs/EncyclopediaIllustrationOverlay.xml',
+                                                     'historicalSha256': '83A7BB907308A5C56B0E79C757DB589A07E1EAE416F0121886E87630C4307E6B',
+                                                     'normalizedSha256': 'F09AEA94BA766CEDAB0F79F7665168479DB923718940F895019D87B728CC5B50',
+                                                     'revision': '30147300678b580b8a33a25327a4cc0bda826973'},
+ 'GUI/Prefabs/WeeklyReportIllustrationOverlay.xml': {'source': 'extensions/AnimusForge.Illustrator/GUI/Prefabs/WeeklyReportIllustrationOverlay.xml',
+                                                     'historicalSha256': 'FF6AAF77572D9B0768DDD2274BB7DF0938F3B5624ACFB0D218E721EF12E42EED',
+                                                     'normalizedSha256': 'EF1BDDF83758854B27FF334839F541D2F978D1AFA407854812285652947E9CA2',
+                                                     'revision': '30147300678b580b8a33a25327a4cc0bda826973'},
+ 'GUI/Prefabs/WorldBulletinPanel.xml': {'source': 'content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml',
+                                        'historicalSha256': 'E29638ACEE4B442273D4F4112FF3664F801BA6C0C13FD60DE63FEFA1BD5A2EEA',
+                                        'normalizedSha256': '108CADB525DAE48E1D627AD63A5C63C3301315197227426C98CDA5E6BF803863',
+                                        'revision': '20cf96279c2e10ce8cb12fad8eb51d5b528621f0'},
+ 'GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png': {'source': 'content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png',
+                                                                       'historicalSha256': 'BBEE0AC2454E6EF10B45F20D363556602EA2169A7D980DE0715EA92C7DAE020F',
+                                                                       'normalizedSha256': 'D9C8B310509B612CE1D6196E00C3E2CCD7DADE945121E3C1B51096A4555D6222',
+                                                                       'revision': '822dfa7312ad19caa1d1921c9f3f276ef62ab58a'}}
+
+def verify_approved_current_content(target: str, source: Path, historical_digest: str) -> bool:
+    review = APPROVED_CURRENT_CONTENT.get(target)
+    if review is None:
+        return False
+    check(review["source"] == source.relative_to(ROOT).as_posix(), f"approved content source drift: {target}")
+    check(review["historicalSha256"] == historical_digest, f"historical content pin changed: {target}")
+    committed = subprocess.check_output(["git", "show", review["revision"] + ":" + review["source"]], cwd=ROOT)
+    committed = committed.replace(b"\r\n", b"\n")
+    current = source.read_bytes().replace(b"\r\n", b"\n")
+    check(hashlib.sha256(committed).hexdigest().upper() == review["normalizedSha256"], f"approved current revision changed: {target}")
+    check(current == committed, f"unreviewed current resource delta: {target}")
+    if source.suffix == ".xml":
+        tree = ET.fromstring(current)
+        check(tree.tag in {"Prefab", "Brushes"}, f"current resource XML root: {target}")
+        if target == "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml":
+            check(any(n.get("IsEnabled") == "@CanSwitchTalk" for n in tree.iter("ButtonWidget")), "native switch-talk processing gate missing")
+            check(any(n.get("SuppressOpeningInteractionKey") == "true" for n in tree.iter()), "native opening key suppression missing")
+    elif source.suffix == ".json":
+        check(isinstance(json.loads(current), dict), f"current prompt JSON object: {target}")
+    return True
+
+
 def verify_map_and_resources() -> None:
     verify_builtin_worldbooks()
     map_path = ROOT / "content" / "content-map.json"
@@ -698,7 +817,10 @@ def verify_map_and_resources() -> None:
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing migrated source: {source}")
         baseline = git_worktree_blob(J15B_BASELINE_REVISION, f"AnimusForge/{target}")
-        if target in J15B_REVIEWED_EDITS:
+        original_digest = J15B_REVIEWED_EDITS.get(target, hashlib.sha256(baseline).hexdigest().upper())
+        if verify_approved_current_content(target, source, original_digest):
+            pass  # Exact approved bytes and structure were checked, not substituted.
+        elif target in J15B_REVIEWED_EDITS:
             # Unchanged up to the pre-integration commit, then exactly the reviewed edit.
             check(git_worktree_blob(J15B_REVIEWED_EDIT_PARENT, expected["source"]) == baseline,
                   f"source bytes drifted from J15b baseline before reviewed edit: {target}")
@@ -725,8 +847,9 @@ def verify_map_and_resources() -> None:
         check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing migrated source: {source}")
-        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
-              f"source hash drift: {target}")
+        if not verify_approved_current_content(target, source, expected["sha256"]):
+            check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
+                  f"source hash drift: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"old editable source remains: {target}")
 
     for target, expected in F4A_EXPECTED.items():
@@ -741,6 +864,17 @@ def verify_map_and_resources() -> None:
         check(source_bytes.count(b"nacisword1") == 1, f"Xihai action marker missing or duplicated: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"retired duplicate TPAC returned: {target}")
 
+    for target, expected in COMMITTED_CONTENT_ADDITIONS.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        committed = subprocess.check_output(["git", "show", expected["revision"] + ":" + expected["source"]], cwd=ROOT)
+        check(hashlib.sha256(committed.replace(b"\r\n", b"\n")).hexdigest().upper() == expected["sha256"],
+              f"approved content revision drift: {target}")
+        check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
+
     for target, expected in INTEGRATION_EXPECTED.items():
         entry = by_target[target]
         for field in ("owner", "source"):
@@ -748,7 +882,9 @@ def verify_map_and_resources() -> None:
         check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing integration source: {source}")
-        if target == "GUI/Prefabs/IllustratorGalleryPopup.xml":
+        if verify_approved_current_content(target, source, INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"])):
+            pass
+        elif target == "GUI/Prefabs/IllustratorGalleryPopup.xml":
             verify_approved_remote_content(source, INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"]),
                 "DDB767890DE94EC49FC286B30917170B3C3734799E0E282DE2EAD59F331D0BE3")
         else:
@@ -763,7 +899,9 @@ def verify_map_and_resources() -> None:
         check(expected["source"] == f"content/modules/AF.Module.Weekly/{target}", f"world bulletin source layout: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing world bulletin source: {source}")
-        if target == "GUI/Prefabs/WorldBulletinPanel.xml":
+        if verify_approved_current_content(target, source, expected["sha256"]):
+            pass
+        elif target == "GUI/Prefabs/WorldBulletinPanel.xml":
             # bulletin-wide-sheet-20261002: wide 1280 sheet + Contain-fit illustration, reviewed on top of the 982a5861 bytes.
             verify_approved_remote_content(source, expected["sha256"],
                 "527432BFC5DED1A0F0A2012C9A3948740C542BDE6C42F8220CD02BE592FE6ABF",
@@ -953,7 +1091,7 @@ def verify_formats_and_references() -> None:
         "GUI/Prefabs/PlayerRpForgePopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Economy/PlayerRpForgePopup.cs",
         "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml": "PolicySystem/UI/PolicyEffectModuleManagerUi.cs",
         "GUI/Prefabs/ShoutTextInputPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopup.cs",
-        "GUI/Prefabs/WorldDiplomacyComposePopup.xml": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+        "GUI/Prefabs/WorldDiplomacyComposePopup.xml": "src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyWidgets.cs",
     }
     for target, consumer in movie_consumers.items():
         movie = Path(target).stem
@@ -968,7 +1106,7 @@ def verify_formats_and_references() -> None:
         "GUI/SpriteParts/af_player_rp_forge/": "src/AF.GameAdapter.Bannerlord/UI/Economy/AnimusForgePlayerRpForgeUiSprites.cs",
         "GUI/SpriteParts/af_vassalage_notifications/": "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs",
         "GUI/SpriteParts/af_weekly_": "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
-        "GUI/SpriteParts/af_world_diplomacy/": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+        "GUI/SpriteParts/af_world_diplomacy/": "src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyWidgets.cs",
     }
     for target in (item for item in J15B_EXPECTED if item.endswith(".png")):
         matches = [consumer for prefix, consumer in sprite_consumers.items() if target.startswith(prefix)]

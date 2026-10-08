@@ -26,6 +26,27 @@ internal sealed class MemoryImportExportState
 
 internal static class MemoryImportExportOwner
 {
+    internal static MemoryImportExportState Capture(MemoryBusinessStateOwner state)
+    {
+        return new MemoryImportExportState
+        {
+            DailyDrafts = state.Drafts, Blocks = state.Blocks, SummaryQueue = state.DailyQueue,
+            Overviews = state.Overviews, OverviewQueue = state.OverviewQueue
+        };
+    }
+    internal static bool ApplyToAuthority(string heroId, CompressedMemoryExportBundle bundle,
+        bool overwriteExisting, MemoryBusinessStateOwner authority, Action<string> markOverviewDirty)
+    {
+        MemoryImportExportState state = Capture(authority);
+        bool applied = Apply(heroId, bundle, overwriteExisting, state, markOverviewDirty);
+        authority.Drafts = state.DailyDrafts;
+        authority.Blocks = state.Blocks;
+        authority.DailyQueue = state.SummaryQueue;
+        authority.Overviews = state.Overviews;
+        authority.OverviewQueue = state.OverviewQueue;
+        return applied;
+    }
+
     // Legacy all-data import intentionally retains supplied list identity and key spelling.
     // This is a user-request-frequency commit over the existing campaign store.
     internal static void ApplyDialogueHistoryImports(MemoryBusinessStateOwner state,

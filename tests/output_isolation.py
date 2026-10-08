@@ -36,6 +36,8 @@ def minimal_test_environment(dotnet: Path, output: Path, temp_root: Path | None 
     env = {key: os.environ[key] for key in allowed if key in os.environ}
     # The caller owns output isolation. No global caches or user profile are used.
     home = output / "home"
+    home.mkdir(parents=True, exist_ok=True)
+    (output / "appdata").mkdir(parents=True, exist_ok=True)
     env.update({"DOTNET_ROOT": str(dotnet.parent), "PATH": str(dotnet.parent),
                 "DOTNET_CLI_HOME": str(home), "HOME": str(home), "USERPROFILE": str(home),
                 "APPDATA": str(output / "appdata"), "LOCALAPPDATA": str(output / "appdata"),

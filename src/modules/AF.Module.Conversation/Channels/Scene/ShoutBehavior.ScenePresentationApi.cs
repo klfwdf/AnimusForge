@@ -18,100 +18,31 @@ public partial class ShoutBehavior
 	public static bool IsScenePresentationCollapsedForExternal => ScenePresentationController._presentationCollapsed;
 
 	// True until the previous line's round is over: replies generated, postprocess settled, replies spoken.
-	public static bool IsScenePresentationBusyForExternal
-	{
-		get
-		{
-			ShoutBehavior owner = CurrentInstance;
-			return owner != null && owner.IsPresentationSubmitBlocked();
-		}
-	}
+	public static bool IsScenePresentationBusyForExternal => ScenePresentationBannerlordAdapter.IsScenePresentationBusyForExternal;
 
-	private bool IsPresentationSubmitBlocked()
-	{
-		return _isProcessingShout || _isWaitingForScenePostprocessGate || IsPresentationRoundActive();
-	}
+private bool IsPresentationSubmitBlocked() => _j17ScenePresentationBannerlordAdapter.IsPresentationSubmitBlocked();
 
-	public static void SetScenePresentationCollapsedForExternal(bool collapsed)
-	{
-		ShoutBehavior owner = CurrentInstance;
-		if (owner == null || !owner.IsPresentationSessionLive() || ScenePresentationController._presentationCollapsed == collapsed)
-		{
-			return;
-		}
-		ScenePresentationController._presentationCollapsed = collapsed;
-		BumpPresentation();
-	}
+public static void SetScenePresentationCollapsedForExternal(bool collapsed) => ScenePresentationBannerlordAdapter.SetScenePresentationCollapsedForExternal(collapsed);
 
-	public static void EndScenePresentationForExternal(string reason)
-	{
-		CurrentInstance?.EndPresentationSession(string.IsNullOrWhiteSpace(reason) ? "ui" : reason);
-	}
+public static void EndScenePresentationForExternal(string reason) => ScenePresentationBannerlordAdapter.EndScenePresentationForExternal(reason);
 
-	public static bool SubmitScenePresentationTextForExternal(string text, out string status)
-	{
-  ShoutBehavior owner=CurrentInstance;
-  if (owner==null) { status="场景会话已结束。"; return false; }
-  if (!owner.Presentation.PrepareTextSubmission(text, IsBannerlordMainThreadForNativeActions, owner.IsPresentationSubmitBlocked,
-   owner.IsPresentationRoundActive, out string content, out status)) return false;
-		// A staged give/show rides on this line, through the same commit as the one-shot flow.
-		if (owner.Presentation.TradeStaged)
-		{
-			return owner.SubmitPresentationTrade(content, out status);
-		}
-		int addressee = owner.Presentation._presentationAddresseeIndex;
-		owner._activeShoutTargetingContext = owner.BuildPresentationTargetingContext();
-		owner.BeginShoutProcessing("scene_presentation_submit");
-		owner.ActivateMultiSceneMovementSuppression(new int[1] { addressee });
-		owner.RunTrackedSceneShout(content, null, addressee);
-		return true;
-	}
+public static bool SubmitScenePresentationTextForExternal(string text, out string status) => ScenePresentationBannerlordAdapter.SubmitScenePresentationTextForExternal(text, out status);
 
-	public static List<ScenePresentationParticipantInfo> GetScenePresentationParticipantsForExternal()
-	{ return CurrentInstance?.Presentation.GetParticipants() ?? new List<ScenePresentationParticipantInfo>(); }
+public static List<ScenePresentationParticipantInfo> GetScenePresentationParticipantsForExternal() => ScenePresentationBannerlordAdapter.GetScenePresentationParticipantsForExternal();
 
-	public static List<ScenePresentationHistoryLine> GetScenePresentationHistoryForExternal(int maxLines = 40)
-	{
-		ShoutBehavior owner = CurrentInstance;
-		return owner != null && owner.IsPresentationSessionLive()
-			? owner.BuildPresentationHistory(Math.Max(1, Math.Min(200, maxLines)))
-			: new List<ScenePresentationHistoryLine>();
-	}
+public static List<ScenePresentationHistoryLine> GetScenePresentationHistoryForExternal(int maxLines = 40) => ScenePresentationBannerlordAdapter.GetScenePresentationHistoryForExternal(maxLines);
 
 	// Card click: talk to this person next. An excluded member is brought back as participating.
-	public static bool SetScenePresentationAddresseeForExternal(int agentIndex)
-	{ return CurrentInstance?.Presentation.SetAddressee(agentIndex) == true; }
+public static bool SetScenePresentationAddresseeForExternal(int agentIndex) => ScenePresentationBannerlordAdapter.SetScenePresentationAddresseeForExternal(agentIndex);
 
 	// Seal click: 参与 → 屏蔽 → 锁定. The addressee skips 屏蔽.
-	public static void CycleScenePresentationParticipantForExternal(int agentIndex)
-	{ CurrentInstance?.Presentation.CycleParticipant(agentIndex); }
+public static void CycleScenePresentationParticipantForExternal(int agentIndex) => ScenePresentationBannerlordAdapter.CycleScenePresentationParticipantForExternal(agentIndex);
 
 	// Batch bar: include everyone, or exclude everyone except the addressee and locked members.
-	public static void SetAllScenePresentationParticipantsForExternal(bool include)
-	{ CurrentInstance?.Presentation.SetAllParticipants(include); }
+public static void SetAllScenePresentationParticipantsForExternal(bool include) => ScenePresentationBannerlordAdapter.SetAllScenePresentationParticipantsForExternal(include);
 
-	public static bool OpenScenePresentationEncyclopediaForExternal()
-	{
-		ShoutBehavior owner = CurrentInstance;
-		ScenePresentationController.Member member = owner?.IsPresentationSessionLive() == true ? owner.FindPresentationMember(owner.Presentation._presentationAddresseeIndex) : null;
-		Hero hero = member?.Character?.HeroObject;
-		if (hero == null)
-		{
-			return false;
-		}
-		OpenHeroEncyclopediaFromShoutInput(hero);
-		return true;
-	}
+public static bool OpenScenePresentationEncyclopediaForExternal() => ScenePresentationBannerlordAdapter.OpenScenePresentationEncyclopediaForExternal();
 
 	// The wheel's center portrait: the framed primary target of the pending shout.
-	public static Agent GetScenePresentationWheelTargetForExternal()
-	{
-		ShoutBehavior owner = CurrentInstance;
-		if (owner?._activeShoutTargetingContext == null)
-		{
-			return null;
-		}
-		List<Agent> framed = owner.GetAgentsForShoutTargetingContext(owner._activeShoutTargetingContext);
-		return ResolvePrimaryAgentForShoutTargetingContext(owner._activeShoutTargetingContext, framed) ?? framed.FirstOrDefault();
-	}
+public static Agent GetScenePresentationWheelTargetForExternal() => ScenePresentationBannerlordAdapter.GetScenePresentationWheelTargetForExternal();
 }

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using AnimusForge.Refactor.Adapters;
@@ -117,6 +117,241 @@ await using (ReplayServer slow = await ReplayServer.StartAsync(async (_, _) =>
 }
 
 Console.WriteLine("PASS configuredGatewayReplay success=1 streaming=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1");
+
+// The transport tests above remain unchanged. These cases execute the production
+// application adapter with only MCM/game/diagnostic leaves replaced by fixtures.
+AnimusForge.DuelSettings ConfigureApplication(string endpoint)
+{
+    var settings = new AnimusForge.DuelSettings { ApiUrl = endpoint, ApiKey = "fixture-only", ModelName = "main-fixture" };
+    AnimusForge.DuelSettings.Current = settings;
+    AnimusForge.DuelSettings.SettingsReads = 0;
+    return settings;
+}
+
+AssertTrue(!LlmRequestConfigurationCaptureAdapter.TryResolveUniversalApiConfig(null, ConfiguredChatRoute.Main,
+    out _, out _, out _, out string missingRoute, out string missingError)
+    && missingRoute == "main" && missingError.Contains("MCM"), "missing configuration result changed");
+var routeSettings = ConfigureApplication("http://127.0.0.1/unused");
+routeSettings.EventAndRebellionApiKey = "partial-fixture";
+AssertTrue(LlmRequestConfigurationCaptureAdapter.TryResolveUniversalApiConfig(routeSettings, ConfiguredChatRoute.EventAndRebellion,
+    out _, out _, out _, out string eventRoute, out _) && eventRoute == "event_rebellion_partial_fallback_main",
+    "event partial configuration lost main fallback");
+AssertTrue(LlmRequestConfigurationCaptureAdapter.ResolveUniversalMaxTokens(routeSettings, eventRoute) == routeSettings.EventTokens
+    && LlmRequestConfigurationCaptureAdapter.ResolveUniversalApiTemperature(routeSettings, eventRoute) == routeSettings.MainTemperature,
+    "partial event fallback token/temperature distinction changed");
+routeSettings.EventAndRebellionApiThinkingEnabled = false;
+LlmRequestConfigurationCaptureAdapter.ResolveUniversalThinkingSettings(routeSettings, eventRoute, out bool eventThinking, out _);
+AssertTrue(!eventThinking, "partial event fallback thinking did not retain event policy");
+routeSettings.AuxiliaryApiKey = "partial-fixture";
+AssertTrue(LlmRequestConfigurationCaptureAdapter.TryResolveUniversalApiConfig(routeSettings, ConfiguredChatRoute.Auxiliary,
+    out _, out _, out _, out string auxRoute, out _) && auxRoute == "auxiliary_partial_fallback_main"
+    && LlmRequestConfigurationCaptureAdapter.ResolveUniversalMaxTokens(routeSettings, auxRoute) == routeSettings.MainTokens,
+    "auxiliary partial fallback changed");
+
+await using (ReplayServer appSuccess = await ReplayServer.StartAsync((_, _) =>
+    (200, "{\"choices\":[{\"message\":{\"content\":\"<think>hidden</think>**reply**\"}}]}")))
+{
+    var settings = ConfigureApplication(appSuccess.Url);
+    int tokenLogs = AnimusForge.Logger.TokenStats;
+    var result = await ConfiguredChatApplicationAdapter.CallUniversalApiDetailed("system", "user", streamResponse: false);
+    AssertTrue(result.Success && result.Content == "reply" && result.StatusCode == 200, "application success/clean/result mapping changed");
+    AssertTrue(AnimusForge.DuelSettings.SettingsReads == 1 && appSuccess.Requests.Count == 1, "application repeated configuration capture");
+    var payload = Newtonsoft.Json.Linq.JObject.Parse(appSuccess.Requests.Single().Body);
+    AssertTrue((int)payload["max_tokens"] == settings.MainTokens && (float)payload["temperature"] == settings.MainTemperature,
+        "application configured max tokens/temperature changed");
+    AssertTrue(AnimusForge.Logger.TokenStats == tokenLogs + 1, "universal successful request lost token accounting");
+}
+
+foreach (var fixture in new[]
+{
+    (Body: "quota exceeded requests per minute", Quota: true, Rpm: false),
+    (Body: "requests per minute limit", Quota: false, Rpm: true),
+    (Body: "too many requests", Quota: false, Rpm: false)
+})
+{
+    await using var limited = await ReplayServer.StartAsync((_, _) => (429, fixture.Body));
+    ConfigureApplication(limited.Url);
+    var result = await ConfiguredChatApplicationAdapter.CallUniversalApiDetailed("system", "user", streamResponse: false);
+    AssertTrue(!result.Success && result.StatusCode == 429 && result.ResponseBody == fixture.Body
+        && result.IsQuotaLimit == fixture.Quota && result.IsRequestsPerMinuteLimit == fixture.Rpm,
+        "application quota/RPM precedence or diagnostic body changed");
+}
+
+await using (ReplayServer stale = await ReplayServer.StartAsync((_, _) =>
+{
+    AnimusForge.SaveRuntimeGuard.AdvanceGeneration("application-replay-old-generation");
+    return (200, "{\"choices\":[{\"message\":{\"content\":\"late reply\"}}]}");
+}))
+{
+    ConfigureApplication(stale.Url);
+    var result = await ConfiguredChatApplicationAdapter.CallWeeklyReportApiDetailed("system", "user");
+    AssertTrue(!result.Success && result.ErrorMessage == AnimusForge.SaveRuntimeGuard.BuildStaleRequestErrorText()
+        && string.IsNullOrEmpty(result.Content) && stale.Requests.Count == 1,
+        "late generation response accepted, or discard mislabeled as network cancellation");
+}
+
+await using (ReplayServer fallback = await ReplayServer.StartAsync((index, _) => index == 1
+    ? (400, "thinking unsupported; reject this control")
+    : (200, "{\"choices\":[{\"message\":{\"content\":\"app fallback\"}}]}")))
+{
+    ConfigureApplication(fallback.Url);
+    var result = await ConfiguredChatApplicationAdapter.CallWeeklyReportApiDetailed("system", "user");
+    AssertTrue(result.Success && result.Content == "app fallback" && fallback.Requests.Count == 2
+        && AnimusForge.DuelSettings.SettingsReads == 1, "application thinking fallback recaptured configuration or changed attempt count");
+}
+
+await using (ReplayServer auxiliary = await ReplayServer.StartAsync((_, _) =>
+    (200, "{\"choices\":[{\"message\":{\"content\":\"aux reply\"}}]}")))
+{
+    var settings = ConfigureApplication(auxiliary.Url);
+    settings.AuxiliaryApiUrl = auxiliary.Url;
+    settings.AuxiliaryApiKey = "aux-fixture";
+    settings.AuxiliaryModelName = "aux-model";
+    var result = await ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed("system", "user", "fixture", 73, true);
+    var payload = Newtonsoft.Json.Linq.JObject.Parse(auxiliary.Requests.Single().Body);
+    AssertTrue(result.Success && result.Content == "aux reply" && (int)payload["max_tokens"] == 73
+        && payload["model"].ToString() == "aux-model" && (bool)payload["thinking"]["enabled"] == false
+        && payload["thinking"]["effort"].ToString() == "low" && AnimusForge.DuelSettings.SettingsReads == 1,
+        "auxiliary explicit token override/force-thinking-disabled changed");
+}
+
+using (var retryAfter = new System.Net.Http.HttpResponseMessage(HttpStatusCode.TooManyRequests))
+{
+    retryAfter.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromMilliseconds(2100));
+    AssertTrue(ConfiguredChatApplicationAdapter.TryGetRetryAfterSeconds(retryAfter) == 3, "RetryAfter fractional delta no longer rounds up");
+}
+AssertTrue(!ConfiguredChatApplicationAdapter.IsQuotaLimitResponseBody("temporary provider failure")
+    && ConfiguredChatApplicationAdapter.IsRequestsPerMinuteLimitResponseBody("每分钟请求超过限制"), "limit classifiers changed");
+foreach (string malformed in new[] { "{\"choices\":[{\"message\":{\"content\":\"\"}}]}", "{\"choices\":[" })
+{
+    await using var malformedServer = await ReplayServer.StartAsync((_, _) => (200, malformed));
+    ConfigureApplication(malformedServer.Url);
+    var result = await ConfiguredChatApplicationAdapter.CallUniversalApiDetailed("system", "user", streamResponse: false);
+    bool isEmpty = malformed.EndsWith("}]}", StringComparison.Ordinal);
+    AssertTrue(!result.Success && !string.IsNullOrWhiteSpace(result.ErrorMessage)
+        && (isEmpty ? result.StatusCode == 200 && result.ResponseBody == malformed
+            : result.StatusCode == null && string.IsNullOrEmpty(result.ResponseBody)
+                && result.ErrorMessage == "configured_gateway_JsonReaderException"),
+        "empty HTTP-result versus truncated gateway-exception mapping changed");
+}
+int beforeLookupPopup = AnimusForge.LlmRetryPrompt.Popups;
+string failedLookup = await ConfiguredChatApplicationAdapter.CallAuxiliaryApiTextForExternal("system", "user", "lookup-failure", () => throw new InvalidOperationException("synthetic lookup failure"));
+AssertTrue(failedLookup == "" && AnimusForge.LlmRetryPrompt.Popups == beforeLookupPopup + 1,
+    "auxiliary owner lookup exception escaped original guarded popup/empty boundary");
+// Request options freeze once; changing the live settings cannot change an in-flight request.
+foreach (bool detailed in new[] { false, true })
+foreach (bool preserve in new[] { false, true })
+{
+    AnimusForge.DuelSettings.Current = new AnimusForge.DuelSettings { UseDetailedSceneSpeechPrompt=detailed, PreserveSceneAsteriskActions=preserve };
+    AnimusForge.DuelSettings.SettingsReads=0;
+    var options=LlmRequestConfigurationCaptureAdapter.CaptureSceneSpeechTextOptions();
+    AssertTrue(options.Detailed==detailed && options.PreserveAsterisk==preserve && AnimusForge.DuelSettings.SettingsReads==1, "scene option boolean capture changed");
+    AnimusForge.DuelSettings.Current.UseDetailedSceneSpeechPrompt=!detailed;
+    AnimusForge.DuelSettings.Current.PreserveSceneAsteriskActions=!preserve;
+    AssertTrue(options.Detailed==detailed && options.PreserveAsterisk==preserve, "in-flight options followed mutable settings");
+    var next=LlmRequestConfigurationCaptureAdapter.CaptureSceneSpeechTextOptions();
+    AssertTrue(next.Detailed!=detailed && next.PreserveAsterisk!=preserve, "next request lost setting toggle");
+}
+AnimusForge.DuelSettings.SettingsNull=true;
+var nullOptions=LlmRequestConfigurationCaptureAdapter.CaptureSceneSpeechTextOptions();
+AssertTrue(!nullOptions.Detailed && !nullOptions.PreserveAsterisk,"null scene settings changed defaults");
+AnimusForge.DuelSettings.SettingsNull=false;
+AnimusForge.DuelSettings.SettingsThrow=true;
+var failedOptions=LlmRequestConfigurationCaptureAdapter.CaptureSceneSpeechTextOptions();
+AssertTrue(!failedOptions.Detailed && !failedOptions.PreserveAsterisk,"throwing scene settings changed defaults");
+AnimusForge.DuelSettings.SettingsThrow=false;
+AnimusForge.DuelSettings.SettingsNull=false; AnimusForge.DuelSettings.SettingsThrow=false;
+AnimusForge.DuelSettings.Current=new AnimusForge.DuelSettings { MemoryCompressionDenominator=-10, MemoryOverviewStartBlockCount=99, MemoryOverviewTargetChars=2 };
+AssertTrue(LlmRequestConfigurationCaptureAdapter.GetMemoryCompressionDenominatorFromSettings()==3
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewStartBlockCountFromSettings()==10
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewTargetCharsFromSettings()==100,"summary config clamp boundary changed");
+AnimusForge.DuelSettings.Current.MemoryCompressionDenominator=40;
+AnimusForge.DuelSettings.Current.MemoryOverviewStartBlockCount=0;
+AnimusForge.DuelSettings.Current.MemoryOverviewTargetChars=9999;
+AssertTrue(LlmRequestConfigurationCaptureAdapter.GetMemoryCompressionDenominatorFromSettings()==10
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewStartBlockCountFromSettings()==3
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewTargetCharsFromSettings()==1000,"summary inverse clamp boundary changed");
+foreach(bool throws in new[]{false,true}) {
+ AnimusForge.DuelSettings.SettingsNull=!throws; AnimusForge.DuelSettings.SettingsThrow=throws;
+ int readCount=AnimusForge.DuelSettings.SettingsReads;
+ AssertTrue(LlmRequestConfigurationCaptureAdapter.GetMemoryCompressionDenominatorFromSettings()==5
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewStartBlockCountFromSettings()==5
+    && LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewTargetCharsFromSettings()==200,"summary null/throw defaults changed");
+ AssertTrue(AnimusForge.DuelSettings.SettingsReads==readCount+3,"summary scalar config repeated read");
+}
+AnimusForge.DuelSettings.SettingsNull=false; AnimusForge.DuelSettings.SettingsThrow=false;
+Console.WriteLine("PASS summaryConfiguration clampCases=6 nullDefaults=3 throwDefaults=3 captureOncePerScalar=1");
+Console.WriteLine("PASS sceneRequestOptions boolCases=4 null=1 throw=1 toggleFrozen=4");
+Console.WriteLine("PASS configuredApplicationReplay partialRoutes=2 success=1 quotaRpm=3 stale=1 thinkingFallback=1 auxiliary=1 retryAfter=1 captureOnce=1");
+
+
+// Whole current Native application over exact gateway wrappers and controlled lower-network callbacks.
+// Timeouts use the real unchanged 180000ms production timeout; no source rewrite or fake timer.
+var nativeMessages = new List<object> { new { role = "user", content = "native replay" } };
+var nativeOptions = new AnimusForge.ConversationSpeechTextOptions(false, false);
+AnimusForge.ShoutNetwork.NonStream = (_, token) => Task.Delay(Timeout.Infinite, token).ContinueWith<string>(
+    _ => throw new OperationCanceledException(token), TaskScheduler.Default);
+AnimusForge.ShoutNetwork.Stream = async (_, chunk, complete, error, token) =>
+{
+    try { await Task.Delay(Timeout.Infinite, token); } catch (OperationCanceledException) { }
+};
+Task<string> nonStreamTimeout = NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, null, nativeOptions);
+Task<string> streamTimeout = NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, _ => throw new InvalidOperationException("Timeout produced preview"), nativeOptions);
+await using (ReplayServer nativeHttp = await ReplayServer.StartAsync((_, _) => (200, "{\"choices\":[{\"message\":{\"content\":\"native nonstream ok\"}}]}")))
+{
+    var gateway = new LegacyConfiguredChatGateway(_ => "synthetic-native-secret", disableThinking:true);
+    AnimusForge.ShoutNetwork.NonStream = async (_, token) => (await gateway.GenerateAsync(BuildRequest(nativeHttp.Url), token)).RawText;
+    string raw = await NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, null, nativeOptions);
+    AssertTrue(raw == "native nonstream ok" && nativeHttp.Requests.Count == 1, "Native nonstream real lower HTTP failed");
+}
+await using (ReplayServer nativeSse = await ReplayServer.StartAsync((_, _) => (200,
+    "data: {\"choices\":[{\"delta\":{\"content\":\"NPC: hello \"}}]}\n\n" +
+    "data: {\"choices\":[{\"delta\":{\"content\":\"there\"}}]}\n\n" + "data: [DONE]\n\n")))
+{
+    var gateway = new LegacyConfiguredChatGateway(_ => "synthetic-native-secret", disableThinking:true);
+    AnimusForge.ShoutNetwork.Stream = async (_, chunk, complete, error, token) =>
+    {
+        var result = await gateway.GenerateExchangeAsync(BuildRequest(nativeSse.Url), true, chunk, token);
+        complete(result.Result.RawText);
+    };
+    var previews = new List<string>();
+    string raw = await NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, previews.Add, nativeOptions);
+    AssertTrue(raw == "NPC: hello there", "Native stream normalized result mismatch: " + raw);
+    AssertTrue(previews.Count >= 1 && previews.Last() == "hello there" && previews.All(x => !x.StartsWith("NPC:")), "Native preview filter leaked/duplicated text");
+}
+foreach (var test in new[] { (partial:"partial visible", completed:"", error:"transport error", expected:"partial visible"),
+    (partial:"partial", completed:"complete wins", error:"transport error", expected:"complete wins"),
+    (partial:"", completed:"", error:"quota limited", expected:"quota limited"),
+    (partial:"", completed:"", error:"", expected:"") })
+{
+    AnimusForge.ShoutNetwork.Stream = (_, chunk, complete, error, token) =>
+    {
+        if (test.partial.Length > 0) chunk(test.partial);
+        if (test.completed.Length > 0) complete(test.completed);
+        if (test.error.Length > 0) error(test.error);
+        return Task.CompletedTask;
+    };
+    string result = await NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, _ => {}, nativeOptions);
+    AssertTrue(result == test.expected, "Native completed/partial/error/empty precedence changed");
+}
+foreach (bool streaming in new[] { false, true })
+{
+    using var cancel = new CancellationTokenSource();
+    AnimusForge.ShoutNetwork.NonStream = (_, token) => { cancel.Cancel(); return Task.FromResult("late nonstream"); };
+    var latePreviews = new List<string>();
+    AnimusForge.ShoutNetwork.Stream = (_, chunk, complete, error, token) =>
+    {
+        cancel.Cancel(); chunk("late delta"); complete("late completed"); return Task.CompletedTask;
+    };
+    bool canceled = false;
+    try { await NativeConversationLlmApplicationAdapter.CallNativeConversationApiAsync(nativeMessages, streaming ? latePreviews.Add : null, nativeOptions, cancel.Token); }
+    catch (OperationCanceledException) { canceled = true; }
+    AssertTrue(canceled && latePreviews.Count == 0, "Native cancellation/late callback boundary changed");
+}
+string timeoutExpected = "（API请求失败: 原生对话正文生成超时 180000ms）";
+AssertTrue(await nonStreamTimeout == timeoutExpected, "Native nonstream real timeout mapping failed");
+AssertTrue(await streamTimeout == timeoutExpected, "Native stream real timeout mapping failed");
+Console.WriteLine("PASS nativeApplicationReplay nonstreamHttp=1 streamSse=1 completionPartialErrorEmpty=4 callerCancelLate=2 actualTimeout180000Ms=2 frozenSpeechOptions=1");
 
 internal sealed class ReplayServer : IAsyncDisposable
 {

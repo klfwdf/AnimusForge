@@ -57,54 +57,7 @@ public partial class ShoutBehavior
 		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null, canStillPublish: canStillPublish);
 	}
 
-	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null)
-	{
-		if (npc == null || string.IsNullOrWhiteSpace(content))
-		{
-			completionSource?.TrySetResult(false);
-			return;
-		}
-		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
-		if (!CanAgentParticipateInSceneSpeech(agent))
-		{
-			completionSource?.TrySetResult(false);
-			return;
-		}
-		NpcDataPacket value = CloneNpcDataPacket(npc);
-		List<NpcDataPacket> value2 = CloneNpcDataSnapshot(allNpcData);
-		ApplySceneLocalDisambiguatedNames(value2);
-		NpcDataPacket npcDataPacket = value2.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex == value.AgentIndex);
-		if (npcDataPacket != null)
-		{
-			value.Name = npcDataPacket.Name;
-			value.PromptGivenName = npcDataPacket.PromptGivenName;
-			value.PromptDisplayName = npcDataPacket.PromptDisplayName;
-		}
-		SceneSpeechQueueItem queuedItem = new SceneSpeechQueueItem
-		{
-			SourceMission = Mission.Current,
-            RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-            Npc = value,
-			Content = content,
-			DiplomacyOrigin = DiplomacyDialogueSourceScope.Capture(content, "scene", _sceneHistorySessionId.ToString(),
-				playerDirectedActionText, playerDirectedNpcReplyText ?? StripActionTagsForSceneSpeech(content)),
-			ContextSnapshot = value2,
-			SceneSummonTargets = SceneMovementController.CloneSceneSummonPromptTargets(sceneSummonTargets),
-			SceneGuideTargets = SceneMovementController.CloneSceneGuidePromptTargets(sceneGuideTargets),
-			CommitHistory = commitHistory,
-			SuppressStare = suppressStare,
-			AllowPlayerDirectedActions = allowPlayerDirectedActions,
-			PlayerDirectedActionText = playerDirectedActionText,
-			PlayerDirectedNpcReplyText = playerDirectedNpcReplyText,
-			RequiredConversationEpoch = requiredConversationEpoch,
-			AfterSpeechInfoMessage = afterSpeechInfoMessage,
-			CompletionSource = completionSource,
-			InteractionTimeoutSeconds = interactionTimeoutSeconds,
-			InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
-			CanStillPublish = canStillPublish
-		};
-		_sceneSpeechQueueOwner.Enqueue(queuedItem);
-	}
+private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null) => _j17SceneSpeechEnqueueAdapter.EnqueueSpeechLineWithOptions(npc, content, allNpcData, commitHistory, suppressStare, allowPlayerDirectedActions, requiredConversationEpoch, sceneSummonTargets, sceneGuideTargets, afterSpeechInfoMessage, completionSource, interactionTimeoutSeconds, interactionParticipantCount, canStillPublish, playerDirectedActionText, playerDirectedNpcReplyText);
 
 	internal sealed class SceneSpeechQueueItem
 	{
@@ -153,7 +106,7 @@ public partial class ShoutBehavior
     private SceneSystemNpcShoutRuntime _systemNpcShoutRuntime;
     private SceneSystemNpcShoutRuntime _systemNpcShout => _systemNpcShoutRuntime ??= new SceneSystemNpcShoutRuntime(
         _sceneSpeechEffects.Ports, _conversationGameThreadDispatcher, () => _sceneConversationEpoch,
-        () => System.Threading.Volatile.Read(ref _sceneHistorySessionId), () => ReferenceEquals(CurrentInstance, this));
+        () => System.Threading.Volatile.Read(ref SceneConversationHistoryOwner.SessionId), () => ReferenceEquals(CurrentInstance, this));
     private SceneSpeechEffectController _sceneSpeechEffectController;
     private SceneSpeechEffectController _sceneSpeechEffects => _sceneSpeechEffectController ??= new SceneSpeechEffectController(new SceneSpeechEffectPorts
     {

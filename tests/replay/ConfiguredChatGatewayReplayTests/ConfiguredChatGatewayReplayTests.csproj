@@ -19,4 +19,15 @@
   <ItemGroup>
     <Compile Include="..\..\..\src\modules\AF.Module.Llm\Streaming\LlmStreamingTransport.cs" Link="Streaming\LlmStreamingTransport.cs" />
   </ItemGroup>
+<ItemGroup><Compile Include="..\..\..\src\AF.GameAdapter.Bannerlord\Configuration\LlmRequestConfigurationCaptureAdapter.cs" /><Compile Include="..\..\..\src\modules\AF.Module.Llm\Application\ConfiguredChatApplicationAdapter.cs" /><Compile Include="..\..\..\src\AF.Foundation.Runtime\Lifecycle\SaveRuntimeGuard.cs" /></ItemGroup>
+<Target Name="ExtractCurrentResponseTextLeaves" BeforeTargets="CoreCompile">
+    <Exec Command="python -B &quot;$(MSBuildProjectDirectory)/../../../artifacts/j17-host-implementation-20261004/c/extract-response-text-leaves.py&quot; --out &quot;$(IntermediateOutputPath)CurrentResponseTextLeaves.cs&quot;" />
+    <ItemGroup><Compile Include="$(IntermediateOutputPath)CurrentResponseTextLeaves.cs" /></ItemGroup>
+  </Target>
+<ItemGroup>
+    <Compile Include="..\..\..\src\modules\AF.Module.Llm\Application\NativeConversationLlmApplicationAdapter.cs" />
+    <Compile Include="..\..\..\src\modules\AF.Module.Llm\Protocol\LlmVisibleReplyNormalizer.cs" />
+    <Compile Include="..\..\..\src\modules\AF.Module.Conversation\Internal\History\ConversationSpeechTextRules.cs" />
+  </ItemGroup>
+<ItemGroup><Compile Include="..\..\..\src\modules\AF.Module.Economy\Host\GiveAssetTagCodec.cs" /></ItemGroup>
 </Project>

@@ -56,6 +56,11 @@ MOVED_COMPOSITION_EDITS = {
 }
 
 
+# Explicit current registration/status additions; each unique hunk is checked before
+# preserving the original full composition equality below.
+CURRENT_COMPOSITION_EDITS = {'CampaignComposition.cs': [('            campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());\n            campaignGameStarter.AddBehavior(new NoblePrisonerExecutionOrderBehavior());\n            campaignGameStarter.AddBehavior(new VoteDealBehavior());\n            campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());\n            campaignGameStarter.AddBehavior(new DiplomacyBehavior());\n            campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());\n            campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());\n            campaignGameStarter.AddBehavior(new NobleGatheringBehavior());\n', '            campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());\n            campaignGameStarter.AddBehavior(new NoblePrisonerExecutionOrderBehavior());\n            campaignGameStarter.AddBehavior(new VoteDealBehavior());\n            DiplomacyModuleServices.Register(campaignGameStarter);\n            campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());\n            campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());\n            campaignGameStarter.AddBehavior(new NobleGatheringBehavior());\n')], 'ModuleFrameworkRuntime.cs': [('        CampaignComposition.Register(starterObject);\n    }\n\n    internal static void Shutdown()\n    {\n        ModuleDirectoryLifecycleOwner.Shutdown();\n', '        CampaignComposition.Register(starterObject);\n    }\n\n    internal static bool ReportHostedExtensionState(string moduleId, InternalModuleRuntimeState state,\n        string reasonCode, bool requireStarted = false)\n    {\n        return ModuleDirectoryLifecycleOwner.UpdateHostedRuntimeState(moduleId, state, reasonCode, requireStarted);\n    }\n\n    internal static void Shutdown()\n    {\n        ModuleDirectoryLifecycleOwner.Shutdown();\n')], 'TeamModuleRegistration.cs': [('        RegisterAdapter(directory, "af.team.siege", "af.team.siege.dialogue",\n            TeamModuleServices.Siege != null, FeatureBridgeIds.ConversationSiege);\n\n        return directory;\n    }\n\n', '        RegisterAdapter(directory, "af.team.siege", "af.team.siege.dialogue",\n            TeamModuleServices.Siege != null, FeatureBridgeIds.ConversationSiege);\n\n        HostedExtensionCatalog.Register(directory);\n        if (DiplomacyModuleServices.Conversation == null || DiplomacyModuleServices.World == null || DiplomacyModuleServices.Policy == null)\n            throw new InvalidOperationException("module.adapter_missing");\n        var diplomacy = new InternalModuleDefinition("af.team.diplomacy", InternalContractVersion,\n            new[] {\n                new InternalCapabilityDefinition("af.team.diplomacy.dialogue", InternalContractVersion, new string[0]),\n                new InternalCapabilityDefinition("af.team.diplomacy.world", InternalContractVersion, new string[0]),\n                new InternalCapabilityDefinition("af.team.diplomacy.policy", InternalContractVersion, new[] { FeatureBridgeIds.PolicyWorldDiplomacy })\n            });\n        if (!directory.TryRegister(diplomacy, out string diplomacyReason))\n            throw new InvalidOperationException(diplomacyReason);\n        return directory;\n    }\n\n')]}
+
+
 def restore_submodule(current):
     prior = old('SubModule.cs')
     startup = declaration(prior, 'protected override void OnBeforeInitialModuleScreenSetAsRoot()')
@@ -69,9 +74,22 @@ def restore_submodule(current):
     expected_startup = ('using System;\nusing HarmonyLib;\n\nnamespace AnimusForge;\n\n'
         '// Startup patch and service composition stays on the Bannerlord main-thread entry point.\n'
         'internal static class StartupPatchComposition\n{\n\t' + moved_startup + '\n}\n')
-    assert restore_remote_feature_delta(
+    startup_current = restore_remote_feature_delta(
         'src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs',
-        read(DEST / 'StartupPatchComposition.cs')) == expected_startup, 'Startup body/order/catches changed'
+        read(DEST / 'StartupPatchComposition.cs'))
+    # One reviewed module boundary replaces only the original registration call.
+    # The real three-hop route must still terminate at the original patch owner.
+    for path, route in (
+        ('src/bridges/Diplomacy/DiplomacyModuleServices.cs', 'internal static void RegisterPatches(HarmonyLib.Harmony harmony) => Module.RegisterPatches(harmony);'),
+        ('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModule.cs', 'internal void RegisterPatches(Harmony harmony) => DiplomacyModuleComposition.RegisterPatches(harmony);'),
+        ('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs', 'internal static void RegisterPatches(Harmony harmony) => WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony);'),
+    ):
+        assert read(ROOT / path).count(route) == 1, 'Startup diplomacy patch route drift: ' + path
+    before = '\t\t\t\tWorldDiplomacyBehavior.RegisterHarmonyPatches(harmony);\n'
+    after = '\t\t\t\tDiplomacyModuleServices.RegisterPatches(harmony);\n'
+    assert startup_current.count(after) == 1, 'Startup diplomacy registration context changed'
+    startup_current = startup_current.replace(after, before, 1)
+    assert startup_current == expected_startup, 'Startup body/order/catches changed'
 
     # ada9894a (reviewed): dt is threaded to both phase lists and IntegratedModuleHost.Tick(dt)
     # is appended as the last phase of each, after VassalageBehavior and before WarStats.
@@ -96,7 +114,17 @@ def restore_submodule(current):
         '// Ordered game-tick dispatch; fast path has no per-frame phase list or delegate allocation.\n'
         'internal static class ApplicationTickComposition\n{\n\t'
         + '\n\n\t'.join((moved_app, moved_fast, moved_watched, phase)) + '\n}\n')
-    assert read(DEST / 'ApplicationTickComposition.cs') == expected_tick, 'Tick branches/order/scopes changed'
+    current_tick = read(DEST / 'ApplicationTickComposition.cs')
+    tick_edits = (
+        ('\t\tWorldDiplomacyBehavior.Instance?.OnEngineTick();\n', '\t\tDiplomacyModuleServices.World.OnEngineTick();\n'),
+        ('() => WorldDiplomacyBehavior.Instance?.OnEngineTick());', '() => DiplomacyModuleServices.World.OnEngineTick());'),
+        ('', '\t\tSettlementBalancePopup.ProcessDeferredCloseIfNeeded();\n'),
+        ('', '\t\t\tRunWatchedTickPhase("SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded", () => SettlementBalancePopup.ProcessDeferredCloseIfNeeded());\n'),
+    )
+    for before, after in reversed(tick_edits):
+        assert current_tick.count(after) == 1, 'Current Tick reviewed context changed'
+        current_tick = current_tick.replace(after, before, 1)
+    assert current_tick == expected_tick, 'Tick branches/order/scopes changed'
     assert 'new Action' not in moved_fast and '() =>' not in moved_fast and 'new[]' not in moved_fast
     assert moved_watched.count('host.ProcessPendingInitialApiGuideNotice') == 1
 
@@ -139,7 +167,11 @@ def verify():
         for before, after in MOVED_COMPOSITION_EDITS.get(name, ()):
             assert expected.count(before) == 1, 'Composition anchor changed: ' + name
             expected = expected.replace(before, after, 1)
-        assert read(DEST / name) == expected, 'Moved composition changed: ' + name
+        current = read(DEST / name)
+        for before, after in reversed(CURRENT_COMPOSITION_EDITS.get(name, ())):
+            assert current.count(after) == 1, 'Current composition context changed: ' + name
+            current = current.replace(after, before, 1)
+        assert current == expected, 'Moved composition changed: ' + name
     print('PASS J02 full-file SubModule inverse + exact Startup/Tick bodies + 5 path-only compositions')
 
 

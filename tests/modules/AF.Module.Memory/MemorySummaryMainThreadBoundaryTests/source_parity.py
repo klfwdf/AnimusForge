@@ -50,8 +50,10 @@ def _restore_j02_guard_source_path(path, text):
     }:
         new = 'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'
         assert text.count(new) == 1, 'B1 runner guard path drift: ' + path
-        return text.replace(new, 'SaveRuntimeGuard.cs', 1)
-    return text
+        text = text.replace(new, 'SaveRuntimeGuard.cs', 1)
+    from f3_migration_projection import current_prior_memory_run_producer
+    prior = current_prior_memory_run_producer()
+    return prior.chain.apply('B1_AFTER_ORIGINAL_LOCATOR',path,text) if prior is not None and prior.chain is not None else text
 
 
 def _is_reviewed_deleted(item):
@@ -60,18 +62,171 @@ def _is_reviewed_deleted(item):
     return item.get('status') != 'UNREVIEWED_WIP'
 
 
+from contextlib import contextmanager
+from contextvars import ContextVar
+_b1_review_input = ContextVar("bound_b1_review_input", default=None)
+
+
+# Fixed original source-review controls only, never current runtime inputs.
+_dependency_target = ContextVar('b1_dependency_target', default=None)
+
+def _positive_fixture_inputs():
+    from af2_terminal_migration_review import j17_packet
+    rows=j17_packet()['independentLayers']['F3']['originalPositiveInputs']
+    paths={'MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySealing.cs','MyBehavior.MemorySummaryPlanning.cs'}
+    assert set(rows)==paths, 'Unreviewed original positive fixture set'
+    result={}
+    for path,row in rows.items():
+        physical=current_source_path(ROOT,path)
+        assert hashlib.sha256(physical.read_bytes()).hexdigest()==row['physicalRawSha256'], 'Original positive physical drift: '+path
+        value=physical.read_text(encoding='utf-8-sig').replace('\r\n','\n')
+        assert _sha256(value)==row['sourceSha256'], 'Original positive source drift: '+path
+        for e in row['edits']:
+            assert e['symbols'] and e['after'] and e['after']!=value and value.count(e['after'])==1, 'Original positive unique context: '+path
+            value=value.replace(e['after'],e['before'],1)
+        assert _sha256(value)==row['targetSha256'], 'Original positive whole drift: '+path
+        result[path]=value
+    return result
+
+@contextmanager
+def _legacy_dependency_target(bound,target):
+    targets={
+        'MyBehavior.MemorySummaryInput.cs':('memory_run_inverse','restore'),
+        'MyBehavior.MemorySummaryPlanning.cs':('memory_run_inverse','restore'),
+        'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs':('memory_writer_inverse','restore_writer'),
+        'MyBehavior.MemorySummaryMainThread.cs':('b1_game_lifetime_inverse','restore'),
+    }
+    assert target in targets and _b1_review_input.get() is bound, 'Unreviewed B1 mutation target/context'
+    assert _dependency_target.get() is None, 'B1 dependency mutation reentry'
+    # Original positive executes every unmutated Run/writer/lifetime/evidence
+    # assertion first. Mutations never enter those upstream producers.
+    bound.verify(bound.source)
+    from importlib.machinery import SourceFileLoader
+    from unittest.mock import patch
+    load=SourceFileLoader.exec_module
+    token=_dependency_target.set(target)
+    hit=[]
+    expected_module,expected_function=targets[target]
+    def execute(loader,module):
+        load(loader,module)
+        if module.__name__!=expected_module:return
+        original=getattr(module,expected_function)
+        def target_output(path,source,*args,**kwargs):
+            output=original(path,source,*args,**kwargs)
+            if path==target:
+                assert not hit, 'Duplicate B1 target mutation'
+                hit.append({'path':path,'originalOutputSha256':_sha256(output)})
+                return output+'\n// unreviewed dependency\n'
+            return output
+        setattr(module,expected_function,target_output)
+    try:
+        with patch.object(SourceFileLoader,'exec_module',execute):yield
+    finally:
+        _dependency_target.reset(token)
+        if not hit:raise AssertionError('B1 dependency target NOT_REACHED: '+target)
+
+class _BoundFiniteReviewInput:
+    def __init__(self, source):self.source=source
+    def verify(self, source):
+        assert _finite_review_input.get() is self, 'Finite target requires validated upstream context'
+        return _verify_current_memory_source(source)
+    @contextmanager
+    def dependency_mutation(self,target):
+        targets={'MyBehavior.MemorySealing.cs','MyBehavior.MemoryMaintenanceBudget.cs','MyBehavior.MemorySummaryInput.cs'}
+        assert target in targets and _finite_review_input.get() is self, 'Unreviewed finite mutation target/context'
+        assert _dependency_target.get() is None, 'Finite mutation reentry'
+        self.verify(self.source)
+        from unittest.mock import patch
+        read=Path.read_text;physical=current_source_path(ROOT,target);hit=[]
+        token=_dependency_target.set(target)
+        def changed(path,*args,**kwargs):
+            value=read(path,*args,**kwargs)
+            if path==physical:
+                assert not hit, 'Duplicate finite target mutation'
+                hit.append(_sha256(value))
+                return value+'\n// unreviewed dependency\n'
+            return value
+        try:
+            with patch.object(Path,'read_text',changed):yield
+        finally:
+            _dependency_target.reset(token)
+            if not hit:raise AssertionError('Finite dependency target NOT_REACHED: '+target)
+
+_finite_review_input=ContextVar('finite_dependency_target',default=None)
+
+@contextmanager
+def bound_finite_review_input(source):
+    from f3_migration_projection import projection_reads,restore
+    assert _finite_review_input.get() is None, 'Finite review reentry'
+    with projection_reads():
+        canonical=restore('MyBehavior.cs',source)
+        bound=_BoundFiniteReviewInput(canonical)
+        token=_finite_review_input.set(bound)
+        try:
+            bound.verify(canonical)
+            yield bound
+        finally:_finite_review_input.reset(token)
+
+class _BoundB1ReviewInput:
+    def __init__(self, source, producer):
+        self._source = source
+        self._producer = producer
+
+    @property
+    def source(self):
+        return self._source
+
+    def fixture_input(self,path):
+        assert _b1_review_input.get() is self and path in self._positive_inputs, 'Original positive requires bound context'
+        return self._positive_inputs[path]
+
+    def dependency_mutation(self,target):
+        return _legacy_dependency_target(self,target)
+
+    @property
+    def upstream_stages(self):
+        return tuple(dict(item) for item in self._producer.stages)
+
+    def verify(self, source):
+        assert _b1_review_input.get() is self, 'B1 target requires validated upstream context'
+        return _verify_bound_b1_source('MyBehavior.cs', source)
+
+@contextmanager
+def bound_b1_review_input():
+    """Validate immutable upstream first; only then inspect B1-layer mutations."""
+    from f3_migration_projection import projection_reads, prior_memory_run_producer
+    assert _b1_review_input.get() is None, 'Bound B1 review reentry'
+    with projection_reads():
+        positive_inputs = _positive_fixture_inputs()
+        with prior_memory_run_producer() as producer:
+            run_spec = importlib.util.spec_from_file_location('bound_memory_run_inverse', ROOT / 'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py')
+            run_inverse = importlib.util.module_from_spec(run_spec); run_spec.loader.exec_module(run_inverse)
+            source = (current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
+            source = run_inverse.restore('MyBehavior.cs', source)
+            persona_spec = importlib.util.spec_from_file_location('bound_persona_inverse', ROOT / 'tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py')
+            persona = importlib.util.module_from_spec(persona_spec); persona_spec.loader.exec_module(persona)
+            source = persona.restore_historical(source, strict=False)
+            producer.stages.append({'stage':'ORIGINAL_PERSONA','sha256':_sha256(source)})
+            bound = _BoundB1ReviewInput(source, producer)
+            bound._positive_inputs = positive_inputs
+            token = _b1_review_input.set(bound)
+            try:
+                # Original positive B1 whole/evidence checks must pass before yield.
+                bound.verify(source)
+                yield bound
+            finally:
+                _b1_review_input.reset(token)
+
 def _restore_memory_summary_source(path, source):
-    source = restore_remote_feature_delta(path, source)
     if path != 'MyBehavior.cs':
-        return source
+        return restore_remote_feature_delta(path,source)
+    with bound_b1_review_input() as bound:
+        return bound.verify(source)
+
+def _verify_bound_b1_source(path, source):
+    assert _b1_review_input.get() is not None, 'B1 target requires validated upstream context'
     run_spec = importlib.util.spec_from_file_location('memory_run_inverse', ROOT / 'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py')
     run_inverse = importlib.util.module_from_spec(run_spec); run_spec.loader.exec_module(run_inverse)
-    source = run_inverse.restore(path, source)
-    # Undo only the separately tested persona changes; the B1 checks below still reject
-    # every other unreviewed delta and verify full-owner equality with their own baseline.
-    persona_spec = importlib.util.spec_from_file_location('persona_inverse', ROOT / 'tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py')
-    persona = importlib.util.module_from_spec(persona_spec); persona_spec.loader.exec_module(persona)
-    source = persona.restore(source, strict=False)
     review = json.loads((HERE / 'source-review-b1.json').read_text(encoding='utf-8'))
     spec = importlib.util.spec_from_file_location('b1_declaration_extractor', ROOT / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     extractor = importlib.util.module_from_spec(spec)
@@ -241,5 +396,7 @@ from af2_terminal_migration_review import terminal_review
 
 @terminal_review
 def restore_memory_summary_source(path,source):
-    from f3_migration_projection import projection_reads,restore
-    with projection_reads():return _restore_memory_summary_source(path,restore(path,source))
+    if path != 'MyBehavior.cs':
+        from f3_migration_projection import projection_reads,restore
+        with projection_reads():return _restore_memory_summary_source(path,restore(path,source))
+    return _restore_memory_summary_source(path,source)

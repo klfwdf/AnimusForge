@@ -21,6 +21,7 @@ public sealed class SceneTradeVM : ViewModel
     private bool _open, _searchPending;
     private float _searchDelay;
     private int _page;
+    private long _flowRevision;
 
     internal int LayoutVersion { get; private set; }
     internal SceneTradeVM(Action<string> status, Action visibilityChanged) { _status = status; _visibilityChanged = visibilityChanged; }
@@ -102,7 +103,7 @@ public sealed class SceneTradeVM : ViewModel
         if (!CanSubmit) return;
         var indices = SelectedItems.Select(x => (int)x.Option.Element.Identifier).ToList();
         var amounts = SelectedItems.Select(x => x.Amount).ToList();
-        if (ShoutBehavior.StageScenePresentationTradeForExternal(indices, amounts, out string status))
+        if (ShoutBehavior.StageScenePresentationTradeForExternal(_flowRevision, indices, amounts, out string status))
         {
             _status("已准备好：发送下一句话时一起交付。");
             Hide();
@@ -113,7 +114,7 @@ public sealed class SceneTradeVM : ViewModel
     // Close without staging drops the host-side option list; a staged gift survives until sent/cancelled.
     public void Close()
     {
-        if (!ShoutBehavior.HasScenePresentationStagedTradeForExternal) ShoutBehavior.CancelScenePresentationTradeForExternal();
+        if (!ShoutBehavior.HasScenePresentationStagedTradeForExternal) ShoutBehavior.CancelScenePresentationTradeForExternal(_flowRevision);
         Hide();
     }
 
@@ -137,6 +138,7 @@ public sealed class SceneTradeVM : ViewModel
     {
         Release();
         List<ScenePresentationTradeOption> options = ShoutBehavior.LoadScenePresentationTradeOptionsForExternal(_mode, out string status);
+        _flowRevision = options.Count > 0 ? options[0].FlowRevision : 0;
         foreach (var option in options)
         {
             var element = new InquiryElement(option.Index, option.Name, null, option.Available > 0, "");

@@ -1,3 +1,16 @@
+<a id="reviewed-refactor-source-delivery-20261008"></a>
+# 当前目录导航：主体职责owner与Bannerlord适配（2026-10-08）
+
+本次同步具名职责迁移与远端增量接线；仍同一AnimusForge实现DLL、双API编译、单模块Bootstrap，不按目录拆多个加载模块。当前证据和限制读[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#reviewed-refactor-source-delivery-20261008)及[代码范围图](af-framework-code-scope.md#reviewed-refactor-source-delivery-20261008)。
+
+- `src/AF.GameAdapter.Bannerlord/Composition`：原引擎注册、组合和必要身份兼容入口；迁移部分接具名owner，不宣称所有partial均已薄化。
+- `ImportExport` / `Persistence` / `Records` / `Memory` / `Prompt`：实际格式、保存、游戏事实与线程安全捕获适配。
+- `Kingdom` / `Weekly` / `Scene` / `UI`：具名战役维护、异步生命周期、场景/原生交易目标及UI流程控制。
+- `src/modules/AF.Module.*`：领域规则、状态与请求/效果/记忆权威；`AF.Module.WarStats/WarStatsLedgerOwner`承接新增v6统计保存/恢复，不在宿主复制第二账本。
+- `tests/` / `tools/`：已有契约与具名当前消费者；旧冻结失败/历史修订注记不被本次同源检查伪装成全量通过。
+
+下面保留原远端目录历史，旧源码行数和Compile计数不是本次重新统计，也不代表实机/旧档验收。
+
 # 当前补充：AF2 最终职责冻结（2026-10-01）
 
 本轮不是单纯物理归位：Kingdom/Rebellion、Social/Patience、Memory/Summary与Recovery、Weekly/Generation、Conversation/Internal与Native、Persona/Generation及Llm/Protocol分别承接本轮具名规则/状态。仍同DLL，不新增公共V1接口或默认gateway，不改存档/程序集/模块身份。最终主Compile1199、资源8（两API集合一致）；旧1172为实施前基线。

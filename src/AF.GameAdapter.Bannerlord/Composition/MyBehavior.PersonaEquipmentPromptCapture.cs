@@ -12,6 +12,6 @@ public partial class MyBehavior {
             GetHeroFactionAndLiegeForPrompt = GetHeroFactionAndLiegeForPrompt,
             GetNpcPersonaStrings = GetNpcPersonaStrings
  }, null);
- private static HeroEquipmentPromptLivePort CreateHeroEquipmentPromptLivePort() => new() {ResolveContext=TryResolveEquipmentContextForPrompt,GetItem=TryGetHeroEquipmentItemForPrompt};
+ private static HeroEquipmentPromptLivePort CreateHeroEquipmentPromptLivePort() => new() {ResolveContext=AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt,GetItem=AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt};
  private static HeroIdentityPromptLivePort CreateHeroIdentityPromptLivePort() => new() {ResolveRuledKingdom=TryResolveActiveKingdomRuledByHeroForPrompt};
 }

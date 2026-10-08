@@ -67,53 +67,7 @@ public partial class MyBehavior
         MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(CaptureDailyDeveloperEditContext(npc), CaptureDailyDeveloperEditEffects(npc, affectedDayIndex, reason), affectedDayIndex, previousLines, currentLines, reason);
     }
 
-	private static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEntriesForDailyMemoryEdit(Hero npc, IEnumerable<DailyMemoryLine> lines)
-	{
-		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
-		string npcName = (npc?.Name?.ToString() ?? "NPC").Trim();
-		if (string.IsNullOrWhiteSpace(npcName))
-		{
-			npcName = "NPC";
-		}
-		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
-		{
-            int currentDay = 0;
-            string currentScene = "";
-            if (line != null && !string.IsNullOrWhiteSpace(line.Text)
-                && UncompressedMemoryMessageAssemblyOwner.IsUnknownMemorySceneLabel(line.Scene))
-            {
-                try
-                {
-                    currentDay = GetCurrentGameDayIndexSafe();
-                    if (line.GameDayIndex == currentDay) currentScene = ResolveCurrentMemorySceneLabel();
-                }
-                catch { }
-            }
-            ConversationMessage message = UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(
-                line, npcName, line?.TargetAgentIndex ?? -1, currentDay, currentScene);
-			if (message == null || string.IsNullOrWhiteSpace(message.Content))
-			{
-				continue;
-			}
-			string role = (message.Role ?? "").Trim();
-			string kind = string.Equals(role, "system", StringComparison.OrdinalIgnoreCase)
-				? "fact"
-				: (string.Equals(role, "user", StringComparison.OrdinalIgnoreCase) ? "player" : "npc");
-			result.Add(new AnimusForgeDialogueHistoryEntry
-			{
-				GameDayIndex = message.GameDayIndex,
-				GameDate = message.GameDate ?? "",
-				GameHour = message.GameHour,
-				Scene = message.Scene ?? "",
-				Speaker = message.SpeakerName ?? "",
-				TargetAgentIndex = message.TargetAgentIndex,
-				TargetName = message.TargetName ?? "",
-				Text = message.Content ?? "",
-				Kind = kind
-			});
-		}
-		return result;
-	}
+	private static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEntriesForDailyMemoryEdit(Hero npc, IEnumerable<DailyMemoryLine> lines) => MemoryHistoryCommitBannerlordAdapter.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(npc, lines);
 
 	private static List<DailyMemoryLine> CloneDevDailyMemoryLines(IEnumerable<DailyMemoryLine> lines)
 	{ return MemoryDeveloperEditOwner.CloneDevDailyMemoryLines(lines); }
@@ -146,36 +100,25 @@ public partial class MyBehavior
     internal bool DeleteDevCompressedMemoryBlockData(Hero npc, string blockId, long generation)
     {
         if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
-        LoadCompressedMemoryBlocks(npc);
-        MemoryImportExportState state = CaptureMemoryImportExportState();
-        bool removed = MemoryDeveloperEditOwner.DeleteBlock(GetMemoryHeroId(npc), blockId, state, MarkMemoryOverviewDirty);
-        _compressedMemoryBlocks = state.Blocks;
-        if (removed) InvalidateDevMemoryOverviewData(npc, "delete_block");
-        return removed;
+        return MemoryDeveloperEditOwner.DeleteBlockForAuthority(() => LoadCompressedMemoryBlocks(npc), () => GetMemoryHeroId(npc),
+            blockId, _memoryBusinessState, MarkMemoryOverviewDirty, blocks => TryEnqueueMemoryOverviewForHero(npc, blocks),
+            () => LoadCompressedMemoryBlocks(npc), message => Logger.Log("MemoryOverview", message));
     }
 
     internal bool TryApplyDevCompressedMemoryBlockDataMutation(Hero npc, string blockId,
         Action<CompressedMemoryBlock> mutate, long generation)
     {
         if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
-        LoadCompressedMemoryBlocks(npc);
-        MemoryImportExportState state = CaptureMemoryImportExportState();
-        bool updated = MemoryDeveloperEditOwner.EditBlock(GetMemoryHeroId(npc), npc.Name?.ToString(), blockId, mutate, state, MarkMemoryOverviewDirty);
-        _compressedMemoryBlocks = state.Blocks;
-        if (updated) InvalidateDevMemoryOverviewData(npc, "edit_block");
-        return updated;
+        return MemoryDeveloperEditOwner.EditBlockForAuthority(() => LoadCompressedMemoryBlocks(npc), () => GetMemoryHeroId(npc), () => npc.Name?.ToString(),
+            blockId, mutate, _memoryBusinessState, MarkMemoryOverviewDirty, blocks => TryEnqueueMemoryOverviewForHero(npc, blocks),
+            () => LoadCompressedMemoryBlocks(npc), message => Logger.Log("MemoryOverview", message));
     }
 
     private void InvalidateDevMemoryOverviewData(Hero npc, string reason)
     {
-        string heroId = GetMemoryHeroId(npc);
-        if (string.IsNullOrWhiteSpace(heroId)) return;
-        MemoryImportExportState state = CaptureMemoryImportExportState();
-        MemoryDeveloperEditOwner.InvalidateOverviewForManualEdit(heroId, state);
-        _memoryOverviewStates = state.Overviews;
-        _memoryOverviewQueue = state.OverviewQueue;
-        TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc));
-        Logger.Log("MemoryOverview", "manual_edit_invalidate hero=" + heroId + " reason=" + (reason ?? ""));
+        MemoryDeveloperEditOwner.InvalidateOverviewForAuthority(() => GetMemoryHeroId(npc), _memoryBusinessState,
+            () => LoadCompressedMemoryBlocks(npc), blocks => TryEnqueueMemoryOverviewForHero(npc, blocks), reason,
+            message => Logger.Log("MemoryOverview", message));
     }
 
     internal bool TryApplyDevDialogueHistoryLineDataMutation(Hero npc, int day, int lineIndex, string input, long generation)

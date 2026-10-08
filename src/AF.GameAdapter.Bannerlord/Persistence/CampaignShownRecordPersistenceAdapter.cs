@@ -5,9 +5,15 @@ using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
-// SyncData-only adapter; operates on original authoritative stores, with no host instance.
-internal static class CampaignShownRecordPersistenceAdapter
+// Save-storage/reset adapter; operates on original authoritative stores, with no host instance.
+internal sealed class CampaignShownRecordPersistenceAdapter
 {
+    private readonly ShownResourceRecordOwner _owner;
+    internal Dictionary<string, string> Storage = new Dictionary<string, string>();
+    internal CampaignShownRecordPersistenceAdapter(ShownResourceRecordOwner owner) { _owner = owner ?? throw new ArgumentNullException(nameof(owner)); }
+    internal void Save(IDataStore store) => Save(store, _owner.Records, Storage);
+    internal void Load(IDataStore store) => Load(store, _owner.Records, ref Storage);
+
     internal static string NormalizeKey(string targetKey) => (targetKey ?? "").Trim().ToLowerInvariant();
     internal static void Save(IDataStore dataStore, Dictionary<string, MyBehavior.HeroShownRecord> records, Dictionary<string, string> storage)
     {
@@ -89,4 +95,6 @@ internal static class CampaignShownRecordPersistenceAdapter
 				}
 			}
     }
+
+internal void ResetForCurrentSave() { _owner.ResetForCurrentSave(); Storage = new Dictionary<string,string>(); }
 }

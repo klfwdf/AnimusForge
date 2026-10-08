@@ -1,3 +1,4 @@
+using System.Reflection;
 using System;using System.Collections.Generic;using System.Linq;using System.Text;
 using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;
 using ExportImportScope = AnimusForge.MyBehavior.ExportImportScope;
@@ -751,6 +752,53 @@ internal sealed class DeveloperRootEditorController
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+internal static bool TryParseDevSelectionInt(string id, string prefix, out int value)
+	{
+		value = 0;
+		if (string.IsNullOrWhiteSpace(id) || prefix == null || !id.StartsWith(prefix, StringComparison.Ordinal))
+		{
+			return false;
+		}
+		return int.TryParse(id.Substring(prefix.Length), out value);
+	}
+
+ internal static void InitializeRootMenuTitle(Action<string> setTitle)
+ { try { setTitle("开发者工具"); } catch { } }
+ internal static bool RootEntryCondition(Action setSubmenu,Func<bool> readEnabled)
+ { setSubmenu();return readEnabled(); }
+ internal static void RootEntryConsequence(Func<bool> readEnabled,Action<string> switchMenu)
+ {
+  if(!readEnabled()) InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+  else switchMenu("AnimusForge_dev_root");
+ }
+ internal static bool RootBackCondition(Action setLeave)
+ { setLeave();return true; }
+ internal static void ReturnToRootMenu(Action<string> switchMenu)
+ { try { switchMenu("AnimusForge_dev_root"); } catch { } }
+ internal static void OpenKingdomStrategicProfilesMenu(Func<Action> captureOpenMenu)
+ {
+  Action open=captureOpenMenu();
+  if(open==null) { InformationManager.DisplayMessage(new InformationMessage("国家战略与性格数据行为尚未初始化。"));return; }
+  open();
+ }
+
+internal static void TryPersistMcmSettings(object settings)
+	{
+		try
+		{
+			MethodInfo method = settings?.GetType().GetMethod("Save", BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+			method?.Invoke(settings, null);
+		}
+		catch
+		{
+		}
+	}
+
+ internal static int ReadHistoryReturnCap(Func<int?> captureTopN,Func<int,int> clamp)
+ {
+  try { int? value=captureTopN();if(value.HasValue)return clamp(value.Value); } catch { }
+  return 4;
+ }
 }
 internal static class DeveloperEditorDataProjection
 {
@@ -768,4 +816,6 @@ internal static class DeveloperEditorDataProjection
   if(second!=null) foreach(var item in second) if(!string.IsNullOrWhiteSpace(item.Key)&&item.Value!=null&&item.Value.Count>0) ids.Add(item.Key);
   return ids.Count;
  }
+
+
 }

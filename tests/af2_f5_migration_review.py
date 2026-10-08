@@ -11,7 +11,7 @@ import importlib.util
 import re
 import subprocess
 from output_isolation import current_source_path
-from af2_terminal_migration_review import terminal_review
+from af2_terminal_migration_review import terminal_review, independent_historical_fixture
 
 ROOT = Path(__file__).resolve().parents[1]
 BEFORE = '320c1aad10df86b6078c1731c0ff8966ebd7c3f5'
@@ -47,6 +47,7 @@ def committed(revision, path):
     return subprocess.check_output(['git', 'show', revision + ':' + path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
 
 
+@independent_historical_fixture("F5")
 def verify_owners():
     for path in OWNERS:
         actual = current_source_path(ROOT, path).read_text(encoding='utf-8-sig')

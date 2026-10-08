@@ -69,12 +69,16 @@ def main():
         'NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
     rules=read('src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintRules.cs')
     files['MemorySourceFingerprintRules.cs']=rules
+    clone_path='src/AF.GameAdapter.Bannerlord/Prompt/MemorySummaryInputCaptureAdapter.cs'
+    clone=extract(read(clone_path),clone_path,'internal static T CloneMemorySummarySource<T>(')
+    files['MemorySummarySourceClone.cs']='using System;using System.Collections.Generic;using System.Linq;namespace AnimusForge.Refactor.Adapters { internal sealed class MemorySummaryInputCaptureAdapter {'+clone+'}}'
+    files['Product.cs']='using AnimusForge.Refactor.Adapters;\n'+files['Product.cs']
     recovery_owner=read('src/modules/AF.Module.Memory/Summary/MemoryRecoveryStateOwner.cs')
     files['MemoryRecoveryMarkerRules.cs']='using System;using System.Linq;namespace AnimusForge {internal sealed class MemoryRecoveryStateOwner {'+'\n'.join(ex.declaration(recovery_owner,signature) for signature in ['internal static bool IsValidMemoryCommitMarker(','internal static bool IsMemoryRecoveryHexDigest('])+'}}'
     for name,value in files.items(): (out/name).write_text(value,encoding='utf-8',newline='\n')
     manifest={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'writer_baseline':args.writer_baseline,'mutation':args.mutate,'declarations':declarations,
-        'source_sha256':{p:hashlib.sha256(read(p).encode()).hexdigest() for p in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemoryRecovery.cs','MyBehavior.MemorySourceFingerprint.cs',RECORDS,WRITER]},
+        'source_sha256':{p:hashlib.sha256(read(p).encode()).hexdigest() for p in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemoryRecovery.cs','MyBehavior.MemorySourceFingerprint.cs',RECORDS,WRITER,clone_path]},
         'generated_sha256':{p:hashlib.sha256(v.encode()).hexdigest() for p,v in files.items()},
         'limits':['Real internal Memory record DTO/copy and complete raw-source mapper/writer; synthetic controlled input, no game objects.',
                   'Stopwatch medians and thread allocations are microbench observations, not game frame guarantees.',
@@ -83,6 +87,9 @@ def main():
     (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
     dotnet=resolve_dotnet(ROOT)
     env=minimal_test_environment(dotnet,out)
+    for key in ('DOTNET_CLI_HOME','USERPROFILE','APPDATA','LOCALAPPDATA','TEMP','TMP'):
+        if key in env: Path(env[key]).mkdir(parents=True,exist_ok=True)
+    env['PYTHONDONTWRITEBYTECODE']='1'
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=120)
     (out/'build.log').write_text(build.stdout+build.stderr,encoding='utf-8')
     if build.returncode: print(build.stdout+build.stderr); return 2

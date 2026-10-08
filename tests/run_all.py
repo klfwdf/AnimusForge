@@ -96,6 +96,7 @@ TOKENS = {
     "{DOTNET8}": str(DOTNET8), "{NEWTONSOFT}": str(NEWTONSOFT), "{GAME}": str(GAME),
     "{WORKSHOP}": str(WORKSHOP), "{REFS14}": str(REFS14), "{STAGE_BIN}": str(STAGE_BIN),
     "{DLL14}": str(DLL14), "{ROOT}": str(ROOT),
+    "{DEBUG_DLL14}": str(DEBUG_DLL14), "{DEBUG_STAGE_BIN}": str(DEBUG_DLL14.parent),
     "{HARMONY_MODULE}": str(HARMONY_MODULE), "{MCM_MODULE}": str(MCM_MODULE),
     "{UIEXTENDER_MODULE}": str(UIEXTENDER_MODULE),
     "{CANDIDATE_ARTIFACT_ROOT}": str(DLL14.parents[2]),
@@ -136,16 +137,50 @@ def discover() -> list[str]:
     return sorted(set(found))
 
 
+def validate_python_selector(path: str, spec: dict) -> None:
+    if "pythonExecutableEnv" in spec and (not path.endswith(".py")
+            or spec["pythonExecutableEnv"] != "AF_TEST_PIL_PYTHON"):
+        raise ValueError("unsupported per-entry Python selector")
+
+
+def python_for_entry(path: str, spec: dict) -> str:
+    validate_python_selector(path, spec)
+    if "pythonExecutableEnv" not in spec:
+        return sys.executable
+    value = os.environ.get("AF_TEST_PIL_PYTHON")
+    if not value:
+        raise ValueError("AF_TEST_PIL_PYTHON is required for the selected entry")
+    selected = checked_path(Path(value))
+    if selected.suffix.lower() != ".exe" or not selected.is_file():
+        raise ValueError("selected Python must be an existing plain executable file")
+    return str(selected)
+
+
+def validate_prepare_entry(path: str, spec: dict) -> None:
+    if "prepareEntry" not in spec:
+        return
+    if (path != "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/DiplomacyArchitectureTests.csproj"
+            or spec["prepareEntry"] != "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py"
+            or spec.get("args") or spec.get("candidateDll")):
+        raise ValueError("unsupported fresh architecture preparation")
+
+
 def command(path: str, spec: dict, run_name: str, build_root: Path | None = None) -> list[str]:
     p = ROOT / path
+    validate_prepare_entry(path, spec)
     extra = expand(spec.get("args", []), run_name)
+    if "prepareEntry" in spec:
+        if build_root is None:
+            raise ValueError("fresh architecture preparation requires isolated build output")
+        extra = [str(build_root / "prepare" / "sources.json")]
     candidate = candidate_dll(spec)
     if p.suffix == ".py":
+        python = python_for_entry(path, spec)
         text = p.read_text(encoding="utf-8", errors="replace")
         if p.name.startswith("test_") and "__main__" not in text and "TestCase" in text:
-            return [sys.executable, "-X", "utf8", "-B", "-m", "unittest", "discover",
+            return [python, "-X", "utf8", "-B", "-m", "unittest", "discover",
                     "-s", str(p.parent), "-p", p.name, "-t", str(p.parent)] + extra
-        return [sys.executable, "-X", "utf8", "-B", str(p)] + extra
+        return [python, "-X", "utf8", "-B", str(p)] + extra
     text = p.read_text(encoding="utf-8", errors="replace")
     sdk = DOTNET10 if "net10.0" in text else DOTNET8
     cmd = [str(sdk), "run", "--project", str(p), "-c", "Release"]
@@ -153,6 +188,8 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
         cmd += ["-p:DebtPythonExe=" + sys.executable]
     if "PythonExecutable" in text:
         cmd += ["-p:PythonExecutable=" + sys.executable]
+    if "PowerShellExecutable" in text:
+        cmd += ["-p:PowerShellExecutable=" + str(PWSH)]
     if build_root is not None:
         # SDK-native per-project bin/obj layout also isolates ProjectReference builds.
         cmd += ["-p:UseArtifactsOutput=true", "-p:UseAppHost=false", f"-p:ArtifactsPath={build_root}",
@@ -176,13 +213,28 @@ def blocked(cmd: list[str]) -> str | None:
     exe = Path(cmd[0])
     if exe.is_absolute() and not exe.exists():
         return f"missing toolchain {exe}"
+    for argument in cmd:
+        if argument.startswith("-p:PowerShellExecutable="):
+            tool = Path(argument.split("=", 1)[1])
+            if not tool.is_absolute() or not tool.is_file():
+                return f"missing absolute PowerShell toolchain {tool}"
     return None
 
 
-def execute(cmd: list[str], env: dict, build_root: Path, timeout: int):
+def execute(cmd: list[str], env: dict, build_root: Path, timeout: int, prepare_entry: str | None = None):
     """SDK8 run can launch old bin/ output despite isolated build properties."""
     options = dict(cwd=ROOT, env=env, capture_output=True, text=True,
                    encoding="utf-8", errors="replace", timeout=timeout)
+    prepare_stdout = prepare_stderr = ""
+    if prepare_entry is not None:
+        project = Path(cmd[cmd.index("--project") + 1]).resolve().relative_to(ROOT.resolve()).as_posix()
+        validate_prepare_entry(project, {"prepareEntry": prepare_entry})
+        prepare = [sys.executable, "-X", "utf8", "-B", str(ROOT / prepare_entry),
+                   "--dotnet", cmd[0], "--run-root", str(build_root / "prepare"), "--prepare-only"]
+        prepared = subprocess.run(prepare, **options)
+        if prepared.returncode:
+            return prepared
+        prepare_stdout, prepare_stderr = prepared.stdout, prepared.stderr
     if len(cmd) < 3 or cmd[1] != "run":
         return subprocess.run(cmd, **options)
     separator = cmd.index("--") if "--" in cmd else len(cmd)
@@ -206,8 +258,8 @@ def execute(cmd: list[str], env: dict, build_root: Path, timeout: int):
     # .NET Framework fixtures run directly; managed .NET fixtures use their selected SDK.
     launch = [str(target)] if metadata["TargetFramework"].startswith("net4") else [cmd[0], str(target)]
     done = subprocess.run([*launch, *runtime_args], **options)
-    done.stdout = built.stdout + evaluated.stdout + "\n--- isolated target ---\n" + str(target) + "\n" + done.stdout
-    done.stderr = built.stderr + evaluated.stderr + done.stderr
+    done.stdout = prepare_stdout + built.stdout + evaluated.stdout + "\n--- isolated target ---\n" + str(target) + "\n" + done.stdout
+    done.stderr = prepare_stderr + built.stderr + evaluated.stderr + done.stderr
     return done
 
 
@@ -247,6 +299,13 @@ def main(argv: list[str]) -> int:
     if invalid_candidates:
         print("runners.json: invalid candidate configuration", invalid_candidates)
         return 2
+    try:
+        for entry, spec in specs.items():
+            validate_python_selector(entry, spec)
+            validate_prepare_entry(entry, spec)
+    except ValueError as error:
+        print("runners.json: invalid bounded process selection:", error)
+        return 2
     entries = discover()
     stale = sorted(set(specs) - set(entries))
     if stale:
@@ -261,6 +320,15 @@ def main(argv: list[str]) -> int:
         for e in entries:
             print(specs.get(e, {}).get("expect", "PASS"), e)
         return 0
+
+    try:
+        for entry in entries:
+            spec = specs.get(entry, {})
+            if "pythonExecutableEnv" in spec and spec.get("execution", "auto") != "manual":
+                python_for_entry(entry, spec)
+    except ValueError as error:
+        print("selected entry: invalid bounded Python environment:", error)
+        return 2
 
     run_name = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:12]
     out = Path(args.out) if args.out else ROOT / "artifacts" / "tests" / "run_all" / run_name
@@ -286,12 +354,18 @@ def main(argv: list[str]) -> int:
         return 2
     out.mkdir(parents=True, exist_ok=False)
     tmp.mkdir(parents=True, exist_ok=False)
+    # Precreate only this fresh run's SDK profile/appdata; never use the real profile.
+    for folder in (out / "dotnet-home", out / "appdata"):
+        folder.mkdir(parents=True, exist_ok=False)
     env = os.environ.copy()
     env.update({
         "TMP": str(tmp), "TEMP": str(tmp), "PYTHONUTF8": "1",
         "AF_DOTNET": str(DOTNET8), "DOTNET_EXE": str(DOTNET8), "AF_J15_DOTNET8": str(DOTNET8),
         "AF_J15_PWSH": str(PWSH), "AF_NEWTONSOFT": str(NEWTONSOFT), "NEWTONSOFT_JSON_PATH": str(NEWTONSOFT),
-        "DOTNET_CLI_HOME": str(out / "dotnet-home"), "DOTNET_NOLOGO": "1", "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "DOTNET_CLI_HOME": str(out / "dotnet-home"), "HOME": str(out / "dotnet-home"),
+        "USERPROFILE": str(out / "dotnet-home"), "APPDATA": str(out / "appdata"),
+        "LOCALAPPDATA": str(out / "appdata"), "PYTHONDONTWRITEBYTECODE": "1",
+        "DOTNET_NOLOGO": "1", "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
         "NUGET_PACKAGES": str(out / "nuget-packages"), "NUGET_HTTP_CACHE_PATH": str(out / "nuget-http-cache"),
         "NUGET_PLUGINS_CACHE_PATH": str(out / "nuget-plugin-cache"),
         "AF_REPLAY_REPO_ROOT": str(ROOT),
@@ -325,7 +399,7 @@ def main(argv: list[str]) -> int:
             code, text = None, reason
         else:
             try:
-                done = execute(cmd, entry_env, build_root, spec.get("timeout", 1200))
+                done = execute(cmd, entry_env, build_root, spec.get("timeout", 1200), prepare_entry=spec.get("prepareEntry"))
                 code, text = done.returncode, done.stdout + "\n--- stderr ---\n" + done.stderr
             except subprocess.TimeoutExpired as ex:
                 def timeout_text(value):

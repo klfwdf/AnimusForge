@@ -125,4 +125,53 @@ internal static partial class MemoryDeveloperEditOwner
         }
         return result;
     }
+
+ internal static int SaveOverviewForAuthority(Func<string> captureHeroId,Func<string> captureHeroName,string summary,
+  Func<List<CompressedMemoryBlock>> loadBlocks,Func<long> captureUtcTicks,MemoryBusinessStateOwner authority,Action<List<CompressedMemoryBlock>> enqueue)
+ {
+  string heroId=captureHeroId();
+  List<CompressedMemoryBlock> blocks=string.IsNullOrWhiteSpace(summary)?null:loadBlocks();
+  MemoryImportExportState state=MemoryImportExportOwner.Capture(authority);
+  bool saved=SaveOverview(heroId,captureHeroName(),summary,blocks,captureUtcTicks(),state);
+  authority.Overviews=state.Overviews;authority.OverviewQueue=state.OverviewQueue;
+  if(!saved){enqueue(loadBlocks());return -1;}
+  return state.Overviews[heroId].IncludedBlockIds?.Count??0;
+ }
+    internal static bool DeleteBlockForAuthority(Action loadBlocks, Func<string> captureHeroId,
+        string blockId, MemoryBusinessStateOwner authority, Action<string> markOverviewDirty,
+        Action<List<CompressedMemoryBlock>> enqueue, Func<List<CompressedMemoryBlock>> reloadBlocks, Action<string> log)
+    {
+        loadBlocks();
+        MemoryImportExportState state = MemoryImportExportOwner.Capture(authority);
+        bool removed = DeleteBlock(captureHeroId(), blockId, state, markOverviewDirty);
+        authority.Blocks = state.Blocks;
+        if (removed) InvalidateOverviewForAuthority(captureHeroId, authority, reloadBlocks, enqueue, "delete_block", log);
+        return removed;
+    }
+
+    internal static bool EditBlockForAuthority(Action loadBlocks, Func<string> captureHeroId, Func<string> captureHeroName,
+        string blockId, Action<CompressedMemoryBlock> mutate, MemoryBusinessStateOwner authority, Action<string> markOverviewDirty,
+        Action<List<CompressedMemoryBlock>> enqueue, Func<List<CompressedMemoryBlock>> reloadBlocks, Action<string> log)
+    {
+        loadBlocks();
+        MemoryImportExportState state = MemoryImportExportOwner.Capture(authority);
+        bool updated = EditBlock(captureHeroId(), captureHeroName(), blockId, mutate, state, markOverviewDirty);
+        authority.Blocks = state.Blocks;
+        if (updated) InvalidateOverviewForAuthority(captureHeroId, authority, reloadBlocks, enqueue, "edit_block", log);
+        return updated;
+    }
+
+    internal static void InvalidateOverviewForAuthority(Func<string> captureHeroId, MemoryBusinessStateOwner authority,
+        Func<List<CompressedMemoryBlock>> loadBlocks, Action<List<CompressedMemoryBlock>> enqueue, string reason, Action<string> log)
+    {
+        string heroId = captureHeroId();
+        if (string.IsNullOrWhiteSpace(heroId)) return;
+        MemoryImportExportState state = MemoryImportExportOwner.Capture(authority);
+        InvalidateOverviewForManualEdit(heroId, state);
+        authority.Overviews = state.Overviews;
+        authority.OverviewQueue = state.OverviewQueue;
+        enqueue(loadBlocks());
+        log("manual_edit_invalidate hero=" + heroId + " reason=" + (reason ?? ""));
+    }
+
 }

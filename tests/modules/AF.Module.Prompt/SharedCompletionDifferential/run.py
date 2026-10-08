@@ -5,6 +5,8 @@ import importlib.util
 import argparse
 import base64
 import json
+import hashlib
+import re
 import os
 import sys
 import shutil
@@ -60,6 +62,50 @@ for revision in ("old", "current"):
         capture = read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs")
         methods += "\n" + extract.declaration(capture, markers[1])
         methods += "\n" + extract.declaration(capture, "private PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(")
+        shared_path="src/AF.GameAdapter.Bannerlord/Prompt/SharedPromptCaptureBannerlordAdapter.cs"
+        shared_source=read(shared_path)
+        shared_markers=['internal static ShoutPromptContext CreateEmptyShoutPromptContext(',
+            'internal static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, string targetId,',
+            'internal static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, Hero targetHero,',
+            'internal static string AppendPlayerPartySharedResourcePrompt(', 'internal static void ApplyPromptRuntimeAppendices(',
+            'internal static ShoutPromptContext CompleteSharedPromptBuild(']
+        shared_methods="\n".join(extract.declaration(shared_source,marker) for marker in shared_markers)
+        shared="""using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Hero=AnimusForge.Hero;
+using CharacterObject=AnimusForge.CharacterObject;
+using ShoutPromptContext=AnimusForge.MyBehavior.ShoutPromptContext;
+using WeeklyPromptSnapshot=AnimusForge.MyBehavior.WeeklyPromptSnapshot;
+namespace AnimusForge.Refactor.Adapters {
+internal sealed class SharedPromptCaptureBannerlordAdapter {
+ @STAGE_CONSTANTS@
+ // Original controlled prisoner fact leaf; not a substitute for completion/section capture.
+ internal static string BuildHeroPrisonerStatusPromptLineForExternal(Hero h)=>"";
+ @SHARED@
+}
+internal static class PersonaIdentityPromptCaptureAdapter {internal static string BuildPlayerPublicDisplayNameForPrompt(Hero h)=>"Player";}
+internal static class MemoryEntityIdentityBannerlordAdapter {
+ internal static int GetCurrentGameDayIndexSafe()=>0;
+ internal static string BuildResidentRecentActionsPrompt(object state,object records,Func<int> day,Func<Hero,CharacterObject,int,string> key,Hero hero,CharacterObject character,int agent)=>"";
+}
+internal static class WeekZeroOpeningSummaryGenerationController {
+ internal static bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string rules,Hero hero,CharacterObject character,string kingdom,WeeklyPromptSnapshot snapshot)=>false;
+}
+internal static class PromptRuleCaptureBannerlordAdapter {
+ internal static string BuildTriggeredRuleInstructions(AnimusForge.MyBehavior owner,string input,Hero hero,bool duel,bool qualified,int tier,bool reward,bool loan,bool surroundings,bool hasAnyHero,CharacterObject character,string kingdom,int agent,string secondary,bool includeDuelStake,bool playerWon,bool worldMap,IEnumerable<string> excluded,IEnumerable<string> preselected,bool suppressMeeting,List<AnimusForge.GuardrailRuleHit> fallbackHits)=>owner.BuildTriggeredRuleInstructions(input,hero,duel,qualified,tier,reward,loan,surroundings,hasAnyHero,character,kingdom,agent,secondary,includeDuelStake,playerWon,worldMap,excluded,preselected,suppressMeeting,fallbackHits);
+}
+}
+""".replace('@SHARED@',shared_methods)
+        constants=[]
+        for name in ['ShoutPromptContextSlowStageMs','ShoutPromptContextHardBudgetMs']:
+            values=re.findall(r'private const double '+name+r' = [^;]+;',shared_source)
+            assert len(values)==1, 'current stage constant drift: '+name
+            constants.append(values[0])
+        shared=shared.replace('@STAGE_CONSTANTS@',"\n".join(constants))
+        (out/'SharedCaptureOwner.cs').write_text(shared,encoding='utf-8')
+        (out/'current-owner-inputs.json').write_text(json.dumps({"sharedPath":shared_path,"sharedRawSha256":hashlib.sha256((ROOT/shared_path).read_bytes()).hexdigest(),"markers":shared_markers,"declarationSha256":[hashlib.sha256(extract.declaration(shared_source,m).encode()).hexdigest() for m in shared_markers],"layer":"Current unchanged completion/appendices/empty/log/resource algorithms + full current CaptureAdapter and actual My thin/factory. Retrieval, rules, weekly, world/game domain and logging leaves retain original synthetic seams; runtime not historical projection."},indent=2),encoding='utf-8')
         # Alias only game types to this suite's existing synthetic API leaves; body is untouched.
         adapter = "using Hero = AnimusForge.Hero; using CharacterObject = AnimusForge.CharacterObject; using CampaignVec2 = AnimusForge.CampaignVec2; using MobileParty = AnimusForge.MobileParty; using TWParallel = AnimusForge.TWParallel;\n" + read("src/AF.GameAdapter.Bannerlord/Composition/PromptContextCaptureBannerlordAdapter.cs")
     if revision == "current" and args.mutate:
@@ -71,7 +117,7 @@ for revision in ("old", "current"):
         before, after = needles[args.mutate]
         assert adapter.count(before) == 1, "mutation anchor drift: " + args.mutate
         adapter = adapter.replace(before, after, 1)
-    (out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Linq;\nusing System.Threading;\nnamespace AnimusForge { public partial class MyBehavior {\n" + methods + "\n}}\n", encoding="utf-8")
+    (out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Linq;\nusing System.Threading;\n#if CURRENT\nusing AnimusForge.Refactor.Adapters;\n#endif\nnamespace AnimusForge { public partial class MyBehavior {\n" + methods + "\n}}\n", encoding="utf-8")
     for filename in composition:
         (out / filename).write_text(read("src/modules/AF.Module.Prompt/Composition/" + filename), encoding="utf-8")
     for filename in ("GuardrailRuleHit.cs", "PreprocessFormatException.cs"):
@@ -81,7 +127,7 @@ for revision in ("old", "current"):
     if revision == "current":
         (out / "CaptureAdapter.cs").write_text(adapter, encoding="utf-8")
         (out / "GameTypeNamespaces.cs").write_text("namespace TaleWorlds.CampaignSystem { internal class TestNamespace { } } namespace TaleWorlds.CampaignSystem.Party { internal class TestNamespace { } } namespace TaleWorlds.Library { internal class TestNamespace { } } namespace AnimusForge.Refactor.Modules { internal class TestNamespace { } }", encoding="utf-8")
-        files += ["CaptureAdapter.cs", "GameTypeNamespaces.cs"]
+        files += ["CaptureAdapter.cs", "GameTypeNamespaces.cs", "SharedCaptureOwner.cs"]
     (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>' + ('<DefineConstants>CURRENT</DefineConstants>' if revision == 'current' else '') + '</PropertyGroup><ItemGroup>' + ''.join(f'<Compile Include="{name}" />' for name in files) + '</ItemGroup></Project>', encoding="utf-8")
     (out / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
     result = subprocess.run([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")

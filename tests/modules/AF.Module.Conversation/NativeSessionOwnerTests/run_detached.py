@@ -16,24 +16,22 @@ a = p.parse_args()
 out = new_run_root(ROOT, 'native-detached-postprocess', a.run_root)
 dotnet = resolve_dotnet(ROOT, a.dotnet)
 owner = courier.ex.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs', None)
-facade = courier.ex.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs', None)
-prepare = courier.ex.declaration(facade, 'internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(')
-prepare = prepare[:prepare.index('{')] + '''{
-    Program.MainOnly();Prepared++;PreparedHits=preprocessRuleHits;
-    if(Immediate)return new SceneActionPostprocessWorkItem("[ACTION:MOOD:NEUTRAL]");
-    return new SceneActionPostprocessWorkItem("system",playerText+"|"+historyText+"|"+replyText,replyText,raw=>{
-        Program.MainOnly();Normalized++;return "[ACTION:GIVE_GOLD:7] [ACTION:UNAUTHORIZED:3]";
-    });
-}'''
+admission = courier.ex.source('src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs', None)
+shout = courier.ex.source('ShoutBehavior.cs', None)
+constant = next(line.strip() for line in shout.splitlines() if 'const int NativeConversationMainThreadPreprocessTimeoutMs =' in line)
 code = (HERE / 'DetachedHarness.cs.txt').read_text(encoding='utf-8')
 code = code.replace('@@WORK@@', '\n'.join(courier.ex.declaration(owner, signature) for signature in
     ('internal sealed class SceneActionPostprocessWorkItem', 'internal sealed class PostprocessNetworkRequest')))
 code = code.replace('@@COMPLETE@@', courier.ex.declaration(owner, 'internal static string CompleteSceneUnifiedActionPostprocess('))
-code = code.replace('@@PREPARE@@', prepare)
+code = code.replace('@@DELEGATES@@', '\n'.join(line for line in admission.splitlines() if line.startswith('internal delegate bool NativeAdmissionTarget')))
+code = code.replace('@@TIMEOUT@@', constant)
 (out / 'Program.cs').write_text(code, encoding='utf-8')
 paths = [out / 'Program.cs', current_source_path(ROOT, 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeDetachedPostprocess.cs')]
 paths += [current_source_path(ROOT, path) for path in courier.LINKS]
-paths.append(ROOT / 'src/modules/AF.Module.Prompt/Configuration/LegacyDetachedRuleSelector.cs')
+paths += [current_source_path(ROOT, path) for path in (
+    'src/modules/AF.Module.Conversation/Channels/Native/NativeDetachedPostprocessApplicationAdapter.cs',
+    'src/modules/AF.Module.Conversation/Channels/Native/ConversationGameThreadDispatcher.cs',
+    'src/modules/AF.Module.Prompt/Configuration/LegacyDetachedRuleSelector.cs')]
 newtonsoft = Path(os.environ.get('AF_NEWTONSOFT') or str(dotnet.parent / 'sdk/8.0.425/Newtonsoft.Json.dll'))
 if not newtonsoft.is_file(): raise SystemExit('Missing existing Newtonsoft.Json.dll: ' + str(newtonsoft))
 items = ''.join('<Compile Include="' + escape(str(path)) + '" />' for path in paths)

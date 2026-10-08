@@ -1553,6 +1553,25 @@ internal sealed class PersonaEditorController
 			OpenDevVoiceMappingMenu();
 		}, shouldInputBeObfuscated: false, null, fallbackVoice ?? ""));
 	}
+
+ internal static bool CanOpenNativePersonaEditor(Func<Hero> captureHero,Func<bool> readEnabled,
+  Func<Hero,bool> isPlayer,Func<Hero,bool> hasHeroCharacter)
+ {
+  try { Hero hero=captureHero();return readEnabled() && hero!=null && !isPlayer(hero) && hasHeroCharacter(hero); }
+  catch { return false; }
+ }
+ internal static bool OpenNativeEditor(Func<bool> canEdit,Func<Hero> captureHero,Action<Hero,Action> openEditor,
+  Action onFinished,Action<Exception> log)
+ {
+  try
+  {
+   if(!canEdit()) return false;
+   Hero hero=captureHero();
+   if(hero==null) return false;
+   openEditor(hero,onFinished);return true;
+  }
+  catch(Exception ex) { log(ex);return false; }
+ }
 }
 
 // Shared selection belongs to the developer UI, not any gameplay/data owner.

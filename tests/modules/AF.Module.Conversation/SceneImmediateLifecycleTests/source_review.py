@@ -10,6 +10,12 @@ after=after.replace('_ports.SceneSessionId()','Volatile.Read(ref _sceneHistorySe
 for text in ['enum ScenePostprocessStatus','sealed class ScenePostprocessOutcome','Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions','bool CommitDeferredSceneActionPlan']:
     assert after.count('internal '+text)==1
     after=after.replace('internal '+text,'private '+text,1)
+# Exact reviewed bridge relocation; the original body oracle remains immutable.
+bridge=(ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs').read_text(encoding='utf-8-sig')
+assert bridge.count('internal static bool CanUseIndependentClanPeaceForExternal(')==1
+assert 'DiplomacyModuleServices.Conversation.CanUseIndependentClanPeace(' in bridge
+assert after.count('DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(')==1
+after=after.replace('DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(', 'DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(',1)
 assert after==before,'Unreviewed complete Scene deferred postprocess body migration'
 print('PASS full deferred Scene postprocess byte inverse against fixed Git 84f428cd (all 633 lines; routing/state only)')
 old_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneActionDirective.cs'
@@ -71,6 +77,10 @@ projected=before[:start]+replacement+before[end:]
 start=projected.index('\t\t\t\t\tList<string> historyLines = null;')
 end=projected.index('\t\t\t\t\tscenePublicHistorySection =',start)
 projected=projected[:start]+'\t\t\t\t\tList<string> historyLines = CaptureVisibleSceneHistoryLines(currentSpeaker.AgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene);\n\n\n'+projected[end:]
+for edge in ['CanUseIndependentClanPeaceForExternal','CanUseDiplomacyActionPostprocessForExternal']:
+    assert bridge.count('internal static bool '+edge+'(')==1
+    assert after.count('DiplomacyConversationBridge.'+edge+'(')==1
+    after=after.replace('DiplomacyConversationBridge.'+edge+'(', 'DiplomacyBehavior.'+edge+'(',1)
 assert after==projected,'Unreviewed entire primary-first/relay/bystander/group effect/history execution body'
 print('PASS full group execution source inverse ('+str(len(before.splitlines()))+' lines), only shared five-phase scheduling + scalar history capture changed')
 def tokens(value):

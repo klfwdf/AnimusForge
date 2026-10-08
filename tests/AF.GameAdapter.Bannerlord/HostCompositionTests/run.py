@@ -35,6 +35,10 @@ def fixtures(source):
         if line == 'host.ProcessPendingInitialApiGuideNotice();':
             order.append('SubModule.ProcessPendingInitialApiGuideNotice')
             continue
+        if line == 'DiplomacyModuleServices.World.OnEngineTick();':
+            # Controlled module leaf; record the original world phase identity.
+            order.append('WorldDiplomacyBehavior.OnEngineTick')
+            continue
         match = re.fullmatch(r'([A-Za-z]\w*)\.Instance\?\.([A-Za-z]\w*)\(\);', line)
         if match:
             owner, method = match.groups()
@@ -49,11 +53,17 @@ def fixtures(source):
                 dt_phases.add(owner + '.' + method)
             order.append(owner + '.' + method)
             continue
-    assert len(order) == 37 and len(set(order)) == 37, 'Tick fixture failed to cover every phase'
+    added = 'SettlementBalancePopup.ProcessDeferredCloseIfNeeded'
+    assert order.count(added) == 1, 'Approved settlement close phase missing or duplicated'
+    original_order = [phase for phase in order if phase != added]
+    assert len(original_order) == 37 and len(set(original_order)) == 37, 'Tick fixture failed to cover every phase'
     assert order[-1] == 'IntegratedModuleHost.Tick' and dt_phases == {'IntegratedModuleHost.Tick'}, \
         'IntegratedModuleHost.Tick(dt) must be the only dt phase and run last'
     scope_names = re.findall(r'RunWatchedTickPhase\("([^"]+)"', watched)
-    assert len(scope_names) == 37 and len(set(scope_names)) == 37, 'Watched fixture failed to cover every phase'
+    added_scope = 'SubModule.' + added
+    assert scope_names.count(added_scope) == 1, 'Approved watched close phase missing or duplicated'
+    original_scopes = [scope for scope in scope_names if scope != added_scope]
+    assert len(original_scopes) == 37 and len(set(original_scopes)) == 37, 'Watched fixture failed to cover every phase'
     assert not (set(static) & set(instance)), 'Unexpected mixed static/instance tick owner'
     stubs = ['using System;\nusing System.Collections.Generic;\nnamespace AnimusForge {',
         '''internal static class TickTrace {
@@ -113,6 +123,7 @@ internal static class CampaignTickDiagnosticsPatch {
         members = ''.join(f' internal void {method}() => TickTrace.Hit("{owner}.{method}");\n'
                           for method in sorted(methods))
         stubs.append(f'internal sealed class {owner} {{ internal static {owner} Instance {{ get; }} = new();\n{members}}}')
+    stubs.append('internal static class DiplomacyModuleServices { internal static RecordingWorldPort World { get; } = new(); }\ninternal sealed class RecordingWorldPort { internal void OnEngineTick() => TickTrace.Hit("WorldDiplomacyBehavior.OnEngineTick"); }')
     stubs.append('}\n')
     return '\n'.join(stubs), order, scope_names
 
@@ -145,8 +156,9 @@ internal static class Program {
    TickTrace.Reset(freeze,perf); ApplicationTickComposition.Run(Host,0.1f);
    HitOrder(true); FrameEnd();
    Check(TickTrace.Dt==0.1f, "frame dt forwarded to IntegratedModuleHost.Tick");
-   int count=TickTrace.Events.Count(x=>x.StartsWith("freeze+:SubModule.") && x!="freeze+:SubModule.PerfProbe.EndFrame");
-   int perfCount=TickTrace.Events.Count(x=>x.StartsWith("perf+:SubModule."));
+   int count=TickTrace.Events.Count(x=>x.StartsWith("freeze+:SubModule.") && x!="freeze+:SubModule.PerfProbe.EndFrame" && x!="freeze+:SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded");
+   int perfCount=TickTrace.Events.Count(x=>x.StartsWith("perf+:SubModule.") && x!="perf+:SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded");
+   Check(TickTrace.Events.Count(x=>x=="freeze+:SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded")== (freeze||perf?1:0), "approved added phase scope count");
    Check(count==(freeze||perf?37:0) && perfCount==count, "phase scope count");
    if(freeze||perf) {
      foreach(var name in ScopeNames) {
@@ -173,7 +185,7 @@ internal static class Program {
  }
  static int Main() {
    try { Normal(false,false); Normal(true,false); Normal(false,true); DynamicFallback(); Failure(false); Failure(true);
-     Console.WriteLine("PASS source-linked 37-phase fast/watched/scope fallback/exception/finally/WarStats replay"); return 0; }
+     Console.WriteLine("PASS source-linked original37+approved1-phase fast/watched/scope fallback/exception/finally/WarStats replay"); return 0; }
    catch(Exception ex) { Console.WriteLine(ex.Message.StartsWith("FAIL ")?ex.Message:"FAIL "+ex); return 1; }
  }
 }
@@ -184,12 +196,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE', str(ROOT / 'local/dotnet/8.0.425/dotnet.exe')))
     parser.add_argument('--skip-mutations', action='store_true')
+    parser.add_argument('--run-root', type=Path)
     args = parser.parse_args()
+    import sys
+    sys.path.insert(0, str(ROOT / 'tests'))
     inverse.verify()
     source = SOURCE.read_text(encoding='utf-8-sig')
     stubs, order, scope_names = fixtures(source)
-    out = HERE / '.generated'
-    out.mkdir(parents=True, exist_ok=True)
+    from output_isolation import new_run_root
+    out = new_run_root(ROOT, 'host-composition', args.run_root)
     (out / 'Stubs.cs').write_text(stubs, encoding='utf-8')
     (out / 'Program.cs').write_text(program(order, scope_names), encoding='utf-8')
     (out / 'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding='utf-8')

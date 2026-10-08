@@ -8,7 +8,9 @@ namespace AnimusForge;
 public partial class ShoutBehavior { internal const int NativeConversationMainThreadPreprocessTimeoutMs=80; }
 internal sealed class PreprocessFormatException : Exception { }
 internal static class Logger { internal static void Log(string area,string text) { if(Probe.ThrowDiagnostic) throw new Exception("diagnostic"); } }
-internal static class FreezeWatchdog { internal static void Mark(string area,string text,bool immediate=false) { if(Probe.ThrowDiagnostic) throw new Exception("diagnostic"); } }
+internal static class LlmRetryPrompt { internal static void CaptureMainThreadContext() {} }
+internal static class BannerlordExceptionSentinel { internal static void ReportObservedException(string area,Exception ex,string context) {} }
+internal static class FreezeWatchdog { internal static IDisposable Scope(string name) => new EmptyScope(); private sealed class EmptyScope:IDisposable { public void Dispose() {} } internal static void Mark(string area,string text,bool immediate=false) { if(Probe.ThrowDiagnostic) throw new Exception("diagnostic"); } }
 internal static class Probe
 {
     internal static bool ThrowDiagnostic;
@@ -34,7 +36,19 @@ internal static class Probe
         Case("preprocess-error-propagates-no-retry",()=>{var r=Runtime(out var registry,true);var t=Start(r,()=>{Calls++;throw new PreprocessFormatException();});Pump(t);Require(t.IsFaulted&&t.Exception.InnerException is PreprocessFormatException&&Calls==1&&registry.Count==0,"format-error-once");});
         Case("diagnostic-failure-cannot-own-completion",()=>{ThrowDiagnostic=true;var r=Runtime(out var registry,true);var t=Start(r,()=>{Calls++;return 42;});Pump(t);Require(t.Result==42&&Calls==1&&registry.Count==0,"diagnostic-survives");});
         Case("sealed-registry-refuses-direct-effects",()=>{var r=Runtime(out var registry);registry.Seal();var t=r.RunAsync("direct","npc",7,()=>{Calls++;return 42;},-1);Require(t.Result==-1&&Calls==0,"sealed-no-effects");});
-        Console.WriteLine("GameThreadDispatcher PASS="+pass+" FAIL=0");
+        Case("production-drain-api-budget-and-reentrant-queue",()=>{
+var q=new ConcurrentQueue<Action>();var drain=new ConversationMainThreadActionDrain(q);int count=0;
+q.Enqueue(()=>{count++;q.Enqueue(()=>count++);});q.Enqueue(()=>count++);q.Enqueue(()=>count++);
+drain.DrainMainThreadActionsForMissionTick();
+#if BANNERLORD_1_4_OR_GREATER
+Require(count==4&&q.Count==0,"1.4 full drain includes newly queued");
+#else
+Require(count==2&&q.Count==2,"1.3 bounded original start count");
+#endif
+drain.ResetQueue();Require(q.Count==0,"reset same queue");
+q.Enqueue(()=>throw new Exception("leaf"));q.Enqueue(()=>count++);drain.DrainMainThreadActionsForMissionTick();Require(q.Count==0,"exception isolated and next action executed");
+});
+Console.WriteLine("GameThreadDispatcher PASS="+pass+" FAIL=0");
     }
 }
 internal static class Program { static int Main(){try{Probe.Run();return 0;}catch(Exception ex){Console.Error.WriteLine("ASSERTION FAILURE: "+ex);return 1;}} }

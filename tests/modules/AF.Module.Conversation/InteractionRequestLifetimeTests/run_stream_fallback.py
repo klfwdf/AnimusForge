@@ -13,8 +13,8 @@ spec = importlib.util.spec_from_file_location('extract', ROOT / 'tests/modules/A
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 
-FALLBACK = 'string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false, cancellationToken: cancellationToken);'
-RETRY_TOKEN = 'forceDisableThinking: true, promptRetryOnError: false, cancellationToken: cancellationToken);'
+FALLBACK = 'string fallback = await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats: false, overrideMaxTokens: overrideMaxTokens, forceDisableThinking: forceDisableThinking, promptRetryOnError: false, cancellationToken: cancellationToken, overrideTemperature: overrideTemperature);'
+RETRY_TOKEN = 'forceDisableThinking: true, promptRetryOnError: false, cancellationToken: cancellationToken, overrideTemperature: overrideTemperature);'
 FALLBACK_GUARD = 'if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))'
 RETRY_GUARD = 'if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))'
 
@@ -25,7 +25,9 @@ parser.add_argument('--newtonsoft', type=Path, help='Newtonsoft.Json.dll; defaul
 args = parser.parse_args()
 
 source = (ROOT / 'src/modules/AF.Module.Llm/ShoutNetwork.cs').read_text(encoding='utf-8-sig')
-method = extract.declaration(source, 'public static async Task CallApiWithMessagesStream(')
+wrapper = extract.declaration(source, 'public static async Task CallApiWithMessagesStream(')
+method = extract.declaration(source, 'private static async Task CallApiWithMessagesStreamCore(')
+assert wrapper.count('await CallApiWithMessagesStreamCore(')==1
 for anchor in (FALLBACK, RETRY_TOKEN, FALLBACK_GUARD, RETRY_GUARD):
     if method.count(anchor) != 1:
         raise SystemExit('source shape changed; re-review the fallback/retry anchors: ' + anchor[:60])
@@ -39,8 +41,9 @@ elif args.mutate == 'retry-publishes-after-cancel':
     method = method.replace(RETRY_GUARD, 'if (true)')
 
 out = new_run_root(ROOT, 'stream-fallback-lifetime', args.run_root)
+(out / 'current-consumer-source.json').write_text(__import__('json').dumps({'path':'src/modules/AF.Module.Llm/ShoutNetwork.cs','rawSha256':__import__('hashlib').sha256((ROOT/'src/modules/AF.Module.Llm/ShoutNetwork.cs').read_bytes()).hexdigest(),'wrapperSha256':__import__('hashlib').sha256(wrapper.encode()).hexdigest(),'scope':'actual public stream wrapper and full core; non-stream HTTP sender and settings leaves controlled'},indent=2),encoding='utf-8')
 template = (HERE / 'StreamFallbackHarness.cs.txt').read_text(encoding='utf-8-sig')
-(out / 'Program.cs').write_text(template.replace('@@STREAM@@', method), encoding='utf-8')
+(out / 'Program.cs').write_text(template.replace('@@STREAM@@', wrapper+'\n'+method), encoding='utf-8')
 for relative in ['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs',
                  'src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs',
                  'src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs',

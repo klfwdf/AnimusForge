@@ -34,7 +34,7 @@ public partial class ShoutBehavior
  public static Func<bool> ScenePresentationBlocksHotkeysHook;
  private ScenePresentationController _scenePresentation;
  private ScenePresentationController Presentation => _scenePresentation ??= new ScenePresentationController(
-  CanAgentParticipateInSceneSpeech, () => Interlocked.Read(ref _currentConversationEventSequence),
+  CanAgentParticipateInSceneSpeech, () => Interlocked.Read(ref SceneConversationHistoryOwner.CurrentEventSequence),
   GetPresentationCombatEndReason, () => { GetConfiguredShoutRange(out var _, out var range); return range; },
   ComputePresentationHistoryFingerprint, index => ActivateMultiSceneMovementSuppression(new[] { index }),
   DeactivateMultiSceneMovementSuppression, ReleasePresentationTrade,
@@ -42,13 +42,9 @@ public partial class ShoutBehavior
  private bool _shoutHotkeyChargeMergesIntoSession { get => Presentation.MergesHotkeyCharge; set => Presentation.MergesHotkeyCharge=value; }
  private const float PresentationTapSeconds = 0.25f;
  private const int PresentationContextLines = 4;
- private static bool IsScenePresentationSessionEnabled()
- {
-  try { return ScenePresentationSessionHook?.Invoke() == true; }
-  catch { return false; }
- }
+internal static bool IsScenePresentationSessionEnabled() => ScenePresentationBannerlordAdapter.IsScenePresentationSessionEnabled();
  private bool IsPresentationSessionLive() => Presentation.IsPresentationSessionLive();
- private static void BumpPresentation() => ScenePresentationController.BumpPresentation();
+ internal static void BumpPresentation() => ScenePresentationController.BumpPresentation();
  private ScenePresentationController.Member FindPresentationMember(int index) => Presentation.FindPresentationMember(index);
  private bool IsPresentationAudience(ScenePresentationController.Member member) => Presentation.IsPresentationAudience(member);
  private int ChoosePresentationAddressee() => Presentation.ChoosePresentationAddressee();

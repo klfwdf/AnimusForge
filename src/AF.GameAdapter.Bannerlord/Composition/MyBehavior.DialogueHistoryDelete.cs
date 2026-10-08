@@ -40,77 +40,11 @@ public partial class MyBehavior
 		}
 	}
 
-	private bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int lineOrdinal, string expectedText, out string status)
-	{
-		string id = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(id) || gameDayIndex < 0 || lineOrdinal < 0)
-		{
-			status = "这条记录不能删除。";
-			return false;
-		}
-		List<DialogueDay> records = LoadDialogueHistoryById(id);
-		DialogueDay day = records?.FirstOrDefault(x => x != null && x.GameDayIndex == gameDayIndex);
-		// The ordinal comes from the panel's snapshot; re-check the text so a stale list can never delete a different line.
-		if (day?.Lines == null || lineOrdinal >= day.Lines.Count || !DisplayTextMatches(day.Lines[lineOrdinal], expectedText))
-		{
-			status = "记录已变化，请重新打开历史后再删除。";
-			return false;
-		}
-		string rawLine = day.Lines[lineOrdinal];
-		string syncKey = NormalizeDialogueHistoryLineForDailyMemorySync(rawLine);
-		day.Lines.RemoveAt(lineOrdinal);
-		if (day.Lines.Count == 0 && (day.MemoryCommitMarkers == null || day.MemoryCommitMarkers.Count == 0))
-		{
-			records.Remove(day);
-		}
-		SaveDialogueHistoryById(id, records);
-		bool draftRemoved = RemoveMatchingDraftLine(id, gameDayIndex, syncKey);
-		Logger.Log("DialogueHistory", "deleted line memoryId=" + id + " day=" + gameDayIndex + " ordinal=" + lineOrdinal + " draftRemoved=" + draftRemoved);
-		status = draftRemoved ? "已删除该条记录。" : "已删除该条记录（该日记忆已压缩，压缩内容不受影响）。";
-		return true;
-	}
+	private bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int lineOrdinal, string expectedText, out string status) => _memoryHistoryCommit.DeleteDialogueHistoryLine(memoryId, gameDayIndex, lineOrdinal, expectedText, out status);
 
-	private static bool DisplayTextMatches(string rawLine, string expectedText)
-	{
-		string line = (rawLine ?? "").Trim();
-		DialogueHistoryLedger.TryStripSceneSessionMarker(line, out line, out var _);
-		ClassifyDialogueHistoryLine(line, out var _, out var text, out var _);
-		return string.Equals((text ?? "").Trim(), (expectedText ?? "").Trim(), StringComparison.Ordinal);
-	}
+	private static bool DisplayTextMatches(string rawLine, string expectedText) => MemoryHistoryCommitBannerlordAdapter.DisplayTextMatches(rawLine, expectedText);
 
 	// Removes one draft line with the same normalized text (the same key the draft-edit sync uses),
 	// then reuses that sync so the native conversation session cache drops the entry too.
-	private bool RemoveMatchingDraftLine(string memoryId, int gameDayIndex, string syncKey)
-	{
-		if (string.IsNullOrWhiteSpace(syncKey))
-		{
-			return false;
-		}
-		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
-		DailyMemoryDraft draft = FindDevDailyMemoryDraft(drafts, gameDayIndex);
-		int index = draft?.Lines == null ? -1 : draft.Lines.FindIndex(x => x != null
-			&& string.Equals(NormalizeDialogueHistoryLineForDailyMemorySync(x.Text), syncKey, StringComparison.Ordinal));
-		if (index < 0)
-		{
-			return false;
-		}
-		DailyMemoryLine removed = draft.Lines[index];
-		draft.Lines.RemoveAt(index);
-		// Sanitize keeps a stale HasLlmDialogue; recompute from what is left.
-		draft.HasLlmDialogue = draft.Lines.Any(x => x != null && x.IsLlmDialogue && !x.IsAfef && !string.IsNullOrWhiteSpace(x.Text));
-		SaveDailyMemoryDraftsById(memoryId, drafts);
-		if (FindDevDailyMemoryDraft(LoadDailyMemoryDraftsById(memoryId), gameDayIndex) == null)
-		{
-			_memorySummaryQueue?.RemoveAll(x => x != null && x.GameDayIndex == gameDayIndex
-				&& string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryId, StringComparison.OrdinalIgnoreCase));
-		}
-		Hero hero = ResolveDialogueHistoryEditHero(memoryId);
-		if (hero != null)
-		{
-			ShoutBehavior.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(hero, hero.CharacterObject, hero.Name?.ToString(), gameDayIndex,
-				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(hero, new[] { removed }),
-				new List<AnimusForgeDialogueHistoryEntry>(), "dialogueui_delete");
-		}
-		return true;
-	}
+	private bool RemoveMatchingDraftLine(string memoryId, int gameDayIndex, string syncKey) => _memoryHistoryCommit.RemoveMatchingDraftLine(memoryId, gameDayIndex, syncKey);
 }

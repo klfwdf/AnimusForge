@@ -124,9 +124,9 @@ def main():
     snippets.append(revision_field.group())
     manifest.append(dict(file='MyBehavior.cs',signature='_weeklyReportMaterialRevisions',line=source[:revision_field.start()].count('\n')+1,sha256=hashlib.sha256(revision_field.group().encode()).hexdigest()))
     product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading; using System.Threading.Tasks; using Newtonsoft.Json; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
-    input_code=read('MyBehavior.MemorySummaryInput.cs')
+    input_code=read('MyBehavior.MemorySummaryInput.cs') if a.source_baseline else support.captured_input_source(ROOT,manifest,ex)
     if a.admission_only:
-        body=ex.declaration(input_code,'private static T CloneMemorySummarySource<T>(');pos=body.index('{')+1
+        body=ex.declaration(input_code,('private' if a.source_baseline else 'internal')+' static T CloneMemorySummarySource<T>(');pos=body.index('{')+1
         input_code=replace(input_code,body,body[:pos]+'\n AdmissionProbe.Clones++; if(value is List<CompressedMemoryBlock> admissionBlocks) AdmissionProbe.ClonedBlocks+=admissionBlocks.Count;'+body[pos:])
     if a.source_baseline:
         if a.mutate:raise ValueError('Select either a mutation or the historical source-check implementation')
@@ -134,8 +134,8 @@ def main():
         manifest.append(dict(file='MyBehavior.MemorySummaryInput.cs',source_revision=a.source_baseline,sha256=hashlib.sha256(old.encode()).hexdigest(),historical_input_only=True));input_code=old
     old_delay='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
     if old_delay in input_code:input_code=replace(input_code,old_delay,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
-    else:input_code=replace(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
-    if a.mutate=='ignore-parse-source':input_code=replace(input_code,'if (!IsMemorySummaryInputCurrent(input)) return false;','/* fault: old provider payload may parse */')
+    elif a.source_baseline:input_code=replace(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
+    if a.mutate=='ignore-parse-source':input_code=replace(input_code,'if (!IsMemorySummaryInputCurrent(input)) return false;' if a.source_baseline else 'if (!_inputCurrent(input)) return false;','/* fault: old provider payload may parse */')
     fixture=read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt');fixture=fixture[:fixture.index('  static void ThreeKinds() {')]+'\n}}'
     fixture=replace(fixture,'public sealed class Hero {','public sealed class Hero { public static Hero MainHero; public object CharacterObject=new(); public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;')
     fixture,count=re.subn(r'^  bool HasCompressedMemoryBlock\([^\n]+\n','',fixture,flags=re.M)
@@ -162,13 +162,25 @@ def main():
     files['RecoveryLedger.cs']=read('src/modules/AF.Module.Memory/Recovery/InteractionMemoryRecoveryLedger.cs')
     for name in ['src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs','src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs','src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
+    # Link the current publication preparation/value context, not copied DTOs or
+    # value-policy stubs. The original terminal assertions still exercise publish.
+    for name in [
+        'src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialValuePolicy.cs',
+        'src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialPolicy.cs',
+        'src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs',
+        'src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs',
+        'AnimusForge.SiegeAftermathIntervention/SiegeActionTagCatalog.cs',
+        'AnimusForge.SiegeAftermathIntervention/SiegeInterventionActionKind.cs',
+        'AnimusForge.SiegeAftermathIntervention/LegacyTownTagAdapter.cs',
+    ]:
+        files[Path(name).name] = read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
         if (current_source_path(ROOT, extra)).exists():files[Path(extra).name]=read(extra)
     deps=Path(os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     if not deps.is_file():raise ValueError('Existing Newtonsoft dependency missing')
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     if a.admission_only:files['Proof.csproj']=files['Proof.csproj'].replace('<NoWarn>','<DefineConstants>ADMISSION_PROOF</DefineConstants><NoWarn>')
-    if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
+    if 'ComputeMemorySummarySourceFingerprint(source)' in input_code or 'MemorySourceFingerprintRules.Compute(source)' in input_code:
         for name in ['MyBehavior.MemorySourceFingerprint.cs','src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']:
             files[Path(name).name]=read(name)
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
@@ -187,6 +199,7 @@ def main():
         files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'Interlocked.CompareExchange(ref _owner._current, null, this)','Interlocked.Exchange(ref _owner._current, null)')
     elif a.run_mutate=='ignore-run-authority':
         files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'ReferenceEquals(Volatile.Read(ref _owner._current), this)','true')
+    if not a.source_baseline:support.include_captured_leaves(ROOT,files,manifest,ex)
     support.include(ROOT,files,manifest,ex)
     files['Terminal.cs']=replace(files['Terminal.cs'],'InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger=new();','InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger => MemoryRecoveryState.Ledger;')
     files['MemoryBusinessStateOwner.cs']=replace(files['MemoryBusinessStateOwner.cs'],'string id = MemoryRecordRules.NormalizeMemoryHeroId(memoryId);\n        if (string.IsNullOrWhiteSpace(id)) return;\n        Drafts ??=', 'MyBehavior.TestBeforeTerminalSave(memoryId); string id = MemoryRecordRules.NormalizeMemoryHeroId(memoryId);\n        if (string.IsNullOrWhiteSpace(id)) return;\n        Drafts ??=')
@@ -205,6 +218,7 @@ def main():
         metadata['admission_mutation']=a.admission_mutate
         metadata['seams']=['Actual TryEnqueueMemoryOverviewForMemoryId, HasMemoryOverviewPendingBlocks, sanitizers/getter/settings/queue publication; controlled game identity. Only method-entry and per-source iteration/copy counters added.']
         metadata['limits']=['Admission-only functional and operation-count observation; no Process/Apply/provider execution or live frame-time acceptance in this mode. Ordinary terminal mode retains its explicitly separate overview-admission seam.']
+    metadata['currentCaptureExecutionScope'] = None if a.source_baseline else {'inputCapture': 'whole current MemorySummaryInputCaptureAdapter', 'application': 'current ExecuteAsync/parse/source-text/queue receipt members', 'commitAdmission': 'not linked through this captured component; terminal/business suite owns that acceptance', 'clock': 'single actual ExecuteAsync Task.Delay delegate to controlled fixture clock', 'legacyMyInventory': 'reviewed historical extraction, not a whole-current-host claim'}
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
     dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
     (out/'home').mkdir();(out/'appdata').mkdir()

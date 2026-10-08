@@ -1,3 +1,25 @@
+<a id="reviewed-refactor-source-delivery-20261008"></a>
+## 当前导航：主体重构与远端功能协调源码（2026-10-08）
+
+本表坐标绑定本次交付树的一基行号与LF规范字节SHA；符号是定位入口，不表示整类已经完整验收。详细状态/真实有限回归及未验层只读[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#reviewed-refactor-source-delivery-20261008)。以下历史表对后来迁移的符号须按本表与当前实现重定位，不能按旧行数推定新源码完成度。
+
+| 文件:一基行 | 符号入口 / 职责 | LF SHA256 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:1712` | `public override void RegisterEvents()`；战役注册/装配；已迁移职责仍通过既有 owner 接线 | `b76f4d3307c661706ee0dd74b61533e7e01125051329d3baeb35e178a4cb693b` |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:2542` | `public override void RegisterEvents()`；场景与原生入口；保留三渠道与生命周期边界 | `12d2d3cd6d7520961b263386e04e1a6c4c6c9b255c48c2b425918246d9f82f10` |
+| `src/AF.GameAdapter.Bannerlord/ImportExport/MemoryHistoryImportExportAdapter.cs:11` | `class MemoryHistoryImportExportAdapter`；记忆导入/导出格式与实际旧格式读取 | `f16df77621252f388e36c80683137ac2da30aa32601c76a39b0e8236411224a1` |
+| `src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs:19` | `class MemoryHistoryCommitBannerlordAdapter`；唯一记忆提交适配与捕获日期 | `66a2d4d80a603cb76f156bf93f13572d9253345ef7b64ee5bbde43d7ced7899b` |
+| `src/AF.GameAdapter.Bannerlord/Weekly/WeekZeroOpeningSummaryGenerationController.cs:498` | `internal void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)`；周零维护增量接入；全部异步组合未验 | `42f6c72b8857bbda0271bf3f1d4fa6efca5552e2ca856dc4b8b0158cc86af76b` |
+| `src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs:241` | `internal void OnWorldBulletinWarDeclared(`；事件事实捕获与外交/内战来源 | `de880b674eaab23059702200e5902802ef366702c61579303074948a1e1da879` |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs:94` | `private bool IsNativeTradeTargetValidForCommit()`；提交前会话/Mission/Hero/Agent 身份复验，失效拒绝 | `6727375faddb9d82c08f7d10ce4007eeab61ee45282204a426a0057aaee0b576` |
+| `src/AF.GameAdapter.Bannerlord/Kingdom/KingdomRebellionRuntimeController.cs:10` | `class KingdomRebellionRuntimeController`；保留本地异步版本占用与远端叛乱行为 | `9c0c61b58c32e0f3f762bc52b2fd86f6631ecdfdb05a4ad75018a47e65770e74` |
+| `src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs:50` | `class ConversationActionExecutorComposition`；唯一动作效果装配；不复制第二执行链 | `e732765954311f572cd5e9ca7483b9cdd55d7bc51ab60c14dfdc2711e388f79a` |
+| `WarStats/AfWarStatsBehavior.cs:389` | `public override void SyncData(IDataStore dataStore)`；47旧键/类型保留、2个新增v6键 | `258b15bc30151284a7c0679b9675307e27a8af17eeb5dc5f99eec921f386237c` |
+| `src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs:276` | `internal void PrepareSaveData(AfWarStatsBehavior host)`；唯一战争状态及新旧保存投影/恢复 | `8b927744218a2ceaffc5151246a74c39b9b00a595c83bd181c24a63428a90314` |
+| `src/AF.GameAdapter.Bannerlord/Persistence/CampaignCivilWarPersistenceAdapter.cs:18` | `internal void Load(IDataStore dataStore)`；旧inline与现有UTF8分片 helper 接线 | `5af82722861e8b41c4e07d50186a28d0d1668b51679359bb899f8040a0af7527` |
+
+共通未覆盖：真实Campaign/Mission事件、玩家旧档引擎反序列化、GPU/渲染、真实网络provider、第三方组合和帧性能。存档fixture用实际DLL及合成IDataStore，场景/VM/provider叶受控，managed接缝注册不启动战役；这些不等于实机验收。三渠道同类规则/动作/历史与唯一提交保持，公开V1与同DLL internal契约仍分开，不新增第二主体或默认路由。
+
 <a id="meeting-lifecycle-fixes-20261008"></a>
 ### 会面放行与投降生命周期导航（2026-10-08）
 

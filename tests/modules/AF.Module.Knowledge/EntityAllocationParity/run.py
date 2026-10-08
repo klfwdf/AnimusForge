@@ -4,15 +4,19 @@ import argparse
 import importlib.util
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, minimal_test_environment
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-detached-scope", "drop-detached-distance"])
+parser.add_argument("--run-root", type=Path)
 args = parser.parse_args()
 source = (ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 markers = [
@@ -26,14 +30,13 @@ if args.mutate == "drop-detached-scope":
     parts[4] = parts[4].replace("candidate.HeroClanId = detached.HeroClanId;", 'candidate.HeroClanId = "";', 1)
 if args.mutate == "drop-detached-distance":
     parts[4] = parts[4].replace("candidate.HeroDistanceBonus = detached.HeroDistanceBonus;", "candidate.HeroDistanceBonus = 0f;", 1)
-out = ROOT / "artifacts/tests/knowledge-j06-entity-allocation" / (args.mutate or "current")
-out.mkdir(parents=True, exist_ok=True)
+out = new_run_root(ROOT, "knowledge-j06-entity-allocation", args.run_root)
 (out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Linq;\nnamespace AnimusForge { internal static partial class WorldEntityRetrievalService {\n" + "\n".join(parts) + "\n}}\n", encoding="utf-8")
 (out / "Program.cs").write_bytes((HERE / "Program.cs").read_bytes())
-(out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="Production.cs"/><Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityInjectionAllocator.cs" Link="EntityInjectionAllocator.cs"/><Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityNameMatcher.cs" Link="EntityNameMatcher.cs"/></ItemGroup></Project>', encoding="utf-8")
+(out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="Production.cs"/><Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityInjectionAllocator.cs" Link="EntityInjectionAllocator.cs"/><Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityNameMatcher.cs" Link="EntityNameMatcher.cs"/></ItemGroup></Project>'.replace("../../../../src/", (ROOT / "src").as_posix() + "/"), encoding="utf-8")
 (out / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
 dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_NOLOGO="1", DOTNET_CLI_TELEMETRY_OPTOUT="1")
+env = minimal_test_environment(dotnet, out)
 r = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 print(r.stdout, end="")
 print(r.stderr, end="")

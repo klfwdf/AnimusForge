@@ -4,7 +4,11 @@ using TaleWorlds.CampaignSystem;
 // Recording fakes model only method signatures. No Bannerlord gameplay is simulated.
 namespace TaleWorlds.CampaignSystem
 {
-    public sealed class Hero { }
+    public sealed class Hero {
+#if ADAPTER_ONLY
+public static Hero MainHero=new(){StringId="player"};public string StringId,Name;public IFaction MapFaction;
+#endif
+}
     public sealed class CharacterObject { }
 }
 
@@ -81,3 +85,34 @@ namespace AnimusForge
           text = Recorder.RefResult; actionHandled = Recorder.HandledResult; return Recorder.BoolResult; }
     }
 }
+
+#if ADAPTER_ONLY
+namespace TaleWorlds.CampaignSystem {
+    public interface IFaction {}
+    public sealed class Kingdom : IFaction { public string Name, StringId; }
+    public sealed class Clan { public static Clan PlayerClan; public Kingdom Kingdom; }
+}
+namespace AnimusForge {
+    public partial class MyBehavior {
+        internal static MyBehavior Instance;
+        internal static readonly List<string> CivilWarCalls = new();
+        internal static void RecordEventSourceMaterialForExternal(string kind,string label,string text,string key,string kingdom,bool world,bool realm) {
+            CivilWarCalls.Add($"material:{kind}|{label}|{text}|{key}|{kingdom}|{world}|{realm}");
+        }
+        internal bool CaptureWorldBulletinEvent(string kind,string key,int score,string sentence,bool player,string group,string detail,params string[] kingdoms) {
+            CivilWarCalls.Add($"bulletin:{kind}|{key}|{score}|{sentence}|{player}|{group}|{detail}|{string.Join(",",kingdoms)}"); return true;
+        }
+    }
+}
+#endif
+
+#if ADAPTER_ONLY
+namespace TaleWorlds.CampaignSystem {public sealed class Campaign {public static Campaign Current;public T GetCampaignBehavior<T>() where T:class=>null;}}
+namespace TaleWorlds.CampaignSystem.Settlements {public sealed class Settlement {public static Settlement CurrentSettlement;public string Name,StringId;public bool IsTown;}}
+namespace TaleWorlds.CampaignSystem.Party {public sealed class MobileParty {public static MobileParty MainParty;public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;}}
+namespace AnimusForge {
+ internal static class Logger {internal static void Log(string category,string text){}}
+ internal static partial class MemoryEntityIdentityBannerlordAdapter {internal static bool ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out string kingdom,out string settlement){kingdom="realm";settlement="town";return true;}}
+ public partial class MyBehavior {internal sealed class NpcActionFacts {}internal ExternalActionObservationBannerlordAdapter ExternalActionObservations;internal static readonly List<object[]> RpCalls=new();}
+}
+#endif

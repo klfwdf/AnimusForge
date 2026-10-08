@@ -128,6 +128,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _setupDone;
 
 	private readonly OnboardingSessionOwner _onboardingSession = new OnboardingSessionOwner();
+	private readonly OnboardingDatabaseImportController _databaseImport = new OnboardingDatabaseImportController();
 	private readonly OnboardingDismissalOwner<OnboardingUiStage> _dismissalOwner = new OnboardingDismissalOwner<OnboardingUiStage>();
 	private readonly OnboardingOperationVersionOwner _operationVersions = new OnboardingOperationVersionOwner();
 
@@ -3724,150 +3725,41 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	}
 
 	private void TryImportRequiredSetAndUnlock(string folderName, Action onReturn)
-	{
-		try
-		{
-			string text = ResolveImportFolderPath(folderName);
-			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			string path = Path.Combine(text, "personality_background");
-			if (!Directory.Exists(path) || Directory.GetFiles(path, "*.json").Length == 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 personality_background\\*.json"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			string path2 = Path.Combine(text, "unnamed_persona");
-			if (!Directory.Exists(path2) || Directory.GetFiles(path2, "*.json").Length == 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 unnamed_persona\\*.json"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			bool flag = false;
-			try
-			{
-				string path3 = Path.Combine(text, "knowledge", "rules");
-				if (Directory.Exists(path3) && Directory.GetFiles(path3, "*.json").Length != 0)
-				{
-					flag = true;
-				}
-			}
-			catch
-			{
-				flag = false;
-			}
-			if (!flag)
-			{
-				string path4 = Path.Combine(text, "knowledge", "KnowledgeRules.json");
-				if (File.Exists(path4))
-				{
-					flag = true;
-				}
-			}
-			if (!flag)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 knowledge\\rules\\*.json（或 knowledge\\KnowledgeRules.json）"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			string path5 = Path.Combine(text, "voice_mapping", "VoiceMapping.json");
-			string path6 = Path.Combine(text, "VoiceMapping.json");
-			if (!File.Exists(path5) && !File.Exists(path6))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 voice_mapping\\VoiceMapping.json。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			string path7 = Path.Combine(text, "event_data", "WorldOpeningSummary.json");
-			string path8 = Path.Combine(text, "event_data", "KingdomOpeningSummaries.json");
-			if (!File.Exists(path7) || !File.Exists(path8))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 event_data\\WorldOpeningSummary.json 或 event_data\\KingdomOpeningSummaries.json。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			string kingdomProfilesPath = Path.Combine(text, "kingdom_profiles", "KingdomProfiles.json");
-			if (!File.Exists(kingdomProfilesPath))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 kingdom_profiles\\KingdomProfiles.json。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			KingdomStrategicProfileBehavior kingdomProfileBehavior = Campaign.Current?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
-			if (kingdomProfileBehavior == null)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格数据行为未初始化。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			if (!kingdomProfileBehavior.InspectImportDirectory(text, out int kingdomProfileTotalCount, out _, out int kingdomProfileSkippedCount, out string kingdomProfileInspectError)
-				|| kingdomProfileTotalCount <= 0)
-			{
-				string reason = string.IsNullOrWhiteSpace(kingdomProfileInspectError)
-					? "资料包中没有与当前世界安全匹配的国家卡。"
-					: kingdomProfileInspectError;
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格资料无效。原因：" + reason));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
-			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (myBehavior == null)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：MyBehavior 未初始化。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!InvokePrivateImport(myBehavior, "ImportPersonaData", text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 Hero 个性/背景导入。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!InvokePrivateImport(myBehavior, "ImportUnnamedPersonaData", text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 非Hero 描述导入。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!InvokePrivateImport(myBehavior, "ImportKnowledgeData", text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 知识导入。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!InvokePrivateImport(myBehavior, "ImportVoiceMappingData", text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 声音映射导入。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!InvokePrivateImport(myBehavior, "ImportEventData", text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 事件库导入。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!kingdomProfileBehavior.ImportAllFromDirectory(text, overwriteExisting: true, out string kingdomProfileImportDetail))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行国家战略与性格导入。原因：" + kingdomProfileImportDetail));
-				OpenImportFolderPicker(onReturn);
-			}
-			else if (!HasLoadedVoiceMapping())
-			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：声音映射未成功载入到当前存档。"));
-				OpenImportFolderPicker(onReturn);
-			}
-			else
-			{
-				InformationManager.DisplayMessage(new InformationMessage("国家战略与性格已从资料包导入：匹配 " + kingdomProfileTotalCount + " 条；无法匹配 " + kingdomProfileSkippedCount + " 条。"));
-				CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: true);
-			}
-		}
-		catch (Exception ex)
-		{
+    {
+        try
+        {
+        Campaign campaign = Campaign.Current;
+        MyBehavior my = campaign?.GetCampaignBehavior<MyBehavior>();
+        Func<bool> memoryCurrent = my?.CaptureOnboardingImportGuard();
+        Func<bool> current = () => ReferenceEquals(Campaign.Current, campaign)
+            && ReferenceEquals(campaign?.GetCampaignBehavior<ModOnboardingBehavior>(), this)
+            && ReferenceEquals(campaign?.GetCampaignBehavior<MyBehavior>(), my)
+            && (memoryCurrent == null || memoryCurrent());
+        _databaseImport.Begin(folderName, current, directory =>
+        {
+            var kingdom = campaign?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
+            var result = new OnboardingDatabaseImportController.KingdomInspection { Available = kingdom != null };
+            if (kingdom == null) return result;
+            result.Valid = kingdom.InspectImportDirectory(directory, out int total, out _, out int skipped, out string error);
+            result.Total = total; result.Skipped = skipped; result.Error = error;
+            result.Import = () =>
+            {
+                bool accepted = kingdom.ImportAllFromDirectory(directory, overwriteExisting: true, out string detail);
+                if (!accepted) InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行国家战略与性格导入。原因：" + detail));
+                return accepted;
+            };
+            return result;
+        }, directory => my?.CaptureOnboardingImports(directory), HasLoadedVoiceMapping,
+        () => { if (current()) CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: true); },
+        () => { if (current()) OpenImportFolderPicker(onReturn); });
+
+        }
+        catch (Exception ex)
+        {
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 			OpenImportFolderPicker(onReturn);
-		}
-	}
+        }
+    }
 
 	private static bool InvokePrivateImport(MyBehavior my, string methodName, string folderName)
 	{

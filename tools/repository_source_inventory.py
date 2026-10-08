@@ -119,6 +119,13 @@ def classify_path(path: str) -> str | None:
             "content/foundation/AF.Foundation.UI/",
         )
         return "content" if path.startswith(owned_roots) else None
+    if path in {
+        "extensions/AnimusForge.Coup/tests/Coup.VictoryFlowTests/Fixture.cs.in",
+        "extensions/AnimusForge.DialogueUI/tests/continue-hit-tests/Fixture.cs.in",
+        "extensions/AnimusForge.Illustrator/tests/ConversationSceneRouteTests/Fixture.cs.in",
+        "extensions/AnimusForge.Illustrator/tests/PlayerRedrawTests/Fixture.cs.in",
+    }:
+        return "tests"  # Reviewed tracked test templates, not accepting gameplay owners.
     if top == "tests":
         return "tests"
     if path == "tools/PersistenceTypedRef.cs":

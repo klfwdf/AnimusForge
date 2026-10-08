@@ -247,7 +247,18 @@ internal static class Program
         owner.RecordExecutionSpeech(c.Request, 1, Cue("保留实录"), victim, new[] { victim });
         MyBehavior.FailMemory = false;
         Check(owner.Transcript(c.Request.SessionId.ToString("N")).LastStatement == "保留实录", "memory failure preserves authoritative transcript");
+        int attempts=MyBehavior.MemoryAttempts;
+        owner.RecordExecutionSpeech(c.Request,1,Cue("保留实录"),victim,new[]{victim});
+        Check(MyBehavior.MemoryAttempts==attempts,"failed memory callback duplicate does not reapply observation");
         owner.CompleteExecutionTranscript(c.Request, false);
         Check(owner.Materials == 0 && owner.News.Count == 0, "cancelled scene does not publish execution news");
+        var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+        var controller=typeof(MyBehavior).GetField("ExecutionWitnesses",flags).GetValue(owner);
+        var store=typeof(MyBehavior).GetField("_executionTranscripts",flags).GetValue(owner);
+        Check(ReferenceEquals(store,typeof(ExecutionWitnessObservationController).GetField("_executionTranscripts",flags).GetValue(controller)),"wrapper and observation use one transcript store");
+        Check(typeof(ExecutionWitnessObservationController).GetFields(flags).All(f=>f.FieldType!=typeof(MyBehavior)),"observation does not hold whole host");
+        var speech=typeof(MyBehavior).GetMethod("RecordExecutionSpeech",flags);
+        Check(speech!=null&&speech.GetParameters()[0].ParameterType==typeof(ExecutionRequest),"original typed hook reflection ABI retained");
+
     }
 }

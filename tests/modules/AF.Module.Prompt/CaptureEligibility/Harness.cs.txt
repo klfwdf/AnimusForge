@@ -39,7 +39,7 @@ namespace AnimusForge
             return true;
         }
     }
-    internal static class DiplomacyBehavior { internal static bool CanInjectDiplomacyRuleForExternal(Hero h, CharacterObject c) { Probe.MainOnly(); return true; } }
+    internal static class DiplomacyConversationBridge { internal static bool CanInjectDiplomacyRuleForExternal(Hero h, CharacterObject c) { Probe.MainOnly(); return true; } internal static bool CanDiscussWorldDiplomacyForExternal(Hero h) => WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(h); }
     internal static class WorldDiplomacyBehavior { internal static bool CanDiscussWorldDiplomacyForExternal(Hero h) { Probe.MainOnly(); return true; } }
     internal sealed class RomanceSystemBehavior
     {

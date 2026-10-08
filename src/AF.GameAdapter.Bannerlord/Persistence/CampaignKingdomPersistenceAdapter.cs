@@ -5,8 +5,20 @@ using TaleWorlds.Library;
 namespace AnimusForge;
 
 // IO boundary only: original domain owners retain all authoritative containers.
-internal static class CampaignKingdomPersistenceAdapter
+internal sealed class CampaignKingdomPersistenceAdapter
 {
+    private readonly KingdomStabilityOwner _state;
+    private readonly RebelKingdomIdentityOwner _rebels;
+    internal Dictionary<string,string> StabilityStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string,string> RelationStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string,string> WeeklyStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string,string> RebelStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+    internal CampaignKingdomPersistenceAdapter(KingdomStabilityOwner state, RebelKingdomIdentityOwner rebels)
+    { _state=state; _rebels=rebels; }
+    internal void Save(IDataStore dataStore) => Save(dataStore, _state.Values, ref StabilityStorage,
+        _state.RelationOffsets, ref RelationStorage, _state.WeeklyDeltas, ref WeeklyStorage, _rebels, ref RebelStorage);
+    internal void Load(IDataStore dataStore) => Load(dataStore, _state.Values, ref StabilityStorage,
+        _state.RelationOffsets, ref RelationStorage, _state.WeeklyDeltas, ref WeeklyStorage, _rebels, ref RebelStorage);
     internal static void Save(IDataStore dataStore, Dictionary<string, int> stability, ref Dictionary<string, string> stabilityStorage, Dictionary<string, int> relationOffsets, ref Dictionary<string, string> relationStorage, Dictionary<string, int> weeklyDeltas, ref Dictionary<string, string> weeklyStorage, RebelKingdomIdentityOwner rebelIdentity, ref Dictionary<string, string> rebelStorage)
     {
 				stabilityStorage.Clear();
@@ -123,4 +135,16 @@ internal static class CampaignKingdomPersistenceAdapter
 			}
     }
 
+
+internal void ResetForCurrentSave()
+{
+ _state.Values = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+ StabilityStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+ _state.RelationOffsets = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+ RelationStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+ _state.WeeklyDeltas = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+ WeeklyStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+ _rebels.Clear();
+ RebelStorage = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+}
 }

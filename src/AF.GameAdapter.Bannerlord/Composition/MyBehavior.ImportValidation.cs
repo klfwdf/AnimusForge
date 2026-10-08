@@ -63,18 +63,7 @@ public partial class MyBehavior
   => KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForSingleRuleImport(kb, rule, overwriteExisting, out error);
 
  private static bool ValidateKnowledgeKeywordsForImport(string importDir, bool overwriteExisting, out string error)
- {
-  try
-  {
-   KnowledgeLibraryBehavior kb = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
-   return KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb, importDir, overwriteExisting, out error);
-  }
-  catch (Exception ex)
-  {
-   error = "导入失败：关键词校验异常：" + ex.Message;
-   return false;
-  }
- }
+  => KnowledgeImportExportAdapter.ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting, out error);
 
  private static string ReadUnnamedPersonaImportKey(string file) => PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(file)?.Key;
 

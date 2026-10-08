@@ -39,8 +39,8 @@ assert current==expected,'unlisted complete-context algorithm/order delta'
 # Verify actual host rule bindings, rather than merely trusting a detached fixture port.
 host=(R/path).read_text(encoding='utf-8-sig')
 factory=ex.declaration(host,'private PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(')
-call=re.search(r'BuildTriggeredRuleInstructions\(request.Input,.*?retrieval\?\.FallbackExtraRuleHits\)',factory,re.S).group()
-expected_call=rule_call
+call=re.search(r'PromptRuleCaptureBannerlordAdapter\.BuildTriggeredRuleInstructions\(NpcMajorRuleCapture, request.Input,.*?retrieval\?\.FallbackExtraRuleHits\)',factory,re.S).group()
+expected_call=rule_call.replace('BuildTriggeredRuleInstructions(', 'PromptRuleCaptureBannerlordAdapter.BuildTriggeredRuleInstructions(NpcMajorRuleCapture, ', 1)
 aliases={'input':'request.Input','flag2':'flags.UseDuelContext','isQualified':'request.IsQualified','flag7':'flags.UseRewardContext','flag8':'flags.IsLoanContext','flag5':'routing.Surroundings.Hit','hasAnyHero':'request.HasAnyHero','kingdomIdOverride':'request.KingdomIdOverride','targetAgentIndex':'request.TargetAgentIndex','npcLastUtterance':'request.NpcLastUtterance','includeDuelStakeContext':'flags.IncludeDuelStakeContext','playerWonLastDuelForRule':'flags.PlayerWonLastDuel','worldMapPartyCommandHit':'routing.WorldMapPartyCommand.Hit','auxiliaryRuleHitIds':'routing.AuxiliaryRuleHitIds'}
 for name,value in aliases.items():expected_call=re.sub(r'\b'+name+r'\b',value,expected_call)
 assert re.sub(r'\s+','',call)==re.sub(r'\s+','',expected_call),'host rule argument/flag binding drift'

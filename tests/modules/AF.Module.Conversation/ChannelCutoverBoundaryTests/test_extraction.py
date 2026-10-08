@@ -6,6 +6,29 @@ import unittest
 from run import SCENE_LIFECYCLE_DISPATCHES, courier_source, declaration, extract, scene_source, source
 
 
+class DeclarationSyntaxTests(unittest.TestCase):
+    def test_arrow_stops_before_next_declaration(self):
+        method = 'private bool M(string value) => value == "{;=>}";'
+        self.assertEqual(method, declaration(method + '\nprivate void Next() { }', 'private bool M('))
+
+    def test_arrow_lambda_preserves_nested_body(self):
+        method = 'private Func<int> M() => () => { return 1; };'
+        self.assertEqual(method, declaration(method + '\nprivate void Next() { }', 'private Func<int> M('))
+
+    def test_arrow_initializer_preserves_nested_braces(self):
+        method = 'private object M() => new Thing { Value = "};" };'
+        self.assertEqual(method, declaration(method + '\nprivate void Next() { }', 'private object M('))
+
+    def test_anonymous_delegate_invocation_stops_at_callback_body(self):
+        callback = 'RunNativePresentationCallback(generation, delegate { var text = "}=>;"; /* } */ if (ready) { Complete(); } }'
+        source = callback + ', originalDialogText, delegate(string npcName) { Next(); });\nprivate void Later() { }'
+        self.assertEqual(callback, declaration(source, 'RunNativePresentationCallback(generation, delegate'))
+
+    def test_unterminated_arrow_rejected(self):
+        with self.assertRaises(ValueError):
+            declaration('private int M() => 1', 'private int M(')
+
+
 from af2_terminal_migration_review import historical_test_case
 
 @historical_test_case

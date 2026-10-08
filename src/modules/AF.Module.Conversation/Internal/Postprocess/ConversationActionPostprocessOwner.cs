@@ -165,6 +165,130 @@ internal sealed class ConversationCourierPostprocessWorkItem
 
 internal static class ConversationActionPostprocessOwner
 {
+	internal static bool HasDeferredDirectGameActionTag(string text)
+	{
+		if (CustomPolicyAgendaActionTagRegex.IsMatch(text ?? "") || GiveAssetTagCodec.Contains(text))
+		{
+			return true;
+		}
+		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:PUBLIC_EXECUTION_START|GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|NOBLE_EXECUTE_ESCORT|NOBLE_EXECUTE_PARTY_PRISONER|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+	}
+internal static string ExtractDeferredSceneActionTags(string text)
+	{
+		string text2 = (text ?? "").Replace("\r", "");
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (GiveAssetTag giveAssetTag in GiveAssetTagCodec.Extract(text2))
+		{
+			if (!string.IsNullOrWhiteSpace(giveAssetTag.RawTag) && hashSet.Add(giveAssetTag.RawTag))
+			{
+				list.Add(giveAssetTag.RawTag);
+			}
+		}
+		text2 = GiveAssetTagCodec.StripTags(text2);
+		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text3 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
+			{
+				list.Add(text3);
+			}
+		}
+		return string.Join(" ", list).Trim();
+	}
+internal static bool HasNonMoodDeferredSceneActionTag(string text)
+	{
+		if (GiveAssetTagCodec.Contains(text))
+		{
+			return true;
+		}
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+internal static string StripDeferredSceneMoodTags(string text)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (GiveAssetTag giveAssetTag in GiveAssetTagCodec.Extract(text))
+		{
+			if (!string.IsNullOrWhiteSpace(giveAssetTag.RawTag) && hashSet.Add(giveAssetTag.RawTag))
+			{
+				list.Add(giveAssetTag.RawTag);
+			}
+		}
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
+			{
+				list.Add(text2);
+			}
+		}
+		return string.Join(" ", list).Trim();
+	}
+
+	internal static bool MayContainGeneratedRpItemReward(string responseText)
+	{
+		return !string.IsNullOrEmpty(responseText)
+			&& responseText.IndexOf(GiveAssetTagCodec.Prefix, StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	internal static string ResolveNativeConversationPostprocessChainName() => SceneAgentIdentityPromptCaptureAdapter.CaptureEncounterMeetingActive() ? "meeting" : "native_conversation";
+
+	internal static string ResolveScenePostprocessChainName() => SceneAgentIdentityPromptCaptureAdapter.CaptureEncounterMeetingActive() ? "meeting" : "scene";
+
+	internal static bool IsNativeConversationNoSpeechPlaceholder(string text)
+	{
+		string value = (text ?? "").Replace("\r", "").Trim();
+		return string.Equals(value, "（没说话）", StringComparison.Ordinal)
+			|| string.Equals(value, "(没说话)", StringComparison.Ordinal)
+			|| string.Equals(value, "无", StringComparison.Ordinal)
+			|| string.Equals(value, "无回信", StringComparison.Ordinal);
+	}
+
+	internal static string StripLordsHallAccessActionTagsForScene(string text)
+	{
+		string text2 = text ?? "";
+		text2 = Regex.Replace(text2, "\\[ACTION:OPEN_LORDS_HALL\\]", "", RegexOptions.IgnoreCase);
+		return text2.Trim();
+	}
+
+	internal static bool ContainsOpenLordsHallActionTag(string text)
+	{
+		return !string.IsNullOrWhiteSpace(text) && Regex.IsMatch(text, "\\[ACTION:OPEN_LORDS_HALL\\]", RegexOptions.IgnoreCase);
+	}
+
+	internal static string ExtractSceneMechanismActionTagsForScene(string text)
+	{
+		string text2 = (text ?? "").Replace("\r", "");
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:SETS_REQUEST_MASSACRE|SETS_START_MASSACRE|SETS_STOP_MASSACRE|SETS_CANCEL_MASSACRE_REQUEST)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text3 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
+			{
+				list.Add(text3);
+			}
+		}
+		return string.Join(" ", list).Trim();
+	}
+
 	internal static void ApplyStageQualifications(int targetAgentIndex, ref bool duelRuleInjected, ref bool rewardRuleInjected, ref bool loanRuleInjected, ref bool persistentAdpDebtRuleInjected, ref bool kingdomServiceRuleInjected, ref bool kingdomVassalageRuleInjected, ref bool lordsHallRuleInjected, ref bool meetingReleaseRuleInjected, ref bool vanillaIssueRuleInjected, ref bool heroJoinPartyRuleInjected, ref bool sceneMechanismRuleInjected, ref bool partyTransferRuleInjected, ref bool voteDealRuleInjected, ref bool customPolicyAgendaRuleInjected, ref bool diplomacyRuleInjected, ref bool worldMapPartyCommandRuleInjected, ref bool nobleGatheringRuleInjected, ref bool marriageRuleInjected)
 	{
 		RequireMainThread();

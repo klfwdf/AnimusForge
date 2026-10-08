@@ -3,12 +3,15 @@ from pathlib import Path
 import argparse, os, subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / 'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--mutate', choices=['skip-overflow','skip-disallowed','ignore-order','ignore-parameters','allow-action-star'])
+parser.add_argument('--run-root', type=Path)
 args = parser.parse_args()
-out = HERE / '.generated' / (args.mutate or 'current')
-out.mkdir(parents=True, exist_ok=True)
+out = new_run_root(ROOT, 'action-protocol', args.run_root)
 
 sources = {
     'InteractionContracts.cs': ROOT / 'src/AF.Contracts/Internal/InteractionContracts.cs',
@@ -34,9 +37,10 @@ for name, path in sources.items():
 (out / 'Program.cs').write_text((HERE / 'Harness.cs.txt').read_text(encoding='utf-8-sig'), encoding='utf-8')
 (out / 'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><ImplicitUsings>disable</ImplicitUsings></PropertyGroup></Project>', encoding='utf-8')
 (out / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
-dotnet = os.environ.get('AF_DOTNET', r'G:/AFMOD/.dotnet-sdk/dotnet.exe')
-env = os.environ.copy()
-env.update(DOTNET_ROOT=str(Path(dotnet).parent), DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'), DOTNET_NOLOGO='1')
+dotnet = str(resolve_dotnet(ROOT))
+env = minimal_test_environment(Path(dotnet), out)
+import json,hashlib
+(out/'generated-inputs-before-build.json').write_text(json.dumps({str(f.name):hashlib.sha256(f.read_bytes()).hexdigest() for f in out.iterdir() if f.is_file() and f.suffix in ('.cs','.csproj','.Config')},indent=2),encoding='utf-8')
 result = subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release'], cwd=ROOT, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
 log = result.stdout + result.stderr
 (out / 'run.log').write_text(log, encoding='utf-8')

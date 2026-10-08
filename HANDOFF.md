@@ -1,3 +1,10 @@
+# 当前交接：主体重构与远端功能协调源码（2026-10-08）
+
+- **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。本次只同步获准源码到main，保留最新远端功能与本地主体owner；不部署、不打包。
+- 生产输入与六构建/具名定向回归的候选逐LF规范字节相同；保存每API103及三渠道、公报、managed Coup接缝等检查通过。5项内容基线改指完全同blob的公开祖先，原哈希和断言不变。
+- 用户确认AssemblyVersion1.5.4.0；1.3参考集不完整、旧冻结全门非全绿、整仓全套/实机旧档/provider/帧性能未验，均不豁免正式发布验收。
+- 干净交付不包含本地专用记录的历史、缓存或产物。当前取舍、核实代码坐标和剩余边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reviewed-refactor-source-delivery-20261008)。下方为原远端独立历史，不构成本次部署或未来授权。
+
 # 当前交接：1.5.6 已部署、打包、推送与累计公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户授权完整交付并确认以正式1.5.5公告为基线；产品源码 `fe40e43f9`，公告 `8ab6045a9`。双API/Bootstrap/接缝及最终DLL专项通过；部署27文件、3,380安装文件和27份备份SHA通过。启动器与ZIP版本统一v1.5.6，包含此前所有已提交会话改动；本条替代这些改动的“未部署”状态，实机边界保持。

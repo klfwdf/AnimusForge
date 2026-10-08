@@ -62,15 +62,14 @@ internal static class MemoryRecoveryProductionReplay
 
     private static void VerifyAuxiliaryRecoveryBoundary(Type ownerType)
     {
-        MethodInfo recoveryWriter = RequireInstanceMethod(
-            ownerType,
-            "PublishDailyInteractionMemoryComponent");
-        MethodInfo legacyWriter = RequireInstanceMethod(
-            ownerType,
-            "AppendDailyMemoryLineById");
-        MethodInfo weeklyAttach = RequireInstanceMethod(
-            ownerType,
-            "AttachPendingWeeklyMemoryMaterialTriggers");
+        Type historyType = RequireType(ownerType.Assembly, "AnimusForge.MemoryHistoryCommitBannerlordAdapter");
+        Type memoryType = RequireType(ownerType.Assembly, "AnimusForge.MemoryBusinessStateOwner");
+        Type recoveryOwnerType = RequireType(ownerType.Assembly, "AnimusForge.MemoryRecoveryStateOwner");
+        MethodInfo recoveryWriter = RequireInstanceMethod(recoveryOwnerType, "PublishDailyInteractionMemoryComponent");
+        MethodInfo legacyFacade = RequireInstanceMethod(ownerType, "AppendDailyMemoryLineById");
+        MethodInfo legacyWriter = RequireInstanceMethod(historyType, "AppendDailyMemoryLineById");
+        MethodInfo memoryWriter = RequireInstanceMethod(memoryType, "AppendDailyMemoryLineById");
+        MethodInfo weeklyAttach = RequireInstanceMethod(memoryType, "AttachPendingWeeklyTriggers");
         Type notorietyType = ownerType.Assembly.GetType(
             "AnimusForge.PlayerNotorietyBehavior",
             throwOnError: true);
@@ -83,10 +82,10 @@ internal static class MemoryRecoveryProductionReplay
             AnyStatic)
             ?? throw new InvalidOperationException("missing exact notoriety line boundary");
         MethodInfo initialAuxiliary = RequireInstanceMethod(
-            ownerType,
+            historyType,
             "CompleteInitialInteractionMemoryNotorietyOutcome");
         MethodInfo auxiliaryMarkerReadback = RequireInstanceMethod(
-            ownerType,
+            historyType,
             "HasPublishedDailyInteractionMemoryComponent");
         MethodInfo initialAuxiliaryGate = ownerType.GetMethod(
             "ShouldCompleteInitialInteractionMemoryNotoriety",
@@ -100,25 +99,31 @@ internal static class MemoryRecoveryProductionReplay
             "CommitExternalDialogueHistoryRecoverable",
             AnyStatic)
             ?? throw new InvalidOperationException("missing recoverable commit owner");
-        Type recoveryOwnerType = RequireType(ownerType.Assembly, "AnimusForge.MemoryRecoveryStateOwner");
+        MethodInfo historyPrepared = RequireInstanceMethod(historyType, "CommitPreparedDialogueHistoryRecovery");
         MethodInfo preparedCommit = RequireInstanceMethod(recoveryOwnerType, "CommitPrepared");
         MethodInfo ownerAuxiliaryGate = recoveryOwnerType.GetMethod(
             "ShouldCompleteInitialInteractionMemoryNotoriety", AnyStatic)
             ?? throw new InvalidOperationException("missing recovery owner auxiliary gate");
 
-        Require(!CallsMethod(recoveryWriter, weeklyAttach),
+        Require(!CallsMethod(recoveryWriter, weeklyAttach) && !CallsMethod(recoveryWriter, memoryWriter),
             "memory recovery writer still consumes transient weekly candidates");
         Require(!CallsMethod(recoveryWriter, notorietyNote),
             "memory recovery writer still replays non-idempotent notoriety state");
         Require(!CallsMethod(recoveryWriter, exactNotorietyNote),
             "memory recovery writer bypassed the completed-core exact notoriety gate");
-        Require(CallsMethod(legacyWriter, weeklyAttach),
+        Require(CallsMethod(legacyFacade, legacyWriter) && CallsMethod(legacyWriter, memoryWriter)
+                && CallsMethod(memoryWriter, weeklyAttach),
             "legacy live writer unexpectedly lost its existing weekly best-effort behavior");
-        Require(CallsMethod(legacyWriter, notorietyNote),
+        Type appendCapabilities = RequireType(ownerType.Assembly, "AnimusForge.MemoryDailyAppendCapabilities");
+        FieldInfo noteCapability = appendCapabilities.GetField("NoteConversation", AnyInstance);
+        ConstructorInfo historyConstructor = historyType.GetConstructors(AnyInstance).Single();
+        Require(ReferencesMember(historyConstructor, notorietyNote)
+                && ReferencesMember(memoryWriter, noteCapability)
+                && CallsMethod(memoryWriter, typeof(Action<string>).GetMethod("Invoke")),
             "legacy live writer unexpectedly lost its existing notoriety best-effort behavior");
-        Require(CallsMethod(recoverableCommit, initialAuxiliary),
+        Require(CallsMethod(recoverableCommit, historyPrepared) && CallsMethod(historyPrepared, initialAuxiliary),
             "initial recoverable commit no longer owns the one-shot auxiliary boundary");
-        Require(CallsMethod(recoverableCommit, preparedCommit)
+        Require(CallsMethod(historyPrepared, preparedCommit)
                 && CallsMethod(preparedCommit, ownerAuxiliaryGate)
                 && CallsMethod(initialAuxiliaryGate, ownerAuxiliaryGate),
             "recoverable commit bypassed the Began/completed auxiliary gate");
@@ -131,7 +136,7 @@ internal static class MemoryRecoveryProductionReplay
             "AnimusForge.InteractionMemoryAuxiliaryCompletionCoordinator");
         MethodInfo coordinateInitial = auxiliaryCoordinator.GetMethod("CompleteInitial", AnyStatic)
             ?? throw new InvalidOperationException("missing initial auxiliary coordinator");
-        MethodInfo notifyInitial = ownerType.GetMethod("NotifyInitialMemoryNotorietyComponent", AnyStatic)
+        MethodInfo notifyInitial = historyType.GetMethod("NotifyInitialMemoryNotorietyComponent", AnyStatic)
             ?? throw new InvalidOperationException("missing typed exact notoriety capability");
         Require(CallsMethod(initialAuxiliary, coordinateInitial)
                 && CallsMethod(initialAuxiliary, notifyInitial)
@@ -142,8 +147,15 @@ internal static class MemoryRecoveryProductionReplay
             "initial auxiliary boundary no longer requires exact Daily marker readback");
         Require(!CallsMethod(initialAuxiliary, weeklyAttach),
             "initial auxiliary boundary attached an unconfirmed weekly candidate");
-        Require(ownerType.GetMethods(AnyInstance)
-                .Count(method => CallsMethod(method, initialAuxiliary)) == 0,
+        MethodInfo[] auxiliaryCallers = historyType.GetMethods(AnyInstance)
+            .Where(method => CallsMethod(method, initialAuxiliary)).ToArray();
+        MethodInfo compatibilityAuxiliary = RequireInstanceMethod(ownerType,
+            "CompleteInitialInteractionMemoryNotorietyOutcome");
+        MethodInfo[] facadeAuxiliaryCallers = ownerType.GetMethods(AnyInstance)
+            .Where(method => CallsMethod(method, initialAuxiliary)).ToArray();
+        Require(facadeAuxiliaryCallers.Length == 1 && facadeAuxiliaryCallers[0] == compatibilityAuxiliary
+                && !CallsMethod(recoverableCommit, compatibilityAuxiliary)
+                && auxiliaryCallers.Length == 1 && auxiliaryCallers[0] == historyPrepared,
             "an instance owner bypasses the static recoverable commit auxiliary gate");
 
         Type beginStatusType = initialAuxiliaryGate.GetParameters()[0].ParameterType;
@@ -201,8 +213,11 @@ internal static class MemoryRecoveryProductionReplay
 
     }
 
-    private static bool CallsMethod(MethodInfo caller, MethodInfo callee)
+    private static bool CallsMethod(MethodInfo caller, MethodInfo callee) => ReferencesMember(caller, callee);
+
+    private static bool ReferencesMember(MethodBase caller, MemberInfo callee)
     {
+        if (callee == null) return false;
         byte[] il = caller?.GetMethodBody()?.GetILAsByteArray() ?? Array.Empty<byte>();
         Dictionary<ushort, OpCode> opCodes = typeof(OpCodes)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
@@ -231,12 +246,12 @@ internal static class MemoryRecoveryProductionReplay
             {
                 return false;
             }
-            if (opCode.OperandType == OperandType.InlineMethod)
+            if (opCode.OperandType == OperandType.InlineMethod || opCode.OperandType == OperandType.InlineField)
             {
                 int token = BitConverter.ToInt32(il, index);
                 try
                 {
-                    MethodBase resolved = caller.Module.ResolveMethod(
+                    MemberInfo resolved = caller.Module.ResolveMember(
                         token,
                         caller.DeclaringType?.GetGenericArguments(),
                         caller.IsGenericMethod ? caller.GetGenericArguments() : Type.EmptyTypes);
@@ -549,7 +564,7 @@ internal static class MemoryRecoveryProductionReplay
         const int dayIndex = 84;
 
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
-        Set(owner, "_memoryBusinessState", New(RequireType(ownerType.Assembly, "AnimusForge.MemoryBusinessStateOwner")));
+        SeedMemoryAuthorities(ownerType, owner, null);
         object work = New(workType);
         Set(work, "RecoveryId", recoveryId);
         Set(work, "PayloadHash", payloadHash);
@@ -966,14 +981,30 @@ internal static class MemoryRecoveryProductionReplay
     private static object CreateOwnerWithLedger(Type ownerType, object ledger)
     {
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
+        SeedMemoryAuthorities(ownerType, owner, ledger);
+        return owner;
+    }
+
+    private static void SeedMemoryAuthorities(Type ownerType, object owner, object ledger)
+    {
         object state = New(RequireType(ownerType.Assembly, "AnimusForge.MemoryBusinessStateOwner"));
-        Set(owner, "_memoryBusinessState", state);
         Type recoveryType = RequireType(ownerType.Assembly, "AnimusForge.MemoryRecoveryStateOwner");
         object recovery = Activator.CreateInstance(recoveryType, AnyInstance, null, new[] { state }, null)
-            ?? throw new InvalidOperationException("could not create actual memory recovery owner");
-        Set(recovery, "Ledger", ledger);
+            ?? throw new InvalidOperationException("could not bind actual recovery owner");
+        if (ledger != null) Set(recovery, "Ledger", ledger);
+        Type providerType = typeof(Func<>).MakeGenericType(recoveryType);
+        Delegate provider = System.Linq.Expressions.Expression.Lambda(providerType,
+            System.Linq.Expressions.Expression.Constant(recovery, recoveryType)).Compile();
+        Type historyType = RequireType(ownerType.Assembly, "AnimusForge.MemoryHistoryCommitBannerlordAdapter");
+        object history = Activator.CreateInstance(historyType, AnyInstance, null,
+            new object[] { state, provider }, null)
+            ?? throw new InvalidOperationException("could not bind actual history owner");
+        Require(ReferenceEquals(Get(history, "_memory"), state)
+                && ReferenceEquals(Get(recovery, "_state"), state),
+            "history and recovery must share the unique fixture memory authority");
+        Set(owner, "_memoryBusinessState", state);
         Set(owner, "_memoryRecoveryState", recovery);
-        return owner;
+        Set(owner, "_memoryHistoryCommit", history);
     }
 
     private static object StoreDailyMarker(

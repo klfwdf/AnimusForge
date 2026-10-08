@@ -2,10 +2,12 @@
 No game, private DTO extraction, external packages or network access.
 """
 from pathlib import Path
-import os, subprocess, json, hashlib
+import os, subprocess, json, hashlib, argparse, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 HARNESS=r'''using System;
 using System.IO;
 using System.Linq;
@@ -37,11 +39,12 @@ class Program {
 }
 '''
 def main():
- out=HERE/'.generated/fingerprint';out.mkdir(parents=True,exist_ok=True)
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--run-root',type=Path);args=parser.parse_args()
+ out=new_run_root(ROOT,'memory-fingerprint',args.run_root)
  source=ROOT/'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
  files={'Program.cs':HARNESS,'NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>','Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><CheckForOverflowUnderflow>true</CheckForOverflowUnderflow></PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="'+escape(str(source))+'"/></ItemGroup></Project>'}
  for name,data in files.items():(out/name).write_bytes(data.encode())
- dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false')
+ dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
  command=[str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')]
  build=subprocess.run(command,env=env,cwd=ROOT,capture_output=True,text=True,encoding='utf8');(out/'build.log').write_text(build.stdout+build.stderr,encoding='utf8')
  meta=dict(source=str(source.relative_to(ROOT)),sourceSha256=hashlib.sha256(source.read_bytes()).hexdigest(),runnerSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),buildCommand=command,buildExit=build.returncode)
