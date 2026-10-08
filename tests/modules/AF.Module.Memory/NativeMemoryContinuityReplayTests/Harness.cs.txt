@@ -1,0 +1,129 @@
+using System;using System.Collections.Generic;using System.IO;using System.Linq;using System.Threading;using System.Threading.Tasks;using Newtonsoft.Json;using Newtonsoft.Json.Linq;using TaleWorlds.CampaignSystem;using AnimusForge.Refactor.Adapters;
+namespace TaleWorlds.MountAndBlade {public class Agent {public int Index;public object Character;public bool IsActive()=>true;}public class Mission {public static Mission Current;public List<Agent> Agents;}}
+namespace AnimusForge {
+public partial class MyBehavior {internal MemoryBusinessStateOwner AuditMemory=>_memoryBusinessState;}
+internal static class SceneActionsRuntimeHost {internal static string BuildNativeConversationActionInstruction()=>"";}
+internal static class LegacyNativePromptParity {internal sealed class LegacyNativePromptParityResult {internal object MainSections;internal string ToDiagnosticString()=>"fixture-disabled";}internal static LegacyNativePromptParityResult CompareMainMessages(List<object> m,string[] p,string[] s,string t,int maxTokens,string model)=>new();}
+public partial class ShoutBehavior {
+ private sealed class AuditAdmission { internal string MeetingElapsedContext="MEETING_BOUNDARY_PROMPT_ONLY"; }
+ private AuditAdmission admission=new();
+ private Hero targetHero;private CharacterObject targetCharacter;private NpcDataPacket npc;
+ private bool npcInitiatedOpening,hadNativeConversationSessionHistoryBeforeTurn,includeCurrentSceneSessionInPersistedHistory;
+ private const bool NativeConversationDetachedPromptParityLoggingEnabled=false;
+ private int nativeTargetAgentIndex=7,minTokens=50,maxTokens=500;private object nativeDetachedMainPromptSections;
+ private string nativeHistoryDisplayName,nativeTargetLog="audit_hero",playerName="Player",roleTopIntro="Answer the player.",roleRuntimeContext="Controlled NPC runtime",nativeNpcListBlock="",trustBlock="",miscExtrasSection="",knowledgeExtrasSection="",systemRuleBlock="",nativeMeetingTauntRuleBlock="",privateRecentWindowSection="",persistedWithoutRecentWindow="",npcOpeningUserText="",promptPlayerText="",persistedHeroHistory="";
+ private List<string> postprocessPreprocessHits=new();private AuditContext ctx=new();private sealed class AuditContext {internal string PreprocessExcludedRuleBlock="";}
+ private List<ConversationMessage> nativeHistoryMessages=new(),pendingNativeCurrentAfefFacts=new();private List<object> messages;
+ private long nativePendingPlayerHistoryEventSequence;private string nativePendingAfefKey;
+ private readonly NativeConversationSessionOwner AuditSessions=new(()=>Interlocked.Increment(ref ReentryReplay.Sequence),500);
+ private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket n)=>"NPC";
+ private static string BuildSceneSingleNpcTaskSystemBlock(string n,bool b,int min,int max,string p)=>"Answer the player.";
+ private static string AppendPlayerCustomPromptRuleToSystemPrompt(string s)=>s;
+ private static List<ConversationMessage> RemoveNativeMessagesAlreadyInPersistentMemory(List<ConversationMessage> n,List<ConversationMessage> p)=>HistorySectionProjectionOwner.RemoveNativeMessagesAlreadyInPersistentMemory(n,p);
+ private static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero h,CharacterObject c,NpcDataPacket n,int i,bool includeCurrentActiveSession=false)=>MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(h,i,includeCurrentActiveSession);
+ internal static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence()=>ReentryReplay.SceneSessionId;
+ private void StampNativePendingPromptMemorySession(string key,long sequence,List<ConversationMessage> history){string session=MyBehavior.CaptureCurrentPromptMemorySessionKey();AuditSessions.StampPromptSessionForEvent(key,sequence,session);foreach(var message in history)if(message.EventSequence==sequence)message.PromptMemorySessionKey=session;}
+ internal void AuditInitialize(Hero h){targetHero=h;targetCharacter=new CharacterObject{Value=h};npc=new NpcDataPacket{AgentIndex=7};}
+ internal string AuditKey=>SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(targetHero,targetCharacter,"NPC",7,npc);
+ internal void AuditClose(bool reset){AuditSessions.CloseInput(reset);if(reset)AuditSessions.ClearAll();ReentryReplay.NativeActive=false;MyBehavior.Instance.AuditMemory.GetCurrentNativeConversationMemorySessionIdForSuppression(()=>false);}
+ internal void AuditRecordNative(string speaker,string text,string kind){SceneHistoryPromptCaptureAdapter.AppendNativeConversationSessionHistoryCaptured(AuditSessions,()=>null,targetHero,targetCharacter,"NPC",speaker,text,kind,Interlocked.Increment(ref ReentryReplay.Sequence),bridgeToSceneHistory:false,targetAgentIndex:7,npc:npc,capturedHistoryKey:AuditKey);}
+ internal bool AuditCacheContains(string token)=>AuditSessions.Snapshot(AuditKey,500).Any(e=>e.Text.Contains(token));
+ internal async Task<JObject> AuditCapture(string label,string input,string dir){
+  ReentryReplay.NativeActive=true;
+  hadNativeConversationSessionHistoryBeforeTurn=SceneHistoryPromptCaptureAdapter.HasNativeConversationSessionHistory(AuditSessions,targetHero,targetCharacter,"NPC",7,npc);
+  AuditRecordNative("Player",input,"player");nativePendingPlayerHistoryEventSequence=ReentryReplay.Sequence;nativePendingAfefKey=AuditKey;
+  promptPlayerText=input;
+  nativeHistoryMessages=SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessages(AuditSessions,targetHero,targetCharacter,"NPC",7,20,npc);
+  CapturePromptMessages();
+  string response=await CallNativeConversationApiAsync(messages,null);
+  var request=JObject.FromObject(LegacyShoutNetworkGateway.LastRequest);
+  var payload=ShoutNetwork.CapturePayload(messages,false);
+  var body=JObject.Parse(LlmApiCompat.PrepareChatRequestJson("https://replay.invalid/v1/chat/completions",payload));
+  File.WriteAllText(Path.Combine(dir,label+".request.json"),body.ToString(Formatting.Indented));
+  var result=new JObject { ["scenario"]=label,["hadNativeHistoryBeforeTurn"]=hadNativeConversationSessionHistoryBeforeTurn,["cacheKey"]=AuditKey,["requestMessageCount"]=((JArray)body["messages"]).Count,["oldExperienceInRequest"]=body.ToString().Contains(ReentryReplay.OldToken),["newNativeExperienceInRequest"]=body.ToString().Contains(ReentryReplay.NewToken),["oldExperienceInCache"]=AuditCacheContains(ReentryReplay.OldToken),["day"]=Host.Day,["scene"]=Host.Scene,["response"]=response};
+  return result;
+ }
+ internal void AuditComplete(string input,string reply){ReentryReplay.AppendRaw(MyBehavior.Instance.AuditMemory,"Player",PersonaIdentityPromptCaptureAdapter.BuildPlayerAddressedInputForName("NPC",input,targetHero));ReentryReplay.AppendRaw(MyBehavior.Instance.AuditMemory,"NPC",DialogueHistoryLedger.NormalizeNpcLine("NPC",reply));AuditRecordNative("NPC",reply,"npc");}
+__CAPTURE__
+}
+internal static class ReentryReplay {
+ internal static bool NativeActive;internal static int SceneSessionId=-1;internal static long Sequence;internal const string OldToken="OLD_EXPERIENCE_PREFER_BLUE_HORSE",NewToken="NEW_NATIVE_WEATHER_REPLY";
+ internal static List<JObject> Results=new();internal static int Checks;
+ internal static void Check(bool pass,string label){Checks++;if(!pass)throw new Exception("ASSERTION: "+label);}
+ internal static void AppendRaw(MemoryBusinessStateOwner state,string speaker,string text){var caps=new MemoryDailyAppendCapabilities(_=>true,()=>Host.Day,()=>"game-day-"+Host.Day,()=>11,()=>state.GetOrStartActiveNativeConversationMemorySessionId(()=>NativeActive),()=>Host.Scene,()=>Host.Day,_=>{},_=>{});Check(state.AppendDailyMemoryLineById("audit_hero","NPC",speaker,text,false,true,SceneSessionId,7,"NPC",caps),"real raw append published "+speaker);}
+ internal static MyBehavior NewMemoryOwner(string saved){var owner=new MyBehavior();MyBehavior.Instance=owner;Campaign.Owner=owner;if(saved!=null){var drafts=JsonConvert.DeserializeObject<Dictionary<string,List<DailyMemoryDraft>>>(saved);foreach(var pair in drafts)owner.AuditMemory.SaveDrafts(pair.Key,pair.Value);}return owner;}
+ private static JObject Capture(ShoutBehavior channel,string label,string input,string dir){var row=channel.AuditCapture(label,input,dir).GetAwaiter().GetResult();Results.Add(row);return row;}
+
+ internal static ConversationMessage Message(string text,string role="assistant",string speaker="NPC",int day=50,int hour=11,string session="runtime:scene:3",long sequence=0)=>new(){Role=role,Content=text,SpeakerName=speaker,GameDayIndex=day,GameDate="game-day-"+day,GameHour=hour,Scene="town",PromptMemorySessionKey=session,EventSequence=sequence,TargetName=role=="user"?"NPC":"",TargetAgentIndex=role=="user"?7:-1,SpeakerAgentIndex=role=="assistant"?7:-1};
+ private static void VerifyMergeAndCurrentScene(string dir,Hero hero){
+  var repeated=NativeMemoryHistoryMergeOwner.Merge(new[]{Message("same"),Message("same")},new[]{Message("same",sequence:3),Message("same",sequence:4)},0,"Player");
+  Check(repeated.Count==2,"one-to-one overlap preserves two actual repeats");
+  var pending=Message("same",role:"user",speaker:"你",sequence:99);
+  var current=NativeMemoryHistoryMergeOwner.Merge(new[]{Message("same",role:"user",speaker:"Player"),Message("same",role:"user",speaker:"Player")},new[]{pending},99,"Player");
+  Check(current.Count==3&&ReferenceEquals(current.Last(),pending),"trimmed-tail repeated current input is retained once at the end");
+  var distinct=NativeMemoryHistoryMergeOwner.Merge(new[]{Message("same"),Message("same",day:49),Message("same",speaker:"Borin"),Message("same",session:"runtime:scene:4")},new[]{Message("same",sequence:5)},0,"Player");
+  Check(distinct.Count==4,"same words on other day/speaker/session are distinct");
+  var unknown=NativeMemoryHistoryMergeOwner.Merge(new[]{Message("same",session:"")},new[]{Message("same",sequence:6)},0,"Player");
+  Check(unknown.Count==2,"missing old provenance is not guessed away");
+  var ordered=NativeMemoryHistoryMergeOwner.Merge(new[]{Message("raw-newer-a",day:51),Message("raw-newer-b",day:52)},new[]{Message("native-older",day:49,sequence:7)},0,"Player");
+  var capped=SceneHistoryMessageAssemblyOwner.KeepAfefFactsAndRecentConversationMessages(ordered,2);
+  Check(capped.Count==2&&capped.All(x=>x.Content.StartsWith("raw-newer")),"older unmatched Native line cannot evict newer raw at the shared budget boundary");
+  string fact="[AFEF玩家行为补充] confirmed transfer";
+  var scoped=NativeMemoryHistoryMergeOwner.Merge(new[]{Message(fact,"system","AFEF",day:49),Message(fact,"system","AFEF"),Message(fact,"system","AFEF")},new[]{Message(fact,"system","系统",sequence:8)},0,"Player",new[]{Message(fact,"system","系统",sequence:9)});
+  Check(scoped.Count==3&&scoped.Count(x=>x.PromptIsCurrentFact)==1&&!scoped[0].PromptIsCurrentFact,"AFEF overlap/repeat preserved but only one latest current occurrence is scoped current");
+  var unknownPast=Message(fact,"system","AFEF",day:49,session:"");unknownPast.Scene="";
+  var unknownCurrent=Message(fact,"system","系统",session:"",sequence:17);unknownCurrent.Scene="";
+  var unknownPending=Message(fact,"system","系统",session:"",sequence:18);unknownPending.Scene="";
+  var unknownFacts=NativeMemoryHistoryMergeOwner.Merge(new[]{unknownPast},new[]{unknownCurrent},0,"Player",new[]{unknownPending});
+  Check(unknownFacts.Count(x=>x.PromptIsCurrentFact)==1&&unknownFacts.Last().PromptIsCurrentFact,"unknown scene/session still retains explicit current AFEF instead of making every fact past");
+  var snapshots=SceneHistoryProjectionOwner.CapturePromptMessages(scoped);
+  Check(snapshots.Count(x=>x.PromptIsCurrentFact)==1&&snapshots.All(x=>x.PromptFactScopeCaptured),"AFEF prompt scope/provenance survives the actual capture clone");
+  var context=new SceneHistoryMessageContext{ViewerAgentIndex=7,ViewerHeroId="audit_hero",PlayerName="Player",GameDate="game-day-50",GameHour=11,Scene="town"};
+  var final=SceneHistoryMessageAssemblyOwner.Build(new SceneHistoryMessageAssemblyInput{SystemPrompt="system",PersistentHistory=snapshots,PendingCurrentFacts=new[]{Message(fact,"system","AFEF")},HistoryLineLimit=1,Context=context});
+  string body=JsonConvert.SerializeObject(final);Check(body.Split("【当下行为】").Length-1==1&&body.Split("【过往行为】").Length-1==2,"actual final request does not reactivate old same-word AFEF");
+  Check(!JsonConvert.SerializeObject(pending).Contains("PromptMemorySessionKey")&&!System.Text.Json.JsonSerializer.Serialize(pending).Contains("PromptMemorySessionKey"),"runtime provenance adds no public JSON/save schema");
+  NativeActive=false;SceneSessionId=10;Host.Day=60;Host.Scene="same scene";var owner=NewMemoryOwner(null);AppendRaw(owner.AuditMemory,"Player","SCENE_RAW_ONLY_EXPERIENCE");
+  var commit=new MemoryHistoryCommitBannerlordAdapter(owner.AuditMemory);
+  var defaultCapture=commit.BuildUncompressedMemoryRoleMessagesById("audit_hero","NPC",7,false);var nativeCapture=commit.BuildUncompressedMemoryRoleMessagesById("audit_hero","NPC",7,true);
+  Check(defaultCapture.Count==0&&nativeCapture.Any(x=>x.Content.Contains("SCENE_RAW_ONLY_EXPERIENCE")),"existing Scene/Courier default suppression stays while Native include-current sees raw-only shared-scene history");
+  var channel=new ShoutBehavior();channel.AuditInitialize(hero);channel.AuditRecordNative("NPC",NewToken,"npc");
+  var row=Capture(channel,"09_same_scene_raw_only_native_nonempty","Recall the scene experience.",dir);Check((bool)row["hadNativeHistoryBeforeTurn"]&&File.ReadAllText(Path.Combine(dir,"09_same_scene_raw_only_native_nonempty.request.json")).Contains("SCENE_RAW_ONLY_EXPERIENCE"),"same-scene raw-only experience survives a nonempty Native cache in actual request");
+  SceneSessionId=-1;
+ }
+ internal static int Run(string dir){try{
+  Directory.CreateDirectory(dir);Host.Reset();NativeActive=true;
+  var hero=new Hero{Id="audit_hero",NameValue="NPC"};Hero.Registry.Add(hero);
+  var owner=NewMemoryOwner(null);AppendRaw(owner.AuditMemory,"Player",OldToken);AppendRaw(owner.AuditMemory,"NPC","I remember your preference.");
+  // Persistent old conversation came from a prior runtime, a normal load condition.
+  string originalSave=JsonConvert.SerializeObject(owner.AuditMemory.Drafts);File.WriteAllText(Path.Combine(dir,"original-drafts.json"),originalSave);
+  NativeActive=false;owner=NewMemoryOwner(originalSave);var channel=new ShoutBehavior();channel.AuditInitialize(hero);
+  var first=Capture(channel,"01_load_first_turn","How is the weather?",dir);Check((bool)first["oldExperienceInRequest"],"load first turn includes old raw");Check(!(bool)first["oldExperienceInCache"],"borrowed raw never seeds Native cache");
+  Check(File.ReadAllText(Path.Combine(dir,"01_load_first_turn.request.json")).Contains("MEETING_BOUNDARY_PROMPT_ONLY")&&!JsonConvert.SerializeObject(owner.AuditMemory.Drafts).Contains("MEETING_BOUNDARY_PROMPT_ONLY"),"admission elapsed context reaches actual prefix payload without entering saved memory");
+  channel.AuditComplete("How is the weather?",NewToken);
+  string unchangedDrafts=JsonConvert.SerializeObject(owner.AuditMemory.Drafts);File.WriteAllText(Path.Combine(dir,"after-first-conversation-drafts.json"),unchangedDrafts);
+  var second=Capture(channel,"02_same_conversation_second_turn","Do you remember my horse preference?",dir);Check((bool)second["hadNativeHistoryBeforeTurn"]&&(bool)second["oldExperienceInRequest"]&&(bool)second["newNativeExperienceInRequest"],"second turn retains authoritative old raw");
+  string secondBody=File.ReadAllText(Path.Combine(dir,"02_same_conversation_second_turn.request.json"));Check(secondBody.Split(NewToken).Length-1==1&&secondBody.Split("How is the weather?").Length-1==1,"real Native append plus real daily storage wrappers overlap once after actual raw assembly");
+  channel.AuditClose(false);Host.Scene="reentered scene";
+  var reentry=Capture(channel,"03_same_day_reentry_first_turn","Do you still remember my horse preference?",dir);Check((bool)reentry["hadNativeHistoryBeforeTurn"]&&(bool)reentry["oldExperienceInRequest"]&&(bool)reentry["newNativeExperienceInRequest"],"reentry first turn retains old raw and new Native cache");
+  Check(JsonConvert.SerializeObject(owner.AuditMemory.Drafts)==unchangedDrafts,"reentry request did not delete or mutate persistent drafts");
+  channel.AuditClose(true);owner=NewMemoryOwner(unchangedDrafts);NativeActive=false;
+  var reloaded=Capture(channel,"04_reload_same_drafts_first_turn","Do you still remember my horse preference?",dir);Check(!(bool)reloaded["hadNativeHistoryBeforeTurn"]&&(bool)reloaded["oldExperienceInRequest"]&&(bool)reloaded["newNativeExperienceInRequest"],"reload same drafts restores old raw");
+  // Counterexample to an overbroad claim: complete same-runtime Native cache survives close(false).
+  channel.AuditClose(true);owner=NewMemoryOwner(originalSave);NativeActive=false;
+  channel.AuditRecordNative("Player",OldToken,"player");channel.AuditRecordNative("NPC","I remember your preference.","npc");channel.AuditClose(false);
+  var control=Capture(channel,"05_complete_native_cache_reentry_control","Recall the blue horse.",dir);Check((bool)control["hadNativeHistoryBeforeTurn"]&&(bool)control["oldExperienceInRequest"],"complete Native history control retains old experience on reentry");
+  // Older raw lines remain available before successful compression, including actual failure bookkeeping.
+  channel.AuditClose(true);owner=NewMemoryOwner(unchangedDrafts);NativeActive=false;Host.Day=51;
+  var draft=owner.AuditMemory.LoadDrafts("audit_hero").Single();draft.QueuedForSummary=true;
+  var job=new MemorySummaryJob{HeroId="audit_hero",GameDayIndex=50};owner.AuditMemory.DailyQueue.Add(job);
+  var pending=Capture(channel,"06_next_day_pending_no_native_cache","Recall the old preference.",dir);Check((bool)pending["oldExperienceInRequest"],"uncompressed yesterday raw survives pending compression");
+  channel.AuditClose(true);owner.AuditMemory.FailDaily(job,"controlled provider failure");
+  var failed=Capture(channel,"07_next_day_failed_no_native_cache","Recall the old preference.",dir);Check((bool)failed["oldExperienceInRequest"]&&draft.SummaryRetryCount==3,"uncompressed yesterday raw survives failed compression");
+  channel.AuditComplete("Recall the old preference.",NewToken);channel.AuditClose(false);
+  var nextReentry=Capture(channel,"08_next_day_failed_reentry_first_turn","Recall the old preference again.",dir);Check((bool)nextReentry["oldExperienceInRequest"]&&(bool)nextReentry["hadNativeHistoryBeforeTurn"],"next-day reentry retains old raw with nonempty Native tail");
+  VerifyMergeAndCurrentScene(dir,hero);
+  File.WriteAllText(Path.Combine(dir,"evidence.json"),new JObject{["checks"]=Checks,["cases"]=JArray.FromObject(Results),["oldToken"]=OldToken,["newToken"]=NewToken,["game"]="STUBBED",["gateway"]="CAPTURE_LEAF",["live"]="NOT_RUN",["regressionFixed"]=true}.ToString(Formatting.Indented));
+  Console.WriteLine("PASS NativeMemoryContinuity checks="+Checks+" cases="+Results.Count+" raw_append=SOURCE capture_gate=SOURCE native_owner=SOURCE final_messages=SOURCE game=STUBBED network=CAPTURE_LEAF live=NOT_RUN");return 0;
+ }catch(Exception e){Console.Error.WriteLine(e.ToString());return 1;}}
+}
+}

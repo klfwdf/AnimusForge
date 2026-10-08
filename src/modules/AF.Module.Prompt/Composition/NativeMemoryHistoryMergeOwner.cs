@@ -8,7 +8,8 @@ namespace AnimusForge;
 internal static class NativeMemoryHistoryMergeOwner
 {
     internal static List<ConversationMessage> Merge(IEnumerable<ConversationMessage> persistent,
-        IEnumerable<ConversationMessage> native, long currentPlayerEventSequence, string playerName)
+        IEnumerable<ConversationMessage> native, long currentPlayerEventSequence, string playerName,
+        IEnumerable<ConversationMessage> pendingCurrentFacts = null)
     {
         var result = persistent?.Where(x => x != null).ToList() ?? new List<ConversationMessage>();
         var occurrences = new Dictionary<HistoryIdentity, Stack<int>>();
@@ -45,9 +46,49 @@ internal static class NativeMemoryHistoryMergeOwner
             .OrderBy(x => x.Message.GameDayIndex < 0 ? int.MaxValue : x.Message.GameDayIndex)
             .ThenBy(x => x.Message.GameHour < 0 ? 24 : x.Message.GameHour)
             .ThenBy(x => x.Index).Select(x => x.Message).ToList();
+        var factIdentities = new Dictionary<HistoryIdentity, Stack<ConversationMessage>>();
+        var factEvents = new Dictionary<long, ConversationMessage>();
+        foreach (var fact in result)
+        {
+            if (!IsAfef(fact)) continue;
+            fact.PromptFactScopeCaptured = true;
+            fact.PromptIsCurrentFact = false;
+            if (fact.EventSequence > 0) factEvents[fact.EventSequence] = fact;
+            if (!TryIdentity(fact, playerName, out var identity)) continue;
+            if (!factIdentities.TryGetValue(identity, out var facts))
+                factIdentities[identity] = facts = new Stack<ConversationMessage>();
+            facts.Push(fact);
+        }
+        foreach (var pending in pendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
+        {
+            if (!IsAfef(pending)) continue;
+            ConversationMessage matched = null;
+            if (pending.EventSequence > 0 && factEvents.TryGetValue(pending.EventSequence, out var sameEvent)
+                && !sameEvent.PromptIsCurrentFact && pending.GameDayIndex == sameEvent.GameDayIndex
+                && pending.PromptMemorySessionKey == sameEvent.PromptMemorySessionKey)
+                matched = sameEvent;
+            if (matched == null && TryIdentity(pending, playerName, out var identity)
+                && factIdentities.TryGetValue(identity, out var facts))
+            {
+                while (facts.Count > 0 && facts.Peek().PromptIsCurrentFact) facts.Pop();
+                if (facts.Count > 0) matched = facts.Pop();
+            }
+            if (matched == null)
+            {
+                // Unknown provenance cannot prove overlap. Keep the explicit current fact instead of downgrading it.
+                matched = SceneHistoryProjectionOwner.CapturePromptMessages(new[] { pending })[0];
+                result.Add(matched);
+            }
+            matched.PromptFactScopeCaptured = true;
+            matched.PromptIsCurrentFact = true;
+        }
         if (current != null) result.Add(current);
         return result;
     }
+
+    private static bool IsAfef(ConversationMessage message) => message != null
+        && string.Equals(message.Role, "system", StringComparison.OrdinalIgnoreCase)
+        && SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(message.Content, out _);
 
     private static bool TryIdentity(ConversationMessage message, string playerName, out HistoryIdentity identity)
     {

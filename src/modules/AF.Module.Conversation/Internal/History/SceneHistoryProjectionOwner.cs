@@ -32,7 +32,8 @@ internal static class SceneHistoryProjectionOwner
             // consumes only these scalars and must not retain any mutable visibility lists.
             result.Add(new ConversationMessage
             {
-                EventSequence = message.EventSequence, PromptMemorySessionKey = message.PromptMemorySessionKey, GameDayIndex = message.GameDayIndex,
+                EventSequence = message.EventSequence, PromptMemorySessionKey = message.PromptMemorySessionKey,
+                PromptFactScopeCaptured = message.PromptFactScopeCaptured, PromptIsCurrentFact = message.PromptIsCurrentFact, GameDayIndex = message.GameDayIndex,
                 GameDate = message.GameDate, GameHour = message.GameHour, Scene = message.Scene,
                 Role = message.Role, Content = message.Content, SpeakerName = message.SpeakerName,
                 SpeakerAgentIndex = message.SpeakerAgentIndex, SpeakerHeroId = message.SpeakerHeroId,

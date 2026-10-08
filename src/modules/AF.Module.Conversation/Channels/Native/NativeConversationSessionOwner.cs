@@ -142,7 +142,7 @@ internal sealed class NativeConversationSessionOwner
     }
     private static ConversationMessage CloneMessage(ConversationMessage x)
     {
-        return x == null ? null : new ConversationMessage { EventSequence=x.EventSequence,PromptMemorySessionKey=x.PromptMemorySessionKey,GameDayIndex=x.GameDayIndex,GameDate=x.GameDate,GameHour=x.GameHour,Scene=x.Scene,Role=x.Role,Content=x.Content,SpeakerName=x.SpeakerName,SpeakerAgentIndex=x.SpeakerAgentIndex,SpeakerHeroId=x.SpeakerHeroId,TargetAgentIndex=x.TargetAgentIndex,TargetName=x.TargetName,TargetHeroId=x.TargetHeroId,PlayerDistanceMeters=x.PlayerDistanceMeters,VisibleAgentIndices=new List<int>(x.VisibleAgentIndices ?? new List<int>()),VisibleHeroIds=new List<string>(x.VisibleHeroIds ?? new List<string>()) };
+        return x == null ? null : new ConversationMessage { EventSequence=x.EventSequence,PromptMemorySessionKey=x.PromptMemorySessionKey,PromptFactScopeCaptured=x.PromptFactScopeCaptured,PromptIsCurrentFact=x.PromptIsCurrentFact,GameDayIndex=x.GameDayIndex,GameDate=x.GameDate,GameHour=x.GameHour,Scene=x.Scene,Role=x.Role,Content=x.Content,SpeakerName=x.SpeakerName,SpeakerAgentIndex=x.SpeakerAgentIndex,SpeakerHeroId=x.SpeakerHeroId,TargetAgentIndex=x.TargetAgentIndex,TargetName=x.TargetName,TargetHeroId=x.TargetHeroId,PlayerDistanceMeters=x.PlayerDistanceMeters,VisibleAgentIndices=new List<int>(x.VisibleAgentIndices ?? new List<int>()),VisibleHeroIds=new List<string>(x.VisibleHeroIds ?? new List<string>()) };
     }
     internal void AppendDiagnostics(StringBuilder output)
     {

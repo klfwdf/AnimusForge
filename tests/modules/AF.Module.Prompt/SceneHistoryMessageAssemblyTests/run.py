@@ -205,6 +205,8 @@ if args.pure_message_current:
     paths.append('src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs')
     source_receipts.extend(dict(path=x,signature='FULL_CURRENT_SOURCE',rawSha256=hashlib.sha256((ROOT/x).read_bytes()).hexdigest()) for x in paths)
 if args.strict_capture_current: source_receipts.extend(dict(path=x,signature='FULL_CURRENT_SOURCE',rawSha256=hashlib.sha256((ROOT/x).read_bytes()).hexdigest()) for x in paths)
+if args.strict_capture_current and not (args.native_history_current or args.wilderness_current):
+    (out/'EmptyPartyNamespace.cs').write_text('namespace TaleWorlds.CampaignSystem.Party {}',encoding='utf-8')
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'" />' for p in paths)+'</ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=ROOT/'local/dotnet/8.0.425/dotnet.exe'
