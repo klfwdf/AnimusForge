@@ -1,3 +1,10 @@
+# 当前交接：迁移缺陷修复与有限审计交付（2026-10-09）
+
+- 产品 `65b6b5c4c` 集合已修外交followup循环/本国外交通知、交易和喊话迁移接缝、1024环境预算降级、inline快报本图重绘入口、领主/同伴主动开场手动retry断链及Xihai属性接缝。首次NPC空白未现场复现；177/177迁移文件是source责任审计，不是全仓/实机验收。
+- 外交24/4000、通知104、交易63/UI103、Panorama36、Native76/112/persona169及具名回放PASS；最终实际双DLL的trade contract、Xihai各4、持久化各103 PASS。官方双API/Bootstrap/双coup接缝/Stage成功，1807输入/PDB1394产品checksum一致。旧chunk catalog CLI仍缺D0 context而NOT-PASS，没有刷新oracle。
+- 原脚本已实际部署24文件；3381个Stage/安装SHA一致，24份Recovery旧备份complete。游戏重启后才加载新DLL；未实机/LLM/GPU/实档/全仓/ZIP。普通推送实际远端核验以最终回执为准。
+- [唯一主台账、源码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#migration-defect-package-20261009)，[职责导航](docs/architecture/af-framework-code-scope.md#migration-defect-package-20261009)。本条替代上次迁移交付的当前状态，保留其历史记录和其他作者改动。
+
 # 当前交接：远端 owner 迁移整合与接力修复
 
 - `73c822bc9` 跟随远端迁移，`ffb2e6a` 保留最新原版开战修复，`e9f378842` 补齐薄宿主接线；主目录已正常快进，接力最多八次且已发言者可回接。Scene/History 与新闻窗口/epoch 等本地增量迁入真实 owner，未恢复旧宿主整块算法。
