@@ -1,4 +1,10 @@
-# 当前交接：双平视机位跟随玩家镜头方向（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+# 当前交接：1.5.6 已部署打包与累计公告（2026-10-08，DEPLOYED_PACKAGED_LIVE_PENDING）
+
+- 用户授权完整交付并确认以正式1.5.5公告为基线；产品源码 `fe40e43f9`，公告 `8ab6045a9`。双API/Bootstrap/接缝及最终DLL专项通过；部署27文件、3,380安装文件和27份备份SHA通过。启动器与ZIP版本统一v1.5.6，包含此前所有已提交会话改动；本条替代这些改动的“未部署”状态，实机边界保持。
+- 包：`一键编译覆盖推送/packages/AnimusForge_v1.5.6_20261008_085444_131.zip`；[累计玩家公告](docs/releases/AnimusForge_1.5.6_累计更新公告_20261008.md)及同名txt也放在包旁。ZIP3,380项与安装一致，不含ONNX/个人配置/日志。
+- [唯一台账、远端比较与恢复点](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-v156-20261008)，证据 `artifacts/release-v1.5.6-20261008/delivery-receipt.json`。普通推送结果随后按远端回执补记；坡地遮挡、敌我识别、真实GPU/模型/旧档仍未验。下方为历史记录，不构成未来交付授权。
+
+# 历史交接：双平视机位跟随玩家镜头方向（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `23776e412`：按用户最终澄清，仅将身体朝向替换为玩家镜头水平朝向；仍是独立双平视机位、原距离和固定视野。A顺着镜头水平方向看，B反向，导演独立决定最终构图。此前连续生图/画廊保留。
 - 采集243、两版实际DLL各129及几何各15、原双API／Bootstrap／接缝PASS，8个变更文件匹配构建快照。[唯一台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-camera-direction-20261008)，证据 `artifacts/player-camera-pair-20261008/receipt.json`。
