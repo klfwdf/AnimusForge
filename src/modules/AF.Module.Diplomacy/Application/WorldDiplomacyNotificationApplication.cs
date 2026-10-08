@@ -42,6 +42,19 @@ internal sealed class WorldDiplomacyNotificationApplication
         if (!_updatingOwnFlags) _viewDirty = true;
     }
 
+    private static bool ConcernsPlayerKingdom(WorldDiplomacyDocument document, string playerKingdomId)
+    {
+        if (string.IsNullOrWhiteSpace(playerKingdomId)) return false;
+        if (string.Equals(document.AuthorKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(document.TargetKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase)
+            || document.AddressedKingdomIds?.Contains(playerKingdomId, StringComparer.OrdinalIgnoreCase) == true)
+            return true;
+        // Actions are the shared target authority. Keep explicit addressees above as well:
+        // mechanical representation of a realm must not hide a notice addressed to it.
+        return WorldDiplomacyStructureRules.GetDocumentTargetIds(document)
+            .Contains(playerKingdomId, StringComparer.OrdinalIgnoreCase);
+    }
+
     private void EnsureView(WorldDiplomacyStorage storage)
     {
         List<WorldDiplomacyDocument> documents = storage?.Documents;
@@ -122,15 +135,14 @@ internal sealed class WorldDiplomacyNotificationApplication
             return;
         }
         string playerKingdomId = sink.PlayerKingdomId;
-        // Failed domestic widgets stay retryable without blocking foreign text notices.
+        // Failed player-realm widgets stay retryable without blocking unrelated foreign text notices.
         // A fixed initial budget prevents reprocessing a deferred document in the same poll.
         int budget = Math.Min(3, _pendingFormal.Count);
         bool? mapRegistered = null;
         for (int i = 0; i < budget; i++)
         {
             WorldDiplomacyDocument document = _pendingFormal.Dequeue();
-            bool showOnMap = !string.IsNullOrWhiteSpace(playerKingdomId)
-                && string.Equals(document.AuthorKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase);
+            bool showOnMap = ConcernsPlayerKingdom(document, playerKingdomId);
             try
             {
                 if (showOnMap)

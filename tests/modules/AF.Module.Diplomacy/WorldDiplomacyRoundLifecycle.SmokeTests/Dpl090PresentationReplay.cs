@@ -226,27 +226,59 @@ internal static class Dpl090PresentationReplay
         var routed = new WorldDiplomacyStorage();
         var domestic = Document("domestic", 1); domestic.AuthorKingdomId = "PLAYER";
         var foreign = Document("foreign", 2); foreign.TargetKingdomId = "player";
-        var playerWritten = Document("self", 3); playerWritten.AuthorKingdomId = "player"; playerWritten.IsPlayerAuthored = true;
-        var notArrived = Document("not-arrived", 4); notArrived.HasReachedPlayerCourt = false;
-        routed.Documents.AddRange(new[] { domestic, foreign, playerWritten, notArrived });
+        var unrelated = Document("unrelated", 3); unrelated.TargetKingdomId = "other";
+        unrelated.Body = "player"; // Body mentions are not notification eligibility.
+        var playerWritten = Document("self", 4); playerWritten.AuthorKingdomId = "player"; playerWritten.IsPlayerAuthored = true;
+        var notArrived = Document("not-arrived", 5); notArrived.TargetKingdomId = "player"; notArrived.HasReachedPlayerCourt = false;
+        routed.Documents.AddRange(new[] { domestic, foreign, unrelated, playerWritten, notArrived });
         var routeOwner = new WorldDiplomacyNotificationApplication();
         var routeSink = new Sink { Registered = false };
         routeOwner.Poll(routed, now, routeSink);
-        Equal("foreign", string.Join(",", routeSink.Notices), "unavailable domestic widget does not block foreign notice even when player is its target");
-        Test.True(!routeSink.RoutedNotices.Single().ShowOnMap && !domestic.FormalNoticeShown,
-            "foreign goes to text and domestic widget failure keeps record retryable");
-        Equal(1, routeSink.Registrations, "only domestic notice probes widget registration");
+        Equal("unrelated", string.Join(",", routeSink.Notices), "unavailable player-realm widgets do not block unrelated foreign text");
+        Test.True(!routeSink.RoutedNotices.Single().ShowOnMap && !domestic.FormalNoticeShown && !foreign.FormalNoticeShown,
+            "author and explicit player target both remain retryable until the widget registers");
+        Equal(1, routeSink.Registrations, "widget registration is probed once for both player-realm notices in a poll");
         int routeBuilds = routeOwner.RebuildCount;
         routeOwner.Poll(routed, now.AddSeconds(1), routeSink);
         Equal(routeBuilds, routeOwner.RebuildCount, "deferred widget retries do not rescan document storage");
         routeSink.Registered = true;
         routeOwner.Poll(routed, now.AddSeconds(2), routeSink);
-        Test.True(domestic.FormalNoticeShown && routeSink.RoutedNotices.Last().ShowOnMap,
-            "same-country declaration restores right icon on registration recovery, ignoring ID case");
+        Test.True(domestic.FormalNoticeShown && foreign.FormalNoticeShown
+            && routeSink.RoutedNotices.Where(n => n.DocumentId != "unrelated").All(n => n.ShowOnMap),
+            "same-country author and foreign player target both restore right icons on registration recovery, ignoring ID case");
         Test.True(!playerWritten.FormalNoticeShown && !notArrived.FormalNoticeShown,
             "existing self-authored exclusion and court-delivery gates remain");
         routeOwner.ResetView(); routeOwner.Poll(routed, now.AddSeconds(3), routeSink);
-        Equal(2, routeSink.Notices.Count, "replacing view does not duplicate either notification route");
+        Equal(3, routeSink.Notices.Count, "replacing view does not duplicate either notification route");
+
+        var targetStorage = new WorldDiplomacyStorage();
+        var actionTarget = Document("action-target", 1);
+        actionTarget.TargetKingdomId = "other";
+        actionTarget.Actions.Add(new WorldDiplomacyDocumentAction { TargetKingdomId = "other", ChangedDiplomaticState = true });
+        actionTarget.Actions.Add(new WorldDiplomacyDocumentAction { TargetKingdomId = "PLAYER", ChangedDiplomaticState = false });
+        var addressedTarget = Document("addressed-target", 2);
+        addressedTarget.AddressedKingdomIds = new() { "other", "player" };
+        var representedTarget = Document("represented-target", 3);
+        representedTarget.TargetKingdomId = "representative";
+        representedTarget.Actions.Add(new WorldDiplomacyDocumentAction { TargetKingdomId = "representative" });
+        representedTarget.AddressedKingdomIds = new() { "player" };
+        var explicitWithActions = Document("explicit-with-actions", 4);
+        explicitWithActions.TargetKingdomId = "player";
+        explicitWithActions.Actions.Add(new WorldDiplomacyDocumentAction { TargetKingdomId = "other" });
+        var readTarget = Document("read-target", 5); readTarget.TargetKingdomId = "player"; readTarget.IsRead = true;
+        targetStorage.Documents.AddRange(new[] { actionTarget, addressedTarget, representedTarget, explicitWithActions, readTarget });
+        var targetOwner = new WorldDiplomacyNotificationApplication();
+        var targetSink = new Sink();
+        targetOwner.Poll(targetStorage, now, targetSink);
+        Equal("action-target,addressed-target,represented-target", string.Join(",", targetSink.Notices),
+            "foreign multi-action, explicit addressed list and mechanically represented addressee use capped right-icon publication");
+        Test.True(targetSink.RoutedNotices.All(n => n.ShowOnMap), "non-changing action targets still concern the player realm");
+        targetOwner.Poll(targetStorage, now.AddSeconds(1), targetSink);
+        Test.True(explicitWithActions.FormalNoticeShown && targetSink.RoutedNotices.Last().ShowOnMap,
+            "explicit document target remains eligible even when the action list has another target");
+        Test.True(!readTarget.FormalNoticeShown && !targetSink.Notices.Contains("read-target"), "read player-target documents remain excluded");
+        targetOwner.ResetView(); targetOwner.Poll(targetStorage, now.AddSeconds(2), targetSink);
+        Equal(4, targetSink.Notices.Count, "all target routes persist once-only notification after view reset");
 
         var noRealmStorage = new WorldDiplomacyStorage();
         var noRealm = Document("no-realm", 1); noRealm.AuthorKingdomId = "";
@@ -257,7 +289,7 @@ internal static class Dpl090PresentationReplay
             "empty player and author realms never count as domestic or require widget");
         var disabledStorage = new WorldDiplomacyStorage();
         var disabledOwn = Document("disabled-own", 1); disabledOwn.AuthorKingdomId = "player";
-        var disabledForeign = Document("disabled-foreign", 2);
+        var disabledForeign = Document("disabled-foreign", 2); disabledForeign.TargetKingdomId = "player";
         disabledStorage.Documents.AddRange(new[] { disabledOwn, disabledForeign });
         var disabledSink = new Sink { MapNotificationsEnabled = false };
         new WorldDiplomacyNotificationApplication().Poll(disabledStorage, now, disabledSink);
