@@ -25,6 +25,7 @@ internal static class WarAdmissionReplay
     {
         internal Port Admission;
         public override int CurrentDay() => Admission.CurrentDay;
+        public override bool HasIndependentAuthority(string id) => Admission.HasIndependentAuthority;
         public override bool PartiesAtWar(string firstId, string secondId) => Admission.AtWar;
         public override bool PartiesAllied(string firstId, string secondId) => Admission.Allied;
         public override IWorldDiplomacyWarAdmissionPort WarAdmission(string firstId, string secondId)
@@ -104,6 +105,17 @@ internal static class WarAdmissionReplay
             "nested legal guard exposes the concrete war reason");
         Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("final_live_legal_action_guard").Contains("可执行"),
             "context-only guard retains fallback");
+        foreach (string blocker in new[] { "none", "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity" })
+        {
+            var playerPort = AdmissionFor(blocker);
+            bool expected = blocker is "none" or "pending" or "cooldown" or "capacity";
+            bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref playerPort, out _, isPlayerAuthored: true);
+            Test.True(allowed == expected && playerPort.Scans == 0, "player bypasses pacing only without war scan: " + blocker);
+            var owner = new WorldDiplomacyOrchestration(new Host { Admission = playerPort }, new WorldDiplomacyRuntimeState());
+            var document = new WorldDiplomacyDocument { IsPlayerAuthored = true };
+            bool rejected = owner.TryGetPlayerWorldStateIntentViolation(document, "declare_war", "binding", "empire_w", "empire_s", out _);
+            Test.True(rejected == !expected, "player validation reaches shared admission: " + blocker);
+        }
         RunStateWiring();
         RunThreatWiring();
     }

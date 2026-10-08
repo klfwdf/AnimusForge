@@ -11,7 +11,7 @@ internal static class DocumentExecutionReplay
         internal WorldDiplomacyOrchestration Owner;
         internal WorldDiplomacyDocument StoredDocument;
         internal bool AuthorAllowed = true, NoAction, ThrowEffect, ThrowHistory, AfterFirstEffect;
-        internal bool UnknownImmediate, UnknownOffer;
+        internal bool UnknownImmediate, UnknownOffer, PlayerStateBlocked;
         internal bool RestrictRound;
         internal WorldDiplomacyRoundOffer RequiredPeace;
         internal int RequiredPeaceReads;
@@ -56,7 +56,7 @@ internal static class DocumentExecutionReplay
             => _p.RestrictRound && round != null ? new() { "accept_peace", "reject_peace" } : _p.Legal;
         public override List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string author, string target, bool relay, string slot, bool external, WorldDiplomacyDocument source) { return _p.Legal; }
         public override bool TryGetDiplomaticStateViolation(string intent, string author, string target, out string reason) { _p.Events.Add("validate:" + target); reason = "changed"; return target == _p.InvalidTarget || (_p.AfterFirstEffect && _p.Effects > 0); }
-        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = ""; return false; }
+        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = "player-state-blocked"; return _p.PlayerStateBlocked || (_p.AfterFirstEffect && _p.Effects > 0); }
         public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument doc, string reason) { _p.Events.Add("reject:" + reason); }
         public override WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string author, string target, string intent, WorldDiplomacyDocument doc)
         {
@@ -108,13 +108,39 @@ internal static class DocumentExecutionReplay
         {
             var (blockedPort, blockedOrch) = Fixture(p => { p.Legal.Clear(); p.InvalidTarget = stateBlocked ? "b" : null; });
             var blockedDocument = Document("b");
-            blockedDocument.IsPlayerAuthored = true;
+            blockedDocument.IsPlayerAuthored = false;
             Run(blockedPort, blockedOrch, blockedDocument);
             string expected = "final_live_legal_action_guard" + (stateBlocked ? ":changed" : "");
             Test.True(blockedPort.Effects == 0 && blockedPort.Events.Contains("reject:" + expected)
                 && blockedPort.Events.Any(x => x.StartsWith("log:final diplomacy action rejected") && x.Contains("reason=" + expected)),
-                "rejected player war preserves specific state reason or contextual fallback");
+                "rejected AI war preserves specific state reason or contextual fallback");
         }
+        foreach (bool legacyPlayer in new[] { false, true })
+        {
+            var (playerPort, playerOrch) = Fixture(p => { p.Legal.Clear(); p.InvalidTarget = "b"; });
+            var playerDocument = Document("b");
+            playerDocument.IsPlayerAuthored = true;
+            if (legacyPlayer) playerDocument.Actions.Clear();
+            Run(playerPort, playerOrch, playerDocument);
+            Test.True(playerPort.Effects == 1 && !playerPort.Events.Any(x => x.StartsWith("reject:")),
+                "player legacy and structured war bypass AI list and AI state checks");
+        }
+        foreach (bool flatPlayer in new[] { false, true })
+        {
+            var (blockedPlayerPort, blockedPlayerOrch) = Fixture(p => p.PlayerStateBlocked = true);
+            var blockedPlayerDocument = Document("b");
+            blockedPlayerDocument.IsPlayerAuthored = true;
+            if (flatPlayer) blockedPlayerDocument.Actions.Clear();
+            Run(blockedPlayerPort, blockedPlayerOrch, blockedPlayerDocument);
+            Test.True(blockedPlayerPort.Effects == 0 && blockedPlayerPort.Events.Contains("reject:final_live_state_guard:player-state-blocked"),
+                "player admission cannot bypass retained live-state restrictions");
+        }
+        var (batchPlayerPort, batchPlayerOrch) = Fixture(p => p.AfterFirstEffect = true);
+        var batchPlayerDocument = Document("b", "c");
+        batchPlayerDocument.IsPlayerAuthored = true;
+        Run(batchPlayerPort, batchPlayerOrch, batchPlayerDocument);
+        Test.True(batchPlayerPort.Effects == 1 && batchPlayerDocument.Actions[1].MechanicalResult.Contains("player-state-blocked"),
+            "player batch rechecks retained state before each effect");
         var frozenDocument = Document("b");
         frozenDocument.RoundId = "round-1";
         frozenDocument.SourceDocumentId = "source-1";

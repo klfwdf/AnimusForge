@@ -367,6 +367,7 @@ internal static class Program
         HashSet<string> expectedAnalysisIntents = new(expectedActionableIntents, StringComparer.Ordinal);
         expectedAnalysisIntents.UnionWith(publicNonMechanicalIntents);
         expectedAnalysisIntents.Add("withdraw_offer");
+        expectedAnalysisIntents.Add("release_subject");
         foreach (string treaty in new[] { "annexation", "tributary", "garrison", "vassal" })
             foreach (string move in new[] { "propose", "accept", "reject" })
                 expectedAnalysisIntents.Add(move + "_" + treaty);
@@ -2221,7 +2222,7 @@ internal static class Program
             "private bool TryGetPlayerWorldStateIntentViolation(");
         int liveGuardStart = publication.IndexOf("if (!input.Exists || target == null", StringComparison.Ordinal);
         int liveStateValidation = publication.IndexOf(
-            "TryGetDiplomaticStateViolation(intent, author, target, out string liveStateReason)",
+            "TryGetExecutionStateViolation(orchestration, document, command.IsPlayerAuthored, intent, input.Commitment, author, target, out string liveStateReason)",
             StringComparison.Ordinal);
         int liveGuardSuppression = publication.IndexOf(
             "SuppressInvalidDocumentBeforePropagation(document, \"final_live_state_guard:\" + liveStateReason);",
