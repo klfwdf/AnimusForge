@@ -1,3 +1,9 @@
+# 当前交接：原版开战对话接续确认（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `27c28f99d`：空菜单/静默拦截不再冒充战斗接管；有界重试、真实战斗读回、重入/换遭遇保护。旧和平清理绑定原会面，已确认开战保护自定义退出与强制返回。
+- 接续67、会面183、放行/投降34、双版真实Harmony入口、原双API/Bootstrap/双接缝PASS；旧源新增空菜单用例按预期FAIL。未实机/部署/打包/推送；玩家模组组合待复测。
+- [唯一台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-combat-resume-20261009)，证据 `artifacts/native-combat-resume-20261009/receipt.json`，候选DLL在其dll/目录。回滚 `git revert 27c28f99d`。
+
 # 当前交接：终端地图图标尺寸兼容（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `a97b3067e`：保留128×128 PNG，将runtime逻辑图标固定40×40；源Brush/fallback明确StretchToTarget、Contain和居中，缓存命中也修正尺寸策略。原导航位置/开关/点击/纹理缓存保持，不新增Tick。

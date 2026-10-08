@@ -8609,3 +8609,16 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - **推送实际阻塞**：重新 fetch 后 `origin/main=a7d8421425cf96a52208c5019ecdbeb311ad8e48`，共同祖先为 `c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce`，远端有一个独立源码整合提交，本地产品链与其分叉。`git merge-base --is-ancestor origin/main HEAD` 退出 1；只读 `git merge-tree --write-tree --name-only HEAD origin/main` 显示九个冲突文件，跨 HANDOFF/主台账/代码范围图、CampaignMaterialRecords、DialogueHistoryDelete、WeeklyRuntime、WorldBulletin、MyBehavior 和 ShoutBehavior。没有执行合并、重写历史或强推；需要另行完成这组实际整合和重新验收后才能普通快进推送。排除路径/玩家日志/附件未纳入本次提交。
 - **未验证**：旧 `ChannelCutoverBoundaryTests` / `ScenePostprocessParityTests` 在进入断言前被既有 `MyBehavior.CampaignMaterialRecords.cs` 历史绑定门禁挡住，未更新哈希或旧 oracle；不能记 PASS。真实游戏 LLM 接话质量、对象过滤/UI/气泡/音效、完整三渠道历史持久化、实档与性能帧耗时 NOT-RUN。离线 fixture 不代替实机验收。
 - **回滚与产物**：对 `8cda28fbe` 作聚焦 inverse/revert，不 reset 或改写历史；游戏恢复使用上述私有 Recovery manifest/备份。本地 `artifacts/scene-relay-continuation-20261008/{run.log,source-fingerprints.json,receipt.json}`、`artifacts/scene-relay-continuation-old-negative-20261008/`、`artifacts/scene-relay-build-final-20261008.log`、`artifacts/scene-relay-deploy-final-20261008.log` 和 `artifacts/scene-relay-remote-merge-preview-20261008.log` 保留完整证据，不上传玩家附件。两个既有未跟踪 NuGet 目录原样保留。
+
+
+<a id="native-combat-resume-20261009"></a>
+
+## 原版开战对话实际接续确认与旧清理隔离（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `27c28f99de8c6596a421fc5a5c56f6a36d9ca857`，检查点 `27d2f76`。修复自定义遭遇菜单打开原版对话后的接续：临时空菜单可恢复；其他菜单有限等待；调用菜单不算成功，需原遭遇双方共享当前Battle并进入encounter菜单或战斗mission。重验存档、遭遇、目标队伍和会话revision，执行中防重入，异常不盲目重放。原版投降、离开和特殊场景保持守卫；已确认开战时自定义离开按钮不再设置LeaveEncounter。
+- 平和会面清理在创建会面时绑定遭遇/队伍/generation，在所有清理入口核验；明确开战立即废弃旧清理。NPC拦截后的强制返回自定义菜单也识别已确认开战，避免两个流程争抢菜单。
+- 性能：无待办Tick只读静态bool退出；待办每250ms检查，菜单恢复至少间隔500ms、最多3次，15秒超时。无反射/扫描/后台游戏对象访问新增。
+- PASS：直接链接生产接续67项；提取真实会面控制流183项、放行/投降34项；原版1.3/1.4真实Harmony入口安装及空闲调用；原统一build_single_module.ps1两实现/Bootstrap/双DLL接缝门禁。旧提交源码跑新增回放在空菜单恢复处FAIL（预期反例）。最初系统dotnet缺离线8.0.30引用包，改用仓库既有8.0.425运行器后通过；最初新增Time命名空间编译错误已修正为TaleWorlds.Engine，最终构建通过。
+- 证据 `artifacts/native-combat-resume-20261009/receipt.json`、continuation.log、boundary.log、release.log、hooks-1.3.log/hooks-1.4.log、negative.log、build-final.log；两个产品文件匹配构建快照，DLL留存在该目录dll/。回放原版菜单/战斗效果为替身，不代表真实Campaign验收；未实机、未部署、未打包、未推送。玩家具体新反馈仍需新日志确认所命中的分支。
+- 源码责任（修订 `27c28f99de8c6596a421fc5a5c56f6a36d9ca857`）：`src/AF.GameAdapter.Bannerlord/Encounter/NativeDialogueBattleContinuation.cs` 的 `HasConfirmedBattle`（110–119）、`Tick`（127–177）拥有接续/readback/限频；`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs` 的 `DiscardPeacefulCleanupForNativeCombat`（4746–4750）、`ValidatePeacefulCleanupScope`（4752–4763）、StartMeetingBattle内scope捕获（8640）、`PreparePlayerRequestedNativeConversationLeave`/`CanReturnFromNativeDialogueHandoff`（8755/8780）拥有清理与退出互斥。既有原版建战、开战场景加载及对话终结句语义未迁移。
+- 回滚仅 `git revert 27c28f99de8c6596a421fc5a5c56f6a36d9ca857`，保留其他作者与NuGet目录。
