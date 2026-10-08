@@ -39,6 +39,7 @@ namespace AnimusForge.XihaiAction
         private static MethodInfo _passiveNpcResponseMethod;
         private static MethodInfo _sceneDescriptionMethod;
         private static FieldInfo _contextField;
+        private static PropertyInfo _contextProperty;
         private static FieldInfo _conversationEpochField;
         private static PropertyInfo _conversationEpochProperty;
         private static FieldInfo _primaryIndexField;
@@ -136,12 +137,9 @@ namespace AnimusForge.XihaiAction
                     reason = "NPC packet AgentIndex contract drifted";
                     return false;
                 }
-                _contextField = behaviorType.GetField(
-                    "_activeShoutTargetingContext",
-                    instanceFlags);
-                if (_contextField == null)
+                if (!TryBindTargetingContextAccessor(behaviorType))
                 {
-                    reason = "targeting context field is missing";
+                    reason = "targeting context accessor is missing or unreadable";
                     return false;
                 }
                 if (!TryBindConversationEpochAccessor(behaviorType))
@@ -150,7 +148,7 @@ namespace AnimusForge.XihaiAction
                     return false;
                 }
                 BindOptionalCapturedPlayerShoutMethods(behaviorType, instanceFlags);
-                Type contextType = _contextField.FieldType;
+                Type contextType = _contextField?.FieldType ?? _contextProperty.PropertyType;
                 _currentInstanceProperty = behaviorType.GetProperty(
                     "CurrentInstance",
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
@@ -511,6 +509,7 @@ namespace AnimusForge.XihaiAction
                 _passiveNpcResponseMethod = null;
                 _sceneDescriptionMethod = null;
                 _contextField = null;
+                _contextProperty = null;
                 _conversationEpochField = null;
                 _conversationEpochProperty = null;
                 _primaryIndexField = null;
@@ -532,6 +531,32 @@ namespace AnimusForge.XihaiAction
         // Resolve once at bridge installation, not in Mission ticks or each reply.
         // The refactored property forwards to the authoritative session owner;
         // do not replace it with a second epoch field or a constant-zero fallback.
+        private static bool TryBindTargetingContextAccessor(Type behaviorType)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            _contextField = behaviorType.GetField("_activeShoutTargetingContext", flags);
+            _contextProperty = behaviorType.GetProperty("_activeShoutTargetingContext", flags);
+            if (_contextProperty?.GetGetMethod(true) == null ||
+                _contextProperty.GetIndexParameters().Length != 0)
+            {
+                _contextProperty = null;
+            }
+            return _contextField != null || _contextProperty != null;
+        }
+
+        private static object ReadTargetingContext(object behavior)
+        {
+            if (_contextField != null)
+            {
+                return _contextField.GetValue(behavior);
+            }
+            if (_contextProperty != null)
+            {
+                return _contextProperty.GetValue(behavior, null);
+            }
+            throw new InvalidOperationException("Targeting context accessor is not bound.");
+        }
+
         private static bool TryBindConversationEpochAccessor(Type behaviorType)
         {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -658,7 +683,7 @@ namespace AnimusForge.XihaiAction
                     return true;
                 }
 
-                object context = _contextField.GetValue(__instance);
+                object context = ReadTargetingContext(__instance);
                 List<Agent> framed = new List<Agent>();
                 Agent primary = null;
                 if (context != null)
