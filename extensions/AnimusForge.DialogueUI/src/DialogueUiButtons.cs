@@ -95,7 +95,7 @@ namespace AnimusForge.DialogueUI
         internal static void StyleShoutScroll(Widget root)
         {
             if (root == null || !DialogueUiSprites.EnsureShoutScrollLoaded()) return;
-            foreach (string id in new[] { "AFDialogueShoutHistory", "AFShoutCancel", "AFShoutCodex", "SceneIllustrationButton" })
+            foreach (string id in new[] { "AFDialogueShoutHistory", "AFShoutCancel", "AFShoutCodex", "SceneIllustrationButton", "SceneGalleryButton" })
                 StylePlate(root.FindChild(id, true) as ButtonWidget);
             StyleSprite(root.FindChild("AFShoutSubmit", true) as ButtonWidget, "afdui_plaque_nameplate");
             StyleSprite(root.FindChild("AFDialogueShoutSubmit", true) as ButtonWidget, "afdui_plaque_nameplate");

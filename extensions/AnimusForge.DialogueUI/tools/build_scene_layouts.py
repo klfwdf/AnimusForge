@@ -52,7 +52,7 @@ def button(parent, bid, label, command, x, y, w, h, size=14, color=INK, **attrs)
     # Dark engraved plates need bright outlined lettering; parchment tabs keep their ink.
     readable = (bid.startswith(('AFPlate', 'AFPlaque')) or bid in {
         'AFRowHistory', 'AFRowGift', 'AFRowCodex', 'AFRowIllustrate', 'AFRowLeave', 'AFRowSend', 'AFRowInterrupt',
-        'SceneIllustrationButton', 'AFShoutCodex', 'AFShoutSubmit', 'AFShoutCancel',
+        'SceneIllustrationButton', 'SceneGalleryButton', 'AFShoutCodex', 'AFShoutSubmit', 'AFShoutCancel',
         'AFDialogueShoutHistory', 'AFDialogueShoutSubmit'})
     if readable:
         size, color = max(size, 17), '#FFF4D6FF'
@@ -294,6 +294,7 @@ def build_scroll():
     button(s, 'AFPlateGift', '赠送', 'ExecuteGift', 1067, 82, 70, 32, 13, '#361F0EFF', IsEnabled='@CanSend')
     button(s, 'AFPlateCodex', '图鉴', 'ExecuteEncyclopedia', 1143, 82, 70, 32, 13, '#361F0EFF')
     button(s, 'AFPlateIllustrate', '@IllustrationButtonText', 'ExecuteIllustrate', 1219, 82, 70, 32, 13, '#361F0EFF', IsEnabled='@CanIllustrate', IsVisible='@IsIllustrationVisible')
+    button(s, 'AFPlateGallery', '画廊', 'ExecuteOpenGallery', 1189, 172, 102, 26, 15, '#FFF4D6FF', IsVisible='@IsIllustrationVisible')
     button(s, 'AFPlaqueSend', '@SendText', 'ExecuteSubmit', 991, 125, 188, 41, 15, '#FFDF95FF', IsEnabled='@CanSend')
     # While a round runs the send plaque is disabled; 打断 sits on top of it.
     button(s, 'AFPlaqueInterrupt', '打断 · 插话', 'ExecuteInterrupt', 991, 125, 188, 41, 15, '#FFB08AFF', IsVisible='@CanInterrupt')
@@ -346,7 +347,8 @@ def build_folio():
     text(f, '@AddresseeText', 73, 781, 440, 22, 14, '#E2C38AFF')
     editor(f, 59, 803, 460, 136, '#F0DFBEFF', '输入你要对周围人说的话，或点名片向特定 NPC 交谈……', '#D9C3A0AA')
     text(f, '[Enter] 发送 · [Shift+Enter] 换行 · 按受众名单同步分发', 73, 941, 440, 16, 12, '#B09572FF')
-    text(f, '@StatusText', 73, 959, 440, 22, 13, '#FFB08AFF')
+    text(f, '@StatusText', 73, 959, 350, 22, 13, '#FFB08AFF')
+    dark_button(f, 'AFRowGallery', '画廊', 'ExecuteOpenGallery', 459, 957, 80, 28, size=15, IsVisible='@IsIllustrationVisible')
     for bid, label, command, x, w, extra in (('AFRowHistory', '历史', 'ExecuteToggleHistory', 39, 70, {}),
                                              ('AFRowGift', '赠送', 'ExecuteGift', 115, 70, {'IsEnabled': '@CanSend'}),
                                              ('AFRowCodex', '图鉴', 'ExecuteEncyclopedia', 191, 70, {}),
@@ -405,6 +407,7 @@ def build_shout_fallback():
     el(children(bar), 'Widget', Id='AFShoutInputHandle', WidthSizePolicy='StretchToParent', HeightSizePolicy='Fixed', SuggestedHeight=24, Sprite=SOLID, Color='#E2C38AAA')
     text(s, '@IllustrationStatusText', 275, 201, 1000, 20, 13, '#FFB08AFF')
     button(s, 'SceneIllustrationButton', '@IllustrationButtonText', 'ExecuteIllustrate', 1219, 82, 70, 32, 13, '#361F0EFF', IsVisible='@IsIllustrationVisible', IsEnabled='@CanIllustrate')
+    button(s, 'SceneGalleryButton', '画廊', 'ExecuteOpenGallery', 1189, 172, 102, 26, 15, '#FFF4D6FF', IsVisible='@IsIllustrationVisible')
     button(s, 'AFShoutCodex', '图鉴', 'ExecuteOpenTitleLink', 1143, 82, 70, 32, 13, '#361F0EFF', IsVisible='@IsTitleLinkEnabled')
     button(s, 'AFShoutSubmit', '发送', 'ExecuteSubmit', 991, 125, 188, 41, 15, '#FFDF95FF')
     button(s, 'AFShoutCancel', '关闭', 'ExecuteCancel', 1189, 125, 102, 41, 14, '#361F0EFF')

@@ -23,8 +23,9 @@ public sealed class SceneSessionVM : ViewModel
     private int _illustrationVersion = -1;
     [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
-    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "生图中…" : "生图";
+    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "截图中…" : "生图";
     public void ExecuteIllustrate() => Queue(() => { if (CanIllustrate) ShoutBehavior.RequestSceneIllustrationForExternal(() => !_released && ShoutBehavior.IsScenePresentationActiveForExternal); });
+    public void ExecuteOpenGallery() => Queue(() => { if (!_released && IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); });
     internal void RefreshIllustration()
     {
         int version = ShoutBehavior.SceneIllustrationVersionForExternal;

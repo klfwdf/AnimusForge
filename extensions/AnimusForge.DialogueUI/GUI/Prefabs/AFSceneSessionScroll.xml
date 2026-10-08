@@ -49,6 +49,11 @@
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
                       </Children>
                     </ButtonWidget>
+                    <ButtonWidget Id="AFPlateGallery" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="102" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1189" MarginTop="172" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteOpenGallery" IsVisible="@IsIllustrationVisible">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="画廊" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
+                      </Children>
+                    </ButtonWidget>
                     <ButtonWidget Id="AFPlaqueSend" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSubmit" IsEnabled="@CanSend">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SendText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />

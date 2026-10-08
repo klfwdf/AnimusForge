@@ -12,6 +12,11 @@ public partial class ShoutBehavior
     public static Func<bool> SceneIllustrationBusyHook;
     public static Func<string> SceneIllustrationStatusHook;
     public static Action<Func<bool>> SceneIllustrationRequestHook;
+    internal static Action SceneIllustrationGalleryHook;
+    internal static void OpenSceneIllustrationGalleryForUi()
+    {
+        if (IsSceneIllustrationAvailableForExternal) SceneIllustrationGalleryHook?.Invoke();
+    }
     public static int SceneIllustrationVersionForExternal { get; private set; }
     public static bool IsSceneIllustrationAvailableForExternal => SceneIllustrationAvailableHook?.Invoke() == true;
     public static bool IsSceneIllustrationBusyForExternal => SceneIllustrationBusyHook?.Invoke() == true;

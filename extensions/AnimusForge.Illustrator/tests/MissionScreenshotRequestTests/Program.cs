@@ -255,7 +255,9 @@ internal static class Program
         Check(request.Contains("完整多人回应") && request.Contains("对白完整原文") && request.Contains("只有对白明确发生的空间变化"), "full frozen dialogue and action priority reach director");
         Check(!request.Contains("允许自定义服装装备"), "screenshot identities remain fixed with ordinary equipment switch off");
         string finalPrompt = Get<string>(result, "Prompt");
-        Check(!finalPrompt.Contains("对白完整原文") && finalPrompt.Contains("玩家与目标相距2米") && finalPrompt.Contains("玩家居中"), "final image uses direction/facts/contract, never raw dialogue or forced player centering");
+        Check(!finalPrompt.Contains("对白完整原文") && finalPrompt.Contains("玩家与目标相距2米")
+            && finalPrompt.Contains("前后平视机位") && finalPrompt.Contains("参考图的居中与透视只是采集构图，不是最终画面的固定要求"),
+            "final image uses direction/facts/contract, never raw dialogue or forced player centering");
         handler.Reset(reply("")); RejectDirection(options, References(), http, "empty director output");
         Check(handler.Records.Count == 1, "empty director fails without local substitute or retry");
         handler.Reset(reply("【人物与镜头】人物挥手。")); RejectDirection(options, References(), http, "incomplete director output");
@@ -289,6 +291,37 @@ internal static class Program
 
     private static void PresentationContracts()
     {
+        var owner = _dll.GetType("AnimusForge.Illustrator.Core.MissionScreenshotIllustration", true);
+        var shout = _dll.GetType("AnimusForge.ShoutBehavior", true);
+        owner.GetMethod("Install", AllStatic).Invoke(null, null);
+        var busy = (Func<bool>)shout.GetField("SceneIllustrationBusyHook", AllStatic).GetValue(null);
+        shout.GetField("SceneIllustrationAvailableHook", AllStatic).SetValue(null, (Func<bool>)(() => true));
+        int galleryCalls = 0, newRequests = 0;
+        shout.GetField("SceneIllustrationGalleryHook", AllStatic).SetValue(null, (Action)(() => galleryCalls++));
+        var scopeField = owner.GetField("_scope", AllStatic);
+        var captureField = owner.GetField("_capture", AllStatic);
+        scopeField.SetValue(null, FormatterServices.GetUninitializedObject(scopeField.FieldType));
+        var inputType = _dll.GetType("AnimusForge.ShoutTextInputPopupVM", true);
+        var input = FormatterServices.GetUninitializedObject(inputType);
+        Set(input, "_allowIllustration", true); Set(input, "_onIllustration", (Action)(() => newRequests++));
+        Check(!busy() && Get<bool>(input, "CanIllustrate"), "background scene generation no longer disables another screenshot");
+        inputType.GetMethod("ExecuteIllustrate").Invoke(input, null);
+        Check(newRequests == 1, "scene input admits another request while previous scope exists");
+        var capture = FormatterServices.GetUninitializedObject(captureField.FieldType);
+        var doneField = captureField.FieldType.GetField("_done", AllInstance);
+        var done = Activator.CreateInstance(doneField.FieldType);
+        doneField.SetValue(capture, done); captureField.SetValue(null, capture);
+        Check(busy() && !Get<bool>(input, "CanIllustrate"), "only native screenshot acquisition holds camera gate");
+        inputType.GetMethod("ExecuteOpenGallery").Invoke(input, null);
+        Check(galleryCalls == 1, "gallery command is independent of image busy state");
+        doneField.FieldType.GetMethod("SetResult").Invoke(done, new object[] { null });
+        Check(!busy() && Get<bool>(input, "CanIllustrate"), "finished screenshot unlocks input before network finishes");
+        var sessionType = _dll.GetType("AnimusForge.DialogueUI.Scene.SceneSessionVM", true);
+        var session = FormatterServices.GetUninitializedObject(sessionType);
+        sessionType.GetMethod("ExecuteOpenGallery").Invoke(session, null);
+        ((Action)sessionType.GetField("_pending", AllInstance).GetValue(session)).Invoke();
+        Check(galleryCalls == 2, "persistent session gallery uses same installed callback");
+        scopeField.SetValue(null, null); captureField.SetValue(null, null);
         Type vm = _dll.GetType("AnimusForge.AnimusForgeNativeConversationOverlayVM", true);
         bool enabled = true; int calls = 0;
         object host = Activator.CreateInstance(vm, new object[] { null, null, null, null, null, null,

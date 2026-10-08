@@ -23,6 +23,7 @@ namespace AnimusForge.DialogueUI.Shout
         [DataSourceProperty] public bool CanIllustrate => Host is ShoutTextInputPopupVM vm && vm.CanIllustrate;
         [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? "生图";
         public void ExecuteIllustrate() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteIllustrate(); }
+        public void ExecuteOpenGallery() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteOpenGallery(); }
 
         [DataSourceProperty] public ViewModel Host { get; private set; }
         [DataSourceProperty] public bool HasSubtitle { get; }

@@ -28,9 +28,10 @@ namespace AnimusForge.Illustrator.Core
         internal static void Install()
         {
             ShoutBehavior.SceneIllustrationAvailableHook = () => IllustratorRuntime.IsMainThread && IllustratorRuntime.IsEnabled() && Mission.Current != null;
-            ShoutBehavior.SceneIllustrationBusyHook = () => _scope != null;
+            ShoutBehavior.SceneIllustrationBusyHook = () => _capture != null && !_capture.Completion.IsCompleted;
             ShoutBehavior.SceneIllustrationStatusHook = () => ReferenceEquals(_statusMission, Mission.Current) ? _status : "";
             ShoutBehavior.SceneIllustrationRequestHook = Request;
+            ShoutBehavior.SceneIllustrationGalleryHook = () => UI.Gallery.IllustratorGalleryPopup.Show();
         }
 
         internal static void Tick()
@@ -41,13 +42,7 @@ namespace AnimusForge.Illustrator.Core
                 _lastAvailable = available; _lastMission = Mission.Current;
                 ShoutBehavior.NotifySceneIllustrationChangedForExternal();
             }
-            _capture?.Tick();
-            if (_capture?.Completion.IsCompleted == true && _openProgress != null)
-            {
-                Action open = _openProgress; _openProgress = null;
-                try { open(); }
-                catch (Exception ex) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败：" + ex.Message)); }
-            }
+            TickCapture();
             // Campaign owns its existing hotkeys. Custom battles have no CampaignBehavior owner.
             if (Campaign.Current != null || Mission.Current == null || !IllustratorRuntime.IsEnabled()
                 || !ShoutBehavior.IsSceneIllustrationBattleForExternal || ShoutTextInputPopup.IsOpen
@@ -59,6 +54,19 @@ namespace AnimusForge.Illustrator.Core
             if (shout != _shoutKeyName) { _shoutKeyName = shout; if (!Enum.TryParse(shout, true, out _shoutKey)) _shoutKey = InputKey.T; }
             if (menu != _menuKeyName) { _menuKeyName = menu; if (!Enum.TryParse(menu, true, out _menuKey)) _menuKey = InputKey.Y; }
             if (Input.IsKeyPressed(_shoutKey) || Input.IsKeyPressed(_menuKey)) OpenCustomBattleInput();
+        }
+
+        private static void TickCapture()
+        {
+            _capture?.Tick();
+            if (_capture?.Completion.IsCompleted != true) return;
+            // Only native capture owns the camera gate. Each admitted scope keeps its own
+            // immutable screenshots and continues independently on the existing bounded workers.
+            _capture = null;
+            Action open = _openProgress; _openProgress = null;
+            ShoutBehavior.NotifySceneIllustrationChangedForExternal();
+            try { open?.Invoke(); }
+            catch (Exception ex) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败：" + ex.Message)); }
         }
 
         private static void OpenCustomBattleInput()
@@ -82,7 +90,7 @@ namespace AnimusForge.Illustrator.Core
         private static void Request(Func<bool> panelStillOpen)
         {
             IllustratorRuntime.AssertMainThread();
-            if (_scope != null) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 上一次生图尚未完成，请等待。")); return; }
+            if (_capture != null && !_capture.Completion.IsCompleted) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 正在采集现场，截图完成后即可再次生图。")); return; }
             Mission mission = Mission.Current;
             var originScreen = ScreenManager.TopScreen;
             IllustrationOptions options;
@@ -122,8 +130,8 @@ namespace AnimusForge.Illustrator.Core
             }
 
             _capture = capture;
-            SetStatus(mission, "正在采集两张截图，完成后恢复原画面…");
             _scope = scope;
+            SetStatus(mission, "正在采集两张截图，完成后恢复原画面…");
             // Open only after capture restores the UI/camera. Never put the waiting card into a screenshot.
             _openProgress = () => {
                 if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded

@@ -19,9 +19,10 @@ public sealed class ShoutTextInputPopupVM : ViewModel
     [DataSourceProperty] public bool HasSubtitleText => !string.IsNullOrWhiteSpace(SubtitleText);
     [DataSourceProperty] public bool IsIllustrationVisible => _allowIllustration && ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
-    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "生图中…" : "生图";
+    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "截图中…" : "生图";
     [DataSourceProperty] public string IllustrationStatusText => ShoutBehavior.SceneIllustrationStatusForExternal;
     public void ExecuteIllustrate() { if (CanIllustrate) _onIllustration?.Invoke(); }
+    public void ExecuteOpenGallery() { if (IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); }
     public void RefreshIllustration()
     {
         int version = ShoutBehavior.SceneIllustrationVersionForExternal;
