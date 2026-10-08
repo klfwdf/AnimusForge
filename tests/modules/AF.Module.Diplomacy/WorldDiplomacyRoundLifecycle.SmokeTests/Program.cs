@@ -15952,7 +15952,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && factSource.Contains("public static bool ContainsDirectedPeaceTerm(", StringComparison.Ordinal)
             && factSource.Contains("public static string BuildPeaceKingdomReferencePattern(", StringComparison.Ordinal),
             "pair-key, rumor, offer-requirement and directed-peace-term rules must live in domain files");
-        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildDiplomacyRumor(", StringComparison.Ordinal)
+        Test.True(!notificationApplicationSource.Contains("sink.ShowRumor(", StringComparison.Ordinal)
+            && notificationApplicationSource.Contains("WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor)", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string PairKey(", StringComparison.Ordinal)
