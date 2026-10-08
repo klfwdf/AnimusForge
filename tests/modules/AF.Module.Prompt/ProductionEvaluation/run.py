@@ -1,17 +1,24 @@
 """Compile the production evaluation entry with per-call deterministic ports."""
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, minimal_test_environment
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
+parser = argparse.ArgumentParser()
+parser.add_argument("--run-root", type=Path)
+args = parser.parse_args()
 source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 session_source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
 mission_source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
@@ -27,8 +34,7 @@ capture = extract.declaration(source, "internal static PromptSemanticWarmupSeedB
 session_start = extract.declaration(source, "internal static void TryStartBackgroundSemanticWarmup(string source)")
 start = extract.declaration(source, "internal static void TryStartBackgroundSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)")
 complete = extract.declaration(source, "private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)")
-output = ROOT / "artifacts/tests/prompt-j03-production-evaluation/current"
-output.mkdir(parents=True, exist_ok=True)
+output = new_run_root(ROOT, "prompt-j03-production-evaluation", args.run_root)
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
 (output / "Program.cs").write_text(template.replace("@@PORTS@@", ports).replace("@@ENTRY@@", entry)
                                   .replace("@@CAPTURE@@", capture).replace("@@SESSION_START@@", session_start)
@@ -47,8 +53,7 @@ project = '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</Outp
 (output / "Proof.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
 dotnet = ROOT / "local/dotnet/8.0.425/dotnet.exe"
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
-           DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1")
+env = minimal_test_environment(dotnet, output)
 build = subprocess.run([str(dotnet), "build", str(output / "Proof.csproj"), "-c", "Release", "--nologo",
                         "-p:UseAppHost=false", "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")],
                        cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")

@@ -363,4 +363,76 @@ internal static string NormalizeNativeConversationHistoryTextForPostprocess(stri
 		string value = ShoutUtils.StripNamePrefixedLineSafely((text ?? "").Replace("\r", "").Trim(), 30);
 		return PrepareSceneHistorySpeechText(value);
 	}
+
+
+internal static string SanitizeSceneSpeechTextForTts(string text)
+	{
+		string text2 = ExtractContentSectionForTts((text ?? "").Replace("\r", ""));
+		text2 = StripLeakedPromptContentForShout(text2);
+		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
+		text2 = ConversationActionPostprocessOwner.StripActionTagsForSceneSpeech(text2);
+		text2 = Regex.Replace(text2, "<think\\b[^>]*>.*?</think>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\[REASONING\\].*?(?=\\[CONTENT\\]|$)", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\[(?:ACTION:)?MOOD:[^\\]\\r\\n]*\\]?", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "(?:^|\\s)(?:ACTION:)?MOOD:[A-Z_]+\\]?(?=$|\\s)", " ", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[(?:NO_CONTINUE|END)\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\（.*?\\）", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\(.*?\\)", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\*\\*.*?\\*\\*", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\*.*?\\*", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "(^|\\n)\\s*【[^】\\r\\n]{1,40}】", "$1");
+		text2 = StripTtsNarrationLines(text2);
+		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
+		text2 = Regex.Replace(text2, "\\n{3,}", "\n\n");
+		text2 = text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':', '：', '，', '。', ',', ';', '；');
+		return text2.Trim();
+	}
+
+internal static string ExtractContentSectionForTts(string text)
+	{
+		string text2 = (text ?? "").Replace("\r", "");
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		int num = text2.LastIndexOf("[CONTENT]", StringComparison.OrdinalIgnoreCase);
+		if (num >= 0)
+		{
+			text2 = text2.Substring(num + "[CONTENT]".Length);
+		}
+		return text2.Trim();
+	}
+
+internal static string StripTtsNarrationLines(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Replace("\r", "").Split('\n');
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (Regex.IsMatch(text2, "^(?:OUTPUT|INPUT|REQUEST_BODY|raw_response|reasoning_content|\\[?REASONING\\]?|\\[?CONTENT\\]?)[：:]", RegexOptions.IgnoreCase))
+			{
+				continue;
+			}
+			if (Regex.IsMatch(text2, "^(?:内心|心声|心想|思考|动作|神态|表情|旁白|叙述|舞台指示|场景描写|心理活动)\\s*[：:]"))
+			{
+				continue;
+			}
+			if (stringBuilder.Length > 0)
+			{
+				stringBuilder.Append('\n');
+			}
+			stringBuilder.Append(text2);
+		}
+		return stringBuilder.ToString().Trim();
+	}
 }

@@ -50,25 +50,15 @@ if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
 echo Config    : "%CONFIG%"
 echo.
 
-echo [1/2] Building and assembling a project-local unified module...
+echo Building and packaging a project-local unified module with the next patch version...
 if defined WORKSHOP_CONTENT_DIR (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Stage
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Build -ExcludeOnnx %*
 ) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Stage
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Build -ExcludeOnnx %*
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
-    echo [FAILED] Unified module build/output failed. ExitCode=%ERR%
-    pause
-    exit /b %ERR%
-)
-
-echo.
-echo [2/2] Creating one AnimusForge ZIP...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -ExcludeOnnx %*
-set "ERR=%ERRORLEVEL%"
-if not "%ERR%"=="0" (
-    echo [FAILED] Packaging failed. ExitCode=%ERR%
+    echo [FAILED] Unified module build/packaging failed. ExitCode=%ERR%
     pause
     exit /b %ERR%
 )

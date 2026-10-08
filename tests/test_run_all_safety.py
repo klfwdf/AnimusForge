@@ -144,6 +144,122 @@ class RunAllSafetyTests(unittest.TestCase):
                 runner.execute(cmd, {}, self.repo / "artifacts/new", 30)
         self.assertEqual(launch.call_count, 2)
 
+    def test_optional_python_default_direct_and_unittest_commands_stay_identical(self):
+        for name, content in (("run_fixture.py", "if __name__ == '__main__': pass"), ("test_fixture.py", "class ExampleTestCase: pass")):
+            (self.repo / name).write_text(content)
+            with patch.object(runner, "ROOT", self.repo):
+                command = runner.command(name, {}, "fixture")
+            self.assertEqual(command[:4], [runner.sys.executable, "-X", "utf8", "-B"])
+            self.assertEqual(command[4] == "-m", name.startswith("test_"))
+
+    def test_optional_python_selects_same_explicit_exe_for_both_branches(self):
+        executable = self.repo / "python.exe"
+        executable.write_bytes(b"synthetic-not-executed")
+        for name, content in (("run_fixture.py", "if __name__ == '__main__': pass"), ("test_fixture.py", "class ExampleTestCase: pass")):
+            (self.repo / name).write_text(content)
+            with patch.object(runner, "ROOT", self.repo), patch.dict(os.environ, {"AF_TEST_PIL_PYTHON": str(executable)}):
+                command = runner.command(name, {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}, "fixture")
+            self.assertEqual(command[0], str(executable))
+            self.assertEqual(command[1:4], ["-X", "utf8", "-B"])
+
+    def test_optional_python_missing_relative_nonexistent_nonexe_fail_closed(self):
+        bad_file = self.repo / "not-python.txt"
+        bad_file.write_text("sentinel")
+        directory = self.repo / "directory.exe"
+        directory.mkdir()
+        for value in ("", "python.exe", str(self.repo / "missing.exe"), str(bad_file), str(directory)):
+            with self.subTest(value=value), patch.dict(os.environ, {"AF_TEST_PIL_PYTHON": value}, clear=True):
+                with self.assertRaises(ValueError):
+                    runner.python_for_entry("fixture.py", {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"})
+
+    def test_optional_python_redirect_and_unknown_selector_fail_closed(self):
+        info = SimpleNamespace(st_mode=stat.S_IFREG, st_file_attributes=stat.FILE_ATTRIBUTE_REPARSE_POINT)
+        with patch.dict(os.environ, {"AF_TEST_PIL_PYTHON": str(self.repo / "python.exe")}), patch.object(Path, "lstat", return_value=info):
+            with self.assertRaisesRegex(ValueError, "reparse"):
+                runner.python_for_entry("fixture.py", {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"})
+        for path, spec in (("fixture.csproj", {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}), ("fixture.py", {"pythonExecutableEnv": "OTHER_PYTHON"})):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                runner.python_for_entry(path, spec)
+
+    def test_unselected_optional_python_does_not_require_environment(self):
+        entries = {"pil.py": {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}, "plain.py": {}}
+        code, launch = self.invoke(entries, ["--only", "plain.py"])
+        self.assertEqual(code, 0)
+        self.assertEqual(launch.call_count, 1)
+
+    def test_list_optional_python_does_not_require_environment_or_write(self):
+        code, launch = self.invoke({"pil.py": {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}}, ["--list"])
+        self.assertEqual(code, 0)
+        launch.assert_not_called()
+        self.assertFalse(self.temp.exists())
+        self.assertFalse((self.repo / "artifacts").exists())
+
+    def test_selected_optional_python_missing_environment_fails_before_writes(self):
+        code, launch = self.invoke({"pil.py": {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}})
+        self.assertEqual(code, 2)
+        launch.assert_not_called()
+        self.assertFalse(self.temp.exists())
+        self.assertFalse((self.repo / "artifacts").exists())
+
+    def test_ids_filter_optional_python_does_not_require_unselected_environment(self):
+        selected = self.repo / "ids.txt"
+        selected.write_text("plain.py")
+        code, launch = self.invoke({"pil.py": {"pythonExecutableEnv": "AF_TEST_PIL_PYTHON"}, "plain.py": {}}, ["--ids", str(selected)])
+        self.assertEqual(code, 0)
+        self.assertEqual(launch.call_count, 1)
+
+    def test_architecture_successful_prepare_output_is_preserved(self):
+        relative = "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/DiplomacyArchitectureTests.csproj"
+        prepare = "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py"
+        build = self.repo / "artifacts" / "fresh-build"
+        target = build / "bin" / "fixture.dll"
+        target.parent.mkdir(parents=True)
+        target.write_bytes(b"synthetic")
+        command = ["dotnet", "run", "--project", str(self.repo / relative), "-c", "Release"]
+        replies = [subprocess.CompletedProcess([], 0, "fresh prepare stdout\n", "fresh prepare stderr\n"),
+                   subprocess.CompletedProcess([], 0, "build", ""),
+                   subprocess.CompletedProcess([], 0, json.dumps({"Properties": {"TargetPath": str(target), "TargetFramework": "net8.0"}}), ""),
+                   subprocess.CompletedProcess([], 0, "original runtime", "")]
+        with patch.object(runner, "ROOT", self.repo), patch.object(runner.subprocess, "run", side_effect=replies):
+            result = runner.execute(command, {}, build, 30, prepare_entry=prepare)
+        self.assertEqual(result.returncode, 0)
+        self.assertTrue(result.stdout.startswith("fresh prepare stdout\n"))
+        self.assertTrue(result.stderr.startswith("fresh prepare stderr\n"))
+        self.assertIn("original runtime", result.stdout)
+
+    def test_unknown_prepare_entry_fails_before_output(self):
+        code, launch = self.invoke({"fixture.csproj": {"prepareEntry": "unknown.py"}})
+        self.assertEqual(code, 2)
+        launch.assert_not_called()
+        self.assertFalse(self.temp.exists())
+
+    def test_architecture_prepare_command_uses_fresh_manifest_and_original_runtime(self):
+        relative = "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/DiplomacyArchitectureTests.csproj"
+        project = self.repo / relative
+        project.parent.mkdir(parents=True)
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>')
+        build = self.repo / "artifacts" / "fresh-build"
+        spec = {"prepareEntry": "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py"}
+        with patch.object(runner, "ROOT", self.repo):
+            command = runner.command(relative, spec, "fixture", build)
+        self.assertEqual(command[-2:], ["--", str(build / "prepare" / "sources.json")])
+        self.assertFalse(build.exists())
+        with self.assertRaises(ValueError):
+            runner.validate_prepare_entry(relative, {**spec, "args": ["stale.json"]})
+
+    def test_architecture_prepare_failure_does_not_build_or_launch(self):
+        relative = "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/DiplomacyArchitectureTests.csproj"
+        prepare = "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py"
+        build = self.repo / "artifacts" / "fresh-build"
+        command = ["dotnet", "run", "--project", str(self.repo / relative), "-c", "Release"]
+        failed = subprocess.CompletedProcess([], 7, "original prepare stdout", "original prepare error")
+        with patch.object(runner, "ROOT", self.repo), patch.object(runner.subprocess, "run", return_value=failed) as launch:
+            result = runner.execute(command, {}, build, 30, prepare_entry=prepare)
+        self.assertEqual((result.returncode, result.stdout, result.stderr), (7, failed.stdout, failed.stderr))
+        self.assertEqual(launch.call_count, 1)
+        self.assertIn("--prepare-only", launch.call_args.args[0])
+        self.assertEqual(launch.call_args.args[0][launch.call_args.args[0].index("--run-root") + 1], str(build / "prepare"))
+
     def test_missing_required_candidate_blocks_without_launch(self):
         with patch.object(runner, "DLL14", self.repo / "missing-candidate.dll"):
             _, launch = self.invoke({"replay.csproj": {"candidateDll": True}})

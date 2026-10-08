@@ -33,7 +33,8 @@ ADAPTER_SOURCES = [
     "src/bridges/Siege/SiegeModuleAdapter.cs",
 ]
 SERVICE_SOURCE = "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs"
-SOURCES = PORT_SOURCES + ADAPTER_SOURCES + [SERVICE_SOURCE]
+CIVIL_WAR_CONTRACT = "src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs"
+SOURCES = PORT_SOURCES + ADAPTER_SOURCES + [SERVICE_SOURCE, CIVIL_WAR_CONTRACT]
 MAP = {
     "Policy": ("KingdomAgendaCustomPolicyBehavior", ["IsEligibleTargetForExternal", "BuildRuntimePostprocessRulesForExternal", "TryProcessAcceptedAgendaTag"]),
     "Gathering": ("NobleGatheringBehavior", ["BuildRuntimePostprocessRulesForExternal", "BuildPostprocessContextForExternal", "NormalizeNobleGatheringPostprocessTagsForExternal", "BuildFeastAttendanceContext", "TryApplyNobleGatheringTagsForExternal"]),
@@ -288,7 +289,33 @@ def main():
     out = new_run_root(ROOT, "team-module-port-parity", args.run_root)
     (out / "owner-signatures.json").write_text(json.dumps(signatures, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
-    target = util.project(out / "Base", "TeamModulePortParity", [current_source_path(ROOT, p) for p in SOURCES] + [HERE / "OwnerStubs.cs", HERE / "Program.cs"], executable=True)
+    # This original three-port suite does not execute CivilWar gameplay. Link its
+    # real current contract and make the unrelated static-composition leaf fail
+    # closed, rather than dropping the actual TeamModuleServices field.
+    contract = read(CIVIL_WAR_CONTRACT)
+    interface = contract.split("internal interface ICivilWarModulePort\n{", 1)[1].rsplit("}", 1)[0]
+    members = []
+    for line in interface.splitlines():
+        declaration = line.strip()
+        if not declaration or declaration.startswith("//"):
+            continue
+        failure = 'throw new System.NotSupportedException("CivilWar gameplay is outside this three-port fixture");'
+        if declaration.startswith("event "):
+            members.append("public " + declaration[:-1] + " { add { " + failure + " } remove { " + failure + " } }")
+        elif declaration.endswith("{ get; }"):
+            members.append("public " + declaration[:-len("{ get; }")] + "=> " + failure)
+        else:
+            assert declaration.endswith(");"), "Unreviewed CivilWar contract member shape: " + declaration
+            members.append("public " + declaration[:-1] + " { " + failure + " }")
+    civil_war_leaf = out / "CivilWarCompositionLeaf.cs"
+    civil_war_leaf.write_text("using System; using System.Collections.Generic; using TaleWorlds.CampaignSystem; "
+        "using TaleWorlds.CampaignSystem.Settlements; using AnimusForge.Refactor.Modules; "
+        "namespace TaleWorlds.CampaignSystem { public interface IFaction {} public sealed class Kingdom {} public sealed class Clan {} } "
+        "namespace TaleWorlds.CampaignSystem.Settlements { public sealed class Settlement {} } "
+        "namespace AnimusForge { internal sealed class CivilWarModuleAdapter : ICivilWarModulePort { "
+        + "\n".join(members) + " } }", encoding="utf-8")
+    fixture_sources = [HERE / "OwnerStubs.cs", HERE / "Program.cs", civil_war_leaf]
+    target = util.project(out / "Base", "TeamModulePortParity", [current_source_path(ROOT, p) for p in SOURCES] + fixture_sources, executable=True)
     code, log = util.run_dotnet(args.dotnet, ["run", "--project", str(target), "-c", "Release"], out)
     print(log, end="")
     if code:
@@ -308,7 +335,7 @@ def main():
             mutated = folder/Path(adapter_path).name
             mutated.write_text(adapters.replace(old, new), encoding="utf-8")
             sources = [mutated if path == adapter_path else current_source_path(ROOT, path) for path in SOURCES]
-            project = util.project(folder, "TeamModulePortParity", sources + [HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
+            project = util.project(folder, "TeamModulePortParity", sources + fixture_sources, executable=True)
             result, text = util.run_dotnet(args.dotnet, ["run", "--project", str(project), "-c", "Release"], out)
             (folder/"run.log").write_text(text, encoding="utf-8")
             if result == 0 or "FAIL " not in text or "error CS" in text:

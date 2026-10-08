@@ -6,8 +6,17 @@ using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
 // Save/load-only, no second event authority or host reference.
-internal static class CampaignWeeklyRecordPersistenceAdapter
+internal sealed class CampaignWeeklyRecordPersistenceAdapter
 {
+    private readonly WeeklyEventRecordStateOwner _owner;
+    internal Dictionary<string, string> OpeningStorage = new Dictionary<string, string>();
+    internal string RecordJsonStorage = "";
+    internal CampaignWeeklyRecordPersistenceAdapter(WeeklyEventRecordStateOwner owner) { _owner = owner ?? throw new ArgumentNullException(nameof(owner)); }
+    internal void SaveOpenings(IDataStore store) => SaveOpenings(store, _owner.KingdomOpenings, OpeningStorage, _owner.WorldOpening);
+    internal void LoadOpenings(IDataStore store) => LoadOpenings(store, _owner.KingdomOpenings, ref OpeningStorage, ref _owner.WorldOpening);
+    internal void SaveRecords(IDataStore store, Action<List<MyBehavior.EventRecordEntry>> normalize) => SaveRecords(store, _owner.Records, ref RecordJsonStorage, normalize);
+    internal void LoadRecords(IDataStore store, Action<List<MyBehavior.EventRecordEntry>> normalize) => LoadRecords(store, ref _owner.Records, ref RecordJsonStorage, normalize);
+
     internal static void SaveOpenings(IDataStore dataStore, Dictionary<string,string> summaries, Dictionary<string,string> storage, string world)
     {
 				storage.Clear();

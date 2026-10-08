@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, resolve_dotnet, minimal_test_environment
 import argparse, importlib.util, os, subprocess
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).parent
@@ -17,8 +17,11 @@ ex = load('ex', 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTest
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--original-callbacks', action='store_true')
 p.add_argument('--skip-mutations', action='store_true')
-p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE', r'G:\AFMOD\.dotnet-sdk\dotnet.exe'))
+p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE'))
+p.add_argument('--run-root', type=Path)
 args = p.parse_args()
+run_root = new_run_root(ROOT, 'game-lifetime', args.run_root)
+dotnet = resolve_dotnet(ROOT, args.dotnet)
 
 def read(path): return (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
 
@@ -44,7 +47,7 @@ mutations = {
 variants = [('original-callbacks' if args.original_callbacks else 'current', None)]
 if not args.original_callbacks and not args.skip_mutations: variants += list(mutations.items())
 for name, mutation in variants:
-    out = HERE / '.generated' / name; out.mkdir(parents=True, exist_ok=True)
+    out = new_run_root(ROOT, 'game-lifetime', run_root / name)
     (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
     selected = []
     for path, code in [(path,read(path)) for path in sources] + [('Program.cs',harness)]:
@@ -53,7 +56,9 @@ for name, mutation in variants:
             code = code.replace(mutation[1], mutation[2])
         file = out / Path(path).name; file.write_text(code, encoding='utf-8'); selected.append(file)
     project = util.project(out, 'GameLifetime', selected, executable=True)
-    status, log = util.run_dotnet(args.dotnet, ['run','--project',str(project),'-c','Release'], out)
+    result = subprocess.run([str(dotnet),'run','--project',str(project),'-c','Release'], cwd=out,
+        env=minimal_test_environment(dotnet,out), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)
+    status, log = result.returncode, result.stdout + result.stderr
     (out/'run.log').write_text(log,encoding='utf-8')
     if mutation:
         assert status != 0 and 'FAIL ' in log and 'error CS' not in log, 'Mutation failed to produce behavioral failure: '+name+'\n'+log

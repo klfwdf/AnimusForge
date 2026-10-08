@@ -94,5 +94,13 @@ internal static List<string> SanitizeWeeklyReportEventIds(IEnumerable<string> so
 	{
 		return (source ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Where((string x) => x.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
+
+internal void ResetForCurrentSave()
+{
+ Unread = new List<string>();
+ ReadingXpClaimedEventIds = new List<string>();
+ ReadingXpPendingCount=0;ReadingXpPendingCharm=0;ReadingXpPendingLeadership=0;ReadingXpPendingSteward=0;
+ ResetShown();NormalizedForPolicy=false;
+}
 }
 internal sealed class WeeklyNoticePort {internal Func<string,EventRecordEntry> FindRecord;internal Func<string,bool> IsBulletin;internal Func<IEnumerable<string>,string> NearestKingdom;internal Action<string,string> Log;internal Action<EventRecordEntry> Publish;}

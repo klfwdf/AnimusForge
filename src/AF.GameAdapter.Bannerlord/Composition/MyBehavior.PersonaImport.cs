@@ -5,16 +5,7 @@ namespace AnimusForge;
 public partial class MyBehavior
 {
  private bool ApplyImportedSinglePersonaProfile(string heroId, NpcPersonaProfile imported, long generation)
- {
-  if (!IsMemorySourceEditorCurrent(generation)) return false;
-  if (imported != null) StampNpcPersonaProfile(heroId, imported);
-  PersonaImportOwner.ApplySingleProfile(ref _npcPersonaProfiles, heroId, imported);
-  return true;
- }
+  => PersonaProfileFiles.ApplyImportedSinglePersonaProfile(heroId, imported, generation);
  private bool ApplyImportedPersonaProfiles(Dictionary<string, NpcPersonaProfile> imported, bool overwriteExisting, long generation)
- {
-  if (!IsMemorySourceEditorCurrent(generation)) return false;
-  PersonaImportOwner.ApplyProfiles(ref _npcPersonaProfiles, imported, overwriteExisting);
-  return true;
- }
+  => PersonaProfileFiles.ApplyImportedPersonaProfiles(imported, overwriteExisting, generation);
 }

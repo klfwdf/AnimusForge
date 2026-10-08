@@ -1,0 +1,800 @@
+global using static AnimusForge.MemoryEntityIdentityBannerlordAdapter;
+global using TaleWorlds.CampaignSystem.Encounters;
+global using TaleWorlds.CampaignSystem.Settlements.Locations;
+global using static AnimusForge.MemoryBusinessStateOwner;
+global using static AnimusForge.HistoryArchiveRecallOwner;
+global using System.Text;
+global using System.Reflection;
+global using AnimusForge.Refactor.Runtime;
+global using System.Text.Json;
+global using static AnimusForge.ShoutBehavior;
+global using TaleWorlds.CampaignSystem.Party;
+global using TaleWorlds.CampaignSystem.Settlements;
+global using TaleWorlds.Core;
+global using TaleWorlds.Library;
+global using AnimusForge.Refactor.Adapters;
+global using System.Text.RegularExpressions;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.CampaignSystem {
+ public class Hero { public string StringId="hero"; public string Name="Hero";public FixtureCulture Culture=new();public Clan Clan;public Clan MapFaction;public bool IsAlive=true,IsDisabled;public bool IsNotable;public Occupation Occupation;public static Hero Find(string id)=>AnimusForge.NativeHost.Hero;public static Hero FindFirst(Func<Hero,bool> f)=>f(AnimusForge.NativeHost.Hero)?AnimusForge.NativeHost.Hero:null;public CharacterObject CharacterObject;public bool IsFemale;public float Age=30; public static IEnumerable<Hero> AllAliveHeroes=>new[]{AnimusForge.NativeHost.Hero};public static Hero MainHero=new(); }
+ public class CharacterObject : BasicCharacterObject { public string StringId="character"; public string Name="Character"; public Hero HeroObject; public float Age=25;public Occupation Occupation;public override bool IsHero=>HeroObject!=null;public bool IsSoldier,IsFemale;public FixtureCulture Culture=new();public int Tier=2; }
+ public class Campaign { public static Campaign Current; public ConversationManager ConversationManager=new ConversationManager();public T GetCampaignBehavior<T>() where T:class=>AnimusForge.MyBehavior.Instance as T; }
+}
+namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager {public int ActiveToken=2; public bool IsConversationInProgress=true;public object OneToOneConversationAgent;} }
+namespace TaleWorlds.MountAndBlade { public class Agent {public int Index;public static Agent Main;public Mission Mission;public bool IsMainAgent=>ReferenceEquals(this,Main);public AgentState State=AgentState.Active;public bool Active=true,IsHuman=true;public float Health=100;public Vec3 Position;public string Name="NPC";public CharacterObject Character=new();public AgentVisuals AgentVisuals=new();public bool IsActive()=>Active;public enum FacialAnimChannel {Mid,High} public void SetAgentFacialAnimation(FacialAnimChannel channel,string value,bool active) {}} public class Mission {public static Mission Current;public List<Agent> Agents=new();public TaleWorlds.Engine.Scene Scene=new();public bool MissionEnded;public float CurrentTime;public string SceneName="fixture";} }
+namespace AnimusForge {
+ public static class NativeHost {
+  public static int MainThread,Calls,Effects,MoodEffects,Writes,WrongThread,SceneSession,Echo,Tts,Captures,DetachedCompletes,LatestReads,HistoryReads;
+  public static bool MemoryFails,ActionFails,Duplicate,TargetValid;
+  public static bool OptInRule;public static string Mode;internal static NativeReplyPlaybackProbe Playback;
+  public static Hero Hero; public static CharacterObject Character;
+  public static TaskCompletionSource<bool> Release;
+  public static TaskCompletionSource<bool> SceneSecondRelease;
+  public static bool SceneFirstQueued;
+  public static void Reset() {Playback?.Close();Playback=null;TtsEngine.Instance=new();ConversationHelper.IsTypewriterWaitingForPlayback=false;MainThread=Thread.CurrentThread.ManagedThreadId;Calls=Effects=MoodEffects=Writes=WrongThread=Echo=Tts=Captures=DetachedCompletes=LatestReads=HistoryReads=0;MemoryFails=ActionFails=Duplicate=OptInRule=false;TargetValid=true;Mode="normal";SceneSession=3;AIConfigHandler.RewardEnabled=false;Hero=new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation++;Release=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneSecondRelease=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneFirstQueued=false;F.Current=new Fixture("native"){Raw="[ACTION:MOOD:CALM]",NoRules=true};ShoutBehavior.ResetOwner();}
+  public static void ReleaseSecondSceneTurn()=>SceneSecondRelease.SetResult(true);
+  public static void Game(){if(MainThread!=Thread.CurrentThread.ManagedThreadId)WrongThread++;}
+  public static void Pump()=>ShoutBehavior.Pump();
+  public static void Retire()=>ShoutBehavior.Retire();
+  public static void ReplaceOwner()=>ShoutBehavior.ResetOwner();
+  public static void Advance()=>SaveRuntimeGuard.Generation++;
+  public static void ChangeConversation(){ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();Hero=new Hero{StringId="second"};Character=new CharacterObject{StringId="second-character"};Campaign.Current.ConversationManager.ActiveToken++;}
+  public static Task<string> SubmitLegacy()=>ShoutBehavior.SubmitLegacy();
+  public static bool[] CoreCases(){
+   var results=new List<bool>();
+   var core=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>{});var held=core.SubmitNative("held","text");results.Add(held.TryBegin()&&!held.TryBegin());held.MarkOwnerAdmitted();held.RecordOwnerCompletion("confirmed");held.RecordOwnerCompletion("overwrite");core.Dispose();held.Finish("late.error");results.Add(held.Snapshot.State==AnimusForge.Refactor.Modules.CoreDialogueState.Completed&&held.Snapshot.Reply=="confirmed");
+   using(var bounded=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel())){
+    for(int i=0;i<128;i++)bounded.SubmitNative("id"+i,"text");
+    results.Add(bounded.SubmitNative("overflow","text").Snapshot.ReasonCode=="dialogue.client_capacity");
+    results.Add(bounded.SubmitNative("id0","text").Snapshot.State==AnimusForge.Refactor.Modules.CoreDialogueState.Cancelled);
+    results.Add(bounded.SubmitNative("bad id","text").Snapshot.ReasonCode=="dialogue.invalid_request");
+    results.Add(bounded.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","overflow","text",op=>op.Cancel()).Snapshot.ReasonCode=="dialogue.client_capacity");
+   }
+   using(var scoped=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel())){
+    int dispatched=0;
+    Action<AnimusForge.Refactor.Modules.CoreDialogueOperation> send=op=>{dispatched++;op.Cancel();};
+    var scene=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    var repeat=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    results.Add(ReferenceEquals(scene,repeat)&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-b","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Courier,"ticket-a","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitNative("shared","text").Snapshot.ReasonCode=="dialogue.request_id_conflict");
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"","fresh","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Native,"","spoof","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
+   }
+   var ticketClient=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel());
+   string issued=ticketClient.CaptureSceneContextTicket();
+   results.Add(issued!=null&&ShoutBehavior.SceneTicketCount==1);
+   ticketClient.Dispose();
+   results.Add(ShoutBehavior.SceneTicketCount==0&&ticketClient.CaptureSceneContextTicket()==null);
+   return results.ToArray();
+  }
+ }
+ static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation; internal static long CurrentGeneration=>Generation; internal static bool IsStale(long g,string phase)=>!IsCurrentGeneration(g); internal static string BuildStaleRequestErrorText()=>"stale";}
+ static class PlayerEncounterCompat {internal static bool IsInPostBattleResultFlow()=>false;}
+ static class NpcInitiatedOpeningRouter {internal static bool TryConsumePendingNativeOpening(Hero h,out string a,out string b,out string c){a=b=c="";return false;}}
+ static class Logger {internal static void Obs(string a,string b,Dictionary<string,object> c){}internal static void Metric(string a,bool ok=true){}internal static bool IsVerboseModLogicEnabled=>false;internal static void LogVerbose(string category,string key,Func<string> message,double interval){} internal static void Log(string a,string b){if(NativeHost.Mode=="trace")Console.WriteLine(a+":"+b);} }
+ static class FreezeWatchdog { internal sealed class ScopeToken:IDisposable {public void Dispose(){}} internal static ScopeToken Scope(string name)=>new();internal static void Mark(string a,string b="",bool immediate=false){} }
+ class PreprocessFormatException : Exception { }
+ static partial class WorldMapPartyCommandBehavior {internal sealed class WorldMapOrderApplyResult {internal bool NeedsChannelExit;}}
+ sealed partial class MyBehavior { internal static MemoryCommitResult CommitDialogueHistoryWithScene(string id,bool nonHero,string name,string player,string reply,string fact,int session){NativeHost.Game();NativeHost.Writes++;return new MemoryCommitResult(NativeHost.MemoryFails?MemoryCommitStatus.Failed:MemoryCommitStatus.Applied);} }
+ public partial class ShoutBehavior {
+  private readonly object _moduleSceneGroupGate=new();
+  private SceneGroupReceipt _activeModuleSceneGroup;
+  private static readonly Dictionary<string,string> SceneTickets=new();
+  internal static int SceneTicketCount=>SceneTickets.Count;
+  internal static string IssueModuleSceneTicket(string clientId){string id=Guid.NewGuid().ToString("N");SceneTickets.Add(id,clientId);return id;}
+  internal static void RevokeModuleSceneTickets(string clientId){foreach(string id in SceneTickets.Where(x=>x.Value==clientId).Select(x=>x.Key).ToArray())SceneTickets.Remove(id);}
+  private sealed class SceneTargetingContext { internal int PrimaryAgentIndex=7; }
+  private sealed class ScenePlayerShoutRequest { internal long RuntimeGeneration; internal int SceneSessionId; internal SceneTargetingContext TargetingContext=new(); }
+  private static bool TryClaimModuleSceneTicket(string clientId,string identity,out ScenePlayerShoutRequest request){
+   NativeHost.Game();request=null;
+   if(!SceneTickets.TryGetValue(identity,out string owner)||owner!=clientId)return false;
+   SceneTickets.Remove(identity);request=new ScenePlayerShoutRequest{RuntimeGeneration=SaveRuntimeGuard.Generation,SceneSessionId=CurrentInstance._sceneHistorySessionId};return true;
+  }
+  private int _sceneHistorySessionId=3,_sceneConversationEpoch;
+  private bool IsSceneConversationEpochCurrent(int epoch)=>epoch==_sceneConversationEpoch;
+  private async Task ProcessCapturedScenePlayerShoutAsync(string text,string extra,int? primary,ScenePlayerShoutRequest request,Action<Action> scope,SceneGroupReceipt receipt){
+   NativeHost.Game();receipt.Bind(Interlocked.Increment(ref _sceneConversationEpoch));
+   receipt.AddTurn(7,"Alice","first",Task.FromResult(true));
+   NativeHost.SceneFirstQueued=true;
+   await NativeHost.SceneSecondRelease.Task.ConfigureAwait(false);
+   receipt.AddTurn(8,"Bob","second",Task.FromResult(true));
+  }
+@@CURRENT_SCENE@@
+  private ScenePersonaPreparationAdapter _fixturePersona;
+  private ScenePersonaPreparationAdapter ScenePersonaPreparation=>_fixturePersona??=new(_conversationGameThreadDispatcher,NativeAdmissions,()=>ReferenceEquals(CurrentInstance,this),()=>_sceneConversationEpoch,NativeConversationPersonaGenerationWaitTimeoutMs);
+  private static ShoutBehavior CurrentInstance;
+  private static readonly NativeConversationSessionOwner _nativeSessionOwner=new(SceneConversationHistoryOwner.NextEventSequence,260);
+  private readonly SceneConversationHistoryOwner _fixtureSceneHistory=new(new object());
+  private readonly ScenePendingAfefFactsOwner _fixturePendingFacts=new();
+  private SceneHistoryPromptCaptureAdapter _fixtureHistoryCapture;
+  private SceneHistoryPromptCaptureAdapter SceneHistoryPromptCapture=>_fixtureHistoryCapture??=new(()=>_fixtureSceneHistory,_fixturePendingFacts,_nativeSessionOwner);
+  private static SceneHistoryPromptCaptureAdapter CurrentSceneHistoryPromptCapture()=>CurrentInstance?.SceneHistoryPromptCapture;
+  internal static int NativeHistoryCount=>_nativeSessionOwner.GetTail(SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(NativeHost.Hero,NativeHost.Character,"NPC",1),260).Count;
+  private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();
+  private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();
+  internal const int NativeConversationMainThreadPreprocessTimeoutMs=100;
+  private const int ScenePostprocessGateWaitTimeoutMilliseconds=1000;
+  internal sealed class NpcDataPacket { internal string Name="NPC", CultureId="neutral",PromptGivenName="NPC",PromptDisplayName="NPC",UnnamedKey="",RoleDesc="",TroopId=""; internal int AgentIndex=1; internal bool IsHero=true,IsFemale;internal float Age=30; }
+  internal sealed class SceneSummonPromptTarget {internal int Id,PromptId;internal string DisplayName,LocationCode;internal object LocationCharacter;} internal sealed class SceneGuidePromptTarget {internal int Id,PromptId;internal string DisplayName,LocationCode;internal object LocationCharacter;}
+  internal NativeDetachedPostprocessApplicationAdapter CreateFixtureDetached() {var owner=this;var capture=new SharedPromptCaptureBannerlordAdapter(new SceneAgentIdentityPromptCaptureAdapter(),(n,h)=>new(),(a,i)=>new(),(n,s,g)=>new()); return new NativeDetachedPostprocessApplicationAdapter(()=>ReferenceEquals(CurrentInstance,owner),TryResolveNativeConversationTarget,TryResolveNativeConversationAgentIndex,IsNativeConversationResponseTargetAvailableForActionDispatch,(out Hero h,out string name,out string id)=>{h=NativeHost.Hero;name="NPC";id=h.StringId;return true;},owner._conversationGameThreadDispatcher,capture.CaptureNativeDetachedPostprocessWork,(work,raw)=>{NativeHost.DetachedCompletes++;if(NativeHost.Mode=="detached_callback")throw new InvalidOperationException("detached.callback.after_owner_start");var completed=ConversationActionPostprocessOwner.CompleteSceneUnifiedActionPostprocess(work,true,raw,null);return completed;});}
+  internal static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleSelectorForExternal(int topN)=>new((p,s,c,n,e)=>new DetachedRuleLookupResult(NativeHost.OptInRule?new[]{"reward"}:Array.Empty<string>()),topN);
+  internal static LegacyInteractionPipelinePorts DetachedPorts()=>CreateNativeConversationDetachedPortsCore(LegacyActionTagCatalog.DefaultAllowedTagFamilies,12,16);
+  internal static int FixtureQueuedActions=>CurrentInstance._mainThreadActions.Count;
+  internal static void PostPlayback(Action action)=>CurrentInstance._mainThreadActions.Enqueue(action);
+  internal static void ResetOwner(){_nativeSessionOwner.ClearAll();CurrentInstance=new ShoutBehavior();}
+  internal static void Retire(){SaveRuntimeGuard.Generation++;CurrentInstance.RetireModuleSceneGroup("scene.stale_context");CurrentInstance._pendingMainThreadFunctions.Seal();while(CurrentInstance._mainThreadActions.TryDequeue(out _)){};}
+  internal static bool PumpOne(){if(CurrentInstance._mainThreadActions.TryDequeue(out var a)){a();return true;}return false;}
+  internal static void Pump(){while(CurrentInstance._mainThreadActions.TryDequeue(out var action)){action();if(NativeHost.Duplicate)action();}}
+  internal static Task<string> SubmitLegacy()=>CurrentInstance.SubmitNativeConversationAdmittedAsync("legacy",null,null,null,null,false);
+  internal static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==NativeHost.MainThread;
+  private static bool CanSubmitNativeConversationForExternal(){NativeHost.Game();NativeHost.Captures++;return Campaign.Current!=null&&Campaign.Current.ConversationManager.IsConversationInProgress;}
+  internal static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string n){NativeHost.Game();h=NativeHost.Hero;c=NativeHost.Character;n="NPC";return NativeHost.TargetValid;}
+  internal static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c){NativeHost.Game();return 1;}
+  internal static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int i,Hero h,CharacterObject c,out string reason){NativeHost.Game();reason="target";return NativeHost.TargetValid;}
+  @@CURRENT_COMPOSITION@@
+@@CURRENT_TURN_ENTRY@@
+
+  internal static string SanitizeSceneSpeechText(string text)=>ConversationSpeechTextRules.SanitizeSceneSpeechText(text,new ConversationSpeechTextOptions(true,true));
+  internal static string PrepareSceneHistorySpeechText(string text)=>SanitizeSceneSpeechText(text);
+  internal static bool IsNativeConversationNoSpeechPlaceholder(string text)=>false;
+  internal static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence()=>3;
+  internal static bool TryResolveWildernessNonHeroMemory(NpcDataPacket n,Hero h,CharacterObject c,int i,out string id,out string name){id=name="";return false;}
+  @@CURRENT_NATIVE_HISTORY_NAME@@
+  internal static void RecordNativeConversationNpcLineForExternal(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket n){NativeHost.Game();NativeHost.Echo++;NativePendingHistoryApplicationAdapter.RecordNativeConversationNpcLineForExternal(_nativeSessionOwner,()=>CurrentInstance?.SceneHistoryPromptCapture,h,c,name,text,i,n);if(NativeHost.Mode=="callback")throw new InvalidOperationException("game.callback.after_memory");}
+  internal static void MarkNativeConversationCurrentDialogRecorded(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket n){NativeHost.Game();NativePendingHistoryApplicationAdapter.MarkNativeConversationCurrentDialogRecorded(_nativeSessionOwner,h,c,name,text,i,n);}
+  private static void TrySpeakNativeConversationReplyWithTts(Hero h,CharacterObject c,NpcDataPacket n,int i,string text){NativeHost.Game();NativeHost.Tts++;if(NativeHost.Mode=="speech")NativeHost.Playback.OnMainReplyReady(text,h,c);}
+  internal static void CloseNativeConversationForSceneMechanism(string reason){NativeHost.Game();}
+  private static void RollbackNativeConversationPendingPlayerHistory(ShoutBehavior owner,NativeConversationAdmission admission,string key,long sequence,string reason){NativeHost.Game();if(owner.IsNativeConversationContextStampCurrent(admission)&&owner._nativeAdmissionOwner.IsPresentationCurrent(admission.PresentationRevision)){_nativeSessionOwner.RollbackPlayerEvent(key,sequence);owner.SceneHistoryPromptCapture.RemoveNativeConversationSessionHistoryEventFromSceneHistoryCaptured(sequence);}}
+@@CURRENT_DISPATCH@@
+@@CURRENT_DATA@@
+@@CURRENT_PURE_HELPERS@@
+ }
+}
+
+namespace AnimusForge.SceneActions.Core { internal static class SceneActionsRuntimeHost {internal static string BuildNativeConversationActionInstruction()=>"";} }
+namespace AnimusForge.XihaiAction { internal class FixtureNamespaceMarker {} }
+namespace RichExecutions.Core { internal class FixtureNamespaceMarker {} }
+namespace RichExecutions.Scene { internal class FixtureNamespaceMarker {} }
+namespace AnimusForge.Refactor.Adapters { internal class FixtureNamespaceMarker {} }
+namespace AnimusForge {
+
+ internal sealed partial class RewardSystemBehavior { internal sealed class DuelStakeOption {} internal static RewardSystemBehavior Instance; internal List<DuelStakeOption> BuildDuelStakeOptionsForAI(TaleWorlds.CampaignSystem.Hero hero)=>new(); }
+}
+
+namespace AnimusForge {
+ sealed partial class MyBehavior {
+ internal sealed class ShoutPromptContext { internal string Extras="",EntityPostprocessContext="",PreprocessExcludedRuleBlock=""; internal List<string> PreprocessRuleIds=new(); internal bool UseRewardContext,IsLoanContext,UseDuelContext,IsQualified; internal object MentionedEntities;internal List<string> ExplicitMentionedKingdomIds,PreprocessExcludedRuleIds; }
+ internal sealed class WeeklyPromptSnapshot { internal static WeeklyPromptSnapshot Empty=new(); }
+ internal static WeeklyPromptSnapshot CaptureWeeklyPromptSnapshotForExternal(TaleWorlds.CampaignSystem.Hero hero,TaleWorlds.CampaignSystem.CharacterObject character)=>new();
+ internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input)=>SharedPromptCaptureBannerlordAdapter.RunSharedKnowledgeRetrieval(input);
+ internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases,PromptKnowledgeWorkResult result)=>SharedPromptCaptureBannerlordAdapter.ApplySharedKnowledgeRetrieval(phases,result);
+ }
+}
+
+namespace AnimusForge {
+ internal sealed class FixtureScope : IDisposable { public void Dispose() {} }
+ internal static partial class LlmRetryPrompt { internal static void CaptureMainThreadContext() {} internal static void ShowFailurePopup(string title,string message) {} }
+ internal static partial class AIConfigHandler {
+ internal static IDisposable BeginGuardrailRuntimeScope()=>new FixtureScope();
+ internal static void ApplyGuardrailRuntimeTarget(object target,object eligibility) {}
+ internal static void ClearGuardrailRuntimeTarget() {}
+ internal static void SetGuardrailRuntimeTargetKingdom(string value) {}
+ internal static void SetGuardrailRuntimeTargetHero(string value) {}
+ internal static void SetGuardrailRuntimeTargetCharacter(string value) {}
+ internal static void SetGuardrailRuntimeTargetTroop(string value) {}
+ internal static void SetGuardrailRuntimeTargetUnnamedRank(string value) {}
+ internal static void SetGuardrailRuntimeTargetAgentIndex(int value) {}
+ internal static bool ShouldExcludeSceneMoveRuleForCurrentMission()=>false;
+ }
+ sealed partial class MyBehavior {
+ internal static MyBehavior Instance=new();
+ @@CURRENT_SHARED_BEGIN@@
+ @@CURRENT_SHARED_ROUTING@@
+ internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases,TaleWorlds.CampaignSystem.Hero hero)=>SharedPromptCaptureBannerlordAdapter.CaptureSharedKnowledgeSnapshot(phases,hero);
+ internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(PromptBuildPhases phases)=>SharedPromptCaptureBannerlordAdapter.CreateSharedKnowledgeWorkInput(phases);
+ @@CURRENT_SHARED_COMPLETE@@
+ }
+}
+
+namespace AnimusForge.SiegeAftermathIntervention { internal class FixtureNamespaceMarker {} }
+namespace SandBox { internal class FixtureNamespaceMarker {} }
+namespace SandBox.Missions.AgentBehaviors { internal class FixtureNamespaceMarker {} }
+namespace SandBox.Missions.MissionLogics { internal class FixtureNamespaceMarker {} }
+namespace SandBox.Missions.MissionLogics.Towns { internal class FixtureNamespaceMarker {} }
+namespace SandBox.Objects.AnimationPoints { internal class FixtureNamespaceMarker {} }
+namespace SandBox.Objects.Usables { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Actions { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.ComponentInterfaces { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Encounters { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Party { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Roster { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Settlements { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Settlements.Locations { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.CampaignSystem.Siege { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.Core { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.Engine { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.InputSystem { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.Library { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.Localization { internal class FixtureNamespaceMarker {} }
+namespace TaleWorlds.MountAndBlade.Missions { internal class FixtureNamespaceMarker {} }
+namespace AnimusForge { internal static partial class SceneMovementController {internal static bool IsPrisonBreakRescueMissionActive()=>false;} }
+
+namespace AnimusForge {
+ internal sealed class LoreCandidateRules { }
+ internal static class WorldEntityRetrievalService {internal static WorldEntityPromptContext BuildPromptContext(params object[] args)=>new();internal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions,string input,Hero hero)=>new();internal static DetachedEntityMatches MatchDetachedCandidates(DetachedEntityCandidates candidates,MentionedWorldEntities mentions,string input,int max)=>new();internal sealed class EntityCapture {internal DetachedEntityCandidates Candidates=new();internal int MaxInjectedEntities=3;} internal sealed class DetachedEntityCandidates {} internal sealed class DetachedEntityMatches {}}
+}
+
+namespace AnimusForge { internal static partial class AIConfigHandler {
+ internal static bool KnowledgeRetrievalEnabled=false,KnowledgeSemanticFirst=false,UseAuxiliaryRuleApiRetrieval=false,RewardEnabled=false,LoanEnabled=false,SurroundingsEnabled=false;
+ internal static int KnowledgeSemanticTopK=2,GuardrailRuleReturnCap=3;
+ internal static void ClearLatestAuxiliaryMentionedEntitiesForExternal() {}
+ internal static void SetGuardrailSemanticContext(string value) {}
+ internal static MentionedWorldEntities GetAuxiliaryMentionedEntitiesForExternal(string a,string b,string c)=>new();
+ internal static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal()=>new();
+ }
+ sealed partial class MyBehavior {internal static void LogShoutPromptContextStage(string phase,Stopwatch total,Stopwatch stage,PromptBuildRequest request,string info) {}}
+}
+
+// Engine/domain leaves only. The production Native action committer/runtime remains source-linked.
+namespace TaleWorlds.CampaignSystem.Party { public class PartyBase {} }
+namespace TaleWorlds.Library { public readonly struct Color {public Color(float r,float g,float b) {}} public static class TWParallel {public static bool IsMainThread()=>AnimusForge.ShoutBehavior.IsBannerlordMainThreadForNativeActions();}}
+namespace TaleWorlds.Core {public class InformationMessage {public InformationMessage(string text,TaleWorlds.Library.Color c) {}} public static class InformationManager {public static void DisplayMessage(InformationMessage message) {}}}
+namespace AnimusForge {
+ internal static partial class PublicExecutionOrderRuntime {internal static bool IsEligible(int index)=>false;internal static void Consume(int index,ref string content) {}}
+ internal static partial class NoblePrisonerEscortBehavior {internal const string ExecuteActionTag="[ACTION:NOBLE_EXECUTE_ESCORT]";internal static void TryProcessSceneExecutionTag(int index,bool direct,ref string content) {}}
+ internal static partial class NoblePrisonerExecutionOrderBehavior {internal static void TryProcessAcceptedTag(Hero hero,int index,bool direct,ref string text,out bool handled) {handled=false;}}
+ internal static partial class TroopInspectionBehavior {internal static void TryProcessPrisonerSlaughterActionTagForExternal(int index,ref string text) {}}
+ internal static class TroopInspectionPrisonerSlaughterProfile {internal const string ActionTag="[ACTION:TROOP_INSPECTION_SLAUGHTER_PRISONERS]";}
+ internal static partial class VoteDealBehavior {internal static void ProcessAgendaTagsDispatch(Hero hero,ref string text) {}}
+ internal static partial class DiplomacyConversationBridge {
+ internal static void ProcessDiplomacyTagsDispatch(Hero hero,ref string text) {}
+ internal static bool CanUseIndependentClanPeaceForExternal(Hero hero,CharacterObject character)=>false;
+ internal static bool CanUseDiplomacyActionPostprocessForExternal(Hero hero,CharacterObject character)=>false;
+ }
+ internal static partial class WorldMapPartyCommandBehavior {
+ internal static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero hero,ref string text)=>new();
+ internal static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero hero,CharacterObject character,int index,ref string text)=>new();
+ internal static string BuildCurrentNpcCommandTasksPromptForExternal(Hero hero,CharacterObject character,int index)=>"";
+ }
+ internal static partial class DuelBehavior {internal static void TryCacheDuelAfterLinesFromText(Hero hero,ref string text) {} internal static void TryCacheDuelStakeFromText(Hero hero,ref string text) {} internal static void SetPendingNonHeroDuelMemoryTarget(string id,string name) {}}
+ internal static partial class VanillaIssueOfferBridge {internal static void ApplyIssueOfferTags(Hero hero,ref string text) {}}
+ internal sealed partial class RomanceSystemBehavior {internal static RomanceSystemBehavior Instance;internal void ApplyMarriageTags(Hero target,Hero player,ref string text,bool runPostprocessIfMissing) {}}
+ internal static partial class SexualConceptionBehavior {internal static void TryApplyIntimacyTags(Hero hero,ref string text,string chain) {}}
+ internal static partial class LordEncounterBehavior {
+ internal static void TryProcessMeetingTauntAction(Hero hero,ref string text,out bool escalated) {escalated=false;}
+ internal static void TryProcessMeetingTauntAction(Hero hero,TaleWorlds.CampaignSystem.Party.PartyBase party,ref string text,out bool escalated) {escalated=false;}
+ internal static void TryConsumeMeetingPlayerReleaseTag(Hero hero,ref string text,out bool triggered) {triggered=false;}
+ internal static void ScheduleNativeConversationMeetingPlayerRelease(Hero hero,string reason) {}
+ }
+ internal sealed partial class RewardSystemBehavior {
+ internal sealed class RpItemIntroductionContext {}
+ internal void ApplyRewardTags(Hero target,Hero player,ref string text,RpItemIntroductionContext context) {
+ NativeHost.Game();if(text.Contains("[ACTION:GIVE_ASSET:GOLD:10]")){NativeHost.Effects++;text=text.Replace("[ACTION:GIVE_ASSET:GOLD:10]","");if(NativeHost.ActionFails)throw new InvalidOperationException("game.effect.after_start");}
+ }
+ internal List<string> ConsumeLastGeneratedNpcFactLines()=>new();
+ internal bool TryApplyNonHeroJoinPlayerPartyTagForNativeConversationExternal(CharacterObject c,int index,string given,string display,ConversationManager manager,int token,ref string text,out List<string> facts,out List<string> notifications) {facts=notifications=new();return false;}
+ internal bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject c,int index,string given,string display,ref string text,out List<string> facts,out List<string> notifications) {facts=notifications=new();return false;}
+ internal void ApplyPartyRewardTags(TaleWorlds.CampaignSystem.Party.PartyBase p,Hero hero,string name,CharacterObject c,ref string text,RpItemIntroductionContext context) {}
+ internal void ApplyMerchantRewardTags(CharacterObject c,Hero hero,ref string text,RpItemIntroductionContext context) {}
+ }
+ sealed partial class MyBehavior {
+ internal static void AppendExternalDialogueHistory(Hero hero,string player,string reply,string fact) {}
+ internal static bool TryApplyPartyTransferTagsForExternal(Hero h,CharacterObject c,int i,ref string text,out List<string> facts,out List<string> notifications) {facts=notifications=new();return false;}
+ internal static void ApplyPostprocessMoodFromSceneHeroResponseExternal(Hero hero,ref string text) {NativeHost.Game();NativeHost.MoodEffects++;}
+ internal static void ApplyPostprocessMoodFromSceneUnnamedResponseExternal(string key,string culture,ref string text,string displayName=null) {NativeHost.Game();NativeHost.MoodEffects++;}
+ internal static int GetCurrentMemoryGameHourForExternal()=>12;
+ }
+ public partial class ShoutBehavior {
+ internal static void LogNativeActionStep(string step,Hero hero,CharacterObject character,string content) {}
+ internal static void TryProcessCustomPolicyAgendaActionTag(Hero hero,string chain,string player,ref string content,string reply) {}
+ internal static bool TryProcessNativeConversationSceneTauntTags(Hero hero,CharacterObject character,int index,ref string text,out bool escalated) {escalated=false;return false;}
+ internal static void PrepareDuelFromActionTag(object target,float delay,DetachedDuelDispatchContext context) {}
+ private static readonly SceneAgentIdentityPromptCaptureAdapter NativePromptIdentityCapture=new();
+ @@CURRENT_FACTORY_NPC@@
+ internal static bool TryResolveWildernessNonHeroRewardParty(Hero h,CharacterObject c,int index,out TaleWorlds.CampaignSystem.Party.PartyBase party) {party=null;return false;}
+ internal static bool TryResolveWildernessNonHeroMemoryForExternal(NpcDataPacket n,Hero h,CharacterObject c,int i,out string id,out string name) {id=name="";return false;}
+ internal static void AppendWildernessNonHeroMemory(NpcDataPacket n,Hero h,CharacterObject c,int i,string player,string reply,string fact) {}
+ internal static bool TryConsumeNativeConversationSiegeSurrenderTag(Hero h,CharacterObject c,ref string text,out int index) {index=-1;return false;}
+ internal static bool TryConsumeNativeConversationNpcSurrenderTag(Hero h,CharacterObject c,ref string text,out int index) {index=-1;return false;}
+ internal static RewardSystemBehavior.RpItemIntroductionContext CreateRpItemIntroductionContextForReward(Hero hero,NpcDataPacket npc,CharacterObject character,int index,string name,string player,string reply,bool includeNativeConversationSessionHistory)=>null;
+ }
+}
+
+namespace TaleWorlds.CampaignSystem.Settlements {public class Settlement {public static List<Settlement> All=new();public string StringId="town",Name="Town";public static Settlement CurrentSettlement=new();}}
+namespace TaleWorlds.Core {public enum BattleSideEnum {None,Attacker,Defender}}
+namespace AnimusForge {
+ internal sealed partial class FixtureTeamLeaves {
+ internal bool TryProcessActionTags(Hero h,CharacterObject c,int i,ref string text,out bool handled,bool replyIsDirectPlayerResponse,string playerText) {handled=false;return false;}
+ internal bool TryApplyNobleGatheringTagsForExternal(Hero h,ref string text,out List<string> facts,out List<string> notifications) {facts=notifications=new();return false;}
+ internal bool IsEligibleTargetForExternal(Hero h,out string reason) {reason="";return false;}
+ internal List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero h)=>new();
+ internal List<PostprocessRuleEntry> BuildPostprocessRules(bool enabled,int index,bool direct,string player)=>new();
+ internal string NormalizePostprocessTags(bool enabled,string raw,List<PostprocessRuleEntry> rules)=>"";
+ internal string BuildPostprocessContextForExternal(Hero h)=>"";
+ internal string NormalizeNobleGatheringPostprocessTagsForExternal(string raw,List<PostprocessRuleEntry> rules)=>"";
+ }
+}
+
+namespace AnimusForge {internal static partial class KingdomAgendaCustomPolicyBehavior {internal const string ActionTag="[ACTION:CUSTOM_POLICY]";}}
+
+namespace TaleWorlds.CampaignSystem {public class Clan {public static List<Clan> All=new();public string Name="Clan";public static Clan PlayerClan=new();public int Tier=3;public Hero Leader;public string StringId="clan";public Kingdom Kingdom;} public class Workshop {} }
+namespace TaleWorlds.CampaignSystem.Party {public class MobileParty {public static MobileParty MainParty;public Hero LeaderHero;public Clan MapFaction;public CampaignVec2 Position;}}
+namespace TaleWorlds.Core {public class ItemObject {public string StringId,Name;} public struct EquipmentElement {}}
+
+namespace AnimusForge {
+ internal sealed partial class DuelSettings {internal static DuelSettings GetSettings()=>new();internal const int DefaultShoutMinTokens=20,DefaultShoutMaxTokens=100;internal int ShoutMinTokens=20,ShoutMaxTokens=100;internal bool DisableShoutInnerThoughtPrompt=false;internal int ShoutThoughtMinTokens=40;internal string PlayerCustomPromptRule="";internal static int GetDailyConversationHistoryLineLimitForExternal()=>50;}
+ internal static class ScenePassiveInteractionController {internal static string BuildFallbackSceneTauntSpeech(bool fight)=>fight?"Fight":"Stop";}
+ public partial class ShoutBehavior {
+ internal static bool IsDetailedSceneSpeechPromptEnabled()=>true;
+ internal static bool ShouldPreserveSceneAsteriskActions()=>true;
+ internal static bool NativeConversationDetachedPromptParityLoggingEnabled=>false;
+ internal const string CustomPolicyAgendaPostprocessRuleId="kingdom_agenda",PersistentAdpDebtPostprocessRuleId="persistent_adp_debt";
+ internal static bool TryTriggerNativeConversationOpenLordsHallAction(Hero h,CharacterObject c,int index,ref string content)=>false;
+ internal bool TryProcessSetsOwnedSettlementMassacreActionTags(int i,ref string content)=>false;
+ internal void QueueNativeConversationNpcSurrender(Hero h,CharacterObject c,int index,string reason) {}
+ internal static void RecordGeneratedNpcAfefFactsForNativeConversation(Hero h,CharacterObject c,IEnumerable<string> facts) {}
+ internal bool TryQueueNativeSceneMechanismActionAfterConversationExit(NpcDataPacket n,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summons,List<SceneGuidePromptTarget> guides,ref string tags)=>false;
+ internal static List<PostprocessRuleEntry> BuildRuntimeSceneMechanismPostprocessRulesForScene(NpcDataPacket speaker,List<SceneSummonPromptTarget> summons,List<SceneGuidePromptTarget> guides,bool includeGenericRules=true)=>new();
+ internal readonly SceneMovementController _sceneMovement=new();
+ internal void LogTtsReport(string stage,int index,string extra=null) {}
+ @@CURRENT_PREPARATION_ENTRY@@
+ internal static async Task<string> CallNativeConversationApiAsync(List<object> messages,Action<string> stream,CancellationToken cancellationToken=default) {
+ NativeHost.Calls++;await NativeHost.Release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);return NativeHost.Mode=="empty"?"":NativeHost.Mode=="error"?"（API请求失败）fixture provider failure":"Hello";
+ }
+ internal static SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(int npcAgentIndex,string systemPrompt,IEnumerable<string> prefixUserSections,IEnumerable<string> suffixUserSections=null,bool currentInputAlreadyRecorded=true,string currentPlayerInput=null,int maxHistoryMessages=0,bool suppressReplyFormatInstruction=false,IEnumerable<ConversationMessage> injectedHistoryMessages=null,bool includeSceneHistory=true,IEnumerable<ConversationMessage> persistentHistoryMessages=null,IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages=null,bool useSceneDistanceSpeechLabels=true)=>new(){SystemPrompt=systemPrompt,PrefixUserSections=prefixUserSections?.ToArray(),SuffixUserSections=suffixUserSections?.ToArray(),Context=new SceneHistoryMessageContext()};
+ internal static List<PostprocessSummonTarget> CapturePostprocessSummonTargets(List<SceneSummonPromptTarget> targets)=>new();
+ internal static List<PostprocessGuideTarget> CapturePostprocessGuideTargets(List<SceneGuidePromptTarget> targets)=>new();
+ internal static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket n,Hero h,List<NpcDataPacket> all,bool inventory,bool trade,bool transfer,object mentions)=>"";
+ internal static string BuildSceneUserRuntimeContextForSingle(NpcDataPacket n,Hero h,List<NpcDataPacket> all,bool inventory,bool trade,bool transfer,object mentions)=>"";
+ internal static bool CanUseSceneMechanismPostprocessForSpeaker(int index)=>false;
+ internal static bool CanInjectDuelPostprocessRule(MyBehavior.ShoutPromptContext c,Hero h,int index,string input,out string reason) {reason="";return false;}
+ internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero h,CharacterObject c,NpcDataPacket n,int i)=>new();
+ internal static string NormalizeNativeConversationVisibleTextKey(string content)=>content??"";
+ internal static void LogNonHeroMemoryTrace(string detail) {}
+ internal static void TryProcessNativeConversationRawMeetingTauntTags(Hero h,CharacterObject c,int index,ref string reply,out bool escalated) {escalated=false;}
+ internal static void RecordSceneActionReplyCapture(int index) {}
+ internal static void SubmitNativeConversationSceneActionObservation(string reply,int index) {}
+ internal static string ExtractSceneActionDirective(ref string reply,int index)=>null;
+ internal static void SubmitSceneActionDirective(string directive,int index,string reply) {}
+ internal static List<string> BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(Hero h,CharacterObject c,string name,int index)=>new();
+ internal static bool ShouldSuppressHeroJoinPartyPostprocessForScene(Hero h)=>false;
+ internal static bool TryResolveNativeConversationSiegeSurrenderContext(Hero h,CharacterObject c,int i,out Settlement settlement,out BattleSideEnum side,out string label) {settlement=null;side=BattleSideEnum.None;label="";return false;}
+ internal static bool IsNpcSurrenderPostprocessContext()=>false;
+ internal static IReadOnlyList<string> TryOfferSceneActionDirective(int i,string reply)=>null;
+ internal static List<PostprocessRuleEntry> BuildSceneActionDirectiveRules(IReadOnlyList<string> keys)=>new();
+ internal static string NormalizeSceneActionDirectiveTag(string raw,IReadOnlyList<string> keys)=>"";
+ internal static int ResolvePartyTransferRecruitMaxTierForScene(Hero h,CharacterObject c)=>0;
+ internal static void MarkWeeklyMemoryMaterialTriggerForScene(int index,string tag) {}
+ internal static string StripAutoGroupRelaySignal(string text)=>ConversationSpeechTextRules.StripAutoGroupRelaySignal(text);
+ internal static string ResolveDetachedInteractionSubjectId(Hero h,CharacterObject c,int index,NpcDataPacket n)=>h?.StringId??c?.StringId??"agent:"+index;
+ }
+ internal sealed partial class SceneMovementController {internal string BuildSceneFollowControlPromptInstruction(NpcDataPacket n)=>"";internal string BuildSceneSummonClosurePromptInstruction(IEnumerable<NpcDataPacket> n)=>"";}
+ internal static partial class AfGcczShoutBridge {
+ internal static bool ShouldRunPostprocessFromPrompt(string text,List<string> hits)=>false;
+ internal static bool ShouldRunPostprocessForActiveScene()=>false;
+ internal static bool TryProcessDirectSceneCommand(int index,string player,bool replyIsDirectPlayerResponse,out bool handled) {handled=false;return false;}
+ }
+ sealed partial class MyBehavior {
+ internal static Func<string> CaptureHistoryContextWorkForHero(Hero h,string player,string secondary,bool include,long generation)=>()=>"";
+ internal static Func<string> CaptureHistoryContextWorkById(string id,string name,string player,string secondary,bool include,long generation)=>()=>"";
+ }
+}
+namespace AnimusForge.Refactor.Adapters {
+ internal static partial class PersonaIdentityPromptCaptureAdapter {internal static int GetCurrentMemoryGameHourForExternal()=>12;internal static string BuildPlayerPublicDisplayNameForExternal()=>"Player";}
+ internal sealed partial class SceneAgentIdentityPromptCaptureAdapter {internal delegate void PersonaReader(Hero h,out string personality,out string background);private readonly PersonaReader _readPersona=(Hero h,out string personality,out string background)=>{personality=background="";};@@CURRENT_FILL_IDENTITY@@ internal static string ResolveSceneHeroIdFromAgentIndex(int index)=>index==1?NativeHost.Hero.StringId:"";internal static float GetPlayerDistanceToAgentForScenePrompt(int index)=>1;internal static bool TryResolveWildernessNonHeroMemory(NpcDataPacket n,Hero h,CharacterObject c,int index,out string id,out string name){id=name="";return false;}internal static MobileParty TryResolveWildernessNonHeroMobileParty(int i)=>null;internal static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string name){h=NativeHost.Hero;c=NativeHost.Character;name="NPC";return NativeHost.TargetValid;}internal static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c)=>1;@@CURRENT_BUILD_NATIVE_NPC@@@@CURRENT_NATIVE_HISTORY_NAME@@internal static (bool InnerThoughtDisabled,int ThoughtMinTokens) CaptureSceneReplyTaskSettings()=>(false,40);internal static bool CaptureEncounterMeetingActive()=>false;}
+}
+
+namespace AnimusForge {
+ internal sealed partial class DuelSettings {internal bool EnableTtsSpeech=true,TtsVolcDedicatedEnabled=true,TtsSceneUseWinmmAudible=true;internal float TtsLipSyncSoundEventVolume;internal static bool IsBuiltInSceneReplyFormatPromptDisabled()=>false;internal const int DailyConversationHistoryLineLimitMin=1,DailyConversationHistoryLineLimitMax=100;}
+ internal static partial class PublicExecutionOrderRuntime {internal static object Capture(int index,string chain,bool framed,bool direct,string player,string reply)=>null;internal static string Normalize(object permit,string raw)=>"";}
+ internal static partial class DiplomacyConversationBridge {internal static string BuildDiplomacyPostprocessContext(Hero h)=>"";internal static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero h,CharacterObject c=null)=>false;internal static bool CanUseNpcSovereignDeclareWarPostprocessForExternal(Hero h,CharacterObject c=null)=>false;internal static bool IsIndependentClanPeacePostprocessTag(string tag)=>false;}
+ internal sealed partial class FixtureTeamLeaves {internal string BuildPostprocessContext(params object[] args)=>"";internal string NormalizeNobleGatheringPostprocessTagsForExternal(string raw)=>"";}
+ internal static class NpcReplyDirectiveTagV1 {internal static bool ContainsTag(string raw)=>false;}
+ internal static partial class TroopInspectionBehavior {internal static string BuildPrisonerSlaughterPostprocessRuleForExternal(params object[] args)=>"";internal static bool CanOfferPrisonerSlaughterActionForExternal(int index)=>false;internal static string BuildPrisonerSlaughterPromptInstructionForExternal(int index)=>"";}
+ internal static partial class NoblePrisonerEscortBehavior {internal static bool IsEscortedAgent(int i)=>false;internal static string BuildSceneExecutionPromptInstruction(int index)=>"";}
+ internal static partial class DuelBehavior {internal static void ClearPendingDuelDebtTag(Hero hero) {} internal static void CachePendingDuelDebtTag(Hero hero,int amount,int days,string note) {}}
+ internal static partial class WorldMapPartyCommandBehavior {internal static string NormalizeWorldMapOrderTagsForExternal(string raw)=>"";}
+ internal static partial class KingdomAnnexationBehavior {internal static List<PostprocessRuleEntry> BuildRuntimeAnnexationPostprocessRulesForExternal(Hero hero,CharacterObject character)=>new();}
+ internal static partial class AIConfigHandler {internal static List<PostprocessRuleEntry> WildernessPostprocessRules=>new();internal static string NormalizeActionPostprocessNameReferences(string text,params object[] args)=>text;}
+ internal sealed partial class RewardSystemBehavior {internal static long CalculateRewardItemsTotalValueForExternal(List<RewardItemInfo> items)=>0;internal static bool IsGoldAssetTokenForExternal(string token)=>string.Equals(token,"gold",StringComparison.OrdinalIgnoreCase);internal static bool IsValidGeneratedRpAssetNameForExternal(string name)=>false;internal static bool IsCanonicalDebtActionTagForExternal(string tag,bool persistent=false)=>false;}
+ sealed partial class MyBehavior {
+ internal static string GetPartyTransferTroopTypeLabelForExternal(CharacterObject e)=>"troop";
+ internal static string GetSettlementTransferAssetDisplayNameForExternal(SettlementTransferPromptEntry e)=>e?.DisplayName;
+ internal static string GetSettlementTransferAssetIdForExternal(SettlementTransferPromptEntry e)=>e?.AssetId;
+ internal static string GetPartyTransferPrisonerSourceLabelForExternal(PartyTransferPromptEntry e)=>"";
+ internal static long CalculatePartyTransferTotalValueForExternal(IEnumerable<PartyTransferPromptEntry> e,bool isPrisoner)=>0;
+ internal static long CalculateSettlementTransferTotalValueForExternal(IEnumerable<SettlementTransferPromptEntry> e)=>0;
+ }
+ public partial class ShoutBehavior {internal static void MarkWeeklyMemoryMaterialTriggerForScene(Hero hero,CharacterObject c,string npc,string text,int index,List<RewardSystemBehavior.RewardItemInfo> items,List<MyBehavior.PartyTransferPromptEntry> troops,List<MyBehavior.PartyTransferPromptEntry> prisoners,List<MyBehavior.SettlementTransferPromptEntry> settlements,bool forceLooseWeeklyMemoryMaterialSession=false,List<MyBehavior.PartyTransferPromptEntry> partyTransferAllTroopOptions=null,List<MyBehavior.PartyTransferPromptEntry> partyTransferAllPrisonerOptions=null) {}}
+}
+
+namespace TaleWorlds.CampaignSystem {public class Kingdom {public static List<Kingdom> All=new();public string Name="Kingdom";public Hero Leader;public string StringId="kingdom";}}
+namespace AnimusForge {
+ internal enum SetsSettlementSceneKind {None}
+ internal static partial class SetsOwnedSettlementMassacreProfile {internal const string RequestActionTag="[ACTION:SETS_REQUEST_MASSACRE]",StartActionTag="[ACTION:SETS_START_MASSACRE]",StopActionTag="[ACTION:SETS_STOP_MASSACRE]",CancelRequestActionTag="[ACTION:SETS_CANCEL_MASSACRE_REQUEST]";internal static string BuildRuntimeInstruction(SetsSettlementSceneKind k,bool active,bool pending)=>"";}
+ internal static partial class SettlementEntryTroopSelectionBehavior {internal static bool IsOwnedOrAttachedSettlementEntryActiveForExternal(Mission m)=>false;internal static bool IsOwnedOrAttachedSettlementMassacreActiveForExternal(Mission m)=>false;internal static bool HasOwnedOrAttachedSettlementMassacreRequestForExternal(Mission m)=>false;internal static SetsSettlementSceneKind GetSetsSettlementSceneKindForExternal(Mission m)=>SetsSettlementSceneKind.None;}
+ internal static partial class TroopInspectionBehavior {internal static bool CanOfferPrisonerSlaughterActionForExternal(int i,out string a,out string b) {a=b="";return false;}}
+}
+
+namespace AnimusForge {
+ internal static class CurrentConsumerAssertions {
+ static int checks;
+ static void Check(bool value,string name) {if(!value)throw new InvalidOperationException("ASSERT "+name);checks++;Console.WriteLine("PASS "+name);}
+ sealed class OptInGateway : ILlmGateway {
+ internal int Calls;internal TaskCompletionSource<bool> Gate=new(TaskCreationOptions.RunContinuationsAsynchronously);
+ public async Task<LlmGenerateResult> GenerateAsync(LlmGenerateRequest request,CancellationToken token){Interlocked.Increment(ref Calls);await Gate.Task.WaitAsync(token).ConfigureAwait(false);return new(LlmResultStatus.Succeeded,request.Prompt.Model.Contains("postprocess")?"[ACTION:MOOD:CALM]":"Hello",0,0,"");}
+ }
+ static RuntimeConfigSnapshot OptInConfig()=>new("fixture",1,new Dictionary<string,bool>{{"native",true}},new Dictionary<string,LlmProviderSnapshot>{{"provider",new("provider","https://fixture.invalid","fixture",1000,5000)}});
+ static InteractionEnvelope CaptureOptIn(string id,string text){NativeHost.Game();var env=LegacyInteractionSnapshotAdapters.CaptureActionCommit(InteractionChannel.NativeConversation,id,NativeHost.Hero.StringId,text,new[]{new InteractionCandidate(NativeHost.Hero.StringId,"NPC",1,true)},new Dictionary<string,string>{{"native_conversation_token",Campaign.Current.ConversationManager.ActiveToken.ToString()}});ShoutBehavior.BindNativeDetachedPostprocessSource(env);return env;}
+ static void RunOptIn(){
+ foreach(string mode in new[]{"normal","cancel_before","cancel_queued","target","generation","memory"}) {
+ NativeHost.Reset();NativeHost.OptInRule=true;F.Current.NoRules=false;NativeHost.Character.HeroObject=NativeHost.Hero;
+ var gateway=new OptInGateway();var composition=ShoutBehavior.OptInComposition();InteractionEnvelope captured=null;using var facade=new LegacyNativeConversationFacade(ShoutBehavior.DetachedPorts(),gateway,()=>SaveRuntimeGuard.Generation,text=>captured=CaptureOptIn("opt-in-"+mode,text));using var cts=new CancellationTokenSource();if(mode=="cancel_before")cts.Cancel();
+ var operation=ShoutBehavior.SubmitNativeConversationRefactorOptInForExternalAsync(facade,OptInConfig(),"native","provider","input",null,cts.Token);
+ if(mode=="cancel_before") {Until(()=>operation.IsCompleted);Check(operation.Result.Status==InteractionStatus.CancelledAsStale&&gateway.Calls==0&&NativeHost.Writes==0,"opt-in pre-cancel uses real coordinator without execution");continue;}
+ Check(gateway.Calls==1,"opt-in real capture/factory precedes provider "+mode);
+
+ if(mode=="generation")NativeHost.Advance();
+ if(mode=="memory")NativeHost.MemoryFails=true;
+ gateway.Gate.SetResult(true);
+ if(mode=="target") {var timer=Stopwatch.StartNew();while(NativeHost.DetachedCompletes==0){ShoutBehavior.PumpOne();if(timer.ElapsedMilliseconds>8000)throw new TimeoutException("opt-in postprocess");Thread.Sleep(1);}while(ShoutBehavior.FixtureQueuedActions==0&&!operation.IsCompleted){if(timer.ElapsedMilliseconds>8000)throw new TimeoutException("opt-in commit");Thread.Sleep(1);}Campaign.Current.ConversationManager.ActiveToken++;}
+ if(mode=="cancel_queued") {var timer=Stopwatch.StartNew();while(ShoutBehavior.FixtureQueuedActions==0&&!operation.IsCompleted){if(timer.ElapsedMilliseconds>8000)throw new TimeoutException("opt-in queue");Thread.Sleep(1);}cts.Cancel();}
+ Until(()=>operation.IsCompleted);var result=operation.GetAwaiter().GetResult();Console.WriteLine("OPTIN "+mode+" status="+result.Status+" error="+result.ErrorCode+" commit="+result.Commit?.Status+" actions="+result.Commit?.ActionsExecuted+" history="+result.Commit?.HistoryWritten+" detached="+result.DetachedResult?.Status+" plan="+result.DetachedResult?.ActionPlan?.RawPostprocessId+" calls="+gateway.Calls+" completes="+NativeHost.DetachedCompletes);
+ if(mode=="normal") {Check(result.Commit!=null&&result.Commit.ActionsExecuted&&result.Commit.HistoryWritten&&!result.UsedLegacyFallback,"opt-in full facade/pipeline/host/request-bound executor/actual committer completes");Check(NativeHost.Writes==1&&NativeHost.WrongThread==0,"opt-in execution and memory use owning dispatcher once");}
+ else if(mode=="memory")Check(result.Commit!=null&&result.Commit.ActionsExecuted&&!result.Commit.HistoryWritten&&NativeHost.Writes==1,"opt-in memory failure keeps executed receipt and does not retry");
+ else if(mode=="target")Check(result.Commit?.Status==InteractionStatus.RejectedByValidation&&!result.Commit.ActionsExecuted&&result.Commit.HistoryWritten&&NativeHost.Writes==1,"opt-in changed session rejects execution while actual committer records rejected visible exchange once");
+ else Check((result.Commit==null||!result.Commit.ActionsExecuted)&&NativeHost.Writes==0,"opt-in "+mode+" cannot reach world/memory");
+ if(mode=="normal"||mode=="memory") {Check(NativeHost.MoodEffects==1,"opt-in actual factory invokes one original mood game leaf "+mode);var replay=facade.Commit(captured,result.DetachedResult,composition.CreateNativeConversationActionPlanExecutorForExternal(),new MyBehaviorMemoryFacade(NativeHost.Hero));Check(replay.Status==result.Commit.Status&&NativeHost.Writes==1&&NativeHost.MoodEffects==1,"opt-in retry returns actual commit receipt without duplicate game/memory "+mode);}
+ }
+ NativeHost.Reset();var old=ShoutBehavior.OptInComposition();NativeHost.ReplaceOwner();Check(old.CreateNativeConversationActionPlanExecutorForExternal()==null,"opt-in retired composition preserves null protocol");Check(old.CreateSceneShoutActionPlanExecutorForExternal(1)==null&&ShoutBehavior.CreateSceneShoutActionPlanExecutorForExternal(-1)==null,"scene retired/invalid factory retains original null protocol");
+ }
+ static void RunSceneOptIn(){
+ foreach(string mode in new[]{"normal","target","session","cancel_before","cancel_queued","memory"}) {
+ NativeHost.Reset();NativeHost.Character.HeroObject=NativeHost.Hero;Mission.Current.Agents.Add(new Agent{Index=1,Character=NativeHost.Character});
+ var gateway=new OptInGateway();var composition=ShoutBehavior.OptInComposition();using var cts=new CancellationTokenSource();if(mode=="cancel_before")cts.Cancel();
+ using var facade=new LegacyChannelInteractionFacade(ConversationActionExecutorComposition.CreateSceneShoutDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies),gateway,()=>SaveRuntimeGuard.Generation,text=>LegacyInteractionSnapshotAdapters.CaptureActionCommit(InteractionChannel.SceneShout,"scene-opt-"+mode,NativeHost.Hero.StringId,text,new[]{new InteractionCandidate(NativeHost.Hero.StringId,"NPC",1,true)},new Dictionary<string,string>{{"scene_session_id","3"},{"memory_kind","hero"}}));
+ var operation=ShoutBehavior.SubmitSceneShoutRefactorOptInForExternalAsync(facade,OptInConfig(),"native","provider","input",1,null,cts.Token);
+ if(mode=="cancel_before"){Until(()=>operation.IsCompleted);Check(operation.Result.Status==InteractionStatus.CancelledAsStale&&gateway.Calls==0&&NativeHost.MoodEffects==0&&NativeHost.Writes==0,"scene opt-in pre-cancel closes actual coordinator before provider/commit");continue;}
+ Check(gateway.Calls==1,"scene opt-in actual factory captures Agent before background provider "+mode);
+ gateway.Gate.SetResult(true);var timer=Stopwatch.StartNew();while(ShoutBehavior.FixtureQueuedActions==0&&!operation.IsCompleted){if(timer.ElapsedMilliseconds>8000)throw new TimeoutException("scene opt-in commit");Thread.Sleep(1);}
+ if(mode=="session")NativeHost.SceneSession++;
+ if(mode=="target")Mission.Current.Agents[0].Character=new CharacterObject{StringId="changed"};
+ if(mode=="cancel_queued")cts.Cancel();
+ if(mode=="memory")NativeHost.MemoryFails=true;
+ Until(()=>operation.IsCompleted);var result=operation.GetAwaiter().GetResult();
+ if(mode=="normal")Check(result.Commit?.ActionsExecuted==true&&result.Commit.HistoryWritten&&NativeHost.Writes==1&&NativeHost.MoodEffects==1&&NativeHost.WrongThread==0,"scene opt-in full host/factory/Agent guard/mood boundary/committer dispatch once");
+ else if(mode=="target"||mode=="session")Check(result.Commit?.Status==InteractionStatus.RejectedByValidation&&!result.Commit.ActionsExecuted&&NativeHost.Writes==1&&NativeHost.MoodEffects==0,"scene changed "+mode+" blocks action and actual committer writes rejected exchange only");
+ else if(mode=="cancel_queued")Check(result.Status==InteractionStatus.CancelledAsStale&&NativeHost.Writes==0,"scene opt-in queued cancel closes actual host commit callback");
+ else Check(result.Commit?.ActionsExecuted==true&&!result.Commit.HistoryWritten&&NativeHost.Writes==1,"scene opt-in memory failure retains real effect receipt without retry");
+ }
+ }
+ static bool SameCore(AnimusForge.Api.V1.AfDialogueOperation left,AnimusForge.Api.V1.AfDialogueOperation right) {var field=typeof(AnimusForge.Api.V1.AfDialogueOperation).GetField("_operation",BindingFlags.Instance|BindingFlags.NonPublic);return ReferenceEquals(field.GetValue(left),field.GetValue(right));}
+ static void Until(Func<bool> complete) {var timer=Stopwatch.StartNew();while(!complete()){NativeHost.Pump();if(timer.ElapsedMilliseconds>8000)throw new TimeoutException("current.Native consumer");Thread.Sleep(1);}NativeHost.Pump();}
+ static AnimusForge.Api.V1.AfDialogueResult Finish(AnimusForge.Api.V1.AfDialogueOperation op) {Until(()=>op.Completion.IsCompleted);return op.Completion.GetAwaiter().GetResult();}
+ static AnimusForge.Api.V1.AfDialogueOperation Submit(AnimusForge.Api.V1.AfDialogueClient client,string id,string text="input")=>Task.Run(()=>client.SubmitNative(id,text)).GetAwaiter().GetResult();
+ public static int Main() {try{Run();RunOptIn();RunSceneOptIn();Console.WriteLine("PASS "+checks+" whole-current Native consumer assertions");return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+ static void Run() {
+ NativeHost.Reset();MyBehavior.Instance.MemoryReadState.MajorActions[NativeHost.Hero.StringId]=new(){new NpcActionEntry{Day=1,Sequence=1,Text="你守卫了城堡",ActionKind="siege_end_defend",IsMajor=true,LocationText="Fort"}};var actualMajor=MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(NativeHost.Hero);Check(actualMajor.Contains("Hero守卫了城堡")&&actualMajor.Contains("围城结束后的守方行动")&&actualMajor.Contains("Fort"),"actual major instruction uses same state/record summary/metadata/current rule input without fake whole owner");MyBehavior.Instance.MemoryReadState.MajorActions.Clear();
+ NativeHost.Reset();var memoryState=MyBehavior.Instance.MemoryReadState;var id=NativeHost.Hero.StringId;memoryState.Blocks[id]=new(){new CompressedMemoryBlock{Id="recall-1",HeroId=id,HeroName="Hero",GameDayIndex=1,GameDate="Day1",StartHour=8,EndHour=9,RichTitle="Old meeting",Summary="Captured summary",AfefLines=new(){"captured fact"}}};var work=MyBehavior.CaptureHistoryContextWorkForHero(NativeHost.Hero,"input","reply",true,SaveRuntimeGuard.Generation);memoryState.Blocks[id][0].Summary="changed after capture";memoryState.Blocks[id][0].AfefLines[0]="changed fact";var recalled=work();Check(recalled.Contains("Captured summary")&&recalled.Contains("captured fact")&&!recalled.Contains("changed"),"actual HistoryWork snapshot clone -> same state context -> real compressed renderer keeps detached block/AFEF");SaveRuntimeGuard.Generation++;Check(work()=="","actual HistoryWork rejects changed generation");SaveRuntimeGuard.Generation--;MyBehavior.Instance=new MyBehavior();Check(work()=="","actual HistoryWork rejects retired owner");
+ NativeHost.Reset();MyBehavior.Instance.WeeklyFixtureRecords.Add(new MyBehavior.EventRecordEntry{EventId="weekly_report:realm",EventKind="kingdom",ScopeKingdomId="realm",WeekIndex=2,CreatedDay=1,Title="卡拉迪亚 Realm",ShortSummary="Retained short",Summary="Retained full"});var weekly=MyBehavior.CaptureWeeklyPromptSnapshotForExternal(NativeHost.Hero,NativeHost.Character);MyBehavior.Instance.WeeklyFixtureRecords[0].Summary="changed after capture";Check(weekly.ShortReportsIncludingNpc.Contains("Retained short")&&weekly.NpcFullReport.Contains("Retained full")&&!weekly.NpcFullReport.Contains("卡拉迪亚"),"actual weekly capture uses real selector/report ranking/rendering and detached strings");var fullWeekly=WeeklyPromptCaptureAdapter.BuildTriggeredWeeklyFullReportsPromptBlock(null,PromptRuleBlockText.Header("npc_major_actions"),NativeHost.Hero,NativeHost.Character,null,weekly);Check(fullWeekly.Contains("Retained full")&&!fullWeekly.Contains("changed after capture"),"actual weekly triggered full snapshot input avoids live records after capture");
+ NativeHost.Reset();var empty=MyBehavior.Instance.BeginSharedPromptBuild(NativeHost.Hero,"","", "neutral",true,NativeHost.Character,null,-1,false,false,null,null,null,null,null);
+ Check(empty==null&&NativeHost.LatestReads==0&&NativeHost.HistoryReads==0,"actual Begin empty request returns before memory capture");
+ MyBehavior.Instance.MemoryReadState.History[NativeHost.Hero.StringId]=new(){new(){GameDayIndex=1,Lines=new(){"NPC: retained fact","玩家: ignored input","【触发相关话题/背景】 ignored lore"}}};
+ var captured=MyBehavior.Instance.BeginSharedPromptBuild(NativeHost.Hero,"input","extra", "neutral",true,NativeHost.Character,null,-1,false,false,null,new[]{"loan"},new[]{"duel"},new[]{"reward"},null);
+ Check(captured.Request.TargetHeroId==NativeHost.Hero.StringId&&captured.Request.CultureId=="neutral"&&captured.Request.IsQualified&&captured.Request.PlayerClanTier==3,"actual request captures identity culture and clan qualification");
+ Check(captured.Request.GuardrailSemanticContext.Contains("NPC: retained fact")&&!captured.Request.GuardrailSemanticContext.Contains("ignored")&&captured.Request.GuardrailSemanticContext.Contains("[AFEF玩家行为补充] extra"),"actual semantic history filters player and lore without fake context assembly");
+ Check(captured.Request.ExcludedRuleIds.Contains("loan")&&captured.Request.PreprocessExcludedRuleIds.Contains("duel")&&captured.Request.ForcedPreprocessRuleIds.Contains("reward"),"actual Begin preserves explicit preprocess and forced rule sets");
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {
+ var cancelled=Submit(client,"cancel");Check(cancelled.Cancel()==AnimusForge.Api.V1.AfDialogueCancelResult.CancelledBeforeStart,"public request cancel before actual schedule claim");Finish(cancelled);Check(NativeHost.Captures==0&&NativeHost.Calls==0&&NativeHost.Writes==0,"cancel prevents actual admission/Turn/provider/history");
+ }
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {
+ var op=Submit(client,"current");Until(()=>NativeHost.Calls==1);Check(op.Cancel()==AnimusForge.Api.V1.AfDialogueCancelResult.TooLate,"actual admitted stamp closes prestart cancellation");NativeHost.Release.SetResult(true);var result=Finish(op);
+
+ Check(result.State==AnimusForge.Api.V1.AfDialogueState.Completed,"actual whole Runtime/coordinator/effects confirms owner completion");Check(NativeHost.Calls==1&&NativeHost.Writes==1,"whole Native provider/history once");Check(NativeHost.LatestReads==1&&NativeHost.HistoryReads==1,"whole actual Begin captures necessary memory leaves once per admitted request");Check(NativeHost.WrongThread==0,"actual game captures and completion on owning thread");Check(result.Reply=="Hello","canonical postprocess/speech produces clean reply");Check(ShoutBehavior.NativeHistoryCount==2,"actual pending input and NPC line share sole Native history capture/owner");Check(SameCore(client.SubmitNative("current","input"),op),"public retry returns same operation");Check(client.SubmitNative("current","changed").GetSnapshot().ReasonCode=="dialogue.request_id_conflict","public request ID conflict not resubmitted");
+ }
+ foreach(string phase in new[]{"queued","started"}) {
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {
+ var op=Submit(client,"target-"+phase);if(phase=="started")Until(()=>NativeHost.Calls==1);NativeHost.ChangeConversation();NativeHost.Release.TrySetResult(true);var result=Finish(op);
+ Check(result.State!=AnimusForge.Api.V1.AfDialogueState.Completed&&NativeHost.Writes==0&&NativeHost.Effects==0,"target/epoch change rejects "+phase+" old response");
+ }}
+ NativeHost.Reset();NativeHost.TargetValid=false;using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var result=Finish(Submit(client,"qualification"));Check(result.State==AnimusForge.Api.V1.AfDialogueState.Rejected&&NativeHost.Calls==0,"actual admission rejects unavailable target");}
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var op=Submit(client,"dispose");client.Dispose();Finish(op);Check(NativeHost.Calls==0&&NativeHost.Writes==0,"client disposal cancels queued actual request");}
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var op=Submit(client,"retire");NativeHost.Retire();var result=Finish(op);Check(result.State!=AnimusForge.Api.V1.AfDialogueState.Completed&&NativeHost.Calls==0,"same registry retirement settles without owner execution");}
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var op=Submit(client,"generation");NativeHost.Advance();Finish(op);Check(NativeHost.Calls==0&&NativeHost.Writes==0,"generation change denies queued capture");}
+ foreach(string mode in new[]{"reward","callback"}) {
+ NativeHost.Reset();NativeHost.Mode=mode;AIConfigHandler.RewardEnabled=true;NativeHost.MemoryFails=mode=="reward";F.Current.NoRules=false;F.Current.Raw="[ACTION:GIVE_ASSET:GOLD:10] [ACTION:MOOD:CALM]";RewardSystemBehavior.Instance=new();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {
+ var op=Submit(client,mode);Until(()=>NativeHost.Calls==1);NativeHost.Duplicate=true;NativeHost.Release.SetResult(true);var result=Finish(op);
+ Check(result.State==AnimusForge.Api.V1.AfDialogueState.Failed&&result.EffectState==AnimusForge.Api.V1.AfDialogueEffectState.UnknownAfterStart,"whole actual effect/"+mode+" failure retains unknown private outcome");Check(NativeHost.Effects==1&&NativeHost.Writes==1,"whole "+mode+" failure does not repeat world/memory");Check(!result.CanRetryAutomatically&&SameCore(client.SubmitNative(mode,"input"),op),"failed request retains receipt and denies automatic retry "+mode);Check(NativeHost.WrongThread==0,"partial "+mode+" game effects confined to owning thread");
+ }}
+ foreach(string mode in new[]{"empty","error"}) {
+ NativeHost.Reset();NativeHost.Mode=mode;using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var op=Submit(client,mode);Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);var result=Finish(op);Check(result.State==AnimusForge.Api.V1.AfDialogueState.Failed&&NativeHost.Effects==0&&NativeHost.Writes==0,"actual main reply "+mode+" cannot manufacture owner receipt");}}
+ NativeHost.Reset();using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var first=Submit(client,"busy-first");Until(()=>NativeHost.Calls==1);var blocked=Finish(Submit(client,"busy-second"));Check(blocked.ReasonCode=="native.busy"&&NativeHost.Calls==1,"sole admission owner rejects second busy request");NativeHost.Release.SetResult(true);Check(Finish(first).State==AnimusForge.Api.V1.AfDialogueState.Completed,"busy rejection does not retire admitted request");}
+ NativeHost.Reset();F.Current.Raw="[ACTION:UNKNOWN:99] [ACTION:MOOD:CALM]";using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {var op=Submit(client,"unknown");Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);var result=Finish(op);Check(result.State==AnimusForge.Api.V1.AfDialogueState.Completed&&NativeHost.Effects==0&&result.Reply=="Hello","canonical unified normalization denies unknown provider tag");}
+ foreach(string phase in new[]{"normal","target","generation","owner","qualification","cancel","cancel_queued","callback"}) {
+ NativeHost.Reset();F.Current.NoRules=false;var env=LegacyInteractionSnapshotAdapters.CaptureActionCommit(InteractionChannel.NativeConversation,"detached",NativeHost.Hero.StringId,"input",detachedFacts:new Dictionary<string,string>{{"native_conversation_token",Campaign.Current.ConversationManager.ActiveToken.ToString()}});ShoutBehavior.BindNativeDetachedPostprocessSource(env);var ports=ShoutBehavior.DetachedPorts();var selection=new RuleSelection(new[]{"reward"},null);var ctx=ports.BuildPostprocessContext(env.Snapshot,selection,ports.Capabilities);var cts=new CancellationTokenSource();var prepare=Task.Run(()=>ports.ComposePostprocessPromptAsync(env,selection,"Hello","Hello",ctx,cts.Token));Until(()=>prepare.IsCompleted);prepare.GetAwaiter().GetResult();
+ if(phase=="target")NativeHost.ChangeConversation();if(phase=="generation")NativeHost.Advance();if(phase=="owner")NativeHost.ReplaceOwner();if(phase=="qualification")NativeHost.TargetValid=false;if(phase=="cancel")cts.Cancel();
+ if(phase=="callback")NativeHost.Mode="detached_callback";
+ var complete=Task.Run(()=>ports.ParseActionsAsync("[ACTION:GIVE_ASSET:GOLD:10]",ctx,cts.Token));
+ if(phase=="cancel_queued") {var deadline=Stopwatch.StartNew();while(ShoutBehavior.FixtureQueuedActions==0&&!complete.IsCompleted){if(deadline.ElapsedMilliseconds>8000)throw new TimeoutException("detached queue");Thread.Sleep(1);}cts.Cancel();}
+ Until(()=>complete.IsCompleted);
+ if(phase=="callback") {Check(complete.IsCompletedSuccessfully&&complete.Result.Actions.Count==0&&NativeHost.DetachedCompletes==1,"detached actual callback failure preserves original dispatcher empty fallback after owner started");var retry=Task.Run(()=>ports.ParseActionsAsync("[ACTION:GIVE_ASSET:GOLD:10]",ctx,CancellationToken.None));Until(()=>retry.IsCompleted);Check(retry.Result.Actions.Count==0&&NativeHost.DetachedCompletes==1,"detached callback failure cannot invoke actual completion twice");continue;}
+ if(phase=="cancel") {Check(complete.IsCanceled&&NativeHost.DetachedCompletes==0,"detached cancellation prevents actual completion");continue;}
+ var plan=complete.GetAwaiter().GetResult();Check(ports.ParseActions("[ACTION:GIVE_ASSET:GOLD:10]",ctx).Actions.Count==0,"detached synchronous parser has no unqualified raw escape "+phase);if(phase=="normal"){Check(plan.Actions.Count(a=>a.Tag=="ACTION:GIVE_ASSET")==1,"detached actual C capture/Unified normalization authorizes one canonical reward plan");Check(plan.Actions.Count==2&&plan.Actions.Any(a=>a.Tag=="ACTION:MOOD"),"detached exact canonical reward plus default mood plan");}Check(NativeHost.DetachedCompletes==(phase=="normal"?1:0),"detached weak source "+phase+" validates actual capture authority");var duplicate=Task.Run(()=>ports.ParseActionsAsync("[ACTION:GIVE_ASSET:GOLD:10]",ctx,CancellationToken.None));Until(()=>duplicate.IsCompleted);Check(duplicate.Result.Actions.Count==0&&NativeHost.DetachedCompletes==(phase=="normal"?1:0),"detached "+phase+" completion at most once");
+ }
+ NativeHost.Reset();NativeHost.Mode="speech";NativeHost.Playback=new NativeReplyPlaybackProbe(ShoutBehavior.PostPlayback,()=>true,()=>3,()=>Campaign.Current.ConversationManager.ActiveToken);
+ using(var client=AnimusForge.Api.V1.AfApi.CreateDialogueClient()) {
+ var op=Submit(client,"playback");Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);var result=Finish(op);var first=TtsEngine.Instance.LastRequest;var firstWait=NativeHost.Playback.WaitAsync();Check(result.State==AnimusForge.Api.V1.AfDialogueState.Completed&&first!=null&&NativeHost.Playback.Owns(first)&&!firstWait.IsCompleted,"whole Native actual effects registers real speech/wait owner");
+ Until(()=>NativeHost.Playback.ReleaseTypewriterFallback());Until(()=>!ConversationHelper.IsTypewriterWaitingForPlayback);Check(!firstWait.IsCompleted&&NativeHost.Playback.Owns(first),"whole actual strict fallback releases display but cannot fabricate playback completion"); TtsEngine.Instance.Finish(first);Until(()=>firstWait.IsCompleted);Check(!NativeHost.Playback.Owns(first),"actual Audio finish retires same request and completes real wait");
+ NativeHost.Playback.OnMainReplyReady("successor",NativeHost.Hero,NativeHost.Character);var second=TtsEngine.Instance.LastRequest;var secondWait=NativeHost.Playback.WaitAsync();TtsEngine.Instance.Finish(first);NativeHost.Pump();Check(!secondWait.IsCompleted&&NativeHost.Playback.Owns(second),"late duplicate finish cannot complete real successor wait");TtsEngine.Instance.Finish(second);Until(()=>secondWait.IsCompleted);Check(!NativeHost.Playback.Owns(second),"successor finishes once through same actual audio authority");
+ }
+ NativeHost.Reset();using(var client=AnimusForge.Refactor.Modules.CoreDialogueServices.CreateClient()) {
+ var op=Task.Run(()=>client.SubmitNative("internal","input")).GetAwaiter().GetResult();Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);Until(()=>op.Completion.IsCompleted);var result=op.Completion.GetAwaiter().GetResult();Check(result.State==AnimusForge.Refactor.Modules.CoreDialogueState.Completed&&NativeHost.Writes==1,"internal client uses same actual Native Runtime completion authority");
+ }
+ }
+ }
+}
+
+namespace AnimusForge {
+ sealed partial class MyBehavior {
+ internal static NpcPersonaReadinessSnapshot CaptureNpcPersonaReadiness(Hero hero,MyBehavior owner) {NativeHost.Game();return new NpcPersonaReadinessSnapshot(hero?.StringId,hero?.Name,"persona","background",true,false,false,false);}
+ internal static Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero,bool ignoreRetryCooldown=false)=>Task.CompletedTask;
+ }
+ public partial class ShoutBehavior {
+ internal const int NativeConversationPersonaGenerationWaitTimeoutMs=1000;
+ internal static string BuildNativeConversationHistoryKey(Hero h,CharacterObject c,string name,int index,NpcDataPacket n=null)=>SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(h,c,name,index,n);
+ internal static string GetPlayerDisplayNameForShout()=>"Player";
+ internal static long NextConversationEventSequence()=>SceneConversationHistoryOwner.NextEventSequence();
+ internal static void AppendNativeConversationSessionHistory(Hero h,CharacterObject c,string name,string player,string text,string source,long sequence,int targetAgentIndex,NpcDataPacket npc,string capturedHistoryKey) {NativeHost.Game();SceneHistoryPromptCaptureAdapter.AppendNativeConversationSessionHistoryCaptured(_nativeSessionOwner,()=>CurrentInstance?.SceneHistoryPromptCapture,h,c,name,player,text,source,sequence,targetAgentIndex:targetAgentIndex,npc:npc,capturedHistoryKey:capturedHistoryKey);}
+ internal static List<ConversationMessage> ConsumePendingCurrentNativeAfefFactMessagesForPrompt(string key)=>CurrentInstance.SceneHistoryPromptCapture.ConsumePendingCurrentNativeAfefFactMessagesForPrompt(key);
+ internal static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero h,CharacterObject c,string name,int index,NpcDataPacket npc,string capturedHistoryKey)=>SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessages(_nativeSessionOwner,h,c,name,index,npc:npc,capturedHistoryKey:capturedHistoryKey);
+ }
+}
+
+namespace AnimusForge { // Fixture-only composition of current production owners, not a second submit/main-reply/wait algorithm.
+// Merge into D's existing CurrentConsumer.cs.txt. Link the 3 production classes listed below.
+internal sealed class NativeReplyPlaybackProbe
+{
+    private readonly NativeConversationPlaybackWaitAdapter _wait;
+    private readonly NativeConversationSpeechAdapter _speech;
+    private readonly SceneAudioLipSyncController _audio;
+    private readonly Func<bool> _ownerCurrent;
+    private readonly List<(int Ms,TaskCompletionSource<bool> Gate)> _delays=new();
+    private Task Delay(int ms) {var gate=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);lock(_delays)_delays.Add((ms,gate));return gate.Task;}
+    internal bool ReleaseTypewriterFallback(){lock(_delays){var index=_delays.FindIndex(item=>item.Ms<30000&&!item.Gate.Task.IsCompleted);if(index<0)return false;return _delays[index].Gate.TrySetResult(true);}}
+    internal NativeReplyPlaybackProbe(Action<Action> postMainThread, Func<bool> ownerCurrent,
+        Func<int> session, Func<int> epoch)
+    {
+        _ownerCurrent = ownerCurrent;
+        object outputSync = new object(); // Render/output leaf only; actual OutputQueue separately exercised by B's current Scene runner.
+        _wait = new NativeConversationPlaybackWaitAdapter(new NativeConversationPlaybackWaitPorts
+        {
+            OutputSyncRoot=()=>outputSync,
+            CaptureOwnerCurrent=()=>ownerCurrent() ? ownerCurrent : null,
+            PostMainThread=postMainThread,
+            IsTypewriterWaiting=()=>ConversationHelper.IsTypewriterWaitingForPlayback,
+            StartTypewriter=duration=>ConversationHelper.StartTypewriterPlaybackIfWaiting(duration),
+            IsPlaybackRequestCurrent=r=>_audio.IsTtsPlaybackRequestCurrent(r),
+            IsPlaybackRequestCurrentAllowCancelled=r=>_audio.IsTtsPlaybackRequestCurrent(r,true),
+            IsActivePlaybackRequestAllowCancelled=r=>_audio.IsActiveTtsPlaybackRequest(r,true),
+            RetirePlaybackRequest=r=>_audio.RetireTtsPlaybackRequest(r),
+            ClearPendingBubble=i=>{},ClearPendingFeed=i=>{},CleanupLipSync=i=>_audio.CleanupSceneLipSyncAfterPlaybackFinished(i),
+            Delay=Delay
+        });
+        _audio = new SceneAudioLipSyncController(new SceneAudioLipSyncPort
+        {
+            SceneSessionId=session,ConversationEpoch=epoch,Dispatch=postMainThread,
+            Cancelled=_wait.HandleTtsPlaybackCancelled,
+            CompleteNativeWait=(r,reason)=>_wait.CompleteNativeConversationTtsPlaybackWait(r,reason),
+            Finished=i=>{},ClearPending=()=>{},Report=(stage,i,extra)=>{},
+            FailureOutput=i=>new SceneAudioFailureOutput(),FlushFailedSpeechEffects=(i,d)=>{},
+            PauseTyping=p=>{},UnmarkPlaybackStarted=i=>{},
+            CanLipSyncIndex=(int i,out string reason)=>{reason="";return true;}
+        });
+        _speech = new NativeConversationSpeechAdapter(new NativeConversationSpeechPorts
+        {
+            CurrentOwner=()=>ownerCurrent() ? _speech : null,Audio=()=>_audio,Wait=_wait,
+            SetTypingPaused=p=>{},SanitizeUiText=text=>text,SanitizeTtsText=text=>text,
+            PreferredHeroVoice=h=>"",MapHeroVoice=h=>"synthetic-hero",MapNonHeroVoice=(key,female,age,i)=>"synthetic-npc",
+            NonHeroAge=c=>30,NonHeroVoiceKey=(npc,h,c,i)=>"fixture-voice",TypingDuration=text=>1,
+            CanParticipate=a=>false,IsHostile=a=>false,IsValidTargetAgent=(a,h,c)=>false,
+            ResolveTarget=(out Hero h,out CharacterObject c,out string name)=>{h=null;c=null;name="";return false;},
+            IsInputOpen=()=>true,QueueDiagnostic=i=>default,InteractionDiagnostic=i=>default
+        });
+    }
+    internal void OnMainReplyReady(string reply, Hero hero, CharacterObject character)
+        => _speech.TrySpeakNativeConversationReplyWithTts(hero,character,new NpcDataPacket(),-1,reply);
+    internal Task WaitAsync()=>_wait.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
+    internal bool Owns(TtsEngine.PlaybackRequest request)=>_wait.IsNativeConversationTtsPlaybackWaitRequest(request);
+    internal void Close()
+    {
+        _audio.UnsubscribeTtsPlaybackEvents();
+        _wait.CompleteNativeConversationTtsPlaybackWait(null,"fixture_close",true);
+    }
+}
+ }
+
+namespace AnimusForge.Refactor.Adapters {
+ internal static partial class LlmRequestConfigurationCaptureAdapter {internal static ConversationSpeechTextOptions CaptureSceneSpeechTextOptions()=>new(true,true);}
+}
+
+namespace AnimusForge.Refactor.Adapters {internal static class SceneLocationPromptCaptureAdapter {internal static string ResolveCurrentMemorySceneLabel()=>"town";}internal static class SceneTradeBannerlordAdapter {internal static string GetPlayerDisplayNameForShout()=>"Player";}}
+
+namespace TaleWorlds.CampaignSystem {public sealed class FixtureCulture {public string StringId="culture";}}
+
+namespace TaleWorlds.CampaignSystem {public struct CampaignTime {public static CampaignTime Now=>new();public double ToDays=>1;public override string ToString()=>"day1";}}
+
+namespace AnimusForge {
+ internal static class KnowledgeLibraryBehavior {internal static PromptLoreSettings CapturePromptLoreSettings()=>new();internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions)=>1;internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions,long version,PromptLoreSettings settings)=>new();}
+ internal static partial class AIConfigHandler {internal static List<GuardrailRuleHit> GetMatchedExtraRuleHitsForWorker(string input,string last,int cap,IEnumerable<string> excluded,string target)=>new();}
+}
+
+namespace TaleWorlds.CampaignSystem {public struct CampaignVec2 {public bool IsValid()=>true;}}
+namespace AnimusForge {
+ internal static partial class AIConfigHandler {internal static string BuildGuardrailClarificationHint(params object[] args)=>"";internal static string GetLoreContextWithCandidates(params object[] args)=>"";}
+ internal sealed partial class RewardSystemBehavior {internal bool HasUnpaidDebtForInteraction(Hero h,CharacterObject c)=>false;internal string BuildDueDateReferenceForAI()=>"";internal string BuildDebtHintForAI(Hero h)=>"";internal string BuildTrustPromptForAI(Hero h)=>"";internal string BuildSettlementMerchantDebtHintForAI(CharacterObject c)=>"";}
+ internal static partial class DuelBehavior {internal static bool TryConsumeLastDuelResult(Hero h,out bool won){won=false;return false;}}
+ internal static partial class LordEncounterBehavior {internal static bool TryGetSavedMainPartyPosition(out CampaignVec2 position){position=new();return true;}}
+ internal sealed class WorldEntityPromptContext {internal string MainPromptBlock="",PostprocessPromptBlock="";internal List<string> ExplicitMentionedKingdomIds=new();internal bool HasContent;internal int MatchCount;}
+ internal static partial class VoteDealBehavior {internal static WorldEntityPromptContext BuildUnifiedAgendaPromptContextForExternal(Hero hero,MentionedWorldEntities mentions)=>new();}
+ internal sealed partial class RomanceSystemBehavior {internal static void SetMarriagePostprocessContextEnabled(Hero hero,bool value){}}
+}
+
+namespace TaleWorlds.CampaignSystem { public enum Occupation { None,Headman,RuralNotable,GangLeader,Merchant,Artisan,Preacher,Weaponsmith,Blacksmith,Armorer,GoodsTrader,HorseTrader } }
+namespace AnimusForge {
+ internal sealed partial class FixtureTeamLeaves {internal string BuildFeastAttendanceContext(Hero h)=>"";internal string BuildActivePolicyDialogueContextForExternal(Hero h,CharacterObject c,string k)=>"";}
+ internal static partial class LordEncounterBehavior {internal static bool IsEncounterMeetingMissionActive=>false;}
+ internal static partial class ShoutUtils {internal static bool IsInValidScene()=>false;internal static string BuildNearbySettlementsDetailForPrompt(CampaignVec2 p,Hero h)=>"";}
+ internal static partial class AfGcczShoutBridge {internal static bool IsActive()=>false;internal static void AppendRuntimePromptToShoutContext(MyBehavior.ShoutPromptContext c,Hero h,CharacterObject ch,int i,string culture){}internal static bool HasInjectedRuleBlock(string s)=>false;internal static void AddRuntimePreprocessRuleExclusions(HashSet<string> ids,int target=-1){}internal static bool ShouldBypassPreprocessForActiveScene(int i)=>false;}
+ internal static partial class AIConfigHandler {internal static bool IsPlayerPartyTradeLimitedTarget(Hero h)=>false;internal static string CaptureGuardrailStickyTargetKey(PromptRuntimeTargetBinding b)=>"";internal static List<string> GetConfiguredEnabledGuardrailRuleIdsForExternal()=>new();internal static bool IsGuardrailRuleAvailableToPreprocessForExternal(string id,bool hero)=>true;internal static string BuildPreprocessExcludedRuleBlockForExternal(IEnumerable<string> ids)=>"";internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b){}internal static bool IsKingdomLordOrKingRuleTargetForPreprocess(Hero h,CharacterObject c)=>false;internal static string BuildRuntimeLordsHallAccessInstructionForExternal()=>"";}
+ internal sealed partial class DuelSettings {internal int MinimumClanTier=0;}
+ internal static partial class VassalageBehavior {internal static bool CanInjectVassalageRuleForPromptCapture(Hero h,CharacterObject c)=>false;}
+ internal static partial class DiplomacyConversationBridge {internal static bool CanInjectDiplomacyRuleForExternal(Hero h,CharacterObject c)=>false;internal static bool CanDiscussWorldDiplomacyForExternal(Hero h)=>false;}
+ internal sealed partial class RomanceSystemBehavior {internal string BuildMarriageRuntimeInstruction(Hero h)=>"";}
+ internal sealed partial class MyBehavior {private MemoryBusinessStateOwner _memoryBusinessState=>MemoryReadState;private readonly NpcActionRecordOwner _npcActionRecords=new();private static int GetCurrentGameDayIndexSafe()=>3;private static string BuildRuleTargetKeyForExternal(Hero h,CharacterObject c,int i)=>h?.StringId??c?.StringId;
+@@CURRENT_MAJOR_INSTRUCTION@@
+internal static string BuildNpcMajorActionsRuntimeInstructionForExternal(Hero h)=>Instance.BuildNpcMajorActionsRuntimeInstruction(h);}
+ internal static partial class WorldMapPartyCommandBehavior {internal static bool CanUseNonHeroPartyFallbackForExternal(CharacterObject c,int i)=>false;}
+ internal static partial class VanillaIssueOfferBridge {internal static string BuildRagSemanticStateForExternal(Hero h)=>"";}
+ internal sealed partial class MyBehavior {
+ internal readonly MemoryBusinessStateOwner MemoryReadState=new();private MemoryHistoryCommitBannerlordAdapter _memoryRead;internal MemoryHistoryCommitBannerlordAdapter MemoryRead=>_memoryRead??=new(MemoryReadState);
+ private SharedPromptCaptureBannerlordAdapter.RequestCapturePorts _requestCapturePorts;internal SharedPromptCaptureBannerlordAdapter.RequestCapturePorts SharedRequestCapturePorts => _requestCapturePorts ??= new(()=>3,(h,c,i)=>{NativeHost.LatestReads++;NativeHost.Game();return MemoryRead.GetLatestNpcDialogueUtterance(h,c,i);},h=>{NativeHost.HistoryReads++;NativeHost.Game();return MemoryRead.LoadDialogueHistory(h);});
+ internal PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(PromptBuildRequest request,PromptRoutingResult routing,PromptRetrievalCapture retrieval,Hero h,CharacterObject c,Stopwatch total,Stopwatch stage)=>new(){IsPartyTransferEligible=()=>false,HasDuelRuntimeTarget=()=>false,IsWorldBulletinEnabled=()=>false,ObserverKnowsPlayer=()=>true,WasRecentlyDefeated=_=>false,WasRecentlyReleased=_=>false,BuildPlayerDisplayName=(h,c,i)=>"Player",BuildPrisonerStatus=_=>"",BuildHeroArmyFact=()=>"",BuildPlayerArmyFact=()=>"",BuildResidentRecentActions=()=>"",BuildTriggeredRules=flags=>PromptRuleCaptureBannerlordAdapter.BuildTriggeredRuleInstructions(BuildNpcMajorActionsRuntimeInstruction,request.Input,h,flags.UseDuelContext,request.IsQualified,request.PlayerClanTier,flags.UseRewardContext,flags.IsLoanContext,routing.Surroundings.Hit,request.HasAnyHero,c,request.KingdomIdOverride,request.TargetAgentIndex,request.NpcLastUtterance,flags.IncludeDuelStakeContext,flags.PlayerWonLastDuel,routing.WorldMapPartyCommand.Hit,request.ExcludedRuleIds,routing.AuxiliaryRuleHitIds,PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds,"meeting_taunt"),retrieval?.FallbackExtraRuleHits),CaptureWorldBulletinSnapshot=()=>null,ShouldExcludeWeeklyShortReport=(r,s)=>false,BuildWeeklyShortReports=(e,s)=>BuildWeeklyShortReportsPromptBlock(h,c,request.KingdomIdOverride,e,s),BuildWeeklyFullReports=(r,s)=>BuildTriggeredWeeklyFullReportsPromptBlock(r,h,c,request.KingdomIdOverride,s),LogStage=(s,d,i)=>{}};
+ }
+}
+namespace AnimusForge.Refactor.Adapters { internal static partial class PersonaIdentityPromptCaptureAdapter {internal static int ResolvePlayerClanTierForPrompt(int tier)=>tier;internal static string BuildPlayerPublicDisplayNameForPrompt(Hero h)=>"Player";} internal static partial class MemoryRecallInputCaptureAdapter {internal static bool IsActiveSceneSessionHistoryLine(string s)=>false;internal static bool IsLoreInjectionHistoryLine(string s)=>false;internal static bool IsPlayerTurnStartLine(string s)=>false;} }
+
+namespace AnimusForge {internal static partial class AIConfigHandler {
+ internal static string DuelInstruction="",RewardInstruction="",LoanInstruction="",SurroundingsInstruction="";
+ internal static List<string> DuelTriggerKeywords=new(),RewardTriggerKeywords=new(),LoanTriggerKeywords=new(),SurroundingsTriggerKeywords=new();
+ internal static List<string> GetGuardrailRuleKeywords(string tag)=>new();
+ internal static List<GuardrailRuleHit> GetGuardrailSemanticRuleHitsForPreprocess(string text,string secondary,int cap,bool includeBuiltInRules,HashSet<string> excluded,out MentionedWorldEntities discovered){discovered=new();return new();}
+ internal static bool IsGuardrailSemanticHit(string input,string secondary,string tag,string instruction,List<string> keywords,out string matchedKeyword,out float score,HashSet<string> excluded){matchedKeyword="controlled_onnx_leaf";score=1;return (NativeHost.Mode=="reward"||NativeHost.Mode=="callback")&&tag=="reward";}
+}}
+
+namespace AnimusForge {internal static partial class AIConfigHandler {internal static bool CanInjectRuleTopicIntoPreprocessForExternal(string id,bool hero)=>true;internal static string GetGuardrailRuleInstruction(string tag)=>"";}}
+
+namespace AnimusForge { public partial class ShoutBehavior { internal static int GetCurrentSceneHistorySessionIdForExternal()=>NativeHost.SceneSession; } }
+
+namespace AnimusForge {public partial class ShoutBehavior {
+ internal SceneHistoryPromptCaptureAdapter.NativePreparationPorts NativePreparationCapturePorts=>new(NativeAdmissions,_nativeSessionOwner,new SceneAgentIdentityPromptCaptureAdapter(),(n,h)=>new(),(a,i)=>new(),new SceneMechanismPromptCaptureAdapter(_=>false,_=>false,_=>"",_=>"").BuildPreprocessExcludedRuleIdsForCurrentInteraction);
+}}
+
+namespace AnimusForge {
+ internal static partial class NoblePrisonerEscortBehavior {internal static string BuildSceneExecutionPostprocessRule(int i)=>"";}
+ internal static partial class SettlementEntryTroopSelectionBehavior {internal static bool IsSetsSelectedFollowerAgentForExternal(Agent a)=>false;internal static bool IsOwnedOrAttachedSettlementMassacreRequestPendingForExternal(Mission m,int i)=>false;}
+ internal static partial class SetsOwnedSettlementMassacreProfile {internal static bool ShouldOfferStopRule(params bool[] args)=>false;internal static bool ShouldOfferRequestRule(params bool[] args)=>false;internal static bool ShouldOfferStartRule(params bool[] args)=>false;internal static bool ShouldOfferCancelRequestRule(params bool[] args)=>false;internal static string BuildStopRuleDescription()=>"";internal static string BuildRequestRuleDescription(SetsSettlementSceneKind kind)=>"";internal static string BuildStartRuleDescription(SetsSettlementSceneKind kind,bool pending)=>"";internal static string BuildCancelRequestRuleDescription()=>"";}
+ internal static partial class SceneMovementController {internal static bool IsPrisonBreakRescuePrisonerAgent(Agent a)=>false;}
+ internal static partial class LordEncounterBehavior {internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero h)=>"";internal static string BuildMeetingTauntRuntimeInstructionForExternal(Hero h,CharacterObject c,PartyBase p)=>"";}
+ internal static class SceneTauntBehavior {internal static string BuildUnifiedTauntRuntimeInstructionForExternal(Hero h,CharacterObject c,int i)=>"";internal static string BuildSceneTauntRuntimeInstructionForExternal(Hero h,CharacterObject c,int i)=>"";}
+ internal static partial class AfGcczShoutBridge {internal const string MeetingTauntRuleBlockMarker="fixture-taunt";internal static bool ShouldUseExclusivePreprocessRuleRouting(int i)=>false;internal static List<string> BuildRuntimePreprocessRuleExclusions(List<string> all,int i)=>new();}
+ internal static partial class TownAfRuleRoutingPolicy {internal const string MeetingTauntRuleId="meeting_taunt";}
+}
+namespace AnimusForge.Refactor.Adapters {internal static partial class PartyAssetTransferBannerlordAdapter {internal static List<MyBehavior.PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(Hero h,CharacterObject c,int i)=>new();}internal sealed partial class SceneAgentIdentityPromptCaptureAdapter {internal static string TryGetKingdomIdOverrideFromAgent(Agent a)=>"";}internal static partial class PersonaIdentityPromptCaptureAdapter {internal static string CaptureHeroIdentityTitle(Hero h)=>"lord";}}
+
+
+namespace TaleWorlds.Library {internal static class MBMath {internal static int ClampInt(int v,int min,int max)=>Math.Clamp(v,min,max);} }
+namespace AnimusForge {internal sealed partial class MyBehavior {internal static bool IsMemoryRecoveryHexDigest(string v)=>MemoryRecoveryStateOwner.IsMemoryRecoveryHexDigest(v);internal static bool IsValidMemoryCommitMarker(string id,string part,string hash)=>MemoryRecoveryStateOwner.IsValidMemoryCommitMarker(id,part,hash);}public partial class ShoutBehavior {private SceneConversationHistoryOwner SceneHistoryOwner=>_fixtureSceneHistory;}}
+
+namespace TaleWorlds.CampaignSystem.Encounters {internal static class PlayerEncounter {internal static FixtureLocationEncounter LocationEncounter;}internal sealed class FixtureLocationEncounter {internal TaleWorlds.CampaignSystem.Settlements.Locations.AccompanyingCharacter GetAccompanyingCharacter(TaleWorlds.CampaignSystem.Settlements.Locations.LocationCharacter c)=>null;}}
+namespace TaleWorlds.CampaignSystem.Settlements.Locations {internal sealed class LocationComplex {internal static LocationComplex Current;internal LocationCharacter FindCharacter(Agent a)=>null;}internal sealed class LocationCharacter {}internal sealed class AccompanyingCharacter {internal bool IsFollowingPlayerAtMissionStart;}}
+namespace AnimusForge {
+ internal static partial class AIConfigHandler {
+ internal static bool DuelStakeEnabled=false;internal static string DuelStakePlayerWinInstruction="",DuelStakeNpcWinInstruction="",DuelDialogueInstruction="",DuelNonHeroInstruction="",RewardNonHeroInstruction="",LoanNonHeroInstruction="";
+ internal static string BuildRuntimeKingdomServiceInstructionForExternal()=>"";internal static string BuildRuntimeHeroJoinPartyInstructionForExternal(Hero h=null)=>"";internal static string GetGuardrailRuleNonHeroInstruction(string id)=>"";
+ internal static string BuildRuntimeRewardInstructionForExternal(Hero h,CharacterObject c)=>"reward instruction";internal static string BuildRuntimeLoanInstructionForExternal(Hero h,CharacterObject c)=>"";
+ internal sealed class GuardrailRulePromptConfig {internal string NonHeroInstruction="";}
+ internal static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> ids)=>new(ids??Array.Empty<string>(),StringComparer.OrdinalIgnoreCase);
+ internal static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input,string secondary,int maxRules,bool includeBuiltInRules,HashSet<string> excludedRuleIds)=>new();
+ internal static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input,string secondary,int maxRules,bool includeBuiltInRules,HashSet<string> excludedRuleIds)=>new();
+ internal static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input,string secondary,List<GuardrailRuleHit> hits,int maxRules,HashSet<string> excluded)=>hits;
+ internal static Dictionary<string,GuardrailRulePromptConfig> BuildRulePromptRegistry()=>new();internal static bool IsNobleDeferenceRuntimeEligible(bool hero)=>false;internal static bool ShouldExcludeRuntimeRuleForConversationTarget(string id)=>false;internal static bool IsPlayerKingdomRecruitmentModeActive()=>false;
+ internal static string BuildRuntimeKingdomServiceInstruction()=>"";internal static Hero ResolveConversationTargetHero()=>NativeHost.Hero;internal static CharacterObject ResolveConversationTargetCharacter()=>NativeHost.Character;internal static int ResolveConversationTargetAgentIndex()=>1;
+ internal static string BuildRuntimeLordsHallAccessInstruction()=>"";internal static string BuildRuntimeRuleConstraintHint(string id)=>"";internal static string BuildExtraRuleHitDebugDetail(string input,string secondary,GuardrailRuleHit hit,HashSet<string> excluded)=>"";internal static string ApplyPlayerDisplayNameToGuardrailText(string text)=>text;
+ }
+ internal static partial class VassalageBehavior {internal static string BuildRuntimeVassalageInstructionForExternal(Hero h,CharacterObject c)=>"";}
+ internal static partial class KingdomAnnexationBehavior {internal static string BuildRuntimeAnnexationInstructionForExternal(Hero h,CharacterObject c)=>"";}
+ internal static partial class VanillaIssueOfferBridge {internal static string BuildRuntimePromptBlockForExternal(Hero h)=>"";}
+ internal static partial class LordEncounterBehavior {internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero h,CharacterObject c)=>"";}
+ internal sealed partial class RewardSystemBehavior {internal string BuildSettlementMerchantRewardInstruction(CharacterObject c)=>"";internal bool TryGetSettlementMerchantKind(CharacterObject c,out string kind){kind="";return false;}}
+ internal static partial class AfGcczShoutBridge {internal static bool ShouldAllowAfRuleForCurrentStage(string id)=>ShouldAllowAfRuleForCurrentStage(id,-1);}
+}
+namespace AnimusForge.Refactor.Adapters {internal static partial class PartyAssetTransferBannerlordAdapter {internal static string BuildPartyTransferRuntimeInstructionForExternal(Hero h,CharacterObject c,int i)=>"";internal static bool IsPartyTransferRuleEligible(Hero h,CharacterObject c,int i)=>false;}}
+
+namespace AnimusForge {internal static partial class LordEncounterBehavior {internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero h,bool value)=>"";}}
+
+namespace AnimusForge {
+ internal sealed partial class SceneMovementController {
+ internal List<ShoutBehavior.SceneSummonPromptTarget> BuildSceneSummonPromptTargets(List<NpcDataPacket> n,Dictionary<int,Hero> h)=>new();
+ internal List<ShoutBehavior.SceneGuidePromptTarget> BuildSceneGuidePromptTargets(Agent a,int id)=>new();
+ }
+
+ internal static partial class DuelBehavior {
+ internal static bool IsSceneDuelBridgeEnabled()=>true;
+ // Duel game artifact operations are intentionally not simulated by this non-Duel opt-in slice.
+ private static void DiscardBoundDuelArtifacts(string s,string id)=>throw new NotSupportedException("Duel artifacts not under this slice");
+ private static void DiscardUnboundDuelArtifacts(string s)=>throw new NotSupportedException("Duel artifacts not under this slice");
+ }
+ internal sealed partial class RewardSystemBehavior {
+ internal static IEconomyRewardDebtMainThreadPort CreateEconomyRewardDebtMainThreadPortForExternal()=>null;
+ internal static IEconomyRewardDebtMainThreadPort CreatePartyEconomyRewardDebtMainThreadPortForExternal(PartyBase p,CharacterObject c,string id,string name)=>null;
+ internal static IEconomyRewardDebtMainThreadPort CreateMerchantEconomyRewardDebtMainThreadPortForExternal(CharacterObject c,Settlement s,string id,string name)=>null;
+ }
+ internal sealed partial class MyBehavior {
+ internal static IEnumerable<ConversationMessage> BuildUncompressedMemoryRoleMessagesForExternal(Hero h,int index,bool flag)=>Array.Empty<ConversationMessage>();
+ internal static IEnumerable<ConversationMessage> BuildNonHeroUncompressedMemoryRoleMessagesForExternal(string id,string name,int index,bool flag)=>Array.Empty<ConversationMessage>();
+ internal static void AppendExternalNonHeroDialogueHistory(string id,string name,string p,string r,string f) {}
+ internal static MemoryCommitResult CommitExternalDialogueHistoryRecoverable(InteractionMemoryCommit commit,bool nonHero,string name){NativeHost.Game();NativeHost.Writes++;return new MemoryCommitResult(NativeHost.MemoryFails?MemoryCommitStatus.Failed:MemoryCommitStatus.Applied);}
+ internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal(WeeklyMemoryMaterialOutcomeCandidate c,bool n,string name)=>WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+ internal static WeeklyMemoryMaterialOutcomeOperationStatus CompleteWeeklyActionOutcomeForExternal(string id,string hash,WeeklyMemoryMaterialOutcomeState state,string error)=>WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+ internal static WeeklyMemoryMaterialOutcomeOperationStatus PublishWeeklyActionOutcomeForExternal(string id,string hash)=>WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+ }
+ public partial class ShoutBehavior {
+ private ConversationActionExecutorComposition _actionExecutors;private ConversationActionBoundaryBannerlordAdapter _actionBoundary;private readonly ConversationMainThreadActionDrain MainThreadActionDrain;
+ private bool ScheduleNativeSceneTauntFightAfterDelay(Hero h,CharacterObject c,int i,string p,string tags)=>throw new NotSupportedException("scene fight outside mood slice");
+ private void QueuePendingCurrentAfefFactForAgent(int i,string text)=>throw new NotSupportedException("scene action facts outside mood slice");
+ private void QueuePendingCurrentNativeAfefFactForKey(string key,string text)=>throw new NotSupportedException("scene action facts outside mood slice");internal static ConversationActionExecutorComposition OptInComposition()=>CurrentInstance.ActionExecutors;
+ internal static bool TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero h,out string name,out string id){h=NativeHost.Hero;name="NPC";id=h.StringId;return true;}
+ }
+}
+
+namespace TaleWorlds.Core {public class BasicCharacterObject {public virtual bool IsHero=>false;}}
+namespace TaleWorlds.MountAndBlade {public enum AgentState {Active,Deleted}}
+namespace AnimusForge {
+ public partial class ShoutBehavior {internal static bool CanAgentParticipateInSceneSpeech(Agent a)=>SceneShoutInputController.CanAgentParticipateInSceneSpeech(a);}
+ internal sealed partial class SceneMovementController {// The source-linked follow entry executes its non-follow branch. These unvisited command game boundaries deliberately fail closed, not emulate follow rules.
+ internal static Agent ResolvePrisonBreakSceneFollowCommandAgent(Agent a)=>throw new NotSupportedException("follow outside mood slice");
+ internal static bool TryConsumeSceneFollowStopTag(NpcDataPacket n,Agent a,ref string s)=>throw new NotSupportedException("follow outside mood slice");
+ internal static bool TryConsumeSceneFollowStartTag(NpcDataPacket n,Agent a,ref string s)=>throw new NotSupportedException("follow outside mood slice");
+ internal static void StopSceneSummonFollowPlayer(Agent a,bool restoreDailyBehaviors)=>throw new NotSupportedException("follow outside mood slice");
+ internal static void ReturnAgentAfterStoppingSceneFollow(Agent a)=>throw new NotSupportedException("follow outside mood slice");
+ internal static bool IsAgentFollowingPlayerBySceneCommand(Agent a)=>throw new NotSupportedException("follow outside mood slice");
+ internal static void RememberSceneFollowReturnState(Agent a,bool overwriteExisting)=>throw new NotSupportedException("follow outside mood slice");
+ internal static void RemoveAgentFromSceneSummonConversationForFollow(Agent a)=>throw new NotSupportedException("follow outside mood slice");
+ internal static void StartSceneSummonFollowPlayer(Agent a)=>throw new NotSupportedException("follow outside mood slice");}
+}
+
+namespace AnimusForge {
+ internal static partial class AIConfigHandler {internal static string ResolveRuleRuntimeText(string ruleId,string stateKey,bool forConstraint,Dictionary<string,string> tokens)=>tokens.TryGetValue("majorActionSummary",out var value)?value:"";}
+ internal static class PlayerNotorietyBehavior {internal static string BuildPlayerMajorRuntimeInstructionForExternal(Hero h)=>"";internal static string BuildPlayerMajorRuntimeInstructionForExternal(string key,string culture)=>"";}
+}
+
+namespace AnimusForge {internal sealed partial class DuelSettings {internal int MemoryCandidateLimit=20,MemoryFinalInjectCount=4,MemoryPreprocessMode=1;}}
+
+namespace AnimusForge {internal static partial class MemoryRecallContextOwner {internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> b,string p,string n,List<DailyMemoryDraft>d,int limit,out List<MemoryRecallCandidate> c,out string error,long generation,MemoryRecallRequest r)=>throw new NotSupportedException("embedding branch outside finite <=FinalCount request slice");internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> c,int count,string p,string n,out List<int> ids,out string error,long g,MemoryRecallRequest r)=>throw new NotSupportedException("preprocess branch outside finite <=FinalCount request slice");}internal sealed partial class DuelSettings{internal int MemoryOverviewStartBlockCount=5;}internal static class MemoryFailureNotices {internal static void PublishMemoryFailureNotice(string t,string m,long g)=>throw new NotSupportedException("blocking recall failure outside finite request slice");}}
+
+namespace AnimusForge {internal sealed partial class MyBehavior {internal List<EventRecordEntry> WeeklyFixtureRecords=new();private WeeklyPromptCaptureAdapter.CapturePorts _weeklyFixturePorts;private static WeeklyPromptCaptureAdapter.CapturePorts ResolveWeeklyCapturePorts()=>Instance?.WeeklyCapturePorts;private WeeklyPromptCaptureAdapter.CapturePorts WeeklyCapturePorts=>_weeklyFixturePorts??=new(){BulletinEnabled=()=>false,BulletinEvents=()=>new(),LatestBulletin=()=>null,Records=()=>WeeklyFixtureRecords,EnsureOpening=()=>{},NpcKingdom=(h,c,k)=>"realm",SurroundingsKingdom=(h,c,k)=>"realm",EditableKingdoms=()=>new(){new Kingdom{StringId="realm",Name="Realm"}},Eligible=k=>true,Proximity=ids=>ids,SelectSnapshot=WeeklyEventRecordStateOwner.SelectWeeklyShortReportKingdomIdsFromSnapshot,SelectLive=(k,e)=>WeeklyEventRecordStateOwner.SelectWeeklyShortReportKingdomIdsFromSnapshot(k,e,true,new[]{"realm"},new[]{"realm"}),Latest=(kind,id)=>throw new NotSupportedException("live report backend outside Native detached snapshot slice")};} }
+namespace AnimusForge.Refactor.Adapters {internal static class WorldBulletinNpcPromptCaptureAdapter {internal static MyBehavior.WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot(WeeklyPromptCaptureAdapter.CapturePorts p,Hero h,CharacterObject c,string k)=>throw new NotSupportedException("bulletin branch outside legacy report request slice");}}

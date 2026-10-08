@@ -19,7 +19,23 @@ for name in ["NormalizeEventRecordEntriesInPlace", "NormalizeEventMaterialRefere
  match=re.search(r"private static [^\r\n]+ " + name + r"\([^;]+;",record)
  assert match and "=>" in match.group()
  methods.append(match.group())
-shim="using System.Threading;"+shim+"namespace AnimusForge { public partial class MyBehavior {"+"\n".join(methods)+(HERE/"HostLifecycle.cs.txt").read_text(encoding="utf-8")+"} public static class Logger { public static void Log(string a,string b){} }}"
+lifecycle=(HERE/"HostLifecycle.cs.txt").read_text(encoding="utf-8")
+state_source=source("src/modules/AF.Module.Weekly/Records/WeeklyEventRecordStateOwner.cs")
+state_fields="\n".join(re.search(r"internal [^\r\n]+ "+name+r" = [^;]+;",state_source).group() for name in ["WorldOpening","KingdomOpenings","Records","PublishedHistoryRevision"])
+for old,new in [
+ ('private string _eventWorldOpeningSummary="old";','private string _eventWorldOpeningSummary {get=>_weeklyEventRecords.WorldOpening;set=>_weeklyEventRecords.WorldOpening=value;}'),
+ ('private Dictionary<string,string> _eventKingdomOpeningSummaries=new();','private Dictionary<string,string> _eventKingdomOpeningSummaries {get=>_weeklyEventRecords.KingdomOpenings;set=>_weeklyEventRecords.KingdomOpenings=value;}'),
+ ('private List<EventRecordEntry> _eventRecordEntries=new();','private List<EventRecordEntry> _eventRecordEntries {get=>_weeklyEventRecords.Records;set=>_weeklyEventRecords.Records=value;}'),
+ ('private int _publishedWorldWeeklyHistoryRevision;','private long _publishedWorldWeeklyHistoryRevision {get=>_weeklyEventRecords.PublishedHistoryRevision;set=>_weeklyEventRecords.PublishedHistoryRevision=value;}')]:
+ assert lifecycle.count(old)==1; lifecycle=lifecycle.replace(old,new)
+lifecycle+='private readonly WeeklyEventRecordStateOwner _weeklyEventRecords=new(){WorldOpening="old",PublishedHistoryRevision=0}; private WeeklyEventImportExportAdapter WeeklyEventFiles=>new(_weeklyEventRecords,SanitizeEventRecordEntries,_weeklyReportMaterialRevisions.MarkOpening,BuildPublishedWorldWeeklyProductsFingerprint,NotifyWorldMessageWeeklyTimelineChanged,()=>{},(title,message,yes,no,cancel)=>throw new InvalidOperationException("UI outside import application replay"));'
+opening_source=source('src/AF.GameAdapter.Bannerlord/Weekly/WeekZeroOpeningSummaryGenerationController.cs')
+opening_remove=extract.declaration(opening_source,'internal void RemovePendingOpeningRequests(')
+lifecycle+='private OpeningQueueProbe _weekZeroShortSummaries=>new(_weekZeroShortSummaryQueueLock,_weekZeroShortSummaryPendingQueue,_weekZeroShortSummaryGenerationAttempted); private sealed class OpeningQueueProbe {private readonly object _weekZeroShortSummaryQueueLock;private readonly List<WeekZeroShortSummaryRequest> _weekZeroShortSummaryPendingQueue;private readonly HashSet<string> _weekZeroShortSummaryGenerationAttempted;private readonly Dictionary<WeekZeroShortSummaryRequest,object> _submissions=new();internal OpeningQueueProbe(object gate,List<WeekZeroShortSummaryRequest> pending,HashSet<string> attempted){_weekZeroShortSummaryQueueLock=gate;_weekZeroShortSummaryPendingQueue=pending;_weekZeroShortSummaryGenerationAttempted=attempted;}'+opening_remove+'}'
+file_adapter=source("src/AF.GameAdapter.Bannerlord/ImportExport/WeeklyEventImportExportAdapter.cs")
+adapter_fields=file_adapter[file_adapter.index(' private readonly WeeklyEventRecordStateOwner'):file_adapter.index(' internal bool TryLoadEventDataFromImportDir')]
+application=extract.declaration(file_adapter,'internal void ApplyImportedEventData(')
+shim="using System.Threading;using static AnimusForge.MyBehavior;"+shim+"namespace AnimusForge { public partial class MyBehavior {"+"\n".join(methods)+lifecycle+"} public static class Logger { public static void Log(string a,string b){} } internal sealed class WeeklyEventRecordStateOwner {"+state_fields+"} internal sealed class WeeklyEventImportExportAdapter {"+adapter_fields+application+"}}"
 # Compile the exact pre-extraction implementation as a parity oracle, not a clone sanitizer.
 original=(HERE/"OriginalNormalization.cs.txt").read_text(encoding="utf-8").replace("private static", "internal static")
 shim += "namespace AnimusForge { using EventRecordEntry=MyBehavior.EventRecordEntry;using EventMaterialReference=MyBehavior.EventMaterialReference; internal static class OriginalNormalizer {"+original+"internal static string NeutralizeWeeklyReportScenarioName(string x)=>WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(x);internal static string BuildFallbackWeeklyReportShortSummary(string x)=>WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(x);internal static string NormalizeWeeklyReportTagText(string x)=>WeeklyGenerationRules.NormalizeWeeklyReportTagText(x);}}"

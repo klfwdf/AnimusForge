@@ -5,7 +5,8 @@ import argparse, importlib.util, subprocess, re
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/'AnimusForge.csproj').is_file())
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT/'tests'))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root
+from af2_terminal_migration_review import restore_j17, verify_bindings
 BASELINE='23f4d467'
 def read(p): return current_source_path(ROOT, p).read_text(encoding='utf-8-sig')
 def old(p): return subprocess.check_output(['git','show',BASELINE+':'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n').replace('\r','\n')
@@ -73,9 +74,22 @@ def boundaries():
   token in context_forwarder for token in ['StringBuilder','Kingdom.All','FactionManager.','[ACTION:DIPLOMACY:']), 'Old prompt context retained in Behavior'
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
  paths += ['src/modules/AF.Module.Conversation/Channels/'+p for p in ['Scene/ShoutBehavior.ScenePostprocess.cs','Scene/ShoutBehavior.SceneConversationChains.cs','Courier/CourierDeliveryBehavior.DomainCommit.cs','Courier/CourierDeliveryBehavior.DeliveryLifetime.cs']]
+ # Only the historical caller oracle is projected to its original mainline.
+ # All adapters/applications above and all runtime Compile inputs stay current.
+ verify_bindings()
+ moved_caller = read('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs')
+ for route, occurrences in {
+  'DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter)': 2,
+  'DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter)': 3,
+  'DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject)': 2,
+  'DiplomacyConversationBridge.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter)': 1,
+  'DiplomacyConversationBridge.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter)': 1,
+  'DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(tag)': 1,
+ }.items():
+  assert moved_caller.count(route) == occurrences, 'Current moved caller lost exact Diplomacy bridge route: '+route
  count=0
  for p in paths:
-  current=read(p);prior=mainline(p); count+=current.count('DiplomacyConversationBridge.')
+  current=restore_j17(p, read(p), require_current=True);prior=mainline(p); count+=current.count('DiplomacyConversationBridge.')
   for name in ['CanDiscussWorldDiplomacyForExternal','TryBuildProactiveDiscussionForExternal']:
    current=current.replace('DiplomacyConversationBridge.'+name,'WorldDiplomacyBehavior.'+name)
   current=current.replace('DiplomacyConversationBridge.','DiplomacyBehavior.')
@@ -214,7 +228,19 @@ def boundaries():
  for name,_ in fields:
   assert name+' = '+name[0].lower()+name[1:]+';' in value_type,'Snapshot value lost: '+name
  for p in ['src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs','src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs']:
-  restored=read(p).replace('DiplomacyModuleServices.World.OnEngineTick()', 'WorldDiplomacyBehavior.Instance?.OnEngineTick()').replace('DiplomacyModuleServices.RegisterPatches(harmony)','WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony)')
+  # Historical family comparisons alone use the strict approved J17 stage.
+  verify_bindings()
+  restored=restore_j17(p,read(p),require_current=True)
+  if p.endswith('ApplicationTickComposition.cs'):
+   # Same two additive phases already reviewed by HostComposition; retain unique
+   # context/order checks and the untouched whole mainline equality below.
+   for added in (
+    '\t\tSettlementBalancePopup.ProcessDeferredCloseIfNeeded();\n',
+    '\t\t\tRunWatchedTickPhase("SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded", () => SettlementBalancePopup.ProcessDeferredCloseIfNeeded());\n',
+   ):
+    assert restored.count(added)==1,'Reviewed settlement phase context drift'
+    restored=restored.replace(added,'',1)
+  restored=restored.replace('DiplomacyModuleServices.World.OnEngineTick()', 'WorldDiplomacyBehavior.Instance?.OnEngineTick()').replace('DiplomacyModuleServices.RegisterPatches(harmony)','WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony)')
   assert restored==mainline(p),'Lifecycle order/guard drift: '+p
  for p in ['src/bridges/Diplomacy/DiplomacyConversationBridge.cs','src/bridges/Diplomacy/DiplomacyPolicyObservationBridge.cs']:
   assert not any(s in read(p) for s in ['foreach (','Regex','Campaign.Current','_af_world_diplomacy_v1','new Dictionary','lock (']), 'Bridge owns business/state: '+p
@@ -318,8 +344,8 @@ def boundaries():
  print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick entry guards preserved')
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');a=p.parse_args();boundaries()
- out=HERE/'.generated/current';out.mkdir(parents=True,exist_ok=True)
+ p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');p.add_argument('--run-root',type=Path);a=p.parse_args();boundaries()
+ out=new_run_root(ROOT,'diplomacy-module-port',a.run_root)
  (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>',encoding='utf-8')
  # Compile the existing immutable ledger DTO verbatim, never a hand-maintained mirror.
  entry=declaration(read('Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs'),'internal sealed class PublishedPolicyArtifactLedgerEntry')

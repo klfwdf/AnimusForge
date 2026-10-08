@@ -549,5 +549,37 @@ class ReadinessTests(unittest.TestCase):
             readiness.decode_json(b" " * (readiness.MAX_JSON_BYTES + 1))
 
 
+class SourcePathBoundsTests(unittest.TestCase):
+    def setUp(self) -> None:
+        FIXTURE_PARENT.mkdir(parents=True, exist_ok=True)
+        self.temporary = tempfile.TemporaryDirectory(prefix=".fixture-path-bound-", dir=FIXTURE_PARENT)
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve()
+        self.assertTrue(self.root.is_relative_to(FIXTURE_PARENT))
+        (self.root / "source.cs").write_text("// synthetic source", encoding="utf-8")
+        self.files = readiness.EvidenceFiles(self.root, None)
+
+    def test_project_paths_accept_512_resolved_files(self) -> None:
+        paths = ["source.cs"] * 512  # Existing contract permits repeated paths.
+        self.assertEqual(paths, readiness.source_paths(self.files, paths, "fixture"))
+        self.assertFalse(readiness.string_list(paths))  # Other lists stay bounded at 256.
+
+    def test_project_paths_reject_513(self) -> None:
+        with self.assertRaises(readiness.InvalidEvidence):
+            readiness.source_paths(self.files, ["source.cs"] * 513, "fixture")
+
+    def test_project_paths_reject_invalid_list_items(self) -> None:
+        for paths in ([], None, "source.cs", ("source.cs",), [""], [" "], [7]):
+            with self.subTest(paths=paths), self.assertRaises(readiness.InvalidEvidence):
+                readiness.source_paths(self.files, paths, "fixture")
+
+    def test_project_paths_still_resolve_each_item_fail_closed(self) -> None:
+        for path in ("../source.cs", "/source.cs", "C:/source.cs", "folder\\source.cs"):
+            with self.subTest(path=path), self.assertRaises(readiness.InvalidEvidence):
+                readiness.source_paths(self.files, ["source.cs", path], "fixture")
+        with self.assertRaises(FileNotFoundError):
+            readiness.source_paths(self.files, ["source.cs", "missing.cs"], "fixture")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

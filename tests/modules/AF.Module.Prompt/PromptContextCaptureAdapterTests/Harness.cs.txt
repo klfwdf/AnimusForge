@@ -100,3 +100,55 @@ namespace AnimusForge
         }
     }
 }
+
+// @@PERSONA_READ_CURRENT@@
+using System;
+using AnimusForge;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.CampaignSystem;
+namespace TaleWorlds.CampaignSystem {internal sealed class Hero {internal string StringId;}}
+internal static class PersonaReadCases
+{
+ static int checks;static void Check(bool ok,string label){if(!ok)throw new Exception("FAIL "+label);checks++;}
+ static int Main(){try{
+ var profiles=new PersonaProfileStateOwner();var reservations=new NpcPersonaGenerationOwner();var app=new NpcPersonaGenerationApplicationAdapter(profiles,reservations);var hero=new Hero{StringId="npc"};
+ Check(!app.NeedsNpcPersonaGeneration(null),"null read rejects without profile creation");hero.StringId=" ";Check(!app.NeedsNpcPersonaGeneration(hero),"whitespace id rejects");hero.StringId="npc";
+ Check(app.NeedsNpcPersonaGeneration(hero)&&profiles.Profiles.Count==0,"missing profile read never creates");profiles.Profiles["npc"]=new(){Personality="p",Background="b"};Check(!app.NeedsNpcPersonaGeneration(hero),"complete profile needs no generation");
+ profiles.Profiles["npc"].Background=" ";Check(app.NeedsNpcPersonaGeneration(hero),"blank background needs generation");profiles.Profiles["npc"].Background="b";profiles.Profiles["npc"].Personality=" ";Check(app.NeedsNpcPersonaGeneration(hero),"blank personality needs generation");
+ profiles.Profiles=null;Check(app.NeedsNpcPersonaGeneration(hero),"null profile store read retains missing semantics");
+ Check(!app.IsNpcPersonaGenerationInFlight(hero),"idle reservation is false");var lease=reservations.TryBegin("npc",false,out _);hero.StringId=" npc ";Check(app.IsNpcPersonaGenerationInFlight(hero),"inflight id is trimmed at same authority");app.GetNpcPersonaGenerationRuntimeState(hero,out bool active,out bool cooling);Check(active&&!cooling,"runtime state shares same active lease");
+ reservations.Complete(lease,false);Check(app.IsNpcPersonaGenerationInFlight(hero),"failure cooldown retains in-flight true");app.GetNpcPersonaGenerationRuntimeState(hero,out active,out cooling);Check(!active&&cooling,"runtime state distinguishes cooldown without consuming it");reservations.Reset();Check(!app.IsNpcPersonaGenerationInFlight(hero),"same owner reset releases read");Check(!app.IsNpcPersonaGenerationInFlight(null),"null reservation read safe");
+ Console.WriteLine("PASS actual persona read capabilities checks="+checks);return 0;
+ }catch(Exception e){Console.WriteLine(e);return 1;}}
+}
+
+// @@PATIENCE_CURRENT@@
+using System;
+using AnimusForge.Refactor.Adapters;
+using Hero=TaleWorlds.CampaignSystem.Hero;
+using Clan=TaleWorlds.CampaignSystem.Clan;
+namespace TaleWorlds.CampaignSystem {internal class Hero {internal static Hero Main;internal static bool Throw;internal static Hero MainHero=>Throw?throw new Exception("identity"):Main;internal Clan Clan,CompanionOf;internal bool IsPlayerCompanion,IsFemale;}internal class Clan{internal static Clan Player;internal static Clan PlayerClan=>Player;}}
+namespace AnimusForge {
+internal static class RewardSystemBehavior {internal static string GetTrustLevelText(int i)=>throw new Exception("UNVISITED trust fallback");}
+internal static class PatienceCurrentCases {
+ static int Count,HeroReads,UnnamedReads,RelationReads;static MyBehavior.PatienceSnapshot Snapshot;
+ static void Check(bool x,string n){if(!x)throw new Exception("FAIL "+n);Count++;Console.WriteLine("PASS "+n);}
+ static void Main(){var ports=new PersonaIdentityPromptCaptureAdapter.PatiencePromptCapturePorts(h=>{HeroReads++;return Snapshot;},(k,n,d)=>{UnnamedReads++;return Snapshot;},r=>{RelationReads++;return "neutral";});
+ Check(PersonaIdentityPromptCaptureAdapter.BuildDirectPatiencePrompt(ports,null,out var exhausted,out var reply)==""&&!exhausted&&reply==""&&HeroReads==0,"null direct Hero preserves outputs and no snapshot read");
+ Check(!PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneStatus(ports,null,out var line,out var can)&&line==""&&can&&HeroReads==0,"null Hero status returns false with original canSpeak true");
+ var clan=new Clan();Clan.Player=clan;Hero.Main=new Hero{Clan=clan};var hero=new Hero();
+ Snapshot=new MyBehavior.PatienceSnapshot{Key="hero",DisplayName="Ada",Current=5,Max=10,Relation=20,Trust=12,PrivateLove=0,PatienceLevel="steady",RelationLevel="friendly",TrustLevel="trusted",PrivateLoveLevel="ordinary"};
+ PersonaIdentityPromptCaptureAdapter.NameReads=0;Check(PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneStatus(ports,hero,out line,out can)&&line.Contains("R(家族关系)")&&can&&PersonaIdentityPromptCaptureAdapter.NameReads==0,"nonexhausted Hero status retains clan relation without player-name capture");
+ hero.IsPlayerCompanion=true;Check(PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneInlineState(ports,hero,out line,out can)&&!line.Contains("你的家族")&&RelationReads==0&&PersonaIdentityPromptCaptureAdapter.NameReads==0,"companion inline omits clan relation and avoids fallback/player-name capture");hero.IsPlayerCompanion=false;hero.Clan=clan;
+ Check(PersonaIdentityPromptCaptureAdapter.ShouldOmitClanRelationFromPrompt(hero)&&!PersonaIdentityPromptCaptureAdapter.ShouldOmitClanRelationFromPrompt(Hero.Main),"same player clan omission does not omit main Hero itself");hero.Clan=null;Hero.Throw=true;Check(!PersonaIdentityPromptCaptureAdapter.ShouldOmitClanRelationFromPrompt(hero),"identity lookup exception preserves false omission");Hero.Throw=false;
+ Snapshot.RelationLevel="";Check(PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneInlineState(ports,hero,out line,out can)&&RelationReads==1&&line.Contains("neutral"),"missing clan relation level captures actual narrow fallback once");
+ Snapshot.Current=.49f;int names=PersonaIdentityPromptCaptureAdapter.NameReads;Check(PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneStatus(ports,hero,out line,out can)&&line.Contains("耐心已归零")&&can&&PersonaIdentityPromptCaptureAdapter.NameReads==names+1,"rounded exhausted status keeps speak true and conditionally captures public name");
+ names=PersonaIdentityPromptCaptureAdapter.NameReads;Check(PersonaIdentityPromptCaptureAdapter.TryGetHeroSceneInlineState(ports,hero,out line,out can)&&!line.Contains("耐心已归零")&&PersonaIdentityPromptCaptureAdapter.NameReads==names,"inline <=.01 guard remains distinct from rounded status exhaustion");
+ Snapshot.Current=.01f;names=PersonaIdentityPromptCaptureAdapter.NameReads;var direct=PersonaIdentityPromptCaptureAdapter.BuildDirectPatiencePrompt(ports,hero,out exhausted,out reply);Check(direct.Contains("耐心已归零")&&!exhausted&&reply==""&&PersonaIdentityPromptCaptureAdapter.NameReads==names+1,"direct exhausted prompt preserves constant outputs and single conditional name read");
+ Snapshot.Key="";names=PersonaIdentityPromptCaptureAdapter.NameReads;int unnamed=UnnamedReads;Check(!PersonaIdentityPromptCaptureAdapter.TryGetUnnamedSceneInlineState(ports,"","","",out line,out can)&&line==""&&can&&UnnamedReads==unnamed+1&&PersonaIdentityPromptCaptureAdapter.NameReads==names,"invalid unnamed key performs original snapshot read then returns before format captures");
+ Snapshot.Key="npc";Snapshot.DisplayName="Guard";Snapshot.Current=0;Check(PersonaIdentityPromptCaptureAdapter.TryGetUnnamedSceneStatus(ports,"npc","Guard",null,out line,out can)&&line.Contains("R(家族关系)=0(中立)")&&line.Contains("普通往来")&&!line.Contains("系统会额外降低")&&can,"unnamed exhausted status retains actual Love zero-level and no relation penalty");
+ Check(PersonaIdentityPromptCaptureAdapter.TryGetUnnamedSceneInlineState(ports,"npc","Guard",null,out line,out can)&&!line.Contains("系统会额外降低")&&can,"unnamed inline retains non-relation exhaustion instruction");
+ Console.WriteLine("PASS patience current "+Count);
+ }
+}}

@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;
+using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;using System.Diagnostics;using TaleWorlds.CampaignSystem;using TaleWorlds.MountAndBlade;
 namespace TaleWorlds.Library { internal static class TWParallel { internal static bool IsMainThread()=>true; } internal static class MBMath { internal static int ClampInt(int x,int a,int b)=>Math.Max(a,Math.Min(b,x)); } }
 namespace TaleWorlds.CampaignSystem { public sealed class Hero {public object Name;public string StringId;} }
 namespace AnimusForge {
@@ -17,10 +17,34 @@ public class FixtureState {
  internal static int CountDailyMemoryDraftLines(IEnumerable<DailyMemoryDraft> ds)=>ds.Sum(d=>d?.Lines?.Count??0);
  internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero h)=>h.StringId;internal static void LogNonHeroMemoryTrace(string s)=>Logger.Lines.Add(s);
 }
+// Complete current capture declarations are inserted below. These are only controlled engine/query leaves.
+internal sealed class FixtureMemoryReadPort {
+ readonly FixtureState source;internal FixtureMemoryReadPort(FixtureState value){source=value;}
+ internal List<DailyMemoryDraft> LoadDrafts(string id)=>source.Drafts;
+ internal bool HasCompressedMemoryBlock(string id,int day)=>source.Compressed.Contains(day);
+ internal int GetCurrentNativeConversationMemorySessionIdForSuppression(Func<bool> active)=>source.NativeSession;
+ internal string BuildCurrentMemorySessionKey(int scene,int native)=>source.Key;
+}
+internal static class MemoryEntityIdentityBannerlordAdapter {
+ internal static FixtureState Current;
+ internal static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>Current.Eligible;
+ internal static int GetCurrentGameDayIndexSafe()=>FixtureState.Day;
+ internal static bool IsNonSceneNativeConversationActiveForMemory()=>true;
+}
+internal static class CampaignCharacterRecordCaptureAdapter {internal static string GetMemoryHeroId(Hero hero)=>hero.StringId;}
+internal static class ShoutUtils {internal static bool IsInValidScene()=>true;}
+internal static class ShoutBehavior {internal static int GetCurrentSceneHistorySessionIdForExternal()=>MemoryEntityIdentityBannerlordAdapter.Current.SceneSession;}
+internal sealed class MemoryHistoryCommitBannerlordAdapter : FixtureState {
+ readonly FixtureMemoryReadPort _memory;internal MemoryHistoryCommitBannerlordAdapter(FixtureState state){_memory=new(state);}
+ @@ACTUAL_HISTORY_CAPTURE@@
+}
 public partial class MyBehavior : FixtureState {
+ readonly MemoryHistoryCommitBannerlordAdapter _memoryHistoryCommit;
+ public MyBehavior(){_memoryHistoryCommit=new(this);}
+
  @@DAY@@
  @@DAILY_CONSUMER@@
- internal List<ConversationMessage> Build(string id="hero",string name="NPC",int agent=7,bool include=false)=>CaptureAndBuildUncompressedMemoryRoleMessagesById(id,name,agent,include);
+ internal List<ConversationMessage> Build(string id="hero",string name="NPC",int agent=7,bool include=false){MemoryEntityIdentityBannerlordAdapter.Current=this;return CaptureAndBuildUncompressedMemoryRoleMessagesById(id,name,agent,include);}
  internal static bool IsMemoryRecoveryHexDigest(string s)=>s!=null&&s.Length==64&&s.All(c=>"0123456789ABCDEF".Contains(c));
  internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&new[]{"user","assistant","fact"}.Contains(b);
 }
@@ -68,3 +92,6 @@ internal static class Program {
  Console.WriteLine("PASS uncompressed prompt same-input checks="+count+" live=NOT_RUN");
  }
 }}
+
+namespace TaleWorlds.MountAndBlade {internal sealed class Mission {internal static Mission Current=new();internal object Scene=new();}}
+namespace AnimusForge.Refactor.Adapters {internal static class SceneLocationPromptCaptureAdapter {internal static string ResolveCurrentMemorySceneLabel()=>AnimusForge.FixtureState.SceneFails?throw new Exception("scene unavailable"):AnimusForge.FixtureState.Scene;} internal static class MemoryRecallInputCaptureAdapter { @@ACTUAL_RECALL_SCENE@@ }}

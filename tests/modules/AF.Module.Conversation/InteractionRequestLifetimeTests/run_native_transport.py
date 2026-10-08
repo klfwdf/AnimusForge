@@ -17,7 +17,8 @@ parser.add_argument('--run-root', type=Path)
 parser.add_argument('--mutate', choices=['drop-timeout-token', 'drop-stream-caller', 'publish-after-cancel'])
 args = parser.parse_args()
 out = new_run_root(ROOT, 'native-transport-lifetime', args.run_root)
-source = (ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+source_path = ROOT / 'src/modules/AF.Module.Llm/Application/NativeConversationLlmApplicationAdapter.cs'
+source = source_path.read_text(encoding='utf-8-sig')
 method = extract.declaration(source, 'internal static async Task<string> CallNativeConversationApiAsync(')
 if args.mutate == 'drop-timeout-token':
     method = method.replace('cancellationToken: requestTimeout.Token', 'cancellationToken: CancellationToken.None')
@@ -26,6 +27,8 @@ elif args.mutate == 'drop-stream-caller':
                             'CreateTimeout(NativeConversationMainReplyTimeoutMs, CancellationToken.None)')
 elif args.mutate == 'publish-after-cancel':
     method = method.replace('timeoutCts.IsCancellationRequested || string.IsNullOrEmpty(delta)', 'string.IsNullOrEmpty(delta)')
+assert method.count('ConversationSpeechTextOptions speechOptions') == 1
+(out / 'current-consumer-source.json').write_text(__import__('json').dumps({'path':source_path.relative_to(ROOT).as_posix(),'rawSha256':__import__('hashlib').sha256(source_path.read_bytes()).hexdigest(),'scope':'actual complete Native LLM application consumer; duration and visible-text leaves controlled'},indent=2),encoding='utf-8')
 template = (HERE / 'NativeTransportHarness.cs.txt').read_text(encoding='utf-8-sig')
 (out / 'Program.cs').write_text(template.replace('@@NATIVE@@', method), encoding='utf-8')
 for file in ['Transport/LlmNonStreamingTransport.cs', 'Streaming/LlmStreamingTransport.cs',

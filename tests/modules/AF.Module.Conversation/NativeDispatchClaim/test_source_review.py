@@ -35,11 +35,13 @@ class ClaimSourceTests(unittest.TestCase):
                 inverse.restore_claim(path,source.replace(before,after,1))
     def test_no_parallel_int_claim_and_no_format_normalization(self):
         for path,expiries in [('ShoutBehavior.cs',3),('ShoutBehavior.NativeAdmission.cs',1)]:
-            raw=(current_source_path(ROOT, path)).read_bytes();s=inverse.restore_main_reply(path,raw.decode('utf-8-sig').replace('\r\n','\n'))
+            raw=(current_source_path(ROOT, path)).read_bytes();s=inverse.restore_main_reply(path,inverse.restore_request_lifetime(path,raw.decode('utf-8-sig').replace('\r\n','\n')))
             self.assertNotIn('dispatchState',s)
             self.assertEqual(s.count('var dispatchClaim = new NativeConversationDispatchClaim();'),1)
             self.assertEqual(s.count('!dispatchClaim.TryStart()'),1)
             self.assertEqual(s.count('dispatchClaim.TryExpireBeforeStart()'),expiries)
-            self.assertEqual(raw.count(b'\r\n'),raw.count(b'\n'))
+            frozen_layout={'ShoutBehavior.cs':(3381,5640),'ShoutBehavior.NativeAdmission.cs':(75,138)}[path]
+            self.assertEqual((raw.count(b'\r\n'),raw.count(b'\n')), frozen_layout, 'c4de frozen current mixed layout')
+            self.assertNotEqual((raw.replace(b'\r\n',b'\n',1).count(b'\r\n'),raw.count(b'\n')), frozen_layout, 'one lost current CRLF must be detected')
             self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
 if __name__=='__main__':unittest.main(verbosity=2)

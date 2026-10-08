@@ -1,5 +1,5 @@
 using System;using System.Collections.Generic;
-namespace AnimusForge;
+namespace AnimusForge {
 internal sealed class Hero {}
 internal sealed class CharacterObject {}
 internal sealed class NpcDataPacket {}
@@ -14,7 +14,8 @@ internal sealed class NativeBridgeProbe {
 }
 internal static class NativeAppendCaptureProbe {
  internal static NativeConversationSessionOwner _nativeSessionOwner=new(()=>0,100);
- internal static NativeBridgeProbe CurrentInstance=new();internal static int KeyCaptures;internal static long Sequence;
+ internal static AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter CurrentInstance=new();
+ internal static AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter CurrentSceneHistoryPromptCapture()=>CurrentInstance;internal static int KeyCaptures;internal static long Sequence;
  internal static string CaptureNativeConversationHistoryKey(Hero h,CharacterObject c,string name,int index,NpcDataPacket npc){KeyCaptures++;return "captured";}
  internal static long NextConversationEventSequence()=>++Sequence;
  @@APPEND@@
@@ -32,4 +33,17 @@ internal static class NativeAppendCaptureProbe {
  int calls=CurrentInstance.Calls;AppendNativeConversationSessionHistoryCaptured(null,null,"Ada","NPC"," ","npc");AppendNativeConversationSessionHistoryCaptured(null,null,"Ada","NPC","text","npc",capturedHistoryKey:"");C(CurrentInstance.Calls==calls,"empty input/key produce no effect");
  Console.WriteLine("PASS actual Native append capture + SessionOwner checks="+checks+" live=NOT_RUN");
  }
+}
+
+}
+namespace AnimusForge.Refactor.Adapters {
+using AnimusForge;
+internal sealed class SceneHistoryPromptCaptureAdapter {
+ internal int Calls;internal bool Fails;internal long Sequence;
+ internal void AppendNativeConversationSessionLineToSceneHistoryCaptured(Hero h,CharacterObject c,string n,string s,string t,string k,long sequence,int index,NpcDataPacket npc,int target,string targetName){Calls++;Sequence=sequence;if(Fails)throw new Exception("bridge failed after session append");}
+ internal static string CaptureNativeConversationHistoryKey(Hero h,CharacterObject c,string name,int index,NpcDataPacket npc)=>NativeAppendCaptureProbe.CaptureNativeConversationHistoryKey(h,c,name,index,npc);
+ @@CURRENT_APPEND@@
+}
+internal static class PersonaIdentityPromptCaptureAdapter {internal static int GetCurrentMemoryGameHourForExternal()=>MyBehavior.GetCurrentMemoryGameHourForExternal();}
+internal static class SceneLocationPromptCaptureAdapter {internal static string ResolveCurrentMemorySceneLabel()=>MyBehavior.ResolveCurrentMemorySceneLabelForExternal();}
 }

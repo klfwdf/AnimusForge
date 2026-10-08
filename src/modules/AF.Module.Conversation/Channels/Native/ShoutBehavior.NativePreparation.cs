@@ -1,4 +1,5 @@
 ﻿using System;
+using AnimusForge.Refactor.Adapters;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
@@ -28,56 +29,6 @@ public partial class ShoutBehavior
         NativeConversationAdmission admission, Hero targetHero, CharacterObject targetCharacter,
         string npcName, string routingInput, out string reason)
     {
-        if (!IsBannerlordMainThreadForNativeActions())
-        {
-            reason = "main_thread_required";
-            return null;
-        }
-        if (!IsNativeConversationAdmissionCurrent(admission, out reason)) return null;
-        // Same existing builders and inputs; no LLM/recall task may be started inside this capture.
-		int nativeTargetAgentIndex = admission.AgentIndex;
-		NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
-		npc.AgentIndex = nativeTargetAgentIndex;
-		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
-		List<NpcDataPacket> presentNpcs = new List<NpcDataPacket> { npc };
-		string cultureId = npc.CultureId ?? "neutral";
-		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
-		string nativeMeetingTauntRuleBlock = "";
-		PartyBase nativeMeetingTauntParty = null;
-		if (targetHero == null)
-		{
-			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
-		}
-		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
-		{
-			nativeMeetingTauntInstruction = (SceneTauntBehavior.BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeTargetAgentIndex) ?? "").Trim();
-		}
-		if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId, nativeTargetAgentIndex) && !string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
-		{
-			nativeMeetingTauntRuleBlock = AfGcczShoutBridge.MeetingTauntRuleBlockMarker + Environment.NewLine + nativeMeetingTauntInstruction;
-		}
-		Dictionary<int, Hero> nativeResolvedHeroes = new Dictionary<int, Hero>();
-		if (nativeTargetAgentIndex >= 0 && targetHero != null)
-		{
-			nativeResolvedHeroes[nativeTargetAgentIndex] = targetHero;
-		}
-		List<SceneSummonPromptTarget> nativeSceneSummonTargets = (nativeTargetAgentIndex >= 0) ? _sceneMovement.BuildSceneSummonPromptTargets(presentNpcs, nativeResolvedHeroes) : null;
-		int nativeSceneGuideFirstPromptId = ((nativeSceneSummonTargets != null && nativeSceneSummonTargets.Count > 0) ? nativeSceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
-		Agent nativeTargetAgent = (nativeTargetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == nativeTargetAgentIndex) : null;
-		List<SceneGuidePromptTarget> nativeSceneGuideTargets = (nativeTargetAgentIndex >= 0) ? _sceneMovement.BuildSceneGuidePromptTargets(nativeTargetAgent, nativeSceneGuideFirstPromptId) : null;
-		List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(targetHero, targetCharacter, nativeTargetAgentIndex, npc.IsHero, nativeSceneSummonTargets, nativeSceneGuideTargets, npc, presentNpcs, routingInput);
-        return new NativeConversationPreparationSnapshot
-        {
-            Npc = npc,
-            TargetLog = nativeTargetLog,
-            PresentNpcs = presentNpcs,
-            CultureId = cultureId,
-            HadSessionHistory = hadNativeConversationSessionHistoryBeforeTurn,
-            MeetingTauntRuleBlock = nativeMeetingTauntRuleBlock,
-            SummonTargets = nativeSceneSummonTargets,
-            GuideTargets = nativeSceneGuideTargets,
-            ExcludedRuleIds = preprocessExcludedRuleIds
-        };
+        return SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPreparation(NativePreparationCapturePorts, admission, targetHero, targetCharacter, npcName, routingInput, out reason);
     }
 }

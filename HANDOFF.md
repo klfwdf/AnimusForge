@@ -63,6 +63,12 @@
 - 产品 `32a7de4e8`，检查点 `45aeed8`。画风、负面词、导演大文本保存到原MCM JSON，编辑立即落盘，MCM复制/确认/默认同步文本并重绑按钮。旧版丢失文本需重新保存。
 - 两实际候选DLL各38真实MCM/Harmony往返专项PASS；原双API/Bootstrap/双接缝构建PASS。真实游戏MCM/玩家配置未验，未部署/打包/推送。
 - [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-persistence-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#illustrator-prompt-persistence-20261008)。证据 `artifacts/illustrator-prompt-persistence-20261008/receipt.json`；回滚 `git revert 32a7de4e8`。
+# 当前交接：主体重构与远端功能协调源码（2026-10-08）
+
+- **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。本次只同步获准源码到main，保留最新远端功能与本地主体owner；不部署、不打包。
+- 生产输入与六构建/具名定向回归的候选逐LF规范字节相同；保存每API103及三渠道、公报、managed Coup接缝等检查通过。5项内容基线改指完全同blob的公开祖先，原哈希和断言不变。
+- 用户确认AssemblyVersion1.5.4.0；1.3参考集不完整、旧冻结全门非全绿、整仓全套/实机旧档/provider/帧性能未验，均不豁免正式发布验收。
+- 干净交付不包含本地专用记录的历史、缓存或产物。当前取舍、核实代码坐标和剩余边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reviewed-refactor-source-delivery-20261008)。下方为原远端独立历史，不构成本次部署或未来授权。
 
 # 当前交接：1.5.6 已部署、打包、推送与累计公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 

@@ -1,6 +1,9 @@
 using System;using System.Collections.Generic;using System.Linq;
 namespace AnimusForge;
 internal sealed partial class MemoryBusinessStateOwner { internal MemoryIdentityPort IdentityPort;
+// Shared major/recent/material ordering authority; persistence remains in original event order.
+internal int ActionGlobalOrderCounter;
+internal int NextActionSequence() => ++ActionGlobalOrderCounter;
 internal Dictionary<string, List<MyBehavior.DialogueDay>> History = new(StringComparer.OrdinalIgnoreCase);
 internal Dictionary<string, string> HistoryStorage = new(StringComparer.OrdinalIgnoreCase);
 internal Dictionary<string, string> DraftStorage = new(StringComparer.OrdinalIgnoreCase);
@@ -144,6 +147,57 @@ internal void RemoveMemoryEntityDataById(string memoryId)
 				OverviewCandidateIds.Enqueue(item);
 			}
 		}
+	}
+
+	internal int _nativeConversationMemorySessionCounter;
+	internal int _activeNativeConversationMemorySessionId = -1;
+	internal string _memoryRuntimeSessionKey = Guid.NewGuid().ToString("N");
+internal int GetOrStartActiveNativeConversationMemorySessionId(Func<bool> isNativeConversationActive)
+	{
+		if (!isNativeConversationActive())
+		{
+			_activeNativeConversationMemorySessionId = -1;
+			return -1;
+		}
+		if (_activeNativeConversationMemorySessionId < 0)
+		{
+			_nativeConversationMemorySessionCounter++;
+			if (_nativeConversationMemorySessionCounter <= 0)
+			{
+				_nativeConversationMemorySessionCounter = 1;
+			}
+			_activeNativeConversationMemorySessionId = _nativeConversationMemorySessionCounter;
+		}
+		return _activeNativeConversationMemorySessionId;
+	}
+
+internal int GetCurrentNativeConversationMemorySessionIdForSuppression(Func<bool> isNativeConversationActive)
+	{
+		if (!isNativeConversationActive())
+		{
+			_activeNativeConversationMemorySessionId = -1;
+			return -1;
+		}
+		return GetOrStartActiveNativeConversationMemorySessionId(isNativeConversationActive);
+	}
+
+internal string BuildCurrentMemorySessionKey(int sceneSessionId, int dialogueSessionId)
+	{
+		string runtimeKey = (_memoryRuntimeSessionKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(runtimeKey))
+		{
+			runtimeKey = Guid.NewGuid().ToString("N");
+			_memoryRuntimeSessionKey = runtimeKey;
+		}
+		if (sceneSessionId >= 0)
+		{
+			return runtimeKey + ":scene:" + sceneSessionId;
+		}
+		if (dialogueSessionId >= 0)
+		{
+			return runtimeKey + ":dialogue:" + dialogueSessionId;
+		}
+		return runtimeKey + ":loose";
 	}
 }
 internal sealed class MemoryIdentityPort {internal Func<string,List<MyBehavior.DialogueDay>> LoadHistory;internal Action<string,List<MyBehavior.DialogueDay>> SaveHistory;internal Func<MemoryRecoveryStateOwner> Recovery;internal Action<string,List<NpcActionEntry>> RefreshRecentIndex;internal Action MarkWeeklySourcesDirty;internal Action<string> MarkOverviewDirty;}

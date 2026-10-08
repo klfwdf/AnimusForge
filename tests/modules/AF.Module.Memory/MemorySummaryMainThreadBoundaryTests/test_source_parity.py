@@ -24,13 +24,22 @@ BASELINE = subprocess.check_output(
 
 
 class InverseGuards(unittest.TestCase):
+    def setUp(self):
+        # All immutable physical/upstream and positive B1 checks complete before
+        # any negative assertion or target-only mock can be installed.
+        context = inverse.bound_b1_review_input()
+        self.bound = context.__enter__()
+        self.addCleanup(context.__exit__, None, None, None)
+        self.source = self.bound.source
+        self.upstream_stages = self.bound.upstream_stages
+
     def reject(self, source, message):
         with self.assertRaisesRegex(AssertionError, message):
-            inverse.restore_memory_summary_source("MyBehavior.cs", source)
+            self.bound.verify(source)
 
     @historical_fixture
     def test_exact_whole_baseline(self):
-        self.assertEqual(BASELINE, inverse.restore_memory_summary_source("MyBehavior.cs", SOURCE))
+        self.assertEqual(BASELINE, self.bound.verify(self.source))
 
     @historical_fixture
     def test_queue_normalization_body_is_exact_old_semantics(self):
@@ -41,7 +50,7 @@ class InverseGuards(unittest.TestCase):
                                    ("MajorActionSummaryJob", "MajorActionSummaryQueue", "TriggerGameDayIndex")]:
             signature = "private static List<" + model + "> "
             prior = extractor.declaration(BASELINE, signature + "Sanitize" + suffix + "(")
-            actual = extractor.declaration(SOURCE, signature + "Normalize" + suffix + "(")
+            actual = extractor.declaration(self.source, signature + "Normalize" + suffix + "(")
             restored = actual.replace("Normalize" + suffix, "Sanitize" + suffix, 1).replace(
                 "return list;", "return list.OrderBy((" + model + " x) => x." + day +
                 ").ThenBy((" + model + " x) => x.HeroName).ToList();", 1)
@@ -50,7 +59,7 @@ class InverseGuards(unittest.TestCase):
     @historical_fixture
     def test_raw_input_four_declaration_inverse(self):
         review = REVIEW["rawSourceFingerprintReview"]
-        text = read_current(review["inputPath"])
+        text = self.bound.fixture_input(review["inputPath"])
         baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["inputPath"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
@@ -70,9 +79,9 @@ class InverseGuards(unittest.TestCase):
         spec.loader.exec_module(extractor)
         old = subprocess.check_output(["git", "show", "40b92e67:MyBehavior.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         old_drafts = extractor.declaration(old, "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(")
-        line = extractor.declaration(SOURCE, "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(")
-        bind = extractor.declaration(SOURCE, "private static void BindDailyMemoryDraftWeeklyTrigger(")
-        entry = extractor.declaration(SOURCE, "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(")
+        line = extractor.declaration(self.source, "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(")
+        bind = extractor.declaration(self.source, "private static void BindDailyMemoryDraftWeeklyTrigger(")
+        entry = extractor.declaration(self.source, "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(")
         select = old_drafts[old_drafts.index("x.GameDayIndex = draft.GameDayIndex;"):old_drafts.index("return x;")]
         def strip_indent(text):
             return "\n".join(part.lstrip("\t") for part in text.splitlines())
@@ -91,7 +100,7 @@ class InverseGuards(unittest.TestCase):
         for edit in review["exactEdits"]:
             self.assertEqual(baseline.count(edit["before"]), 1)
             baseline = baseline.replace(edit["before"], edit["after"], 1)
-        self.assertEqual(baseline, read_current(review["path"]))
+        self.assertEqual(baseline, self.bound.fixture_input(review["path"]))
 
     @historical_fixture
     def test_dispatcher_dependency_direction_and_host_shape(self):
@@ -110,28 +119,28 @@ class InverseGuards(unittest.TestCase):
         old = subprocess.check_output(["git", "show", "9617f96a:MyBehavior.MemorySummaryPlanning.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         self.assertEqual(old.count("_memorySummaryMainThreadElapsedTicks"), 2)
         self.assertEqual(old.replace("_memorySummaryMainThreadElapsedTicks", "MemorySummaryDispatchElapsedTicks"),
-                         read_current("MyBehavior.MemorySummaryPlanning.cs"))
+                         self.bound.fixture_input("MyBehavior.MemorySummaryPlanning.cs"))
 
     @historical_fixture
     def test_changed_accepted_body(self):
-        self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
+        self.reject(self.source.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),
                     "Unreviewed B1 declaration")
 
     @historical_fixture
     def test_added_composition_span_drift(self):
-        self.reject(SOURCE.replace("item => item.Day, item => item.StableKey",
+        self.reject(self.source.replace("item => item.Day, item => item.StableKey",
                                    "item => 0, item => item.StableKey", 1),
                     "Unreviewed B1 added source span")
 
     @historical_fixture
     def test_duplicate_composition_span(self):
-        self.reject(SOURCE + REVIEW["addedSourceSpans"][0]["text"],
+        self.reject(self.source + REVIEW["addedSourceSpans"][0]["text"],
                     "Unreviewed B1 added source span")
 
     @historical_fixture
     def test_unlisted_surrounding_change(self):
-        self.reject(SOURCE + "\n// unreviewed extra source\n",
+        self.reject(self.source + "\n// unreviewed extra source\n",
                     "Unreviewed B1 surrounding source changes")
 
     @historical_fixture
@@ -141,13 +150,13 @@ class InverseGuards(unittest.TestCase):
         module = importlib.util.module_from_spec(extractor)
         extractor.loader.exec_module(module)
         body = module.declaration(BASELINE, "private bool HasPastDailyMemoryDrafts(")
-        self.reject(SOURCE.replace("public override void SyncData(IDataStore dataStore)",
+        self.reject(self.source.replace("public override void SyncData(IDataStore dataStore)",
                                    body + "\npublic override void SyncData(IDataStore dataStore)", 1),
                     "Deleted B1 declaration unexpectedly restored")
 
     @historical_fixture
     def test_added_campaign_scope_cannot_drift(self):
-        self.reject(SOURCE.replace("_campaignMemoryMaintenanceCycleActive = true;",
+        self.reject(self.source.replace("_campaignMemoryMaintenanceCycleActive = true;",
                                    "_campaignMemoryMaintenanceCycleActive = false;", 1),
                     "Unreviewed B1 added source span")
 
@@ -161,24 +170,40 @@ class InverseGuards(unittest.TestCase):
         ]
         for target in targets:
             with self.subTest(path=target):
+                if target in {
+                    "MyBehavior.MemorySummaryInput.cs",
+                    "src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs",
+                    "MyBehavior.MemorySummaryMainThread.cs",
+                    "MyBehavior.MemorySummaryPlanning.cs",
+                }:
+                    # The bound context has already verified every upstream layer.
+                    # Mutate only its original B1 dependency input, not physical reads.
+                    with self.bound.dependency_mutation(target):
+                        self.reject(self.source, "Unreviewed B1 (production dependency|evidence)")
+                    continue
                 path = current_source_path(ROOT, target)
                 def changed(file, *args, **kwargs):
                     text = original(file, *args, **kwargs)
                     return text + "\n// unreviewed dependency\n" if file == path else text
                 with patch.object(Path, "read_text", changed):
-                    self.reject(SOURCE, "Unreviewed B1 (production dependency|evidence)")
+                    self.reject(self.source, "Unreviewed B1 (production dependency|evidence)")
 
     @historical_fixture
     def test_obsolete_partial_cannot_reenter(self):
         original = Path.exists
         removed = ROOT / "MyBehavior.EventSourceMaterialIndex.cs"
         with patch.object(Path, "exists", lambda p: True if p == removed else original(p)):
-            self.reject(SOURCE, "Obsolete B1 production file restored")
+            self.reject(self.source, "Obsolete B1 production file restored")
 
 
 class CurrentScopeGuards(InverseGuards):
     """Explicit current Memory-only successor; original historical tests remain unchanged."""
     RECORDS = 'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'
+    def setUp(self):
+        # This independently scoped current-source suite retains its own producer
+        # and verifier; it is not a substitute for the historical B1 target.
+        self.source = SOURCE
+
 
     def extract(self,text,signature):
         spec=importlib.util.spec_from_file_location('finite_memory_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
@@ -278,6 +303,14 @@ class CurrentScopeGuards(InverseGuards):
         targets=inverse.current_scope_dependencies(REVIEW)+[REVIEW['evidence']['materials']['runner']]
         for target in targets:
             with self.subTest(path=target):
+                if target in {'MyBehavior.MemorySealing.cs', 'MyBehavior.MemoryMaintenanceBudget.cs', 'MyBehavior.MemorySummaryInput.cs'}:
+                    # Positive physical/F3/finite guards finish before assertRaises;
+                    # rejection must come from the designated finite B1 target.
+                    with inverse.bound_finite_review_input(SOURCE) as finite:
+                        with finite.dependency_mutation(target):
+                            with self.assertRaisesRegex(AssertionError, 'Unreviewed B1 (production dependency|evidence)'):
+                                finite.verify(SOURCE)
+                    continue
                 path=current_source_path(ROOT, target)
                 def changed(file,*args,**kwargs):
                     text=read(file,*args,**kwargs)

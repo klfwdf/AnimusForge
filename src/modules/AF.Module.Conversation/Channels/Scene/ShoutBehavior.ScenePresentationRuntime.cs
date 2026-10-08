@@ -16,53 +16,14 @@ public partial class ShoutBehavior
 
 	// Real fights only (runs at the 10 Hz session tick, no agent scan). A team-hostile bystander in a
 	// peaceful town is not a fight; hostile members already drop out via IsUsablePresentationAgent/range.
-	private static string GetPresentationCombatEndReason(Mission mission)
-	{
-		if (IsMeetingPseudoCombatContext())
-		{
-			return "meeting";
-		}
-		if (IsActiveSceneConversationDuelCombat())
-		{
-			return "duel";
-		}
-		try
-		{
-			if (mission.GetMissionBehavior<SandBox.Missions.MissionLogics.MissionFightHandler>()?.IsThereActiveFight() == true)
-			{
-				return "fight";
-			}
-			if (mission.Mode == MissionMode.Battle || mission.Mode == MissionMode.Duel)
-			{
-				return "battle_mode";
-			}
-		}
-		catch
-		{
-		}
-		return null;
-	}
+private static string GetPresentationCombatEndReason(Mission mission) => ScenePresentationBannerlordAdapter.GetPresentationCombatEndReason(mission);
 
 	private long ComputePresentationHistoryFingerprint()
 		=> SceneHistoryOwner.PublicFingerprint();
 
 	// The turn's framed audience: every non-excluded member currently in range (locked at any distance).
-	// ProcessCurrentScenePlayerShout adds 10 m bystanders only when automatic exclusion is off.
-	private ShoutTargetingContext BuildPresentationTargetingContext()
-	{
-		GetConfiguredShoutRange(out var _, out var maxRange);
-		ShoutTargetingContext context = new ShoutTargetingContext
-		{
-			RangeMeters = maxRange,
-			HalfAngleRadians = ShoutMaxTotalAngleRadians * 0.5f,
-			PrimaryAgentIndex = Presentation._presentationAddresseeIndex
-		};
-  Presentation.VisitAudience((index, agent) => {
-   context.CandidateAgentIndices.Add(index); context.PreviewCandidateAgents.Add(agent);
-   if (TryGetPlayerPlanarDistanceMeters(agent, out var distance)) context.CandidatePlayerDistancesMeters[index]=distance;
-  });
-		return context;
-	}
+	// ProcessCurrentScenePlayerShout still adds 10 m bystanders around the addressee and the player.
+private ShoutTargetingContext BuildPresentationTargetingContext() => _j17ScenePresentationBannerlordAdapter.BuildPresentationTargetingContext();
 
 	// Scope filter used by TryBuildSceneShoutConversationScope. Null when no session applies.
 	private HashSet<int> GetPresentationExcludedAgentIndices() => Presentation.GetPresentationExcludedAgentIndices();
@@ -91,59 +52,15 @@ public partial class ShoutBehavior
   }
  };
 
-	private void MergeFramedIntoPresentation(ShoutTargetingContext framed)
-	{
-		List<Agent> agents = GetAgentsForShoutTargetingContext(framed);
-		Agent primary = ResolvePrimaryAgentForShoutTargetingContext(framed, agents);
-		if (agents.Count == 0)
-		{
-			ScenePresentationController._presentationCollapsed = false;
-			BumpPresentation();
-			return;
-		}
-		EnsurePresentationSession(agents, primary?.Index ?? Presentation._presentationAddresseeIndex);
-	}
+private void MergeFramedIntoPresentation(ShoutTargetingContext framed) => _j17ScenePresentationBannerlordAdapter.MergeFramedIntoPresentation(framed);
 
 	// Wheel "交流": open (or merge into) the session instead of the one-shot popup. The mission is not paused.
-	private bool TryOpenPresentationSessionFromWheel()
-	{
-		if (!IsScenePresentationSessionEnabled() || !EnsurePresentationSessionForWheelAction())
-		{
-			return false;
-		}
-		ResumeGame();
-		return true;
-	}
+private bool TryOpenPresentationSessionFromWheel() => _j17ScenePresentationBannerlordAdapter.TryOpenPresentationSessionFromWheel();
 
 	// Give/show/etc. from the wheel: keep the session, then run the host's own trade flow unchanged.
-	private bool EnsurePresentationSessionForWheelAction()
-	{
-		if (!IsScenePresentationSessionEnabled())
-		{
-			return false;
-		}
-		// The 10 Hz tick would end a session opened mid-fight at once; fall back to the one-shot flow instead.
-		Mission mission = Mission.Current;
-		if (mission == null || GetPresentationCombatEndReason(mission) != null)
-		{
-			return false;
-		}
-		List<Agent> framed = GetAgentsForShoutTargetingContext(_activeShoutTargetingContext);
-		Agent primary = ResolvePrimaryAgentForShoutTargetingContext(_activeShoutTargetingContext, framed);
-		return EnsurePresentationSession(framed, primary?.Index ?? -1);
-	}
+private bool EnsurePresentationSessionForWheelAction() => _j17ScenePresentationBannerlordAdapter.EnsurePresentationSessionForWheelAction();
 
-	private List<ScenePresentationHistoryLine> BuildPresentationHistory(int maxLines)
- {
-  lock (_historyLock)
-  {
-   return Presentation.BuildHistory(SceneHistoryOwner.PublicCount, index => {
-    SceneHistoryScalarRecord message=SceneHistoryOwner.ReadPublicScalar(index);
-    return !message.Exists ? default : new ScenePresentationHistoryRecord { Exists=true, EventSequence=message.EventSequence,
-     Role=message.Role, Content=message.Content, TargetName=message.TargetName, SpeakerName=message.SpeakerName };
-   }, TryNormalizeAfefFactLineForPrompt, maxLines);
-  }
- }
+private List<ScenePresentationHistoryLine> BuildPresentationHistory(int maxLines) => _j17ScenePresentationBannerlordAdapter.BuildPresentationHistory(maxLines);
 
 
 }

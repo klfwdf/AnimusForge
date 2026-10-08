@@ -47,7 +47,8 @@ namespace AnimusForge {
   internal bool OpenArchivedWeeklyReport(string id){OpenedId=id;Opens++;return true;}
  }
  public partial class MyBehavior {
-  internal System.Collections.Generic.List<EventRecordEntry> _eventRecordEntries;
+  internal readonly WeeklyEventRecordStateOwner _records=new();
+  internal System.Collections.Generic.List<EventRecordEntry> _eventRecordEntries {get=>_records.Records;set=>_records.Records=value;}
   internal WorldBulletinSaveState _worldBulletinState;
   private static int GetCurrentGameDayIndexSafe()=>5;
   private static string ResolveWeeklyReportNpcKingdomId(TaleWorlds.CampaignSystem.Hero h,TaleWorlds.CampaignSystem.CharacterObject c,string id)=>id??"A";
@@ -55,12 +56,18 @@ namespace AnimusForge {
   private static System.Collections.Generic.List<string> GetDevEditableKingdoms()=>new(){"A","B"};
   private static bool IsKingdomEligibleForWeeklyReport(string id)=>true;
   private static string GetKingdomId(string id)=>id;
-  private static string ResolveKingdomDisplay(string id)=>id;
+  internal static string ResolveKingdomDisplay(string id)=>id;
   private static System.Collections.Generic.List<string> GetKingdomIdsByPlayerProximity(System.Collections.Generic.List<string> ids)=>ids;
   private static System.Collections.Generic.List<string> SelectWeeklyShortReportKingdomIdsFromSnapshot(string id,bool excludeNpcKingdom,bool eligible,System.Collections.Generic.IEnumerable<string> nearest,System.Collections.Generic.IEnumerable<string> fallback)=>new(excludeNpcKingdom?nearest.Where(x=>x!=id):nearest);
   private EventRecordEntry FindLatestWorldBulletinRecord()=>_eventRecordEntries?.FirstOrDefault();
-  internal WeeklyPromptSnapshot ReplayNpcSnapshot(TaleWorlds.CampaignSystem.Hero hero=null,TaleWorlds.CampaignSystem.CharacterObject character=null,string kingdom=null)=>CaptureWorldBulletinNpcSnapshot(hero,character,kingdom);
-  internal System.Collections.Generic.IReadOnlyList<WorldWeeklyReportHistoryEntry> ReplayDiplomacyHistory(int minWeek=-1)=>GetPublishedWorldWeeklyReportHistoryInternal(minWeek);
+  internal WeeklyPromptSnapshot ReplayNpcSnapshot(TaleWorlds.CampaignSystem.Hero hero=null,TaleWorlds.CampaignSystem.CharacterObject character=null,string kingdom=null)=>
+   AnimusForge.Refactor.Adapters.WorldBulletinNpcPromptCaptureAdapter.CaptureWorldBulletinNpcSnapshot(new AnimusForge.Refactor.Adapters.WeeklyPromptCaptureAdapter.CapturePorts {
+    BulletinEvents=()=>_worldBulletinState?.Events, LatestBulletin=FindLatestWorldBulletinRecord,
+    NpcKingdom=ResolveWeeklyReportNpcKingdomId, SurroundingsKingdom=ResolveWeeklyReportSurroundingsKingdomId,
+    EditableKingdoms=()=>new(){new(){StringId="A"},new(){StringId="B"}}, Eligible=k=>IsKingdomEligibleForWeeklyReport(k.StringId),
+    Proximity=GetKingdomIdsByPlayerProximity, SelectSnapshot=SelectWeeklyShortReportKingdomIdsFromSnapshot
+   },hero,character,kingdom);
+  internal System.Collections.Generic.IReadOnlyList<WorldWeeklyReportHistoryEntry> ReplayDiplomacyHistory(int minWeek=-1)=>_records.GetPublishedWorldWeeklyReportHistoryInternal(minWeek);
  }
  // Only identity lookups, live host availability and current storage are fixtures. Knowledge selection,
  // adapter delegation and MyBehavior's prompt assembly are the actual production method spans.

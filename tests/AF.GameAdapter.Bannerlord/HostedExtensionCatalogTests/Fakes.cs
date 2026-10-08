@@ -37,6 +37,14 @@ namespace HarmonyLib
 }
 namespace AnimusForge
 {
+    // Registration only checks these existing service leaves for availability.
+    // The real TeamModuleRegistration and directory lifecycle remain source-linked.
+    internal static class DiplomacyModuleServices
+    {
+        internal static object Conversation = new();
+        internal static object World = new();
+        internal static object Policy = new();
+    }
     internal static class Logger { internal static void Log(string name,string message) {} }
     internal static class ShoutBehavior { internal static Func<bool> ScenePresentationSessionHook; internal static Func<bool> ScenePresentationBlocksHotkeysHook; }
     internal static class NoblePrisonerEscortBehavior { internal static object GetEscortedHeroesForExecution() => null; }

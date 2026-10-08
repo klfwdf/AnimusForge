@@ -50,12 +50,7 @@ public partial class ShoutBehavior
 {
     internal List<string> CaptureVisibleSceneHistoryLinesForPrompt(int viewerAgentIndex, string viewerName, bool useDistanceLabels)
     {
-        lock (_historyLock)
-        {
-            if (SceneHistoryOwner.PublicCount == 0) return null;
-            return SceneHistoryOwner.CaptureVisiblePublicLines(viewerAgentIndex, ResolveSceneHeroIdFromAgentIndex(viewerAgentIndex),
-                viewerName, useDistanceLabels, GetPlayerDisplayNameForShout(), DuelSettings.GetDailyConversationHistoryLineLimitForExternal());
-        }
+        return SceneHistoryPromptCapture.CaptureVisibleSceneHistoryLinesForPrompt(viewerAgentIndex, viewerName, useDistanceLabels);
     }
 	private static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
 	{
@@ -69,30 +64,8 @@ public partial class ShoutBehavior
 
 	internal SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true)
 	{
-
-        int limit = ResolveDailyConversationHistoryLineLimit(maxHistoryMessages);
-        string strictSystem = BuildStrictSceneMessagesSystemPrompt(systemPrompt, suppressReplyFormatInstruction);
-        var pending = new List<ConversationMessage>();
-        AppendConversationMessages(pending, pendingCurrentAfefFactMessages);
-        pending.AddRange(ConsumePendingCurrentAfefFactMessagesForPrompt(npcAgentIndex));
-        ConversationMessage current = null;
-        if (!currentInputAlreadyRecorded && !string.IsNullOrWhiteSpace(currentPlayerInput))
-            current = StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
-            {
-                Role = "user", Content = currentPlayerInput.Trim(), SpeakerName = GetStrictScenePlayerDisplayName(),
-                SpeakerAgentIndex = -1, TargetAgentIndex = npcAgentIndex,
-                PlayerDistanceMeters = GetPlayerDistanceToAgentForScenePrompt(npcAgentIndex)
-            });
-        return new SceneHistoryMessageAssemblyInput
-        {
-            SystemPrompt = strictSystem,
-            PrefixUserSections = prefixUserSections?.ToArray(), SuffixUserSections = suffixUserSections?.ToArray(),
-            PendingCurrentFacts = SceneHistoryProjectionOwner.CapturePromptMessages(pending), SceneHistory = includeSceneHistory ? SceneHistoryProjectionOwner.CapturePromptMessages(GetNpcConversationHistorySnapshot(npcAgentIndex)) : null,
-            InjectedHistory = SceneHistoryProjectionOwner.CapturePromptMessages(injectedHistoryMessages), PersistentHistory = SceneHistoryProjectionOwner.CapturePromptMessages(persistentHistoryMessages),
-            CurrentInputMessage = current, HistoryLineLimit = limit,
-            Context = CaptureSceneHistoryMessageContext(npcAgentIndex, useSceneDistanceSpeechLabels)
-        };
-	}
+        return SceneHistoryPromptCapture.CaptureStrictSceneMessageInputForNpc(npcAgentIndex, systemPrompt, prefixUserSections, suffixUserSections, currentInputAlreadyRecorded, currentPlayerInput, maxHistoryMessages, suppressReplyFormatInstruction, injectedHistoryMessages, includeSceneHistory, persistentHistoryMessages, pendingCurrentAfefFactMessages, useSceneDistanceSpeechLabels);
+    }
 	private static string BuildConversationMessageDedupeKey(ConversationMessage msg)
 	{
 		return SceneHistoryMessageAssemblyOwner.BuildConversationMessageDedupeKey(msg, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
@@ -170,15 +143,6 @@ public partial class ShoutBehavior
 
     private static SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int npcAgentIndex, bool useDistance)
     {
-        string date;
-        try { date = CampaignTime.Now.ToString(); } catch { date = "当前日期"; }
-        return new SceneHistoryMessageContext
-        {
-            ViewerAgentIndex = npcAgentIndex, ViewerHeroId = ResolveSceneHeroIdFromAgentIndex(npcAgentIndex),
-            PlayerName = GetStrictScenePlayerDisplayName(), GameDate = date,
-            GameHour = MyBehavior.GetCurrentMemoryGameHourForExternal(), Scene = MyBehavior.ResolveCurrentMemorySceneLabelForExternal(),
-            UseDistanceLabels = useDistance,
-            SpeechTextOptions = new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions())
-        };
+        return SceneHistoryPromptCaptureAdapter.CaptureSceneHistoryMessageContext(npcAgentIndex, useDistance);
     }
 }

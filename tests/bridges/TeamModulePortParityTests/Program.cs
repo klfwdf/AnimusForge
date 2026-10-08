@@ -110,8 +110,46 @@ internal static class Program
         catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
     }
 
+#if ADAPTER_ONLY
+    private static void ExerciseCivilWarObservation()
+    {
+        var realm = new Kingdom { Name="realm", StringId="realm-id" };
+        Clan.PlayerClan = new Clan { Kingdom=realm }; MyBehavior.Instance=new MyBehavior();
+        MyBehavior.CivilWarCalls.Clear();
+        MyBehavior.RecordCivilWarPoliticalResult(null,"coup:1","outcome",true);
+        MyBehavior.RecordCivilWarPoliticalResult(realm,"coup:1"," ",true);
+        Check(MyBehavior.CivilWarCalls.Count==0,"civil-war rejects missing realm/empty observation");
+        MyBehavior.RecordCivilWarPoliticalResult(realm,"coup:1","outcome",false);
+        Check(MyBehavior.CivilWarCalls.Count==1 && MyBehavior.CivilWarCalls[0]=="material:civil_war|内战政治 - realm|outcome|coup:1|realm-id|True|True","civil-war actual hook material args and flags");
+        MyBehavior.CivilWarCalls.Clear();
+        MyBehavior.RecordCivilWarPoliticalResult(realm,"coup:2","outcome",true);
+        Check(MyBehavior.CivilWarCalls.Count==2 && MyBehavior.CivilWarCalls[0].StartsWith("material:"),"civil-war record precedes optional bulletin once");
+        Check(MyBehavior.CivilWarCalls[1].Contains("|True|realm:realm-id|outcome|realm-id"),"civil-war player realm and record group preserved");
+        MyBehavior.Instance=null;MyBehavior.CivilWarCalls.Clear();
+        MyBehavior.RecordCivilWarPoliticalResult(realm,"coup:3","outcome",true);
+        Check(MyBehavior.CivilWarCalls.Count==1,"civil-war missing bulletin owner never repeats material");
+        var method=typeof(MyBehavior).GetMethod("RecordCivilWarPoliticalResult",BindingFlags.Static|BindingFlags.NonPublic);
+        Check(method.GetParameters().Select(p=>p.ParameterType).SequenceEqual(new[]{typeof(Kingdom),typeof(string),typeof(string),typeof(bool)}),"civil-war original reflection ABI retained");
+        Console.WriteLine("PASS 6 current CivilWar hook/application observation assertions (record and bulletin leaves are substitutes)");
+    }
+#endif
+#if ADAPTER_ONLY
+    private static void ExerciseRpCraftObservation() {
+        MyBehavior.RpCalls.Clear();MyBehavior.Instance=new();var app=new ExternalActionObservationApplication((h,t,k,a,m,r,target,place,loc,allow,won)=>{},(text,key,kind,major,target,place,location,won)=>MyBehavior.RpCalls.Add(new object[]{"action",text,key,kind,major,location}), (h,t,k,f,allow)=>{},(h,t,k,d,f,allow)=>{},(kind,label,text,key,kingdom,settlement,world,realm,hero,actorRealm,day,date)=>MyBehavior.RpCalls.Add(new object[]{"weekly",text,key,kind,world,realm,hero}));MyBehavior.Instance.ExternalActionObservations=new ExternalActionObservationBannerlordAdapter(app,()=>throw new Exception("RP must not allocate its own sequence"),(h,n)=>{});
+        MyBehavior.RecordPlayerHighValueRpCraftForExternal("batch","requested","final",10000,0,"player","","good");Check(MyBehavior.RpCalls.Count==0,"RP original investment threshold rejects 10000");
+        MyBehavior.RecordPlayerHighValueRpCraftForExternal("batch","requested","final",10001,0,"player","","good");Check(MyBehavior.RpCalls.Count==2&&Equals(MyBehavior.RpCalls[0][0],"action")&&Equals(MyBehavior.RpCalls[1][0],"weekly"),"RP typed external hook actual capture application record order");Check(Equals(MyBehavior.RpCalls[0][2],"player_rp_craft_high_value:batch:action")&&Equals(MyBehavior.RpCalls[1][2],"player_rp_craft_high_value:batch:weekly"),"RP stable record identities remain unique existing authority");Check(MyBehavior.RpCalls.All(row=>((string)row[1]).Contains("10001"))&&Equals(MyBehavior.RpCalls[1][6],"player"),"RP captured investment/player identity retained");
+        MyBehavior.RpCalls.Clear();MyBehavior.RecordPlayerHighValueRpCraftForExternal(" ","requested","final",10001,1,"player","","good");Check(MyBehavior.RpCalls.Count==0,"RP empty batch cannot fabricate record");
+        var hook=typeof(MyBehavior).GetMethod("RecordPlayerHighValueRpCraftForExternal",BindingFlags.Public|BindingFlags.Static);hook.Invoke(null,new object[]{"reflection","requested","final",10001,10,"other","Crafter","good"});Check(MyBehavior.RpCalls.Count==2&&((string)MyBehavior.RpCalls[0][1]).Contains("Crafter"),"RP real reflection ABI reaches same actual observation application");
+        MyBehavior.Instance=null;MyBehavior.RpCalls.Clear();MyBehavior.RecordPlayerHighValueRpCraftForExternal("none","requested","final",10001,1,"player","","good");Check(MyBehavior.RpCalls.Count==0,"RP missing record owner retains null protocol");
+        Console.WriteLine("PASS 7 current RP typed/reflection hook actual capture/application assertions (A record and engine foothold leaves substituted)");
+    }
+#endif
     private static void Run()
     {
+#if ADAPTER_ONLY
+        ExerciseCivilWarObservation();
+        ExerciseRpCraftObservation();
+#endif
 #if !ADAPTER_ONLY
         Check(ReferenceEquals(TeamModuleServices.Policy, TeamModuleServices.Policy)
             && ReferenceEquals(TeamModuleServices.Gathering, TeamModuleServices.Gathering)

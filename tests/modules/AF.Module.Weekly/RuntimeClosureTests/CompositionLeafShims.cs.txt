@@ -1,5 +1,11 @@
 
  private static MyBehavior Instance;
+ private int _newsCollectionEpoch;
+ private readonly System.Collections.Concurrent.ConcurrentQueue<Action> _worldBulletinMainThreadActions = new();
+ private bool HasRestartedWeeklyCollection => false;
+ private void SynchronizeNewsCollectionMode() {}
+ private void CompleteRestartedWeeklyCollection() {}
+ private static string FormatNewsCalendarDate(int day) => "date" + day;
  private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions=new();
  private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext,WeeklyReportGenerationResult> _weeklyReportCommitQueue=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>new());
  private readonly WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext,WeeklyPromptPreparationResult> _weeklyPromptPreparationQueue=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>WeeklyPromptPreparationResult.Canceled);

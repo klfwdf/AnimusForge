@@ -22,15 +22,38 @@ files = [root / "src/modules/AF.Module.Memory/ImportExport/MemoryImportExportOwn
          root / "src/AF.Persistence/AnimusForgeDataPaths.cs",
          here / "OwnerChecks.cs", here / "ImportSchemaChecks.cs"]
 # Replay the current single-NPC entry without an inverse source projection.
+import ast
+extract_path = root / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py"
+node = next(n for n in ast.parse(extract_path.read_text(encoding="utf-8-sig")).body if isinstance(n, ast.FunctionDef) and n.name == "declaration")
+scope = {"re": re}
+exec(compile(ast.Module(body=[node], type_ignores=[]), str(extract_path), "exec"), scope)
+declaration = scope["declaration"]
 source = (root / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ImportExportUi.cs").read_text(encoding="utf-8-sig")
-bodies = []
-for name in ["ImportSingleNpcDialogueHistoryData", "ImportDialogueHistoryData"]:
-    start = source.index("\tprivate void " + name + "(")
-    end = re.search(r"^\tprivate\s", source[start + 1:], re.M)
-    assert end, name + " method boundary missing"
-    bodies.append(source[start:start + 1 + end.start()])
+formats = (root / "src/AF.GameAdapter.Bannerlord/ImportExport/MemoryHistoryImportExportAdapter.cs").read_text(encoding="utf-8-sig")
+names = ["ImportSingleNpcDialogueHistoryData", "ImportDialogueHistoryData"]
+facades = "\n".join(declaration(source, "private void " + name) for name in names)
+bodies = "\n".join(declaration(formats, "internal void " + name) for name in names)
+capabilities = r'''
+internal sealed partial class MyBehavior {
+ private MemoryHistoryImportExportAdapter MemoryHistoryFiles => new(
+  () => 1, IsMemorySourceEditorCurrent, ShowDuplicateImportInquiry,
+  HasCompressedMemoryDataForHero, ApplyCompressedMemoryExportBundle);
+}
+internal sealed class MemoryHistoryImportExportAdapter {
+ private readonly Func<long> _captureGeneration;
+ private readonly Func<long,bool> _isCurrent;
+ private readonly Action<string,string,Action,Action,Action> _showDuplicate;
+ private readonly Func<string,bool> _hasData;
+ private readonly Func<string,CompressedMemoryExportBundle,bool,bool> _apply;
+ internal MemoryHistoryImportExportAdapter(Func<long> capture,Func<long,bool> current,Action<string,string,Action,Action,Action> show,Func<string,bool> hasData,Func<string,CompressedMemoryExportBundle,bool,bool> apply) {
+  _captureGeneration=capture;_isCurrent=current;_showDuplicate=show;_hasData=hasData;_apply=apply;
+ }
+ private bool HasCompressedMemoryDataForHero(string id)=>_hasData(id);
+ private bool ApplyCompressedMemoryExportBundle(string id,CompressedMemoryExportBundle bundle,bool overwriteExisting)=>_apply(id,bundle,overwriteExisting);
+'''
+header = 'using System;using System.IO;using System.Collections.Generic;using TaleWorlds.Library;namespace AnimusForge {'
 host = out / "CurrentSingleImport.cs"
-host.write_text('using System; using System.IO; using System.Collections.Generic; using TaleWorlds.Library; using AnimusForge.Refactor.Runtime; namespace AnimusForge { internal sealed partial class MyBehavior {\n' + '\n'.join(bodies) + '\n}}', encoding="utf-8")
+host.write_text(header + 'internal sealed partial class MyBehavior {' + facades + '}\n' + capabilities + bodies + '}}', encoding="utf-8")
 files.append(host)
 files.append(root / "src/AF.Persistence/NpcDataFileName.cs")
 if args.mutate:

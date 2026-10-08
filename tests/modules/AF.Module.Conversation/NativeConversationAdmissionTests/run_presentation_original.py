@@ -1,6 +1,10 @@
-import importlib.util,subprocess,os
+import argparse,sys,importlib.util,subprocess,os
 from pathlib import Path
-root=Path(__file__).resolve().parents[4];here=Path(__file__).parent;out=here/'.generated/presentation-original';out.mkdir(parents=True,exist_ok=True)
+root=Path(__file__).resolve().parents[4];here=Path(__file__).parent;
+sys.path.insert(0,str(root/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);args=p.parse_args()
+out=new_run_root(root,'native-admission-presentation-original',args.run_root)
 spec=importlib.util.spec_from_file_location('extractor',root/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 s=subprocess.check_output(['git','show','36e04059:AnimusForgeNativeConversationOverlay.cs'],cwd=root).decode('utf-8-sig')
 method=ex.declaration(s,'private async Task SubmitAsync(string text)')
@@ -30,6 +34,8 @@ class Proof {
 }'''.replace('@@HELPER@@',helper).replace('@@CALLBACK@@',callback)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=os.environ.get('DOTNET_EXE',r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
-env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(root/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(root/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+dotnet=str(resolve_dotnet(root))
+env=minimal_test_environment(Path(dotnet),out)
+import json,hashlib
+(out/'generated-inputs-before-build.json').write_text(json.dumps({str(f.name):hashlib.sha256(f.read_bytes()).hexdigest() for f in out.iterdir() if f.is_file() and f.suffix in ('.cs','.csproj','.Config')},indent=2),encoding='utf-8')
 r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=root,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace');(out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr);raise SystemExit(r.returncode)

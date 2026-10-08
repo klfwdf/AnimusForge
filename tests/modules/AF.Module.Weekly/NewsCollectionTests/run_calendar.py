@@ -5,9 +5,9 @@ root=Path(__file__).resolve().parents[4]
 out=Path(sys.argv[1]).resolve();out.mkdir(parents=True,exist_ok=True)
 spec=importlib.util.spec_from_file_location('extract',root/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
-host=(root/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
+host=(root/'src/AF.GameAdapter.Bannerlord/Prompt/WeeklyPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig')
 policy=(root/'src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs').read_text(encoding='utf-8-sig')
-source='using System;class Program {'+extract.declaration(host,'private static string FormatNewsCalendarDate(')+'''
+source='using System;class Program {'+extract.declaration(host,'internal static string FormatNewsCalendarDate(')+'''
 static void Main() {
  int n=0;void Check(bool value){if(!value)throw new Exception("calendar adapter");n++;}
  CampaignTime.Render=day=> { Check(day==91118);return "1084年秋季21日"; };

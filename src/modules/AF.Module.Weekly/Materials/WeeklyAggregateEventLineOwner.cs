@@ -46,6 +46,11 @@ internal sealed class WeeklyAggregateGameFacts
 // Called only during synchronous main-thread material preparation. No game object is retained.
 internal sealed class WeeklyAggregateEventLineOwner
 {
+internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,string> resolve)
+	{
+		return (ids ?? Enumerable.Empty<string>()).Select(resolve).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
 	private readonly WeeklyAggregateGameFacts _facts;
 	internal WeeklyAggregateEventLineOwner(WeeklyAggregateGameFacts facts) { _facts = facts ?? throw new ArgumentNullException(nameof(facts)); }
 	private static bool SameId(string left, string right) => !string.IsNullOrWhiteSpace(left) && string.Equals(left.Trim(), (right ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
@@ -2178,20 +2183,11 @@ internal sealed class WeeklyAggregateEventLineOwner
 		return list;
 	}
 
-	private List<string> ResolveHeroNames(IEnumerable<string> heroIds)
-	{
-		return (heroIds ?? Enumerable.Empty<string>()).Select(ResolveHeroDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
+	private List<string> ResolveHeroNames(IEnumerable<string> heroIds) => ResolveNames(heroIds, ResolveHeroDisplay);
 
-	private List<string> ResolveClanNames(IEnumerable<string> clanIds)
-	{
-		return (clanIds ?? Enumerable.Empty<string>()).Select(ResolveClanDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
+	private List<string> ResolveClanNames(IEnumerable<string> clanIds) => ResolveNames(clanIds, ResolveClanDisplay);
 
-	private List<string> ResolveKingdomNames(IEnumerable<string> kingdomIds)
-	{
-		return (kingdomIds ?? Enumerable.Empty<string>()).Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
+	private List<string> ResolveKingdomNames(IEnumerable<string> kingdomIds) => ResolveNames(kingdomIds, ResolveKingdomDisplay);
 
 	private List<string> ResolveSettlementNames(IEnumerable<string> settlementIds)
 	{

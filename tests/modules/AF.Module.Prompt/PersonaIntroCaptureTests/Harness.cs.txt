@@ -65,3 +65,199 @@ internal static class Program {
  Console.WriteLine("PASS complete persona/equipment capture+pure composer+actual factories/consumer checks="+checks+" live=NOT_RUN");
  }
 }
+
+// @@ROSTER_CURRENT_CASES@@
+using System;using System.Collections.Generic;using System.Linq;using AnimusForge;using AnimusForge.Refactor.Adapters;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.CampaignSystem.Roster;
+internal static class RosterCurrentCases {
+ static int checks;static void C(bool b,string why){checks++;if(!b)throw new Exception(why);}
+ static TroopRoster R(params TroopRosterElement[] entries){var r=new TroopRoster();r.Elements.AddRange(entries);return r;}
+ static TroopRosterElement E(CharacterObject c,int n)=>new(){Character=c,Number=n};
+ static CharacterObject T(string id,string name,int tier,string label)=>new(){StringId=id,Name=name,Tier=tier,Label=label};
+ public static void Main(){
+  var selected=new Hero{StringId="selected",Name="Selected"};var armyLeader=new Hero{StringId="army",Name="ArmyLeader"};var main=new Hero{StringId="player",Name="Player"};Hero.MainHero=main;
+  var memberParty=new MobileParty{LeaderHero=selected,Party=new PartyBase()};selected.PartyBelongedTo=memberParty;var leaderParty=new MobileParty{LeaderHero=armyLeader,Party=new PartyBase()};main.PartyBelongedTo=leaderParty;MobileParty.MainParty=new(){Party=new PartyBase()};
+  C(ReferenceEquals(SceneRosterPromptCaptureAdapter.ResolveLedPartyBaseForPrompt(selected),memberParty.Party),"selected army member remains selected; not leader fallback");
+  C(ReferenceEquals(SceneRosterPromptCaptureAdapter.ResolveLedPartyBaseForPrompt(main),MobileParty.MainParty.Party),"player not leader uses original main-party fallback");
+  var follower=new Hero{PartyBelongedTo=leaderParty};C(SceneRosterPromptCaptureAdapter.ResolveLedPartyBaseForPrompt(follower)==null,"nonleader cannot expose led roster");C(SceneRosterPromptCaptureAdapter.ResolveLedPartyBaseForPrompt(null)==null,"null hero");
+  var own=T("hero","Selected",0,"");own.IsHero=true;own.HeroObject=selected;var player=T("player","Player",0,"");player.IsHero=true;player.HeroObject=main;
+  var a=T("a","Alpha",4,"弓手");var b=T("b","Beta",5,"骑兵");var h=T("h","HorseArcher",3,"骑射手");var infantry=T("i","Infantry",1,"throw");
+  var roster=R(E(a,3),E(a,2),E(b,1),E(h,2),E(infantry,4),E(own,1),E(player,1),E(null,5),E(a,0),E(b,-1));
+  SceneRosterPromptCaptureAdapter.AggregateRosterForPrompt(roster,true,out var total,out var inf,out var cav,out var arc,out var harc,out var top,2);
+  C(total==12&&inf==4&&cav==1&&arc==5&&harc==2,"nonhero positive counts; failed type defaults infantry");C(top.Count==2&&top[0].Key=="Beta"&&top[1].Key=="Alpha"&&top[1].Value==5,"tier precedes count and same ID combines");
+  SceneRosterPromptCaptureAdapter.AggregateRosterForPrompt(roster,true,out _,out _,out _,out _,out _,out top,0);C(top.Count==1,"original topN minimum one");
+  roster.ThrowIndex=2;SceneRosterPromptCaptureAdapter.AggregateRosterForPrompt(roster,true,out total,out _,out cav,out _,out _,out top,10);C(total==11&&cav==0,"unreadable element skipped without aborting others");roster.ThrowIndex=-1;
+  var heroRoster=R(E(own,1),E(own,1),E(player,1));var names=SceneRosterPromptCaptureAdapter.ExtractHeroMemberNamesForPrompt(heroRoster,selected,"Selected Override",12,out var hc);C(hc==1&&names.SequenceEqual(new[]{"Selected Override（领队）"}),"hero ID dedup, player excluded, selected leader label");
+  var secondHero=new Hero{StringId="second",Name="Second"};var second=T("second","Second",0,"");second.IsHero=true;second.HeroObject=secondHero;heroRoster.Elements.Add(E(second,1));names=SceneRosterPromptCaptureAdapter.ExtractHeroMemberNamesForPrompt(heroRoster,selected,null,1,out hc);C(hc==2&&names.Count==1,"total hero count retained beyond cap");
+  var party=new PartyBase{LeaderHero=selected,MemberRoster=roster,PrisonRoster=R(E(own,1),E(own,1),E(a,3)),MobileParty=new(){Ship="Cutter"}};memberParty.Party=party;
+  var text=SceneRosterPromptCaptureAdapter.BuildPartyTroopsLineForPrompt(party,"你率领","无",true,"Selected Override");C(text.Contains("Selected Override（领队）")&&text.Contains("Alpha x")==false&&text.Contains("Alphax5")&&text.Contains("舰船：Cutter"),"full production troop builder");
+  C(SceneRosterPromptCaptureAdapter.BuildHeroPartyTroopsLineForPrompt(selected,true,false).Contains("你率领")&&!SceneRosterPromptCaptureAdapter.BuildHeroPartyTroopsLineForPrompt(selected,true,false).Contains("兵种："),"compact original builder no troop detail");
+  names=SceneRosterPromptCaptureAdapter.ExtractHeroPrisonerNamesForPrompt(party.PrisonRoster);C(names.SequenceEqual(new[]{"Selected"}),"prisoner name dedup");C(SceneRosterPromptCaptureAdapter.BuildHeroPartyPrisonersLineForPrompt(selected,true).Contains("Selected"),"hero prisoner consumer");
+  C(SceneRosterPromptCaptureAdapter.BuildPartyTroopsLineForPrompt(null,"","none")=="none","unavailable roster fallback");C(SceneRosterPromptCaptureAdapter.BuildPartyPrisonersLineForPrompt(null,"x","none")=="none","unavailable prison fallback");
+  var primary=new NpcDataPacket{AgentIndex=1,Name="One",Age=22,PromptDisplayName="One name",HasScenePosition=true,ScenePositionX=4};var secondary=new NpcDataPacket{AgentIndex=2,Name="Two"};
+  var group=SceneRosterPromptCaptureAdapter.BuildGroupSpeakingCandidates(new(){primary,secondary,primary},primary);C(group.Count==2&&ReferenceEquals(group[0],primary),"group primary first, agent dedup");
+  var clone=SceneRosterPromptCaptureAdapter.CloneNpcDataSnapshot(new(){primary,null,secondary});primary.Name="changed";C(clone.Count==2&&clone[0].Name=="One"&&clone[0].ScenePositionX==4&&clone[0].Age==22,"detached clones retain necessary facts despite live source change");
+  C(SceneRosterPromptCaptureAdapter.CloneNpcDataPacket(null)==null&&SceneRosterPromptCaptureAdapter.CloneNpcDataSnapshot(null).Count==0,"null detached capture");
+  Console.WriteLine("PASS current full SceneRosterPromptCaptureAdapter assertions="+checks+" lower-engine/type-label/name leaves synthetic; live=NOT_RUN");
+ }
+}
+
+// @@OBSERVER_CURRENT_CASES@@
+using System;using AnimusForge;using AnimusForge.Refactor.Adapters;using TaleWorlds.CampaignSystem;using TaleWorlds.MountAndBlade;
+internal static class ObserverCases {
+ static int checks;static void C(bool value,string label){if(!value)throw new Exception(label);checks++;}
+ public static int Main(){
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(null)=="","null player");
+ var hero=new Hero{Name="fallback"};PersonaIdentityPromptCaptureAdapter.PublicName="Player";
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(hero)=="Player没有效忠于任何人。","clanless public name");
+ PersonaIdentityPromptCaptureAdapter.PublicName="玩家";C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(hero)=="fallback没有效忠于任何人。","fallback name");
+ var kingdom=new Kingdom{Name="K"};hero.Clan=new Clan{Kingdom=kingdom,IsUnderMercenaryService=true};C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(hero)=="而且他还是K的雇佣兵。","mercenary");
+ hero.Clan.IsUnderMercenaryService=false;hero.IsFactionLeader=true;kingdom.Leader=hero;C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(hero)=="而且他还是K的统治者。","ruler");
+ hero.IsFactionLeader=false;hero.IsLord=true;C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerSceneIdentitySentenceForPrompt(hero)=="而且他还是K的封臣。","vassal");
+ Hero.MainHero=new Hero{Clan=hero.Clan};C(SceneAgentIdentityPromptCaptureAdapter.ShouldForceDetailedPlayerIntroForObserver(hero),"same clan");Hero.MainHero.Clan=new Clan();C(!SceneAgentIdentityPromptCaptureAdapter.ShouldForceDetailedPlayerIntroForObserver(hero),"other clan");
+ PlayerNotorietyBehavior.Known=true;C(SceneAgentIdentityPromptCaptureAdapter.DoesSceneObserverKnowPlayerIdentityForPrompt(hero,null)&&PlayerNotorietyBehavior.Observer==hero,"hero query");
+ var npc=new NpcDataPacket{AgentIndex=7,CultureId="fallback-culture",Name="NPC"};var character=new CharacterObject{StringId="troop",Culture=new CultureObject{StringId="live-culture"}};
+ Mission.Current=new Mission();Mission.Current.Agents.Add(new Agent{Index=7,Character=character});C(SceneAgentIdentityPromptCaptureAdapter.DoesSceneObserverKnowPlayerIdentityForPrompt(null,npc)&&PlayerNotorietyBehavior.Key=="agent:7"&&PlayerNotorietyBehavior.Culture=="live-culture","nonhero actual target key");
+ character.HeroObject=hero;C(SceneAgentIdentityPromptCaptureAdapter.DoesSceneObserverKnowPlayerIdentityForPrompt(null,npc)&&PlayerNotorietyBehavior.Observer==hero,"agent hero query");
+ PlayerNotorietyBehavior.Throw=true;C(!SceneAgentIdentityPromptCaptureAdapter.DoesSceneObserverKnowPlayerIdentityForPrompt(hero,npc),"query exception");PlayerNotorietyBehavior.Throw=false;
+ npc.PatienceName=" P ";C(SceneAgentIdentityPromptCaptureAdapter.GetSceneNpcPatienceNameForPrompt(npc)=="P","patience preferred");npc.PatienceName=" ";npc.HistoryName=" H ";C(SceneAgentIdentityPromptCaptureAdapter.GetSceneNpcPatienceNameForPrompt(npc)=="H","history fallback");npc.HistoryName="";C(SceneAgentIdentityPromptCaptureAdapter.GetSceneNpcPatienceNameForPrompt(npc)=="NPC","identity fallback");
+
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildSceneObserverInlineStateForPrompt(hero,null)=="state","hero inline projection trimmed");
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildSceneObserverInlineStateForPrompt(null,npc)=="state"&&MyBehavior.Target.StartsWith(":"),"unnamed inline captured identity and display");
+ MyBehavior.InlineSuccess=false;C(SceneAgentIdentityPromptCaptureAdapter.BuildSceneObserverInlineStateForPrompt(hero,npc)=="","inline unavailable empty");MyBehavior.InlineSuccess=true;MyBehavior.Throw=true;C(SceneAgentIdentityPromptCaptureAdapter.BuildSceneObserverInlineStateForPrompt(hero,npc)=="","inline exception empty");MyBehavior.Throw=false;
+ var faction=new Kingdom{Name="NPC Kingdom",StringId="npc"};hero.Clan=new Clan{Kingdom=faction};Hero.MainHero=new Hero{MapFaction=new Kingdom{Name="Player Kingdom",StringId="player"}};
+ C(ReferenceEquals(SceneAgentIdentityPromptCaptureAdapter.ResolveNpcPerspectiveFactionForPlayerCrimePrompt(hero,npc),faction),"observer clan kingdom perspective wins");
+ var agent=Mission.Current.Agents[0];agent.Origin=new Origin{BattleCombatant=new TaleWorlds.CampaignSystem.Party.PartyBase{MapFaction=faction}};
+ C(ReferenceEquals(SceneAgentIdentityPromptCaptureAdapter.ResolveNpcPerspectiveFactionForPlayerCrimePrompt(null,npc),faction),"nonhero origin faction capture");
+ SceneLocationPromptCaptureAdapter.Hostile=false;C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerFactionWarLineForPrompt(hero,npc)=="","neutral no war prompt");SceneLocationPromptCaptureAdapter.Hostile=true;C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerFactionWarLineForPrompt(hero,npc).Contains("NPC Kingdom")&&SceneAgentIdentityPromptCaptureAdapter.BuildPlayerFactionWarLineForPrompt(hero,npc).Contains("Player Kingdom"),"hostile factions named");
+ C(ReferenceEquals(SceneAgentIdentityPromptCaptureAdapter.ResolveNpcPerspectiveKingdomForPrompt(hero,npc),faction),"kingdom perspective resolution");
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildFactionNameForPrompt(new Kingdom{Name=" ",StringId=" fallback "})=="fallback","faction name fallback trimmed id");
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerVassalageRelationLineForPrompt(hero,npc)=="vassal"&&MyBehavior.Target=="7:selected","vassalage selected agent capture");
+ var party=new TaleWorlds.CampaignSystem.Party.MobileParty();TaleWorlds.CampaignSystem.Party.MobileParty.MainParty=party;party.Roles[TaleWorlds.CampaignSystem.Party.PartyRole.Scout]=hero;party.Roles[TaleWorlds.CampaignSystem.Party.PartyRole.Engineer]=hero;
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerCompanionPartyRoleLabelForPrompt(hero)=="斥候","companion scout priority preserved");
+ C(SceneAgentIdentityPromptCaptureAdapter.BuildPlayerCompanionPartyRoleLabelForPrompt(null)=="下属","null companion role fallback");
+
+ DuelSettings.Current=null;C(PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeSettingForPrompt()==55&&PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeGapSettingForPrompt()==25,"marriage settings null defaults");
+ DuelSettings.Current=new(){MarriageCandidateMaxAge=200,MarriageCandidateMaxAgeGap=-2};C(PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeSettingForPrompt()==80&&PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeGapSettingForPrompt()==0,"marriage settings clamp upper age lower gap");
+ DuelSettings.Current=new(){MarriageCandidateMaxAge=0,MarriageCandidateMaxAgeGap=200};C(PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeSettingForPrompt()==18&&PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeGapSettingForPrompt()==60,"marriage settings clamp lower age upper gap");
+ DuelSettings.Throw=true;C(PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeSettingForPrompt()==55&&PersonaIdentityPromptCaptureAdapter.GetMarriageCandidateMaxAgeGapSettingForPrompt()==25,"marriage settings throw defaults");DuelSettings.Throw=false;DuelSettings.Current=new();
+ var candidate=new Hero{StringId="candidate",Name="Candidate",Age=18};C(PersonaIdentityPromptCaptureAdapter.IsMarriageCandidateForPrompt(candidate,new(){Age=30}),"adult age boundary admitted");candidate.Age=17;C(!PersonaIdentityPromptCaptureAdapter.IsMarriagePoolCandidateForPrompt(candidate),"minor excluded");candidate.Age=56;C(!PersonaIdentityPromptCaptureAdapter.IsMarriagePoolCandidateForPrompt(candidate),"max age excluded");candidate.Age=30;candidate.IsPrisoner=true;C(!PersonaIdentityPromptCaptureAdapter.IsMarriageCandidateForPrompt(candidate,null),"prisoner excluded");candidate.IsPrisoner=false;candidate.IsDead=true;C(!PersonaIdentityPromptCaptureAdapter.IsMarriagePoolCandidateForPrompt(candidate),"dead excluded");candidate.IsDead=false;C(!PersonaIdentityPromptCaptureAdapter.IsMarriageCandidateForPrompt(candidate,candidate),"player self excluded");candidate.Spouse=new(){Name="Spouse"};C(PersonaIdentityPromptCaptureAdapter.IsMarriageCandidateForPrompt(candidate,new(){Age=30})&&PersonaIdentityPromptCaptureAdapter.GetNativeSpouseLabelForMarriagePrompt(candidate).Contains("Spouse"),"original married candidate admitted with spouse fact");
+ var elder=new Hero{StringId="elder",Name="Elder",Age=40};var duplicate=new Hero{StringId="CANDIDATE",Name="Duplicate",Age=50};var clan=new Clan{Lords=new(){candidate,elder,duplicate},Leader=elder};hero.Clan=clan;
+ C(System.Linq.Enumerable.Count(PersonaIdentityPromptCaptureAdapter.GetClanMembersForPrompt(clan))==2,"clan ID ordinal duplicate removal");
+ var rendered=PersonaIdentityPromptCaptureAdapter.BuildClanUnmarriedCandidatesForPrompt(hero,null,1);C(rendered.Contains("Elder")&&!rendered.Contains("Candidate")&&rendered.Contains("targetHeroId=elder"),"candidate age-descending capped with identity tag");
+ clan.Lords=null;clan.Heroes=new(){candidate};C(System.Linq.Enumerable.Count(PersonaIdentityPromptCaptureAdapter.GetClanMembersForPrompt(clan))==1,"Heroes fallback when Lords unavailable");
+ var playerList=PersonaIdentityPromptCaptureAdapter.BuildPlayerClanUnmarriedCandidatesForPrompt(hero,null,0);C(playerList.Contains("playerClanHeroId=candidate")&&playerList.Contains("Spouse"),"player clan nonpositive cap one and spouse fact");
+ int settingsReads=DuelSettings.Reads;C(!PersonaIdentityPromptCaptureAdapter.IsMarriageCandidateForPrompt(null,hero)&&DuelSettings.Reads==settingsReads,"null candidate no premature settings capture");
+ Mission.Current=new(){DoesMissionRequireCivilianEquipment=true};
+ C(PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt(hero,out var civilian)&&civilian,"equipment Mission civilian requirement precedes settlement");
+ Mission.Current=null;TaleWorlds.CampaignSystem.Settlements.Settlement.CurrentSettlement=new(){IsVillage=true};hero.CurrentSettlement=new(){IsVillage=false};
+ C(PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt(hero,out civilian)&&!civilian,"equipment current village precedes hero settlement");
+ Mission.Throw=true;TaleWorlds.CampaignSystem.Settlements.Settlement.CurrentSettlement=null;
+ C(PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt(hero,out civilian)&&civilian,"equipment Mission failure preserves Hero town fallback");
+ Mission.Throw=false;hero.CurrentSettlement=null;
+ C(!PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt(hero,out civilian)&&!civilian,"equipment no context default battle false");
+ Hero.MainHero=hero;Agent.Main=new();var spawned=new TaleWorlds.Core.ItemObject{StringId="spawned"};var runtime=new TaleWorlds.Core.ItemObject{StringId="runtime"};var stored=new TaleWorlds.Core.ItemObject{StringId="stored"};
+ Agent.Main.SpawnEquipment.Items[TaleWorlds.Core.EquipmentIndex.Body]=spawned;Agent.Main.Equipment.Items[TaleWorlds.Core.EquipmentIndex.Body]=runtime;hero.CivilianEquipment.Items[TaleWorlds.Core.EquipmentIndex.Body]=stored;
+ C(ReferenceEquals(PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt(hero,TaleWorlds.Core.EquipmentIndex.Body,true),spawned),"equipment main player spawn item first");
+ Agent.Main.SpawnEquipment.Fail=true;
+ C(ReferenceEquals(PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt(hero,TaleWorlds.Core.EquipmentIndex.Body,true),runtime),"equipment spawn exception falls back to runtime item");
+ Agent.Main.Equipment.Fail=true;
+ C(ReferenceEquals(PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt(hero,TaleWorlds.Core.EquipmentIndex.Body,true),stored),"equipment two Agent failures fall back to selected Hero equipment");
+ Agent.Main.Active=false;
+ C(PersonaIdentityPromptCaptureAdapter.TryGetAgentEquipmentItemForPrompt(hero,TaleWorlds.Core.EquipmentIndex.Body)==null,"equipment inactive Agent cannot expose spawn items");
+ C(PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt(null,TaleWorlds.Core.EquipmentIndex.Body,true)==null,"equipment null Hero early return");
+ C(RebelNamingPromptSummaryCaptureAdapter.BuildRebelSettlementSummaryForNamingPrompt(null)=="无"&&KingdomRebellionGameAdapter.BackgroundCaptures==0,"naming null settlements skip all live background captures");
+ var namingSettlements=new System.Collections.Generic.List<TaleWorlds.CampaignSystem.Settlements.Settlement>{null,new(){StringId="village",IsVillage=true},new(){StringId="a",IsTown=true},new(){StringId="b",IsCastle=true},new(){StringId="c",IsTown=true},new(){StringId="d",IsTown=true},new(){StringId="e",IsTown=true}};
+ var settlementSummary=RebelNamingPromptSummaryCaptureAdapter.BuildRebelSettlementSummaryForNamingPrompt(namingSettlements);
+ C(settlementSummary.StartsWith("- a：captured:a")&&settlementSummary.Contains("- d：captured:d")&&!settlementSummary.Contains("village")&&!settlementSummary.Contains("- e：")&&KingdomRebellionGameAdapter.BackgroundCaptures==4,"naming selected town/castle capture ordered and capped at four");
+ C(RebelNamingPromptSummaryCaptureAdapter.BuildRebelFollowerSummaryForNamingPrompt(null)=="无"&&KingdomStabilityGameAdapter.FortificationCaptures==0,"naming null followers skip fortification captures");
+ var follower=new Clan{Name="House",Leader=new(){Name="Leader"},Fortifications=""};
+ var followerSummary=RebelNamingPromptSummaryCaptureAdapter.BuildRebelFollowerSummaryForNamingPrompt(new[]{null,follower,follower});
+ C(followerSummary=="- House（族长：Leader；暂无可用封地摘要）"&&KingdomStabilityGameAdapter.FortificationCaptures==2,"naming follower null filter original per-entry capture and pure dedup fallback");
+ Console.WriteLine("PASS current observer/player capture checks="+checks+" live=NOT_RUN");return 0;
+ }
+}
+
+// @@IDENTITY_CURRENT_CASES@@
+internal static class IdentityCases {
+ static int checks;static void C(bool value,string label){if(!value)throw new Exception(label);checks++;}
+ internal static void Run(){
+  int settings=DuelSettings.Reads;RewardSystemBehavior.Instance=new();
+  C(PersonaIdentityPromptCaptureAdapter.BuildPlayerIdentityInfoForPrompt(null,true,true,true)==""&&PersonaIdentityPromptCaptureAdapter.BuildNpcIdentityInfoForPrompt(null,true)==""&&DuelSettings.Reads==settings&&RewardSystemBehavior.Instance.Reads==0,"null identity capture no rules or trade");
+  var hero=new Hero{Name="Actor",Gold=-20};Hero.MainHero=hero;
+  string basic=PersonaIdentityPromptCaptureAdapter.BuildNpcIdentityInfoForPrompt(hero,false);
+  C(basic.Contains("NPC存款：0")&&basic.Contains("无家族")&&DuelSettings.Reads==settings&&RewardSystemBehavior.Instance.Reads==0,"clanless clamp and unselected lazy captures");
+  hero.Clan=new(){Tier=3,Name="House",Leader=hero,Kingdom=new(){Name="Realm"}};
+  C(PersonaIdentityPromptCaptureAdapter.BuildPlayerIdentityInfoForPrompt(hero,false,false,false).Contains("Realm")&&DuelSettings.Reads==settings,"faction visible without rule gated reputation or marriage reads");
+  string withPrice=PersonaIdentityPromptCaptureAdapter.BuildPlayerIdentityInfoForPrompt(hero,true,true,true);
+  C(withPrice.Contains("guide")&&RewardSystemBehavior.Instance.Reads==1,"selected player pricing captured once");
+  Logger.Throw=true;string inventory=PersonaIdentityPromptCaptureAdapter.BuildNpcIdentityInfoForPrompt(hero,true);
+  C(inventory.Contains("inventory")&&AIConfigHandler.Reads==1,"logger failure preserves already accepted inventory text");Logger.Throw=false;
+  RewardSystemBehavior.Instance.Summary=" ";C(!PersonaIdentityPromptCaptureAdapter.BuildNpcIdentityInfoForPrompt(hero,true).Contains("inventory"),"empty inventory omitted");
+  var snapshot=new PersonaIdentityPromptCaptureAdapter.HeroIdentityInfoSnapshot(3,"FrozenHouse","FrozenRealm","Liege","Title","Culture","Role","Adult","Gear",5,"Kinship",true,false,"Leader",true,true,true,55,"Candidates","Price","Header","Inventory");
+  string detached=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposeNpcIdentityInfo(snapshot);hero.Clan.Name="Changed";hero.Gold=900;RewardSystemBehavior.Instance=null;DuelSettings.Throw=true;
+  C(detached==AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposeNpcIdentityInfo(snapshot)&&detached.Contains("FrozenHouse")&&!detached.Contains("Changed"),"detached rendering stable after live objects and settings change");DuelSettings.Throw=false;
+  C(System.Linq.Enumerable.All(typeof(PersonaIdentityPromptCaptureAdapter.HeroIdentityInfoSnapshot).GetFields(System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic),f=>f.IsInitOnly&&(f.FieldType==typeof(string)||f.FieldType==typeof(bool)||f.FieldType==typeof(int))),"snapshot immutable scalars no live handles");
+  C(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposeNpcIdentityInfo(null)==""&&AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposePlayerIdentityInfo(null)=="","null detached projection");
+  C(PersonaIdentityPromptCaptureAdapter.BuildNobleEtiquettePromptForHero(null)==""&&PersonaIdentityPromptCaptureAdapter.BuildNobleEtiquettePromptForHero(new Hero())=="","etiquette null and clanless early return");
+  Hero.MainHero=new(){Clan=new(){Tier=4}};hero.Clan.Tier=2;string respectful=PersonaIdentityPromptCaptureAdapter.BuildNobleEtiquettePromptForHero(hero);Hero.MainHero.Clan.Tier=0;
+  C(respectful.Length>PersonaIdentityPromptCaptureAdapter.BuildNobleEtiquettePromptForHero(hero).Length,"etiquette player tier higher only adds restraint clause");
+  C(PersonaIdentityPromptCaptureAdapter.BuildNpcInventorySummaryHeader(null)=="【NPC的商铺可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)","inventory header null fallback exact existing pure rule");
+  C(PersonaIdentityPromptCaptureAdapter.BuildSiegeStartNarrative(null,true,null).Contains("某处要塞")&&CampaignBattleRecordCaptureAdapter.Captures==2,"siege defaults still captures both side lists in order");
+  var siege=new TaleWorlds.CampaignSystem.Siege.SiegeEvent{BesiegerCamp=new(){LeaderParty=new(){MapFaction=new Kingdom{Name="Attackers"}}}};
+  string siegeText=PersonaIdentityPromptCaptureAdapter.BuildSiegeStartNarrative(new(){Name="Keep",MapFaction=new Kingdom{Name="Defenders"}},false,siege);
+  C(siegeText.Contains("Keep")&&siegeText.Contains("Attackers")&&siegeText.IndexOf("Attacker:5")<siegeText.IndexOf("Defender:5"),"siege defender narrative and cap five ordered side summaries");
+  Console.WriteLine("PASS identity capture/snapshot/projection checks="+checks+" existing narrow capture leaves controlled; whole=NOT_RUN");
+ }
+}
+
+// @@SCENE_LIST_CURRENT@@
+namespace AnimusForge {
+internal static class SceneListCases {
+ static int checks;static void C(bool v,string s){if(!v)throw new System.Exception("FAIL "+s);checks++;}
+ internal static void Run(){
+  var player=new TaleWorlds.CampaignSystem.Hero{Name="RealPlayer",StringId="player"};TaleWorlds.CampaignSystem.Hero.MainHero=player;var clan=new TaleWorlds.CampaignSystem.Clan();player.Clan=clan;TaleWorlds.CampaignSystem.Clan.PlayerClan=clan;PlayerNotorietyBehavior.Throw=false;PlayerNotorietyBehavior.Known=false;AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.PublicName="Masked";
+  var self=new NpcDataPacket{AgentIndex=1,Name="Self",IsHero=true,HasScenePosition=true};var guard=new NpcDataPacket{AgentIndex=-1,Name="Guard",PromptGivenName="Given",UnnamedKey="npc:kingdom:realm:lord:lord",CultureId="fallback",HasScenePosition=true,ScenePositionX=3,ScenePositionY=4};
+  var hero=new TaleWorlds.CampaignSystem.Hero{Name="Selected",StringId="selected",Clan=clan,IsPlayerCompanion=true,Spouse=player,IsPrisoner=true,PartyBelongedToAsPrisoner=new(){LeaderHero=new(){Name="Captor"}}};var npc=new NpcDataPacket{AgentIndex=2,Name="Selected",IsHero=true,RoleDesc="Lord",HasScenePosition=true};
+  var ids=new System.Collections.Generic.Dictionary<int,TaleWorlds.CampaignSystem.Hero>{{1,hero},{2,hero}};TaleWorlds.MountAndBlade.Mission.Throw=false;TaleWorlds.MountAndBlade.Mission.Current=new();TaleWorlds.CampaignSystem.Kingdom.All=new(){new(){StringId="realm",Name="Realm",Leader=new(){Name="Ruler"}}};TaleWorlds.CampaignSystem.Hero.Lookup["lord"]=new(){Name="LocalLord"};
+  string line=AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNpcListLineWithRuntimeFactsForPrompt(npc,self,"Masked",ids);C(line.Contains("Selected")&&line.Contains("Captor")&&line.Contains("Masked")&&line.Contains("Player"),"Hero provided ID lookup, prisoner, companion and spouse capture");
+  string civilian=AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNpcListLineWithRuntimeFactsForPrompt(guard,self,"Masked",ids,true);C(civilian.Contains("Given")&&civilian.Contains("Realm")&&civilian.Contains("Ruler")&&civilian.Contains("LocalLord")&&civilian.Contains("5.0"),"nonhero allegiance and lord-key capture with detached distance");
+  var list=AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.FilterScenePresentNpcsForPrompt(new[]{self,null,npc,guard},self);C(list.Count==2&&ReferenceEquals(list[0],npc)&&ReferenceEquals(list[1],guard),"present list self/null filtering and source order");
+  C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildScenePresentNpcListBlockForPrompt(new[]{self},self,ids)=="","empty filtered list has no capture block");
+  var block=AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildScenePresentNpcListBlockForPrompt(new[]{self,npc,guard},self,ids);C(block.IndexOf("Selected")<block.IndexOf("Given")&&block.Contains("Realm"),"complete present block uses same ID lookup and order");
+  C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPlayerDisplayNameForSceneNpcListIdentity(self,ids)=="RealPlayer","companion observer reveals original player name");ids[1]=new(){StringId="stranger"};C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPlayerDisplayNameForSceneNpcListIdentity(self,ids)=="Masked","unknown observer uses public scalar identity");
+  C(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildPlayerMarriageFactForNpcListLine(player)=="","self never produces spouse fact");
+  guard.ScenePositionX=float.NaN;C(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildDistanceToCurrentNpcForNpcListLine(guard,self).Contains("NaN"),"nonfinite distance remains unknown");guard.HasScenePosition=false;C(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildDistanceToCurrentNpcForNpcListLine(guard,self).Contains("5.0"),"missing distance stays unknown");
+  C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNonHeroNamingNoteForPrompt(new[]{npc})==""&&AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNonHeroNamingNoteForPrompt(new[]{guard})!="","naming note only for nonhero participants");
+  C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNpcListLineForPrompt(null)!="","null NPC keeps detached unknown line");
+  C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildNativeConversationNpcListBlockForPrompt(new[]{self,null},self)=="","Native present list empty after same self/null filter");
+  var nativeList=AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildNativeConversationNpcListBlockForPrompt(new[]{self,npc,guard},self);C(nativeList.IndexOf("Selected")<nativeList.IndexOf("Given")&&nativeList.Contains(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildSceneNonHeroNamingNoteForPrompt(new[]{guard})),"Native complete list reuses same filter/order/line/naming-note owners");
+  System.Console.WriteLine("PASS current scene list capture checks="+checks);
+ }
+}
+}
+
+// @@PACKET_CURRENT@@
+namespace AnimusForge {internal static class PacketCases {
+static int checks;static void C(bool v,string label){if(!v)throw new System.Exception(label);checks++;}
+internal static void Run(){
+var start=SceneMovementController.Reads;
+C(AnimusForge.Refactor.Adapters.SceneRosterPromptCaptureAdapter.BuildSceneNpcDataFromLocationCharacter(null)==null&&AnimusForge.Refactor.Adapters.SceneRosterPromptCaptureAdapter.BuildSceneNpcDataFromLocationCharacter(new())==null&&SceneMovementController.Reads==start,"missing location character skips lookup");
+var character=new TaleWorlds.CampaignSystem.CharacterObject{Name=" Guard ",StringId=" TROOP ",Culture=new(){StringId="EMPIRE"},Occupation=TaleWorlds.CampaignSystem.Occupation.Guard,IsFemale=true};
+var location=new TaleWorlds.CampaignSystem.Settlements.Locations.LocationCharacter{Character=character};
+SceneMovementController.Resolved=new();ShoutUtils.Extracted=new(){Name="Live",AgentIndex=91};var nameReads=ShoutUtils.NameReads;
+C(object.ReferenceEquals(AnimusForge.Refactor.Adapters.SceneRosterPromptCaptureAdapter.BuildSceneNpcDataFromLocationCharacter(location),ShoutUtils.Extracted)&&ShoutUtils.ExtractReads==1&&ShoutUtils.NameReads==nameReads,"resolved live Agent uses independent packet leaf without fallback capture");
+SceneMovementController.Resolved=null;var packet=AnimusForge.Refactor.Adapters.SceneRosterPromptCaptureAdapter.BuildSceneNpcDataFromLocationCharacter(location);
+C(packet.AgentIndex==-1&&packet.TroopId=="troop"&&packet.CultureId=="empire"&&packet.RoleDesc=="守卫"&&packet.IsFemale&&packet.Age==30&&packet.PromptGivenName==" Guard ","nonHero location fallback preserves fields and naming order");
+var hero=new TaleWorlds.CampaignSystem.Hero{Name="Hero",IsLord=true,Age=42};character.IsHero=true;character.HeroObject=hero;
+packet=AnimusForge.Refactor.Adapters.SceneRosterPromptCaptureAdapter.BuildSceneNpcDataFromLocationCharacter(location);
+C(packet.RoleDesc=="领主"&&packet.Age==42&&packet.TroopId==""&&packet.PersonalityDesc=="persona"&&packet.BackgroundDesc=="background"&&MyBehavior.PersonaReads==1,"Hero fallback captures selected persona once");
+int reads=MyBehavior.BadgeReads;C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPatienceBadgeForNpc(null,null)==""&&MyBehavior.BadgeReads==reads,"null badge skips live and snapshot boundaries");
+var live=new TaleWorlds.MountAndBlade.Agent{Character=character};TaleWorlds.MountAndBlade.Mission.Throw=true;
+C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPatienceBadgeForNpc(packet,live)=="hero-badge"&&object.ReferenceEquals(MyBehavior.BadgeHero,hero),"live Hero badge wins without Mission fallback");
+TaleWorlds.MountAndBlade.Mission.Throw=false;packet.AgentIndex=91;TaleWorlds.MountAndBlade.Mission.Current=new(){Agents=new(){new(){Index=91,Character=character}}};
+C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPatienceBadgeForNpc(packet,null)=="hero-badge"&&object.ReferenceEquals(MyBehavior.BadgeHero,hero),"missing live Hero uses actual same indexed resolver");
+TaleWorlds.MountAndBlade.Mission.Throw=true;C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPatienceBadgeForNpc(packet,null)=="hero-badge"&&MyBehavior.BadgeHero==null,"Mission failure preserves null Hero external mapping");TaleWorlds.MountAndBlade.Mission.Throw=false;
+packet.IsHero=false;packet.UnnamedKey="party:guard";
+C(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildPatienceBadgeForNpc(packet,live)=="unnamed-badge"&&MyBehavior.BadgeKey=="party:guard: Guard ","nonHero badge uses same key and packet name rather than live Hero");
+System.Console.WriteLine("PASS location packet/badge current consumers checks="+checks+" independent game/persona/badge boundaries controlled");
+}}}

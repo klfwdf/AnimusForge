@@ -34,6 +34,13 @@ def main():
             for entry in manifest['extraction']:
                 if 'signature' not in entry:
                     text = (historical_source(entry['file']) if entry['file'] in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else current_source_path(ROOT, entry['file']).read_text(encoding='utf-8-sig'))
+                    if entry.get('source_extracted_state_and_budget'):
+                        if entry['file'] != 'src/AF.GameAdapter.Bannerlord/Weekly/CampaignDailyMaintenanceController.cs':
+                            raise ValueError('Unknown state/budget extraction contract')
+                        from business_owner_fixture_support import daily_maintenance_replay_members
+                        spec=importlib.util.spec_from_file_location('commit_manifest_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+                        extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
+                        text='\n'.join(daily_maintenance_replay_members(text,extractor))
                     if sha(text) != entry['sha256']: return None
             for name,digest in manifest['generated_sha256'].items():
                 if hashlib.sha256((base/name).read_bytes()).hexdigest()!=digest:return None
@@ -109,8 +116,33 @@ def main():
     files['CommitBodies.cs']='using System; using System.IO; using System.Text; using System.Collections.Generic; using System.Linq; using Newtonsoft.Json; using TaleWorlds.Core; using TaleWorlds.CampaignSystem; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\n'+'\n\n'.join(snippets)+'\n}}'
     commit=read('MyBehavior.DialogueHistoryCommit.cs')
     if a.mutate=='ignore-main-thread':commit=replace(commit,'if (!TWParallel.IsMainThread())','if (false)')
-    if a.mutate=='fake-commit-success':commit=replace(commit,'return accepted\n','return true\n')
     files['CommitEntry.cs']=commit
+    history_source=read('src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs')
+    acceptance=ex.declaration(history_source,'internal MemoryCommitResult CommitDialogueHistoryWithScene(')
+    normalization=ex.declaration(history_source,'private static string NormalizeMemoryHeroId(')
+    inventory.append(dict(file='src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs',signature='CommitDialogueHistoryWithScene',sha256=sha(acceptance)))
+    if a.mutate=='fake-commit-success':acceptance=replace(acceptance,'return accepted\n','return true\n')
+    files['MemoryHistoryCommitBannerlordAdapter.cs']=replace(files['MemoryHistoryCommitBannerlordAdapter.cs'],'internal static class MemoryHistoryCommitBannerlordAdapter','internal sealed partial class MemoryHistoryCommitBannerlordAdapter')
+    # Actual acceptance runs against the same complete Append bodies and memory owner.
+    # Only its constructor's game-facing append capabilities are controlled here.
+    files['CommitOwner.cs']='''using System;
+using TaleWorlds.CampaignSystem;
+using AnimusForge.Refactor.Contracts;
+using static AnimusForge.MemoryBusinessStateOwner;
+namespace AnimusForge {
+internal sealed partial class MemoryHistoryCommitBannerlordAdapter {
+'''+normalization+'\n'+acceptance+'''
+private readonly Func<Hero,string,string,string,int,int,string,bool> _appendHero;
+private readonly Func<string,string,string,string,string,int,int,string,bool> _appendById;
+internal MemoryHistoryCommitBannerlordAdapter(Func<Hero,string,string,string,int,int,string,bool> hero, Func<string,string,string,string,string,int,int,string,bool> byId) { _appendHero=hero; _appendById=byId; }
+private bool AppendDialogueHistory(Hero hero,string player,string ai,string fact,int session,int target,string targetName) => _appendHero(hero,player,ai,fact,session,target,targetName);
+private bool AppendDialogueHistoryById(string id,string npc,string player,string ai,string fact,int session,int target,string targetName) => _appendById(id,npc,player,ai,fact,session,target,targetName);
+}
+public partial class MyBehavior {
+private MemoryHistoryCommitBannerlordAdapter _commitHistoryFixture;
+private MemoryHistoryCommitBannerlordAdapter _memoryHistoryCommit => _commitHistoryFixture ??= new MemoryHistoryCommitBannerlordAdapter(AppendDialogueHistory,AppendDialogueHistoryById);
+}}
+'''
     files['DevTextEditorHelper.cs']=read('src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs')
     files['TextInputSanitizer.cs']=read('src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs')
     files['DialogueHistoryEntry.cs']=read('AnimusForgeDialogueHistoryEntry.cs')

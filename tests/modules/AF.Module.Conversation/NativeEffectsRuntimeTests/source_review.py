@@ -18,6 +18,14 @@ count=0
 for oldfile,newfile in pairs:
     before=baseline(oldfile)
     after=(source/newfile).read_text(encoding='utf-8-sig')
+    # Reverse the exact typed Diplomacy edge, preserving the original algorithm oracle.
+    if newfile == 'NativeConversationGameEffectsRuntime.cs':
+        current_call = 'DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(targetHero, ref content);'
+        original_call = 'DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);'
+        bridge = (ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs').read_text(encoding='utf-8-sig')
+        assert 'ProcessDiplomacyTagsDispatch(Hero hero, ref string text) => DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text);' in bridge
+        assert after.count(current_call) == 1 and after.count(original_call) == 0, 'Diplomacy dispatch edge drift'
+        after = after.replace(current_call, original_call, 1)
     # Preserve method body exactly while reviewing only explicit capability routing and exit claim.
     after=after.replace('_ports.PostMainThread(', '_mainThreadActions.Enqueue(')
     after=after.replace('_ports.RollbackPendingPlayerHistory(', 'RollbackNativeConversationPendingPlayerHistory(this, ')

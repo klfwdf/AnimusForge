@@ -442,6 +442,30 @@ internal bool TryRecordCoupOutcomeWithParticipantsForBulletin(string coupId, boo
 internal string ExportJson(){if(State!=null&&CorruptRaw!=null)State.PreservedUnreadableState=CorruptRaw;return State!=null?Newtonsoft.Json.JsonConvert.SerializeObject(State):(CorruptRaw??"");}
  internal void ImportJson(string loaded){CorruptRaw=null;try{State=string.IsNullOrWhiteSpace(loaded)?null:Newtonsoft.Json.JsonConvert.DeserializeObject<WorldBulletinSaveState>(loaded);}catch(Exception ex){State=null;CorruptRaw=loaded;_port.Log("WorldBulletin","[ERROR] saved state unreadable, preserved raw ("+loaded.Length+" chars) key=_af_worldBulletin_v1: "+ex.Message);}}
 
+
+internal static bool IsWorldBulletinEnabled()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.UseWorldBulletin ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+internal static bool IsWorldBulletinPublishingEnabled()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			return settings == null || (settings.UseWorldBulletin && settings.AutoGenerateWeeklyReports);
+		}
+		catch
+		{
+			return true;
+		}
+	}
 }
 internal sealed class WorldBulletinPromptFacts {internal string ScopeLine,Date;internal List<string> KingdomContext;}
 internal sealed class WorldBulletinPort {

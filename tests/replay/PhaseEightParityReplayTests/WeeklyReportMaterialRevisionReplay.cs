@@ -28,8 +28,13 @@ internal static class WeeklyReportMaterialRevisionReplay
         Check(!Current(beforeRemoval), "source removal or owner merge invalidates captured materials");
 
         Type behavior = af.GetType("AnimusForge.MyBehavior", true);
-        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
-        behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, owner);
+        FieldInfo instance = behavior.GetField("<Instance>k__BackingField", Members);
+        object previous = instance.GetValue(null);
+        object host;
+        try { host = Activator.CreateInstance(behavior, true); }
+        finally { instance.SetValue(null, previous); }
+        // The real constructor's adapters and runtime must share this one revision authority.
+        owner = behavior.GetField("_weeklyReportMaterialRevisions", Members).GetValue(host);
         Type groupType = behavior.GetNestedType("WeeklyEventMaterialPreviewGroup", BindingFlags.NonPublic);
         object world = Activator.CreateInstance(groupType, true);
         groupType.GetField("GroupKind", Members).SetValue(world, "world");

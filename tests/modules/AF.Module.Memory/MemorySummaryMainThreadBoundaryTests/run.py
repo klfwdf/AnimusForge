@@ -9,12 +9,13 @@ import subprocess
 from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, resolve_dotnet, minimal_test_environment
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--original", action="store_true")
+parser.add_argument("--run-root", type=Path)
 parser.add_argument("--source-baseline", choices=["9617f96a"])
 parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline", "ignore-time-budget", "omit-time-charge", "omit-time-reset"])
 args = parser.parse_args()
@@ -71,8 +72,7 @@ if args.mutate:
     else:
         old, new = runtime_mutations[args.mutate]; assert runtime is not None and old in runtime; runtime = runtime.replace(old, new)
 
-out = HERE / ".generated" / (args.mutate or ("original-" + args.source_baseline if args.source_baseline else "current"))
-out.mkdir(parents=True, exist_ok=True)
+out = new_run_root(ROOT, "memory-main-thread", args.run_root)
 (out / "Boundary.cs").write_text(boundary, encoding="utf-8")
 harness = ("#define DISPATCH_OWNER\n" if runtime is not None else "") + (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
 if args.source_baseline:
@@ -91,12 +91,10 @@ if runtime is not None:
     '</PropertyGroup><ItemGroup><Compile Include="Boundary.cs"/><Compile Include="Program.cs"/><Compile Include="SaveRuntimeGuard.cs"/>' + extra + '</ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
 
-dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT.parent / ".dotnet-sdk/dotnet.exe")))
-env = os.environ.copy()
-env.update(DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
-           NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
-           DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_CLI_UI_LANGUAGE="en",
-           APPDATA=str(ROOT / ".tmp/appdata"))
+dotnet = resolve_dotnet(ROOT)
+env = minimal_test_environment(dotnet, out)
+for key in ("DOTNET_CLI_HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "TMP"):
+    Path(env[key]).mkdir(parents=True, exist_ok=True)
 # Compilation failure never counts as a successful negative control.
 build = subprocess.run([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "Release", "--nologo",
                         "-p:RestoreConfigFile=" + str(out / "NuGet.Config")],

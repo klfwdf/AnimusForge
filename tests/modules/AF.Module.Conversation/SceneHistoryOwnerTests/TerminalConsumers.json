@@ -133,15 +133,15 @@
   },
   {
     "symbol": "BuildNativeConversationHistoryKey",
-    "exact": "private static string BuildNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null) => CaptureNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);"
+    "exact": "internal static string BuildNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null) => CaptureNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);"
   },
   {
     "symbol": "AppendNativeConversationSessionHistory",
-    "exact": "private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null, int playerTargetAgentIndex = -1, string playerTargetName = null, string capturedHistoryKey = null) => AppendNativeConversationSessionHistoryCaptured(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, bridgeToSceneHistory, targetAgentIndex, npc, playerTargetAgentIndex, playerTargetName, capturedHistoryKey);"
+    "exact": "internal static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null, int playerTargetAgentIndex = -1, string playerTargetName = null, string capturedHistoryKey = null) => AppendNativeConversationSessionHistoryCaptured(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, bridgeToSceneHistory, targetAgentIndex, npc, playerTargetAgentIndex, playerTargetName, capturedHistoryKey);"
   },
   {
     "symbol": "NormalizeWildernessNonHeroMemoryKeyPart",
-    "exact": "private static string NormalizeWildernessNonHeroMemoryKeyPart(string value) => NativeHistoryIdentityProjectionOwner.NormalizeWildernessNonHeroMemoryKeyPart(value);"
+    "exact": "internal static string NormalizeWildernessNonHeroMemoryKeyPart(string value) => NativeHistoryIdentityProjectionOwner.NormalizeWildernessNonHeroMemoryKeyPart(value);"
   },
   {
     "symbol": "BuildNativeConversationNonHeroUnnamedKey",
@@ -185,7 +185,9 @@
   },
   {
     "symbol": "scene_history_diagnostics",
-    "exact": "\t\t\t\tSceneHistoryOwner.AppendDiagnostics(sb);"
+    "exact": "SceneHistoryOwner.AppendDiagnostics,()=>_mainThreadActions.Count,_sceneSpeechQueueOwner.TryGetSnapshot);",
+    "binding_source": "src/AF.GameAdapter.Bannerlord/Conversation/ConversationDiagnosticsCaptureAdapter.cs",
+    "binding_exact": "try { taken=_tryEnter(); if(taken) _history(sb); else sb.Append(\" sceneHistory=busy\"); }"
   },
   {
     "symbol": "native_context_visible_history",

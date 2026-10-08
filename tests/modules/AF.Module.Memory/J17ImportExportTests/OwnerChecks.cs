@@ -82,11 +82,48 @@ internal static class Program
         Check(MemoryDeveloperEditOwner.ParseLineList(" A\r\na\nB ", 2, true).SequenceEqual(new[] { "A", "B" }), "line edit dedup/cap");
         Check(MemoryDeveloperEditOwner.ParseLineList(" A\na ", 2, false).SequenceEqual(new[] { "A", "a" }), "line edit case semantics");
         Check(MemoryDeveloperEditOwner.Clear("hero", state) && !MemoryImportExportOwner.HasData("hero", state), "manual clear five domains");
+        var authority = new MemoryBusinessStateOwner { Drafts=state.DailyDrafts, Blocks=state.Blocks,
+            DailyQueue=state.SummaryQueue, Overviews=state.Overviews, OverviewQueue=state.OverviewQueue };
+        var view = MemoryImportExportOwner.Capture(authority);
+        Check(ReferenceEquals(view.DailyDrafts,authority.Drafts) && ReferenceEquals(view.SummaryQueue,authority.DailyQueue), "authority capture shares stores not second warehouse");
+        authority.Drafts=null; authority.Blocks=null; authority.DailyQueue=null; authority.Overviews=null; authority.OverviewQueue=null;
+        Check(MemoryImportExportOwner.ApplyToAuthority("hero",incoming,true,authority,null), "authority apply accepts original import");
+        Check(authority.Drafts["hero"][0].GameDayIndex==2 && authority.DailyQueue.Count==1 && authority.OverviewQueue.Count==1, "authority receives replacement stores and queues");
+        var before=authority.Drafts;
+        Check(MemoryImportExportOwner.ApplyToAuthority("hero",new CompressedMemoryExportBundle(),false,authority,null) && ReferenceEquals(before,authority.Drafts), "skip keeps original store reference");
+        var order=new List<string>();
+        int count=MemoryDeveloperEditOwner.SaveOverviewForAuthority(()=>{order.Add("id");return "hero";},()=>{order.Add("name");return "Hero";},"saved",()=>{order.Add("blocks");return authority.Blocks["hero"];},()=>{order.Add("ticks");return 77;},authority,x=>order.Add("enqueue"));
+        Check(count==1 && order.SequenceEqual(new[]{"id","blocks","name","ticks"}),"overview actual domain capture order and included count preserved");
+        Check(authority.Overviews["hero"].UpdatedUtcTicks==77 && authority.Overviews["hero"].Summary=="saved","overview edit publishes same sole authority");
+        order.Clear();
+        count=MemoryDeveloperEditOwner.SaveOverviewForAuthority(()=>{order.Add("id");return "hero";},()=>{order.Add("name");return "Hero";}," ",()=>{order.Add("blocks");return authority.Blocks["hero"];},()=>{order.Add("ticks");return 78;},authority,x=>order.Add("enqueue"));
+        Check(count==-1 && order.SequenceEqual(new[]{"id","name","ticks","blocks","enqueue"}) && !authority.Overviews.ContainsKey("hero"),"overview clear skips early blocks and reschedules only after pointer publish");
+        authority.Overviews["hero"] = new() { HeroId="hero", Summary="stale" };
+        authority.OverviewQueue.Add(new() { HeroId="hero" });
+        order.Clear();
+        bool changed=MemoryDeveloperEditOwner.EditBlockForAuthority(()=>order.Add("load"),()=>{order.Add("id");return "hero";},()=>{order.Add("name");return "Hero";},"changed",x=>x.Id="edited",authority,_=>order.Add("dirty"),x=>{Check(!authority.Overviews.ContainsKey("hero") && authority.OverviewQueue.Count==0,"edit clears same overview and publishes before enqueue");order.Add("enqueue");},()=>{order.Add("reload");return authority.Blocks["hero"];},x=>order.Add("log"));
+        Check(changed && authority.Blocks["hero"][0].Id=="edited" && order.SequenceEqual(new[]{"load","id","name","dirty","id","reload","enqueue","log"}),"edit original capture order and conditional invalidation: changed="+changed+" id="+authority.Blocks["hero"][0].Id+" order="+string.Join(",",order));
+        order.Clear();
+        changed=MemoryDeveloperEditOwner.DeleteBlockForAuthority(()=>order.Add("load"),()=>{order.Add("id");return "hero";},"missing",authority,_=>order.Add("dirty"),x=>order.Add("enqueue"),()=>{order.Add("reload");return new();},x=>order.Add("log"));
+        Check(!changed && order.SequenceEqual(new[]{"load","id"}) && authority.Blocks["hero"][0].Id=="edited","missing delete preserves state and does not invalidate or reload");
+        changed=MemoryDeveloperEditOwner.DeleteBlockForAuthority(()=>{},()=>"hero","edited",authority,_=>{},x=>{},()=>new(),x=>{});
+        Check(changed && !authority.Blocks.ContainsKey("hero"),"delete publishes removed block into sole authority");
+        order.Clear();
+        MemoryDeveloperEditOwner.InvalidateOverviewForAuthority(()=>" ",authority,()=>{order.Add("reload");return new();},x=>order.Add("enqueue"),null,x=>order.Add("log"));
+        Check(order.Count==0,"invalid identity skips view lookup reload and logging");
         ImportSchemaChecks.Run();
         Console.WriteLine($"PASS {checks} memory owner assertions");
     }
 }
 
-// Signature-only dependency for the unrelated new history import method; not replayed by these 29 checks.
-internal sealed class MemoryBusinessStateOwner { internal Dictionary<string, List<MyBehavior.DialogueDay>> History; }
+// Store shape dependency: capture/apply uses these same references. Rules above remain controlled historical fixture leaves.
+internal sealed class MemoryBusinessStateOwner
+{
+ internal Dictionary<string,List<MyBehavior.DialogueDay>> History;
+ internal Dictionary<string,List<DailyMemoryDraft>> Drafts;
+ internal Dictionary<string,List<CompressedMemoryBlock>> Blocks;
+ internal List<MemorySummaryJob> DailyQueue;
+ internal Dictionary<string,MemoryOverviewState> Overviews;
+ internal List<MemoryOverviewJob> OverviewQueue;
+}
 internal sealed partial class MyBehavior { internal sealed class DialogueDay { } }

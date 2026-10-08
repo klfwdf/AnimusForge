@@ -1,2 +1,2 @@
 using AnimusForge;
-try { ShoutBehavior.RunNativeAudioBoundary(); } catch (Exception e) { Console.WriteLine(e); Environment.ExitCode=1; }
+try { ShoutBehavior.RunNativeAudioBoundary(); await NativeWholeConsumer.RunAsync(); } catch (Exception e) { Console.WriteLine(e); Environment.ExitCode=1; }

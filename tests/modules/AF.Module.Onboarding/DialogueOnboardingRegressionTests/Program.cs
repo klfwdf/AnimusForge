@@ -17,6 +17,14 @@ static class Program
         Check(done(),"bounded asynchronous dispatch completed");
     }
     static string Read(string root,string path)=>File.ReadAllText(Path.Combine(root,path));
+    static string ResolveRepositoryRoot()
+    {
+        foreach (string start in new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory })
+            for (var directory = new DirectoryInfo(start); directory != null; directory = directory.Parent)
+                if (File.Exists(Path.Combine(directory.FullName, "AnimusForge.csproj")))
+                    return directory.FullName;
+        throw new DirectoryNotFoundException("AF repository root was not found; pass an explicit repository argument.");
+    }
     static int Main(string[] args)
     {
         try { Run(args); return 0; }
@@ -136,7 +144,7 @@ static class Program
         delayed.SetResult(new(){Success=true});Thread.Sleep(20);lateVm.OnTick();
         Check(!lateVm.IsSuccessViewVisible,"late success after cancellation cannot reopen success");lateVm.OnFinalize();
 
-        string root=args.Length==0?Path.GetFullPath("../../../.."):Path.GetFullPath(args[0]);
+        string root=args.Length==0?ResolveRepositoryRoot():Path.GetFullPath(args[0]);
         var setupXml=XDocument.Load(Path.Combine(root,"content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
         foreach(string name in new[]{"Primary","Auxiliary","Postprocess","Event"})
         {
@@ -237,8 +245,11 @@ static class Program
         var wrapper=Read(root,"extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs");
         Check(wrapper.Contains("PreparePlayerRequestedNativeConversationLeave();") && wrapper.IndexOf("PreparePlayerRequestedNativeConversationLeave();")<wrapper.IndexOf("AnimusForgeNativeConversationOverlay.CloseActive();"),"toolbar leave prepares native farewell before closing overlay");
         var shout=Read(root,"src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs");
-        var stare=shout.Substring(shout.IndexOf("public void UpdatePassiveStareLogic("));
-        stare=stare.Substring(0,stare.IndexOf("private static float GetPassiveStareTriggerTime("));
+        Check(shout.Contains("public void UpdatePassiveStareLogic(float dt) => _j17ScenePassiveInteractionController.UpdatePassiveStareLogic(dt);"),"public idle stare ABI routes to the sole controller");
+        var passive=Read(root,"src/modules/AF.Module.Conversation/Channels/Scene/ScenePassiveInteractionController.cs");
+        var stare=passive.Substring(passive.IndexOf("internal void UpdatePassiveStareLogic("));
+        // All original early-admission and reset-before-scan assertions apply to the real body.
+
         foreach(string owner in new[]{"IsScenePresentationActiveForExternal","AnimusForgeNativeConversationOverlay.IsOpen","Campaign.Current?.ConversationManager?.IsConversationInProgress == true"})
             Check(stare.Contains(owner) && stare.IndexOf(owner)<stare.IndexOf("ShoutUtils.GetClosestFacingAgent"),"active dialogue suppresses idle stare before any target scan: "+owner);
         Check(stare.Contains("ResetPassiveStareTracking();"),"opening dialogue clears accumulated stare, not just pauses the timer");
@@ -250,8 +261,12 @@ static class Program
         var admission=Read(root,"src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs");
         var uiBusy=admission.Substring(admission.IndexOf("internal static bool IsNativeConversationBackendBusyForUi("));
         uiBusy=uiBusy.Substring(0,uiBusy.IndexOf("internal static void InvalidateNativeConversationAdmissionOnConversationEnd("));
-        Check(uiBusy.Contains("IsNativeConversationContextStampCurrent(admission)")&&uiBusy.Contains("Owns(admission)")&&uiBusy.Contains("IsCancellationRequested")&&!uiBusy.Contains("IsNativeConversationAdmissionCurrent("),"UI busy excludes full target scan but preserves owner/stamp/cancellation");
-        Check(admission.Contains("HasCurrentConversationContext()")&&admission.Contains("HasCurrentContext() && _owner.IsNativeConversationContextCurrent"),"display scope seam does not weaken existing submission guard");
+        Check(uiBusy.Contains("CurrentInstance?.NativeAdmissions.IsBusyForUi()"),"UI busy facade routes to actual admission owner");
+        var admissionApplication=Read(root,"src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs");
+        var uiBusyPolicy=admissionApplication.Substring(admissionApplication.IndexOf("internal bool IsBusyForUi()"));
+        uiBusyPolicy=uiBusyPolicy.Substring(0,uiBusyPolicy.IndexOf("internal void EndConversation()"));
+        Check(uiBusyPolicy.Contains("IsNativeConversationContextStampCurrent(a)")&&uiBusyPolicy.Contains("Owns(a)")&&uiBusyPolicy.Contains("IsCancellationRequested")&&!uiBusyPolicy.Contains("IsNativeConversationAdmissionCurrent("),"UI busy excludes full target scan but preserves owner/stamp/cancellation");
+        Check(admission.Contains("HasCurrentConversationContext()=>Lease.HasCurrentConversationContext()")&&admissionApplication.Contains("HasCurrentContext()&&_owner.IsNativeConversationContextCurrent"),"display scope seam does not weaken existing submission guard");
         var encounterHost=Read(root,"src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs");
         Check(encounterHost.Contains("RegisterNativeDialogueHandoff(target);")&&encounterHost.Contains("manager.ConversationEndOneShot += _nativeDialogueHandoffEndHandler"),"real native conversation entry wires captured end hook");
         Check(encounterHost.Contains("_nativeDialogueHandoffManager.ConversationEndOneShot -= _nativeDialogueHandoffEndHandler"),"captured manager hook cleaned after close/session change");
@@ -269,7 +284,9 @@ static class Program
         var my=Read(root,"src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs");
         var newGame=my.Substring(my.IndexOf("private void OnNewGameCreated("));newGame=newGame.Substring(0,newGame.IndexOf("private void OnGameLoaded("));
         Check(newGame.Contains("QueueMissingOnnxGateCheck(TimeSpan.Zero);"),"new campaign actually queues ONNX gate");
-        Check(my.Contains("AnimusForgeApiOnboardingPopup.IsOpen")&&my.Contains("IsSetupUiActive == true"),"ONNX gate waits for foreground owner without losing pending check");
+        Check(my.Contains("_campaignSaveExit.ProcessPendingMissingOnnxGateCheck()"),"ONNX gate tick routes to actual sole save-exit controller");
+        var saveExit=Read(root,"src/AF.GameAdapter.Bannerlord/UI/CampaignSaveExitController.cs");
+        Check(saveExit.Contains("AnimusForgeApiOnboardingPopup.IsOpen")&&saveExit.Contains("IsSetupUiActive == true"),"ONNX gate waits for foreground owner without losing pending check");
         using(var map=System.Text.Json.JsonDocument.Parse(Read(root,"content/content-map.json")))
             Check(map.RootElement.GetProperty("entries").EnumerateArray().Any(x=>x.GetProperty("target").GetString()=="GUI/Prefabs/AFDialogueConversationItem.xml"),"new template included in unified content map");
         var adapter=Read(root,"extensions/AnimusForge.DialogueUI/src/Native/NativeUiAdapter.cs");

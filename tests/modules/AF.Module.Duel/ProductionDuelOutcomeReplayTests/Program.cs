@@ -522,21 +522,69 @@ internal static class Program
                 && CountOccurrences(resolveExact, "ActionExecutionEffectState.UnknownAfterStart") >= 4,
             "Duel+Mood or a crossed host side-effect boundary is no longer conservatively terminal Unknown.");
 
-        Require(CountOccurrences(shout, "CreateRequestBoundDuelExecutor(") == 2
-                && CountOccurrences(shout, "PrepareDuelForDetachedRequest(") == 3
-                && shout.Contains("duelDispatchContext: duelDispatchContext", StringComparison.Ordinal),
-            "Native/SceneShout do not pass the explicit request context to their actual Duel branch.");
+        string composition = File.ReadAllText(Path.Combine(projectRoot,
+            "src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs"));
+        string effects = File.ReadAllText(Path.Combine(projectRoot,
+            "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs"));
+        string boundary = File.ReadAllText(Path.Combine(projectRoot,
+            "src/AF.GameAdapter.Bannerlord/Conversation/ConversationActionBoundaryBannerlordAdapter.cs"));
+        foreach (string factoryName in new[]
+        {
+            "CreateNativeConversationActionPlanExecutorForExternal",
+            "CreateSceneShoutActionPlanExecutorForExternal"
+        })
+        {
+            string facade = ExtractMethod(shout,
+                "public static LegacyNativeActionPlanExecutor " + factoryName + "(");
+            string factory = ExtractMethod(composition,
+                "internal LegacyNativeActionPlanExecutor " + factoryName + "(");
+            Require(facade.Contains("var owner=CurrentInstance", StringComparison.Ordinal)
+                    && facade.Contains("return owner.ActionExecutors." + factoryName + "(", StringComparison.Ordinal)
+                    && CountOccurrences(facade, "CreateRequestBoundDuelExecutor(") == 0
+                    && CountOccurrences(factory, "CreateRequestBoundDuelExecutor(") == 1
+                    && factory.Contains("(actionPlan, snapshot, duelDispatchContext)", StringComparison.Ordinal)
+                    && factory.Contains("DuelBehavior.CreateDetachedDuelDispatchOwnerForExternal()", StringComparison.Ordinal),
+                factoryName + " does not route its thin facade through the sole request-bound composition/Duel owner.");
+        }
+        string nativeRoute = ExtractMethod(composition,
+            "internal LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecutorForExternal(");
+        string sceneRoute = ExtractMethod(composition,
+            "internal LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExternal(");
+        Require(nativeRoute.Contains("instance._nativeGameEffects.ApplyNativeConversationGameActionsLegacyCore(", StringComparison.Ordinal)
+                && nativeRoute.Contains("duelDispatchContext);", StringComparison.Ordinal)
+                && sceneRoute.Contains("instance._boundary.TryApplyDeferredScenePostprocessActionTagsDirectly(", StringComparison.Ordinal)
+                && sceneRoute.Contains("duelDispatchContext: duelDispatchContext", StringComparison.Ordinal)
+                && ExtractMethod(boundary, "internal bool TryApplyDeferredScenePostprocessActionTagsDirectly(")
+                    .Contains("duelDispatchContext: duelDispatchContext", StringComparison.Ordinal)
+                && ExtractMethod(effects, "internal NativeConversationGameActionResult ApplyNativeConversationGameActionsLegacyCore(")
+                    .Contains("duelDispatchContext: duelDispatchContext", StringComparison.Ordinal),
+            "Native/SceneShout do not pass the explicit request context through their actual game-effects branch.");
+        string actionTags = ExtractMethod(effects,
+            "internal WorldMapPartyCommandBehavior.WorldMapOrderApplyResult ApplyNativeConversationActionTags(");
+        foreach (string target in new[] { "targetHero", "duelAgent", "targetCharacter" })
+            Require(actionTags.Contains("PrepareDuelFromActionTag(" + target + ", 3f, duelDispatchContext)", StringComparison.Ordinal),
+                "Game-effects Duel branch lost its request context for " + target + ".");
+        string normalizedShout = shout.Replace("\r\n", "\n", StringComparison.Ordinal);
+        foreach (string targetType in new[] { "Hero", "Agent", "CharacterObject" })
+        {
+            string prepareRoute = ExtractMethod(normalizedShout,
+                "internal static void PrepareDuelFromActionTag(\n\t\t" + targetType);
+            Require(prepareRoute.Contains("if (duelDispatchContext == null)", StringComparison.Ordinal)
+                    && CountOccurrences(prepareRoute, "DuelBehavior.PrepareDuelForDetachedRequest(") == 1
+                    && prepareRoute.Contains("delaySeconds,\n\t\t\t\tduelDispatchContext);", StringComparison.Ordinal),
+                targetType + " Duel branch does not forward the explicit request context to the detached Duel authority.");
+        }
         Require(courier.Contains("CreateRequestBoundDuelExecutor(", StringComparison.Ordinal)
                 && courier.Contains("RejectDetachedDuelDispatchForExternal(", StringComparison.Ordinal)
                 && courier.Contains("\"unsupported_channel\"", StringComparison.Ordinal),
             "Courier outbound Duel is not an explicit unsupported-channel rejection.");
 
         string nativeFactory = ExtractMethod(
-            shout,
-            "public static LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecutorForExternal(");
+            composition,
+            "internal LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecutorForExternal(");
         string sceneFactory = ExtractMethod(
-            shout,
-            "public static LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExternal(");
+            composition,
+            "internal LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExternal(");
         foreach ((string Factory, string ContextName, string Channel) provenance in new[]
         {
             (nativeFactory, "isCurrentNativeContext", "InteractionChannel.NativeConversation"),

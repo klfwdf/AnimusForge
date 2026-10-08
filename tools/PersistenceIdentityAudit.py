@@ -46,14 +46,74 @@ def sync_bindings(source: str) -> set[tuple[str, str]]:
     return result
 
 
+def compile_glob_pruning_patterns(project_source: str) -> list[str]:
+    """Only unconditional removals before the first explicit Include can prune defaults.
+
+    Explicit Includes are still evaluated by the original MSBuild project afterwards.
+    Conditional/imported/dynamic item semantics are never approximated here.
+    """
+    project = ET.fromstring(project_source)
+    if project.findall('.//Import') or project.findall('.//Choose'):
+        raise ValueError('cannot prove early Compile pruning with imports/Choose')
+    patterns = []
+    for group in project.findall('ItemGroup'):
+        for item in group.findall('Compile'):
+            if 'Include' in item.attrib:
+                return patterns
+            if 'Remove' not in item.attrib:
+                continue
+            if group.get('Condition') or item.get('Condition'):
+                continue
+            value = item.attrib['Remove']
+            if any(token in value for token in ('$(', '@(', '%(')):
+                raise ValueError('cannot prove dynamic Compile removal pruning')
+            patterns.extend(value.split(';'))
+    return patterns
+
+
 def production_sources() -> list[Path]:
-    paths = []
-    for path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in path.parts):
-            continue
-        if any("原版游戏本体代码" in part for part in path.parts):
-            continue
-        paths.append(path)
+    # The evaluated implementation Compile items, not every .cs in the repository,
+    # define production (test shims and removed extension sources are not owners).
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('_identity_output_isolation', ROOT / 'tests/output_isolation.py')
+    isolation = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(isolation)
+    dotnet = isolation.resolve_dotnet(ROOT)
+    output = isolation.new_run_root(ROOT, 'persistence-source-evaluation', None)
+    env = isolation.minimal_test_environment(dotnet, output)
+    for key in ('DOTNET_CLI_HOME', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA'):
+        Path(env[key]).mkdir(parents=True, exist_ok=True)
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
+    paths = set()
+    for api in ('1.3', '1.4'):
+        command = [str(dotnet), 'msbuild', str(ROOT / 'AnimusForge.csproj'),
+                   '-getItem:Compile', '-p:BannerlordApi=' + api, '-nologo']
+        patterns = compile_glob_pruning_patterns((ROOT / 'AnimusForge.csproj').read_bytes().decode('utf-8-sig'))
+        actual_command = command + ['-getProperty:DefaultItemExcludes']
+        actual_env = env.copy()
+        if patterns:
+            # SDK defaults append to an environment property, unlike an immutable
+            # command-line override. The original project's ordered Include/Remove
+            # evaluation remains authoritative, including explicit linked sources.
+            glob_patterns = [re.sub(r'[\\/]\*\*[\\/]\*\.cs$', '/**', pattern) for pattern in patterns]
+            original_env_exclusions = env.get('DefaultItemExcludes', '')
+            actual_env['DefaultItemExcludes'] = original_env_exclusions + ';' + ';'.join(glob_patterns)
+            (output / (api + '-pruning-contract.json')).write_text(json.dumps({
+                'unprunedCommand': command, 'actualCommand': actual_command,
+                'originalEnvironmentExclusions': original_env_exclusions,
+                'unconditionalPreIncludeRemovals': patterns,
+                'earlySdkGlobExclusions': glob_patterns,
+                'unprunedStatus': 'NOT_RUN_PREVIOUS_REAL_TIMEOUT_PRESERVED',
+                'mode': 'ACTUAL_ORIGINAL_PROJECT_MSBUILD_WITH_EQUIVALENT_DEFAULT_GLOB_PRUNING'}, indent=2), encoding='utf-8')
+        result = subprocess.run(actual_command, cwd=ROOT, env=actual_env, capture_output=True,
+                                text=True, encoding='utf-8', errors='strict', timeout=120)
+        (output / (api + '.log')).write_text(result.stdout + result.stderr, encoding='utf-8')
+        if result.returncode:
+            raise RuntimeError('production Compile evaluation failed: ' + api)
+        for item in json.loads(result.stdout)['Items']['Compile']:
+            path = Path(item['FullPath']).resolve()
+            path.relative_to(ROOT.resolve())
+            paths.add(path)
     return sorted(paths)
 
 
@@ -104,6 +164,105 @@ def parse_batch_cat_file(data: bytes, expected_objects: int | None = None) -> di
     return result
 
 
+def historical_compile_paths(project_source: str, inventory: list[str]) -> list[str]:
+    """Evaluate historical Compile XML over its own tracked inventory, never current globs."""
+    import copy
+    import importlib.util
+    original = ET.fromstring(project_source)
+    if original.attrib.get('Sdk') != 'Microsoft.NET.Sdk' or original.findall('.//Import'):
+        raise ValueError('unsupported historical project SDK/import')
+    if original.findall('.//Choose') or original.findall('.//Target/ItemGroup/Compile'):
+        raise ValueError('unsupported historical dynamic Compile items')
+    spec = importlib.util.spec_from_file_location('_historical_isolation', ROOT / 'tests/output_isolation.py')
+    isolation = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(isolation)
+    dotnet = isolation.resolve_dotnet(ROOT)
+    from uuid import uuid4
+    requested = ROOT / 'artifacts/j17-host-implementation-20261004/a' / ('r1-historical-compile-eval-' + uuid4().hex)
+    output = isolation.new_run_root(ROOT, 'persistence-historical-compile', requested)
+    env = isolation.minimal_test_environment(dotnet, output)
+    for key in ('DOTNET_CLI_HOME', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'TEMP', 'TMP'):
+        Path(env[key]).mkdir(parents=True, exist_ok=True)
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
+    inventory = sorted(set(inventory))
+    if any(Path(path).is_absolute() or '..' in path.split('/') for path in inventory):
+        raise ValueError('historical inventory escapes project')
+
+    def glob_matches(path: str, pattern: str) -> bool:
+        pattern = re.sub(r'/+', '/', pattern.replace('\\', '/'))
+        # MSBuild **/ also matches zero directories; ordinary * never crosses /.
+        tokens = re.split(r'(\*\*/|\*\*|\*|\?)', pattern)
+        expression = ''.join({'**/': '(?:.*/)?', '**': '.*', '*': '[^/]*', '?': '[^/]'}.get(t, re.escape(t)) for t in tokens)
+        return re.fullmatch(expression, path, flags=re.IGNORECASE) is not None
+
+    def evaluate(model: ET.Element, api: str, label: str, query: str) -> dict:
+        file = output / (api + '-' + label + '.csproj')
+        ET.ElementTree(model).write(file, encoding='utf-8', xml_declaration=True)
+        command = [str(dotnet), 'msbuild', str(file), query, '-p:BannerlordApi=' + api, '-p:ImportDirectoryBuildProps=false',
+                   '-p:ImportDirectoryBuildTargets=false', '-nologo']
+        result = subprocess.run(command, cwd=output, env=env, capture_output=True,
+                                text=True, encoding='utf-8', errors='strict', timeout=120)
+        (output / (api + '-' + label + '.log')).write_text(result.stdout + result.stderr, encoding='utf-8')
+        if result.returncode:
+            raise RuntimeError('historical Compile evaluation failed: ' + api + '/' + label)
+        return json.loads(result.stdout)
+
+    selected = set()
+    for api in ('1.3', '1.4'):
+        model = ET.Element('Project', {'Sdk': 'Microsoft.NET.Sdk'})
+        for group in original.findall('PropertyGroup'):
+            model.append(copy.deepcopy(group))
+        flags = ET.SubElement(model, 'PropertyGroup')
+        for name in ('EnableDefaultCompileItems', 'ImportDirectoryBuildProps', 'ImportDirectoryBuildTargets'):
+            ET.SubElement(flags, name).text = 'false'
+        properties = evaluate(model, api, 'properties', '-getProperty:DefaultItemExcludes,DefaultExcludesInProjectFolder')['Properties']
+        excludes = []
+        for value in properties.values():
+            for pattern in value.replace('\\', '/').split(';'):
+                prefix = output.as_posix() + '/'
+                if pattern.startswith(prefix):
+                    pattern = pattern[len(prefix):]
+                if pattern:
+                    excludes.append(pattern)
+        defaults = [path for path in inventory if path.endswith('.cs') and not any(glob_matches(path, x) for x in excludes)]
+        initial = ET.SubElement(model, 'ItemGroup')
+        for path in defaults:
+            ET.SubElement(initial, 'Compile', {'Include': path})
+        for group in original.findall('ItemGroup'):
+            if 'Exists(' in group.get('Condition', ''):
+                raise ValueError('unsupported historical filesystem Compile condition')
+            target = ET.Element('ItemGroup', group.attrib)
+            for node in group.findall('Compile'):
+                item = copy.deepcopy(node)
+                if 'Exists(' in item.get('Condition', ''):
+                    raise ValueError('unsupported historical filesystem Compile condition')
+                for attr in ('Include', 'Remove', 'Exclude', 'Update'):
+                    value = item.get(attr, '')
+                    if any(token in value for token in ('$(', '@(', '%(')):
+                        raise ValueError('unsupported historical Compile expression: ' + value)
+                if 'Include' in item.attrib:
+                    patterns = item.attrib['Include'].split(';')
+                    if any(not any(c in pattern for c in '*?') and pattern.replace('\\', '/') not in inventory for pattern in patterns):
+                        raise ValueError('historical explicit Compile input unavailable')
+                    matches = [path for path in inventory if any(glob_matches(path, pattern) for pattern in patterns)]
+                    for path in matches:
+                        concrete = copy.deepcopy(item)
+                        concrete.set('Include', path)
+                        target.append(concrete)
+                else:
+                    target.append(item)
+            if len(target):
+                model.append(target)
+        result = evaluate(model, api, 'items', '-getItem:Compile')
+        for item in result['Items']['Compile']:
+            path = item['Identity'].replace('\\', '/')
+            if path not in inventory:
+                raise ValueError('historical Compile item is not from historical inventory: ' + path)
+            selected.add(path)
+    (output / 'compile-inputs.json').write_text(json.dumps({'inventory': inventory, 'selected': sorted(selected)}, ensure_ascii=False, indent=2), encoding='utf-8')
+    return sorted(selected)
+
+
 def baseline_source_snapshot(commit: str) -> list[tuple[str, str]]:
     git_env = os.environ.copy()
     git_env["GIT_NO_LAZY_FETCH"] = "1"
@@ -120,9 +279,9 @@ def baseline_source_snapshot(commit: str) -> list[tuple[str, str]]:
         except ValueError as exc:
             raise ValueError("malformed baseline tree entry") from exc
         relative = relative_bytes.decode("utf-8", errors="strict")
-        if (not relative.endswith(".cs")
-                or relative.startswith("tools/")
-                or relative.startswith("原版游戏本体代码")):
+        if relative in ("Directory.Build.props", "Directory.Build.targets"):
+            raise ValueError("unsupported baseline Directory.Build import")
+        if not (relative.endswith(".cs") or relative == "AnimusForge.csproj"):
             continue
         objects.append((object_id.decode("ascii"), relative))
     if not objects:
@@ -139,7 +298,11 @@ def baseline_source_snapshot(commit: str) -> list[tuple[str, str]]:
     missing = [object_id for object_id, _relative in objects if object_id not in blobs]
     if missing:
         raise RuntimeError("baseline source blob unavailable (" + str(len(missing)) + " missing)")
-    return [(relative, blobs[object_id]) for object_id, relative in objects]
+    project = next((blobs[oid] for oid, path in objects if path == 'AnimusForge.csproj'), None)
+    if project is None:
+        raise RuntimeError('baseline actual project unavailable')
+    selected = set(historical_compile_paths(project, [path for _oid, path in objects if path.endswith('.cs')]))
+    return [(relative, blobs[object_id]) for object_id, relative in objects if relative in selected]
 
 
 def behavior_names(source: str) -> set[str]:

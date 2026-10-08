@@ -17,8 +17,25 @@ public partial class MyBehavior
   ProductState = BuildPublishedWorldWeeklyProductState, ApplyStability = ApplyWeeklyReportStabilityDelta,
   NotifyProduct = NotifyPublishedWorldWeeklyProductChanged, SanitizeRecords = SanitizeEventRecordEntries,
   ResolveNearestKingdom = ResolveNearestWeeklyReportKingdomId, QueueNotice = QueueWeeklyReportMapNotice,
-  QueueFailurePopup = (context, immediate) => { if (epoch == System.Threading.Volatile.Read(ref _newsCollectionEpoch)) QueueWeeklyReportFailurePopup(context, immediate); }, LaunchWave = EnqueueWeeklyWaveLaunchAsync
- },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue); }
+  QueueFailurePopup = (context, immediate) => { if (epoch == System.Threading.Volatile.Read(ref _newsCollectionEpoch)) QueueWeeklyReportFailurePopup(context, immediate); }, LaunchWave = EnqueueWeeklyWaveLaunchAsync,
+  NewsEpoch = epoch, IsCurrentNewsEpoch = value => value == System.Threading.Volatile.Read(ref _newsCollectionEpoch),
+  SynchronizeNewsCollectionMode = SynchronizeNewsCollectionMode, HasRestartedWeeklyCollection = () => HasRestartedWeeklyCollection,
+  CalendarDate = FormatNewsCalendarDate, QueueMainThreadAction = action => _worldBulletinMainThreadActions.Enqueue(action),
+  CompleteRestartedWeeklyCollection = CompleteRestartedWeeklyCollection,
+  MemoryState = _memoryBusinessState, WeeklyRecords = _weeklyEventRecords, RecordCapture = () => _campaignCharacterRecordCapture,
+  MaterialState = _campaignMaterialRecords, AutoSchedule = _weeklyAutoSchedule, RebellionFlow = () => AutomaticKingdomRebellions.FlowActive, WorldBulletinEnabled = IsWorldBulletinEnabled, EpicWeekLabel = BuildWeeklyEpicWeekLabel, QueueDeferredWeekly = _dailyMaintenanceController.QueueDeferredAutoWeeklyReportsForWeek,
+  ProximityOrder = MemoryEntityIdentityBannerlordAdapter.GetKingdomIdsByPlayerProximity,
+  AggregateMaterials = ApplyWeeklyPromptMaterialAggregation,
+  BatchSystem = batch => AnimusForge.Refactor.Adapters.WeeklyPromptCaptureAdapter.BuildWeeklyBatchReportSystemPrompt(WeeklyRequestPromptSettings, batch),
+  BatchUser = batch => AnimusForge.Refactor.Adapters.WeeklyPromptCaptureAdapter.BuildWeeklyBatchReportUserPrompt(WeeklyRequestPromptCapturePorts, batch),
+  FullSystem = BuildWeeklyReportFullOnDemandSystemPrompt, FullUser = BuildWeeklyReportFullOnDemandUserPrompt,
+  FullPreview = BuildWeeklyReportPromptPreviewText, FullFailure = ShowWeeklyFullOnDemandFailurePopup,
+  FullProgress = ShowWeeklyFullOnDemandProgressPopup, HideInquiry = InformationManager.HideInquiry,
+  FullCompletions = _weeklyFullReportCompletions, ParseFullResponse = _weeklyGenerationRules.TryParseWeeklyFullOnDemandReportResponse,
+  BatchPreview = BuildWeeklyBatchPromptPreviewText,
+  WaveLaunchQueue = _weeklyWaveLaunchQueue, BatchApiAttemptQueue = _weeklyBatchApiAttemptQueue,
+  CallApi = CallWeeklyReportApiDetailed, GenerationAttempt = _weeklyGenerationAttemptOwner, AttemptPort = CreateWeeklyGenerationAttemptPort
+ },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue);
  private static int CaptureWeeklyReportLengthPreset() { try { return DuelSettings.GetSettings()?.WeeklyReportLengthPreset ?? 2; } catch { return 2; } }
  private static string CaptureWeeklyReportWritingRequirements() { try { return DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? ""; } catch { return ""; } }
 private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs) => WeeklyReportRuntimeOwner.IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs);

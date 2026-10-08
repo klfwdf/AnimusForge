@@ -44,6 +44,15 @@ def restore_runtime_move(file, source):
     if file == 'ShoutBehavior.NativeTurnPrompt.cs':
         assert source.count('ctx = await BuildNativePromptContextScheduledAsync(') == 1
         source = source.replace('ctx = await BuildNativePromptContextScheduledAsync(', 'ctx = await _ports.BuildNativePromptContextScheduledAsync(')
+    if file == 'ShoutBehavior.NativeTurnCommit.cs':
+        bridge = (ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs').read_text(encoding='utf-8-sig')
+        for method, port in [('CanUseIndependentClanPeaceForExternal', 'CanUseIndependentClanPeace'),
+                             ('CanUseDiplomacyActionPostprocessForExternal', 'CanUseDiplomacyActionPostprocess')]:
+            current = 'DiplomacyConversationBridge.' + method + '(targetHero, targetCharacter)'
+            original = 'DiplomacyBehavior.' + method + '(targetHero, targetCharacter)'
+            assert source.count(current) == 1 and source.count(original) == 0, 'Diplomacy qualification edge drift: ' + method
+            assert 'DiplomacyModuleServices.Conversation.' + port + '((hero ?? character?.HeroObject)?.StringId);' in bridge
+            source = source.replace(current, original, 1)
     source = source.replace('NativeConversationGameEffectsRuntime.ObserveNativeActionDispatch(', 'ObserveNativeActionDispatch(')
     source = source.replace('_ports.', '_owner.')
     source = source.replace('using static AnimusForge.ShoutBehavior;\n\nnamespace AnimusForge;', 'namespace AnimusForge;')

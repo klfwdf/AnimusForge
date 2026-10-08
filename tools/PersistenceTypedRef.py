@@ -27,6 +27,9 @@ def _build(root: Path):
     dotnet = isolation.resolve_dotnet(root)
     output = isolation.new_run_root(root, 'persistence-typed-ref', None)
     env = isolation.minimal_test_environment(dotnet, output)
+    for key in ('DOTNET_CLI_HOME', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA'):
+        Path(env[key]).mkdir(parents=True, exist_ok=True)
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
     helper = Path(__file__).with_name('PersistenceTypedRef.cs')
     project = output / 'TypedRef.csproj'
     project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup><Compile Include="' + escape(str(helper), {'"': '&quot;'}) + '"/><Reference Include="Microsoft.CodeAnalysis"><HintPath>$(MSBuildToolsPath)/Roslyn/bincore/Microsoft.CodeAnalysis.dll</HintPath></Reference><Reference Include="Microsoft.CodeAnalysis.CSharp"><HintPath>$(MSBuildToolsPath)/Roslyn/bincore/Microsoft.CodeAnalysis.CSharp.dll</HintPath></Reference></ItemGroup></Project>', encoding='utf-8')
@@ -47,23 +50,15 @@ def _build(root: Path):
 def resolve_snapshot_bindings(root: Path, snapshot, legacy):
     captured = [(str(path), source) for path, source in snapshot]
     affected = {path for path, source in captured
-                if DOTTED_REF.search(source) or any(kind == 'UNRESOLVED' for _, kind in legacy(source))}
+                if DOTTED_REF.search(source) or re.search(r'\bSyncData\s*<', source)
+                or any(kind == 'UNRESOLVED' for _, kind in legacy(source))}
     if not affected:
         return set().union(*(legacy(source) for _, source in captured)) if captured else set()
     if len({path for path, _ in captured}) != len(captured):
         raise ValueError('duplicate source path in typed-ref snapshot')
-    inputs = {path: source for path, source in captured if path in affected}
-    # This selects declarations, not expected field types. Roslyn alone binds the ref.
-    for path, source in list(inputs.items()):
-        for name in set(DOTTED_REF.findall(source)):
-            declared_types = set(re.findall(r'\b([A-Za-z_]\w*)\s+' + re.escape(name) + r'\s*(?=[,)=;])', source))
-            for type_name in declared_types:
-                declarations = [(p, text) for p, text in captured
-                                if re.search(r'\b(?:class|struct)\s+' + re.escape(type_name) + r'\b', text)]
-                if len(declarations) > 1:
-                    raise ValueError('ambiguous typed-ref closure declaration: ' + type_name)
-                if declarations:
-                    inputs.update(declarations)
+    # Compile one captured production batch. C# namespace/containing-type identity
+    # and partial merging must be bound by Roslyn, not a simple-name regex.
+    inputs = dict(captured)
     dotnet, output, env, dll = _build(root)
     batch = output / ('batch-' + uuid4().hex)
     batch.mkdir()
@@ -73,7 +68,7 @@ def resolve_snapshot_bindings(root: Path, snapshot, legacy):
                             env=env, capture_output=True, text=True, timeout=120)
     (batch / 'run.log').write_text(result.stdout + result.stderr, encoding='utf-8')
     if result.returncode or not result_file.is_file():
-        raise RuntimeError('typed-ref semantic batch failed; see ' + str(batch / 'run.log'))
+        raise RuntimeError('typed-ref semantic batch failed: ' + (result.stderr + result.stdout)[-1500:] + '; see ' + str(batch / 'run.log'))
     rows = json.loads(result_file.read_text(encoding='utf-8'))
     values = set().union(*(legacy(source) for path, source in captured if path not in affected))
     values.update((row['key'], row['type']) for row in rows if row['path'] in affected)

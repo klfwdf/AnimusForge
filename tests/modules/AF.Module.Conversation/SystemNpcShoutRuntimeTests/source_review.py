@@ -33,6 +33,12 @@ end='return true;\n\t\t\t}, false, forceQueue: true);'
 assert new.count(end)==1;new=new.replace(end,'});',1)
 assert new.count('return false;')==2;new=new.replace('return false;','return;')
 new=new.replace('_ports.GetDuelLiteralHit()','_lastShoutDuelLiteralHit').replace('_ports.','')
+# Exact reviewed bridge relocation; the original body oracle remains immutable.
+bridge=(ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs').read_text(encoding='utf-8-sig')
+assert bridge.count('internal static void ProcessDiplomacyTagsDispatch(')==1
+assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(' in bridge
+assert new.count('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(')==1
+new=new.replace('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(', 'DiplomacyBehavior.ProcessDiplomacyTagsDispatch(',1)
 tokens=lambda text:re.findall(r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|\w+|[^\s]',text)
 assert tokens(old)==tokens(new),'unreviewed system effects/history/TTS/notification/exit rule drift'
 entry=ex.declaration(runtime,'internal async Task<bool> Enqueue(')

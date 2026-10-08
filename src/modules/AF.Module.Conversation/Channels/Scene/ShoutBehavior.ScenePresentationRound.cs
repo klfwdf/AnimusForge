@@ -14,11 +14,7 @@ public partial class ShoutBehavior
 	// Replies may still be spoken after they are generated; bounded so ambient speech can't lock the session.
 	// Session sends still go through OnShoutConfirmedWithContext, so other modules' patches on it
 	// (XihaiAction battle speech) keep seeing every player line.
-	private void RunTrackedSceneShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex)
-	{
-		Presentation.BeginRound(GetApplicationTimeSafe());
-		OnShoutConfirmedWithContext(shoutText, extraFact, forcedPrimaryAgentIndex);
-	}
+private void RunTrackedSceneShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex) => _j17ScenePresentationBannerlordAdapter.RunTrackedSceneShout(shoutText, extraFact, forcedPrimaryAgentIndex);
 
 	// Called by ProcessCapturedScenePlayerShoutAsync once the group task exists (any thread).
 	private void NotePresentationRoundGroup(Task groupTask) => Presentation.NoteRoundGroup(groupTask, _sceneConversationEpoch);
@@ -27,29 +23,9 @@ public partial class ShoutBehavior
 
 	private void ClearPresentationRound() => Presentation.ClearRound();
 
-	public static bool CanInterruptScenePresentationForExternal
-	{
-		get
-		{
-			ShoutBehavior owner = CurrentInstance;
-			return owner != null && owner.IsPresentationSessionLive() && owner.IsPresentationRoundActive();
-		}
-	}
+	public static bool CanInterruptScenePresentationForExternal => ScenePresentationBannerlordAdapter.CanInterruptScenePresentationForExternal;
 
 	// 打断: retire the running round like a new player line does. Postprocess actions already started keep
 	// running (their gate still holds the next request until they settle).
-	public static bool InterruptScenePresentationForExternal()
-	{
-		ShoutBehavior owner = CurrentInstance;
-		if (owner == null || !owner.IsPresentationSessionLive() || !IsBannerlordMainThreadForNativeActions() || !owner.IsPresentationRoundActive())
-		{
-			return false;
-		}
-		owner.BeginNewPlayerDrivenSceneConversationEpoch();
-		owner.EndShoutProcessing("scene_presentation_interrupt");
-		owner.ClearPresentationRound();
-		Logger.Log("ScenePresentation", "round interrupted by player");
-		BumpPresentation();
-		return true;
-	}
+public static bool InterruptScenePresentationForExternal() => ScenePresentationBannerlordAdapter.InterruptScenePresentationForExternal();
 }

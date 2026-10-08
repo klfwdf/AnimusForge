@@ -1,0 +1,200 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace TaleWorlds.ModuleManager
+{
+    internal static class ModuleHelper
+    {
+        internal static bool Active;
+        public static bool IsModuleActive(string id) => Active && id == "NavalDLC";
+    }
+}
+
+namespace AnimusForge
+{
+    // Explicit engine/model fakes: this does not exercise the native map or serialization.
+    internal enum TerrainType { Water }
+    internal static class CampaignData { public const string NavalDLCStringId = "NavalDLC"; }
+    internal class CampaignVec2
+    {
+        public bool IsOnLand = true;
+        public bool Valid = true;
+        public bool IsValid() => Valid;
+    }
+    internal class Settlement
+    {
+        public bool HasPort;
+        public CampaignVec2 GatePosition = new CampaignVec2();
+        public static List<Settlement> All = new List<Settlement> { new Settlement { HasPort = true } };
+    }
+    internal class MobileParty
+    {
+        public enum NavigationType { None, Default, Naval, All }
+        public static MobileParty MainParty;
+        public static List<MobileParty> All = new List<MobileParty>();
+        public bool IsActive = true;
+        public bool IsCurrentlyAtSea;
+        public bool NavalAllowed = true;
+        public CampaignVec2 Position = new CampaignVec2();
+        public PartyBase Party;
+        public object LeaderHero = new object(), MapFaction = new object(), ItemRoster = new object();
+        public Clan ActualClan = new Clan();
+        public Roster MemberRoster = new Roster(), PrisonRoster = new Roster();
+        public string StringId = "courier";
+        public MBReadOnlyList<Ship> Ships => Party.Ships;
+        public bool HasNavalNavigationCapability => NavalAllowed && Campaign.Current.Models.PartyNavigationModel.SupportWater && Ships.Count > 0;
+        public NavigationType NavigationCapability => HasNavalNavigationCapability ? NavigationType.All : NavigationType.Default;
+        public MobileParty() { Party = new PartyBase { MobileParty = this }; }
+    }
+    internal class PartyBase { public MobileParty MobileParty; public object Owner = new object(); public MBReadOnlyList<Ship> Ships = new MBReadOnlyList<Ship>(); }
+    internal class Clan { public object Leader = new object(); }
+    internal class Roster { public int TotalManCount = 1; }
+    internal class MBReadOnlyList<T> : List<T> { }
+    internal class ShipHull { public string StringId = "small"; public int TotalCrewCapacity = 10; public float BaseSpeed = 5; }
+    internal class TextObject { private readonly string _text; public TextObject(string text) { _text = text; } public override string ToString() => _text; }
+    internal class Ship
+    {
+        public ShipHull ShipHull;
+        public TextObject Name;
+        public bool IsUsedByQuest, IsInvulnerable;
+        public PartyBase Owner;
+        public Ship(ShipHull hull) { ShipHull = hull; }
+        public void SetName(TextObject name) { Name = name; }
+    }
+    internal static class ChangeShipOwnerAction
+    {
+        internal static bool Fail;
+        public static void ApplyByMobilePartyCreation(PartyBase party, Ship ship)
+        {
+            if (Fail) throw new InvalidOperationException("owner-change-failure");
+            ship.Owner = party;
+            party.Ships.Add(ship);
+        }
+    }
+    internal static class DestroyShipAction { public static void Apply(Ship ship) { ship.Owner.Ships.Remove(ship); } }
+    internal class MBObjectManager
+    {
+        public static MBObjectManager Instance;
+        public MBReadOnlyList<ShipHull> Hulls = new MBReadOnlyList<ShipHull> { new ShipHull() };
+        public int Reads;
+        public MBReadOnlyList<T> GetObjectTypeList<T>() { Reads++; return (MBReadOnlyList<T>)(object)Hulls; }
+    }
+    internal class Game { public static Game Current; public MBObjectManager ObjectManager; }
+    internal class NavalNavigationModel
+    {
+        public bool SupportWater = true;
+        public bool IsTerrainTypeValidForNavigationType(TerrainType terrain, MobileParty.NavigationType navigation) => SupportWater;
+    }
+    internal class MapDistanceModel
+    {
+        public bool LandPath = true;
+        public bool PathExistBetweenPoints(CampaignVec2 from, CampaignVec2 to, MobileParty.NavigationType navigation) => LandPath;
+    }
+    internal class Models { public NavalNavigationModel PartyNavigationModel = new NavalNavigationModel(); public MapDistanceModel MapDistanceModel = new MapDistanceModel(); }
+    internal class Campaign { public static Campaign Current; public Models Models = new Models(); }
+
+    public sealed partial class CourierDeliveryBehavior
+    {
+        private sealed class CourierSession
+        {
+            public string Id = "test", TemporaryShipHullId = "", LastRouteKey = "land";
+            public bool TemporaryShipCreated;
+        }
+        private static void Log(string message) { }
+        private static void LogVerbose(string key, string message, double seconds) { }
+        private static void LogCourierStatus(string message) { }
+        private static void LogCourierStatusVerbose(string key, string message, double seconds) { }
+        private static string DescribeMobileParty(MobileParty party) => party?.StringId ?? "";
+        private static int _checks;
+        private static void Check(bool ok, string name) { if (!ok) throw new Exception("FAIL " + name); _checks++; }
+        private static MobileParty Reset(bool active = true)
+        {
+            TaleWorlds.ModuleManager.ModuleHelper.Active = active;
+            Campaign.Current = new Campaign();
+            MBObjectManager.Instance = new MBObjectManager();
+            Game.Current = new Game { ObjectManager = MBObjectManager.Instance };
+            ChangeShipOwnerAction.Fail = false;
+            MobileParty.MainParty = new MobileParty();
+            return new MobileParty();
+        }
+        public static void Main()
+        {
+            MobileParty courier = Reset(false);
+            Check(!IsNavalRuntimeAvailable(), "installed resources/model are not an enabled DLC");
+            var session = new CourierSession();
+            var plan = BuildCourierRoutePlan(courier, new CampaignVec2 { IsOnLand = false }, new Settlement { HasPort = true }, null, true);
+            Check(plan.NavigationType == MobileParty.NavigationType.Default && !plan.RequiresNaval && !plan.UsePort, "DLC disabled stays land-only, even for sea target/preferPort");
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "disabled") && courier.Ships.Count == 0, "disabled creates no ship");
+
+            courier = Reset(); session = new CourierSession();
+            Check(IsNavalRuntimeAvailable(), "enabled DLC with live water navigation");
+            int reads = MBObjectManager.Instance.Reads;
+            for (int i = 0; i < 20; i++) Check(IsNavalRuntimeAvailable(), "stable DLC capability");
+            Check(MBObjectManager.Instance.Reads == reads, "DLC gate does not enumerate hulls");
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), new Settlement { HasPort = true }, null, false);
+            Check(!plan.RequiresNaval && !plan.UsePort, "land-accessible destination keeps gate approach");
+            Check(plan.NavigationType == MobileParty.NavigationType.All, "land-accessible route may use sea shortcut");
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "recipient"), "land-accessible courier gets naval readiness");
+            Check(courier.Ships.Count == 1 && session.TemporaryShipCreated && session.LastRouteKey == "", "one temporary boat and route invalidation");
+            Ship boat = courier.Ships[0];
+            Check(boat.Owner == courier.Party && boat.IsUsedByQuest && boat.IsInvulnerable, "temporary boat ownership/protection");
+            Check(MobileParty.MainParty.Ships.Count == 0, "player fleet untouched");
+            reads = MBObjectManager.Instance.Reads;
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "return") && ReferenceEquals(boat, courier.Ships.Single()), "return/repeated routing reuses boat");
+            Check(MBObjectManager.Instance.Reads == reads, "existing boat avoids hull selection");
+            boat.IsUsedByQuest = false; boat.IsInvulnerable = false;
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "loaded") && courier.Ships.Count == 1 && boat.IsUsedByQuest && boat.IsInvulnerable, "loaded session restores boat protection without duplication");
+            TaleWorlds.ModuleManager.ModuleHelper.Active = false;
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "stale_plan"), "stale mixed plan rechecks disabled DLC");
+            Check(ReferenceEquals(boat, courier.Ships.Single()), "disabled stale plan does not remove existing boat");
+            TaleWorlds.ModuleManager.ModuleHelper.Active = true;
+            DestroyCourierTemporaryShips(session, courier, "complete");
+            Check(courier.Ships.Count == 0 && !session.TemporaryShipCreated, "existing terminal cleanup retained");
+
+            courier = Reset(); session = new CourierSession();
+            Campaign.Current.Models.MapDistanceModel.LandPath = false;
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), new Settlement { HasPort = true }, null, false);
+            Check(plan.RequiresNaval && plan.UsePort && plan.NavigationType == MobileParty.NavigationType.All, "disconnected land uses port and mixed path");
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "island"), "island supplies boat");
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2 { IsOnLand = false }, null, new MobileParty { IsCurrentlyAtSea = true }, false);
+            Check(plan.RequiresNaval && plan.Reason == "target_sea", "moving player/NPC at sea");
+            courier.IsCurrentlyAtSea = true;
+            Check(BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false).Reason == "courier_sea", "sea courier returning to land");
+
+            courier = Reset(); session = new CourierSession();
+            Ship existing = new Ship(new ShipHull()); existing.SetName(new TextObject("existing boat")); existing.Owner = courier.Party; courier.Ships.Add(existing);
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "existing") && courier.Ships.Count == 1 && !session.TemporaryShipCreated, "existing boat not duplicated or claimed");
+            Check(existing.Name.ToString() == "existing boat" && !existing.IsUsedByQuest, "foreign boat not renamed");
+            DestroyCourierTemporaryShips(session, courier, "complete");
+            Check(courier.Ships.Count == 1, "cleanup leaves unowned boat intact");
+
+            courier = Reset(); session = new CourierSession();
+            MBObjectManager.Instance.Hulls.Clear();
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "missing_hull") && courier.Ships.Count == 0, "missing hull safely rejects");
+            Check(GetEffectiveCourierNavigationType(courier, false) == MobileParty.NavigationType.Default, "failed readiness falls back to land");
+            courier = Reset(); session = new CourierSession(); courier.IsActive = false;
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "inactive") && !session.TemporaryShipCreated, "invalid owner creates no ship");
+            courier = Reset(); session = new CourierSession(); ChangeShipOwnerAction.Fail = true;
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "exception") && !session.TemporaryShipCreated && courier.Ships.Count == 0, "assignment exception is not success");
+            ChangeShipOwnerAction.Fail = false;
+            Check(EnsureCourierNavalReadiness(session, courier, plan, "retry") && courier.Ships.Count == 1, "failed assignment can recover once");
+            courier = Reset(); session = new CourierSession(); courier.NavalAllowed = false;
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "model_rejected"), "ship presence alone does not fake navigation readiness");
+            Check(!EnsureCourierNavalReadiness(session, courier, plan, "repeat_rejected") && courier.Ships.Count == 1, "model rejection does not create more boats");
+
+            courier = Reset(); Campaign.Current.Models.PartyNavigationModel.SupportWater = false;
+            Check(!IsNavalRuntimeAvailable(), "enabled DLC but unsupported water model stays off");
+            plan = BuildCourierRoutePlan(courier, new CampaignVec2(), null, null, false);
+            Check(plan.NavigationType == MobileParty.NavigationType.Default, "model not ready keeps land routing");
+            Campaign.Current = null;
+            Check(!IsNavalRuntimeAvailable(), "campaign unload gate");
+            Console.WriteLine("PASS Courier naval production-method checks=" + _checks + " gameLeaves=FAKE live=NOT_RUN");
+        }
+    }
+}

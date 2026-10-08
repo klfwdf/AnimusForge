@@ -315,15 +315,9 @@ public partial class MyBehavior
 
 
  private int SaveDevMemoryOverviewCore(Hero npc, string summary)
- {
-  string heroId = GetMemoryHeroId(npc);
-  List<CompressedMemoryBlock> blocks = string.IsNullOrWhiteSpace(summary) ? null : LoadCompressedMemoryBlocks(npc);
-  MemoryImportExportState state = CaptureMemoryImportExportState();
-  bool saved = MemoryDeveloperEditOwner.SaveOverview(heroId, npc.Name?.ToString(), summary, blocks, DateTime.UtcNow.Ticks, state);
-  _memoryOverviewStates = state.Overviews; _memoryOverviewQueue = state.OverviewQueue;
-  if (!saved) { TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc)); return -1; }
-  return state.Overviews[heroId].IncludedBlockIds?.Count ?? 0;
- }
+  => MemoryDeveloperEditOwner.SaveOverviewForAuthority(() => GetMemoryHeroId(npc), () => npc.Name?.ToString(), summary,
+   () => LoadCompressedMemoryBlocks(npc), () => DateTime.UtcNow.Ticks, _memoryBusinessState,
+   blocks => TryEnqueueMemoryOverviewForHero(npc,blocks));
  private void ApplyDevEditLineInput(Hero npc, int dayIndex, int lineIndex, string input)
   => MemoryEditor.ApplyDevEditLineInput(npc, dayIndex, lineIndex, input, SaveRuntimeGuard.CaptureGeneration());
  private void DeleteDevCompressedMemoryBlock(Hero npc, string blockId, int returnPage, string returnQuery)

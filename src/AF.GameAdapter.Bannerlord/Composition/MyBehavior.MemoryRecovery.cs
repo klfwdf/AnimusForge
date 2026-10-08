@@ -28,8 +28,9 @@ public partial class MyBehavior
     private MemoryRecoveryPort _memoryRecoveryPort;
     private MemoryRecoveryStateOwner MemoryRecoveryState { get { _memoryRecoveryState ??= new MemoryRecoveryStateOwner(_memoryBusinessState); _memoryRecoveryState.Bind(_memoryRecoveryPort ??= new MemoryRecoveryPort { IsEntityEligible = IsMemoryEntityEligibleForCompressedMemory, CurrentDay = GetCurrentGameDayIndexSafe, CurrentDate = GetCurrentGameDateTextSafe, History = () => _dialogueHistory, LoadHistory = LoadDialogueHistoryById, SaveHistory = SaveDialogueHistoryById, RemoveExpiredFacts = RemoveExpiredSingleUseNpcFactLines, Log = Logger.Log, TickScope = () => PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessInteractionMemoryRecovery") }); return _memoryRecoveryState; } }
     private ref InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger => ref MemoryRecoveryState.Ledger;
-    private Dictionary<string, string> _interactionMemoryRecoveryStorage =
-        new Dictionary<string, string>(StringComparer.Ordinal);
+    private readonly CampaignMemoryRecoveryPersistenceAdapter _memoryRecoveryPersistence;
+    private CampaignMemoryRecoveryPersistenceAdapter MemoryRecoveryPersistence => _memoryRecoveryPersistence;
+    private Dictionary<string,string> _interactionMemoryRecoveryStorage { get => _memoryRecoveryPersistence.Storage; set => _memoryRecoveryPersistence.Storage = value; }
     private ref int _hasInteractionMemoryRecoveryWork => ref MemoryRecoveryState.HasWork;
     private ref long _interactionMemoryRecoveryNextAttemptUtcTicks => ref MemoryRecoveryState.NextAttemptTicks;
     private ref long _interactionMemoryRecoveryLoadedGeneration => ref MemoryRecoveryState.LoadedGeneration;
@@ -63,8 +64,7 @@ public partial class MyBehavior
                     preparationFailureStatus,
                     preparationError);
             }
-            return owner.MemoryRecoveryState.CommitPrepared(seed, preparedRecoveryId, preparedPayloadHash,
-                owner.CompleteInitialInteractionMemoryNotorietyOutcome);
+            return owner._memoryHistoryCommit.CommitPreparedDialogueHistoryRecovery(seed, preparedRecoveryId, preparedPayloadHash);
         }
         catch (Exception ex)
         {
@@ -110,35 +110,12 @@ public partial class MyBehavior
     {
         try
         {
-            if (!TWParallel.IsMainThread())
-            {
-                return InteractionMemoryRecoveryLookupStatus.Unavailable;
-            }
+            if (!TWParallel.IsMainThread()) return InteractionMemoryRecoveryLookupStatus.Unavailable;
             MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-            if (owner == null)
-            {
-                return InteractionMemoryRecoveryLookupStatus.Unavailable;
-            }
-            InteractionMemoryRecoveryLedger ledger = owner.EnsureInteractionMemoryRecoveryLedger();
-            if (ledger.IsDisabled)
-            {
-                return InteractionMemoryRecoveryLookupStatus.Disabled;
-            }
-            if (Interlocked.Read(ref owner._interactionMemoryRecoveryLoadedGeneration)
-                    != SaveRuntimeGuard.CurrentGeneration
-                || Volatile.Read(ref owner._interactionMemoryRecoveryLoadImportConfirmed) == 0)
-            {
-                return InteractionMemoryRecoveryLookupStatus.Unavailable;
-            }
-            return ledger.GetLookupStatus(
-                recoveryId,
-                expectedSubjectId,
-                expectedPayloadHash);
+            return owner == null ? InteractionMemoryRecoveryLookupStatus.Unavailable
+                : owner._memoryHistoryCommit.GetExternalDialogueHistoryRecoveryStatus(recoveryId, expectedSubjectId, expectedPayloadHash);
         }
-        catch
-        {
-            return InteractionMemoryRecoveryLookupStatus.Unavailable;
-        }
+        catch { return InteractionMemoryRecoveryLookupStatus.Unavailable; }
     }
 
     private static bool TryPrepareExternalDialogueHistoryRecovery(
@@ -175,82 +152,14 @@ public partial class MyBehavior
             errorCode = "memory_owner_missing";
             return false;
         }
-        if (Interlocked.Read(ref owner._interactionMemoryRecoveryLoadedGeneration)
-            != SaveRuntimeGuard.CurrentGeneration
-            || Volatile.Read(ref owner._interactionMemoryRecoveryLoadImportConfirmed) == 0)
-        {
-            failureStatus = MemoryCommitStatus.Failed;
-            errorCode = "memory_recovery_not_activated";
-            return false;
-        }
-        string normalizedMemoryId = NormalizeMemoryHeroId(commit.SubjectId);
-        if (string.IsNullOrEmpty(normalizedMemoryId)
-            || isNonHero != IsNonHeroMemoryId(normalizedMemoryId))
-        {
-            errorCode = "memory_identity_invalid";
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(commit.UserText)
-            && string.IsNullOrWhiteSpace(commit.AssistantText)
-            && !(commit.ConfirmedFacts ?? Array.Empty<FactRecord>()).Any(fact =>
-                fact != null && !string.IsNullOrWhiteSpace(fact.Text)))
-        {
-            errorCode = "memory_empty_commit";
-            return false;
-        }
-        Hero hero = isNonHero
-            ? null
-            : (Hero.Find(commit.SubjectId.Trim()) ?? FindHeroById(normalizedMemoryId));
-        if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(hero))
-        {
-            errorCode = "memory_target_ineligible";
-            return false;
-        }
-        seed = owner.BuildInteractionMemoryRecoverySeed(
-            commit,
-            normalizedMemoryId,
-            isNonHero,
-            npcName,
-            hero);
-        if (!InteractionMemoryRecoveryLedger.TryBuildRecoveryIdentity(
-            seed,
-            out recoveryId,
-            out payloadHash,
-            out errorCode))
-        {
-            failureStatus = MemoryCommitStatus.Failed;
-            return false;
-        }
-        return true;
+        return owner._memoryHistoryCommit.TryPrepareExternalDialogueHistoryRecovery(commit,isNonHero,npcName,out seed,out recoveryId,out payloadHash,out errorCode,out failureStatus);
     }
 
-    private static string ResolveInteractionMemoryOriginGameDate(int originDay, int currentDay)
-    {
-        if (originDay == currentDay) return GetCurrentGameDateTextSafe();
-        try
-        {
-            // CampaignTime.Days is an absolute campaign date in both supported APIs.
-            // Do not relabel delayed delivery with the current date or invent a calendar.
-            string date = CampaignTime.Days(Math.Max(0, originDay)).ToString();
-            if (!string.IsNullOrWhiteSpace(date)) return date.Trim();
-        }
-        catch { }
-        return "第 " + Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture) + " 日";
-    }
+    private static string ResolveInteractionMemoryOriginGameDate(int originDay, int currentDay) => MemoryHistoryCommitBannerlordAdapter.ResolveInteractionMemoryOriginGameDate(originDay, currentDay);
 
-    private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(InteractionMemoryCommit commit,string normalizedMemoryId,bool isNonHero,string npcName,Hero hero) {
- string memoryName=string.IsNullOrWhiteSpace(npcName)?hero?.Name?.ToString()??"NPC":npcName.Trim();if(string.IsNullOrWhiteSpace(memoryName))memoryName="NPC";
- Hero memoryHero=hero??FindHeroById(normalizedMemoryId);string userText=(commit.UserText??string.Empty).Trim();string assistantText=(commit.AssistantText??string.Empty).Trim();string factsText=MemoryRecoverySeedRules.Facts(commit);
- string renderedUser=string.IsNullOrWhiteSpace(userText)?string.Empty:BuildPlayerAddressedInputForName(memoryName,userText,memoryHero,commit.TargetName);
- string renderedFact=MemoryRecoverySeedRules.RenderInteractionMemoryFact(factsText);string renderedAssistant=MemoryRecoverySeedRules.RenderInteractionMemoryAssistant(memoryName,assistantText);
- int currentDay=GetCurrentGameDayIndexSafe();int originDay=MemoryRecoverySeedRules.OriginDay(commit,currentDay);int originHour=MemoryRecoverySeedRules.OriginHour(commit,MemoryRecoverySeedRules.HasDetachedProvenance(commit)?0:GetCurrentHourOfDaySafeForPrompt());
- string originDate=!string.IsNullOrWhiteSpace(commit.CapturedGameDate)?commit.CapturedGameDate:ResolveInteractionMemoryOriginGameDate(originDay,currentDay);string originScene=!string.IsNullOrWhiteSpace(commit.LocationId)?commit.LocationId.Trim():ResolveCurrentMemorySceneLabel();
- int sceneSessionId=commit.Channel==InteractionChannel.SceneShout?Math.Max(-1,commit.SceneSessionId):-1;int dialogueSessionId=commit.Channel==InteractionChannel.NativeConversation?GetOrStartActiveNativeConversationMemorySessionId():-1;
- string memorySessionKey=BuildInteractionMemoryRecoverySessionKey(commit,sceneSessionId,dialogueSessionId);
- return MemoryRecoverySeedRules.Build(commit,normalizedMemoryId,isNonHero,new MemoryRecoverySeedCapture{Name=memoryName,User=renderedUser,Fact=renderedFact,Assistant=renderedAssistant,Day=originDay,Date=originDate,Hour=originHour,Scene=originScene,SceneSessionId=sceneSessionId,DialogueSessionId=dialogueSessionId,SessionKey=memorySessionKey,PlayerName=string.IsNullOrWhiteSpace(renderedUser)?string.Empty:BuildPlayerPublicDisplayNameForPrompt(memoryHero)});
-}
+    private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(InteractionMemoryCommit commit,string normalizedMemoryId,bool isNonHero,string npcName,Hero hero) => _memoryHistoryCommit.BuildInteractionMemoryRecoverySeed(commit, normalizedMemoryId, isNonHero, npcName, hero);
 
-    private string BuildInteractionMemoryRecoverySessionKey(InteractionMemoryCommit commit,int sceneSessionId,int dialogueSessionId) => MemoryRecoverySeedRules.BuildInteractionMemoryRecoverySessionKey(commit,sceneSessionId,dialogueSessionId,BuildCurrentMemorySessionKey(sceneSessionId,dialogueSessionId));
+    private string BuildInteractionMemoryRecoverySessionKey(InteractionMemoryCommit commit,int sceneSessionId,int dialogueSessionId) => _memoryHistoryCommit.BuildInteractionMemoryRecoverySessionKey(commit,sceneSessionId,dialogueSessionId);
 
     private static string RenderInteractionMemoryFact(string factsText) => MemoryRecoverySeedRules.RenderInteractionMemoryFact(factsText);
 
@@ -267,24 +176,9 @@ public partial class MyBehavior
 
     private bool PublishDailyInteractionMemoryComponent(InteractionMemoryRecoveryWorkItem work) => MemoryRecoveryState.PublishDailyInteractionMemoryComponent(work);
 
-    private void CompleteInitialInteractionMemoryNotorietyOutcome(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash)
-    {
-        var receipt = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed, recoveryId, payloadHash,
-            HasPublishedDailyInteractionMemoryComponent, NotifyInitialMemoryNotorietyComponent);
-        if (receipt.HasAttempt)
-            Logger.Log("MemoryRecovery", "auxiliary_outcome recovery=" + recoveryId
-                + " notoriety_line=confirmed count=" + receipt.Accepted + " duplicate=" + receipt.Duplicate
-                + " unavailable=" + receipt.Unavailable + " weekly=not_replayed_or_consumed");
-    }
+    private void CompleteInitialInteractionMemoryNotorietyOutcome(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash) => _memoryHistoryCommit.CompleteInitialInteractionMemoryNotorietyOutcome(seed, recoveryId, payloadHash);
 
-    private static MemoryAuxiliaryReceiptOutcome NotifyInitialMemoryNotorietyComponent(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash, string part)
-    {
-        var status = PlayerNotorietyBehavior.NoteConversationLineRecoverableForExternal(seed.SubjectId, seed.MemorySessionKey,
-            seed.RuntimeGeneration, seed.SaveGeneration, seed.OriginGameDay, seed.OriginGameHour, recoveryId, payloadHash, part);
-        return status == NotorietyConversationOutcomeOperationStatus.Accepted ? MemoryAuxiliaryReceiptOutcome.Accepted
-            : status == NotorietyConversationOutcomeOperationStatus.Duplicate ? MemoryAuxiliaryReceiptOutcome.Duplicate
-            : MemoryAuxiliaryReceiptOutcome.Unavailable;
-    }
+    private static MemoryAuxiliaryReceiptOutcome NotifyInitialMemoryNotorietyComponent(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash, string part) => MemoryHistoryCommitBannerlordAdapter.NotifyInitialMemoryNotorietyComponent(seed, recoveryId, payloadHash, part);
 
     private static bool IsInitialInteractionMemoryNotorietyComponentEligible(
         InteractionMemoryRecoveryComponentSeed component)
@@ -380,42 +274,7 @@ public partial class MyBehavior
         _interactionMemoryRecoveryStorage = EnsureInteractionMemoryRecoveryLedger().Export();
     }
 
-    private void SyncInteractionMemoryRecoveryData(IDataStore dataStore)
-    {
-        try
-        {
-            InteractionMemoryRecoveryLedger ledger = EnsureInteractionMemoryRecoveryLedger();
-            Dictionary<string, string> storage;
-            if (dataStore.IsSaving)
-            {
-                _interactionMemoryRecoveryStorage = ledger.Export();
-                storage = CampaignSaveChunkHelper.FlattenStringDictionary(
-                    _interactionMemoryRecoveryStorage,
-                    InteractionMemoryRecoveryStorageKey,
-                    "MemoryRecovery");
-                dataStore.SyncData(InteractionMemoryRecoveryStorageKey, ref storage);
-                return;
-            }
-
-            storage = new Dictionary<string, string>(StringComparer.Ordinal);
-            dataStore.SyncData(InteractionMemoryRecoveryStorageKey, ref storage);
-            _interactionMemoryRecoveryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(
-                storage,
-                "MemoryRecovery") ?? new Dictionary<string, string>(StringComparer.Ordinal);
-            ledger.Import(_interactionMemoryRecoveryStorage);
-            Volatile.Write(ref _interactionMemoryRecoveryLoadImportConfirmed, 1);
-            Interlocked.Exchange(ref _interactionMemoryRecoveryLoadedGeneration, SaveRuntimeGuard.CurrentGeneration);
-            RefreshInteractionMemoryRecoveryWorkFlag();
-        }
-        catch (Exception ex)
-        {
-            EnsureInteractionMemoryRecoveryLedger().DisableForCurrentCampaign(
-                "memory_recovery_sync_failed");
-            Volatile.Write(ref _interactionMemoryRecoveryLoadImportConfirmed, 0);
-            ResetInteractionMemoryRecoveryTransientState("sync_failure");
-            Logger.Log("MemoryRecovery", "[ERROR] recovery SyncData isolated: " + ex.Message);
-        }
-    }
+    private void SyncInteractionMemoryRecoveryData(IDataStore dataStore) => MemoryRecoveryPersistence.Sync(dataStore);
 
     private sealed class InteractionMemoryRecoveryPermanentException : Exception
     {

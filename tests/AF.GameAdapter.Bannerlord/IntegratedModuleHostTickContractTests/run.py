@@ -19,6 +19,9 @@ def load(name, path):
 STUBS = '''using System;
 using System.Collections.Generic;
 namespace TaleWorlds.Core { public interface IGameStarter {} }
+namespace TaleWorlds.CampaignSystem { public sealed class CampaignGameStarter:TaleWorlds.Core.IGameStarter{} }
+namespace AnimusForge.Refactor.Modules { internal enum InternalModuleRuntimeState { NotInitialized,Ready,Unavailable,Failed } internal static class HostedExtensionCatalog { internal const string Illustrator="af.extension.illustrator",DialogueUi="af.extension.dialogue_ui",Coup="af.extension.coup"; } }
+namespace AnimusForge { internal static class ModuleFrameworkRuntime { internal static void ReportHostedExtensionState(string id,AnimusForge.Refactor.Modules.InternalModuleRuntimeState state,string reason,bool requireStarted=false)=>throw new NotSupportedException("non-Tick module lifecycle is outside this fixture"); } }
 namespace RichExecutions.Core { public static class VengeanceIntegration { public static bool IsEmbeddedHostActive => true; } }
 namespace AnimusForge {
  internal static class Trace {
@@ -104,7 +107,7 @@ def main():
         path = f"extensions/AnimusForge.{name}/src/SubModule.cs"
         paths.append(path)
         tick = extract((ROOT / path).read_text(encoding="utf-8-sig"), "internal static void Tick(float dt)")
-        wrappers += f'\nnamespace AnimusForge.{name} {{ internal static class SubModule {{\n{tick}\ninternal static void Start() {{}} internal static void Shutdown() {{}} internal static void InstallPresentation() {{}} internal static void RegisterCampaign(TaleWorlds.Core.IGameStarter starter) {{}} }} }}\n'
+        wrappers += f'\nnamespace AnimusForge.{name} {{ internal static class SubModule {{\n{tick}\ninternal static void Start() {{}} internal static bool TryStart()=>throw new System.NotSupportedException("non-Tick start"); internal static void Shutdown() {{}} internal static bool TryInstallPresentation()=>throw new System.NotSupportedException("non-Tick presentation"); internal static void InstallPresentation() {{}} internal static void RegisterCampaign(TaleWorlds.Core.IGameStarter starter) {{}} }} }}\n'
     (out / "Stubs.cs").write_text(wrappers, encoding="utf-8")
     (out / "Program.cs").write_text(PROGRAM, encoding="utf-8")
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
@@ -117,7 +120,7 @@ def main():
     if code: return code
     source = (ROOT / paths[0]).read_text(encoding="utf-8-sig")
     coup = "global::AnimusForge.Coup.SubModule.Tick(dt);"
-    mutations = {"skip_coup": (coup, ";"), "swallow_coup_failure": (coup, 'Try("Coup", () => global::AnimusForge.Coup.SubModule.Tick(dt));'),
+    mutations = {"skip_coup": (coup, ";"), "swallow_coup_failure": (coup, 'try { global::AnimusForge.Coup.SubModule.Tick(dt); } catch (System.Exception) { }'),
                  "duplicate_ui": ("global::AnimusForge.Illustrator.SubModule.Tick(dt);", "global::AnimusForge.DialogueUI.SubModule.Tick(dt);")}
     for name,(before,after) in mutations.items():
         assert source.count(before)==1, "Mutation anchor drift: "+name

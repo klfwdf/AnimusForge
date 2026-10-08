@@ -8,7 +8,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 
 
@@ -16,6 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', required=True)
     parser.add_argument('--ref')
+    parser.add_argument('--run-root', type=Path)
     parser.add_argument('--lifecycle', action='store_true')
     parser.add_argument('--public-api', action='store_true')
     parser.add_argument('--probe', action='store_true', help='Run a compiled reflection probe before adding the public surface')
@@ -118,8 +119,7 @@ def main():
             assert sum(part.count(before) for part in declarations) == 1, 'Mutation anchor drift: ' + args.mutate
             declarations = [part.replace(before, after) for part in declarations]
 
-    output = HERE / '.generated' / ('public-' + ('reordered' if args.reorder_core_enums else 'current') if args.public_api else 'lifecycle-' + (args.mutate or 'current') if args.lifecycle else 'admission-baseline' if args.ref else 'admission-' + (args.mutate or 'current'))
-    output.mkdir(parents=True, exist_ok=True)
+    output = new_run_root(ROOT, 'courier-session-admission', args.run_root)
     harness = (HERE / 'AdmissionHarness.cs.txt').read_text(encoding='utf-8')
     (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)) + ((HERE / 'LifecycleHarness.cs.txt').read_text(encoding='utf-8') if args.lifecycle else ''), encoding='utf-8')
     defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS' + (';COURIER_LIFECYCLE' if args.lifecycle else '') + '</DefineConstants>'
@@ -145,11 +145,9 @@ def main():
         return run_public_consumer(args, output, extract, defines)
     (output / 'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit>' + defines + '</PropertyGroup><ItemGroup>' + includes + '</ItemGroup></Project>', encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
-    env = os.environ.copy()
-    env.update(DOTNET_ROOT=str(Path(args.dotnet).resolve().parent), DOTNET_CLI_HOME=str(ROOT / '.tmp/dotnet-cli'),
-               DOTNET_CLI_TELEMETRY_OPTOUT='1', DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1', DOTNET_NOLOGO='1')
+    env = minimal_test_environment(Path(args.dotnet).resolve(), output)
     result = subprocess.run([args.dotnet, 'run', '--project', str(output / 'Tests.csproj'), '-c', 'Release'],
-                            cwd=ROOT, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
+                            cwd=output, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
     log = result.stdout + result.stderr
     (output / 'run.log').write_text(log, encoding='utf-8')
     print(log, end='')
@@ -205,14 +203,14 @@ def run_public_consumer(args, output, extract, defines):
     dotnet = str(Path(args.dotnet).resolve())
     command = ['run', '--project', str(client.resolve()), '-c', 'Release']
     if args.expect_disabled: command += ['--', '--expect-disabled']
-    status, log = api.run_dotnet(dotnet, command, ROOT)
+    status, log = api.run_dotnet(dotnet, command, output)
     (output / 'public.log').write_text(log, encoding='utf-8')
     print(log, end='')
     if status or args.probe: return status
     denied_source = output / 'Denied.cs'
     denied_source.write_text('class Denied { static void Main(){ AnimusForge.Refactor.Modules.CoreDialogueServices.CreateClient(); } }', encoding='utf-8')
     denied = api.project(output / 'Denied', 'CourierUnrelatedDenied', [denied_source.resolve()], [library.resolve()], True)
-    status, log = api.run_dotnet(dotnet, ['build', str(denied.resolve()), '-c', 'Release'], ROOT)
+    status, log = api.run_dotnet(dotnet, ['build', str(denied.resolve()), '-c', 'Release'], output)
     (output / 'denied.log').write_text(log, encoding='utf-8')
     assert status != 0 and 'CS0122' in log and 'CoreDialogueServices' in log, log
     print('PASS unrelated Courier consumer cannot use internal CoreDialogueServices (CS0122)')
