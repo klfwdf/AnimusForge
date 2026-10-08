@@ -1,4 +1,44 @@
-﻿<a id="diplomacy-closure-audit-20261009"></a>
+﻿<a id="native-memory-continuity-fix-20261009"></a>
+## Native 未压缩记忆连续性、游戏时间边界与远端语义合并（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+本条收敛用户“重进/跨天遗忘”“做”及拉取合并/功能去重请求。工作区 `F:/AnimusForge-main` / `main`，raw冻结 `c77d448e5577fc83d5a74489bedb60202fc22a2d`、elapsed `d4beb7b762b3c141ee7c55babc5af0772103201e`。WIP保护点 `5c13cc419` 与远端 `8f7e38e6f` 已由 `cce41183743c19df6e10909fb3ea77e76721a523` 合并；本条替代HANDOFF“Native WIP、统一构建待验”的当前状态，保留各历史receipt当时边界，不复用历史部署/推送授权。
+
+**实际修复**：原普通Native只要缓存非空就不再读取权威未压缩daily drafts；缓存可只有读档后新几句，旧草稿仍在却没进入请求。现每轮包含当前session的raw，与Native短史按session/日期/小时/场景/角色/说话者/目标/文本从尾部一对一计数匹配；不同日、不同主体/会话及独立重复原句保留，未知来源保守保留。pending玩家event独立末尾追加一次，旧Native-only行按时间合并后再使用原共享消息预算。AFEF仅实际pending occurrence标为当下，其他同文事实仍过往；显式pending未知来源也保留，Scene/Courier默认scope/capture路径不变。
+
+**游戏时间提示**：按generation+真实conversation epoch+ConversationManager引用+稳定目标缓存新对话边界，只在首次prepare捕获现有持久化user/assistant配对元数据与CampaignTime.Now.ToHours；当前pending玩家/AFEF不作上次交流锚点。失败重试保留同一票据和原锚点；主线程当前admission复验后的raw主回复接受即消费，后处理之前已消费，可见正文可能为空，此项不等同GPU显示成功。普通输入框开关/token变化不算新会面，真实end/generation/manager变化退休；上次交流间隔是游戏小时而非系统时间。旧零小时、未知/回退clock、最近记录小时不明、32draft/512line/32block截断、只剩压缩记忆均保守降级，不能拿EndHour冒称最后交流时刻。提示只进入prefix，不写聊天/AFEF/sav；文案“上次与你交流”包含持久化交流来源，不把信件称物理会面。
+
+raw运行于每次请求：复用当前NPC已有snapshot和最终HistoryLineLimit，匹配/事实索引O(n+p)、时间排序O(n log n)，临时字典/stack只归本request。elapsed只在新conversation/target首次capture，读取已加载目标缓存、固定预算，不反序列化JSON。新增provenance/scope为internal临时字段，不新增存档键/公共JSON字段、Tick/反射/后台游戏对象读取或玩法数值。实际帧耗时未实机测量；未知来源保留重复是有意保护，不以文本相同擅删来节省token。
+
+### 合并去重结论与已执行证据
+
+共同基线 `b41587eca`，本地70文件/远端46文件有9个重叠：三份Orchestration/Host/Behavior、四份测试与两份文档接缝。独立逐diff未发现同义产品实现或第二效果/job/通知链：本地保留CourtEffectPending、response去重、失效作者占槽和损坏隔离；远端玩家多动作/受控相关方资格、配置分析预算进入同一owner。测试Host合并FailCourtLogOnce与Unavailable/IsEliminatedParty，重试验证一处定义/调用；传闻提示删除与非独立国家发文资格提示移除是不同功能，不因词似“提示”删互补行为。4份helper/adapter/propagation/DTO normalized内容保留；历史文档分别保留，本条是当前统一验收入口。
+
+| 证据/层次 | 结果与实际范围 |
+| --- | --- |
+| 原请求级反例/修复回放 | 原16项/8case只读反例在 `artifacts/native-memory-reentry-audit-20261009/`；最终 `request-replay-frozen` **31 PASS/9case**，实际Native append/storage wrappers→raw/capture/merge→最终API payload；原重进反例、同scene尾部缺口、跨日同文/重复/角色/预算/AFEF及elapsed prefix不入存储；game/network sender叶受控 |
+| elapsed边界 | `elapsed-r1/run.log` **32 PASS**；真实pure owner/history projection/capture/精确admission桥，跨天、午夜/旧零、unknown/截断、失败/迟到/新epoch/读档/worker/非Hero；真实Campaign clock叶受控 |
+| 相关既有合同 | import prerequisite121、strict capture30、未压缩同输入34、history-pure及channel-role投影PASS；失败fixture日志保留，空namespace/编译leaf/参数接线修复后保留原断言；不是三渠道完整live等价 |
+| 合并外交专项 | `artifacts/remote-merge-dedup-20261009/merge-receipt.json`：当前RoundLifecycle**4106**、effect receipt**182**、adapter**14** PASS；受控世界叶，复用有效门不重复跑 |
+| 最终Gateway配置预算 | 新1.4实际DLL `gateway-replay-final/receipt.json`，exit0：本地HTTP request的配置12000输出预算、截断停止同预算重试、取消/超时/鉴权/cache/凭据边界；首轮隔离OutputPath边界配置失败保留，修为bin/net8.0后通过，未弱化任何assertion；无真实provider |
+| 官方双API/Bootstrap/单模块Stage | 原build_single_module.ps1双1.3/1.4、Bootstrap、双Coup seams及项目内Stage exit0；引用v1.3.15.110062/v1.4.6.115628；构建前后2777输入未变，真实Campaign仍NOT-RUN |
+
+本地最终receipt及源码/产物绑定：`artifacts/native-memory-continuity-fix-20261009/final-build-receipt.json`（产品/Stage与源冻结）及 `gateway-replay-final/receipt.json`（本组最终Gateway，绑定同一1.4 SHA）；elapsed独立 `elapsed-receipt.json`。三产物均核实SHA，最终Stage为 `bin/Debug/single_module_stage/AnimusForge`
+
+| 最终产物（Stage SHA一致） | SHA256 |
+| --- | --- |
+| `versions/1.3/AnimusForge.dll` | `616ee6cbcbf8dca03c7b8b839cd6f9f721f597edaa8ea667a693fb34a70e1bbc` |
+| `versions/1.4/AnimusForge.dll` | `ad94171f61e7a292630a17b40d08754524c5068187ffe2f215adba54f91cd2c0` |
+| `AnimusForge.Bootstrap.dll` | `a3b8a4c1c7489f5d7081f758f6932ea4e5ed8d30b9236ba051205b86e242b07f` |
+
+14个符号一基坐标/source与method SHA位于 `artifacts/native-memory-continuity-fix-20261009/independent-code-evidence.json`，owner/consumer范围见[当前代码导航](architecture/af-framework-code-scope.md#native-memory-continuity-fix-20261009)。独立notes/progress保存设计风险、具体差异和最终修复状态；不用测试数量替代实际consumer。
+
+### 保留项与回滚
+
+真实Campaign/Mission/按键/Gauntlet/GPU/网络provider/TTS、实际.sav引擎与代表性旧坏档修复未验。NativePreparationBoundary旧WarStats owner oracle仍NOT-PASS，未刷新；[六类补审](#migration-functional-review-20261009)Memory坏JSON下次Save证据丢失、Weekly缺块为空/无原损坏证据以及旧综合fixture风险不改绿；[外交闭环](#diplomacy-closure-audit-20261009)catalog整体civil-war JSON绑定失败和保存UI/队列恢复未验仍保留。
+
+本轮只有项目内单模块Stage，未覆盖游戏、打包或推送。产品回滚用 `git revert c77d448e5` 与 `git revert d4beb7b76` 的focused inverse；最初部分raw/elapsed在混合WIP保护 `5c13cc419`，需要按本代码图对应符号恢复，不能revert整个混合WIP或merge、hard reset远端/其他作者。文档用对应文档提交反向提交。保留NEW-10/GCCZ及两个原NuGet目录。
+
+<a id="diplomacy-closure-audit-20261009"></a>
 ## 外交闭环异常修复与有限复核（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 本条接续[六类真实功能补审](#migration-functional-review-20261009)后用户追加的外交闭环复核。工作区为 `F:/AnimusForge-main` / `main`；原审查基线 `b41587eca`，本轮持久化产品冻结为 `fe29282a1384e9cceee0e83701376385dc36cb20`，传播修复为 `39b461813`、`6f00d3a8a`，传播/效果测试为 `6461c037f`、`8aeecd452`。保留已交付的传闻提示删除 `303e44c48` 与人物菜单旧Hero保护 `6e9c6a74f`；本条签收以下三类异常修复的离线有限闭环，不表示整个外交、全仓或实机通过。

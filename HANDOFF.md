@@ -1,4 +1,12 @@
-﻿# 当前合并边界：远端外交提交与本地 Native WIP（2026-10-09，MERGE_SOURCE_AND_REPLAY_VERIFIED）
+﻿# 当前交接：Native raw连续性、游戏时间提示与远端外交合并（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- raw `c77d448e5` 每回合携带权威未压缩记忆并与Native短史精确计数合并，修复旧草稿仍在但重进请求漏掉；保留跨日同文/重复、pending输入和AFEF当下/过往角色。elapsed `d4beb7b76` 按真实新会话票据提示游戏交流间隔，失败retry不消费、current主回复接受后消费，unknown/截断/压缩日期保守降级；prefix不写保存记忆。
+- 远端 `8f7e38e6f` 与WIP `5c13cc419` 经merge `cce411837` 合入同一外交owner。9文件交集复核无重复产品实现，保留本地隔离/传播/retry与远端玩家多动作/配置预算；旧测试Host只保留单helper/call，文档历史保留，本条统一收敛当前状态。
+- 原请求反例已由31项/9场景修复回放覆盖；elapsed32、import121、strict30、raw同输入34、history/role及合并外交4106/effects182/adapter14 PASS。原官方双API/Bootstrap/双Coup seams/Stage exit0，2777输入冻结、三产物SHA一致；新1.4实际Gateway配置12000预算HTTP专项exit0。回执final-build-receipt.json与gateway-replay-final/receipt.json同候选绑定；未部署、打包、推送。
+- **保留边界**：真实Campaign/.sav/坏档修复/LLM/TTS/GPU未验；NativePreparation旧WarStats oracle、catalog civil-war绑定整体NOT-PASS未刷新，Memory/Weekly继承坏载荷风险不改绿；严格拒存不等于保存UI/队列恢复。
+- [唯一主台账、receipt/产物SHA与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-memory-continuity-fix-20261009)、[真实代码导航](docs/architecture/af-framework-code-scope.md#native-memory-continuity-fix-20261009)。本地证据 `artifacts/native-memory-continuity-fix-20261009/`，合并记录 `artifacts/remote-merge-dedup-20261009/`。focused inverse具名切片；混合WIP只按符号恢复，不整体revert merge/其他作者。以下合并/WIP和历史授权状态已由本条接续。
+
+# 当前合并边界：远端外交提交与本地 Native WIP（2026-10-09，MERGE_SOURCE_AND_REPLAY_VERIFIED）
 
 - 远端 `8f7e38e6f` 与本地保护点 `5c13cc419` 保留双方历史；本轮用户已授权拉取合并和功能实现。只处理语义合并与去重，未继承历史推送、部署授权。Native 原文连续性及时间提示仍为 WIP，尚未验收。
 - 下列外交交接保留各自原始产品/验证范围；合并候选的外交 round lifecycle、实际效果回读、持久化 adapter 专项均退出0；源内保留 CourtEffectPending、损坏隔离与配置分析预算。独立语义去重复核及统一构建仍待本轮验收。
