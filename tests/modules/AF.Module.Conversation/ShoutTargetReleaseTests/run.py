@@ -7,9 +7,9 @@ out = Path(sys.argv[1]).resolve()
 out.mkdir(parents=True, exist_ok=True)
 spec = importlib.util.spec_from_file_location('extract', root / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
-source = (root / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+source = (root / 'src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs').read_text(encoding='utf-8-sig')
 fixture = (Path(__file__).parent / 'Fixture.cs.in').read_text(encoding='utf-8')
-for marker, signature in [('UPDATE', 'private void UpdateShoutHotkeyCharge('), ('BEGIN', 'private void TryBeginShoutHotkeyCharge('), ('RELEASE', 'private void TryStartShoutFromHotkey(')]:
+for marker, signature in [('UPDATE', 'internal void UpdateShoutHotkeyCharge('), ('BEGIN', 'internal void TryBeginShoutHotkeyCharge('), ('RELEASE', 'internal void TryStartShoutFromHotkey(')]:
     fixture = fixture.replace('__' + marker + '__', extract.declaration(source, signature))
 (out / 'Program.cs').write_text(fixture, encoding='utf-8')
 (out / 'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>', encoding='utf-8')

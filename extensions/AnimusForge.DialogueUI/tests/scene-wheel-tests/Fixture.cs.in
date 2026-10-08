@@ -36,7 +36,22 @@ static class Program {
   owner=Fresh();owner.TriggerShout();menu=owner.Menu;SaveRuntimeGuard.Generation++;menu.AffirmativeAction(new(){menu.InquiryElements[0]});Check(owner.Sessions==0,"old save generation rejected");
   owner=Fresh();owner.TriggerShout();menu=owner.Menu;owner.Epoch++;menu.NegativeAction(new());Check(owner.Cancels==0,"new conversation epoch rejects old cancellation");
   owner=Fresh();owner.TriggerShout();menu=owner.Menu;menu.AffirmativeAction=_=>owner.Sessions++;factories=WheelLayer.Factories;MBInformationManager.ShowMultiSelectionInquiry(menu,true);Check(WheelLayer.Factories==factories,"modified callback identity does not pass owner contract");
-  H.UnpatchAll(H.Id);Console.WriteLine("PASS "+n+" actual producer/classification/real-Harmony/wheel-factory/once/session/mission/owner/style checks; GPU render NOT-RUN");
+  foreach(var key in new[]{InputKey.T,InputKey.Y}) foreach(bool battle in new[]{false,true}) {
+   owner=Fresh();owner.IsSceneIllustrationBattleForExternal=battle;owner.Next.CandidateAgentIndices.Add(8);
+   int before=WheelLayer.Factories;Input.Pressed=key;Input.Down=key;Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();
+   Check(owner._shoutHotkeyChargeActive&&owner.Preview==1&&WheelLayer.Factories==before,"facade press begins preview without opening menu "+key+" battle="+battle);
+   Input.Pressed=InputKey.Invalid;Campaign.Current.Behavior.TickInput();var framed=owner.Next;
+   Check(owner.Preview==2&&WheelLayer.Factories==before,"hold refreshes preview before release");
+   Input.Down=InputKey.Invalid;Input.Released=key;Campaign.Current.Behavior.TickInput();
+   Check(!owner._shoutHotkeyChargeActive&&ReferenceEquals(owner._activeShoutTargetingContext,framed)&&WheelLayer.Factories==before+1,"release freezes target and enters real current menu/wheel");
+   Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();Check(WheelLayer.Factories==before+1,"held/released frame is consumed once");
+   WheelLayer.Last.Choose("normal");Check(owner.Sessions==1,"key producer reaches original selection callback");
+  }
+  owner=Fresh();owner.IsSceneIllustrationAvailableForExternal=true;owner.IsSceneIllustrationBattleForExternal=true;Input.Pressed=InputKey.T;Input.Down=InputKey.T;Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();Input.Pressed=InputKey.Invalid;Input.Down=InputKey.Invalid;Input.Released=InputKey.T;Campaign.Current.Behavior.TickInput();Check(owner.BattleInputs==1&&!SceneWheel.IsOpen,"targetless image release reaches battle input without menu");
+  foreach(string cancel in new[]{"lost-key","busy","invalid-scene"}){owner=Fresh();Input.Pressed=InputKey.T;Input.Down=InputKey.T;Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();Input.Pressed=InputKey.Invalid;if(cancel=="lost-key")Input.Down=InputKey.Invalid;if(cancel=="busy")owner._isProcessingShout=true;if(cancel=="invalid-scene")ShoutUtils.Valid=false;Campaign.Current.Behavior.TickInput();Check(!owner._shoutHotkeyChargeActive&&!SceneWheel.IsOpen&&owner.ClearPreview==1,"charge retires without UI/effects "+cancel);ShoutUtils.Valid=true;}
+  owner=Fresh();owner.SuppressFocus=true;Input.Pressed=InputKey.T;Input.Down=InputKey.T;Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();Check(!owner._shoutHotkeyChargeActive&&!SceneWheel.IsOpen,"focus debounce rejects before target capture");
+  owner=Fresh();SceneSessionPanel.IsAvailable=false;Input.Pressed=InputKey.T;Input.Down=InputKey.T;Input.Released=InputKey.Invalid;Campaign.Current.Behavior.TickInput();Input.Pressed=InputKey.Invalid;Input.Down=InputKey.Invalid;Input.Released=InputKey.T;Campaign.Current.Behavior.TickInput();Check(owner.DirectInputs==1&&owner.Menu==null,"disabled session ordinary key retains direct input route");
+  H.UnpatchAll(H.Id);Console.WriteLine("PASS "+n+" actual facade/hotkey/producer/classification/real-Harmony/wheel-factory/once/session/mission/owner/style checks; GPU render NOT-RUN");
  }
 }
 namespace TaleWorlds.Core {
@@ -48,13 +63,24 @@ namespace TaleWorlds.CampaignSystem {public sealed class Campaign{public static 
 namespace TaleWorlds.MountAndBlade {public enum MissionMode{StartUp,Conversation}public sealed class Mission{public static Mission Current;public bool IsMissionEnding;public MissionMode Mode;}public sealed class Agent{public static Agent Main;public bool IsActive()=>true;}}
 namespace AnimusForge.Refactor.Runtime {public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}}
 namespace AnimusForge {
- public sealed class NpcDataPacket{public string Name="NPC";}public sealed class ShoutTargetingContext{}
+ public enum InputKey{Invalid,T,Y}
+ public static class Input{public static InputKey Pressed,Down,Released;public static bool IsKeyPressed(InputKey k)=>k!=InputKey.Invalid&&k==Pressed;public static bool IsKeyDown(InputKey k)=>k!=InputKey.Invalid&&k==Down;public static bool IsKeyReleased(InputKey k)=>k!=InputKey.Invalid&&k==Released;}
+ internal static class Logger{internal static void Log(string a,string b){}internal static void LogVerbose(string a,string b,Func<string> c,double d){}}
+ internal static class ShoutUtils{internal static bool Valid=true;internal static bool IsInValidScene()=>Valid;}
+ internal static class ShoutTextInputPopup{internal static bool IsOpen;}
+ internal readonly struct Color{internal Color(float a,float b,float c){}}
+ internal sealed class InformationMessage{internal InformationMessage(string a,Color b){}}
+ internal static class InformationManager{internal static void DisplayMessage(InformationMessage a){}}
+ public sealed class NpcDataPacket{public string Name="NPC";}public sealed class ShoutTargetingContext{public List<int> CandidateAgentIndices=new();}
  public enum ShoutChatMode{Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements}
- public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();__LEGACY_ENTRY__ internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
+ public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();__LEGACY_ENTRY__ internal void TickInput()=>UpdateShoutHotkeyCharge(InputKey.T,InputKey.Y);internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
  internal static class MyBehavior{internal static bool IsDevDataManagementEnabledForExternal()=>false;}
  internal static class BattleSpeechRuntimeHost{internal static bool CanOpenSpeechMenu(Mission m)=>false;}
  internal sealed class SceneShoutInputController {
   __FIELDS__
+  internal bool _shoutHotkeyChargeActive,_shoutHotkeyChargeOpenModeMenu,_shoutHotkeyChargeMergesIntoSession,_isProcessingShout,_isWaitingForScenePostprocessGate,IsSceneIllustrationBattleForExternal,IsSceneIllustrationAvailableForExternal,SuppressFocus;
+  internal InputKey _shoutHotkeyChargeKey;internal float _shoutHotkeyChargeStartedAt;internal ShoutTargetingContext _lastRenderedShoutTargetingContext,Next=new();internal int Preview,ClearPreview,BattleInputs,DirectInputs;
+  private bool UpdatePresentationHotkey(InputKey a,InputKey b)=>false;private bool ShouldSuppressShoutHotkeyAfterFocusChange()=>SuppressFocus;private bool IsScenePresentationSessionEnabled()=>SceneSessionPanel.IsAvailable;private float GetApplicationTimeSafe()=>1;private void ResetPassiveStareTracking(){}private ShoutTargetingContext BuildCurrentShoutTargetingContext()=>Next;private void DrawShoutRangePreview(ShoutTargetingContext c){Preview++;_lastRenderedShoutTargetingContext=c;}private void ClearShoutRangePreviewEntities(){ClearPreview++;}private void ClearShoutPreviewAgentHighlights(){}private void TryShowShoutProcessingBusyMessage(){}private void LogShoutTargetingContextSnapshot(bool a,ShoutTargetingContext b){}private void BeginShoutProcessing(string a){_isProcessingShout=true;}private void OpenBattleShoutInput(bool imageOnly=false){BattleInputs++;}private void TriggerShoutDirectInput(){DirectInputs++;}
   internal MultiSelectionInquiryData Menu=>_modeInquiry;internal ShoutTargetingContext _activeShoutTargetingContext=new();internal int Epoch,Sessions,Cancels,Inputs,Trades,FallbackTrades;internal string LastMode;private int _sceneConversationEpoch=>Epoch;
   private bool TryPrepareShoutTarget(out NpcDataPacket data){data=new();return true;}
   private List<Agent> GetAgentsForShoutTargetingContext(ShoutTargetingContext c)=>new();private Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext c,List<Agent>a)=>null;private bool IsPlayerSideBattleSpeechTarget(Mission m,Agent main,Agent target)=>false;
