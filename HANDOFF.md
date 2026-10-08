@@ -1,7 +1,7 @@
 # 当前交接：远端 owner 迁移整合与接力修复
 
 - `73c822bc9` 跟随远端迁移，`ffb2e6a` 保留最新原版开战修复，`e9f378842` 补齐薄宿主接线；主目录已正常快进，接力最多八次且已发言者可回接。Scene/History 与新闻窗口/epoch 等本地增量迁入真实 owner，未恢复旧宿主整块算法。
-- 接力28、Scene退出21、NativeSession492、开战67、Encounter183、材料56、日历7、新闻27、真实RuntimeClosure及两版本native Harmony hooks PASS；最终Debug双API/Bootstrap/双接缝/Stage success。迁移版部署23文件，3381个Stage文件与安装逐项hash一致，23份私有Recovery备份 complete。未验实机/LLM/实档/全仓，当前推送待远端验收。
+- 接力28、Scene退出21、NativeSession492、开战67、Encounter183、材料56、日历7、新闻27、真实RuntimeClosure及两版本native Harmony hooks PASS；最终Debug双API/Bootstrap/双接缝/Stage success。迁移版部署23文件，3381个Stage文件与安装逐项hash一致，23份私有Recovery备份 complete。未验实机/LLM/实档/全仓；`origin/main` 已普通快进推送并核对真实远端 ref，发布产品绑定 `e9f378842`。
 - [唯一主台账、源码职责、完整证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-owner-migration-integration-20261009)。本条替代旧“接力分叉阻塞/过渡部署”当前状态；旧条目保留历史事实。主目录其他作者提交及既有NuGet目录保留。
 
 # 当前交接：原版开战对话接续确认（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
