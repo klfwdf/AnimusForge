@@ -219,11 +219,103 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (schedule) SchedulePlayerResponseWork(round);
     }
 
+    private string PlayerResponseUnavailableReason(string receiverId, string sourceId)
+    {
+        var source = ResolveDocument(sourceId);
+        if (source?.IsPlayerAuthored != true || !source.IsReadyForPublication) return "source_unavailable";
+        // Resolve the original parties only. A changed suzerain never inherits this declaration.
+        string author = _host.ResolvePartyId(source.AuthorKingdomId);
+        if (author == null || _host.IsEliminatedParty(author) || !_host.HasIndependentAuthority(author))
+            return "source_author_no_independent_authority";
+        string receiver = _host.ResolvePartyId(receiverId);
+        if (receiver == null || _host.IsEliminatedParty(receiver) || !_host.HasIndependentAuthority(receiver))
+            return "receiver_no_independent_authority";
+        return "";
+    }
+
+    private void ValidatePlayerResponseObligations(WorldDiplomacyRound round)
+    {
+        string firstReason = "";
+        foreach (var item in round?.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
+        {
+            if (item == null || item.Status != "pending" || !string.IsNullOrWhiteSpace(item.AnswerDocumentId)) continue;
+            string reason = PlayerResponseUnavailableReason(item.KingdomId, item.SourceDocumentId);
+            if (string.IsNullOrEmpty(reason)) continue;
+            item.Status = "unavailable"; item.FailureReason = reason;
+            if (firstReason.Length == 0) firstReason = reason;
+        }
+        if (firstReason.Length > 0)
+        {
+            _diplomacyWorkNeedsReconcile = true;
+            _host.Notify(firstReason == "source_author_no_independent_authority"
+                ? "你的原宣言所属王国已失去独立外交资格，尚未答复的外交回应已停止；恢复资格后请重新发布宣言，旧承诺不会转给宗主国。"
+                : "原宣言或回应国已不具备外交回应资格，尚未完成的回应已停止。请查看原公文与当前外交局势。");
+        }
+    }
+
+    private bool CanDispatchPlayerResponse(WorldDiplomacyJob job)
+    {
+        var round = ResolveRound(job?.RoundId);
+        bool followup = string.Equals(round?.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase);
+        if (followup && (job.Kind == "round_plan" || (job.Kind == "generate" && !job.IsExternalResponseOnly))) return false;
+        if (job?.Kind != "generate") return true;
+        var sourceIds = (job.PlayerResponseSourceIds ?? new List<string>()).ToList();
+        if (job.IsExternalResponseOnly && ResolveDocument(job.SourceDocumentId)?.IsPlayerAuthored == true)
+            sourceIds.Add(job.SourceDocumentId);
+        if (sourceIds.Count == 0) return true;
+        ValidatePlayerResponseObligations(round);
+        foreach (string id in sourceIds.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (PlayerResponseUnavailableReason(job.AuthorKingdomId, id).Length > 0) return false;
+            var obligation = round?.PlayerResponses?.FirstOrDefault(x => x != null && x.KingdomId == job.AuthorKingdomId && x.SourceDocumentId == id);
+            if (obligation != null && (obligation.Status != "pending" || obligation.RetryNotBeforeDay > _host.CurrentDay())) return false;
+        }
+        return true;
+    }
+
+    private void DeferUnpublishedPlayerResponses(WorldDiplomacyJob job)
+    {
+        if (job?.IsExternalResponseOnly != true) return;
+        var round = ResolveRound(job.RoundId);
+        ValidatePlayerResponseObligations(round);
+        int tomorrow = _host.CurrentDay() + 1;
+        foreach (var item in round?.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
+        {
+            if (item != null && item.Status == "pending" && item.KingdomId == job.AuthorKingdomId
+                && ((job.PlayerResponseSourceIds?.Contains(item.SourceDocumentId) ?? false) || item.SourceDocumentId == job.SourceDocumentId))
+            { item.RetryNotBeforeDay = Math.Max(item.RetryNotBeforeDay, tomorrow); item.FailureReason = "unpublished_response"; }
+        }
+        _diplomacyWorkNeedsReconcile = true;
+    }
+
+    private bool MaintainPlayerFollowup(WorldDiplomacyRound round)
+    {
+        if (!string.Equals(round?.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase)) return false;
+        ValidatePlayerResponseObligations(round);
+        bool pending = round.PlayerResponses?.Any(x => x != null && x.Status == "pending" && string.IsNullOrWhiteSpace(x.AnswerDocumentId)) == true;
+        if (!pending) { CloseRound("player_responses_finished", round); return true; }
+        // These obligations do not own a relay circuit. Withdrawn AI participants
+        // cannot close and re-create the same request; only the existing deadline ends it.
+        if (!IsHardEndReached(_host.CurrentDay(), round.HardEndDay))
+        { SchedulePlayerResponseWork(round); return true; }
+        if (Storage.Jobs.Any(x => x != null && x.RoundId == round.RoundId && x.IsRunning)) return true;
+        CloseRound("player_response_deadline", round);
+        return true;
+    }
+
     private void SchedulePlayerResponseWork(WorldDiplomacyRound round)
     {
         if (!IsLiveRound(round) || round.PlayerResponses == null) return;
+        ValidatePlayerResponseObligations(round);
+        if (string.Equals(round.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase))
+            foreach (var obsolete in Storage.Jobs.Where(x => x != null && !x.IsRunning && x.RoundId == round.RoundId
+                && (x.Kind == "round_plan" || (x.Kind == "generate" && !x.IsExternalResponseOnly))).ToList()) RemoveJob(obsolete.JobId);
+        // Selection predicates must not modify the job list while it is being iterated.
+        // Retire now on the owning reconciliation path, outside dispatch selection.
+        foreach (var job in Storage.Jobs.Where(x => x != null && !x.IsRunning && x.IsExternalResponseOnly && x.RoundId == round.RoundId).ToList())
+            if (!CanDispatchPlayerResponse(job)) RemoveJob(job.JobId);
         foreach (var group in round.PlayerResponses.Where(x => x != null && string.IsNullOrWhiteSpace(x.AnswerDocumentId)
-            && x.Status == "pending").GroupBy(x => x.KingdomId).OrderBy(x => x.Min(y => y.CreatedDay)))
+            && x.Status == "pending" && x.RetryNotBeforeDay <= _host.CurrentDay()).GroupBy(x => x.KingdomId).OrderBy(x => x.Min(y => y.CreatedDay)))
         {
             string receiver = ResolveDialogueParty(group.Key);
             if (receiver == null || _host.IsEliminatedParty(receiver) || !_host.HasIndependentAuthority(receiver))
@@ -288,7 +380,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             null, job.AuthorKingdomId, true, true);
         var knownDocuments = Storage.Documents.Where(x => x != null && x.IsReadyForPublication
             && (x.AuthorKingdomId == job.AuthorKingdomId || knownIds.Contains(x.DocumentId))).ToList();
-        job.PlayerResponseSourceIds = DiplomacyRoundWorkRules.SelectResponseBatch(round, job.AuthorKingdomId, knownDocuments);
+        job.PlayerResponseSourceIds = DiplomacyRoundWorkRules.SelectResponseBatch(round, job.AuthorKingdomId, knownDocuments, _host.CurrentDay());
         string tail = DiplomacyRoundWorkRules.BuildRequestTail(round, knownDocuments, job.PlayerResponseSourceIds);
         int modeMarker = job.UserPrompt.LastIndexOf("【MODE=DECLARE】", StringComparison.Ordinal);
         string basePrompt = modeMarker >= 0 ? job.UserPrompt.Substring(0, modeMarker) : job.UserPrompt;
@@ -348,6 +440,17 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void CarryUnansweredPlayerResponses(WorldDiplomacyRound closed)
     {
+        if (closed.CloseReason == "closed_disabled") return;
+        ValidatePlayerResponseObligations(closed);
+        if (string.Equals(closed.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase))
+        {
+            bool unresolved = false;
+            foreach (var item in closed.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
+                if (item != null && item.Status == "pending" && string.IsNullOrWhiteSpace(item.AnswerDocumentId))
+                { item.Status = "unanswered"; item.FailureReason = closed.CloseReason ?? "closed"; unresolved = true; }
+            if (unresolved) _host.Notify("后续外交回应已结束，但仍有国家未能答复；原宣言和未完成记录已保留，可重新发布宣言，不会恢复旧提议。");
+            return;
+        }
         var pending = (closed.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>()).Where(x => x != null
             && x.Status == "pending" && string.IsNullOrWhiteSpace(x.AnswerDocumentId)).ToList();
         if (pending.Count == 0 || closed.CloseReason == "closed_disabled") return;
@@ -362,7 +465,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             item.Status = "transferred";
             followup.PlayerResponses.Add(new WorldDiplomacyPlayerResponse { SourceDocumentId = item.SourceDocumentId,
-                KingdomId = item.KingdomId, CreatedDay = item.CreatedDay, OriginalRoundId = item.OriginalRoundId });
+                KingdomId = item.KingdomId, CreatedDay = item.CreatedDay, OriginalRoundId = item.OriginalRoundId,
+                RetryNotBeforeDay = item.RetryNotBeforeDay, FailureReason = item.FailureReason });
             if (!followup.RelayRouteKingdomIds.Contains(item.KingdomId)) followup.RelayRouteKingdomIds.Add(item.KingdomId);
             EnsureRoundParticipant(followup, item.KingdomId, "active", true);
         }

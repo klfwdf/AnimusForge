@@ -11,8 +11,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     internal bool CanDispatchDiplomacyJob(WorldDiplomacyJob job)
     {
         if (job == null || job.IsRunning || RequestLeases.ContainsJob(job.JobId)
-            || job.RetryAfterUtcTicks > DateTime.UtcNow.Ticks || Storage.ServiceRetryAfterUtcTicks > DateTime.UtcNow.Ticks
-            || !Storage.RequestBudget.CanAdmit(IsPlayerSchedulingJob(job))) return false;
+            || job.RetryAfterUtcTicks > DateTime.UtcNow.Ticks || Storage.ServiceRetryAfterUtcTicks > DateTime.UtcNow.Ticks) return false;
+        if (!CanDispatchPlayerResponse(job) || !Storage.RequestBudget.CanAdmit(IsPlayerSchedulingJob(job))) return false;
         if (job.Kind == "generate")
         {
             if (job.IsExternalResponseOnly && !string.IsNullOrWhiteSpace(job.SourceDocumentId)
