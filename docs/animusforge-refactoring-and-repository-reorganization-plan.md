@@ -11,11 +11,18 @@
 - 回滚仅 `git revert 4df26683b`。验证结束时其他会话开始修改NativeSessionOwnerTests，未纳入本提交/构建结论；两份NuGet缓存保留。
 
 <a id="native-history-and-scene-exit-20261008"></a>
-# 自由对话单行历史同步与退出后场景动作（2026-10-08，ACTIVE）
+# 自由对话单行历史同步与退出后场景动作（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户报告删除一两条历史后 NPC 失忆，以及场景动作提示退出后 Esc/F 重开闪退。本包只修确认的单条差量被当整日快照、原版退出事件内动作重入及旧待执行动作越过场景/会话生命周期；不改变压缩记忆、RAG预算、标签格式或原构建流程。
 - 调查基线：NativeConversationSessionOwner.SyncDay 匹配失败整日重建；dialogueui_delete/edit 传单行差量。原版 ConversationManager.EndConversation 在事件后才清 ConversationAgents、停用 flow、卸载 handler，AF 在事件内立即 drain 场景动作。
 - 范围：两历史 UI host、Native session owner、Scene ShoutBehavior 与生产链接回放测试；保留整日编辑重建语义、其他日期/NPC/AFEF、动作一次执行。完成门：缺陷旧版反例、单行回归、退出/重开/离场/读档回放、原双API/Bootstrap/接缝构建、差异核对。未获本轮部署/打包/推送授权；真实闪退堆栈与实机均尚缺。
+- 产品 `3238cf542`，本地检查点 `4eaaeae37`。单行删除/编辑明确传 `completeDaySnapshot:false`；未匹配到被删行只跳过该行，未匹配到被编辑行加入新行，均不重建整日。整日开发编辑仍用完整快照并保持原重建语义；原7参数公开同步方法保持，新增显式范围重载。压缩块、存档键、RAG及历史条数预算不变。
+- 场景动作退出事件仅标记就绪；专用 Mission Tick 等待原版 conversation flow、Agent 列表、mission mode 退出后执行。绑定原 Mission、Campaign、ConversationManager、会话代次与真实 Agent 对象，拒绝同编号替换对象/场景及失效目标；重开、读档、离场清理。取消未绑定 epoch 的 speech queue fallback。立即 F 重开会撤销尚未执行的旧动作，须重新下达；已执行动作不回滚。
+- 性能：无待执行动作时 Tick 仅读取就绪标志；每帧最多2个动作，只有实际待执行项才解析 Agent。删除/编辑同步仅手动操作时运行，沿用有限 Native 缓存，不新增逐帧序列化、反射、世界人物扫描。
+- 核实代码范围（产品修订）：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.DialogueHistoryDelete.cs:109-113` / `MyBehavior.DialogueHistoryEdit.cs:124-128`（单行消费者）；`src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs:142-250`（范围与差量处理）；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:333`（Tick消费者）、`:2074`（读档清理）、`:7569-7585`（开始代次与结束事件）、`:10166-10214`（公开兼容重载）、`:12441-12614`（待执行状态与验证）；既有 mission/reset 清理继续复用。
+- 验证：生产 owner 链接专项492项、生产退出方法/DTO回放21项、既有移动生命周期19项PASS。旧基线分别失败 `single-delete-cache-miss-preserves-day` / `native-end-event-does-not-execute-or-drain`，重新启用整日重建的变异被单条删除断言拒绝。退出旧版夹具首轮缺10参数替身导致编译失败，修复替身后到达预期行为断言；该编译失败不计缺陷复现。原 `build_single_module.ps1` 对1.3 v1.3.15.110062、1.4 v1.4.6.115628、Bootstrap和双接缝PASS；构建产物见 `bin/Debug/single_module_artifacts`，证据见 `artifacts/native-history-scene-exit-20261008/verification-receipt.json` 与关联日志。
+- NOT-RUN：真实玩家存档、实际网络请求上下文、实机 Esc/F 与原生相机/导航。确认的缓存删除与事件重入缺陷不代表该玩家闪退唯一根因；缺完整异常堆栈。此前已误清的临时缓存不自动恢复；持久化其他行/压缩块未由本缺陷删除。未部署、打包或推送。
+- 回滚仅 `git revert 3238cf542`；不撤销其他会话政变大厅/YJ/画廊提交，保留两份既有NuGet缓存。
 
 <a id="yj-endpoint-selection-20261008"></a>
 ## YJ 引导三线路测速（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
