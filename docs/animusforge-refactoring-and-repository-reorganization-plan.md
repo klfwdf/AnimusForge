@@ -1,3 +1,42 @@
+<a id="player-war-pacing-20261009"></a>
+## 玩家宣战放行（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+本条只针对用户要求的玩家宣战放行，产品修订 `dd1216d4a82b6daa2a8174258acb167923467d4c`，起始检查点 `a34b840f0`；保留既有拒绝原因修复 `b51bf5b88` 和其他会话合并 `dade98fe4`。当前工作区 `F:/AnimusForge-main`、分支 `main`。本包没有部署、覆盖游戏、打包或推送授权，不继承下面历史工作包的发布授权。
+
+### 行为与性能边界
+
+`IsPlayerAuthored` 玩家文书现在跳过主动开战冷却、同时战争数量上限及待处理谴责/最后通牒的一次性决定等待；发布初检、结构化多目标执行前复检、即时原版宣战端口都使用同一玩家准入。目标有效性、独立外交权、双方已交战、同盟、和平保护期及内战限制仍保留。AI 文书、NPC 承诺发文、警告/最后通牒和非宣战意图仍遵循既有规则；不是全局移除战争限制。
+
+改动只发生在已有文书分析/发布/动作执行边界，未新增 Tick、网络请求、缓存、后台游戏对象读取或全量扫描。玩家分支在已有共同门禁及内战检查后返回，避免访问同时战争计数；AI 的 lazy 读取顺序和末尾战争扫描不变，多目标批量每次效果前仍复检当前状态。
+
+<a id="player-war-pacing-code-20261009"></a>
+### 核实的一基源码坐标（产品修订 `dd1216d4a82b6daa2a8174258acb167923467d4c`）
+
+| 路径与行号 | 符号、真实消费者及覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyWarAdmissionApplication.cs:42–61` | `CanDeclareWar`：玩家标记默认 false；共享门禁/内战保留，玩家只跳过 pending/cooldown/capacity |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:2370–2413` | `TryGetPlayerWorldStateIntentViolation`：玩家 declare_war 回调进入共享准入，其他意图走原校验 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs:179–187,261–310,419–426` | `TryGetExecutionStateViolation`、`ExecuteItems`：玩家宣战独立于 AI 合法动作列表，初检及多目标实时状态复检仍保留 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:863–866`；`World/WorldDiplomacyBehavior.ImmediateActionPort.cs:20–27` | 宿主 `CanDeclareWar` 转发及真实 `ImmediateActionPort.DeclareWar` 从当前文书读取 `IsPlayerAuthored`；已核验两实际 DLL 的 IL 传参 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/WarAdmissionReplay.cs:105–118`；`DocumentExecutionReplay.cs:106–143` | 真实 Application/Orchestration 与 fake game ports：玩家/AI 差异、十类准入、零战争扫描、旧/结构化玩家文书及批量状态改变反例 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/Program.cs:370,2225` | 只同步已有 `release_subject` 分析意图及新执行校验符号；不为额外陈旧文本测试改生产逻辑 |
+
+### 验证与证据
+
+完整本地证据在 `artifacts/player-war-pacing-20261009/receipt.json`，源码 SHA、产物 SHA、命令和日志由该回执绑定。该目录不提交或上传。
+
+| 验证 | 实际结果与能证明的边界 |
+| --- | --- |
+| `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/WorldDiplomacyRoundLifecycle.SmokeTests.csproj` | `replay.log`：4048 断言 PASS；含真实准入/编排/执行 Application，游戏端口为测试替身，不能替代原版实际宣战效果 |
+| `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyResultSettlement.SmokeTests/WorldDiplomacyResultSettlement.SmokeTests.csproj` | `settlement.log`：576 断言 PASS，既有结算回归 |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -BannerlordRoot 'F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord' -Bannerlord14ReferenceDir 'F:\AnimusForge-main\.tmp\build_check\1.4'` | `build.log`：1.3、1.4、Bootstrap 各 0 错误，双 coup 接缝通过，`Build Result : success`；实际引用 1.3 为 `v1.3.15.110062`、1.4 为 `v1.4.6.115628`；只生成本地候选产物 |
+| `artifacts/player-war-pacing-20261009/verify-immediate-forwarding.ps1` | `immediate-forwarding.log`：两实际实现 DLL 六项检查 PASS；直接查看真实端口加载文书标记和宿主转发到准入的 IL，未启动 Game/Campaign/原版效果 |
+| `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/WorldDiplomacyIntentBoundary.SmokeTests.csproj` | `intent.log` 保留初次失败（旧 oracle 缺 `release_subject`）；两处预期更新后 `intent-after.log` 仍 NOT-PASS，退出 `-532462766`：`RunOfferCooldownIntegrationContractTests` 的 `ExtractSection` 缺旧 MCM marker `[SettingPropertyInteger("外交长期记忆压缩触发值`（Program.cs:1847）。这是既有迁移文本坐标失效，本次不扩大修复；不能声称此套件全部通过 |
+| `git diff --check` | PASS，无空白错误；原有两个未跟踪 NuGet 目录保持 |
+
+### 未验证项与回滚
+
+实机玩家宣战/多目标宣战、Bannerlord 原版动作实际读回、真实存档及其他 MOD 组合均 NOT-RUN；额外 IntentBoundary 整套未通过。没有部署/覆盖/ZIP/推送。回滚本产品切片只运行 `git revert dd1216d4a82b6daa2a8174258acb167923467d4c`；不 hard reset，不回退其他作者提交。后续实机验收应分别确认玩家在三项节奏限制下能够宣战，并确认和平保护、同盟和内战等保留限制仍拒绝。
 <a id="migration-defect-package-20261009"></a>
 ## 迁移后缺陷修复与177文件有限审计（2026-10-09，DUAL_DLL_AND_DEPLOYMENT_VERIFIED）
 

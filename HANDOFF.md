@@ -1,3 +1,8 @@
+# 当前交接：玩家宣战放行（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `dd1216d4a82b6daa2a8174258acb167923467d4c`：仅 `IsPlayerAuthored` 玩家文书跳过主动开战冷却、同时战争数量上限及待处理通牒等待；目标/独立外交权/已交战/同盟/和平保护期/内战限制保留。AI、NPC 发文及其他意图保持，发布初检、批量复检与真实即时动作端口已接通。
+- 真实外交回放4048、结算576、两实际DLL端口传参6项、官方双API/Bootstrap/双接缝 PASS；引用为1.3.15及1.4.6。额外IntentBoundary仍因既有MCM旧文本marker缺失而NOT-PASS，已保留原失败及修正预期后的日志，没有扩大产品修改。
+- [唯一主台账与完整边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-war-pacing-20261009)、[核实代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-war-pacing-code-20261009)；本地回执 `artifacts/player-war-pacing-20261009/receipt.json`。未验实机/原版实际动作/实档/其他MOD，未部署/打包/推送。回滚只 `git revert dd1216d4a82b6daa2a8174258acb167923467d4c`，保留既有诊断修复、其他作者提交和NuGet目录；以下部署/推送记录均为历史授权，不适用于本包。
 # 当前交接：迁移缺陷修复与有限审计交付（2026-10-09）
 
 - 产品 `65b6b5c4c` 集合已修外交followup循环/本国外交通知、交易和喊话迁移接缝、1024环境预算降级、inline快报本图重绘入口、领主/同伴主动开场手动retry断链及Xihai属性接缝。首次NPC空白未现场复现；177/177迁移文件是source责任审计，不是全仓/实机验收。
