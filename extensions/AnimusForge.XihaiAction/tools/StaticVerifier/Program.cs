@@ -52,6 +52,7 @@ internal static class Program
             Console.WriteLine("Bridge candidate: " + implementation);
             Run("AF epoch accessor accepts fields and forwarding properties, rejects invalid contracts",
                 VerifyConversationEpochAccessor);
+            Run("AF targeting context accessor follows migrated owner state", VerifyTargetingContextAccessor);
             Run("AF Harmony observers install and uninstall offline", VerifyCompatPatchInstallation);
             Run("speech prompt admission survives asynchronous preprocessing", VerifySpeechPromptAdmissionAfterYield);
             Console.WriteLine($"Bridge verifier: {_passed} passed, {_failed} failed.");
@@ -2848,6 +2849,74 @@ internal static class Program
             claimField.SetValue(null, oldClaim);
             stageSettings.SetValue(null, oldSettings);
         }
+    }
+
+    private static void VerifyTargetingContextAccessor()
+    {
+        Assembly module = GetModuleAssembly();
+        Type compat = module.GetType("AnimusForge.XihaiAction.AfCompatV130", true);
+        const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+        const BindingFlags members = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        MethodInfo bind = compat.GetMethod("TryBindTargetingContextAccessor", flags);
+        MethodInfo read = compat.GetMethod("ReadTargetingContext", flags);
+        MethodInfo uninstall = compat.GetMethod("Uninstall", flags | BindingFlags.Public);
+        Require(bind != null && read != null, "production targeting accessor is missing");
+        Require(MethodBodyReferences(compat.GetMethod("ObserveAcceptedPlayerShout", flags), read),
+            "player shout bypassed the targeting accessor");
+        try
+        {
+            var legacy = new LegacyTargetingFixture();
+            Require((bool)bind.Invoke(null, new object[] { legacy.GetType() }), "legacy targeting field rejected");
+            Require(ReferenceEquals(read.Invoke(null, new object[] { legacy }), legacy.Value), "legacy context not read");
+            var forwarded = new ForwardingTargetingFixture();
+            Require((bool)bind.Invoke(null, new object[] { forwarded.GetType() }), "forwarding targeting property rejected");
+            Require(ReferenceEquals(read.Invoke(null, new object[] { forwarded }), forwarded.Value), "property context not read");
+            forwarded.Value = new object();
+            Require(ReferenceEquals(read.Invoke(null, new object[] { forwarded }), forwarded.Value), "replacement owner state was cached as a value");
+            foreach (Type invalid in new[] { typeof(MissingTargetingFixture), typeof(WriteOnlyTargetingFixture),
+                typeof(StaticTargetingFixture), typeof(IndexedTargetingFixture) })
+            {
+                Require(!(bool)bind.Invoke(null, new object[] { invalid }), "invalid targeting accessor accepted: " + invalid.Name);
+                Require(compat.GetField("_contextField", flags).GetValue(null) == null &&
+                        compat.GetField("_contextProperty", flags).GetValue(null) == null,
+                    "invalid targeting rebind retained previous owner");
+            }
+            Type shout = module.GetType("AnimusForge.ShoutBehavior", true);
+            object behavior = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(shout);
+            FieldInfo controllerField = shout.GetField("_j17SceneShoutInputController", members);
+            object controller = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(controllerField.FieldType);
+            controllerField.SetValue(behavior, controller);
+            FieldInfo contextField = controllerField.FieldType.GetField("_activeShoutTargetingContext", members);
+            object context = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(contextField.FieldType);
+            contextField.SetValue(controller, context);
+            Require((bool)bind.Invoke(null, new object[] { shout }), "actual migrated ShoutBehavior targeting contract rejected");
+            Require(ReferenceEquals(read.Invoke(null, new object[] { behavior }), context), "actual authoritative context owner not read");
+            contextField.SetValue(controller, null);
+            Require(read.Invoke(null, new object[] { behavior }) == null, "actual owner clear not observed");
+        }
+        finally { uninstall.Invoke(null, null); }
+        Require(compat.GetField("_contextField", flags).GetValue(null) == null &&
+                compat.GetField("_contextProperty", flags).GetValue(null) == null,
+            "uninstall retained targeting accessor metadata");
+    }
+
+    private sealed class LegacyTargetingFixture
+    {
+        private object _activeShoutTargetingContext = new object();
+        internal object Value => _activeShoutTargetingContext;
+    }
+    private sealed class ForwardingTargetingFixture
+    {
+        internal object Value = new object();
+        private object _activeShoutTargetingContext => Value;
+    }
+    private sealed class MissingTargetingFixture { }
+    private sealed class WriteOnlyTargetingFixture { private object _activeShoutTargetingContext { set { } } }
+    private sealed class StaticTargetingFixture { private static object _activeShoutTargetingContext => new object(); }
+    private sealed class IndexedTargetingFixture
+    {
+        [System.Runtime.CompilerServices.IndexerName("_activeShoutTargetingContext")]
+        public object this[int index] => new object();
     }
 
     private static void VerifyConversationEpochAccessor()
