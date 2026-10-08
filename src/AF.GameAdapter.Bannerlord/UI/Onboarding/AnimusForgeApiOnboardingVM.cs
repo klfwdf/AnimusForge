@@ -438,6 +438,9 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private float _toastTimer;
 	private CancellationTokenSource _testCts;
+    private CancellationTokenSource _yjProbeCts;
+    private string _selectedYjUrl = YjEndpointProbe.DefaultUrl;
+    internal Func<CancellationToken, Task<YjEndpointProbe.Result>> ProbeYjEndpoints = YjEndpointProbe.SelectAsync;
 	private readonly OnboardingUiDispatchOwner _uiDispatch = new OnboardingUiDispatchOwner();
 
 	public AnimusForgeApiOnboardingVM(bool isApiOnlyFlow, Action onCompleted, Action onCancelled)
@@ -533,6 +536,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private void SwitchView(OnboardingView view)
 	{
+        CancelYjProbe();
 		_currentView = view;
 		OnPropertyChanged(nameof(IsMainViewVisible));
 		OnPropertyChanged(nameof(IsYjMenuViewVisible));
@@ -573,9 +577,38 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	// ================= Actions: Main Cards =================
 	public void ExecuteSelectYj()
 	{
+        if (_yjProbeCts != null) return;
         _usingExistingConfig = false;
-		SwitchView(OnboardingView.YjMenu);
+        var cts = _yjProbeCts = new CancellationTokenSource();
+        ShowToast("正在测试 YJ 三条线路，完成后进入接入方式选择…");
+        _toastTimer = 9f;
+        _ = ProbeYjAndOpenAsync(cts);
 	}
+
+    private async Task ProbeYjAndOpenAsync(CancellationTokenSource cts)
+    {
+        try
+        {
+            var result = await ProbeYjEndpoints(cts.Token).ConfigureAwait(false);
+            _uiDispatch.Post(() => {
+                if (!ReferenceEquals(_yjProbeCts, cts) || cts.IsCancellationRequested) return;
+                _yjProbeCts = null;
+                if (result == null) { ShowToast("YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。"); return; }
+                _selectedYjUrl = result.Url;
+                SwitchView(OnboardingView.YjMenu);
+                SubtitleText = "已选线路：" + new Uri(result.Url).Host + " · 响应约 " + Math.Round(result.Milliseconds) + " ms；请选择接入方式";
+            });
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { _uiDispatch.Post(() => { if (ReferenceEquals(_yjProbeCts, cts)) { _yjProbeCts = null; ShowToast("YJ 线路测速失败，请重试。"); } }); }
+        finally { cts.Dispose(); }
+    }
+
+    private void CancelYjProbe()
+    {
+        var cts = _yjProbeCts; _yjProbeCts = null;
+        try { cts?.Cancel(); } catch (ObjectDisposedException) { }
+    }
 
 	public void ExecuteSelectDeepSeekFlash()
 	{
@@ -702,7 +735,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 				ShowToast("API Key 不能为空");
 				return;
 			}
-			string yjUrl = "https://www.shenlanqaq.com/v1";
+			string yjUrl = _selectedYjUrl;
 			PrimaryUrl = yjUrl;
 			AuxiliaryUrl = yjUrl;
 			PostprocessUrl = yjUrl;
@@ -724,7 +757,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteYjMultiGroup()
 	{
 		_isCustomMode = false;
-		string yjUrl = "https://www.shenlanqaq.com/v1";
+		string yjUrl = _selectedYjUrl;
 		PrimaryUrl = yjUrl;
 		AuxiliaryUrl = yjUrl;
 		PostprocessUrl = yjUrl;
@@ -1073,6 +1106,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteClose()
 	{
+        CancelYjProbe();
 		_uiDispatch.CancelTest();
 		_testCts?.Cancel();
 		_onCancelled?.Invoke();
@@ -1080,6 +1114,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteOpenSupport()
 	{
+        CancelYjProbe();
 		IsSupportModalVisible = true;
 	}
 
@@ -1097,6 +1132,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	// Prompt Overlay Helpers
 	private void OpenKeyPrompt(string title, string hint, Action<string> onConfirm)
 	{
+        CancelYjProbe();
 		KeyPromptTitle = title;
 		KeyPromptHint = hint;
 		PromptKeyInput = "";
@@ -1166,6 +1202,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public override void OnFinalize()
 	{
+        CancelYjProbe();
 		_uiDispatch.Close();
 		base.OnFinalize();
 		_testCts?.Cancel();

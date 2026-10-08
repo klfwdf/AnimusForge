@@ -24,6 +24,8 @@ static class Program
     }
     static void Run(string[] args)
     {
+        YjProbeCases.Run().GetAwaiter().GetResult();
+        if (args.Contains("--yj-only")) return;
         int modeSwitches=0;
         var modeVm=new AnimusForgeNativeConversationOverlayVM(null,()=>modeSwitches++,null,null,null,null);
         Check(modeVm.CanSwitchTalk,"idle mode switch starts enabled");

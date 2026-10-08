@@ -39,7 +39,7 @@ namespace AnimusForge {
  }
 }
 namespace MCM.Abstractions.Attributes { public class SettingPropertyGroupAttribute:Attribute {public SettingPropertyGroupAttribute(string s){}public int GroupOrder{get;set;}} }
-namespace MCM.Abstractions.Attributes.v2 { public class SettingPropertyBoolAttribute:Attribute {public SettingPropertyBoolAttribute(string s){}public int Order{get;set;}public bool RequireRestart{get;set;}public string HintText{get;set;}}
+namespace MCM.Abstractions.Attributes.v2 { public class SettingPropertyIntegerAttribute:Attribute {public SettingPropertyIntegerAttribute(string s,int min,int max,string format){} public int Order{get;set;}public bool RequireRestart{get;set;}public string HintText{get;set;}} public class SettingPropertyBoolAttribute:Attribute {public SettingPropertyBoolAttribute(string s){}public int Order{get;set;}public bool RequireRestart{get;set;}public string HintText{get;set;}}
  public class SettingPropertyDropdownAttribute:Attribute {public SettingPropertyDropdownAttribute(string s){}public int Order{get;set;}public bool RequireRestart{get;set;}public string HintText{get;set;}} }
 namespace MCM.Abstractions.Base.Global { public abstract class AttributeGlobalSettings<T> {public static T Instance; public abstract string Id{get;}public abstract string DisplayName{get;}public abstract string FolderName{get;}public abstract string FormatType{get;}} }
 namespace MCM.Common {public class Dropdown<T> {public int SelectedIndex;public Dropdown(T[] values,int index){SelectedIndex=index;}} }
