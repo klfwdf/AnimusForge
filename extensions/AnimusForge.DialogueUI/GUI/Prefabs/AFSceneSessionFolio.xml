@@ -137,7 +137,21 @@
                       </Children>
                     </Widget>
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="440" SuggestedHeight="16" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="73" MarginTop="941" Text="[Enter] 发送 · [Shift+Enter] 换行 · 按受众名单同步分发" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#B09572FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="440" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="73" MarginTop="959" Text="@StatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="350" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="73" MarginTop="959" Text="@StatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="80" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="459" MarginTop="957" IsVisible="@IsIllustrationVisible" DoNotAcceptEvents="true">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="78" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#2A1E14E0" DoNotAcceptEvents="true" />
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="80" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="BlankWhiteSquare_9" Color="#9E7A46FF" DoNotAcceptEvents="true" />
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="80" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="27" Sprite="BlankWhiteSquare_9" Color="#9E7A46FF" DoNotAcceptEvents="true" />
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#9E7A46FF" DoNotAcceptEvents="true" />
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="79" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#9E7A46FF" DoNotAcceptEvents="true" />
+                      </Children>
+                    </Widget>
+                    <ButtonWidget Id="AFRowGallery" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="80" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="459" MarginTop="957" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteOpenGallery" IsVisible="@IsIllustrationVisible">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="画廊" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#E8D5B5FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="39" MarginTop="992" DoNotAcceptEvents="true">
                       <Children>
                         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="68" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#2A1E14E0" DoNotAcceptEvents="true" />

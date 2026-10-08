@@ -1,0 +1,46 @@
+using System;
+using System.Threading.Tasks;
+class Mission { }
+class IllustrationScope { public bool Closed; public void Close() { Closed = true; } }
+class MissionScreenshotCapture {
+ public TaskCompletionSource<object> Done = new TaskCompletionSource<object>();
+ public Task Completion => Done.Task;
+ public int Ticks;
+ public void Tick() { Ticks++; }
+ public void Cancel(string s) { Done.TrySetResult(null); }
+}
+static class ShoutBehavior { public static int Changes; public static void NotifySceneIllustrationChangedForExternal() { Changes++; } }
+class InformationMessage { public InformationMessage(string s) { } }
+static class InformationManager { public static void DisplayMessage(InformationMessage message) { } }
+class Program {
+ static MissionScreenshotCapture _capture;
+ static IllustrationScope _scope;
+ static Action _openProgress;
+ static string _status;
+ static int statuses,checks;
+ static void SetStatus(Mission mission,string status) { statuses++; _status = status; }
+ __TickCapture__
+ __Finish__
+ __ScopeClosed__
+ static void Check(bool value,string label) { if (!value) throw new Exception(label); checks++; }
+ static void Main() {
+  var mission = new Mission(); var first = new IllustrationScope(); var a = new MissionScreenshotCapture();
+  _scope=first;_capture=a;int opens=0;_openProgress=()=>opens++;
+  TickCapture(); Check(ReferenceEquals(_capture,a) && opens==0,"pending native capture retains gate");
+  a.Done.SetResult(null);TickCapture();
+  Check(_capture==null && !first.Closed && ReferenceEquals(_scope,first),"camera gate released while first job continues");
+  Check(opens==1 && ShoutBehavior.Changes==1,"unlock notification and progress happen once");
+  TickCapture();Check(opens==1 && a.Ticks==2,"background job does not keep ticking native capture");
+  var second=new IllustrationScope();var b=new MissionScreenshotCapture();_scope=second;_capture=b;_openProgress=()=>opens++;
+  Finish(first,a,mission,"first saved");
+  Check(first.Closed && !second.Closed && ReferenceEquals(_scope,second),"old completion cannot close new generation");
+  Check(ReferenceEquals(_capture,b) && statuses==0 && _openProgress!=null,"old completion cannot clear new camera/status/progress");
+  ScopeClosed(first,a,mission);Check(ReferenceEquals(_capture,b) && statuses==0,"late old cleanup cannot cancel new capture");
+  b.Done.SetResult(null);TickCapture();Check(opens==2 && _capture==null,"second capture independently unlocks");
+  Finish(second,b,mission,"second saved");Check(second.Closed && _scope==null && statuses==1,"latest completion cleans only itself");
+  var third=new IllustrationScope();var c=new MissionScreenshotCapture();_scope=third;_capture=c;_openProgress=()=>{throw new Exception("UI");};
+  c.Done.SetResult(null);TickCapture();Check(_capture==null && !third.Closed,"UI open failure does not cancel admitted background work");
+  ScopeClosed(third,c,mission);Check(_scope==null && _openProgress==null,"current cancellation clears owned state");
+  Console.WriteLine("PASS "+checks+" production-method scene multi-job lifecycle checks; native and HTTP boundaries are doubles.");
+ }
+}

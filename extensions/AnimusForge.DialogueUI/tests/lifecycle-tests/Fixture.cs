@@ -64,7 +64,7 @@ namespace AnimusForge
         private static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int agent, int limit) => new() { "history" };
     }
     public class ShoutTextInputPopup { private object _dataSource; private void Close(bool silent) { } }
-    public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public bool IsIllustrationVisible => false; public bool CanIllustrate => false; public string IllustrationButtonText => ""; public void ExecuteIllustrate() { } public void ExecuteSubmit() { } public void ExecuteCancel() { } }
+    public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public bool IsIllustrationVisible => false; public bool CanIllustrate => false; public string IllustrationButtonText => ""; public void ExecuteIllustrate() { } public void ExecuteOpenGallery() { } public void ExecuteSubmit() { } public void ExecuteCancel() { } }
     public static class AnimusForgeNativeConversationOverlay { public static void CloseActive() { } }
     public static class LordEncounterBehavior { public static void PreparePlayerRequestedNativeConversationLeave() { } }
 }
