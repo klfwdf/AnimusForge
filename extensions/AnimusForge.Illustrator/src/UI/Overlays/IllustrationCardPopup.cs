@@ -42,6 +42,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly bool _autoFullscreen;
         private string _activeSpriteName;
         private bool _closed;
+        private IDisposable _redrawEditor;
         private TaleWorlds.MountAndBlade.Mission _screenshotMission;
         private int _generationCount;
         private int _cacheLoadVersion;
@@ -222,7 +223,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (_editingRedrawPrompt || _displayedImage == null || !_dataSource.CanRegenerateBasedOnImage) return;
             var source = _displayedImage;
             string session = _category == "conversation" ? ConversationSessionOwnerKey() : null;
-            IllustrationRedrawPromptEditor.Show(_imageEditDraft,
+            _redrawEditor = IllustrationRedrawPromptEditor.Show(_imageEditDraft,
                 () => !_closed && _scope.IsCurrent && ReferenceEquals(_activeInstance, this) &&
                     ReferenceEquals(source, _displayedImage) && !_dataSource.IsLoading &&
                     (_category != "conversation" || session == ConversationSessionOwnerKey()),
@@ -238,19 +239,20 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         else _dataSource.SetReady("重绘失败：" + (completion.Result?.ErrorMessage ?? "未能保存或显示图片"));
                     }, error => _dataSource.SetReady("重绘失败：" + error));
                 }, status => _dataSource.StatusText = status,
-                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } }, basedOnImage: true);
+                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } }, basedOnImage: true, inputOwner: _layer, isInputOwnerAlive: () => !_closed);
         }
 
         private void OpenRedrawPromptEditor()
         {
             if (_editingRedrawPrompt) return;
             string ownerKey = _category == "conversation" ? ConversationSessionOwnerKey() : null;
-            IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
+            _redrawEditor = IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
                 () => !_closed && _scope.IsCurrent && ReferenceEquals(_activeInstance, this) && !_dataSource.IsLoading &&
                     (_category != "conversation" || ownerKey == ConversationSessionOwnerKey()),
                 prompt => { _playerRedrawDraft = prompt; Regenerate(prompt); },
                 status => _dataSource.StatusText = status,
-                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } });
+                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } },
+                inputOwner: _layer, isInputOwnerAlive: () => !_closed);
         }
 
         private void OnDefaultImageChanged(CachedIllustrationItem image)
@@ -1163,6 +1165,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_closed) return;
             _closed = true;
+            try { _redrawEditor?.Dispose(); } catch (Exception ex) { Debug.Print("[Illustrator] Editor cleanup failed: " + ex.Message); } finally { _redrawEditor = null; }
             _openingSceneBase64 = null;
             _openingSceneSessionKey = null;
             _autoRedrawPending = false;

@@ -15,6 +15,7 @@ public sealed class DevWeeklyReportPopup
 	private readonly ScreenBase _screen;
 
 	private readonly GauntletLayer _layer;
+    private DevPopupInputLease _illustrationInput;
 
 	private readonly ViewModel _dataSource;
 
@@ -58,9 +59,18 @@ public sealed class DevWeeklyReportPopup
 
 	private void SetIllustrationPromptEditing(bool editing)
 	{
-		if (_session.IsClosed || _session.IsSuspended) return;
-		_illustrationPromptEditing = editing;
-		if (_layer?.UIContext?.Root != null) _layer.UIContext.Root.IsVisible = !editing;
+        if (editing && (_session.IsClosed || _session.IsSuspended)) return;
+        _illustrationPromptEditing = editing;
+        if (editing)
+            _illustrationInput ??= new DevPopupInputLease(_screen, _layer, () => !_session.IsClosed && !_session.IsSuspended);
+        else
+        {
+            var lease = _illustrationInput;
+            _illustrationInput = null;
+            lease?.Dispose();
+        }
+        if (!_session.IsClosed && !_session.IsSuspended && _layer?.UIContext?.Root != null)
+            _layer.UIContext.Root.IsVisible = !editing;
 	}
 
 	// Separate name from Show so name-based Harmony hooks on Show keep resolving to the weekly-report overload only.
@@ -293,6 +303,7 @@ public sealed class DevWeeklyReportPopup
 		{
 			return;
 		}
+        try { _illustrationInput?.Dispose(); } catch (Exception ex) { Logger.Log("DevWeeklyReportPopup", "[WARN] Illustration input cleanup failed: " + ex.Message); } finally { _illustrationInput = null; }
 		try
 		{
 			// Release the modal input mask before opening the lower-priority encyclopedia layer.
