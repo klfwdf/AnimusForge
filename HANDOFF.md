@@ -1,4 +1,10 @@
-# 当前交接：场景轮盘、连续回复可见性与名录动画
+# 当前交接：玩家外交与解析截断修复整合远端主分支（2026-10-09）
+
+- 产品 `04f07b12c`，从最新远端 `b41587eca` 在独立 `codex/bugfix-main-20261009` 整合；保留远端回应恢复、具体拒绝原因及通知修复。玩家相关外交豁免AI节奏/独立外交权/动作限制，支持废约后宣战等顺序多动作；解析使用对应API输出预算，截断停止重复请求并保留原文/重新解析入口。
+- 最终外交4088、回应恢复26、实际生产端口效果回读182、实际DLL HTTP与精确宣战授权回归，以及1.4构建PASS。1.5因远端旧构建基线仍不支持而未验证；实机/真实服务未验。用户已授权推送origin/main；原本地1.5适配目录不修改，不部署游戏。
+- [唯一台账、源码坐标与验证限制](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-diplomacy-analysis-fix-20261009)、[现有代码导航](docs/architecture/af-framework-code-scope.md)。本地收据 `artifacts/player-diplomacy-analysis-fix-20261009/integration-receipt.json`；产品回滚仅focused revert `04f07b12c`。下方其他交付记录保持。
+
+# 历史交接：场景轮盘、连续回复可见性与名录动画
 
 产品`f634a8c03`组合修复菜单迁移owner断链、TTSoff文本feed延迟、名录主体贴顶及0.25秒卷收；外交第三方消息文案/路由日志澄清。轮盘21、sink68、生命周期117/54/30、UI125、通知107 PASS；最终两DLL真实TriggerShout→分类→ShowPrefix及trade契约、官方双API/Bootstrap/双coup接缝/Stage PASS。2010产品输入冻结，其后测试提交不改变产品。
 
