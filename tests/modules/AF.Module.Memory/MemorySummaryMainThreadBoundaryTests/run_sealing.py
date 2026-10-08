@@ -160,10 +160,11 @@ def main():
  fixture=(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig');fixture=fixture[:fixture.index('  static void ThreeKinds() {')]+'\n}}'
  fixture=exact(fixture,'private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;','private static double GetDailyMaintenanceFrameBudgetMs() { SealProbe.Hit("budget-settings"); return SealProbe.Budget; }')
  fixture,count=re.subn(r'^  bool HasCompressedMemoryBlock\([^\n]+\n','',fixture,flags=re.M);assert count==1
- input_code=read('MyBehavior.MemorySummaryInput.cs')
+ support=module('sealing_current_pipeline_support',HERE/'business_owner_fixture_support.py')
+ input_code=read('MyBehavior.MemorySummaryInput.cs') if baseline else support.captured_input_source(ROOT,manifest,ex)
  old_delay='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
  if old_delay in input_code:input_code=exact(input_code,old_delay,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
- else:input_code=exact(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
+ elif baseline:input_code=exact(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
  variant=('original-'+baseline if baseline else (a.mutate or 'current'));out=new_run_root(ROOT,'memory-b1a-sealing',a.run_root)
  deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll';assert deps.exists()
  product=apply_product_mutation(product, a.mutate)
@@ -210,7 +211,7 @@ def main():
   seal=exact(seal,'foreach (var owner in state.CompletedOwners)\n        {','foreach (var owner in state.CompletedOwners)\n        { SealProbe.Hit("completed-owner-check");')
   files['MemorySealing.cs']=apply_seal_mutation(seal, None if shared_budget and a.mutate in ('unbounded-metadata','unbounded-expensive','ignore-deadline') else a.mutate)
  if not baseline and '_memoryBusinessState.Sealing' in read('MyBehavior.MemorySealing.cs'):
-  support=module('sealing_state_support',HERE/'business_owner_fixture_support.py');support.include(ROOT,files,manifest,ex)
+  support.include_captured_leaves(ROOT,files,manifest,ex);support.include(ROOT,files,manifest,ex)
  if 'CooperativeMemoryQueueSort' in files.get('MemorySealing.cs',''):
   path='src/modules/AF.Module.Memory/Summary/CooperativeMemoryQueueSort.cs';sort=read(path)
   manifest.append(dict(file=path,sha256=hashlib.sha256(sort.encode()).hexdigest(),whole_component=True))
@@ -221,7 +222,7 @@ def main():
   if a.mutate=='ignore-sort-culture':sort=exact(sort,'_compareInfo.Equals(CultureInfo.CurrentCulture.CompareInfo)','true')
   files.pop('CooperativeMemoryQueueSort.cs',None)
   files['QueueSort.cs']=sort
- if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
+ if 'ComputeMemorySummarySourceFingerprint(source)' in input_code or 'MemorySourceFingerprintRules.Compute(source)' in input_code:
   for name in ['MyBehavior.MemorySourceFingerprint.cs','src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']:
    files[Path(name).name]=read(name)
    manifest.append(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True))
@@ -238,6 +239,7 @@ def main():
  files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
  for path,text in files.items():(out/path).write_bytes(text.encode())
  meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['Owner sanitizer is per-draft; lines/trigger binds use metadata grants, trigger list sanitize stays atomic','No real game/save/provider or overall frame-time acceptance'])
+ meta['currentCaptureExecutionScope'] = None if baseline else {'inputCapture': 'whole current InputCapture', 'application': 'current execution/parser/queue-receipt member closure; sealing assertions remain unchanged', 'commitAdmission': 'outside captured component'}
  (out/'manifest.json').write_bytes(json.dumps(meta,ensure_ascii=False,indent=2).encode())
  dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')));(out/'home').mkdir();(out/'appdata').mkdir();env = minimal_test_environment(dotnet, out)
  build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'build.log').write_bytes((build.stdout+build.stderr).encode())

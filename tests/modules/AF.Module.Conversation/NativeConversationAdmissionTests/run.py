@@ -1,4 +1,4 @@
-import argparse,importlib.util,os,subprocess,hashlib,json
+import argparse,importlib.util,os,subprocess,hashlib,json,re
 from pathlib import Path
 import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -23,6 +23,8 @@ baseline=subprocess.check_output(['git','show','14dec2d7:ShoutBehavior.cs'],cwd=
 assert ex.declaration(s,'public static bool CanSubmitNativeConversationForExternal()')==ex.declaration(baseline,'public static bool CanSubmitNativeConversationForExternal()')
 pre=body.split('\t\tStopwatch nativeActionSw =')[0]
 capture=ex.declaration((ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
+assert 'SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPreparation(NativePreparationCapturePorts,' in capture
+capture=ex.declaration((ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig'),'internal static NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
 reply_host=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeMainReply.cs').read_text(encoding='utf-8-sig')
 assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==7
 assert reply_host.count('IsNativeConversationAdmissionCurrent(_admission, out ')==1
@@ -40,11 +42,20 @@ overlay=(ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNative
 assert overlay.count('catch (ShoutBehavior.NativeConversationAdmissionException ex)')==2
 assert 'ShoutBehavior.IsNativeConversationBackendBusy()' in ex.declaration(overlay,'private void HandleSubmitRequested(')
 opening=ex.declaration(overlay,'private void TryStartPendingNpcOpening(');assert opening.index('IsNativeConversationBackendBusy')<opening.index('_npcOpeningAutoStarted = true')
-if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))','if (false)',1)
-if args.mutate=='release-new-slot':partial=partial.replace('_nativeAdmissionOwner.Release(admission);','_nativeAdmissionOwner.Release(_nativeAdmissionOwner.Current);',1)
-if args.mutate=='skip-timeout-cas':partial=partial.replace('if (!dispatchClaim.TryStart())','if (false)',1)
-if args.mutate=='skip-generation':partial=partial.replace('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false',1)
-if args.mutate=='skip-queued-epoch':partial=partial.replace('|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)', '|| false', 1)
+application=(ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs').read_text(encoding='utf-8-sig')
+admission_mutations={
+ 'drop-busy':('if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))','if (false)'),
+ 'release-new-slot':('_nativeAdmissionOwner.Release(admission);','_nativeAdmissionOwner.Release(_nativeAdmissionOwner.Current);'),
+ 'skip-timeout-cas':('if (!dispatchClaim.TryStart())','if (false)'),
+ 'skip-generation':('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false'),
+ 'skip-queued-epoch':('|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)','|| false'),
+}
+if args.mutate in admission_mutations:
+ before,after=admission_mutations[args.mutate]
+ # Release mutation retains its original first finally target, despite other legitimate cleanup sites.
+ assert application.count(before)==(3 if args.mutate=='release-new-slot' else 1)
+ application=application.replace(before,after,1)
+
 overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNativeConversationOverlay.cs'],cwd=ROOT).decode('utf-8-sig') if args.mutate=='old-overlay-finalizer' else overlay
 finalizers=[]
 for signature,name in [('private async Task SubmitAsync(string text)', 'CompletePlayer'),('private async Task SubmitNpcInitiatedOpeningAsync(', 'CompleteOpening')]:
@@ -69,7 +80,12 @@ if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNat
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
-code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
+code=core_fixture.migrate_admission_fixture(code)
+binding=re.search(r'NativeAdmissions = new NativeAdmissionApplicationAdapter\([^;]+;', (ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'));assert binding is not None
+host_anchor='public partial class ShoutBehavior';assert code.count(host_anchor)==1
+position=code.index('{',code.index(host_anchor))+1;code=code[:position]+'\npublic ShoutBehavior() {'+binding.group(0)+'}\n'+code[position:]
+(out/'NativeAdmissionApplicationAdapter.cs').write_text(application,encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

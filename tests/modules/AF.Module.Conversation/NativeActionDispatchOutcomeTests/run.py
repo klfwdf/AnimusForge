@@ -1,7 +1,11 @@
 import argparse,importlib.util,subprocess,os,hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--retirement-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);args=p.parse_args();assert not (args.original and args.timeout_baseline)
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--retirement-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);p.add_argument('--run-root',type=Path);args=p.parse_args();assert not (args.original and args.timeout_baseline)
+import sys
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, minimal_test_environment
+out=new_run_root(ROOT,'native-action-dispatch-outcome',args.run_root)
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline else '807bc5b9' if args.retirement_baseline else None
 import sys
@@ -32,7 +36,7 @@ if args.mutate=='keep-failed-queue-live':code=code.replace('if (dispatchClaim.Tr
 if args.mutate=='skip-dispatch-timeout':code=code.replace('PendingOperationRegistry.AwaitRelease(AwaitDispatch(), registration)','PendingOperationRegistry.AwaitRelease(tcs.Task, registration)',1)
 if args.mutate=='leave-expired-callback-live':code=code.replace('winner != tcs.Task && dispatchClaim.TryExpireBeforeStart()','winner != tcs.Task && new NativeConversationDispatchClaim().TryExpireBeforeStart()',1)
 if args.mutate=='expire-started-dispatch':code=code.replace('winner != tcs.Task && dispatchClaim.TryExpireBeforeStart()','winner != tcs.Task && true',1)
-out=HERE/'.generated'/('original' if args.original else 'timeout-baseline' if args.timeout_baseline else 'retirement-baseline' if args.retirement_baseline else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+# The per-run root is allocated before source extraction; never reuse generated output.
 (out/'Program.cs').write_text(code,encoding='utf-8');enum=ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState');(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+enum,encoding='utf-8')
 if not args.original:
  boundary=subprocess.check_output(['git','show',baseline+':ShoutBehavior.NativeActionDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if args.timeout_baseline else (ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
@@ -58,6 +62,6 @@ if not args.original and not args.timeout_baseline:
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 import sys;sys.path.insert(0,str(ROOT/'tests'));from output_isolation import resolve_dotnet;_dotnet=resolve_dotnet(ROOT)
-env=os.environ.copy();env.update(DOTNET_ROOT=str(_dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+env=minimal_test_environment(_dotnet,out)
 r=subprocess.run([str(_dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log='original='+str(args.original)+' baseline='+str(baseline)+' clockBudgetFixture=40ms/500ms sourceSha256='+hashlib.sha256(s.encode()).hexdigest()+' mutation='+str(args.mutate)+'\n'+r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

@@ -129,17 +129,32 @@ def declaration(text: str, signature: str, optional: bool = False) -> str:
         if optional:
             return ""
         raise ValueError(f"Missing source declaration: {signature}")
-    opening = text.index("{", start)
-    tokens = re.compile(r'@"(?:[^"]|"")*"|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\n]*|/\*[\s\S]*?\*/|[{}]')
-    depth = 0
-    for match in tokens.finditer(text, opening):
+    tokens = re.compile(r'@"(?:[^"]|"")*"|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\n]*|/\*[\s\S]*?\*/|=>|[{}();\[\]]')
+    braces = parentheses = brackets = 0
+    body = False
+    arrow = False
+    for match in tokens.finditer(text, start):
         token = match.group()
-        if token == "{":
-            depth += 1
-        elif token == "}":
-            depth -= 1
-            if depth == 0:
+        if token == '(':
+            parentheses += 1
+        elif token == ')':
+            parentheses -= 1
+        elif token == '[':
+            brackets += 1
+        elif token == ']':
+            brackets -= 1
+        elif token == '=>' and not body and parentheses == brackets == braces == 0:
+            arrow = True
+        elif token == '{':
+            if not arrow and brackets == braces == 0:
+                body = True
+            braces += 1
+        elif token == '}':
+            braces -= 1
+            if body and braces == 0:
                 return text[start:match.end()]
+        elif token == ';' and arrow and parentheses == brackets == braces == 0:
+            return text[start:match.end()]
     raise ValueError(f"Unterminated source declaration: {signature}")
 
 

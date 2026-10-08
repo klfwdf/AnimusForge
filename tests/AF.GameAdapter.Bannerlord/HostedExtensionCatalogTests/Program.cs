@@ -30,7 +30,12 @@ internal static class Program
         string[] ids=deferCoup?new[]{HostedExtensionCatalog.Illustrator,HostedExtensionCatalog.DialogueUi,HostedExtensionCatalog.Vengeance}
             :new[]{HostedExtensionCatalog.Illustrator,HostedExtensionCatalog.DialogueUi,HostedExtensionCatalog.Coup,HostedExtensionCatalog.Vengeance};
         Check(!ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Illustrator,InternalModuleRuntimeState.Ready,"before.init"),"cannot report before init");
-        Fresh();Check(Snapshot().Modules.Count==3+ids.Length,"three existing ports plus hosted catalog");
+        Fresh();Check(Snapshot().Modules.Count==4+ids.Length
+            && Snapshot().Modules.Select(m=>m.Id).OrderBy(id=>id,StringComparer.Ordinal).SequenceEqual(
+                new[]{"af.team.policy","af.team.gathering","af.team.siege","af.team.diplomacy"}.Concat(ids).OrderBy(id=>id,StringComparer.Ordinal))
+            && Snapshot().Modules.Single(m=>m.Id=="af.team.diplomacy").Capabilities.Select(c=>c.Id).OrderBy(id=>id,StringComparer.Ordinal).SequenceEqual(
+                new[]{"af.team.diplomacy.dialogue","af.team.diplomacy.policy","af.team.diplomacy.world"}),
+            "four existing ports with exact Diplomacy capabilities plus hosted catalog");
         foreach(string id in ids){State(id,AfModuleCapabilityState.NotInitialized,"not automatically ready: "+id);Check(Cap(id).Id==id+".host"&&!Cap(id).IsExternallyCallable,"metadata is not an executor: "+id);}
         Check(!ModuleFrameworkRuntime.ReportHostedExtensionState("af.team.policy",InternalModuleRuntimeState.Failed,"bad"),"host cannot alter original port");
         Check(!ModuleFrameworkRuntime.ReportHostedExtensionState("unknown",InternalModuleRuntimeState.Ready,"bad"),"unknown cannot be registered by event");
@@ -54,7 +59,7 @@ internal static class Program
         State("af.team.siege",AfModuleCapabilityState.Unavailable,"existing siege gate retained");
         foreach(string id in ids)State(id,AfModuleCapabilityState.Available,"unrelated gate does not suppress extension: "+id);
         AnimusForge.Refactor.Runtime.FeatureBridgeRuntime.Disabled=false;
-        Parallel.For(0,128,_=>{var s=Snapshot();if(s.Modules.Count!=3+ids.Length||s.Modules.Any(m=>m.Capabilities[0].State!=AfModuleCapabilityState.Available))throw new Exception("parallel snapshot");});checks++;
+        Parallel.For(0,128,_=>{var s=Snapshot();if(s.Modules.Count!=4+ids.Length||s.Modules.Any(m=>m.Capabilities[0].State!=AfModuleCapabilityState.Available))throw new Exception("parallel snapshot");});checks++;
         IntegratedModuleHost.Shutdown();VengeanceRuntimeBridge.Shutdown();
         foreach(string id in ids)State(id,AfModuleCapabilityState.Unavailable,"host stop: "+id);
         var stoppedHost=Snapshot();ModuleFrameworkRuntime.Shutdown();
@@ -105,7 +110,7 @@ internal static class Program
             Fresh();StartAll();TestLeaves.Failure="register.CoupCampaignBehavior";IntegratedModuleHost.RegisterCampaign(new CampaignGameStarter());CheckCoup(AfModuleCapabilityState.Unavailable,"coup campaign failure visible");
             TestLeaves.Failure=null;IntegratedModuleHost.RegisterCampaign(new CampaignGameStarter());CheckCoup(AfModuleCapabilityState.Available,"coup campaign can recover");
         }
-        Fresh();Check(ModuleFrameworkRuntime.Initialize(out _),"repeat init idempotent");Check(Snapshot().Modules.Count==3+ids.Length,"no duplicate directory entries");
+        Fresh();Check(ModuleFrameworkRuntime.Initialize(out _),"repeat init idempotent");Check(Snapshot().Modules.Count==4+ids.Length,"no duplicate directory entries");
         foreach(string id in ids)State(id,AfModuleCapabilityState.NotInitialized,"reload needs actual startup: "+id);
         Console.WriteLine($"PASS {checks} hosted-extension lifecycle checks; fake engine/patch/resource leaves; live NOT_RUN");return 0;
     }

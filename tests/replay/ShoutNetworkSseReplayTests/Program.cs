@@ -53,6 +53,7 @@ void ConfigurePrimary(string endpoint)
     apiKey.SetValue(settings, "replay-secret", null);
     modelName.SetValue(settings, "deepseek-replay", null);
     thinking.SetValue(settings, true, null);
+    settingsType.GetProperty("MainApiStreamingEnabled").SetValue(settings, true, null);
 }
 
 object BuildRequest(string endpoint)

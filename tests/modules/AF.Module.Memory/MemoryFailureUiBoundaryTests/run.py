@@ -29,8 +29,13 @@ if not a.original:
  # The historical full-process inverse predates J17. Bind only this UI publication boundary.
  accepted=subprocess.check_output(['git','show','f6e2ead7:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  assert publication_payloads==[line.strip() for line in accepted.splitlines() if line.strip().startswith('ShowCompressedMemoryBlockingPopup(')],'Unreviewed failure publication call'
+ from af2_terminal_migration_review import restore_j17, verify_bindings
+ # Bind actual current inputs before comparing only the historical publication hook.
+ # Keep s physical: runtime extraction below must exercise today's engine hook.
+ verify_bindings()
+ accepted_source=restore_j17('MyBehavior.cs',s,require_current=True)
  for sig in ['private void ShowCompressedMemoryBlockingPopup(', 'public void OnEngineTick()']:
-  assert ex.declaration(s,sig)==ex.declaration(accepted,sig),'Unreviewed failure UI consumer: '+sig
+  assert ex.declaration(accepted_source,sig)==ex.declaration(accepted,sig),'Unreviewed failure UI consumer: '+sig
  for sig in ['private void ResetLocalTransientRuntimeForLoadedSave(', 'private void ClearAllDataForCurrentSave(']:
   assert 'ResetMemoryFailureNotices();' in ex.declaration(s,sig),'Missing failure reset consumer'
 show=ex.declaration(s,'private void ShowCompressedMemoryBlockingPopup(');tick=ex.declaration(s,'public void OnEngineTick()')
@@ -39,6 +44,14 @@ stubs='\n'.join('private void '+n+'(){OtherTickPhases++;}' for n in re.findall(r
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('string error=',('string failureMessage="fixture failure"; '+('var snapshot=new MemoryRecallRequest { Generation=runtimeGeneration }; ' if not a.original else '')+'string error='),1).replace('@@SHOW@@',show).replace('@@TICK@@',tick).replace('@@TICK_STUBS@@',stubs).replace('@@PRODUCERS@@',' '.join('case '+str(i)+': '+call+' break;' for i,call in enumerate(calls)))
 out=new_run_root(ROOT,'MemoryFailureUiBoundaryTests',a.run_root)
 if not a.original:
+ capture_source=read('src/AF.GameAdapter.Bannerlord/Prompt/MemoryRecallInputCaptureAdapter.cs')
+ publication=ex.declaration(capture_source,'internal static void PublishMemoryRecallFailure(')
+ port_field=re.findall(r'^\s*internal Action<string,string,long> ShowBlockingFailure;',capture_source,re.M)
+ binding=re.findall(r'^\s*ShowBlockingFailure = [^\n]+',recall_adapter,re.M)
+ assert len(port_field)==1 and len(binding)==1,'Actual recall publication capability drift'
+ code='using AnimusForge.Refactor.Adapters;\n'+code
+ code+='\nnamespace AnimusForge.Refactor.Adapters { internal static class MemoryRecallInputCaptureAdapter { internal sealed class CapturePorts { '+port_field[0].strip()+' } '+publication+' }}'
+ code+='\nnamespace AnimusForge { public partial class MyBehavior { private MemoryRecallInputCaptureAdapter.CapturePorts _memoryRecallCapturePorts; private MemoryRecallInputCaptureAdapter.CapturePorts MemoryRecallCapturePorts => _memoryRecallCapturePorts ??= new MemoryRecallInputCaptureAdapter.CapturePorts { '+binding[0].strip()+' }; }}'
  # Source-extract only the scalar request publication projection; the whole recall/run behavior has separate actual owner fixtures.
  request_fields='internal long Generation; internal string BlockingTitle, BlockingMessage;'
  assert 'internal long Generation;' in recall and 'internal string BlockingTitle, BlockingMessage;' in recall
@@ -63,7 +76,7 @@ if not a.original:
  (out/'Notice.cs').write_text(ui,encoding='utf-8')
  (out/'MemoryFailureNoticeOwner.cs').write_text(owner,encoding='utf-8')
  import json
- (out/'source-manifest.json').write_text(json.dumps({'actual_owner_sha256':hashlib.sha256(read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs').encode()).hexdigest(),'actual_host_sha256':hashlib.sha256(read('MyBehavior.MemoryFailureNotice.cs').encode()).hexdigest(),'mutation':a.mutate},indent=2),encoding='utf-8')
+ (out/'source-manifest.json').write_text(json.dumps({'actual_owner_sha256':hashlib.sha256(read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs').encode()).hexdigest(),'actual_host_sha256':hashlib.sha256(read('MyBehavior.MemoryFailureNotice.cs').encode()).hexdigest(),'actual_publication_sha256':hashlib.sha256(publication.encode()).hexdigest(),'actual_capture_source_sha256':hashlib.sha256(capture_source.encode()).hexdigest(),'actual_capture_root_sha256':hashlib.sha256(recall_adapter.encode()).hexdigest(),'publication_layer':'complete actual Publish method plus same-owner scalar capability root; other recall behavior not replayed','mutation':a.mutate},indent=2),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'SaveRuntimeGuard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=str(resolve_dotnet(ROOT))

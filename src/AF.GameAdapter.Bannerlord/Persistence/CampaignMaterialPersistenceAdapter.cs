@@ -6,8 +6,14 @@ using EventSourceMaterialEntry = AnimusForge.MyBehavior.EventSourceMaterialEntry
 namespace AnimusForge;
 
 // IO only: original record owner retains its list, index and rebuild lifecycle.
-internal static class CampaignMaterialPersistenceAdapter
+internal sealed class CampaignMaterialPersistenceAdapter
 {
+    private readonly CampaignMaterialRecordOwner _owner;
+    internal string JsonStorage = "";
+    internal CampaignMaterialPersistenceAdapter(CampaignMaterialRecordOwner owner) { _owner = owner; }
+    internal void Save(IDataStore store) => Save(store, _owner, ref JsonStorage);
+    internal void Load(IDataStore store) => Load(store, _owner, ref JsonStorage);
+
     internal static void Save(IDataStore dataStore, CampaignMaterialRecordOwner owner, ref string json)
     {
 				try

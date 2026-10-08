@@ -34,6 +34,17 @@ def _restore_round2_current_paths(path, source):
     packet = reviewed.get(str(path).replace(chr(92), "/"))
     if packet is None:
         return source
+    # Approved A4 changes affect only fresh output allocation and the SDK environment.
+    # Restore those exact two runners before their original locator/whole-file guards.
+    fresh_output = {'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run.py': {'current_sha256': 'f08023fe71337d9ac6d151d74f8b754a8482ab5c6dc898cb1880db589bb65851', 'reviewed_sha256': '63a2c7f695f1ae58f8f241271f188f4b8252ed53462ef62fe3880a0050dc826a', 'edits': [('from output_isolation import current_source_path\n', 'from output_isolation import current_source_path, new_run_root, resolve_dotnet, minimal_test_environment\n'), ("p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE', r'G:\\AFMOD\\.dotnet-sdk\\dotnet.exe'))\n", "p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE'))\np.add_argument('--run-root', type=Path)\n"), ('', "run_root = new_run_root(ROOT, 'game-lifetime', args.run_root)\ndotnet = resolve_dotnet(ROOT, args.dotnet)\n"), ("    out = HERE / '.generated' / name; out.mkdir(parents=True, exist_ok=True)\n", "    out = new_run_root(ROOT, 'game-lifetime', run_root / name)\n"), ("    status, log = util.run_dotnet(args.dotnet, ['run','--project',str(project),'-c','Release'], out)\n", "    result = subprocess.run([str(dotnet),'run','--project',str(project),'-c','Release'], cwd=out,\n        env=minimal_test_environment(dotnet,out), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)\n    status, log = result.returncode, result.stdout + result.stderr\n")]}, 'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_memory.py': {'current_sha256': '1644ccb9f416847e4794bf6745d0abcefce4de6a707652420be33b0bc3880fed', 'reviewed_sha256': 'b107577c746dbd6714605daa5d15d0fa520e3ff84ab50027379d61348882ed71', 'edits': [('from output_isolation import current_source_path\nimport argparse,importlib.util,os\n', 'from output_isolation import current_source_path, new_run_root, resolve_dotnet, minimal_test_environment\nimport argparse,importlib.util,os,subprocess\n'), ("p=argparse.ArgumentParser();p.add_argument('--mutate',action='store_true');a=p.parse_args()\nout=HERE/'.generated'/('memory-missing-retirement' if a.mutate else 'memory-current');out.mkdir(parents=True,exist_ok=True)\n", "p=argparse.ArgumentParser();p.add_argument('--mutate',action='store_true');p.add_argument('--run-root',type=Path);a=p.parse_args()\nrun_root=new_run_root(ROOT,'game-lifetime-memory',a.run_root)\nout=new_run_root(ROOT,'game-lifetime-memory',run_root/('memory-missing-retirement' if a.mutate else 'memory-current'))\n"), ("status,log=util.run_dotnet(os.environ.get('DOTNET_EXE',r'G:\\AFMOD\\.dotnet-sdk\\dotnet.exe'),['run','--project',str(project),'-c','Release'],out);(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(status)\n", "dotnet=resolve_dotnet(ROOT)\nresult=subprocess.run([str(dotnet),'run','--project',str(project),'-c','Release'],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)\nstatus,log=result.returncode,result.stdout+result.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(status)\n")]}}
+    fresh = fresh_output.get(str(path).replace(chr(92), "/"))
+    if fresh is not None and hashlib.sha256(source.encode()).hexdigest() != packet["before_sha256"]:
+        if hashlib.sha256(source.encode()).hexdigest() != fresh["reviewed_sha256"]:
+            assert hashlib.sha256(source.encode()).hexdigest() == fresh["current_sha256"], "Unreviewed lifetime fresh-output source: " + str(path)
+            for before, after in reversed(fresh["edits"]):
+                assert after and source.count(after) == 1, "Unreviewed lifetime fresh-output context: " + str(path)
+                source = source.replace(after, before, 1)
+            assert hashlib.sha256(source.encode()).hexdigest() == fresh["reviewed_sha256"], "Incomplete lifetime fresh-output inverse: " + str(path)
     if hashlib.sha256(source.encode()).hexdigest() == packet["before_sha256"]:
         return source
     for before, after in reversed(packet["edits"]):
@@ -59,6 +70,27 @@ def restore_commit(source):
  return baseline
 
 def restore_lifetime_dependency(path, source):
+ if path == 'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/Bindings.cs.txt':
+  # Reuse the approved B1_READ declaration inverse for this original lifetime
+  # consumer; ec74 -> 1dec below remains the original, unchanged whole guard.
+  from af2_terminal_migration_review import j17_packet
+  chain = j17_packet()['independentLayers']['F3']['originalGuardChain']
+  rows = [row for row in chain['stages'] if row['stage'] == 'B1_READ' and row['legacyPath'] == path]
+  assert len(rows) == 1, 'Unreviewed lifetime dependency stage'
+  row = rows[0]
+  physical = [item for item in chain['physicalBindings'] if item['path'] == path]
+  owners = chain['actualOwnerBindings']
+  assert len(physical) == 1 and len(owners) == 1 and owners[0]['path'] == 'src/modules/AF.Module.Conversation/Channels/Native/ConversationMainThreadActionDrain.cs', 'Unreviewed lifetime physical binding set'
+  for item in physical + owners:
+   assert hashlib.sha256((ROOT/item['path']).read_bytes()).hexdigest() == item['rawSha256'], 'Unreviewed lifetime physical dependency: '+item['path']
+  source = source.replace('\r\n', '\n')
+  if hashlib.sha256(source.encode()).hexdigest() != row['targetSha256']:
+   assert hashlib.sha256(source.encode()).hexdigest() == row['sourceSha256'], 'Unreviewed game lifetime binding fixture input'
+   assert row['editOrder'] == 'FORWARD_LIST', 'Unreviewed lifetime context order'
+   for edit in row['edits']:
+    assert edit['symbols'] and edit['after'] and edit['after'] != source and source.count(edit['after']) == 1, 'Unreviewed lifetime dependency unique context'
+    source = source.replace(edit['after'], edit['before'], 1)
+   assert hashlib.sha256(source.encode()).hexdigest() == row['targetSha256'], 'Incomplete lifetime dependency inverse'
  source = restore_remote_feature_delta(path, source)
  if path=='tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/Bindings.cs.txt':
   reviewed=subprocess.check_output(['git','show','ec74d44d:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')

@@ -56,11 +56,17 @@ namespace AnimusForge {
     public static class ProactiveNpcRequestBehavior { public static void RecordLetterNeedDeliveredForExternal(string need) { } }
     public static class MainThreadActions { public static void Enqueue(Action action) => action(); }
     public sealed class MemoryProbe { public bool Ready=true, Accept, Completed, Missing, RejectPermanent; public int Attempts, LastDay=-1; public string LastLocation, LastHistory, LastFact, LastDate; public int LastHour; public List<string> Sessions=new(); }
+    // Calendar lookup is a controlled game leaf; the date policy below is extracted verbatim.
+    internal static class MemoryEntityIdentityBannerlordAdapter {
+        internal static string GetCurrentGameDateTextSafe() => TaleWorlds.CampaignSystem.CampaignTime.Now.ToString();
+    }
+    internal sealed class MemoryHistoryCommitBannerlordAdapter {
+@@MEMORYDATE@@
+    }
     public static class MyBehavior {
         public static MemoryProbe Owner;
         private static string GetCurrentGameDateTextSafe() => TaleWorlds.CampaignSystem.CampaignTime.Now.ToString();
-        public static string DateForTests(int originDay, int currentDay) => ResolveInteractionMemoryOriginGameDate(originDay, currentDay);
-@@MEMORYDATE@@
+        public static string DateForTests(int originDay, int currentDay) => MemoryHistoryCommitBannerlordAdapter.ResolveInteractionMemoryOriginGameDate(originDay, currentDay);
         public static string ResolveCurrentMemorySceneLabelForExternal() => "delivery-scene";
         public static bool TryPrepareExternalDialogueHistoryRecoveryIdentity(InteractionMemoryCommit commit, bool isNonHero,
             string npcName, out string recoveryId, out string payloadHash, out string error) {

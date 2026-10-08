@@ -57,20 +57,26 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+    private MemoryRecallInputCaptureAdapter.CapturePorts _memoryRecallCapturePorts;
+    private MemoryRecallInputCaptureAdapter.CapturePorts MemoryRecallCapturePorts => _memoryRecallCapturePorts ??= new MemoryRecallInputCaptureAdapter.CapturePorts
+    {
+        LoadBlocks = _memoryBusinessState.LoadBlocks,
+        LoadDrafts = _memoryBusinessState.LoadDrafts,
+        FinalCount = MemoryBusinessStateOwner.GetMemoryFinalInjectCountFromSettings,
+        CandidateLimit = MemoryBusinessStateOwner.GetMemoryCandidateLimitFromSettings,
+        PreprocessMode = MemoryBusinessStateOwner.GetMemoryPreprocessModeFromSettings,
+        ShowBlockingFailure = (title, message, generation) => MemoryFailureNotices.PublishMemoryFailureNotice(title, message, generation)
+    };
+
 	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts, string capturedScene = null)
-	{
-		return MemoryRecallContextOwner.BuildMemoryRecallQueryText(currentInput, secondaryInput, drafts, capturedScene ?? ResolveCurrentMemorySceneLabel());
-	}
+    {
+        return MemoryRecallInputCaptureAdapter.BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts, capturedScene);
+    }
 
 	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error, long runtimeGeneration, HistoryPromptSnapshot snapshot = null)
-	{
-
-        MemoryRecallRequest request = CaptureMemoryRecallRequest(hero?.StringId, currentInput, secondaryInput, snapshot, blocks, drafts);
-        if (snapshot == null && blocks != null && blocks.Count > candidateLimit)
-            request.RecallQuery = BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts, request.Scene);
-        try { return MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks, currentInput, secondaryInput, drafts, candidateLimit, out candidates, out error, runtimeGeneration, request); }
-        finally { PublishMemoryRecallFailure(request); }
-	}
+    {
+        return MemoryRecallInputCaptureAdapter.TryBuildMemoryRecallCandidates(MemoryRecallCapturePorts, hero, blocks, currentInput, secondaryInput, drafts, candidateLimit, out candidates, out error, runtimeGeneration, snapshot);
+    }
 
 	private static void AssignMemoryCandidateDisplayIds(List<MemoryRecallCandidate> candidates)
 	{
@@ -78,20 +84,14 @@ public partial class MyBehavior
 	}
 
 	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error, long runtimeGeneration, HistoryPromptSnapshot snapshot = null)
-	{
-
-        MemoryRecallRequest request = CaptureMemoryRecallRequest(null, currentInput, secondaryInput, snapshot, new List<CompressedMemoryBlock>(), new List<DailyMemoryDraft>());
-        try { return MemoryRecallContextOwner.TrySelectMemoryIdsWithPreprocess(candidates, finalCount, currentInput, secondaryInput, out selectedIds, out error, runtimeGeneration, request); }
-        finally { PublishMemoryRecallFailure(request); }
-	}
+    {
+        return MemoryRecallInputCaptureAdapter.TrySelectMemoryIdsWithPreprocess(MemoryRecallCapturePorts, candidates, finalCount, currentInput, secondaryInput, out selectedIds, out error, runtimeGeneration, snapshot);
+    }
 
 	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput, HistoryPromptSnapshot snapshot = null)
-	{
-
-        var request = CaptureMemoryRecallRequest(memoryId, currentInput, secondaryInput, snapshot, null, null);
-        try { return MemoryRecallContextOwner.BuildCompressedMemoryContextById(memoryId, currentInput, secondaryInput, request); }
-        finally { PublishMemoryRecallFailure(request); }
-	}
+    {
+        return MemoryRecallInputCaptureAdapter.BuildCompressedMemoryContextById(MemoryRecallCapturePorts, memoryId, currentInput, secondaryInput, snapshot);
+    }
 
 	private static string FormatPastAfefLineForPrompt(string text)
 	{
@@ -106,29 +106,11 @@ public partial class MyBehavior
     private MemoryRecallRequest CaptureMemoryRecallRequest(string memoryId, string currentInput, string secondaryInput,
         HistoryPromptSnapshot snapshot, List<CompressedMemoryBlock> blocks, List<DailyMemoryDraft> drafts)
     {
-        string id = NormalizeMemoryHeroId(memoryId);
-        blocks = blocks ?? snapshot?.Blocks ?? LoadCompressedMemoryBlocksById(id);
-        drafts = drafts ?? (snapshot == null ? LoadDailyMemoryDraftsById(id) : null);
-        string scene = snapshot?.Scene ?? ResolveCurrentMemorySceneLabel();
-        int finalCount = snapshot?.FinalCount ?? GetMemoryFinalInjectCountFromSettings();
-        int candidateLimit = snapshot?.CandidateLimit ?? GetMemoryCandidateLimitFromSettings();
-        return new MemoryRecallRequest
-        {
-            Generation = snapshot?.Generation ?? SaveRuntimeGuard.CaptureGeneration(),
-            GameDay = snapshot?.GameDay ?? GetCurrentGameDayIndexSafe(), Scene = scene,
-            FinalCount = finalCount,
-            CandidateLimit = candidateLimit,
-            PreprocessMode = snapshot?.PreprocessMode ?? GetMemoryPreprocessModeFromSettings(),
-            BlockCount = snapshot?.BlockCount ?? blocks.Count, DraftCount = snapshot?.DraftCount ?? (drafts?.Count ?? 0),
-            Blocks = blocks, Drafts = drafts,
-            RecallQuery = snapshot?.RecallQuery ?? (blocks.Count > Math.Max(finalCount, candidateLimit) ? BuildMemoryRecallQueryText(null, currentInput, secondaryInput, drafts, scene) : ""),
-            FormatFailureDetail = (reason, reply) => LlmRetryPrompt.BuildFailureDetail(reason, reply)
-        };
+        return MemoryRecallInputCaptureAdapter.CaptureMemoryRecallRequest(MemoryRecallCapturePorts, memoryId, currentInput, secondaryInput, snapshot, blocks, drafts);
     }
 
     private void PublishMemoryRecallFailure(MemoryRecallRequest request)
     {
-        if (!string.IsNullOrWhiteSpace(request.BlockingTitle))
-            ShowCompressedMemoryBlockingPopup(request.BlockingTitle, request.BlockingMessage, request.Generation);
+        MemoryRecallInputCaptureAdapter.PublishMemoryRecallFailure(MemoryRecallCapturePorts, request);
     }
 }

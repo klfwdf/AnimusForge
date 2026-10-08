@@ -84,7 +84,7 @@ def main():
  if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
  out=new_run_root(ROOT,'scene-request-lifetime',args.run_root)
  if args.source_ref is None:
-  review=subprocess.run([sys.executable,str(HERE.parent/'SceneImmediateLifecycleTests/source_review.py')],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace')
+  review=subprocess.run([sys.executable,'-B',str(HERE.parent/'SceneImmediateLifecycleTests/source_review.py')],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace')
   (out/'current-complete-owner-inverse.log').write_text(review.stdout+review.stderr,encoding='utf-8')
   if review.returncode:print(review.stdout+review.stderr);return review.returncode
  pre=generate(args.source_ref or ORACLE_REF)

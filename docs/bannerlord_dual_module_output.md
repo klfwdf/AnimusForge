@@ -104,7 +104,11 @@ Its root folder must be `AnimusForge`. The package must contain:
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll`
 
-Packaging bumps the module version once and writes the same version to the source and project-local staged `SubModule.xml`; it does not deploy. `-NoBump` keeps the current version; an explicit version parameter overrides it when supported by the script. XML changes are rolled back byte-for-byte if packaging fails.
+Both one-click package entries increment the patch component by one, carrying at 10: `1.5.5 -> 1.5.6`, `1.5.9 -> 1.6.0`, `1.9.9 -> 2.0.0`. The source `AnimusForge/SubModule.xml` records the last successful package version; the initial baseline for this flow is `v1.5.5`, so the first package is `v1.5.6`.
+
+The one-click entry passes `-Build` to `package_mod.ps1`: select the next version before invoking the existing unified build/Stage, stamp `Properties/AssemblyInfo.cs` with the matching four-part `AssemblyFileVersion` (for example `1.5.6.0`), and require both implementation DLL file versions to match before writing the ZIP. `AssemblyVersion` stays `0.0.0.0`; Bootstrap selection, hashes, clean-Stage validation and the single-module layout remain unchanged. Packaging does not deploy.
+
+Successful packaging retains that version in both the source and project-local staged XML for the next increment. `-NoBump` keeps the current version; explicit `-Version` overrides it; explicit `-BumpMicro` remains available but neither one-click entry enables it by default. Captured build/ZIP failures restore version sources byte-for-byte without consuming a release number; concurrent source edits are preserved and reported instead of overwritten. A direct package-only invocation requires already-built DLLs matching the requested version; it cannot just relabel old DLLs through XML. Interrupted processes or system failures still require inspecting version sources and rebuilding before retrying.
 
 The ZIP is first written to a temporary file in the package directory. It becomes the final ZIP only after validating the Bootstrap-only XML, strict DLL allowlist, both implementation markers, and marker-to-DLL hashes; failed temporary archives are removed.
 

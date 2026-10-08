@@ -39,8 +39,11 @@ def _restore_j02_guard_path(path,source,require_new=False):
             assert source.count(new)==1,'Memory-run live runner guard path drift: '+path
         if new in source:
             assert source.count(new)==1,'Memory-run runner guard path drift: '+path
-            return source.replace(new,'SaveRuntimeGuard.cs',1)
-    return source
+            source=source.replace(new,'SaveRuntimeGuard.cs',1)
+    import sys
+    f3=sys.modules.get('f3_migration_projection')
+    prior=None if f3 is None else f3.current_prior_memory_run_producer()
+    return prior.chain.run_locator_output(path,source) if prior is not None and prior.chain is not None else source
 
 @terminal_review
 def restore(path,source):
@@ -64,10 +67,16 @@ def restore(path,source):
     for delta in reversed(review['paths'][path]):
         a,b=delta['start'],delta['end'];assert ''.join(lines[a:b])==delta['before'];lines[a:b]=[delta['after']]
     expected=''.join(lines)
-    live=_restore_j02_guard_path(path,restore_remote_feature_delta(path,(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')),require_new=True)
+    import sys
+    f3=sys.modules.get('f3_migration_projection')
+    prior=None if f3 is None else f3.current_prior_memory_run_producer()
+    remote_input=restore_remote_feature_delta if prior is None else prior.restore_remote_input
+    live=_restore_j02_guard_path(path,remote_input(path,(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')),require_new=True)
     assert live==expected,'Unreviewed live memory-run source: '+path
-    source=_restore_j02_guard_path(path,restore_remote_feature_delta(path,source))
+    source=_restore_j02_guard_path(path,remote_input(path,source))
     assert source in (expected,old),'Unreviewed memory-run source changes: '+path
+    if prior is not None:
+        prior.record_run_acceptance(path,live,source,old)
     return old
 @historical_fixture
 def verify_current():

@@ -126,59 +126,16 @@ public partial class MyBehavior
 		=> DeveloperEditorDataProjection.CountNonEmptyOwners(_npcMajorActions,_npcRecentActions);
 
 	private int CountDebtOwnersForDev()
-	{
-		try
-		{
-			return RewardSystemBehavior.Instance?.ExportDebtEntries()?.Count ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
+		=> DebtFiles.CountDebtOwnersForDev();
 
 	private int CountUnnamedPersonaForDev()
-	{
-		try
-		{
-			string text = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return 0;
-			}
-			JObject jObject = JObject.Parse(text);
-			return (jObject["Profiles"] as JObject)?.Count ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
+		=> PersonaProfileFiles.CountUnnamedPersonaForDev();
 
 	private int CountKnowledgeRulesForDev()
-	{
-		try
-		{
-			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
-			return knowledgeLibraryBehavior?.GetRuleIdsForDev(100000)?.Count ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
+		=> KnowledgeFiles.CountKnowledgeRulesForDev();
 
 	private int CountVoiceMappingForDev()
-	{
-		try
-		{
-			return VoiceMapper.GetTotalVoiceCount();
-		}
-		catch
-		{
-			return 0;
-		}
-	}
+		=> VoiceFiles.CountVoiceMappingForDev();
 
 	private void OpenDevTownEditorHeroSelection()
 		=> DeveloperRootEditor.OpenDevTownEditorHeroSelection();
@@ -216,20 +173,7 @@ public partial class MyBehavior
 	private void OpenDevNpcActionMenu(Hero npc, bool recentOnly, int page)
 		=> DeveloperRootEditor.OpenDevNpcActionMenu(npc, recentOnly, page);
 
-	private List<NpcActionEntry> GetDevNpcActionEntries(Hero npc, bool recentOnly)
-	{
-		string npcActionHeroKey = GetNpcActionHeroKey(npc);
-		if (string.IsNullOrWhiteSpace(npcActionHeroKey))
-		{
-			return new List<NpcActionEntry>();
-		}
-		Dictionary<string, List<NpcActionEntry>> dictionary = (recentOnly ? _npcRecentActions : _npcMajorActions);
-		if (dictionary == null || !dictionary.TryGetValue(npcActionHeroKey, out var value) || value == null)
-		{
-			return new List<NpcActionEntry>();
-		}
-		return SanitizeNpcActionEntries(value, keepOnlyRecentWindow: recentOnly);
-	}
+	private List<NpcActionEntry> GetDevNpcActionEntries(Hero npc, bool recentOnly) => _npcActionRecords.ReadEntries(_memoryBusinessState, GetNpcActionHeroKey(npc), recentOnly, GetCurrentGameDayIndexSafe);
 
 	private string BuildDevNpcActionMenuDescription(Hero npc, bool recentOnly, int page, int totalPages, int currentCount, int majorCount)
 		=> DeveloperRootEditor.BuildDevNpcActionMenuDescription(npc, recentOnly, page, totalPages, currentCount, majorCount);

@@ -3320,18 +3320,20 @@ public static class ShoutUtils
 		}
 	}
 
-	public static void ImportUnnamedPersonaFromDir(string importRootDir)
+	public static void ImportUnnamedPersonaFromDir(string importRootDir) => TryImportUnnamedPersonaFromDir(importRootDir);
+
+	internal static bool TryImportUnnamedPersonaFromDir(string importRootDir)
 	{
 		try
 		{
 			if (string.IsNullOrWhiteSpace(importRootDir))
 			{
-				return;
+				return false;
 			}
 			string text = importRootDir;
 			if (!Directory.Exists(text))
 			{
-				return;
+				return false;
 			}
 			string text2 = System.IO.Path.Combine(text, "unnamed_persona");
 			if (Directory.Exists(text2))
@@ -3408,9 +3410,11 @@ public static class ShoutUtils
 				}
 				SaveUnnamedProfilesUnsafe();
 			}
+            return true;
 		}
 		catch
 		{
+            return false;
 		}
 	}
 

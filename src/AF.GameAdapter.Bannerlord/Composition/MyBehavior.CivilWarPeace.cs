@@ -10,7 +10,7 @@ public partial class MyBehavior
 {
 	// Vanilla LeaveWithRebellion + CreateKingdom make a new rebel kingdom fight the old kingdom AND every enemy of the old kingdom.
 	// Only the war against the old kingdom is the rebellion itself, so the inherited wars are ended once, right at creation.
-	private static void PacifyInheritedRebelWars(Kingdom rebel, Kingdom home)
+	internal static void PacifyInheritedRebelWars(Kingdom rebel, Kingdom home)
 	{
 		try
 		{

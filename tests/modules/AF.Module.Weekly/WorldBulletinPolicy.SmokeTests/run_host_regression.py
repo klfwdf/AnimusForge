@@ -66,9 +66,18 @@ owned='using System;using System.Linq;using System.Globalization;using System.Co
 # Only calendar, storage/game records and logging are fixture facts; all state/cache/save algorithms above are actual spans.
 owned+='internal sealed class WorldBulletinPort {internal Func<int> CurrentDay;internal Func<bool> Enabled;internal Func<double> CurrentHour;internal Func<string> CurrentDate;internal Func<string,string> Render;internal Func<WorldBulletinFocus> Focus;internal Func<List<EventRecordEntry>> Records;internal Action<string,string> Log;internal Func<string,MyBehavior.EventRecordEntry> FindRecord;internal Action<string> QueueNotice;}'
 generated=generated.replace('public partial class MyBehavior\n{','public partial class MyBehavior\n{ private readonly WorldBulletinStateOwner _worldBulletinOwner=new();private WorldBulletinStateOwner WorldBulletinState {get { _worldBulletinOwner.Bind(new(){CurrentDay=GetCurrentGameDayIndexSafe,Records=()=>_eventRecordEntries,Log=Logger.Log});return _worldBulletinOwner;}}',1)
+capture_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs').read_text(encoding='utf-8-sig')
+# Only the actual transient data declarations are needed, not campaign event effects.
+capture_fields='\n'.join(re.search(r'internal [^\r\n]+ '+name+r'(?:=[^;]+)?;',capture_source).group() for name in ['DeathSnapshots','Focus','FocusDay','FocusOwnKingdomId'])
+generated=generated.replace('public partial class MyBehavior\n{','public partial class MyBehavior\n{ private readonly CaptureState _worldBulletinEventCapture=new();private sealed class CaptureState {'+capture_fields+'}',1)
+persistence=(ROOT/'src/AF.GameAdapter.Bannerlord/Persistence/CampaignWorldBulletinPersistenceAdapter.cs').read_text(encoding='utf-8-sig')
+# IDataStore is the existing controlled serializer boundary, not a second persistence algorithm.
+persistence=persistence.replace('using TaleWorlds.CampaignSystem;','')
+inventory.extend([{'file':'src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs','exactTransientDeclarationsSha256':hashlib.sha256(capture_fields.encode()).hexdigest()}, {'file':'src/AF.GameAdapter.Bannerlord/Persistence/CampaignWorldBulletinPersistenceAdapter.cs','sha256':hashlib.sha256(persistence.encode()).hexdigest()}])
 run = new_run_root(ROOT, "world-bulletin-review", args.run_root)
 (run / "Host.cs").write_text(generated, encoding="utf-8")
 (run / "Owner.cs").write_text(owned,encoding='utf-8')
+(run / "Persistence.cs").write_text(persistence,encoding='utf-8')
 (run / "Replay.cs").write_text((HERE/'HostRegression.cs').read_text(encoding='utf-8-sig').replace('private sealed class EventRecordEntry','internal sealed class EventRecordEntry'),encoding='utf-8')
 (run / "source-manifest.json").write_text(json.dumps(inventory,indent=2),encoding='utf-8')
 links = [ HERE / "LayoutStub.cs", ROOT / "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs", ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs"]

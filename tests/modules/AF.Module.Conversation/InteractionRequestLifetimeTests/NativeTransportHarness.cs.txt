@@ -22,11 +22,14 @@ static class LegacyShoutNetworkGateway {
         catch(OperationCanceledException)when(token.IsCancellationRequested) { }
     }
 }
+sealed class ConversationSpeechTextOptions { }
+static class ScenePromptMessageProjectionComposer { internal static string BuildNativeConversationStreamingVisibleText(string text, ConversationSpeechTextOptions options)=>text; }
 static class Program {
     // Only the deadline duration is controlled in this fixture; the real consumer is unchanged.
     // The timeout case is short, but caller-cancel cases must not race initial streaming JIT.
     private static int NativeConversationMainReplyTimeoutMs=60;
     static string BuildNativeConversationStreamingVisibleText(string text)=>text;
+    static Task<string> CallNativeConversationApiAsync(List<object> messages, Action<string> onStreamText, CancellationToken cancellationToken=default)=>CallNativeConversationApiAsync(messages,onStreamText,new ConversationSpeechTextOptions(),cancellationToken);
     @@NATIVE@@
     internal static Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>> Send;
     internal static TaskCompletionSource<bool> LateChunk;

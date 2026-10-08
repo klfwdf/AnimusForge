@@ -15,11 +15,16 @@ from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, minimal_test_environment
 sys.stdout.reconfigure(encoding='utf-8')
-p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--legacy-abi',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));p.add_argument('--run-root',type=Path);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--legacy-abi',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--current-consumer',action='store_true');p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));p.add_argument('--run-root',type=Path);a=p.parse_args()
 if a.legacy_abi and (a.reorder_core_enums or a.mutate):p.error('Legacy ABI runs against the unmodified current candidate only')
 dotnet=Path(a.dotnet) if Path(a.dotnet).is_absolute() else Path(shutil.which(a.dotnet) or '')
 if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
 dotnet=dotnet.resolve()
+if a.current_consumer:
+ if a.reorder_core_enums or a.legacy_abi or a.mutate:p.error('current consumer is independent of legacy oracle mutation/projection')
+ spec=importlib.util.spec_from_file_location('current_consumer',HERE/'current_consumer.py');current=importlib.util.module_from_spec(spec);spec.loader.exec_module(current)
+ raise SystemExit(current.verify(a.run_root,None if a.dotnet=="dotnet" else dotnet))
+
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 out=new_run_root(ROOT,'native-module-submission',a.run_root)
 s=historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')
@@ -34,10 +39,19 @@ scene_declarations='\n'.join([ex.declaration(post,'private enum ScenePostprocess
                               ex.declaration(post,'private sealed class ScenePostprocessOutcome')]
                              +[ex.declaration(scene,sig) for sig in scene_sigs])
 host=host.replace('@@SCENE_DECLARATIONS@@',scene_declarations)
+# The original provider/action leaves remain controlled, but admission now lives
+# in this actual request-bound application. Capture its real production binding.
+import re
+current_shout=current_source_path(ROOT,'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+admission_binding=re.search(r'NativeAdmissions = new NativeAdmissionApplicationAdapter\([^;]+;',current_shout)
+assert admission_binding is not None and current_shout.count(admission_binding.group(0))==1
+host_anchor='public partial class ShoutBehavior {'
+assert host.count(host_anchor)==1
+host=host.replace(host_anchor,host_anchor+'\npublic ShoutBehavior() {'+admission_binding.group(0)+'}\n',1)
 (out/'Host.cs').write_text(host,encoding='utf-8')
 contracts=(ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig')
 (out/'Contracts.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+'\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']),encoding='utf-8')
-paths=['src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs','ShoutBehavior.NativeAdmission.cs','ShoutBehavior.NativeCompletion.cs','ShoutBehavior.NativeActionDispatch.cs','ShoutBehavior.ModuleNativeSubmission.cs','src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs','src/modules/AF.Module.PublicApi/V1/AfApi.cs','src/AF.Contracts/PublicApi/V1/AfApiContracts.cs','src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs','src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs','src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs','src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs','src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs','src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs','src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs','src/AF.Contracts/Internal/FeatureBridgeContracts.cs']
+paths=['src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs','ShoutBehavior.NativeAdmission.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs','ShoutBehavior.NativeCompletion.cs','ShoutBehavior.NativeActionDispatch.cs','ShoutBehavior.ModuleNativeSubmission.cs','src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs','src/modules/AF.Module.PublicApi/V1/AfApi.cs','src/AF.Contracts/PublicApi/V1/AfApiContracts.cs','src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs','src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs','src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs','src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs','src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs','src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs','src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs','src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs','src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs','src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs','src/AF.Contracts/Internal/FeatureBridgeContracts.cs']
 mutations={
  'ignore-cancel':('src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs','if (_snapshot.State != CoreDialogueState.Queued) return false;','if (_snapshot.State == CoreDialogueState.Running) return false;'),
  'text-success':('ShoutBehavior.ModuleNativeSubmission.cs','if (execution != null) await execution.ConfigureAwait(false);','if (execution != null) operation.RecordOwnerCompletion(await execution.ConfigureAwait(false));'),
@@ -52,7 +66,7 @@ mutations={
 spec_lifetime=importlib.util.spec_from_file_location('native_lifetime_fixture',HERE/'fixture_support.py');lifetime_fixture=importlib.util.module_from_spec(spec_lifetime);spec_lifetime.loader.exec_module(lifetime_fixture);lifetime_fixture.include_request_lifetime(out)
 sources=[out/'ConversationRequestLifetime.cs',out/'InteractionRequestLease.cs',out/'CancellationScope.cs',out/'Host.cs',out/'Contracts.cs',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs']
 for path in paths:
- text=historical_source(path) # Legacy extraction copies only, not current replay.
+ text=(current_source_path(ROOT,path).read_text(encoding='utf-8-sig') if path.endswith('/NativeAdmissionApplicationAdapter.cs') else historical_source(path)) # Only the actual admission owner is linked unprojected; other legacy oracles stay explicit.
  if a.reorder_core_enums and path=='src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs':
   text=text.replace('Queued, Running, Completed, Rejected, Cancelled, Failed','Queued=100, Running=20, Completed=50, Rejected=1, Cancelled=30, Failed=6').replace('NoConfirmedEffect, UnknownAfterStart, CompletedByOwner','NoConfirmedEffect=4, UnknownAfterStart=8, CompletedByOwner=2').replace('CancelledBeforeStart, AlreadyTerminal, TooLate','CancelledBeforeStart=7, AlreadyTerminal=2, TooLate=4')
  if a.mutate and path==mutations[a.mutate][0]:

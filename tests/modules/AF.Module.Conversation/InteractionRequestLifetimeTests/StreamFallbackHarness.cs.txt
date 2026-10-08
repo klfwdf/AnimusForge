@@ -28,6 +28,9 @@ static class LlmRetryPrompt {
     public static Task<bool> PromptRetryAsync(string stage, string error) { Prompts++; return Task.FromResult(false); }
 }
 sealed class DuelSettings {
+    public bool MainApiStreamingEnabled = true;
+    public static int ClampApiMaxTokens(int value,int fallback)=>value;
+    public static float ClampApiTemperature(float value)=>value;
     public string ApiKey = "fixture";
     public string ApiUrl = "https://fixture.invalid/v1/chat/completions";
     internal static DuelSettings GetSettings() => new DuelSettings();
@@ -49,7 +52,7 @@ public static class ShoutNetwork {
     private static List<object> ApplyPlayerDisplayNameToOutgoingMessages(List<object> m) => m;
     private static string ApplyPlayerDynamicNameToMainText(string t) => t ?? "";
     private sealed class PlayerReferenceStreamFilter { public string Push(string s) => s; public string Flush() => ""; }
-    public static Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
+    private static Task<string> CallApiWithMessagesNonStreamingCore(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
     {
         NonStreamCalls.Add((forceDisableThinking ? "empty-retry" : "fallback", cancellationToken));
         return NonStream(messages, cancellationToken);

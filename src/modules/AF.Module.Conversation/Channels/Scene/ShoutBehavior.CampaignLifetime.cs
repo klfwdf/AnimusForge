@@ -22,7 +22,7 @@ public partial class ShoutBehavior
         _sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
         _pendingMainThreadFunctions.ResetAndClear(() =>
         {
-            while (_mainThreadActions.TryDequeue(out _)) { }
+MainThreadActionDrain.ResetQueue();
         });
     }
 

@@ -54,3 +54,354 @@ internal static class Program
             && detached[0].VisibleAgentIndices == null && detached[0].VisibleHeroIds == null, "capture detaches scalars without retaining visibility containers");
     }
 }
+
+// @@PURE_MESSAGE_CURRENT_CASES@@
+internal sealed class NpcDataPacket { internal bool IsHero; internal int AgentIndex; internal string Name,PromptGivenName,PromptDisplayName,RoleDesc,UnnamedKey,TroopId; }
+internal sealed class MyBehavior { internal sealed class ShoutPromptContext { internal string Extras,EntityPostprocessContext;internal List<string> PreprocessRuleIds;internal bool UseDuelContext,UseRewardContext,IsLoanContext,IsQualified; } }
+internal static class PureMessageCurrentCases
+{
+    static int Count;
+    static void Check(bool value,string name) {if(!value)throw new Exception("FAIL "+name);Count++;Console.WriteLine("PASS "+name);}
+    static void Main()
+    {
+        var t=typeof(Program).GetMethod("OriginalMain",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);t.Invoke(null,null);
+        Check(!ShoutBehavior.HasPartyTransferRuleContext(null)&&!ShoutBehavior.HasPartyTransferRuleContext(" "),"C2 empty extras no selected party rule");
+        Check(!ShoutBehavior.HasPartyTransferRuleContext("party_transfer")&&!ShoutBehavior.HasPartyTransferRuleContext("【附加规则:party_transfer_more】"),"C2 incidental and different marker rejected");
+        Check(ShoutBehavior.HasPartyTransferRuleContext("【附加规则:party_transfer】"),"C2 exact selected party marker");
+        Check(ShoutBehavior.HasPartyTransferRuleContext("before 【附加规则:PARTY_TRANSFER】 after"),"C2 marker substring ordinal case insensitive");
+        Check(ShoutBehavior.BuildNpcInitiatedOpeningPersistentFactText(null)==""&&ShoutBehavior.BuildNpcInitiatedOpeningPersistentFactText(" ")=="","C2 empty opening fact remains empty");
+        Check(ShoutBehavior.BuildNpcInitiatedOpeningPersistentFactText("[AFEF NPC行为补充] delivered")=="[AFEF NPC行为补充] delivered","C2 strip then restore exact opening prefix");
+        Check(ShoutBehavior.BuildNpcInitiatedOpeningPersistentFactText("  delivered  ")=="[AFEF NPC行为补充] delivered","C2 raw fact trimmed without role change");
+        Check(ShoutBehavior.BuildNpcInitiatedOpeningPersistentFactText("[AFEF NPC行为补充] ")=="","C2 prefix-only fact empty");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.StripAfefPrefixForPromptSection("[AFEF NPC行为补充] delivered")=="delivered","AFEF strip exact prefix");
+        var af=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildScopedAfefFactLinesForPrompt("[AFEF NPC行为补充] delivered\n[AFEF玩家行为补充] shown",false);
+        Check(af.Split('\n').Length==2&&af.Contains("【过往行为】"),"AFEF detached ordered lines");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildCurrentAfefFactPromptBlock(" ")=="","empty facts no block");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildCurrentAfefFactPromptBlock("done").Contains("【当下行为】"),"current fact scope");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.StripScenePersonaBlocks("【角色个性】quiet\n【角色背景】past\n rule ")=="rule","persona removed rule retained");
+        var trust=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ExtractTrustPromptBlock("本级语义：friend\n本级信用规则：obey\n价值口径：2\nordinary",out var remaining);
+        Check(trust.Contains("friend")&&remaining=="ordinary","Trust projection without consume");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.InjectTrustBlockBeforeGroupRules("extra\n【群体对话规则】rule","trust")=="extra\ntrust\n【群体对话规则】rule","Trust precedes group rules");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ContainsLiteralKeywordHit("HELLO",new(){" hello "}),"literal case trim");
+        Check(!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ContainsLiteralKeywordHit(" ",new(){"hello"}),"empty literal no hit");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ContainsAutoGroupEndSignal("[stp]")&&!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ContainsAutoGroupEndSignal("stop"),"end exact protocol");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.TryParseAutoGroupRelayTargetAgentIndex("[RELAY: 17]",out var index)&&index==17&&!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.TryParseAutoGroupRelayTargetAgentIndex("[RELAY:-1]",out _),"relay valid nonnegative");
+        var empty=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.CreateEmptyNativeConversationPromptContext();
+        Check(empty.IsQualified&&!empty.UseDuelContext&&!empty.UseRewardContext&&empty.PreprocessRuleIds.Count==0,"empty context exact defaults");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.HasInjectedRuleBlockForPostprocess("【附加规则:Duel】rule","duel")&&!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.HasInjectedRuleBlockForPostprocess("Duel","duel"),"injected header not incidental mention");
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(null)=="","TTS null empty");
+        Check(ConversationSpeechTextRules.ExtractContentSectionForTts("[CONTENT]first[CONTENT] last ")=="last","TTS last CONTENT wins");
+        Check(ConversationSpeechTextRules.StripTtsNarrationLines("内心：hidden\nOUTPUT:raw\nspoken")=="spoken","TTS raw/narration removed");
+        var tts=ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("[REASONING]secret[CONTENT] Hello [ACTION:MOOD:CALM] [RELAY:17] [END] *waves* (thinks)");
+        Check(tts=="Hello","TTS shared actual action policy/no thoughts");
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("<think>secret</think> Spoken")=="Spoken","TTS think removed");
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("[ACTION:GIVE_ASSET:item:1]voice")=="voice","TTS actual GIVE codec removed");
+        var self=new NpcDataPacket{AgentIndex=7,Name="Self",IsHero=true,TroopId="self"};
+        var nearby=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildNearbyPresentNpcLineForPrompt(self,new[]{self,new NpcDataPacket{AgentIndex=7,Name="same"},null,new NpcDataPacket{AgentIndex=8,Name="Other",PromptDisplayName="Named",RoleDesc="lord ",IsHero=true},new NpcDataPacket{AgentIndex=9,Name="Guard",PromptDisplayName="Guard"}});
+        Check(nearby.Contains("Named")&&nearby.Contains("Guard")&&!nearby.Contains("Self")&&!nearby.Contains("same"),"nearby same-agent/self excluded with Hero/nonHero ordered names");
+        Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.IsSameSceneNpcForPrompt(new(){AgentIndex=-1,UnnamedKey=" key "},new(){AgentIndex=-1,UnnamedKey="KEY"}),"same unnamed key ordinal insensitive");
+        Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.IsSameSceneNpcForPrompt(null,self),"null scene identity not same");
+        int loads=0;Func<TaleWorlds.CampaignSystem.Hero,List<MyBehavior.DialogueDay>> load=hero=>{loads++;return new(){null,new(){Lines=new(){" user ","[AFEF NPC行为补充] first",null,"[AFEF NPC行为补充] last"}}};};
+        Check(AnimusForge.Refactor.Adapters.PromptRuleCaptureBannerlordAdapter.BuildRecentNpcFactContext(load,null)==""&&loads==0,"recent facts null hero skips history capture");
+        Check(AnimusForge.Refactor.Adapters.PromptRuleCaptureBannerlordAdapter.BuildRecentNpcFactContext(load,new(),0)=="[AFEF NPC行为补充] last","recent facts nonpositive cap still latest one");
+        Check(AnimusForge.Refactor.Adapters.PromptRuleCaptureBannerlordAdapter.BuildRecentNpcFactContext(load,new(),4).Split('\n').Length==2,"recent facts retain order while excluding dialogue/nulls");
+        Check(AnimusForge.Refactor.Adapters.PromptRuleCaptureBannerlordAdapter.BuildRecentNpcFactContext(hero=>throw new Exception(),new())=="","recent history capture exception original empty fallback");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.MergeUserHistoryAndInput(" old "," new ")=="old\nnew","identity history input trim preserves order");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.MergeUserHistoryAndInput(null,"new")=="new"&&AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.MergeUserHistoryAndInput("old",null)=="old","identity missing side no blank section");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt("[AF_SCENE_SESSION:2] Npc: reply","Ada")=="Npc: reply"&&AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NameCaptures==0,"nonplayer session strip skips live player name capture");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt("玩家： hello","Ada")=="Player对你说: hello","player Chinese prefix addressed to viewer");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt("Old（player）对Ada说： hello"," Ada ",false)=="Player对Ada说: hello","legacy public name player marker retains target scalar");
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt("玩家: hi",null,false)=="Player对该NPC说: hi","nonviewer null target uses original fallback");
+        int beforeName=AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NameCaptures;
+        AnimusForge.Refactor.Adapters.MemoryHistoryCommitBannerlordAdapter.FirstMeetingFact="captured first meeting fact";
+        Check(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt("fact","Ada")=="captured first meeting fact"&&AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NameCaptures==beforeName,"A first meeting capability short circuits player-name capture");
+        AnimusForge.Refactor.Adapters.MemoryHistoryCommitBannerlordAdapter.FirstMeetingFact=null;
+        var opening=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildProactiveSceneOpeningFactText("[AFEF NPC��Ϊ����] arrived", "speak\r\nnow");
+        Check(opening.Contains("arrived")&&opening.Contains("speak  now")&&!opening.Contains("\n"),"proactive opening preserves flattened facts and instruction order");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildNpcInitiatedOpeningUserText("","")==""&&AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildProactiveSceneOpeningFactText("","")=="","both empty opening projections remain empty");
+        var initiated=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildNpcInitiatedOpeningUserText("[AFEF NPC��Ϊ����] arrived","speak");Check(initiated.IndexOf("arrived")<initiated.IndexOf("speak")&&initiated.Contains("role=user"),"NPC initiated user instruction keeps fact before prompt and role distinction");
+        var tags="[ACTION:MOOD:CALM] [FOL] [fol] [ACTION:GIVE_ASSET:sword:1] [STP]";
+        var deferred=ConversationActionPostprocessOwner.ExtractDeferredSceneActionTags(tags);Check(deferred.StartsWith("[ACTION:GIVE_ASSET:sword:1]")&&deferred.Contains("[ACTION:MOOD:CALM]")&&deferred.IndexOf("[FOL]")==deferred.LastIndexOf("[FOL]")&&!deferred.Contains("[fol]"),"deferred same codec asset-first case insensitive de-dup");
+        Check(!ConversationActionPostprocessOwner.HasNonMoodDeferredSceneActionTag("[ACTION:MOOD:CALM]")&&ConversationActionPostprocessOwner.HasNonMoodDeferredSceneActionTag(tags),"deferred nonmood exact protocol eligibility");
+        var stripped=ConversationActionPostprocessOwner.StripDeferredSceneMoodTags(tags);Check(!stripped.Contains("MOOD")&&stripped.Contains("[FOL]")&&stripped.Contains("GIVE_ASSET")&&stripped.EndsWith("[STP]"),"deferred mood stripping retains ordered game tags without effect");
+        var publicLines=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.FilterScenePublicHistoryLines(new[]{" old ","", "[AFEF NPC行为补充] arrived","new"}.ToList());Check(publicLines.Count==3&&publicLines[0]=="old","public history detached filter trims and ignores blank without reordering");
+        var publicSection=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposeScenePublicHistorySection(publicLines,1,1,100);Check(publicSection.Contains("AFEF")&&publicSection.Contains("new")&&!publicSection.Contains("old"),"public history original cap preserves AFEF plus recent dialogue");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.ComposeScenePublicHistorySection(new List<string>(),1,1,100).EndsWith("无"),"empty public section retains original visible placeholder");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.IsAuxiliaryPureDialogueSceneMessage(new ConversationMessage{Role=" USER "})&&!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.IsAuxiliaryPureDialogueSceneMessage(new ConversationMessage{Role="system"})&&!AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.IsAuxiliaryPureDialogueSceneMessage(null),"auxiliary pure-dialogue role policy remains user/assistant only");
+        var controlled=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.PrepareSceneMainReplySpeechText("hello [ACTION:MOOD:CALM] [STP] [END]",true,false);Check(controlled.Contains("hello")&&!controlled.Contains("ACTION:")&&controlled.EndsWith("[STP]")&&!controlled.Contains("[END]"),"main speech strips unauthorized tags then restores only validated stop control");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildRecentSceneLoreQueryText(null)==""&&AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildRecentSceneLoreQueryText(new List<string>())=="","Lore query empty history remains empty");
+        var lore=AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildRecentSceneLoreQueryText(new List<string>{"Ada: oldest","", "Ada: middle","Ada: newest"},2,280);
+        Check(lore.IndexOf("middle")<lore.IndexOf("newest")&&!lore.Contains("oldest"),"Lore query skips empty and restores chronological recent order");
+        Check(AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer.BuildRecentSceneLoreQueryText(new List<string>{"abcdefgh"},1,3)=="fgh","Lore query preserves original tail character cap");
+        Console.WriteLine("PASS current pure message assertions="+Count);
+    }
+}
+
+// @@PERSISTED_HISTORY_CURRENT_CASES@@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+namespace TaleWorlds.Library { internal static class TWParallel { [ThreadStatic] internal static bool Main; internal static bool IsMainThread()=>Main; } }
+namespace TaleWorlds.CampaignSystem { internal class Hero { internal string Id;internal string StringId=>Id;internal string Name=>Id; } internal class CharacterObject { internal string Id; internal Hero HeroObject; } }
+namespace TaleWorlds.MountAndBlade { internal class Agent { internal int Index; internal object Character; internal bool IsActive()=>true; } internal class Mission { private static Mission _current; internal static int OffMainReads; internal static readonly ManualResetEventSlim ReadGate=new(true), ReadEntered=new(false); internal static Mission Current { get { if(!TaleWorlds.Library.TWParallel.Main){Interlocked.Increment(ref OffMainReads);ReadEntered.Set();ReadGate.Wait();}return _current;}set{_current=value;} } internal List<Agent> Agents=new(); } }
+namespace AnimusForge.SiegeAftermathIntervention { internal static class AfGcczShoutBridge { internal static bool Eligible=true; internal static bool ShouldUsePersistentPersonalMemory(object hero,object character,int agent)=>Eligible; } }
+namespace AnimusForge {
+internal class NpcDataPacket { internal string Id; internal bool IsHero;internal int AgentIndex; }
+internal class CommitReceipt { internal bool HistoryWritten; }
+internal static class MyBehavior { internal static readonly List<string> Commits=new(),Appends=new(); internal static CommitReceipt CommitDialogueHistoryWithScene(string id,bool nonhero,string name,string player,string ai,string scene,int session){Commits.Add(id+":"+ai+":"+session);return new(){HistoryWritten=id!="nonhero"};} internal static void AppendExternalNonHeroSceneDialogueHistory(string id,string name,string player,string ai,string scene,int session)=>Appends.Add(id+":"+ai);internal static void AppendExternalSceneDialogueHistory(TaleWorlds.CampaignSystem.Hero hero,string player,string ai,string scene,int session)=>Appends.Add(hero.Id+":"+ai); internal static string BuildHistoryContextForExternal(TaleWorlds.CampaignSystem.Hero hero,int max,string input,string secondary)=>hero.Id+":"+input+":"+secondary; }
+internal static class ShoutUtils { internal static NpcDataPacket ExtractNpcData(TaleWorlds.MountAndBlade.Agent agent)=>new(){Id=((TaleWorlds.CampaignSystem.CharacterObject)agent.Character).Id}; }
+internal class SceneConversationHistoryOwner { internal static int SessionId=1; internal string LatestNpcUtterance(int index)=>"secondary"; }
+internal static class Logger { internal static void Log(string area,string text){} }
+internal static class FreezeWatchdog { internal static void Mark(string area,string text,bool immediate){} }
+internal class ShoutBehavior { internal const int NativeConversationMainThreadPreprocessTimeoutMs=30000; internal sealed class PrecomputedShoutRagContext { internal string PersistedHistoryContext; internal bool HasPersistedHistoryContext; internal Task<string> PersistedHistoryContextTask; } }
+internal static class Cases {
+static int checks,epoch;static bool owner=true;static readonly ConcurrentQueue<Action> Queue=new();
+static readonly Dictionary<int,TaleWorlds.CampaignSystem.Hero> Heroes=new(){{7,new(){Id="hero"}}};
+static readonly Dictionary<int,ShoutBehavior.PrecomputedShoutRagContext> Cache=new();
+static SceneHistoryPromptCaptureAdapter Adapter;
+static void Check(bool value,string label){if(!value)throw new Exception(label);checks++;Console.WriteLine("PASS "+label);}
+static void Pump(){TaleWorlds.Library.TWParallel.Main=true;try{while(Queue.TryDequeue(out var action))action();}finally{TaleWorlds.Library.TWParallel.Main=false;}}
+static async Task<Task<string>> Begin(string input){Task<string> result=null;await Task.Run((Action)(()=>result=Adapter.StartPrecomputedPersistedHistoryContextTask(7,input,Heroes,Cache,"test")));return result;}
+static async Task AwaitQueued(){for(int i=0;i<200 && Queue.IsEmpty;i++)await Task.Delay(5);Check(!Queue.IsEmpty,"background starts queue game-thread capture");}
+static async Task<string> Join(string input,Task<string> task)=>await Adapter.AwaitPrecomputedPersistedHistoryContextAsync(7,input,Heroes,Cache,task,"test");
+static async Task Main(){
+TaleWorlds.MountAndBlade.Mission.Current=new(){Agents={new(){Index=7,Character=new TaleWorlds.CampaignSystem.CharacterObject(){Id="original-target"}}}};
+TaleWorlds.MountAndBlade.Mission.ReadGate.Reset();
+var original=new OriginalUnsafeHistoryBaseline();Task<string> unsafeTask=null;
+await Task.Run((Action)(()=>unsafeTask=original.StartPrecomputedPersistedHistoryContextTask(7,"baseline",new(){{7,null}},new(),"original")));
+Check(TaleWorlds.MountAndBlade.Mission.ReadEntered.Wait(5000),"original unsafe path actually reaches live Mission from background");
+TaleWorlds.MountAndBlade.Mission.Current=new(){Agents={new(){Index=7,Character=new TaleWorlds.CampaignSystem.CharacterObject(){Id="replacement-target"}}}};
+TaleWorlds.MountAndBlade.Mission.ReadGate.Set();
+Check(await unsafeTask=="replacement-target:baseline:secondary","original forced-yield wrong Mission target counterexample reproduced");
+int originalOffMain=TaleWorlds.MountAndBlade.Mission.OffMainReads;
+TaleWorlds.MountAndBlade.Mission.Current=new(){Agents={new(){Index=7,Character=new TaleWorlds.CampaignSystem.CharacterObject(){Id="nonhero"}}}};
+var pending=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();
+var dispatcher=new ConversationGameThreadDispatcher(pending,Queue.Enqueue,TaleWorlds.Library.TWParallel.IsMainThread);
+Adapter=new(()=>new SceneConversationHistoryOwner(),new(dispatcher,()=>owner,()=>Volatile.Read(ref epoch),()=>new SharedPromptCaptureBannerlordAdapter.HistoryWorkCapturePorts()));
+var first=await Begin("one");await AwaitQueued();
+var reuse=await Begin("one");Check(ReferenceEquals(first,reuse),"request reuses same pending task");
+Pump();Check(await Join("one",first)=="hero:one:secondary","main capture detached render result");
+Check(SharedPromptCaptureBannerlordAdapter.Captures==1,"one necessary capture per request");
+var cached=await Begin("one");Check(await Join("one",cached)=="hero:one:secondary" && Queue.IsEmpty,"cache hit no extra game capture");
+var switched=await Begin("two");await AwaitQueued();Interlocked.Increment(ref epoch);TaleWorlds.MountAndBlade.Mission.Current=new();Pump();
+Check(await Join("two",switched)=="","queued old mission epoch rejects before capture");
+Check(SharedPromptCaptureBannerlordAdapter.Captures==1,"old mission does not capture replacement target");
+TaleWorlds.MountAndBlade.Mission.Current=new(){Agents={new(){Index=7,Character=new TaleWorlds.CampaignSystem.CharacterObject(){Id="nonhero"}}}};
+var generation=await Begin("generation");await AwaitQueued();SaveRuntimeGuard.AdvanceGeneration("test");Pump();Check(await Join("generation",generation)=="","old generation rejected");
+var session=await Begin("session");await AwaitQueued();Interlocked.Increment(ref SceneConversationHistoryOwner.SessionId);Pump();Check(await Join("session",session)=="","old scene session rejected");
+SharedPromptCaptureBannerlordAdapter.RenderGate.Reset();var old=await Begin("old-source");await AwaitQueued();Pump();
+var fresh=await Begin("fresh-source");await AwaitQueued();Pump();SharedPromptCaptureBannerlordAdapter.RenderGate.Set();
+Check(await Join("old-source",old)=="","late old input cannot publish");Check(await Join("fresh-source",fresh)=="hero:fresh-source:secondary","replacement request owns cache");
+Check(Cache[7].PersistedHistoryContext=="hero:fresh-source:secondary","late task cannot overwrite replacement slot");
+SharedPromptCaptureBannerlordAdapter.Throw=true;var failure=await Begin("error");await AwaitQueued();Pump();Check(await Join("error",failure)=="" && Cache[7].PersistedHistoryContextTask==null,"render exception clears only owned task and returns empty");SharedPromptCaptureBannerlordAdapter.Throw=false;
+Heroes[7]=null;var nonhero=await Begin("nonhero");await AwaitQueued();Pump();Check(await Join("nonhero",nonhero)=="nonhero:nonhero:secondary","nonhero identity captured on game thread");
+AnimusForge.SiegeAftermathIntervention.AfGcczShoutBridge.Eligible=false;var disallowed=await Begin("ineligible");await AwaitQueued();Pump();Check(await Join("ineligible",disallowed)=="","qualification early exit");
+TaleWorlds.Library.TWParallel.Main=true;
+AnimusForge.SiegeAftermathIntervention.AfGcczShoutBridge.Eligible=true;
+TaleWorlds.MountAndBlade.Mission.Current.Agents.Add(new(){Index=9,Character=new TaleWorlds.CampaignSystem.CharacterObject(){HeroObject=new(){Id="hero-recipient"}}});
+var audience=new List<NpcDataPacket>{null,new(){Id="nonhero",AgentIndex=7},new(){Id="nonhero",AgentIndex=8},new(){IsHero=true,AgentIndex=9}};
+Check(!Adapter.PersistNpcSpeechToNamedHeroes(7,"Speaker","reply",audience,true),"speech partial history receipt preserves failure");
+Check(MyBehavior.Commits.Count==2 && MyBehavior.Commits[0].Contains(":reply:") && MyBehavior.Commits[1].Contains("reply"),"speech nonhero de-duplicate self/heard and later hero commit still executed");
+Check(Adapter.PersistNpcSpeechToNamedHeroes(7,"Speaker","reply",audience,false) && MyBehavior.Appends.Count==2,"speech no-receipt appends same two identities");
+Check(Adapter.PersistNpcSpeechToNamedHeroes(7,"Speaker","",audience,true) && MyBehavior.Commits.Count==2,"empty speech makes no memory write");
+TaleWorlds.Library.TWParallel.Main=false;
+Check(TaleWorlds.MountAndBlade.Mission.OffMainReads==originalOffMain,"current path performs zero background live Mission reads");
+Console.WriteLine("PERSISTED_HISTORY_CURRENT_PASS "+checks);
+}
+}
+}
+namespace AnimusForge.Refactor.Adapters {
+internal static class SceneAgentIdentityPromptCaptureAdapter { internal static string ResolveSceneHistorySpeakerNameForPrompt(int index,string fallback,IEnumerable<AnimusForge.NpcDataPacket> nearby)=>fallback; internal static bool TryResolveWildernessNonHeroMemory(AnimusForge.NpcDataPacket npc,object hero,object character,int agent,out string id,out string name){id=npc.Id;name=id;return true;} }
+internal static class SharedPromptCaptureBannerlordAdapter {
+internal class HistoryWorkCapturePorts {}
+internal static int Captures;internal static bool Throw;internal static readonly ManualResetEventSlim RenderGate=new(true);
+static Func<string> Capture(string id,string input,string secondary){if(!TaleWorlds.Library.TWParallel.IsMainThread())throw new Exception("live capture off main thread");Interlocked.Increment(ref Captures);return ()=>{if(TaleWorlds.Library.TWParallel.IsMainThread())throw new Exception("render must be detached");RenderGate.Wait();if(Throw)throw new Exception("render failed");return id+":"+input+":"+secondary;};}
+internal static Func<string> CaptureHistoryContextWorkForHero(Func<HistoryWorkCapturePorts> ports,TaleWorlds.CampaignSystem.Hero hero,string input,string secondary,bool include,long generation)=>Capture(hero.Id,input,secondary);
+internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCapturePorts> ports,string id,string name,string input,string secondary,bool include,long generation)=>Capture(id,input,secondary);
+}
+}
+
+// @@STRICT_CAPTURE_CURRENT@@
+internal sealed class NpcDataPacket {internal bool IsHero;internal int AgentIndex;internal string Name,UnnamedKey,TroopId;}
+internal sealed class DuelSettings {
+ internal int ShoutThoughtMinTokens,ShoutMinTokens,ShoutMaxTokens;internal bool DisableShoutInnerThoughtPrompt;internal const int DefaultShoutMinTokens=100,DefaultShoutMaxTokens=400; internal bool UseDetailedSceneSpeechPrompt,PreserveSceneAsteriskActions;internal static DuelSettings Current;internal static bool Throw,Disable;internal static int Reads,Limits;internal const int DailyConversationHistoryLineLimitMin=1,DailyConversationHistoryLineLimitMax=100;
+ internal static DuelSettings GetSettings(){Reads++;if(Throw)throw new Exception("settings");return Current;}
+ internal static int GetDailyConversationHistoryLineLimitForExternal(){Limits++;return 2;}
+ internal static bool IsBuiltInSceneReplyFormatPromptDisabled()=>Disable;
+}
+internal static class StrictCaptureCurrentCases {
+ static int Count;static void Check(bool x,string n){if(!x)throw new Exception("FAIL "+n);Count++;Console.WriteLine("PASS "+n);}
+ static void Main(){typeof(Program).GetMethod("OriginalMain",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static).Invoke(null,null);var h=new SceneConversationHistoryOwner(new object());var pending=new ScenePendingAfefFactsOwner();var c=new AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter(h,pending);
+ Check(c.CaptureVisibleSceneHistoryLinesForPrompt(7,"Ada",false)==null&&DuelSettings.Limits==0,"empty public history avoids identity/config capture");
+ DuelSettings.Current=null;Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.IsDetailedSceneSpeechPromptEnabled()&&!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldPreserveSceneAsteriskActions(),"null settings speech options false");
+ DuelSettings.Throw=true;Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.IsDetailedSceneSpeechPromptEnabled()&&!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldPreserveSceneAsteriskActions(),"throwing settings preserves false mapping");DuelSettings.Throw=false;
+ DuelSettings.Current=new DuelSettings{UseDetailedSceneSpeechPrompt=true,PreserveSceneAsteriskActions=true};Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.IsDetailedSceneSpeechPromptEnabled()&&AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldPreserveSceneAsteriskActions(),"enabled options remain independent reads");
+ AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.CustomReads=0;c.CaptureStrictSceneMessageInputForNpc(7,"",null,includeSceneHistory:false);Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.CustomReads==0,"empty system does not read player custom rule");
+ h.AppendNpc(7,new ConversationMessage{EventSequence=2,Role="assistant",Content="Ada: hello",SpeakerAgentIndex=7,SpeakerHeroId="ada",SpeakerName="Ada",TargetAgentIndex=7});
+ var f=new ConversationMessage{EventSequence=1,Role="system",Content="[AFEF NPC行为补充] arrived",TargetAgentIndex=7};pending.Queue(7,f);var prefixes=new List<string>{"prefix"};int limits=DuelSettings.Limits;
+ var input=c.CaptureStrictSceneMessageInputForNpc(7,"custom\noriginal",prefixes,currentInputAlreadyRecorded:false,currentPlayerInput:" hi ",maxHistoryMessages:1,pendingCurrentAfefFactMessages:new[]{f});
+ Check(input.HistoryLineLimit==1&&DuelSettings.Limits==limits,"explicit history limit avoids settings fallback");
+ Check(input.PendingCurrentFacts.Count()==2&&pending.Consume(7).Count==0,"pending current facts transfer once from same owner");
+ Check(input.CurrentInputMessage.Content=="hi"&&input.CurrentInputMessage.Role=="user"&&input.CurrentInputMessage.TargetAgentIndex==7&&input.CurrentInputMessage.EventSequence>0,"unrecorded input stamped with target and sequence");
+ prefixes[0]="changed";f.Content="changed";Check(input.PrefixUserSections.Single()=="prefix"&&input.PendingCurrentFacts.First().Content.Contains("arrived"),"captured prompt arrays and facts detached");
+ Check(input.SceneHistory.Count()==1&&input.Context.ViewerHeroId=="ada"&&input.Context.GameHour==9&&input.Context.Scene=="square","same scene history authority plus captured context");
+ var output=SceneHistoryMessageAssemblyOwner.Build(input);Check(output.Any(x=>x.GetType().GetProperty("role").GetValue(x).ToString()=="assistant"),"actual strict assembly consumes captured self role");
+ var retry=c.CaptureStrictSceneMessageInputForNpc(7,"system",null,currentInputAlreadyRecorded:true,currentPlayerInput:"again",includeSceneHistory:false);Check(retry.PendingCurrentFacts.Count()==0&&retry.SceneHistory==null&&retry.CurrentInputMessage==null,"retry does not duplicate pending/current input or excluded history");
+ var visible=c.CaptureVisibleSceneHistoryLinesForPrompt(7,"Ada",false);Check(visible==null,"private history is not fabricated into public view");
+ string format="你的回复格式必须严格按照以下执行，动作要用**括起来：\n*你的动作内容*\n你实际要说的话，此处是正文";
+ var formatted=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildStrictSceneMessagesSystemPrompt("custom\n"+format+"\ntail");Check(formatted.StartsWith("custom")&&formatted.Contains(format)&&formatted.IndexOf("messages说明")<formatted.IndexOf(format),"format extraction relocates instruction after custom rule");
+ var suppressed=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildStrictSceneMessagesSystemPrompt("custom\n"+format+"\ntail",true);Check(!suppressed.Contains(format)&&suppressed.Contains("tail"),"suppression drops extracted built-in instruction only");
+ DuelSettings.Disable=true;var disabled=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildStrictSceneMessagesSystemPrompt("custom\n"+format+"\ntail",true);Check(disabled.Contains(format),"disabled built-in extractor leaves original system text untouched");DuelSettings.Disable=false;
+ h.AppendPublic(new ConversationMessage{Role="assistant",Content="Ada: public",SpeakerAgentIndex=7,SpeakerHeroId="ada",SpeakerName="Ada",TargetAgentIndex=7});Check(c.CaptureVisibleSceneHistoryLinesForPrompt(7,"Ada",false).Single().Contains("public"),"current visible capture consumes sole public history renderer");
+ DuelSettings.Current=new DuelSettings();Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.IsDetailedSceneSpeechPromptEnabled()&&!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldPreserveSceneAsteriskActions(),"changed settings read at subsequent capture not retained snapshot");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ClampMemoryPromptHour(-1)==9&&AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ClampMemoryPromptHour(25)==23&&AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ClampMemoryPromptHour(0)==0,"memory hour negative capture and positive clamp preserve original");
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryConvertAfefFactToStrictChatMessage(null,7,true,out var absent)&&absent==null&&!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryConvertAfefFactToStrictChatMessage(new ConversationMessage{Content="normal"},7,true,out absent),"AFEF conversion rejects null and ordinary dialogue");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryConvertAfefFactToStrictChatMessage(new ConversationMessage{Content="[AFEF NPC行为补充] arrived"},7,true,out var currentFact)&&currentFact.GetType().GetProperty("role").GetValue(currentFact).ToString()=="user"&&currentFact.GetType().GetProperty("content").GetValue(currentFact).ToString().Contains("【当下行为】"),"current AFEF remains scoped user fact through actual strict metadata owner");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryConvertAfefFactToStrictChatMessage(new ConversationMessage{Content="[AFEF NPC行为补充] arrived"},99,false,out var oldFact)&&oldFact.GetType().GetProperty("content").GetValue(oldFact).ToString().Contains("【过往行为】"),"past AFEF is not rewritten as current interaction");
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldDeferExtraFactPersistenceUntilAfterSceneReply(null)&&AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldDeferExtraFactPersistenceUntilAfterSceneReply("已人口 估值为 10，但尚未交给玩家，证据只包含这些内容" )==false,"deferred fact qualification rejects empty and near-match text");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldDeferExtraFactPersistenceUntilAfterSceneReply("看了看 总值为100\r\n暂未交付给你 证明了他有这些东西"),"deferred displayed asset qualification preserves three required literal facts");
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldDeferExtraFactPersistenceUntilAfterSceneReply("看了看 总值为100 暂未交付给你"),"deferred displayed asset incomplete fact does not qualify");
+ int sceneLookups=0;Func<AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter> scene=()=>{sceneLookups++;return c;};
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldIncludeCurrentSceneSessionInNativePersistedHistory(scene,7)&&sceneLookups==0,"Native persisted history missing Mission early-return avoids scene owner lookup");
+ TaleWorlds.MountAndBlade.Mission.Current=new TaleWorlds.MountAndBlade.Mission{Scene=new object()};TaleWorlds.MountAndBlade.Mission.Valid=false;
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldIncludeCurrentSceneSessionInNativePersistedHistory(scene,7)&&sceneLookups==0,"invalid scene early-return preserves no owner capture");TaleWorlds.MountAndBlade.Mission.Valid=true;
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.HasNativeConversationSceneDialogueHistoryForPrompt(scene,7)&&!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldIncludeCurrentSceneSessionInNativePersistedHistory(scene,7),"same actual dialogue history excludes duplicate Native persisted scene session");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.ShouldIncludeCurrentSceneSessionInNativePersistedHistory(()=>null,7),"missing current owner preserves original inclusion fallback");
+ Check(!AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.HasNativeConversationSceneDialogueHistoryForPrompt(()=>throw new Exception("lookup"),7),"scene owner lookup exception remains guarded false mapping");
+ Console.WriteLine("PASS strict capture current "+Count);
+// @@NATIVE_HISTORY_CURRENT_CASES@@
+ var hero=new TaleWorlds.CampaignSystem.Hero{StringId="ada",Name="Ada"};var character=new TaleWorlds.CampaignSystem.CharacterObject{HeroObject=hero,StringId="ada_character",Name="Ada"};var npc=new NpcDataPacket{IsHero=true,AgentIndex=7,Name="Ada"};
+ var session=new NativeConversationSessionOwner(SceneConversationHistoryOwner.NextEventSequence,100);string key=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(hero,character,"Ada",7,npc);
+ session.Append(key,new AnimusForgeDialogueHistoryEntry{Kind="fact",Text="[AFEF NPC行为补充] arrived",EventSequence=1,GameDate="Autumn 11",GameHour=9,Scene="square",Speaker="Ada",TargetAgentIndex=7});
+ session.Append(key,new AnimusForgeDialogueHistoryEntry{Kind="npc",Text="hello",EventSequence=2,GameDate="Autumn 11",GameHour=9,Scene="square",Speaker="Ada",TargetAgentIndex=7});
+ TaleWorlds.MountAndBlade.Mission.Current.Agents=new List<TaleWorlds.MountAndBlade.Agent>{null,new(){Index=8,Character=character,Npc=npc},new(){Index=7,Character=character,Npc=npc}};
+ var captured=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessagesForAgent(session,7,1);Check(captured.Count==2&&captured.Any(x=>x.Role=="assistant")&&captured.Any(x=>x.Role=="system"),"Native Agent capture routes same Session history fact plus self role");
+ var lines=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationSceneHistoryLinesForPrompt(session,hero,character," Ada ",7,1);Check(lines.Count==2&&lines.Any(x=>x.Contains("hello"))&&lines.Any(x=>x.Contains("AFEF")),"Native Session capture flows through actual projection renderer and AFEF cap");
+ TaleWorlds.MountAndBlade.Mission.Current.Agents.Last().Active=false;Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessagesForAgent(session,7,1).Count==0,"inactive target Agent does not capture another agent history");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessagesForAgent(session,-1,1).Count==0,"negative target Agent exits empty without game identity capture");
+ var noMission=TaleWorlds.MountAndBlade.Mission.Current;TaleWorlds.MountAndBlade.Mission.Current=null;Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationSessionHistoryMessagesForAgent(session,7,1).Count==0,"changed missing Mission yields no stale Agent session history");
+ Check(session.Snapshot(key,1).Count==2,"Native capture and rendering do not consume or modify same session authority");
+ var unified=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(session,()=>c,hero,character,"Ada",7,2);Check(unified.Count==3&&unified.Count(x=>x.Contains("hello"))==1&&unified.Count(x=>x.Contains("AFEF"))==1,"unified current scene plus Native history deduplicates same positive event and preserves zero-sequence public entry");
+ var capped=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(session,()=>c,hero,character,"Ada",7,1);Check(capped.Count==2&&capped.Any(x=>x.Contains("AFEF"))&&capped.Any(x=>x.Contains("public"))&&!capped.Any(x=>x.Contains("hello")),"unified one-line cap retains original zero-sequence-last ordering plus AFEF fact");
+ var withoutScene=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(session,()=>null,hero,character,"Ada",7,1);Check(withoutScene.Count==2&&withoutScene.Any(x=>x.Contains("hello")),"missing current scene owner falls back to same Native session rendered history");
+ TaleWorlds.MountAndBlade.Mission.Current=noMission;noMission.Agents.Last().Active=true;
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetLatestNativeConversationNpcUtteranceForExternal(session,hero,character,7)=="hello","latest Native utterance consumes same session scalar snapshot");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetLatestNativeConversationNpcUtteranceForExternal(session,hero,character)=="hello","latest Native omitted agent uses actual B resolver and same Hero key");
+ int bridges=0;Func<AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter> bridge=()=>{bridges++;return c;};
+ AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryRecordNativeConversationCurrentDialogLine(session,bridge,hero,character,"Ada","Ada display","fresh reply");
+ int recorded=session.Snapshot(key,100).Count;
+ Check(recorded==3&&bridges==1&&h.CaptureNpc(8,null,new ConversationSpeechTextOptions(false,false)).Any(x=>x.Content.Contains("fresh reply")&&x.SpeakerAgentIndex==8)&&session.Snapshot(key,100).Last().TargetAgentIndex==-1,"record real TryMark then Session append then current Scene bridge exactly once");
+ AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryRecordNativeConversationCurrentDialogLine(session,bridge,hero,character,"Ada","Ada display","fresh reply");
+ Check(session.Snapshot(key,100).Count==recorded&&bridges==1,"duplicate normalized current dialog does not append or bridge twice");
+ AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.TryRecordNativeConversationCurrentDialogLine(session,bridge,hero,character,"Ada","Ada display","  ");
+ Check(session.Snapshot(key,100).Count==recorded&&bridges==1,"empty dialog rejects before resolver and marker acceptance");
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetLatestNativeConversationNpcUtteranceForExternal(session,hero,character,7)=="fresh reply","record accepted dialog becomes same Session latest utterance");
+ var identity=new AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter();MyBehavior.WorkCaptures=0;TaleWorlds.Library.TWParallel.Main=false;
+ Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(session,identity,hero,character,"input","",false,9)==null&&MyBehavior.WorkCaptures==0,"persisted capture off-thread guard rejects before any game/history capture");TaleWorlds.Library.TWParallel.Main=true;
+ int workRuns=0;MyBehavior.CapturedWork=()=>{workRuns++;return " detached ";};
+ var work=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(session,identity,hero,character,"input","",false,9);
+ Check(work!=null&&workRuns==0&&MyBehavior.WorkCaptures==1&&MyBehavior.CapturedSecondary=="fresh reply","persisted capture freezes latest secondary and detached work without running it");
+ TaleWorlds.MountAndBlade.Mission.Current=null;hero.Name="changed";
+ Check(work()=="detached"&&workRuns==1&&MyBehavior.WorkCaptures==1,"captured work later trims result without rereading changed game identity or recapturing");
+ MyBehavior.CapturedWork=()=>throw new Exception("history work");
+ var failed=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(session,identity,hero,character,"input","explicit",false,9);
+ Check(failed()!=null&&failed()==""&&MyBehavior.CapturedSecondary=="explicit","persisted detached exception preserves empty mapping and explicit secondary capture");
+ MyBehavior.CapturedWork=null;Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(session,identity,hero,character,"input","explicit",false,9)==null,"null captured history work remains null not fabricated result");
+ DuelSettings.Current=null;int settingsReads=DuelSettings.Reads;
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.GetShoutThoughtMinTokens()==200&&!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.IsShoutInnerThoughtPromptDisabled()&&DuelSettings.Reads==settingsReads+2,"scalar settings null defaults and exact independent reads");
+ DuelSettings.Throw=true;Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.GetShoutThoughtMinTokens()==200&&!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.IsShoutInnerThoughtPromptDisabled(),"scalar settings exception defaults preserved");DuelSettings.Throw=false;
+ DuelSettings.Current=new DuelSettings{ShoutThoughtMinTokens=-5,DisableShoutInnerThoughtPrompt=true,ShoutMinTokens=200,ShoutMaxTokens=10};
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.GetShoutThoughtMinTokens()==40&&AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.IsShoutInnerThoughtPromptDisabled(),"scalar thought clamp and enabled capture");
+ settingsReads=DuelSettings.Reads;AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.GetSceneReplyLengthLimits(DuelSettings.Current,out int min,out int max);
+ Check(min==200&&max==200&&settingsReads==DuelSettings.Reads,"reply limits use given settings without lookup and enforce max not below min");
+ AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.GetSceneReplyLengthLimits(null,out min,out max);Check(min==100&&max==400,"reply null defaults remain original independent bounds");
+ AfGcczShoutBridge.ActiveReads=AfGcczShoutBridge.BlockReads=AfGcczShoutBridge.IdentityReads=0;AfGcczShoutBridge.Active=false;
+ Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.HasGcczImmediatePromptExtras(" ")&&AfGcczShoutBridge.ActiveReads==0,"empty GCCZ extras avoid bridge lookup");
+ Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.HasGcczImmediatePromptExtras("rules")&&AfGcczShoutBridge.BlockReads==0,"inactive GCCZ extras preserve active-before-block short circuit");
+ AfGcczShoutBridge.Active=true;AfGcczShoutBridge.Injected=true;AfGcczShoutBridge.Identity=" override ";
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildGcczImmediateIdentityOverrideBlock(hero,character,8,"rules")=="override"&&AfGcczShoutBridge.IdentityReads==1,"GCCZ identity invoked only qualified and trimmed");
+ AfGcczShoutBridge.Throw=true;Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildGcczImmediateIdentityOverrideBlock(hero,character,8,"rules")=="","GCCZ bridge qualification exception empty mapping preserved");
+// @@WILDERNESS_CURRENT_CASES@@
+ var party=new TaleWorlds.CampaignSystem.Party.MobileParty{Name=" Raiders\n Party ",StringId="party-one",MapFaction=new(){StringId="realm",Name="Realm"},LeaderHero=hero};var partyBase=new TaleWorlds.CampaignSystem.Party.PartyBase{IsMobile=true,MobileParty=party,ItemRoster=new object(),Index=3};party.Party=partyBase;
+ TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.EncounteredParty=partyBase;TaleWorlds.MountAndBlade.Mission.Current=null;
+ var civilianCharacter=new TaleWorlds.CampaignSystem.CharacterObject{StringId="guard",Name="Guard"};var civilianNpc=new NpcDataPacket{IsHero=false,AgentIndex=-1,Name="Guard",UnnamedKey="troop:guard"};
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildWildernessNonHeroPartyRepresentativePrompt(-1).Contains("Raiders  Party"),"wilderness representative captures encountered party name and flattens newline");
+ Check(ReferenceEquals(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.ResolveWildernessNonHeroPartyBaseForPrompt(-1),partyBase),"wilderness party base uses actual encountered-party fallback");
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroRewardParty(null,civilianCharacter,-1,out var rewardParty)&&ReferenceEquals(rewardParty,partyBase),"world-map reward capture uses actual context/party guard and item roster");
+ Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory(civilianNpc,null,civilianCharacter,-1,out string memoryId,out string memoryName)&&memoryId=="af_nonhero:troop:guard|party:party_string_id:party-one"&&memoryName=="Guard","nonHero actual capture uses stable party ID plus sole A original memory-ID policy");
+ MyBehavior.HistoryResult=" history ";Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildWildernessNonHeroHistoryContextForPrompt(civilianNpc,null,civilianCharacter,-1,"input","secondary")=="history","wilderness context freezes same qualified ID and trims typed history-read result");
+ AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.AppendWildernessNonHeroMemory(civilianNpc,null,civilianCharacter,-1,"input","reply",null,42);AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.AppendWildernessNonHeroMemory(civilianNpc,null,civilianCharacter,-1,"input","reply",null,-1);
+ Check(MyBehavior.Appends.Count==2&&MyBehavior.Appends[0]==memoryId+":42"&&MyBehavior.Appends[1]==memoryId+":default","wilderness append preserves same ID and scene-session/default branch order at A typed commit boundary");
+ party.StringId="party-two";Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory(civilianNpc,null,civilianCharacter,-1,out string secondId,out _)&&secondId!=memoryId,"same troop/name in distinct stable party remains distinct memory identity");
+ TaleWorlds.CampaignSystem.Settlements.Settlement.CurrentSettlement=new();Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.BuildWildernessNonHeroPartyRepresentativePrompt(-1)==""&&AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.ResolveWildernessNonHeroPartyBaseForPrompt(-1)==null&&!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroRewardParty(null,civilianCharacter,-1,out rewardParty),"settlement rejects representative/base/reward before wilderness capture");TaleWorlds.CampaignSystem.Settlements.Settlement.CurrentSettlement=null;
+ partyBase.ItemRoster=null;Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroRewardParty(null,civilianCharacter,-1,out rewardParty)&&rewardParty==null,"missing item roster rejects reward with reset out result");
+ Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory(civilianNpc,hero,character,-1,out secondId,out _)&&secondId=="","Hero guard rejects nonHero memory without state mutation");
+// @@WILDERNESS_CURRENT_END@@
+ Console.WriteLine("PASS strict/native history current "+Count);
+ }
+}
+
+// @@LORE_CURRENT_CASES@@
+var loreHistory=new SceneConversationHistoryOwner(new object());loreHistory.AppendNpc(7,new ConversationMessage{Role="assistant",Content="Ada: previous",SpeakerAgentIndex=7,SpeakerName="Ada"});loreHistory.AppendNpc(7,new ConversationMessage{Role="user",Content="new turn"});var loreCapture=new AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter(loreHistory,new ScenePendingAfefFactsOwner());
+int loreReads=AIConfigHandler.LoreReads;
+Check(loreCapture.BuildAutoGroupLoreContextForSpeaker(null,null,null,null,null,null)==""&&AIConfigHandler.LoreReads==loreReads,"empty AutoGroup skips independent lore leaf");
+var loreHero=new TaleWorlds.CampaignSystem.Hero{StringId="lore"};var loreCharacter=new TaleWorlds.CampaignSystem.CharacterObject{StringId="lore-character",Occupation="guard"};
+Check(loreCapture.BuildAutoGroupLoreContextForSpeaker(new(){AgentIndex=7},null,loreCharacter,loreHero,"Realm",new(){"Player: first","Player: second"})=="captured lore"&&AIConfigHandler.Kind=="hero"&&AIConfigHandler.Input.Contains("first")&&AIConfigHandler.Input.Contains("second")&&AIConfigHandler.Secondary==loreHistory.LatestNpcUtterance(7),"AutoGroup actual recent formatter plus sameHistory recall uses Hero overload");
+Check(loreCapture.BuildAutoGroupLoreContextForSpeaker(new(){AgentIndex=7},null,loreCharacter,null,"Realm",null)=="captured lore"&&AIConfigHandler.Kind=="character"&&AIConfigHandler.Kingdom=="Realm"&&AIConfigHandler.Input==loreHistory.LatestNpcUtterance(7)&&AIConfigHandler.Secondary==null,"AutoGroup empty visible input falls back to latest sameHistory then Character overload");
+loreReads=AIConfigHandler.LoreReads;Check(loreCapture.BuildAutoGroupLoreContextForSpeaker(new(){AgentIndex=-1},null,loreCharacter,loreHero,"Realm",null)==""&&AIConfigHandler.LoreReads==loreReads,"negative index never looks up other NPC history");
+AIConfigHandler.Throw=true;Check(loreCapture.BuildAutoGroupLoreContextForSpeaker(null,null,loreCharacter,loreHero,null,new(){"query"})=="","AutoGroup lore exception original empty mapping");AIConfigHandler.Throw=false;
+Check(loreHistory.LatestNpcUtterance(7)=="previous","AutoGroup reads do not consume or change history");
+
+// @@PUBLIC_TARGETED_CURRENT_CASES@@
+var publicHero=new TaleWorlds.CampaignSystem.Hero{StringId="public-hero",Name=" Public Hero "};var publicCharacter=new TaleWorlds.CampaignSystem.CharacterObject{StringId="public-character",HeroObject=publicHero,Name="Character",IsHero=true};publicHero.CharacterObject=publicCharacter;
+TaleWorlds.CampaignSystem.Hero.OneToOneConversationHero=publicHero;TaleWorlds.CampaignSystem.CharacterObject.OneToOneConversationCharacter=publicCharacter;
+Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryGetNativeConversationHistoryTargetForExternal(out var ph,out var pn)&&object.ReferenceEquals(ph,publicHero)&&pn=="Public Hero","public history target uses complete current resolver and trimmed identity");
+Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryGetNativeConversationLinkTargetForExternal(out ph,out var pc)&&object.ReferenceEquals(pc,publicCharacter),"public encyclopedia link target shares current resolved character");
+var publicCapture=new AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter();
+Check(publicCapture.TryGetNativeConversationPersistentHistoryTargetForExternal(out ph,out pn,out var pid)&&pid=="public-hero"&&pn=="Public Hero","public persistent Hero target shares ID and display capture without nonHero lookup");
+Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.FormatNativeConversationDisplayTextForExternal("reply",publicHero,publicCharacter)=="formatted:reply"&&object.ReferenceEquals(EncyclopediaEntityLinkFormatter.Hero,publicHero),"explicit display capture uses independent formatter with selected Hero");
+Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.FormatNativeConversationDisplayTextForExternal("reply")=="formatted:reply","implicit display resolves same target then actual overload");
+EncyclopediaEntityLinkFormatter.Throw=true;Check(AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.FormatNativeConversationDisplayTextForExternal("<unsafe>")=="sanitized:<unsafe>","display formatter exception falls back to safe independent richtext sanitizer");EncyclopediaEntityLinkFormatter.Throw=false;
+TaleWorlds.CampaignSystem.Hero.OneToOneConversationHero=null;TaleWorlds.CampaignSystem.CharacterObject.OneToOneConversationCharacter=null;TaleWorlds.CampaignSystem.Campaign.Current=null;TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.EncounteredParty=null;
+Check(!publicCapture.TryGetNativeConversationPersistentHistoryTargetForExternal(out ph,out pn,out pid)&&ph==null&&pn==""&&pid=="","missing target resets all persistent outputs");
+var publicFacts=new Dictionary<string,string>{{"secondary_input","frozen secondary"},{"rule_runtime_context","frozen runtime"},{"excluded_rule_ids","A;B;a"}};
+var publicSnapshot=new AnimusForge.Refactor.Contracts.GameInteractionSnapshot(new("public-session",AnimusForge.Refactor.Contracts.InteractionChannel.NativeConversation,"public-hero"),new("public-trace",1,1,"fixture","api"),"frozen player","square",1,1,null,null,publicFacts);
+var publicSelector=AnimusForge.Refactor.Adapters.PromptRuleCaptureBannerlordAdapter.CreateNativeConversationDetachedRuleSelectorForExternal(0);var publicSelection=publicSelector.Select(publicSnapshot);
+Check(publicSelection.RuleIds.SequenceEqual(new[]{"Duel","trust"})&&NativePublicLookupProbe.Cap==1&&NativePublicLookupProbe.Excluded.SequenceEqual(new[]{"A","B"})&&NativePublicLookupProbe.User=="frozen player"&&NativePublicLookupProbe.Secondary=="frozen secondary"&&NativePublicLookupProbe.Runtime=="frozen runtime","actual selector factory and full Legacy selector keep frozen facts topN clamp trim/dedup and exclusions");
+NativePublicLookupProbe.Success=false;NativePublicLookupProbe.Error=" ";publicSelection=publicSelector.Select(publicSnapshot);Check(publicSelection.RuleIds.Count==0&&publicSelection.ExclusionReasons.Contains("rule_lookup_failed"),"native rule lookup failure uses original fallback mapping");NativePublicLookupProbe.Error="quota";publicSelection=publicSelector.Select(publicSnapshot);Check(publicSelection.ExclusionReasons.Contains("rule_lookup_quota"),"native rule lookup explicit error preserved");NativePublicLookupProbe.Success=true;
+var targetedHistory=new SceneConversationHistoryOwner(new object());var targeted=new AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter(targetedHistory,new ScenePendingAfefFactsOwner());var targetedNpc=new NpcDataPacket{AgentIndex=91,IsHero=true,Name="Public Hero"};var targetedAgent=new TaleWorlds.MountAndBlade.Agent{Index=91,Character=publicCharacter,Npc=targetedNpc};TaleWorlds.MountAndBlade.Mission.Current=new(){Agents=new(){targetedAgent}};
+int reactions=0;Action<string,int,float> reaction=(fact,index,delay)=>{Check(targetedHistory.PublicCount>0&&targeted.FixtureSession.Snapshot("public-hero",100).Count>0,"reaction happens after real Scene and Native fact records");reactions++;};
+targeted.AppendTargetedScenePlayerFact("",91,true,1,reaction);targeted.AppendTargetedScenePlayerFact("fact",-1,true,1,reaction);Check(targetedHistory.PublicCount==0&&reactions==0,"targeted empty and negative guards have no records or reaction");
+targetedAgent.Health=0;targeted.AppendTargetedScenePlayerFact("dead target",91,true,1,reaction);Check(targetedHistory.PublicCount==0,"actual B Agent qualification rejects zero health");targetedAgent.Health=100;
+targeted.AppendTargetedScenePlayerFact("player fact",91,true,1,reaction);Check(targetedHistory.PublicCount==1&&reactions==1,"targeted player fact actual record/public/private/native then typed reaction");
+AfGcczShoutBridge.Persistent=true;targeted.AppendTargetedSceneNpcFact("npc\r\nfact",91,true);Check(targetedHistory.PublicCount==2&&MyBehavior.PrivateFacts.Single()=="[AFEF NPC行为补充] npc  fact","targeted NPC flatten/prefix and same external private history boundary");
+var targetedKey=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(publicHero,publicCharacter,"Public Hero",91,targetedNpc);var actualTargetedRecords=targeted.FixtureSession.Snapshot(targetedKey,100);
+Check(actualTargetedRecords.Count==2&&actualTargetedRecords.All(x=>x.Kind=="fact"&&x.EventSequence>0)&&actualTargetedRecords[0].EventSequence<actualTargetedRecords[1].EventSequence,"same actual Native session fact authority gets ordered EventSequence once per targeted append");
+AfGcczShoutBridge.Persistent=false;targeted.AppendTargetedSceneNpcFact("third fact",91,true);Check(MyBehavior.PrivateFacts.Count==1&&targetedHistory.PublicCount==3,"independent GCCZ rejects only persistent memory not accepted scene fact");
+int auxLookups=0;Func<AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter> auxCurrent=()=>{auxLookups++;return targeted;};var aux=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetAuxiliarySceneDialogueHistoryLinesForExternal(targeted.FixtureSession,auxCurrent,91,2);Check(aux.Count>0&&auxLookups==1,"closed Native input uses same actual public history auxiliary fallback");
+TaleWorlds.CampaignSystem.Hero.OneToOneConversationHero=publicHero;TaleWorlds.CampaignSystem.CharacterObject.OneToOneConversationCharacter=publicCharacter;TaleWorlds.CampaignSystem.Campaign.Current=new(){ConversationManager=new(){IsConversationInProgress=true,OneToOneConversationAgent=targetedAgent}};AnimusForge.Refactor.Adapters.SceneShoutInputController._nativeConversationInputOpen=true;AnimusForge.Refactor.Adapters.SceneShoutInputController.CurrentInstance=new object();
+aux=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetAuxiliarySceneDialogueHistoryLinesForExternal(targeted.FixtureSession,auxCurrent,91,2);Check(aux.Count==2&&aux.Any(x=>x.Contains("third fact")),"actual B open-input gate prioritizes real Native unified history and tail cap");
+var auxEmpty=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetAuxiliarySceneDialogueHistoryLinesForExternal(targeted.FixtureSession,()=>throw new Exception("scene lookup"),91,2);Check(auxEmpty.Count==0,"auxiliary failed current scene lookup preserves original guarded empty mapping");
+
+var auxNoScene=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.GetAuxiliarySceneDialogueHistoryLinesForExternal(targeted.FixtureSession,()=>null,91,2);Check(auxNoScene.Count==2,"Native nonempty actual session survives absent scene owner");
+TaleWorlds.CampaignSystem.Hero.MainHero=publicHero;TaleWorlds.CampaignSystem.CharacterObject.PlayerCharacter=publicCharacter;Check(!AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.TryGetNativeConversationHistoryTargetForExternal(out ph,out pn)&&ph==null&&pn=="","self target is rejected by actual full resolver with cleared outputs");
+
+// @@UNCOMPRESSED_FAMILY_CURRENT_CASES@@
+TaleWorlds.Library.TWParallel.Main=true;AfGcczShoutBridge.Persistent=false;int ucReads=MyBehavior.UncompressedReads,ucMission=TaleWorlds.MountAndBlade.Mission.Reads;
+Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero,7).Count==0&&MyBehavior.UncompressedReads==ucReads&&TaleWorlds.MountAndBlade.Mission.Reads==ucMission,"uncompressed personal-memory qualification rejects before live history and Mission capture");
+AfGcczShoutBridge.Persistent=true;TaleWorlds.MountAndBlade.Mission.Throw=true;
+var uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero,7);Check(object.ReferenceEquals(uc,MyBehavior.UncompressedResult)&&object.ReferenceEquals(MyBehavior.UncompressedHero,hero)&&MyBehavior.UncompressedIndex==7&&!MyBehavior.UncompressedInclude&&uc.Select(x=>x.Role).SequenceEqual(new[]{"user","assistant"}),"uncompressed Hero two-param family preserves selected Hero includeFalse exact role order/list without Mission read");
+var ucMap=new Dictionary<int,TaleWorlds.CampaignSystem.Hero>{{7,hero}};Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(7,ucMap).Count==0,"dictionary overload retains original guarded Mission lookup failure even when cached Hero exists");TaleWorlds.MountAndBlade.Mission.Throw=false;
+TaleWorlds.MountAndBlade.Mission.Current=new(){Agents=new(){new(){Index=7,Character=new TaleWorlds.CampaignSystem.CharacterObject{HeroObject=new(){StringId="other"}}}}};
+uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(7,ucMap);Check(object.ReferenceEquals(MyBehavior.UncompressedHero,hero)&&!MyBehavior.UncompressedInclude,"dictionary resolved Hero takes priority over changed Mission Agent Hero");
+var ucAgentHero=new TaleWorlds.CampaignSystem.Hero{StringId="agent"};var ucChar=new TaleWorlds.CampaignSystem.CharacterObject{HeroObject=ucAgentHero,StringId="agent_char"};TaleWorlds.MountAndBlade.Mission.Current.Agents[0].Character=ucChar;
+uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(7,new Dictionary<int,TaleWorlds.CampaignSystem.Hero>());Check(object.ReferenceEquals(MyBehavior.UncompressedHero,ucAgentHero),"dictionary miss falls back to current active Agent Hero");
+TaleWorlds.MountAndBlade.Mission.Current.Agents[0].Active=false;ucReads=MyBehavior.UncompressedReads;uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(7,null);Check(uc.Count==0&&MyBehavior.UncompressedReads==ucReads,"inactive Agent never injects stale Hero memory");
+var ucParty=new TaleWorlds.CampaignSystem.Party.MobileParty{Name="Party",StringId="uc-party",Party=new(){IsMobile=true,ItemRoster=new object()},MapFaction=new(){StringId="faction"},LeaderHero=hero};ucParty.Party.MobileParty=ucParty;
+var ucNonHero=new TaleWorlds.CampaignSystem.CharacterObject{StringId="guard",Name="Guard",IsSoldier=true};var ucNpc=new NpcDataPacket{AgentIndex=-1,Name="Guard",TroopId="guard"};var ucAgent=new TaleWorlds.MountAndBlade.Agent{Index=91,Character=ucNonHero,Npc=ucNpc,Origin=new(){BattleCombatant=ucParty.Party}};TaleWorlds.MountAndBlade.Mission.Current=new(){Agents=new(){ucAgent}};TaleWorlds.CampaignSystem.Settlements.Settlement.CurrentSettlement=null;TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.EncounteredParty=ucParty.Party;MyBehavior.Counterparty=ucParty.Party;
+uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(null,ucNonHero,ucNpc,91);Check(object.ReferenceEquals(uc,MyBehavior.UncompressedResult)&&ucNpc.AgentIndex==91&&MyBehavior.UncompressedHero==null&&MyBehavior.UncompressedId.StartsWith("af_nonhero:")&&MyBehavior.UncompressedName=="Guard"&&MyBehavior.UncompressedIndex==91&&!MyBehavior.UncompressedInclude,"four-param nonHero shares actual party-scoped memory identity patches AgentIndex and preserves role list/includeFalse");
+uc=AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(91,null);Check(object.ReferenceEquals(uc,MyBehavior.UncompressedResult)&&MyBehavior.UncompressedId.StartsWith("af_nonhero:"),"dictionary nonHero branch shares full four-param capture and memory identity");
+MyBehavior.UncompressedThrow=true;Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero,7).Count==0,"uncompressed backend exception remains empty-list mapping");MyBehavior.UncompressedThrow=false;MyBehavior.UncompressedResult=null;Check(AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(hero,7).Count==0,"uncompressed backend null remains empty-list mapping");

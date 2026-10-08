@@ -38,7 +38,11 @@ def verify():
     restore((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'))
     # The existing renderer ignores maxLines; reusing the captured path's zero preserves that behavior.
     current=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
-    body=m.declaration(current,'private string BuildHistoryContextById(')
+    facade=m.declaration(current,'private string BuildHistoryContextById(')
+    expected='private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false, HistoryPromptSnapshot snapshot = null) => _memoryBusinessState.BuildHistoryContextById(_memoryHistoryContext, memoryId, memoryName, maxLines, currentInput, secondaryInput, includeCurrentActiveSceneSession, snapshot);'
+    assert facade==expected,'History facade arguments/order changed; revisit Courier parity'
+    owner=(ROOT/'src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs').read_text(encoding='utf-8-sig')
+    body=m.declaration(owner,'internal string BuildHistoryContextById(')
     assert body.count('maxLines')==1,'History maxLines semantics changed; revisit Courier parity'
     print('PASS historical baseline identity; current history owner + two generation consumers; maxLines remains unused; other root responsibilities excluded')
 if __name__=='__main__':verify()

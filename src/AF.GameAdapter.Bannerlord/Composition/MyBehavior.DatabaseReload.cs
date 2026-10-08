@@ -105,7 +105,7 @@ public partial class MyBehavior
   ExportEventRecordsJson = () => JsonConvert.SerializeObject(_eventRecordEntries ?? new List<EventRecordEntry>()),
   GetKingdomOpeningSummaries = () => _eventKingdomOpeningSummaries,
   CaptureWorldWeeklyProductsFingerprint = BuildPublishedWorldWeeklyProductsFingerprint,
-  RestorePersonaProfiles = restored => PersonaImportOwner.RestoreProfileSnapshot(ref _npcPersonaProfiles, restored),
+  RestorePersonaProfiles = restored => PersonaImportOwner.RestoreProfileSnapshot(ref _personaProfiles.Profiles, restored),
   RestoreWeeklyData = RestoreDatabaseReloadWeeklyData,
   ReplaceOpeningKnowledge = ReplaceDatabaseOpeningKnowledge,
   SetVoiceMappingStorage = json => _voiceMappingJsonStorage = json,
@@ -116,6 +116,6 @@ public partial class MyBehavior
  private bool ApplyDatabaseReloadPlan(DatabaseReloadPlan plan, out string detail)
   => DatabaseReload.ApplyDatabaseReloadPlan(plan, out detail);
  private int ReplaceNpcVoiceAssignmentsForDatabaseReload(Dictionary<string,string> sourceVoiceIds, out int appliedVoiceIdCount)
-  => PersonaImportOwner.ReplaceVoiceAssignments(ref _npcPersonaProfiles, sourceVoiceIds, Hero.MainHero?.StringId, StampNpcPersonaProfile, out appliedVoiceIdCount);
+  => PersonaImportOwner.ReplaceVoiceAssignments(ref _personaProfiles.Profiles, sourceVoiceIds, Hero.MainHero?.StringId, StampNpcPersonaProfile, out appliedVoiceIdCount);
 
 }

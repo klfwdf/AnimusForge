@@ -95,4 +95,9 @@ internal static class PersonaImportOwner
 		return num;
 	}
 
+
+ internal static void ApplyDeveloperText(MyBehavior.NpcPersonaProfile profile,string personality,string background,Action<MyBehavior.NpcPersonaProfile> save)
+ { profile.Personality=personality;profile.Background=background;save(profile); }
+ internal static void ApplyDeveloperVoice(MyBehavior.NpcPersonaProfile profile,string voice,Action<MyBehavior.NpcPersonaProfile> save)
+ { profile.VoiceId=voice;save(profile); }
 }

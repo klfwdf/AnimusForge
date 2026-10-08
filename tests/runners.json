@@ -2,6 +2,29 @@
  "schemaVersion": 1,
  "meaning": "Per-entry extra arguments and expected non-PASS states for tests/run_all.py. Entries not listed must PASS. expect values: PASS, PREEXISTING_FAIL, NEEDS_INPUT, SUPERSEDED_BY_RUNNER, ENV_STATE (see docs/audits/2026-09-28-j16-baseline.json statusMeaning).",
  "entries": {
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_writers.py": {"args": ["--run-root", "{ROOT}/artifacts/tests/memory-writers/{RUN}"]},
+  "tests/modules/AF.Module.Knowledge/RerankerDeviceTests/RerankerDeviceTests.csproj": {
+   "msbuild": [
+    "-p:CpuRuntimeDir={DEBUG_STAGE_BIN}"
+   ],
+   "args": [
+    "faults"
+   ]
+  },
+  "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py": {
+   "args": ["--run-root", "{ROOT}/artifacts/tests/run_all-entry/{RUN}/diplomacy-architecture"]
+  },
+  "tests/modules/AF.Module.Llm/LegacyShoutGatewayResultRegressionTests/run.py": {
+   "args": ["--run-root", "{ROOT}/artifacts/tests/run_all-entry/{RUN}/legacy-shout-gateway"]
+  },
+  "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/DiplomacyArchitectureTests.csproj": {"prepareEntry": "tests/modules/AF.Module.Diplomacy/DiplomacyArchitectureTests/run.py"},
+  "tests/bridges/Policy/SettlementBalance.RuntimeTests/SettlementBalance.RuntimeTests.csproj": {"args": ["{ROOT}"], "msbuild": ["-p:BalanceReferenceDir={REFS14}", "-p:BalanceSharedReferenceDir={REFS14}", "-p:BalanceHarmonyDir={HARMONY_MODULE}/bin/Win64_Shipping_Client"]},
+  "extensions/AnimusForge.DialogueUI/tests/lifecycle-tests/LifecycleTests.csproj": {
+   "args": ["{ROOT}"]
+  },
+  "tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/current_consumer.py": {
+   "args": ["--run-root", "{ROOT}/artifacts/tests/run_all-entry/{RUN}/native-module-current"]
+  },
   "extensions/AnimusForge.DialogueUI/tests/auxiliary-tests/AuxiliaryTests.csproj": {
    "expect": "PASS",
    "msbuild": [
@@ -651,6 +674,42 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/{RUN}/native-wait-audio"
    ],
    "note": "Current seven retained Native atoms plus actual Audio/Presentation owners: late token/cancel/replacement/load/mission/exit do not change new pause/resources. Offline engine sinks; whole NativeWait/live audio NOT_RUN."
+  },
+  "tests/replay/PrimaryStreamingOptionReplayTests/PrimaryStreamingOptionReplayTests.csproj": {
+   "candidateDll": true,
+   "candidateConfiguration": "Debug"
+  },
+  "tests/replay/PrimaryStreamingOptionReplayTests/run.py": {
+   "args": [
+    "--candidate",
+    "{DEBUG_DLL14}",
+    "--game-root",
+    "{GAME}",
+    "--reference-dir",
+    "{REFS14}",
+    "--harmony-module",
+    "{HARMONY_MODULE}",
+    "--mcm-module",
+    "{MCM_MODULE}",
+    "--ui-module",
+    "{UIEXTENDER_MODULE}",
+    "--private-runtime",
+    "{DEBUG_STAGE_BIN}",
+    "--run-root",
+    "{ROOT}/artifacts/j17-host-implementation-20261004/h0/primary-streaming-{RUN}"
+   ]
+  },
+  "tests/content/BulletinCourierLayoutTests/run.py": {
+   "pythonExecutableEnv": "AF_TEST_PIL_PYTHON"
+  },
+  "tests/modules/AF.Module.Conversation/NativeTtsFallbackBoundaryTests/run.py": {
+   "args": ["--output-name", "run-all-{RUN}"]
+  },
+  "tests/modules/AF.Module.Economy/HeroAssetScopeRegressionTests/run.py": {
+   "args": ["--output-name", "run-all-{RUN}"]
+  },
+  "tests/modules/AF.Module.Weekly/BulletinArchiveTests/run.py": {
+   "args": ["--out", "{ROOT}/artifacts/tests/bulletin-archive/{RUN}"]
   }
  }
 }

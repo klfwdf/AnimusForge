@@ -5,14 +5,25 @@ from output_isolation import current_source_path
 import re
 
 root = Path(__file__).resolve().parents[4]
-source = (current_source_path(root, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
+# Responsibility migration: inspect current actual owners, not obsolete host business bodies.
+# Original guard/fingerprint/cancel/invalid JSON refusal assertions and mutation probes remain below.
+source = (root / "src/AF.GameAdapter.Bannerlord/UI/Editors/MemoryEditorController.cs").read_text(encoding="utf-8-sig")
+formats = (root / "src/AF.GameAdapter.Bannerlord/ImportExport/MemoryHistoryImportExportAdapter.cs").read_text(encoding="utf-8-sig")
+package = (root / "src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageImportController.cs").read_text(encoding="utf-8-sig")
 
 
-def method(name, text=source):
-    match = re.search(r'^\s*private\s+[^\n]*\b' + re.escape(name) + r'\s*\(', text, re.M)
+def method(name, text=None):
+    if text is None:
+        text = package if name == "ImportHeroNpcAllData" else formats if name.startswith("Import") else source
+    match = re.search(r'^\s*(?:private|internal)\s+[^\n]*\b' + re.escape(name) + r'\s*\(', text, re.M)
     assert match, f'missing production method: {name}'
-    following = re.search(r'^\s*private\s+[^\n]*\(', text[match.end():], re.M)
-    return text[match.start():match.end() + following.start()] if following else text[match.start():]
+    following = re.search(r'^\s*(?:private|internal)\s+[^\n]*\(', text[match.end():], re.M)
+    body = text[match.start():match.end() + following.start()] if following else text[match.start():]
+    if name == "ImportHeroNpcAllData":
+        # The actual package invokes this complete format scan; do not count an unrelated unused helper.
+        assert "_memoryFiles.PrepareCompressedDirectory(importDir,out num3,out num4,out invalidMemoryFiles)" in body
+        body += method("PrepareCompressedDirectory", formats)
+    return body
 
 
 def callback_guard(body, call, fingerprint=False):
@@ -37,8 +48,10 @@ guarded = [
     ('OpenDevCompressedMemoryBlockScenesEditor', 'ApplyDevCompressedMemoryBlockMutation', True),
     ('OpenDevCompressedMemoryBlockAfefEditor', 'ApplyDevCompressedMemoryBlockMutation', True),
     ('ConfirmDevDeleteCompressedMemoryBlock', 'DeleteDevCompressedMemoryBlock', True),
-    ('ConfirmDevClearCompressedMemory', 'MemoryDeveloperEditOwner.Clear', False),
+    ('ConfirmDevClearCompressedMemory', 'ClearDevCompressedMemoryData', False),
 ]
+clear_root = (root / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryDeveloperDailyEdit.cs").read_text(encoding="utf-8-sig")
+assert "MemoryDeveloperEditOwner.ClearMemoryWithHistorySync(_memoryBusinessState" in clear_root, 'clear capability disconnected from sole Memory authority'
 checks = 0
 for name, call, fingerprint in guarded:
     body = method(name)

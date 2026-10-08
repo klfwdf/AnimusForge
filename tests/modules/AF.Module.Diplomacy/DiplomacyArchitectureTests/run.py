@@ -4,7 +4,7 @@ import argparse,importlib.util,json,subprocess,os,re,sys
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/'AnimusForge.csproj').is_file())
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT/'tests'))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, minimal_test_environment
 BASELINE='19e9bb22'
 def read(p):return current_source_path(ROOT, p).read_text(encoding='utf-8-sig')
 def old(p):return subprocess.check_output(['git','show',BASELINE+':'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -175,7 +175,8 @@ BEHAVIOR_APP_WHITELIST={
 }
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');p.add_argument('--baseline-dll');p.add_argument('--candidate-dll');a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');p.add_argument('--baseline-dll');p.add_argument('--candidate-dll');p.add_argument('--run-root',type=Path);p.add_argument('--prepare-only',action='store_true');a=p.parse_args()
+ if a.prepare_only and a.run_root is None:p.error('--prepare-only requires a fresh --run-root')
  retired=load('retired','tools/DiplomacyArchitectureTests/retired.py')
  prior_raw=old(retired.HOST)
  current=read(retired.HOST)
@@ -274,7 +275,8 @@ def main():
  assert 'buildCanonicalHistoryBlock' not in prompt
 
  # 7. Baseline retained text required by Program.cs: raw baseline host snapshot.
- out=HERE/'.generated';out.mkdir(exist_ok=True)
+ out=new_run_root(ROOT,'DiplomacyArchitectureTests',a.run_root) if a.run_root is not None else HERE/'.generated'
+ if a.run_root is None:out.mkdir(exist_ok=True)
  (out/'prior-host.cs.txt').write_text(prior_raw,encoding='utf-8')
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)
@@ -283,6 +285,19 @@ def main():
  payload={'root':str(ROOT),'paths':[str(path) for path in paths], 'retired':[s[s.rfind(' ')+1:].rstrip('(') for s in retired.RETIRED]}
  payload.update(baseline=a.baseline_dll or '',candidate=a.candidate_dll or '')
  manifest=out/'sources.json';manifest.write_text(json.dumps(payload),encoding='utf-8')
- code=subprocess.call([a.dotnet,'run','--project',str(HERE/'DiplomacyArchitectureTests.csproj'),'-c','Release','--',str(manifest)],cwd=ROOT)
+ if a.prepare_only:
+  print(manifest)
+  return
+ if a.run_root is None:
+  code=subprocess.call([a.dotnet,'run','--project',str(HERE/'DiplomacyArchitectureTests.csproj'),'-c','Release','--',str(manifest)],cwd=ROOT)
+ else:
+  # Reuse the same isolated SDK build/target evaluation as the original discovery runner.
+  runner=load('isolated_discovery_runner','tests/run_all.py')
+  build_root=out/'build'
+  command=[a.dotnet,'run','--project',str(HERE/'DiplomacyArchitectureTests.csproj'),'-c','Release','-p:UseArtifactsOutput=true','-p:UseAppHost=false',f'-p:ArtifactsPath={build_root}',f'-p:OutDir={build_root / "bin" / "runtime"}/','--',str(manifest)]
+  result=runner.execute(command,minimal_test_environment(Path(a.dotnet),out),build_root,300)
+  (out/'execution.log').write_text(result.stdout+result.stderr,encoding='utf-8')
+  print(result.stdout+result.stderr)
+  code=result.returncode
  raise SystemExit(code)
 if __name__=='__main__':main()

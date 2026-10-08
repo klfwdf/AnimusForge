@@ -1,3 +1,4 @@
+using WeeklyEventMaterialPreviewGroup = AnimusForge.MyBehavior.WeeklyEventMaterialPreviewGroup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,4 +117,92 @@ internal sealed class CampaignMaterialRecordOwner
     internal void ResetMaterials() => Materials = new List<EventSourceMaterialEntry>();
     internal void EnsureMaterials() => Materials ??= new List<EventSourceMaterialEntry>();
 
+
+internal static HashSet<string> BuildEventSourceMaterialStableKeySet(List<EventSourceMaterialEntry> source) => BuildStableKeySet(source);
+
+internal HashSet<string> BuildEventSourceMaterialStableKeySet()
+	{
+		return BuildEventSourceMaterialStableKeySet(Materials);
+	}
+
+internal static bool DoesEventSourceMaterialRelateToKingdom(EventSourceMaterialEntry item, string kingdomId)
+	{
+		if (item == null || kingdomId == null)
+		{
+			return false;
+		}
+		string text = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (string.Equals((item.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text2 = (item.MaterialKind ?? "").Trim();
+		return string.Equals(text2, "raid_completed", StringComparison.OrdinalIgnoreCase) && string.Equals((item.ActorKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
+	}
+
+ internal List<EventSourceMaterialEntry> WeeklyBuildSnapshot;
+internal List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
+	{
+		return WeeklyBuildSnapshot ?? SanitizeEventSourceMaterials(Materials);
+	}
+
+internal WeeklyEventMaterialPreviewGroup BuildWeeklyEventMaterialPreviewGroupWithSnapshot(Func<WeeklyEventMaterialPreviewGroup> builder, List<EventSourceMaterialEntry> snapshot)
+	{
+		List<EventSourceMaterialEntry> previous = WeeklyBuildSnapshot;
+		try
+		{
+			WeeklyBuildSnapshot = snapshot;
+			return builder?.Invoke();
+		}
+		finally
+		{
+			WeeklyBuildSnapshot = previous;
+		}
+	}
+internal List<string> GetRecentKingdomEventFacts(string kingdomId,int limit)
+ { var facts=new List<string>();
+ try
+ {
+				string id = (kingdomId ?? "").Trim();
+				if (Materials == null || string.IsNullOrWhiteSpace(id)) return facts;
+				foreach (EventSourceMaterialEntry entry in Materials.Where(x => x != null && string.Equals((x.KingdomId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase)).Reverse().Take(Math.Max(1, limit)))
+				{
+					string kind = (entry.MaterialKind ?? "").Trim();
+					if (kind != "war_declared" && kind != "peace_made" && kind != "raid_completed" && kind != "kingdom_decision_support" && kind != "clan_destroyed" && kind != "player_execution" && kind != "siege_aftermath") continue;
+					facts.Add(kind + "\t" + (entry.StableKey ?? "") + "\t" + LimitEventFact((entry.Label ?? "") + " " + (entry.SnapshotText ?? "")));
+				}
+ }
+ catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] recent event facts failed: " + ex.Message); }
+ return facts;
+ }
+internal static string LimitEventFact(string text)
+		{
+			string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			return value.Length <= 80 ? value : value.Substring(0, 80);
+		}
+
+
+internal static string BuildPrefixedEventSourceStableKey(string prefix, string stableKey, string fallbackText)
+	{
+		string cleanPrefix = NpcActionLedger.NormalizeStableKey(prefix, "").TrimEnd(':');
+		string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, fallbackText);
+		if (string.IsNullOrWhiteSpace(cleanPrefix))
+		{
+			return normalizedKey;
+		}
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return cleanPrefix;
+		}
+		string prefixWithSeparator = cleanPrefix + ":";
+		if (string.Equals(normalizedKey, cleanPrefix, StringComparison.OrdinalIgnoreCase) || normalizedKey.StartsWith(prefixWithSeparator, StringComparison.OrdinalIgnoreCase))
+		{
+			return normalizedKey;
+		}
+		return prefixWithSeparator + normalizedKey;
+	}
 }

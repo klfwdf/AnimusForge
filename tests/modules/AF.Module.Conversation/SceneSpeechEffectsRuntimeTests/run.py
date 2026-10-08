@@ -35,6 +35,15 @@ for name in ['SceneSpeechQueueOwner.cs','SceneSpeechExecutionRuntime.cs']:
 (out/'Ports.cs').write_text((src/'SceneSpeechEffectPorts.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Completion.cs').write_text(completion,encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0169;CS0414</NoWarn></PropertyGroup></Project>')
+# Compile the actual current AF edge, not a renamed old owner stub.
+bridge_path=ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs'
+bridge_source=bridge_path.read_text(encoding='utf-8-sig')
+bridge_matches=__import__('re').findall(r'(?m)^\s*internal static void ProcessDiplomacyTagsDispatch\([^\r\n]+\)\s*=>[^\r\n]+;',bridge_source)
+assert len(bridge_matches)==1, 'actual diplomacy dispatch edge must be unique'
+bridge=bridge_matches[0].strip()
+assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text)' in bridge
+(out/'DiplomacyBridge.cs').write_text('using TaleWorlds.CampaignSystem;\nnamespace AnimusForge { internal static class DiplomacyConversationBridge { '+bridge+' } }',encoding='utf-8')
+(out/'current-bridge-source.json').write_text(__import__('json').dumps({'path':bridge_path.relative_to(ROOT).as_posix(),'rawSha256':__import__('hashlib').sha256(bridge_path.read_bytes()).hexdigest(),'methodSha256':__import__('hashlib').sha256(bridge.encode()).hexdigest(),'scope':'actual AF edge; diplomacy module leaf synthetic, no diplomacy game effects claim'},indent=2),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 dotnet=resolve_dotnet(ROOT);r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

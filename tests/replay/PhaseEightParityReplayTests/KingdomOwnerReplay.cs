@@ -119,10 +119,26 @@ internal static class KingdomOwnerReplay
                 Check((int)Call(host, null, "GetLowClanCountRoyalDomainLoyaltyAdjustment", value, 2) == (int)Call(policy, null, "GetLowClanCountRoyalDomainLoyaltyAdjustment", value, 2), "real loyalty/model adapter");
             }
             object behavior = RuntimeHelpers.GetUninitializedObject(host);
-            host.GetField("_lastProcessedKingdomRebellionWeek", M).SetValue(behavior, 9);
+            Type runtimeType = assembly.GetType("AnimusForge.KingdomRebellionRuntimeController", true);
+            Type pumpType = assembly.GetType("AnimusForge.KingdomRebellionPumpCapabilities", true);
+            object pump = Activator.CreateInstance(pumpType, true);
+            FieldInfo maintenancePort = pumpType.GetField("Maintenance", M);
+            Type maintenanceType = maintenancePort.FieldType.GetGenericArguments()[0];
+            object actualMaintenance = Activator.CreateInstance(maintenanceType, true);
+            Delegate maintenanceProvider = System.Linq.Expressions.Expression.Lambda(maintenancePort.FieldType,
+                System.Linq.Expressions.Expression.Constant(actualMaintenance, maintenanceType)).Compile();
+            maintenancePort.SetValue(pump, maintenanceProvider);
+            object records = Activator.CreateInstance(assembly.GetType("AnimusForge.WeeklyEventRecordStateOwner", true), true);
+            object runtime = Activator.CreateInstance(runtimeType, M, null,
+                new object[] { records, (Func<int>)(() => 0), null, null, pump }, null);
+            host.GetField("_kingdomRebellionRuntime", M).SetValue(behavior, runtime);
+            FieldInfo completedWeek = runtimeType.GetField("LastProcessedWeek", M);
+            Check(host.GetProperty("_lastProcessedKingdomRebellionWeek", M)?.PropertyType == typeof(int).MakeByRefType(),
+                "saved completed week remains a ref projection to the unique runtime state");
+            completedWeek.SetValue(runtime, 9);
             Check((bool)Call(host, behavior, "ProcessWeeklyKingdomRebellionsSlice", 9)
                 && (bool)Call(host, behavior, "ProcessWeeklyKingdomRebellionsSlice", 0)
-                && (int)host.GetField("_lastProcessedKingdomRebellionWeek", M).GetValue(behavior) == 9, "real saved completed week blocks duplicate/invalid work");
+                && (int)completedWeek.GetValue(runtime) == 9, "real saved completed week blocks duplicate/invalid work");
         }
         Console.WriteLine("PASS KingdomOwnerReplay stability/royal-loyalty/relation-saturation/duplicate/revoke/missing/weekly-delta/cursor/reset/saved-week/auto-flow/canceled-naming live=NOT_RUN");
     }

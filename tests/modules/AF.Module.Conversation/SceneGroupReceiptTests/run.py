@@ -43,7 +43,14 @@ def main():
     if args.source_only:
         print('PASS Scene fallback generation/session/epoch and post-await stale guards')
         return 0
-    candidate = extract.declaration(host, 'internal static List<NpcDataPacket> BuildGroupSpeakingCandidates(')
+    candidate = extract.declaration((ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/SceneRosterPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig'), 'internal static List<NpcDataPacket> BuildGroupSpeakingCandidates(')
+    capture_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig')
+    current_capture=extract.declaration(capture_source,'internal SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(')
+    current_capture+='\n'+extract.declaration(capture_source,'internal List<ConversationMessage> CaptureNpcConversationHistory(')
+    limit_source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs').read_text(encoding='utf-8-sig')
+    limit_start=limit_source.index('internal static int ResolveHistoryLineLimit(')
+    current_limit=limit_source[limit_start:limit_source.index(';',limit_start)+1]
+    assert current_limit.count('=>')==1
     if args.mutate == "drop-primary":
         assert candidate.count('speakingCandidates.Add(primaryNpc);') == 1
         candidate = candidate.replace('speakingCandidates.Add(primaryNpc);', '// mutation: primary speaker lost', 1)
@@ -63,10 +70,11 @@ def main():
         extract.declaration(stages, 'internal Task<bool> RecordSceneReplyHistoryOnMainThreadAsync('),
     ])
     output = new_run_root(ROOT, 'scene-group-receipt', args.run_root)
-    program = (HERE / 'Harness.cs.txt').read_text(encoding='utf-8').replace('@@DECLARATIONS@@', declarations)
+    program = (HERE / 'Harness.cs.txt').read_text(encoding='utf-8').replace('@@DECLARATIONS@@', declarations).replace('@@CURRENT_CAPTURE@@',current_capture).replace('@@CURRENT_LIMIT@@',current_limit)
     assert '@@DECLARATIONS@@' not in program
     (output / 'Program.cs').write_text(program, encoding='utf-8')
     history_paths = ['src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs','src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs']
+    history_paths += ['src/modules/AF.Module.Conversation/Internal/History/SceneConversationHistoryOwner.cs','src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs','src/modules/AF.Module.Conversation/Channels/Scene/ScenePendingAfefFactsOwner.cs']
     history_items = ''.join('<Compile Include="' + str(ROOT/path) + '" />' for path in history_paths)
     contracts = ROOT / 'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs'
     operation = ROOT / 'src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs'
@@ -75,6 +83,8 @@ def main():
         '<OutputType>Exe</OutputType><Nullable>disable</Nullable><ImplicitUsings>enable</ImplicitUsings>'
         '</PropertyGroup><ItemGroup><Compile Include="' + str(contracts) + '" /><Compile Include="' + str(operation) + '" />' + history_items + '</ItemGroup></Project>',
         encoding='utf-8')
+    receipt_paths=history_paths+['src/AF.GameAdapter.Bannerlord/Prompt/SceneRosterPromptCaptureAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneHistoryMessages.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs']
+    (output/'current-consumer-source.json').write_text(__import__('json').dumps({'sources':{x:__import__('hashlib').sha256((ROOT/x).read_bytes()).hexdigest() for x in receipt_paths},'scope':'actual group receipt/wrapper, candidate and strict capture declarations; real history/pending/assembly stores; game identity/context leaves controlled'},indent=2),encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
     env = minimal_test_environment(Path(args.dotnet).resolve(), output)
     result = subprocess.run([args.dotnet, 'run', '--project', str(output / 'Tests.csproj'), '-c', 'Release'],

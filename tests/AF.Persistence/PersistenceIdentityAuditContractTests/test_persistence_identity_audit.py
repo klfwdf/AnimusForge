@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import re
 import subprocess
 import sys
 import unittest
@@ -15,6 +16,38 @@ import PersistenceIdentityAudit as audit  # noqa: E402
 
 
 class PersistenceIdentityAuditTests(unittest.TestCase):
+    def test_compile_pruning_only_uses_unconditional_preinclude_removals(self) -> None:
+        project='<Project><ItemGroup><Compile Remove="artifacts/**/*.cs;tests/**/*.cs"/><Compile Remove="conditional/**/*.cs" Condition="condition"/><Compile Include="tests/Linked.cs"/><Compile Remove="later/**/*.cs"/></ItemGroup></Project>'
+        self.assertEqual(audit.compile_glob_pruning_patterns(project), ['artifacts/**/*.cs', 'tests/**/*.cs'])
+        for unsafe in ['<Project><Import Project="unknown"/></Project>', '<Project><Choose/></Project>',
+                       '<Project><ItemGroup><Compile Remove="$(Unknown)/**/*.cs"/></ItemGroup></Project>']:
+            with self.assertRaisesRegex(ValueError, 'cannot prove'):
+                audit.compile_glob_pruning_patterns(unsafe)
+
+    def test_actual_msbuild_pruning_preserves_explicit_linked_compile(self) -> None:
+        sys.path.insert(0, str(ROOT/'tests'))
+        from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+        out=new_run_root(ROOT,'identity-pruning-equivalence',None)
+        dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
+        for key in ('DOTNET_CLI_HOME','USERPROFILE','APPDATA','LOCALAPPDATA','TEMP','TMP'):
+            Path(env[key]).mkdir(parents=True,exist_ok=True)
+        env['PYTHONDONTWRITEBYTECODE']='1'
+        for relative in ['Owner.cs','tests/Fake.cs','tests/Linked.cs','artifacts/Fake.cs','extensions/Linked/Owner.cs']:
+            file=out/relative;file.parent.mkdir(parents=True,exist_ok=True);file.write_text('class Sample {}',encoding='utf-8')
+        project='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup><ItemGroup><Compile Remove="tests/**/*.cs;artifacts/**/*.cs;extensions/**/*.cs"/><Compile Include="tests/Linked.cs;extensions/Linked/Owner.cs"/></ItemGroup></Project>'
+        file=out/'Input.csproj';file.write_text(project,encoding='utf-8')
+        command=[str(dotnet),'msbuild',str(file),'-getItem:Compile','-nologo']
+        before=subprocess.run(command,cwd=out,env=env,capture_output=True,text=True,check=True,timeout=30)
+        optimized_env=env.copy()
+        optimized_env['DefaultItemExcludes']=env.get('DefaultItemExcludes','')+';'+ ';'.join(re.sub(r'[\\/]\*\*[\\/]\*\.cs$', '/**', pattern) for pattern in audit.compile_glob_pruning_patterns(project))
+        after=subprocess.run(command+['-getProperty:DefaultItemExcludes'],cwd=out,env=optimized_env,capture_output=True,text=True,check=True,timeout=30)
+        self.assertIn('bin', json.loads(after.stdout)['Properties']['DefaultItemExcludes'])
+        self.assertIn('obj', json.loads(after.stdout)['Properties']['DefaultItemExcludes'])
+        paths=lambda result: sorted(x['Identity'].replace('\\','/') for x in json.loads(result.stdout)['Items']['Compile'])
+        self.assertEqual(paths(before),['Owner.cs','extensions/Linked/Owner.cs','tests/Linked.cs'])
+        self.assertEqual(paths(after),paths(before))
+        (out/'before.json').write_text(before.stdout,encoding='utf-8');(out/'after.json').write_text(after.stdout,encoding='utf-8')
+
     def test_civilwar_review_accepts_only_exact_authorized_key_delta(self) -> None:
         old={('unchanged','int'),('_af_kingdom_civil_war_v1','string')}
         new={('unchanged','int'),('_af_kingdom_civil_war_v2','string')}

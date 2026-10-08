@@ -47,26 +47,38 @@ if a.native:
  code=code[:code.index('    public static class Program')]+fragment
 out=new_run_root(ROOT,'native-history-snapshot',a.run_root)
 if not a.original:
- snap=read('MyBehavior.HistoryPromptSnapshot.cs')
+ snaproot=read('MyBehavior.HistoryPromptSnapshot.cs')
+ shared=read('src/AF.GameAdapter.Bannerlord/Prompt/SharedPromptCaptureBannerlordAdapter.cs')
+ snap='using System;using System.Collections.Generic;using TaleWorlds.CampaignSystem;using AnimusForge.Refactor.Adapters; namespace AnimusForge {public partial class MyBehavior { '+ '\n'.join(ex.declaration(snaproot,x) for x in ['internal sealed class HistoryPromptSnapshot','internal static Func<string> CaptureHistoryContextWorkForHero(','internal static Func<string> CaptureHistoryContextWorkById('])+' } }'
+ shared_methods='\n'.join(ex.declaration(shared,x) for x in ['internal sealed class HistoryWorkCapturePorts','internal static Func<string> CaptureHistoryContextWorkById(','internal static Func<string> CaptureHistoryContextWorkForHero(','internal static CompressedMemoryBlock CopyHistoryRecallBlock('])
+ recall=read('src/AF.GameAdapter.Bannerlord/Prompt/MemoryRecallInputCaptureAdapter.cs')
+ recall_methods='\n'.join(ex.declaration(recall,x) for x in ['internal sealed class CapturePorts','internal static string BuildMemoryRecallQueryText(','internal static bool TryBuildMemoryRecallCandidates(','internal static bool TrySelectMemoryIdsWithPreprocess(','internal static string BuildCompressedMemoryContextById(','internal static MemoryRecallRequest CaptureMemoryRecallRequest(','internal static void PublishMemoryRecallFailure('])
+ state=read('src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs')
+ state_methods=ex.declaration(state,'internal string BuildHistoryContextById(')
+ adapters='using System;using System.Linq;using System.Collections.Generic;using TaleWorlds.CampaignSystem;using TaleWorlds.Library;using HistoryPromptSnapshot=AnimusForge.MyBehavior.HistoryPromptSnapshot; namespace AnimusForge.Refactor.Adapters {internal static class SharedPromptCaptureBannerlordAdapter {'+shared_methods+'} internal static class MemoryRecallInputCaptureAdapter {'+recall_methods+'} }'
+ (out/'CaptureAdapters.cs').write_text(adapters,encoding='utf-8')
+ state_code='using System;using System.Collections.Generic;using System.Diagnostics;using System.Text; namespace AnimusForge { '+ex.declaration(state,'internal sealed class MemoryHistoryContextReadCapabilities')+' internal sealed class MemoryBusinessStateOwner {internal Func<string,List<CompressedMemoryBlock>> LoadBlocks;internal Func<string,List<DailyMemoryDraft>> LoadDrafts;internal static int GetMemoryFinalInjectCountFromSettings()=>MyBehavior.ReadFinal();internal static int GetMemoryCandidateLimitFromSettings()=>MyBehavior.ReadLimit();internal static int GetMemoryPreprocessModeFromSettings()=>MyBehavior.ReadMode();private const string NonHeroMemoryIdPrefix=\"af_nonhero:\";'+ex.declaration(state,'internal static bool IsNonHeroMemoryId(')+state_methods+' } }'
+ (out/'StateRead.cs').write_text(state_code,encoding='utf-8')
  mutations={
   'reuse-owner-blocks':('blocks.Select(CopyHistoryRecallBlock).ToList()','blocks'),
   'reuse-afef-list':('new List<string>(block.AfefLines)','block.AfefLines'),
   'lose-summary':('Summary = block.Summary,','Summary = "",'),
-  'ignore-generation':('!ReferenceEquals(Instance, owner) || !SaveRuntimeGuard.IsCurrentGeneration(generation)','!ReferenceEquals(Instance, owner) || false'),
-  'ignore-owner':('!ReferenceEquals(Instance, owner) || !SaveRuntimeGuard.IsCurrentGeneration(generation)','false || !SaveRuntimeGuard.IsCurrentGeneration(generation)'),
+  'ignore-generation':('!owner.IsCurrentOwner() || !SaveRuntimeGuard.IsCurrentGeneration(generation)','!owner.IsCurrentOwner() || false'),
+  'ignore-owner':('!owner.IsCurrentOwner() || !SaveRuntimeGuard.IsCurrentGeneration(generation)','false || !SaveRuntimeGuard.IsCurrentGeneration(generation)'),
  }
  if a.mutate in mutations:
-  old,new=mutations[a.mutate];assert old in snap;snap=snap.replace(old,new,1)
+  old,new=mutations[a.mutate];assert old in adapters;adapters=adapters.replace(old,new,1)
  if a.mutate=='live-scene':
-  old='snapshot?.Scene ?? ResolveCurrentMemorySceneLabel()';assert old in code;code=code.replace(old,'ResolveCurrentMemorySceneLabel()',1)
+  old='snapshot?.Scene ?? SceneLocationPromptCaptureAdapter.ResolveCurrentMemorySceneLabel()';assert old in adapters;adapters=adapters.replace(old,'SceneLocationPromptCaptureAdapter.ResolveCurrentMemorySceneLabel()',1)
  if a.mutate=='live-date':
-  old='snapshot?.GameDay ?? GetCurrentGameDayIndexSafe()';assert old in code;code=code.replace(old,'GetCurrentGameDayIndexSafe()',1)
+  old='snapshot?.GameDay ?? MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe()';assert old in adapters;adapters=adapters.replace(old,'MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe()',1)
  if a.mutate=='live-query':
-  old='snapshot?.RecallQuery ?? (blocks.Count';assert old in code;code=code.replace(old,'(blocks.Count',1)
+  old='snapshot?.RecallQuery ?? (blocks.Count';assert old in adapters;adapters=adapters.replace(old,'(blocks.Count',1)
  if a.mutate=='drop-capture-guard':
   old='() => IsNativeConversationAdmissionCurrent(admission, out _)\n\t\t\t\t? CaptureNativeConversationPersistedHistoryWork';assert old in code;code=code.replace(old,'() => true\n\t\t\t\t? CaptureNativeConversationPersistedHistoryWork',1)
  if a.mutate=='drop-accept-guard':
   old='() => IsNativeConversationAdmissionCurrent(admission, out _), false)';assert old in code;code=code.replace(old,'() => true, false)',1)
+ (out/'CaptureAdapters.cs').write_text(adapters,encoding='utf-8')
  (out/'Snapshot.cs').write_text(snap,encoding='utf-8')
 if a.native:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 if not a.original:

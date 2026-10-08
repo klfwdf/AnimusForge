@@ -49,6 +49,29 @@ class RunnerOutputIsolationTests(unittest.TestCase):
             target.mkdir(parents=True)
             for name in ("run.py", project, *other):
                 shutil.copy2(source / name, target / name)
+        # Source-only dependencies used by the current PlayerExports emitter.
+        # The fake SDK still controls subprocesses; writes remain in the replica.
+        for rel in (
+            'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py',
+            'src/AF.GameAdapter.Bannerlord/Memory/MemoryEntityIdentityBannerlordAdapter.cs',
+            'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs',
+            'src/modules/AF.Module.Llm/Tts/VoiceMapper.cs',
+            'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs',
+            'src/modules/AF.Module.Knowledge/Import/KnowledgeImportValidationOwner.cs',
+            'src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs',
+            'src/modules/AF.Module.Knowledge/Import/KnowledgeRuleImportOwner.cs',
+            'src/AF.GameAdapter.Bannerlord/Kingdom/KingdomRebellionRuntimeController.cs',
+            'tests/modules/AF.Module.Memory/J17ImportExportTests/OwnerChecks.cs',
+            'src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs',
+            'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignMaterialRecords.cs',
+            'src/AF.GameAdapter.Bannerlord/ImportExport/DebtImportExportAdapter.cs',
+            'src/AF.GameAdapter.Bannerlord/ImportExport/VoicePersonaImportExportAdapter.cs',
+            'src/AF.GameAdapter.Bannerlord/ImportExport/KnowledgeImportExportAdapter.cs',
+            'src/AF.GameAdapter.Bannerlord/ImportExport/WeeklyEventImportExportAdapter.cs',
+        ):
+            target = FIXTURE / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(REPO / rel, target)
         helper = REPO / "tests/output_isolation.py"
         if helper.exists():
             shutil.copy2(helper, FIXTURE / "tests/output_isolation.py")

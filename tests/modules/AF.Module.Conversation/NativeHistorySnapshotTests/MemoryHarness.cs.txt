@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
+#if !ORIGINAL
+using AnimusForge.Refactor.Adapters;
+#endif
 namespace TaleWorlds.Library { public static class TWParallel {public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainId;} public static class MBMath {public static int ClampInt(int n,int a,int b)=>Math.Clamp(n,a,b);} }
 namespace TaleWorlds.CampaignSystem
 {
@@ -53,6 +56,31 @@ namespace AnimusForge
         @@MODELS@@
         @@METHODS@@
         @@BASELINE_METHODS@@
+#if !ORIGINAL
+        private readonly MemoryBusinessStateOwner _memoryBusinessState;
+        private readonly MemoryHistoryContextReadCapabilities _memoryHistoryContext;
+        private MemoryBusinessStateOwner MemoryQueueState => _memoryBusinessState;
+        private MemoryRecallInputCaptureAdapter.CapturePorts MemoryRecallCapturePorts => new() {
+         LoadBlocks=LoadCompressedMemoryBlocksById,LoadDrafts=LoadDailyMemoryDraftsById,
+         FinalCount=GetMemoryFinalInjectCountFromSettings,CandidateLimit=GetMemoryCandidateLimitFromSettings,
+         PreprocessMode=GetMemoryPreprocessModeFromSettings,ShowBlockingFailure=ShowCompressedMemoryBlockingPopup
+        };
+        public MyBehavior() {
+         _memoryBusinessState=new() {LoadBlocks=LoadCompressedMemoryBlocksById,LoadDrafts=LoadDailyMemoryDraftsById};
+         _memoryHistoryContext=new() {IsEligible=IsMemoryEntityEligibleForCompressedMemory,Overview=BuildMemoryOverviewContextById,Compressed=BuildCompressedMemoryContextById,Trace=LogNonHeroMemoryTrace};
+        }
+        private SharedPromptCaptureBannerlordAdapter.HistoryWorkCapturePorts HistoryWorkCapturePorts => new() {
+         IsCurrentOwner=()=>ReferenceEquals(Instance,this),LoadBlocks=LoadCompressedMemoryBlocksById,LoadDrafts=LoadDailyMemoryDraftsById,
+         Overview=BuildMemoryOverviewContextById,BuildContext=BuildHistoryContextById
+        };
+        internal static SharedPromptCaptureBannerlordAdapter.HistoryWorkCapturePorts ResolveHistoryWorkCapturePorts()=>Instance?.HistoryWorkCapturePorts;
+        internal static int ReadFinal()=>GetMemoryFinalInjectCountFromSettings();
+        internal static int ReadLimit()=>GetMemoryCandidateLimitFromSettings();
+        internal static int ReadMode()=>GetMemoryPreprocessModeFromSettings();
+        internal static int ReadDay()=>GetCurrentGameDayIndexSafe();
+        internal static string ReadScene()=>ResolveCurrentMemorySceneLabel();
+        internal static bool ReadEligibility(string id)=>IsMemoryEntityEligibleForCompressedMemory(id);
+#endif
         private List<CompressedMemoryBlock> Blocks=new();private List<DailyMemoryDraft> Drafts=new();private string Overview="overview";
         private static bool IsMemoryEntityEligibleForCompressedMemory(string id){Host.Read("eligibility");return Host.Eligible;}
         private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string id){Host.Read("blocks");return Blocks;}
@@ -98,6 +126,14 @@ namespace AnimusForge
             Host.Scene="changed scene";Host.Day=500;Host.Final=20;Host.Limit=40;Host.Mode=2;Host.Eligible=false;
         }
     }
+#if !ORIGINAL
+    internal static class MemoryEntityIdentityBannerlordAdapter {
+     internal static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>MyBehavior.ReadEligibility(id);
+     internal static int GetCurrentGameDayIndexSafe()=>MyBehavior.ReadDay();
+    }
+    internal static class SceneLocationPromptCaptureAdapter {internal static string ResolveCurrentMemorySceneLabel()=>MyBehavior.ReadScene();}
+    internal static class CampaignCharacterRecordCaptureAdapter {internal static string GetMemoryHeroId(Hero hero)=>MemoryRecordRules.NormalizeMemoryHeroId(hero?.StringId);}
+#endif
     public static class Program
     {
         static int Checks,Failures;

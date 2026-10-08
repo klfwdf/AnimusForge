@@ -54,7 +54,7 @@ namespace AnimusForge
     {
         internal readonly struct ScopeToken : IDisposable { public void Dispose() { } }
         internal static ScopeToken Scope(string name) => new ScopeToken();
-        internal static void Mark(string name, string detail) { }
+        internal static void Mark(string name, string detail, bool immediate=false) { }
     }
     internal sealed class RewardSystemBehavior
     {
@@ -91,6 +91,7 @@ namespace AnimusForge
     }
     internal static class AIConfigHandler
     {
+        internal static bool IsPlayerPartyTradeLimitedTarget(Hero hero)=>false;
         internal static bool LoanEnabled => false;
         internal static bool RewardEnabled => false;
         internal static string BuildGuardrailClarificationHint(string input, bool duel, float duelScore, bool reward, float rewardScore, bool loan, float loanScore, bool surrounding, float surroundingScore) => "";
@@ -104,6 +105,11 @@ namespace AnimusForge
     }
     public partial class MyBehavior
     {
+#if CURRENT
+        private readonly object _memoryBusinessState=new(), _npcActionRecords=new();
+        private MyBehavior NpcMajorRuleCapture=>this;
+        private static string BuildRuleTargetKeyForExternal(Hero hero,CharacterObject character,int agent)=>hero?.StringId??character?.StringId??"";
+#endif
         public sealed class ShoutPromptContext
         {
             public string Extras, EntityPostprocessContext, PreprocessExcludedRuleBlock;
@@ -136,7 +142,7 @@ namespace AnimusForge
         private static bool DoesPlayerNotorietyObserverKnowPlayer(Hero hero, CharacterObject character, int agent) => false;
         private static string AppendPlayerPartySharedResourcePrompt(string extras, Hero hero, CharacterObject character) => extras;
 #if CURRENT
-        private string BuildTriggeredRuleInstructions(string input, Hero hero, bool duel, bool qualified, int tier, bool reward, bool loan, bool surroundings, bool hasAnyHero, CharacterObject character, string kingdom, int agent, string secondary, bool includeDuelStake, bool playerWon, bool worldMap, IEnumerable<string> excluded, IEnumerable<string> preselected, bool suppressMeeting, List<GuardrailRuleHit> fallbackHits) { TextPorts.RuleCalls++; TextPorts.SawPreselected = preselected != null; TextPorts.SawFallbackHits = fallbackHits != null; return TextPorts.Rule; }
+        internal string BuildTriggeredRuleInstructions(string input, Hero hero, bool duel, bool qualified, int tier, bool reward, bool loan, bool surroundings, bool hasAnyHero, CharacterObject character, string kingdom, int agent, string secondary, bool includeDuelStake, bool playerWon, bool worldMap, IEnumerable<string> excluded, IEnumerable<string> preselected, bool suppressMeeting, List<GuardrailRuleHit> fallbackHits) { TextPorts.RuleCalls++; TextPorts.SawPreselected = preselected != null; TextPorts.SawFallbackHits = fallbackHits != null; return TextPorts.Rule; }
 #else
         private string BuildTriggeredRuleInstructions(string input, Hero hero, bool duel, bool qualified, int tier, bool reward, bool loan, bool surroundings, bool hasAnyHero, CharacterObject character, string kingdom, int agent, string secondary, bool includeDuelStake, bool playerWon, bool worldMap, IEnumerable<string> excluded, IEnumerable<string> preselected, bool suppressMeeting) { TextPorts.RuleCalls++; TextPorts.SawPreselected = preselected != null; return TextPorts.Rule; }
 #endif

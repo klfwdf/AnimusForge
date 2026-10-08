@@ -1,6 +1,6 @@
 using System;using System.Collections.Generic;using System.Linq;using TaleWorlds.MountAndBlade;using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
-internal static class MyBehavior { internal static Func<Hero,string> Voice;internal static string GetNpcVoiceIdForExternal(Hero h)=>Voice(h); }
+internal static partial class MyBehavior { internal static Func<Hero,string> Voice;internal static string GetNpcVoiceIdForExternal(Hero h)=>Voice(h); }
 internal static class VoiceMapper { internal static Action<string> Trace;internal static string ResolveVoiceId(Hero h){Trace?.Invoke("hero-voice");return "mapped-hero";}internal static string ResolveVoiceIdForNonHero(bool female,float age,int index){Trace?.Invoke("unnamed-voice:"+index);return "mapped-unnamed";} }
 internal static class MeetingBattleLockMissionBehavior { internal static Action Trace;internal static void ReapplyMeetingLockForAgentIfNeeded(Agent a,bool recaptureAnchor,bool preserveFacing)=>Trace(); }
 internal sealed class SpeechScenario {

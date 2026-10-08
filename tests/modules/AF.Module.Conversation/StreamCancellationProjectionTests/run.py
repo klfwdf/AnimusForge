@@ -5,6 +5,9 @@ import importlib.util
 import os
 import re
 import subprocess
+import sys,json,hashlib
+sys.path.insert(0,str(Path(__file__).resolve().parents[4]/"tests"))
+from output_isolation import new_run_root,minimal_test_environment
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
@@ -14,9 +17,15 @@ extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--mutate", choices=["cancel-partial", "late-exception"])
+parser.add_argument("--run-root",type=Path)
 args = parser.parse_args()
 source = (ROOT / "src/modules/AF.Module.Llm/ShoutNetwork.cs").read_text(encoding="utf-8-sig")
-method = extract.declaration(source, "public static async Task CallApiWithMessagesStream(")
+wrapper = extract.declaration(source, "public static async Task CallApiWithMessagesStream(")
+assert wrapper.count("await CallApiWithMessagesStreamCore(")==1
+assert 'DuelSettings.GetSettings()?.MainApiStreamingEnabled == true' in wrapper
+assert 'cancellationToken.ThrowIfCancellationRequested();' in wrapper
+assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_callback") || string.IsNullOrWhiteSpace(result)' in wrapper
+method = extract.declaration(source, "private static async Task CallApiWithMessagesStreamCore(")
 guard_pattern = re.compile(
     r'if \((!cancellationToken\.IsCancellationRequested && !SaveRuntimeGuard\.IsStale\(runtimeGeneration, "([^"]+)"\))\)')
 guard_matches = list(guard_pattern.finditer(method))
@@ -43,9 +52,8 @@ elif args.mutate == "late-exception":
 blocks = "\n".join(
     f'case {index}: if ({condition}) onComplete?.Invoke("partial"); break;'
     for index, (condition, _) in enumerate(guards))
-out = ROOT / "artifacts/j17b/session-20260930/p5-channels" / (
-    "stream-cancel-001" if not args.mutate else "stream-cancel-" + args.mutate + "-001")
-out.mkdir(parents=True, exist_ok=True)
+out = new_run_root(ROOT,"stream-cancellation-projection",args.run_root)
+
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
 (out / "Program.cs").write_text(template.replace("@@BLOCKS@@", blocks), encoding="utf-8")
 (out / "Tests.csproj").write_text(
@@ -55,24 +63,12 @@ template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
 (out / "NuGet.Config").write_text(
     "<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
 dotnet = ROOT / "local/dotnet/8.0.425/dotnet.exe"
-env = {
-    "DOTNET_ROOT": str(dotnet.parent), "DOTNET_CLI_HOME": str(out / "cli"),
-    "DOTNET_CLI_TELEMETRY_OPTOUT": "1", "DOTNET_NOLOGO": "1",
-    "TEMP": str(out), "TMP": str(out), "APPDATA": str(out),
-    "LOCALAPPDATA": str(out), "USERPROFILE": str(out), "HOME": str(out),
-    "HOMEDRIVE": out.drive, "HOMEPATH": str(out)[len(out.drive):],
-    "NUGET_PACKAGES": str(out / "packages"),
-    "SystemRoot": os.environ.get("SystemRoot", r"C:\Windows"),
-    "ProgramData": os.environ.get("ProgramData", r"C:\ProgramData"),
-    "ALLUSERSPROFILE": os.environ.get("ALLUSERSPROFILE", r"C:\ProgramData"),
-    "ProgramFiles": os.environ.get("ProgramFiles", r"C:\Program Files"),
-    "ProgramFiles(x86)": os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
-    "windir": os.environ.get("windir", r"C:\Windows"),
-}
+env = minimal_test_environment(dotnet,out)
 result = subprocess.run([str(dotnet), "run", "--project", str(out / "Tests.csproj"), "-c", "Release"],
                         cwd=out, env=env, capture_output=True, text=True,
                         encoding="utf-8", errors="replace", timeout=90)
 log = result.stdout + result.stderr
 (out / "run.log").write_text(log, encoding="utf-8")
+(out / "receipt.json").write_text(json.dumps({"productionRaw":hashlib.sha256((ROOT/"src/modules/AF.Module.Llm/ShoutNetwork.cs").read_bytes()).hexdigest(),"coreBodySha":hashlib.sha256(method.encode("utf-8")).hexdigest(),"exitCode":result.returncode,"layer":"six current source-derived stream-core guard expressions, synthetic channel sinks; wrapper guard static proof; not whole transport","mutation":args.mutate},indent=2),encoding="utf-8")
 print(log, end="")
 raise SystemExit(result.returncode)

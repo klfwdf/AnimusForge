@@ -27,11 +27,11 @@ class Guards(unittest.TestCase):
   orig=Path.read_text;target=current_source_path(ROOT, 'MyBehavior.PersonaGeneration.cs')
   def change(p,*args,**kwargs):return orig(p,*args,**kwargs)+ ('\n// drift' if p==target else '')
   with patch.object(Path,'read_text',change):
-   with self.assertRaisesRegex(AssertionError,'dependency'):inverse.restore(SOURCE)
+   with self.assertRaisesRegex(AssertionError,r'^Unreviewed independent source: PERSONA_F6:src/AF\.GameAdapter\.Bannerlord/Composition/MyBehavior\.PersonaGeneration\.cs$'):inverse.restore(SOURCE)
  @historical_fixture
  def test_new_persona_rules_mutation_rejected(self):
   orig=Path.read_text;target=ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs'
   def change(p,*args,**kwargs):return orig(p,*args,**kwargs)+ ('\n// drift' if p==target else '')
   with patch.object(Path,'read_text',change):
-   with self.assertRaisesRegex(AssertionError,'Unreviewed F5 dependency'):inverse.restore(SOURCE)
+   with self.assertRaisesRegex(AssertionError,r'^Unreviewed independent source: F5:src/modules/AF\.Module\.Persona/Generation/NpcPersonaTextRules\.cs$'):inverse.restore(SOURCE)
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -19,7 +19,12 @@ namespace AnimusForge {
 }
 
 namespace AnimusForge {
- internal static class PlayerExportsStore { internal static string Root; internal static string GetPlayerExportsRootPath()=>Root??throw new InvalidOperationException("fixture unavailable"); internal static string SanitizeFolderName(string name)=>(name??"").Trim(); internal static string ResolveExportFolderName(string name)=>name; internal static string ResolveImportFolderPath(string name)=>null; }
+ internal static class PlayerExportsStore {
+  // Controlled directory leaf only; real folder enumeration/atomic IO is covered by the PlayerExports production runner.
+  internal sealed class ImportFolder { internal string FullPath,Name,SourceLabel; internal DateTime LastWriteTime; }
+  internal static readonly List<ImportFolder> ImportFolders=new();
+  internal static List<ImportFolder> GetImportFolders()=>ImportFolders;
+  internal static string Root; internal static string GetPlayerExportsRootPath()=>Root??throw new InvalidOperationException("fixture unavailable"); internal static string SanitizeFolderName(string name)=>(name??"").Trim(); internal static string ResolveExportFolderName(string name)=>name; internal static string ResolveImportFolderPath(string name)=>null; }
  internal static class NpcDataFileName { internal static string TryParseHeroId(string name)=>null; }
  internal static class ShoutUtils { internal class UnnamedPersonaIndexItem { public string Key,Label; } internal static List<UnnamedPersonaIndexItem> GetUnnamedPersonaIndexItemsForDev(int max)=>new(); internal static bool TryGetUnnamedPersonaByKey(string key,out string personality,out string background){personality=background="";return false;} internal static void SaveUnnamedPersonaByKey(string key,string personality,string background){} }
  internal static class VoiceMapper { internal static string[] AllGroupKeys=Array.Empty<string>(); internal static List<string> GetVoicesForGroup(string key)=>new(); internal static string GetFallbackVoice()=>""; internal static string GetGroupDisplayName(string key)=>key; internal static bool ImportMappingJson(string text,bool overwriteExisting=false,bool saveToFile=true)=>false; internal static void ReloadConfig(){} internal static void AddVoiceToGroup(string key,string value){} internal static void RemoveVoiceFromGroup(string key,string value){} internal static void SetFallbackVoice(string value){} }

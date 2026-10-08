@@ -1,4 +1,4 @@
-import argparse,importlib.util,os,subprocess,hashlib
+import argparse,importlib.util,os,subprocess,hashlib,re
 from pathlib import Path
 import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -27,9 +27,13 @@ for key,sig in [('PLAYER_STREAM','private async Task SubmitAsync(string text)'),
  assert 'IsNativeConversationResponseTargetAvailableForExternal()' not in method
  assert 'CaptureNativeConversationPresentationScopeForOverlay()' in method and 'SubmitNativeConversationForOverlayAsync(presentationScope,' in method
 assert 'ValidatePendingSubmissionPresentation();' in ex.declaration(overlay,'private void Tick()')
+application_path=ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs'
+application=application_path.read_text(encoding='utf-8-sig')
 if args.mutate=='drop-callback-guard':ui=ui.replace('if (!IsSubmissionPresentationCurrent(generation))','if (false)',1)
-if args.mutate=='drop-revision':partial=partial.replace('_owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)','true',1)
-if args.mutate=='use-backend-slot':partial=partial.replace('=> HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);','=> _owner.IsNativeConversationAdmissionCurrent(_snapshot, out _);',1)
+if args.mutate=='drop-revision':
+ before='_owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)';assert application.count(before)==1;application=application.replace(before,'true',1)
+if args.mutate=='use-backend-slot':
+ before='=>HasCurrentContext()&&_owner.IsNativeConversationContextCurrent(_snapshot,out _);';assert application.count(before)==1;application=application.replace(before,'=>_owner.IsNativeConversationAdmissionCurrent(_snapshot,out _);',1)
 if args.mutate=='drop-stamp-retirement':ui=ui.replace('if (_isSubmitting && _submitPresentationScope != null && !_submitPresentationScope.HasCurrentContext())','if (false)',1)
 if args.mutate=='allow-stale-finish':
  method=ex.declaration(ui,'private bool CompleteNativeSubmissionPresentation(');ui=ui.replace(method,method.replace('if (!IsSubmissionPresentationCurrent(generation))','if (false)',1),1)
@@ -47,6 +51,14 @@ for name,text in [('Program.cs',code),('Admission.cs',partial),('Presentation.cs
 (out/'CompletionStubs.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
 code=core_fixture.migrate_admission_fixture(code)
+# Bind the same once-only production admission composition; only engine/provider leaves are controlled.
+binding=re.search(r'NativeAdmissions = new NativeAdmissionApplicationAdapter\([^;]+;', (ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
+assert binding is not None
+host_anchor='public partial class ShoutBehavior'
+assert code.count(host_anchor)==1
+position=code.index('{',code.index(host_anchor))+1
+code=code[:position]+'\npublic ShoutBehavior() {'+binding.group(0)+'}\n'+code[position:]
+(out/'NativeAdmissionApplicationAdapter.cs').write_text(application,encoding='utf-8')
 # The generated host protocol remains a reviewed oracle; execute the whole CURRENT dispatch atom via one typed test leaf.
 result_decl='private sealed class NativeConversationGameActionResult'
 assert code.count(result_decl)==1

@@ -139,7 +139,14 @@ def without_stream_cancellation(method: str) -> str:
     return method
 
 
+from af2_terminal_migration_review import independent_historical_fixture, restore_independent_layer
+
+
+@independent_historical_fixture("PROTOCOL")
 def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
+    # This named source-only layer restores the reviewed public/Core routing delta.
+    # It never supplies source to current policy/compat/normalizer compilation.
+    actual_shout = restore_independent_layer("PROTOCOL", "src/modules/AF.Module.Llm/ShoutNetwork.cs", actual_shout)
     # J08 transport changes have their own executable old/current HTTP differential.
     # Keep this J01 check scoped to unchanged protocol extraction, not new HTTP I/O.
     transport_review = json.loads((ROOT / "tests/modules/AF.Module.Llm/NonStreamingTransport/primary-source-review.json").read_text(encoding="utf-8-sig"))

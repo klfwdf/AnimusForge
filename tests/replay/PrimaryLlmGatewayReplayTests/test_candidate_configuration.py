@@ -18,7 +18,7 @@ class CandidateConfigurationTests(unittest.TestCase):
     def test_primary_manifest_requires_debug_only_for_this_entry(self):
         entries = json.loads((ROOT / "tests/runners.json").read_text(encoding="utf-8"))["entries"]
         self.assertEqual(entries[ENTRY]["candidateConfiguration"], "Debug")
-        self.assertEqual([name for name, spec in entries.items() if spec.get("candidateConfiguration")], [ENTRY])
+        self.assertEqual([name for name, spec in entries.items() if spec.get("candidateConfiguration")], [ENTRY, "tests/replay/PrimaryStreamingOptionReplayTests/PrimaryStreamingOptionReplayTests.csproj"])
 
     def test_debug_and_default_candidates_do_not_contaminate_each_other(self):
         output = new_run_root(ROOT, "primary-candidate-selection", None)

@@ -6,6 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Social/PatienceResponseBannerlordAdapter.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Conversation/ConversationDiagnosticsCaptureAdapter.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Social/Patience/*.cs" />
   </ItemGroup>
 </Project>

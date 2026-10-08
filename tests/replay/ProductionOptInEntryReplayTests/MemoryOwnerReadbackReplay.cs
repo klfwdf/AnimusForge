@@ -25,7 +25,7 @@ internal static class MemoryOwnerReadbackReplay
         const int day = 42;
 
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
-        Set(owner, "_memoryBusinessState", New(RequireType(production, "AnimusForge.MemoryBusinessStateOwner")));
+        SeedMemoryAuthorities(production, owner);
         object draft = New(draftType);
         object line = New(lineType);
         Set(draft, "HeroId", ownerId);
@@ -75,10 +75,23 @@ internal static class MemoryOwnerReadbackReplay
         IList differentRecords = NewList(dayType, copyDay);
         Require(!InvokeBool(recentPublished, owner, ownerId, differentRecords), "different recent list identity was accepted");
         object emptyOwner = RuntimeHelpers.GetUninitializedObject(ownerType);
-        Set(emptyOwner, "_memoryBusinessState", New(RequireType(production, "AnimusForge.MemoryBusinessStateOwner")));
+        SeedMemoryAuthorities(production, emptyOwner);
         Require(!InvokeBool(recentPublished, emptyOwner, ownerId, records), "missing recent owner was accepted");
 
         Console.WriteLine("PASS memoryOwnerReadback fixtureOnly=1 liveCampaign=0 assertions=" + _assertions);
+    }
+
+    private static void SeedMemoryAuthorities(Assembly production, object owner)
+    {
+        object state = New(RequireType(production, "AnimusForge.MemoryBusinessStateOwner"));
+        Type historyType = RequireType(production, "AnimusForge.MemoryHistoryCommitBannerlordAdapter");
+        object history = Activator.CreateInstance(historyType, InstanceFields, null,
+            new object[] { state, null }, null)
+            ?? throw new InvalidOperationException("could not bind actual history adapter");
+        Require(ReferenceEquals(Get(history, "_memory"), state),
+            "history adapter must use the unique fixture memory state");
+        Set(owner, "_memoryBusinessState", state);
+        Set(owner, "_memoryHistoryCommit", history);
     }
 
     private static object New(Type type) => Activator.CreateInstance(type, nonPublic: true)

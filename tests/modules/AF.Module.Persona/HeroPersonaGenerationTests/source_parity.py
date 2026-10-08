@@ -3,7 +3,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
-from af2_terminal_migration_review import historical_fixture
+from af2_terminal_migration_review import independent_historical_fixture
 from af2_f5_migration_review import exact_inverse, verify_owners
 import hashlib,importlib.util,json,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -39,7 +39,13 @@ def restore_historical(source,strict=True):
  source=run_inverse.restore('MyBehavior.cs',source)
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for path,expected in review['dependencies'].items():
-  assert hashlib.sha256(_restore_round2_current_paths(path, (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')).encode()).hexdigest()==expected,'Unreviewed persona dependency: '+path
+  dependency=_restore_round2_current_paths(path, (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))
+  import sys
+  f3=sys.modules.get('f3_migration_projection')
+  prior_producer=None if f3 is None else f3.current_prior_memory_run_producer()
+  if prior_producer is not None and prior_producer.chain is not None:
+   dependency=prior_producer.chain.apply('PERSONA_AFTER_ORIGINAL_LOCATOR',path,dependency)
+  assert hashlib.sha256(dependency.encode()).hexdigest()==expected,'Unreviewed persona dependency: '+path
  old=prior();result=source
  for signature,expected in review['replacementMethods'].items():
   current=ex.declaration(result,signature)
@@ -67,7 +73,7 @@ def restore_historical(source,strict=True):
 
 # J17 moved unrelated Memory/Weekly code; compare only this owner, not the old whole host.
 CURRENT_REVIEW='f6e2ead7'
-@historical_fixture
+@independent_historical_fixture("PERSONA_F6")
 def restore(source,strict=True):
  verify_owners()
  source=exact_inverse('MyBehavior.cs',source,verify=False)
@@ -94,7 +100,7 @@ def restore(source,strict=True):
   assert '_npcPersonaGeneration.Reset();' in ex.declaration(source,signature),'Missing persona reset consumer'
  return prior()
 
-@historical_fixture
+@independent_historical_fixture("PERSONA_F6")
 def verify():
  restore((current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'))
  old=ex.declaration(prior(),'private async Task<string> GenerateNpcPersonaAsync(')
