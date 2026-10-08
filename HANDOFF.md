@@ -1,3 +1,10 @@
+# 当前交接：外交闭环三类异常修复（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `fe29282a1` 将坏外交域改为当前owner隔离、完整primitive证据分块保存与新store重载，拒绝损坏/不完整证据和旧缓存提交，formal配置与health分离；传播 `39b461813`、`6f00d3a8a` 修失效作者占槽、逐arrival异常及持久化CourtEffectPending。真实response job/obligation/事实retry去重已回放。保留前轮传闻提示 `303e44c48`、人物菜单 `6e9c6a74f`；只签收这三类异常的有限离线闭环。
+- 当前外交4069、strict227、adapter14、传播129、效果182、独立native两版各8和最终实际DLL pinned1.3/1.4各37 PASS；原双API/Bootstrap/双Coup seams/单模块Stage exit0。1.3引用MVID4b87、1.4MVID1d6c；初次1.3误取安装native日志仅历史观察。回执 `artifacts/diplomacy-closure-audit-20261009/final-build/receipt.json` 绑定产品/三产物SHA，PDB两版各1395源码匹配；完整2010构建前快照未重采集，Stage输出 `bin/Debug/single_module_stage/AnimusForge`；未部署、打包、推送。
+- **保留边界**：catalog当前20键与strict两键精确读写门已过，随后civil-war JSON binding缺失/重复而整体NOT-PASS，未刷新oracle。坏Memory JSON下次Save/Weekly缺块证据仍NOT-PASS；历史D0/旧巨集失败不改绿。严格拒存仅证实未进入MBSaveLoad，真实Save Error UI/队列恢复、Campaign/.sav/坏档修复/LLM/GPU未验。
+- [唯一主台账、产物SHA及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-closure-audit-20261009)、[源码职责范围](docs/architecture/af-framework-code-scope.md#diplomacy-closure-audit-20261009)；本地报告/receipt位于 `artifacts/diplomacy-closure-audit-20261009/`。回滚按依赖逆序focused revert本包产品/文档，保留其他作者、NEW-10/GCCZ及原NuGet目录。以下六类与历史部署/推送记录仍按原证据，不授予本轮外部写入。
+
 # 当前交接：六类真实功能补审（2026-10-09，OFFLINE_WITH_OPEN_PERSISTENCE_RISK）
 
 - 原迁移177文件inventory已补真实caller→owner→consumer审查；当前候选产品 `6e9c6a74f`，包含外交左下传闻提示删除 `303e44c48` 和Persona旧Hero菜单回调修复。当前Native导入121、3运行负控、Memory/Weekly实际adapter roundtrip31、news27/date7/Weekly owner90 PASS；Scene/Native/UI与Persona/Patience/Kingdom专项范围见台账，不称整链/全仓全绿。

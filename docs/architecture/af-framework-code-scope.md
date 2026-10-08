@@ -1,3 +1,20 @@
+<a id="diplomacy-closure-audit-20261009"></a>
+### 当前职责导航：外交三类异常闭环
+
+持久化产品 `fe29282a1`；传播产品 `39b461813`、`6f00d3a8a`，测试 `6461c037f`、`8aeecd452`。前轮提示 `303e44c48` / 人物 `6e9c6a74f` 保留。当前真实owner、有限受控/nativeDLL覆盖及未覆盖统一见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-closure-audit-20261009)；本导航不以接口数量或目录Ready推导实机完成。坐标为当前一基范围，13个方法的source/method SHA和修订绑定在本地 `artifacts/diplomacy-closure-audit-20261009/independent-code-evidence.json`。
+
+| 当前源码（一基范围）/真实符号 | owner、消费者及覆盖边界 |
+| --- | --- |
+| `src/AF.Persistence/CampaignSaveChunkHelper.cs:27–96,100–120`；`LoadChunkedStringStrict/SaveChunkedStringStrict/ReplaySafeRawRecords` | SyncData频率strict namespace primitive快照→UTF8 chunk/envelope，raw key/value安全subset；静态只cache metadata；227受控+native各8+最终DLL各37，真实sav/Save Error UI未验 |
+| `src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs:38–102`；`Save/Load` | 当前Behavior实例唯一health与完整quarantine证据，canonical旧key/新evidence key；坏payload新store重载仍隔离；其他Memory/Weekly域不在修复范围 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:1760–1786`；`SyncData` | health unavailable空壳替换及runtime退休，完整Load/NewGame恢复；统一consumer门；缓存端口最终DLL执行及IL验证，实际Campaign生命周期未验 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:75–85`；`RetryAnalysis`；`WorldDiplomacyBehavior.DialogueHost.cs:19–43`；`ExecuteTreaty` | 缓存UI/效果逐调用current owner+health，配置formal与availability分离；最终DLL缓存拒绝/IL各37；GPU/原生动作叶受控 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs:138–164`；`RetryDeferred` | 日级Take(8)内失效作者退休释放槽，resolver异常可重试；archive保留；不无界扫描 |
+| 同文件 `:344–407,409–424`；`ProcessDue/ReceiveCourt` | due prefix逐item异常隔离、次日排队公平性与CourtEffectPending已知court重试；普通重复仍抑制；129受控回放，真实地理/战役事件未验 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:2056–2072`；`ProcessPropagationArrivals`；`WorldDiplomacyOrchestration.Scheduling.cs:306–358`；`SchedulePlayerResponseWork` | 真effect开始置pending→court memory receipt/source+receiver obligation/原response job身份去重；实际Register后异常再retry单job/单义务/事实once；provider/.sav未验 |
+
+helper默认协议、公有API与同DLL internal端口责任不扩展；正式配置关闭与坏域隔离分开，不回落为native假成功。最终pinned1.3引用MVID4b87、1.4MVID1d6c；build/Bootstrap/双接缝/Stage通过均仅离线。catalog当前20键+strict精确两键门通过后civil-war JSON binding失败，整体NOT-PASS；六类补审Memory/Weekly继承风险不变。未部署/推送，以下导航保留其原修订。
+
 <a id="migration-functional-review-20261009"></a>
 ### 当前职责导航：六类真实链路补审
 
