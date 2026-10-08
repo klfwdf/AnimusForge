@@ -36,12 +36,14 @@ namespace AnimusForge
     internal static class MapSeaContextGuard { internal static bool IsCurrentPlayerEncounterAtSea(Hero target) => false; }
     internal static class LordEncounterBehavior
     {
+        internal static void DiscardPeacefulCleanupForNativeCombat() { }
         internal static bool IsNativeEncounterActivityContext(Hero target) => false;
         internal static void LogEncounterDiagnostic(string stage, string reason) { }
     }
     internal static class MeetingBattleRuntime { internal static bool IsMeetingActive => false; }
     internal static class PlayerEncounterCompat
     {
+        internal static TaleWorlds.CampaignSystem.MapEvents.MapEvent GetBattleSafe() => null;
         internal static bool HasCampaignBattleResult() => false;
         internal static bool IsInPostBattleResultFlow() => false;
     }

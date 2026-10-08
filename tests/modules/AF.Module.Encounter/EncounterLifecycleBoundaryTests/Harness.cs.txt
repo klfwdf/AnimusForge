@@ -25,6 +25,7 @@ internal static class Program
         ConversationTargetAudit.Run();
         ReturnAudit.Run();
         NativeHandoffAudit.Run();
+        PeacefulCleanupAudit.Run();
         PlayerLeaveAudit.Run();
         HardSuppressionAudit.Run();
         RaidContextAudit.Run();
@@ -275,6 +276,10 @@ internal static class PlayerLeaveAudit
             PreparePlayerRequestedNativeConversationLeave();
             Program.Check(!PlayerEncounter.LeaveEncounter && PlayerEncounter.Current.IsPlayerWaiting, "naval exit requires the same player-initiated conversation mission: " + danger);
         }
+        Setup(); NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter = true;
+        PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(!PlayerEncounter.LeaveEncounter, "custom leave after confirmed fight cannot cancel native combat");
+        NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter = false;
         Setup(); PlayerEncounter.Current = null; PreparePlayerRequestedNativeConversationLeave();
         Program.Check(!PlayerEncounter.LeaveEncounter, "scene conversation without an encounter does not create a farewell flag");
     }
@@ -661,4 +666,39 @@ internal static class InteractionComponentSafePatch
     public static void Prefix() { }
     public static void Finalizer() { }
     public static void Run() { EnsurePatched(); EnsurePatched(); Program.Check(Harmony.Patches==1, "safety patch installs once without a feature bridge dependency"); }
+}
+
+internal static class NativeDialogueBattleContinuation { internal static bool IsCombatRequestedForCurrentEncounter; }
+internal static class PeacefulCleanupAudit
+{
+    class PartyBase { }
+    class PlayerEncounter { internal static PlayerEncounter Current; }
+    static class SaveRuntimeGuard { internal static long Generation; internal static long CaptureGeneration()=>Generation; }
+    static PartyBase Party;
+    static PartyBase GetCurrentEncounterPartySafe()=>Party;
+    static readonly EncounterPendingReturnOwner<PlayerEncounter,PartyBase> _peacefulCleanupOwner=new();
+    static bool _pendingPeacefulMeetingBattleCleanup, _pendingPostMissionCleanup;
+    static int Cleared;
+    static void ClearMeetingReleaseSafePassageFinalReapply(string reason) { Cleared++; }
+    static void LogEncounterDiagnostic(string stage,string reason) { }
+    @@PEACEFUL_SCOPE@@
+    internal static void Run()
+    {
+        foreach(var change in new[]{"none","party","encounter","save","combat"})
+        {
+            PlayerEncounter.Current=new(); Party=new(); SaveRuntimeGuard.Generation=1;
+            NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter=false;
+            _pendingPeacefulMeetingBattleCleanup=_pendingPostMissionCleanup=true; Cleared=0;
+            _peacefulCleanupOwner.Mark(PlayerEncounter.Current,Party,1);
+            if(change=="party") Party=new();
+            if(change=="encounter") PlayerEncounter.Current=new();
+            if(change=="save") SaveRuntimeGuard.Generation++;
+            if(change=="combat") NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter=true;
+            if(change=="combat") DiscardPeacefulCleanupForNativeCombat();
+            bool valid=change=="combat" ? _pendingPeacefulMeetingBattleCleanup : ValidatePeacefulCleanupScope();
+            Program.Check(valid==(change=="none"),"peaceful cleanup identity/combat guard: "+change);
+            Program.Check(valid || (!_pendingPeacefulMeetingBattleCleanup && !_pendingPostMissionCleanup && Cleared==1),"discard stale cleanup before side effects: "+change);
+        }
+        NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter=false;
+    }
 }
