@@ -58,6 +58,13 @@ internal sealed class SceneTradeController
     private long _uiStepRevision;
     private bool _flowOpen, _commitConsumed;
     internal long FlowRevision => _flowRevision;
+    // Synchronous UI-only capture. The original guarded callbacks remain authoritative.
+    internal Func<MultiSelectionInquiryData, bool> InlineInquiryCapture;
+    private void PresentTradeInquiry(MultiSelectionInquiryData data)
+    {
+        if (InlineInquiryCapture?.Invoke(data) == true) return;
+        MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+    }
     private Mission _flowMission;
     private long _flowGeneration;
 
@@ -182,7 +189,7 @@ internal sealed class SceneTradeController
 			ResumeGame();
 			FinishShoutTradeActionOnlyIfNeeded();
 		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		PresentTradeInquiry(data);
 	}
 
 	internal static bool IsShoutTradeShowMode(ShoutChatMode mode)
@@ -300,7 +307,7 @@ internal sealed class SceneTradeController
 			ResumeGame();
 			FinishShoutTradeActionOnlyIfNeeded();
 		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		PresentTradeInquiry(data);
 	}
 
 	internal void OnShoutTradeResourcesSelected(List<InquiryElement> selectedElements)

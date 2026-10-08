@@ -19,6 +19,7 @@ namespace AnimusForge.DialogueUI.Shout
         private static Type _hostVmType;
         private static bool _installed;
         private static Func<object, int> _packetIndex;
+        private static Func<object, object> _inputOwner, _tradeOwner;
         private static Func<object, object> _tradePacket;
         private static Func<object, Agent> _tradeAgent;
         private static Func<object, bool> _tradeActionOnly;
@@ -43,8 +44,12 @@ namespace AnimusForge.DialogueUI.Shout
                 if (behavior == null || packet == null || popup == null || _hostVmType == null)
                     throw new MissingMemberException("AF scene input types are unavailable.");
 
-                MethodInfo direct = RequireMethod(behavior, "OpenShoutTextInput", packet, typeof(string), typeof(string));
-                MethodInfo trade = RequireMethod(behavior, "ShowShoutTradeChatInput");
+                FieldInfo inputOwner = AccessTools.Field(behavior, "_j17SceneShoutInputController") ?? throw new MissingFieldException(behavior.FullName, "_j17SceneShoutInputController");
+                FieldInfo tradeOwner = AccessTools.Field(behavior, "_j17SceneTradeController") ?? throw new MissingFieldException(behavior.FullName, "_j17SceneTradeController");
+                _inputOwner = FieldReader<object>(behavior, inputOwner.Name);
+                _tradeOwner = FieldReader<object>(behavior, tradeOwner.Name);
+                MethodInfo direct = RequireMethod(inputOwner.FieldType, "OpenShoutTextInput", packet, typeof(string), typeof(string));
+                MethodInfo trade = RequireMethod(tradeOwner.FieldType, "ShowShoutTradeChatInput");
                 MethodInfo close = RequireMethod(popup, "Close", typeof(bool));
                 MethodInfo submit = RequireMethod(_hostVmType, "ExecuteSubmit");
                 _packetIndex = FieldReader<int>(packet, "AgentIndex");
@@ -135,13 +140,13 @@ namespace AnimusForge.DialogueUI.Shout
         private static void DirectInputPrefix(object __instance, object[] __args, out ShoutContext __state)
         {
             __state = _openingContext;
-            _openingContext = Capture(__instance, __args != null && __args.Length > 0 ? __args[0] : null, false);
+            _openingContext = Capture(ResolveBehavior(__instance, false), __args != null && __args.Length > 0 ? __args[0] : null, false);
         }
 
         private static void TradeInputPrefix(object __instance, out ShoutContext __state)
         {
             __state = _openingContext;
-            _openingContext = Capture(__instance, null, true);
+            _openingContext = Capture(ResolveBehavior(__instance, true), null, true);
         }
 
         private static Exception InputFinalizer(Exception __exception, ShoutContext __state)
@@ -233,6 +238,12 @@ namespace AnimusForge.DialogueUI.Shout
 
         private static HarmonyMethod Patch(string name) => new HarmonyMethod(typeof(ShoutUiAdapter), name);
 
+        private static object ResolveBehavior(object controller, bool trade)
+        {
+            var behavior = Campaign.Current?.GetCampaignBehavior<ShoutBehavior>();
+            return behavior != null && ReferenceEquals((trade ? _tradeOwner : _inputOwner)(behavior), controller) ? behavior : null;
+        }
+
         private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters)
         {
             return AccessTools.Method(type, name, parameters) ?? throw new MissingMethodException(type.FullName, name);
@@ -240,7 +251,8 @@ namespace AnimusForge.DialogueUI.Shout
 
         private static Func<object, T> FieldReader<T>(Type type, string name)
         {
-            FieldInfo field = AccessTools.Field(type, name) ?? throw new MissingFieldException(type.FullName, name);
+            FieldInfo field = AccessTools.Field(type, name);
+            if (field == null) return PropertyReader<T>(type, name);
             var instance = Expression.Parameter(typeof(object), "instance");
             return Expression.Lambda<Func<object, T>>(Expression.Convert(Expression.Field(Expression.Convert(instance, type), field), typeof(T)), instance).Compile();
         }

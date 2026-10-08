@@ -14,12 +14,14 @@ internal sealed class InlineTradeBridge : IDisposable
 {
     [ThreadStatic] private static InlineTradeBridge _capture;
     [ThreadStatic] private static InlineTradeBridge _committing;
-    private static readonly FieldInfo OptionsField = AccessTools.Field(typeof(ShoutBehavior), "_shoutTradeOptions");
-    private static readonly FieldInfo PendingField = AccessTools.Field(typeof(ShoutBehavior), "_shoutPendingTradeItems");
-    private static readonly FieldInfo PendingIndexField = AccessTools.Field(typeof(ShoutBehavior), "_shoutPendingTradeItemIndex");
-    private static readonly FieldInfo ActionOnlyField = AccessTools.Field(typeof(ShoutBehavior), "_shoutTradeActionOnly");
-    private static readonly FieldInfo FinishedField = AccessTools.Field(typeof(ShoutBehavior), "_shoutTradeActionOnlyFinished");
-    private static readonly MethodInfo ResourceSelectedMethod = AccessTools.Method(typeof(ShoutBehavior), "OnShoutTradeResourcesSelected");
+    private static readonly FieldInfo ControllerField = AccessTools.Field(typeof(ShoutBehavior), "_j17SceneTradeController");
+    private static readonly Type OwnerType = ControllerField?.FieldType;
+    private static readonly FieldInfo OptionsField = AccessTools.Field(OwnerType, "_shoutTradeOptions");
+    private static readonly FieldInfo PendingField = AccessTools.Field(OwnerType, "_shoutPendingTradeItems");
+    private static readonly FieldInfo PendingIndexField = AccessTools.Field(OwnerType, "_shoutPendingTradeItemIndex");
+    private static readonly FieldInfo ActionOnlyField = AccessTools.Field(OwnerType, "_shoutTradeActionOnly");
+    private static readonly FieldInfo FinishedField = AccessTools.Field(OwnerType, "_shoutTradeActionOnlyFinished");
+    private static readonly FieldInfo CaptureField = AccessTools.Field(OwnerType, "InlineInquiryCapture");
     private static readonly Type OptionType = typeof(ShoutBehavior).GetNestedType("ShoutTradeResourceOption", BindingFlags.NonPublic);
     private static readonly Type PendingType = typeof(ShoutBehavior).GetNestedType("ShoutPendingTradeItem", BindingFlags.NonPublic);
     private static readonly FieldInfo NameField = AccessTools.Field(OptionType, "Name");
@@ -32,7 +34,7 @@ internal sealed class InlineTradeBridge : IDisposable
     private static readonly string[] IdentityFields = { "IsGold", "ItemId", "PartyEntry", "SettlementEntry" };
     private static readonly FieldInfo[] OptionIdentity = Array.ConvertAll(IdentityFields, name => AccessTools.Field(OptionType, name));
     private static readonly FieldInfo[] PendingIdentity = Array.ConvertAll(IdentityFields, name => AccessTools.Field(PendingType, name));
-    private static readonly MethodInfo CommitMethod = AccessTools.Method(typeof(ShoutBehavior), "CommitShoutTradeActionOnly");
+    private static readonly MethodInfo CommitMethod = AccessTools.Method(OwnerType, "CommitShoutTradeActionOnly");
     private MultiSelectionInquiryData _menu;
     private MultiSelectionInquiryData _resources;
     private object _owner;
@@ -52,13 +54,11 @@ internal sealed class InlineTradeBridge : IDisposable
         Available = false;
         foreach (var field in OptionIdentity) if (field == null) throw new MissingMemberException("Trade option identity unavailable.");
         foreach (var field in PendingIdentity) if (field == null) throw new MissingMemberException("Pending trade identity unavailable.");
-        var amountMethod = AccessTools.Method(typeof(ShoutBehavior), "ShowShoutTradeAmountInquiry");
-        var inquiry = AccessTools.Method(typeof(MBInformationManager), "ShowMultiSelectionInquiry");
-        foreach (var member in new MemberInfo[] { OptionsField, PendingField, PendingIndexField, ActionOnlyField,
+        var amountMethod = AccessTools.Method(OwnerType, "ShowShoutTradeAmountInquiry");
+        foreach (var member in new MemberInfo[] { ControllerField, CaptureField, OptionsField, PendingField, PendingIndexField, ActionOnlyField,
             NameField, AmountField, GoldField, UnitValueField, PartyField, SettlementField, PendingAmountField,
-            CommitMethod, amountMethod, inquiry, FinishedField, ResourceSelectedMethod })
+            CommitMethod, amountMethod, FinishedField })
             if (member == null) throw new MissingMemberException("DialogueUI inline trade host contract is missing.");
-        harmony.Patch(inquiry, prefix: new HarmonyMethod(typeof(InlineTradeBridge), nameof(CaptureInquiry)));
         harmony.Patch(amountMethod, prefix: new HarmonyMethod(typeof(InlineTradeBridge), nameof(ApplyInlineAmounts)));
         Available = true;
     }
@@ -71,17 +71,13 @@ internal sealed class InlineTradeBridge : IDisposable
         {
             // Require the exact host menu contract; a nested third-party inquiry stays native.
             if (__0.MaxSelectableOptionCount != 1 || __0.InquiryElements?.Count != Modes.Length) return true;
-            var declaring = __0.AffirmativeAction.Method.DeclaringType;
-            while (declaring != null && declaring != typeof(ShoutBehavior)) declaring = declaring.DeclaringType;
-            if (declaring == null) return true;
             foreach (string mode in Modes)
                 if (!__0.InquiryElements.Exists(e => e?.Identifier is string id && id == mode)) return true;
             bridge._menu = __0;
         }
         else
         {
-            if (bridge._resources != null || !ReferenceEquals(__0.AffirmativeAction.Target, bridge._owner)
-                || __0.AffirmativeAction.Method != ResourceSelectedMethod) return true;
+            if (bridge._resources != null) return true;
             bridge._resources = __0;
         }
         return false;
@@ -96,11 +92,16 @@ internal sealed class InlineTradeBridge : IDisposable
         if (_inCommit) return false;
         Cancel();
         if (_disposed || !Available || _inCommit || _capture != null || Array.IndexOf(Modes, mode) < 0) return false;
-        _owner = Campaign.Current?.GetCampaignBehavior<ShoutBehavior>();
+        var behavior = Campaign.Current?.GetCampaignBehavior<ShoutBehavior>();
+        _owner = behavior == null ? null : ControllerField.GetValue(behavior);
         if (_owner == null || ActionOnlyField.GetValue(_owner) is true) { _owner = null; return false; }
         _finished = false;
         _completion = () => _finished = true;
         bool loaded = false;
+        Func<MultiSelectionInquiryData, bool> capture = inquiry => !CaptureInquiry(inquiry);
+        if (CaptureField.GetValue(_owner) != null) { Cancel(); return false; }
+        object capturedOwner = _owner;
+        CaptureField.SetValue(_owner, capture);
         _capture = this;
         try
         {
@@ -131,6 +132,7 @@ internal sealed class InlineTradeBridge : IDisposable
         finally
         {
             _capture = null;
+            if (ReferenceEquals(CaptureField.GetValue(capturedOwner), capture)) CaptureField.SetValue(capturedOwner, null);
             if (!loaded) Cancel();
         }
     }
@@ -163,7 +165,7 @@ internal sealed class InlineTradeBridge : IDisposable
         finally { _committing = null; _inCommit = false; _commitAmounts.Clear(); _commitOptions.Clear(); Cancel(); }
     }
 
-    private static bool ApplyInlineAmounts(ShoutBehavior __instance)
+    private static bool ApplyInlineAmounts(object __instance)
     {
         var bridge = _committing;
         if (bridge == null || !ReferenceEquals(bridge._owner, __instance)) return true;
