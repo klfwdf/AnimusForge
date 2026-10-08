@@ -64,9 +64,11 @@ internal static class SceneWheelProducerReplay
         Constant(harmony,getBehavior,shout);
         Constant(harmony,mission.GetProperty("Current",All).GetGetMethod(true),missionObject);
         Constant(harmony,mission.GetProperty("IsMissionEnding",All).GetGetMethod(true),false);
-        Type mode=mission.GetProperty("Mode",All).PropertyType; Constant(harmony,mission.GetProperty("Mode",All).GetGetMethod(true),Enum.Parse(mode,"StartUp"));
+        Type mode=mission.GetProperty("Mode",All).PropertyType;
+        object nonConversation=Enum.GetValues(mode).Cast<object>().First(x=>!string.Equals(x.ToString(),"Conversation",StringComparison.Ordinal));
+        Constant(harmony,mission.GetProperty("Mode",All).GetGetMethod(true),nonConversation);
         Constant(harmony,ownerType.GetProperty("_sceneConversationEpoch",All).GetGetMethod(true),0);
-        Constant(harmony,host.GetType("AnimusForge.BattleSpeechRuntimeHost",true).GetMethod("CanOpenSpeechMenu",All),false);
+        Constant(harmony,host.GetType("AnimusForge.XihaiAction.BattleSpeechRuntimeHost",true).GetMethod("CanOpenSpeechMenu",All),false);
         Constant(harmony,host.GetType("AnimusForge.MyBehavior",true).GetMethod("IsDevDataManagementEnabledForExternal",All),false);
         Type packetType=host.GetType("AnimusForge.NpcDataPacket",true); object packet=FormatterServices.GetUninitializedObject(packetType);
         FieldInfo name=packetType.GetField("Name",All); if(name!=null)name.SetValue(packet,"contract target");else packetType.GetProperty("Name",All).SetValue(packet,"contract target");
