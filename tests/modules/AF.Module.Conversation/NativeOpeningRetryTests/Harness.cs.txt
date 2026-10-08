@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
+using HarmonyLib;
 using AnimusForge;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
@@ -86,7 +88,9 @@ internal static class Program {
  private static int Checks;
  private static void Check(bool value,string name){Checks++;if(!value)throw new InvalidOperationException(name);}
  private static async Task WaitFor(Func<bool> predicate){for(int i=0;i<1000&&!predicate();i++)await Task.Delay(1);Check(predicate(),"worker-started");}
- static async Task Main(){
+ static async Task Main(){try{await Run();}catch(Exception error){Console.WriteLine("FAIL "+error.GetType().FullName+": "+error.Message);Console.WriteLine(error.StackTrace);Environment.ExitCode=1;}}
+ static async Task Run(){
+  var realHarmony=new Harmony("AF.Native.CurrentProducer.Illustrator");ConversationIllustrationPatch.Install(realHarmony);
   var entry=new Fixture{Mode="ready"};int streams=0,posts=0,readyCalls=0;Hero seenHero=null;CharacterObject seenCharacter=null;
   Action<string> stream=t=>{Check(t=="chunk","facade keeps stream callback text");streams++;};Action<string> post=t=>posts++;Action<string,Hero,CharacterObject> ready=(text,hero,character)=>{readyCalls++;seenHero=hero;seenCharacter=character;};
   Check(await ShoutBehavior.SubmitNativeConversationTextForExternalAsync("first player input",stream,"original dialog",post,ready)=="body","public player producer reaches actual admission/worker");
@@ -97,6 +101,8 @@ internal static class Program {
   Check(scopeReused&&entry.Runs==2,"same overlay producer lease cannot replay a turn");
   presentation=ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();Mission.Current=new();Check(await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentation,"old scene",stream,"",post,ready,false)==""&&entry.Runs==2,"stale overlay facade rejected before callbacks and worker");
   foreach(string producerSource in new[]{"lord","companion"}){entry=new Fixture();entry.Open(producerSource);Check(await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(stream,"opening dialog",post,ready)=="preprocess-unavailable"&&entry.Consumed==1,"public NPC producer crosses "+producerSource+" obligation owner");entry.Mode="ready";int beforeReady=readyCalls;Check(await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(stream,"retry dialog",post,ready)=="body"&&entry.Consumed==1&&entry.LastOpening&&entry.LastDialog=="retry dialog"&&readyCalls==beforeReady+1&&!entry.HasRetry(),"public NPC retry preserves callback and consumes source exactly once "+producerSource);}
+  Check(ConversationIllustrationPatch.Available&&IllustrationCardPopup.Accepted.Count==4&&IllustrationCardPopup.Accepted.Contains("first player input")&&IllustrationCardPopup.Accepted.Contains("second player input")&&IllustrationCardPopup.Accepted.FindAll(x=>x==null).Count==2,"real current public/overlay/NPC producers drive installed Illustrator wrapper and exact accepted callbacks; installed="+ConversationIllustrationPatch.Available+" observers="+IllustrationCardPopup.Accepted.Count+" logs="+ConversationIllustrationPatch.Logs);
+  realHarmony.UnpatchAll(realHarmony.Id);
   foreach(string source in new[]{"lord","companion"}) {
    var f=new Fixture();f.Open(source);
    Check(await f.Submit()=="preprocess-unavailable",source+" first attempt failed without body");
@@ -148,4 +154,15 @@ internal static class Program {
   }
   Console.WriteLine("PASS NativeOpeningRetry checks="+Checks+"; current public/overlay producers + admission adapter/owner/router + production lord/companion consume statements; game/UI/full turn/network leaves are fixtures, no live opening acceptance");
  }
+}
+internal static class IllustrationCardPopup {
+ internal static readonly List<string> Accepted=new();
+ internal static Action<string,Hero,CharacterObject> CaptureAutoReplyObserver(string input)=>(body,hero,character)=>Accepted.Add(input);
+}
+internal static class ConversationIllustrationPatch {
+ private static bool _nativeConversationReplyPatchInstalled;
+ internal static bool Available=>_nativeConversationReplyPatchInstalled;
+ internal static void Install(Harmony harmony)=>TryPatchHostNativeConversationReply(harmony);
+ internal static string Logs="";private static void LogAutoRedraw(string message){Logs+=message+";";}
+ @@ILLUSTRATOR_HOOKS@@
 }
