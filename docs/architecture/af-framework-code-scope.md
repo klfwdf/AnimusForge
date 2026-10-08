@@ -1,3 +1,20 @@
+<a id="native-memory-continuity-fix-20261009"></a>
+### 当前职责导航：Native raw连续性与游戏时间边界
+
+raw `c77d448e5`、elapsed `d4beb7b76`，远端合并 `cce411837`。实际变化、9文件交集无重复实现、全部门禁/产物绑定及未覆盖统一见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#native-memory-continuity-fix-20261009)，不把prompt source/metadata/Stage当实机。14个符号当前一基范围/source与method SHA位于本地 `artifacts/native-memory-continuity-fix-20261009/independent-code-evidence.json`。
+
+| 当前源码（一基范围）/符号 | owner与实际消费者、有限边界 |
+| --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs:192–240`；`CapturePromptMessages` | 每Native请求raw include-current→merge→elapsed prefix→唯一共享message/API；31/9实际request回放，provider/game叶受控 |
+| `src/modules/AF.Module.Prompt/Composition/NativeMemoryHistoryMergeOwner.cs:10–87,93–138`；`Merge/TryIdentity` | request multiset重叠、pending event/事实scope与共享budget；不同日同文/独立重复保留，未知来源保守；不改原权威存储 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs:26–66`；`BuildUncompressedMemoryRoleMessagesForPrompt`；`Composition/MyBehavior.UncompressedMemoryPrompt.cs:6–13`；`CaptureCurrentPromptMemorySessionKey` | Native opt-in包含当前raw，Scene/Courier默认false；只读现有session identity；clone传递internal provenance，无新增sav/公开JSON字段 |
+| `src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs:179–247`；`TryConvertSceneMessageToStrictChatMessage` | explicit Native fact scope→当前/过往AFEF；未标记消息仍用旧判断；最终role/metadata/capture合同与旧渠道投影回放，完整live三渠道未验 |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeMeetingElapsedHistoryProjection.cs:11–69`；`Capture`；`NativeMeetingElapsedOwner.cs:34–74`；`Capture/Confirm/BuildContext` | 已完成pair元数据/未知精度降级→generation/epoch/manager/target票据；32执行，截断不冒称最后时刻，真实Campaign时间叶受控 |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs:32–41`；`CaptureMeetingElapsedBoundary/ConfirmMeetingElapsedBoundary`；`ShoutBehavior.NativeTurnPresentation.cs:26–119`；`ReceiveAndPresentAsync` | 主线程current admission捕获与raw主回复接受消费、后处理前；重试/迟到拒绝、Clear退休；正文可能为空，不等于UI显示成功 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/NativeMeetingElapsedCaptureAdapter.cs:8–20`；`Capture` | CampaignTime.ToHours、Hero/非Hero稳定memory身份→MyBehavior目标缓存只读bridge；新边界一次bounded读取，无Tick/JSON/后台游戏访问 |
+
+外交仍在原Orchestration：local CourtEffectPending/隔离/槽位与remote玩家多动作/配置budget互补，未新建第二效果或通知链。旧Memory/Weekly存档风险、catalog/WarStats历史oracle和live/SAV未验维持原结论；无public API/默认入口变更、部署或推送。以下导航保留其原修订与证据。
+
 <a id="diplomacy-closure-audit-20261009"></a>
 ### 当前职责导航：外交三类异常闭环
 
