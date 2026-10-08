@@ -1,3 +1,44 @@
+<a id="diplomacy-closure-audit-20261009"></a>
+## 外交闭环异常修复与有限复核（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+本条接续[六类真实功能补审](#migration-functional-review-20261009)后用户追加的外交闭环复核。工作区为 `F:/AnimusForge-main` / `main`；原审查基线 `b41587eca`，本轮持久化产品冻结为 `fe29282a1384e9cceee0e83701376385dc36cb20`，传播修复为 `39b461813`、`6f00d3a8a`，传播/效果测试为 `6461c037f`、`8aeecd452`。保留已交付的传闻提示删除 `303e44c48` 与人物菜单旧Hero保护 `6e9c6a74f`；本条签收以下三类异常修复的离线有限闭环，不表示整个外交、全仓或实机通过。
+
+- **损坏外交域保护**：当前Behavior实例拥有adapter健康状态和证据。严格读取canonical `_af_world_diplomacy_v1`，缺/空/非string chunk、坏JSON不降级成成功空域或inline fallback；完整primitive原record进入 `_af_world_diplomacy_quarantine_v1` 的Version/Reason/Records/RecordsSha256 envelope并按UTF8分块。Save新store再Load仍隔离；raw只重放字节安全subset，过长key/value完整保留在envelope，不截断identity或业务数据。不完整、非支持证据拒绝Save。正式外交配置与availability分开，隔离不走native oral fallback；缓存UI/效果端口逐调用重验owner+health，旧Campaign无权提交。NewGame或完整健康Load恢复本owner。
+- **失效作者占槽**：每日 `Take(8)` 内明确失效作者的传播票据退休，保留archive；resolver异常继续延期重试，合法第九项后续能进入已有预算。不增加无界扫描。
+- **到达失败与部分提交**：固定due prefix逐项隔离异常，失败项移到次日并排既有同日工作之后；同日不空转、重入项不进入当前pass。`CourtEffectPending`只在真实court effect开始时置位并持久化，允许部分提交后越过known门重试；JSON/normalize保留，旧缺字段false。真实Orchestration的personal-memory receipts、同source+receiver obligation和原response job对象去重，重试不追加第二效果或job。
+
+snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态cache仅Type/FieldInfo，不保留raw、owner或游戏对象；传播沿既有日级预算，未新增Tick序列化、全量扫描或后台游戏对象读取。helper旧permissive默认协议与其他域保持，本包未改默认交互入口、public API、存档类型身份、构建/覆盖脚本或其他制作组玩法。
+
+### 已执行证据及限度
+
+| 门禁/层次 | 本轮结果 | 实际范围与保留边界 |
+| --- | --- | --- |
+| 当前外交source完整suite | 4069 PASS；`persistence-roundlife-final.log`，exit0 | 当前application/Orchestration受控世界叶；不是live Campaign或整个网络回合 |
+| 持久化严格协议 | 227 PASS；`persistence-protection-catalog/run.log`（此前r3同源码证据保留）；默认adapter14 PASS | 当前完整helper/adapter/store与精确SyncData；native-record/DTO/runtime叶受控；旧坏载荷Load→Save新store→Load及跨owner隔离 |
+| 传播闭环与效果 | 129 PASS；`propagation-closure-run.log`；效果182 PASS，`effect-receipts-final.log` | 当前真实Orchestration响应job/obligation/事实去重；真实game adapter/peace service/readback的engine叶受控 |
+| 独立native record探针 | 两引用各8 PASS；`independent-native-records-r3/receipt.json` | 实例化真实BehaviorSaveData并链接当前helper；前修两版超长key反例r2保留，后修key/valueUTF8边界不截断 |
+| 最终实际DLL探针 | pinned1.3、1.4各37 PASS；trade/Wheel/Persona接缝亦PASS | 实际产物helper/adapter、native新store、缓存端口及IL；无战役、Gauntlet、.sav或GPU启动 |
+| 原统一构建与Stage | 双API1.3/1.4、Bootstrap、双Coup seam、项目内单模块Stage PASS，`final-build/build.exitcode=0` | 真实引用1.3.15.110062 / 1.4.6.115628；没有覆盖游戏目录或打包推送 |
+| chunk catalog当前CLI | **整体NOT-PASS**；`catalog-strict-validation.log`，exit1 | current源码入口的20键和strict两键精确save/load集合已过，随后停在 `JSON save binding is missing/duplicated: _af_kingdom_civil_war_v2`；未刷新oracle、未宣称完整catalog通过 |
+
+上述文件均位于本地 `artifacts/diplomacy-closure-audit-20261009/`。source审读/边界矩阵为 `review.md`、`closure-matrix.json`；独立结论为 `review-notes.md`、`independent-review-progress.json`，13个真实方法源码/一基范围/hash为 `independent-code-evidence.json`。完整源码导航见[当前代码范围图](architecture/af-framework-code-scope.md#diplomacy-closure-audit-20261009)，本条不复制整表。最终回执为 `artifacts/diplomacy-closure-audit-20261009/final-build/receipt.json`，绑定产品 `fe29282a1`、下列三产物SHA、两版native解析与门禁结论。上轮2010输入对照为1999不变/11获准差异；本轮精确编译源码绑定使用两版各1395个portable PDB校验、0 mismatch，完整2010份构建前快照未重新采集；对照表不当作新的冻结快照。
+
+最终pinned1.3探针首选 `_deps_auto`，native MVID `4b87d2d0-89dd-4989-adb4-69b0cca71136`，SHA256 `dc1935472fd5b6b2798231f7f89eaa8cd82ba822ff2497c127dc4831e4e24bfd`；1.4首选 `.tmp/build_check/1.4`，MVID `1d6cff98-6895-4b99-ab2e-23881e60edad`，SHA256 `4f20011a74cf23bdffcda6bf7a51a829b94b912b6e4434780c5573af48c2f7c9`。初次1.3误取安装native MVID886629的37项日志保留为历史观察，不计pinned1.3证明；纠正后仅重跑对应probe，没有重复build。
+
+| 冻结产物（Stage与实现输出SHA一致） | SHA256 |
+| --- | --- |
+| `versions/1.3/AnimusForge.dll` | `a3d5ac8b9564c52bd479887716b7e0c0250fa9a032509f4ac43b9eacb7a63cc7` |
+| `versions/1.4/AnimusForge.dll` | `f5bf4777b2315b021d68be31366a7f390b4439fe668979eb64ea7603e9923ef0` |
+| `AnimusForge.Bootstrap.dll` | `6df1fb4803c254ec0961016fc156a3168fc97c937ea11466cb87ece0eb6da876` |
+
+### 保留项、真实存档限制与回滚
+
+真实SaveHandler/dispatcher/MbEvent/BehaviorSaveData源码确认严格拒绝发生在MBSaveLoad之前；SaveTick先推进AwaitingCompletion且相关分支没有catch/finally，因此本轮只证明不进入引擎保存，**正常Save Error UI、保存队列恢复和engine异常处理NOT-RUN**。未启动真实Campaign/Mission/LLM，未写.sav，未修复玩家旧坏档；上述测试不能承诺坏域拒存后游戏会自动恢复保存。
+
+六类补审中的Memory坏JSON下一Save丢scratch证据、Weekly缺chunk为空且不留原损坏载荷仍**NOT-PASS**；本包只保护外交域，没有把这些继承风险改绿。此前19键catalog失败及Memory/Weekly D0 plain CLI context/旧campaign/WeekZero综合fixture失败保留为历史证据；本次CLI的新结果是前述civil-war绑定门失败，不把历史D0失败写成本次执行结果，未刷新历史hash/oracle。
+
+本轮仅本地Stage，输出 `bin/Debug/single_module_stage/AnimusForge`；未部署、打包、推送或写外部副本。按依赖逆序分别 `git revert fe29282a1`、`git revert 6f00d3a8a`、`git revert 39b461813` 回滚具名产品；测试提交/文档用对应focused inverse，保留其他作者、NEW-10/GCCZ和两个原NuGet目录，不hard reset。以下交接保留所属当时证据与授权，本条不复用历史部署/推送授权。
+
 <a id="migration-functional-review-20261009"></a>
 ## 迁移后的六类真实功能审查（2026-10-09，OFFLINE_REVIEW_WITH_OPEN_PERSISTENCE_RISK）
 
