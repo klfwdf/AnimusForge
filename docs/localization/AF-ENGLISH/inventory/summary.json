@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source_revision": "a7d8421425cf96a52208c5019ecdbeb311ad8e48",
+  "branch": "AF-ENGLISH",
+  "worldbook_policy": "knowledge subtree and KnowledgeRules.json bodies deferred; UI/loader code included",
+  "compiled_csharp_files": 1758,
+  "text_resource_files": 1386,
+  "excluded_worldbook_files": 1877,
+  "raw_han_source_lines": 38410,
+  "unique_han_texts": 26469,
+  "counts": {
+    "han_category:comment_not_runtime": 459,
+    "han_category:conditional_code_review": 2,
+    "han_category:diagnostic_review": 349,
+    "han_category:logic_or_contract_review": 2190,
+    "han_category:prompt_review": 4993,
+    "han_category:resource_contract_review": 6,
+    "han_category:text_review": 37827,
+    "han_occurrences": 45826,
+    "kind:csharp.char": 2059,
+    "kind:csharp.comment": 7515,
+    "kind:csharp.disabled": 76,
+    "kind:csharp.interpolated": 2865,
+    "kind:csharp.string": 96622,
+    "kind:json.key": 28072,
+    "kind:json.value": 30526,
+    "kind:resource.document": 1,
+    "kind:xml.attribute": 29084,
+    "occurrences": 196820
+  },
+  "limitations": [
+    "Static extraction, not runtime reachability or language identification.",
+    "Disabled preprocessor trivia is inventoried as review-only, not tokenized as active code.",
+    "XML is lexically inventoried; bindings/identifiers/comments require review.",
+    "Raster image text, native binaries and player-created runtime content are not scanned."
+  ]
+}

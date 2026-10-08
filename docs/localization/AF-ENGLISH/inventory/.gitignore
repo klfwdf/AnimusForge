@@ -1,0 +1,5 @@
+# Plain local views are reproducible; publish their complete gzip equivalents.
+occurrences.jsonl
+han-review.jsonl
+unique-han-texts.jsonl
+han-source-lines.tsv

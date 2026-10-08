@@ -1,3 +1,19 @@
+<a id="af-english-inventory-20261009"></a>
+## AF-ENGLISH：静态提取与英化计划（2026-10-09）
+
+状态 **INVENTORY_VERIFIED / TRANSLATION_NOT_STARTED / LIVE_NOT_RUN**。用户明确要求此线程用于 MOD 英化、排除世界书正文，并创建 GitHub `AF-ENGLISH`；随后批准新建 `G:\AFMOD\AF-ENGLISH`。其他 AF/GCCZ 工作树保持不写入，不把历史交接当作部署授权。
+
+- 起点是建分支时 GitHub `main` 的 `a7d8421425cf96a52208c5019ecdbeb311ad8e48`；通过固定 SHA 官方快照恢复浅克隆，32,124 个原始 blob、整树及提交 SHA 完全一致。没有使用旧试验目录或携带本地专用历史。
+- [执行计划](localization/AF-ENGLISH/PLAN.md)：可见界面 → 提示词/素材 → 中文依赖逻辑 → 双版本/实机验收。当前仅新增离线提取工具和证据，不修改产品源码、内容映射、游戏安装或构建/覆盖入口。
+- MSBuild 两 API 与 Bootstrap 输入评估覆盖 **1,758 个 C# 文件**；再盘点 **1,386 个文本资源文件**。共 **196,820 条记录**，含汉字 **45,826 条**、去重 **26,469 条**；其中有日志、注释、字符常量、技术键和条件代码，不是已批准直接翻译的数量。
+- 精确延期 **1,877 个世界书文件**，只记录路径/大小/SHA，不复制正文。当前消费者 `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs:52,97–99` 支持 `knowledge/rules`、`knowledge/single_rules`、`knowledge` 与 `KnowledgeRules.json`；世界书编辑器 UI/加载器外壳保留在提取范围。
+- [清单摘要](localization/AF-ENGLISH/inventory/summary.json)、源文件清单、延期清单与完整 gzip 流位于同目录。本地同时保留普通 JSONL/TSV；压缩只是静态证据存储，不是 MOD 发布打包。
+- 提取器 `tools/LocalizationInventory/Program.cs` 使用 SDK 内 Roslyn 处理 C#；`extract_text.py` 使用实际 Compile/EmbeddedResource 和 content-map，保留 JSON token 位置、转义与占位符线索。Json.NET 风格预设中的字面控制符被原样解码，不修写产品数据。
+- 工具构建 0 警告/0 错误，6 项专项覆盖转义/重复值、raw newline、XML 实体、插值/字符/注释、两 API 分支与世界书排除。最终一致性与重复运行证据见 [VERIFICATION](localization/AF-ENGLISH/VERIFICATION.md)。
+- **限制**：静态提取不证明运行可达、译文正确或发布有效；未 OCR 图片，未读取玩家私有运行资料，未构建英化产品 DLL，未进行实机或真实 LLM 验收。自动分类只是人工分流；协议标签、存档键、JSON 键和语言匹配逻辑必须逐项确认。
+
+本轮没有替换旧产品路径或产生需要同步的 GCCZ 规则变化。工具的 bin/obj/缓存不跟踪，未新增并行运行时实现。后续仅在本分支按已批准范围推进，不改 main、不 force-push、不自动部署。
+
 <a id="reviewed-refactor-source-delivery-20261008"></a>
 <a id="j17-host-responsibility-completion-20261004"></a>
 ## 当前源码交付：主体重构与远端功能协调（2026-10-08）

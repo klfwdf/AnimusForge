@@ -1,3 +1,10 @@
+# AF-ENGLISH 交接：静态提取完成，翻译尚未开始（2026-10-09）
+
+- 用户批准的英化工作区 `G:\AFMOD\AF-ENGLISH`，专用分支 `AF-ENGLISH`；起点 `a7d8421425cf96a52208c5019ecdbeb311ad8e48`，不混入旧试验或本地专用历史。
+- 1,758 个编译 C# 文件、1,386 个文本资源，196,820 条静态记录；1,877 个世界书文件正文延期。含汉字记录含技术/注释/日志审查项，不能全局直接替换。
+- [唯一台账与证据入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-english-inventory-20261009)、[计划](docs/localization/AF-ENGLISH/PLAN.md)。下一批先做 UI/MCM；保持占位符、标签、存档与三渠道语义。
+- 工具离线验证完成；产品源码、其他 AF/GCCZ 工作树和游戏安装未改。未提供译文/英化 DLL，未实机/LLM 验收，也未 MOD 打包或部署。下方为原 main 历史，不构成本英化分支的新交付授权。
+
 # 当前交接：主体重构与远端功能协调源码（2026-10-08）
 
 - **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。本次只同步获准源码到main，保留最新远端功能与本地主体owner；不部署、不打包。
