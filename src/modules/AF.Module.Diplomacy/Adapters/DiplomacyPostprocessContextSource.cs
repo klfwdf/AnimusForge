@@ -4,13 +4,14 @@ using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
 // Captures current campaign values; prompt admission and layout live in Application.
-internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource
+internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource, IDiplomacySubjectReleaseContextSource
 {
     private readonly Hero _npc;
     private Kingdom _npcKingdom;
     private Kingdom _playerKingdom;
 
     internal DiplomacyPostprocessContextSource(Hero npc) : this() => _npc = npc;
+    public string ReleaseSubjectContext() => WorldDiplomacyBehavior.BuildPlayerSubjectReleaseContext(_npc);
     public bool HasSpeaker => _npc != null;
     public bool UseFormalCommitments => WorldDiplomacyBehavior.UseFormalDiplomacyForConversation;
     public string NativeActionInstruction() => AIConfigHandler.ResolveRuleRuntimeText("diplomacy", "native_action_postprocess", forConstraint: false, null);

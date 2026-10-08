@@ -742,8 +742,10 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string authorId, string targetId)
     {
-        return new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
+        var intents = new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
             .BuildLegalDiplomaticActionIntents(round, authorId, targetId);
+        if (CanReleasePlayerSubject(authorId, targetId)) intents.Add("release_subject");
+        return intents;
     }
 
     public List<string> BuildLegalDiplomaticDeclarationIntents(
@@ -2266,6 +2268,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
+        if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "release_subject")
+            return ExecutePlayerSubjectRelease(authorId, targetId, document);
         return WorldDiplomacyImmediateActionApplication.Execute(_host.ImmediateAction(), authorId, targetId, intent, document);
     }
 
@@ -2319,6 +2323,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool TryGetDiplomaticStateViolation(string intent, string authorId, string targetId, out string reason)
     {
+        if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "release_subject")
+        { reason = CanReleasePlayerSubject(authorId, targetId) ? "" : "subject_not_directly_owned_by_player_ruler"; return reason != ""; }
         IWorldDiplomacyWarAdmissionPort warAdmission = _host.WarAdmission(authorId, targetId);
         return WorldDiplomacyGenerationValidationRules.TryGetDiplomaticStateViolation(
             intent, authorId, targetId, Storage?.DiplomaticThreats,
@@ -2360,6 +2366,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyDocument document, string intent, string commitment,
         string authorId, string targetId, out string reason)
     {
+        if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "release_subject")
+        {
+            if (!WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, commitment))
+            { reason = "subject_release_commitment_mismatch"; return true; }
+            return !ValidatePlayerSubjectRelease(document, authorId, targetId, out reason);
+        }
         if (document != null && !string.IsNullOrEmpty(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent))
             && !DialogueDocumentKnown(authorId, document.RespondingToOfferDocumentId))
         {
@@ -2407,7 +2419,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         string exchangeId)
     {
         int day = _host.CurrentDay();
-        return WorldDiplomacyDocumentApplication.Create(new WorldDiplomacyDocumentApplication.CreationSnapshot
+        var created = WorldDiplomacyDocumentApplication.Create(new WorldDiplomacyDocumentApplication.CreationSnapshot
         {
             DocumentId = _host.NewId("diplomacy_document"),
             ExchangeId = exchangeId,
@@ -2427,6 +2439,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             IsPlayerAuthored = isPlayerAuthored,
             IsResponse = isResponse
         });
+        if (isPlayerAuthored) created.SubjectReleaseTokens = SubjectReleaseHost?.CapturePlayerSubjectReleaseTokens(authorId);
+        return created;
     }
 
     public void AddDocument(WorldDiplomacyDocument document)

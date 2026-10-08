@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SubjectRelease.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacySubjectReleasePayload.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" Link="InteractionContracts.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" Link="LlmContracts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs" />

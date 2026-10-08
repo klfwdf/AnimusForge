@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 // Exercises the actual module owner, not a predecessor Behavior or copied algorithm.
 internal static class ConcurrentOralMigrationReplay
 {
-    internal sealed class Host : FakeOrchestrationHost, IWorldDiplomacyDialogueHost
+    internal class Host : FakeOrchestrationHost, IWorldDiplomacyDialogueHost
     {
         internal WorldDiplomacyOrchestration Owner;
         internal bool PublishEnabled;

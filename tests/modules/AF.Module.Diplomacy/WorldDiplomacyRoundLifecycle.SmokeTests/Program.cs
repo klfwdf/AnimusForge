@@ -27,6 +27,12 @@ internal static class Program
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--subject-release")
+        {
+            SubjectReleaseReplay.Run();
+            Console.WriteLine($"Player subject release passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--lifecycle-repair")
         {
             LifecycleRepairReplay.Run();
@@ -252,6 +258,7 @@ RunRepairCorrectionAndJobDecisionTests();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
         DocumentExecutionReplay.Run();
+        SubjectReleaseReplay.Run();
         string executionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
         Test.True(!executionSource.Contains("ProcessAnalyzedMultiActionDocument(")
             && executionSource.Split(new[] { "orchestration.ExecuteImmediateIntent(" }, StringSplitOptions.None).Length == 2,

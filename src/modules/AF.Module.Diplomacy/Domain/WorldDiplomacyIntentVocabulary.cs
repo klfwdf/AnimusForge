@@ -51,7 +51,7 @@ public static class WorldDiplomacyIntentVocabulary
 		if (normalized.StartsWith("accept_", StringComparison.Ordinal)) return "acceptance";
 		if (normalized.StartsWith("reject_", StringComparison.Ordinal)) return "rejection";
 		return normalized is "withdraw_offer" or "ultimatum" or "comply_ultimatum" or "apology" or "concession"
-			or "declare_war" or "break_alliance" or "cancel_trade"
+			or "declare_war" or "break_alliance" or "cancel_trade" or "release_subject"
 			? "binding"
 			: "non_binding";
 	}
@@ -75,7 +75,7 @@ public static class WorldDiplomacyIntentVocabulary
     public static bool IsImmediateIntent(string intent)
     {
 		string normalized = NormalizeIntent(intent);
-		return normalized == "withdraw_offer" || normalized == "declare_war" || normalized == "break_alliance" || normalized == "cancel_trade"
+		return normalized == "withdraw_offer" || normalized == "declare_war" || normalized == "break_alliance" || normalized == "cancel_trade" || normalized == "release_subject"
 			|| normalized == "comply_ultimatum"
 			|| (IsFormalTreatyIntent(normalized) && normalized.StartsWith("accept_"));
 	}
@@ -128,7 +128,7 @@ public static class WorldDiplomacyIntentVocabulary
 		return NormalizeIntent(intent) is "statement" or "condemn" or "warning" or "ultimatum" or "comply_ultimatum" or "apology" or "concession"
 			or "propose_peace" or "accept_peace" or "reject_peace"
 			or "propose_alliance" or "accept_alliance" or "reject_alliance" or "break_alliance"
-			or "propose_trade" or "accept_trade" or "reject_trade" or "cancel_trade" or "withdraw_offer" or "declare_war"
+			or "propose_trade" or "accept_trade" or "reject_trade" or "cancel_trade" or "release_subject" or "withdraw_offer" or "declare_war"
 			|| IsFormalTreatyIntent(intent);
 	}
 
@@ -151,7 +151,7 @@ public static class WorldDiplomacyIntentVocabulary
 		return NormalizeIntent(intent) is "warning" or "ultimatum" or "comply_ultimatum"
 			or "propose_peace" or "accept_peace" or "reject_peace"
 			or "propose_alliance" or "accept_alliance" or "reject_alliance" or "break_alliance"
-			or "propose_trade" or "accept_trade" or "reject_trade" or "cancel_trade" or "withdraw_offer" or "declare_war"
+			or "propose_trade" or "accept_trade" or "reject_trade" or "cancel_trade" or "release_subject" or "withdraw_offer" or "declare_war"
 			|| IsFormalTreatyIntent(intent);
 	}
 
@@ -159,7 +159,7 @@ public static class WorldDiplomacyIntentVocabulary
     {
 		return NormalizeIntent(intent) is "declare_war" or "accept_peace"
 			or "accept_alliance" or "break_alliance"
-			or "accept_trade" or "cancel_trade";
+			or "accept_trade" or "cancel_trade" or "release_subject";
 	}
 
     public static bool IsSupportedCommitment(string commitment)
@@ -178,7 +178,7 @@ public static class WorldDiplomacyIntentVocabulary
         return NormalizeIntent(intent) is "accept_peace" or "reject_peace"
             or "accept_alliance" or "reject_alliance"
             or "accept_trade" or "reject_trade"
-            or "comply_ultimatum" or "apology" or "concession" or "break_alliance" or "cancel_trade" or "declare_war";
+            or "comply_ultimatum" or "apology" or "concession" or "break_alliance" or "cancel_trade" or "release_subject" or "declare_war";
     }
 
     public static bool IsAcceptanceIntent(string intent)
@@ -220,6 +220,7 @@ public static class WorldDiplomacyIntentVocabulary
 			"accept_trade" => "接受贸易",
 			"reject_trade" => "拒绝贸易",
 			"cancel_trade" => "终止贸易",
+            "release_subject" => "宗主释放臣属国",
 			"comply_ultimatum" => "服从最后通牒",
 			"ultimatum" => "最后通牒",
 			"warning" => "谴责",

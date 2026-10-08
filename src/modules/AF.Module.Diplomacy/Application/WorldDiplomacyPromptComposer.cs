@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -401,7 +401,9 @@ internal static class WorldDiplomacyPromptComposer
 		if (documentAuthor != null) AppendDiplomaticThreatAnalysisContext(sb, world, documentAuthor);
 		string vassalageSnapshot = world.BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
-	sb.AppendLine("候选对象国：");
+	if (document.IsPlayerAuthored && document.SubjectReleaseTokens?.Count > 0)
+            sb.AppendLine("本宣言提交时的直属臣属国ID（明确释放用release_subject）：" + string.Join(",", document.SubjectReleaseTokens.Keys));
+        sb.AppendLine("候选对象国：");
 		foreach (string kingdom in world.KingdomIds().Where(x => x != null && !world.IsEliminated(x) && !string.Equals(x, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
 		{
 			sb.AppendLine("- " + kingdom + " = " + world.KingdomName(kingdom));

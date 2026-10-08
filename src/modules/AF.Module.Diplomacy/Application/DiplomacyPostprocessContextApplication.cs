@@ -67,6 +67,11 @@ internal interface IDiplomacyPostprocessContextSource
     void LogFailure(string message);
 }
 
+internal interface IDiplomacySubjectReleaseContextSource
+{
+    string ReleaseSubjectContext();
+}
+
 internal static class DiplomacyPostprocessContextApplication
 {
     internal static string Build<TSource>(ref TSource source) where TSource : struct, IDiplomacyPostprocessContextSource
@@ -85,6 +90,7 @@ internal static class DiplomacyPostprocessContextApplication
             string royal = BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
             if (source is IDiplomacyOralPostprocessSource oral && oral.UseFormalCommitments)
                 royal += "\n" + oral.OralArrangementContext();
+            if (source is IDiplomacySubjectReleaseContextSource release) royal += "\n" + release.ReleaseSubjectContext();
             return royal;
         }
         catch (Exception ex)
