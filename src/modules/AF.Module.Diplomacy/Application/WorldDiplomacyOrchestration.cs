@@ -2042,9 +2042,13 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 string receiverId = _host.ResolvePropagationReceiverId(arrival.KingdomId, arrival.SettlementId);
                 if (receiverId == null) return;
                 WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, receiverId, day,
-                    () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
+                    () => _host.IsPlayerAffiliatedParty(receiverId), () =>
+                    {
+                        arrival.CourtEffectPending = true;
+                        ProcessCourtArrival(receiverId, document);
+                    }, arrival.CourtEffectPending);
             },
-            _host.ResolveSettlementId);
+            _host.ResolveSettlementId, _host.Log);
     }
 
     public void RecalculatePendingPropagationIfNeeded()
