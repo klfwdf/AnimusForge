@@ -128,5 +128,6 @@ Check(Resolve(scroll, (string)scroll.Attribute("ClipRect")) == Id("AFDialogueInp
 Check(Resolve(scroll, (string)scroll.Attribute("InnerPanel")) == Id("AFDialogueInputEditor"), "input content path resolves");
 Check(Resolve(scroll, (string)scroll.Attribute("VerticalScrollbar")) == Id("AFDialogueInputBar"), "scrollbar path resolves");
 Check((string)Id("AFDialogueInputClip").Attribute("ClipContents") == "true" && (string)Id("AFDialogueInputEditor").Attribute("AutoScrollToCaret") == "true", "long input clips and enables caret scrolling");
-Console.WriteLine($"PASS: {checks} production-linked UI lifecycle, epoch-reader and XML checks; engine/patch dispatch/drawer are doubles, not visual acceptance.");
+AudienceDocketReplay.Run(root, Check);
+Console.WriteLine($"PASS: {checks} production-linked UI lifecycle, epoch-reader, audience rolling and XML checks; engine/patch dispatch/drawer are doubles, not visual acceptance.");
 class FakeMovie : IGauntletMovie { }
