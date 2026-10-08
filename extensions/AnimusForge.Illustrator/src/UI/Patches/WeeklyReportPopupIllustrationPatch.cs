@@ -343,7 +343,6 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.TitleText = title ?? "";
                 slot.StatusText = "正在为本期快报绘制新插画...";
                 slot.OnRegenerate = TriggerRegenerate;
-                slot.OnRegenerateBasedOnImage = () => { if (ReferenceEquals(ownerScope, _scope)) OpenCurrentImageEditor(); };
                 slot.OnRegenerateWithPrompt = () => { if (ReferenceEquals(ownerScope, _scope)) OpenRedrawPromptEditor(); };
                 slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
@@ -483,7 +482,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void OpenCurrentImageEditor()
         {
-            if (_editingRedrawPrompt || _scope == null || _sink == null || _sink.IsLoading || !_sink.HasIllustration || _activeItem == null) return;
+            if (_bulletinSlot != null || _editingRedrawPrompt || _scope == null || _sink == null || _sink.IsLoading || !_sink.HasIllustration || _activeItem == null) return;
             var owner = _scope; var sink = _sink; var source = _activeItem;
             IllustrationRedrawPromptEditor.Show(_imageEditDraft,
                 () => ReferenceEquals(owner, _scope) && owner.IsCurrent && ReferenceEquals(sink, _sink) &&
@@ -750,7 +749,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             finally
             {
-                if (_bulletinSlot != null) { _bulletinSlot.OnRegenerateWithPrompt = null; _bulletinSlot.OnRegenerateBasedOnImage = null; }
+                if (_bulletinSlot != null) _bulletinSlot.OnRegenerateWithPrompt = null;
                 _imageEditDraft = string.Empty;
                 _playerRedrawDraft = string.Empty;
                 _editingRedrawPrompt = false;
