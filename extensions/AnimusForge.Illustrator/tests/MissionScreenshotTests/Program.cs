@@ -36,7 +36,7 @@ internal static class Program
     private static void Reject(Action action, string name)
     { try { action(); } catch (Exception) { _assertions++; return; } throw new Exception("Expected rejection: " + name); }
     private static AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM Photo =>
-        (AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM)_screen.Layers.OfType<TaleWorlds.Engine.GauntletUI.GauntletLayer>().Last().VM;
+        (AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM)_screen.Layers.OfType<TaleWorlds.Engine.GauntletUI.GauntletLayer>().Single(l => l.VM is AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM).VM;
     private static void Setup(bool paused = false)
     {
         IllustratorRuntime.OwnerThread = Thread.CurrentThread.ManagedThreadId;
@@ -111,15 +111,24 @@ internal static class Program
         Check(exportCancel.Completion.IsCanceled,"Esc works during export warmup");Restored(false,"export cancel");
         Setup();var oldUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();var hiddenUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();hiddenUi.UIContext.Root.IsVisible=false;
         _screen.AddLayer(oldUi);_screen.AddLayer(hiddenUi);ScreenManager.TrySetFocus(oldUi);
+        oldUi.InputRestrictions.SetMouseVisibility(true);
         var visibility=new MissionScreenshotCapture(_mission,true);
+        Check(!_screen.Layers.Any(l=>l.IsActive&&l.InputRestrictions.MouseVisibility),"hidden source popup no longer requests cursor during aim");
         Check(!oldUi.UIContext.Root.IsVisible&&!hiddenUi.UIContext.Root.IsVisible,"prior UI hidden without losing prior visibility");
-        oldUi.UIContext.Root.IsVisible=true;visibility.Tick();
+        oldUi.UIContext.Root.IsVisible=true;oldUi.InputRestrictions.SetMouseVisibility(true);visibility.Tick();
+        Check(!oldUi.InputRestrictions.MouseVisibility,"reasserted source cursor is suppressed without changing input mask");
         Check(!oldUi.UIContext.Root.IsVisible,"later UI updates remain hidden during aiming");
-        var addedUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(addedUi);
+        var addedUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();addedUi.InputRestrictions.SetMouseVisibility(true);_screen.AddLayer(addedUi);
+        Check(!addedUi.InputRestrictions.MouseVisibility,"new layer cursor suppressed");
+        Key(visibility,TaleWorlds.InputSystem.InputKey.Escape);
+        Check(_screen.Layers.OfType<TaleWorlds.Engine.GauntletUI.GauntletLayer>().Single(l=>l.VM is AnimusForge.Illustrator.UI.Overlays.MissionPhotoVM).InputRestrictions.MouseVisibility,"decision buttons have a cursor");
+        Photo.ExecuteFirst();
+        Check(!_screen.Layers.Any(l=>l.IsActive&&l.InputRestrictions.MouseVisibility),"retake hides decision cursor again");
         Check(!addedUi.UIContext.Root.IsVisible,"layers added during capture are hidden");
         _screen.RemoveLayer(oldUi);oldUi.IsFinalized=false;_screen.AddLayer(oldUi);
         visibility.Cancel("test");Check(oldUi.UIContext.Root.IsVisible&&!hiddenUi.UIContext.Root.IsVisible&&ScreenManager.FocusedLayer==oldUi,"exact prior UI/focus restored");
         Check(addedUi.UIContext.Root.IsVisible,"newly added UI regains original visibility");
+        Check(oldUi.InputRestrictions.MouseVisibility&&addedUi.InputRestrictions.MouseVisibility&&!hiddenUi.InputRestrictions.MouseVisibility,"each prior cursor request restored exactly");
         Setup();var originUi=new TaleWorlds.Engine.GauntletUI.GauntletLayer();_screen.AddLayer(originUi);ScreenManager.TrySetFocus(originUi);
         var replacedScreen=new MissionScreenshotCapture(_mission,true);
         var nextScreen=new ScreenBase();var nextFocus=new TaleWorlds.Engine.GauntletUI.GauntletLayer();nextScreen.AddLayer(nextFocus);

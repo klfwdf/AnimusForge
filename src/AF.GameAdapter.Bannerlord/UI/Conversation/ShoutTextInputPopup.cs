@@ -367,6 +367,10 @@ public sealed class ShoutTextInputPopup
 		try
 		{
 			ScreenLayer focusedLayer = ScreenManager.FocusedLayer;
+			// The photo overlay temporarily borrows this popup's focus on the same screen.
+			// Keep genuine screen changes, focus loss and unrelated windows on their existing paths.
+			if (ShoutBehavior.IsSceneIllustrationBusyForExternal && focusedLayer?.Name == "AFMissionPhoto"
+				&& ReferenceEquals(ScreenManager.TopScreen, _screen)) return false;
 			if (focusedLayer != null && !ReferenceEquals(focusedLayer, _layer))
 			{
 				return true;

@@ -17,6 +17,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly MissionPhotoVM _vm;
         private readonly List<Tuple<Widget, bool>> _hidden = new List<Tuple<Widget, bool>>();
         private readonly HashSet<Widget> _hiddenRoots = new HashSet<Widget>();
+        private readonly Dictionary<ScreenLayer, bool> _mouseVisibility = new Dictionary<ScreenLayer, bool>();
         private bool _closed;
         internal MissionPhotoOverlay(ScreenBase screen, Action generate, Action more, Action restart, Action cancel)
         {
@@ -39,6 +40,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private void Hide(ScreenLayer layer)
         {
             if (ReferenceEquals(layer, _layer)) return;
+            if (!_mouseVisibility.ContainsKey(layer)) _mouseVisibility.Add(layer, layer.InputRestrictions.MouseVisibility);
+            layer.InputRestrictions.SetMouseVisibility(false);
             var gauntlet = layer as GauntletLayer;
             var root = gauntlet?.UIContext?.Root;
             if (root == null) return;
@@ -48,7 +51,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
             gauntlet.TwoDimensionView.Clear();
         }
         internal void HideOtherUi()
-        { foreach (var entry in _hidden) if (entry.Item1.IsVisible) entry.Item1.IsVisible = false; }
+        {
+            foreach (var entry in _hidden) if (entry.Item1.IsVisible) entry.Item1.IsVisible = false;
+            // ScreenManager combines cursor requests from every active layer, even hidden roots.
+            foreach (var entry in _mouseVisibility)
+                if (!entry.Key.IsFinalized && entry.Key.InputRestrictions.MouseVisibility)
+                    entry.Key.InputRestrictions.SetMouseVisibility(false);
+        }
         internal void Aim(int count)
         {
             _vm.Set("Enter 回车截取第 " + (count + 1) + " 张 · Esc 取消", false, "", "", null, null);
@@ -89,6 +98,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             foreach (var entry in _hidden) RestorePart(() => entry.Item1.IsVisible = entry.Item2);
             _hidden.Clear();
             _hiddenRoots.Clear();
+            foreach (var entry in _mouseVisibility)
+                if (!entry.Key.IsFinalized) RestorePart(() => entry.Key.InputRestrictions.SetMouseVisibility(entry.Value));
+            _mouseVisibility.Clear();
             RestorePart(() => _layer.InputRestrictions.ResetInputRestrictions());
             _layer.IsFocusLayer = false;
             RestorePart(() => ScreenManager.TryLoseFocus(_layer));

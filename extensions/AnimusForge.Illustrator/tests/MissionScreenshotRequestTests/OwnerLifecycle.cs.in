@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-class Mission { }
+class Mission { public static Mission Current; public bool MissionEnded; }
 class IllustrationScope { public bool Closed; public void Close() { Closed = true; } }
 class MissionScreenshotCapture {
  public TaskCompletionSource<object> Done = new TaskCompletionSource<object>();
@@ -9,9 +9,34 @@ class MissionScreenshotCapture {
  public void Tick() { Ticks++; }
  public void Cancel(string s) { Done.TrySetResult(null); }
 }
-static class ShoutBehavior { public static int Changes; public static void NotifySceneIllustrationChangedForExternal() { Changes++; } }
+static class ShoutBehavior { public static bool IsSceneIllustrationBusyForExternal; public static int Changes; public static void NotifySceneIllustrationChangedForExternal() { Changes++; } }
 class InformationMessage { public InformationMessage(string s) { } }
 static class InformationManager { public static void DisplayMessage(InformationMessage message) { } }
+class ScreenLayer { public string Name; }
+class ScreenBase { }
+static class ScreenManager { public static ScreenBase TopScreen; public static ScreenLayer FocusedLayer; }
+static class Debug { public static void Print(string message) { } }
+static class IllustrationCardPopup {
+ public static bool Throw; public static int Opens;
+ public static void ShowForMissionScreenshot(IllustrationScope scope,string subject,Mission mission,string status) {
+  Opens++; if(Throw) throw new Exception("missing prefab");
+ }
+}
+class PopupFixture {
+ public bool _isClosed, _allowTemporaryScreenSwitch, _temporaryScreenSwitchObserved, _isHiddenForTemporaryScreenSwitch;
+ public bool Focused=true, Grace, Blocking;
+ public enum PendingCloseAction { None, Cancel }
+ public PendingCloseAction _pendingCloseAction;
+ public ScreenBase _screen; public ScreenLayer _layer;
+ bool IsGameWindowFocused()=>Focused;
+ void BeginTemporarySystemInterruption(){_allowTemporaryScreenSwitch=true;_isHiddenForTemporaryScreenSwitch=true;}
+ bool IsTemporaryScreenBlockingRestore(ScreenBase screen)=>Blocking;
+ void HidePopupForTemporaryScreenSwitch(){_isHiddenForTemporaryScreenSwitch=true;}
+ void RestorePopupAfterTemporaryScreenSwitch(){_isHiddenForTemporaryScreenSwitch=false;}
+ bool IsInFocusGuardGrace()=>Grace;
+ __ShouldCancelForSystemInterruption__
+ public bool CheckInterruption()=>ShouldCancelForSystemInterruption();
+}
 class Program {
  static MissionScreenshotCapture _capture;
  static IllustrationScope _scope;
@@ -23,6 +48,7 @@ class Program {
  __TickCapture__
  __Finish__
  __ScopeClosed__
+ __TryShowProgress__
  static void Check(bool value,string label) { if (!value) throw new Exception(label); checks++; }
  static void Main() {
   var mission = new Mission(); var first = new IllustrationScope(); var a = new MissionScreenshotCapture();
@@ -46,6 +72,25 @@ class Program {
   _scope=cancelledScope;_capture=cancelledCapture;_openProgress=()=>opens++;
   cancelledCapture.Done.SetCanceled();TickCapture();
   Check(cancelledScope.Closed&&_capture==null&&_scope==null&&opens==2,"cancelled aiming never starts network/progress and closes scope");
+  var screen=new ScreenBase();ScreenManager.TopScreen=screen;Mission.Current=mission;
+  var running=new IllustrationScope();_scope=running;IllustrationCardPopup.Throw=true;
+  TryShowProgress(running,"shot",mission,screen,()=>true);
+  Check(!running.Closed&&ReferenceEquals(_scope,running)&&IllustrationCardPopup.Opens==1,"progress UI exception preserves admitted generation");
+  TryShowProgress(running,"shot",mission,screen,()=>{throw new Exception("panel disposed");});
+  Check(!running.Closed&&IllustrationCardPopup.Opens==1,"source panel callback failure also preserves worker");
+  IllustrationCardPopup.Throw=false;TryShowProgress(running,"shot",mission,screen,()=>true);
+  Check(IllustrationCardPopup.Opens==2&&!running.Closed,"normal progress still opens");
+  TryShowProgress(running,"shot",mission,new ScreenBase(),()=>true);
+  Check(IllustrationCardPopup.Opens==2,"changed screen skips presentation");
+  var popup=new PopupFixture{_screen=screen,_layer=new ScreenLayer{Name="Shout"}};
+  ScreenManager.FocusedLayer=new ScreenLayer{Name="AFMissionPhoto"};ShoutBehavior.IsSceneIllustrationBusyForExternal=true;
+  Check(!popup.CheckInterruption(),"photo focus after grace does not close source popup");
+  ScreenManager.FocusedLayer=new ScreenLayer{Name="Other"};Check(popup.CheckInterruption(),"unrelated focus still interrupts during photo session");
+  ScreenManager.FocusedLayer=new ScreenLayer{Name="AFMissionPhoto"};ScreenManager.TopScreen=new ScreenBase();
+  Check(popup.CheckInterruption(),"actual screen change still interrupts");ScreenManager.TopScreen=screen;
+  ShoutBehavior.IsSceneIllustrationBusyForExternal=false;Check(popup.CheckInterruption(),"photo name without active capture grants no exemption");
+  ShoutBehavior.IsSceneIllustrationBusyForExternal=true;popup.Focused=false;
+  Check(!popup.CheckInterruption()&&popup._allowTemporaryScreenSwitch&&popup._isHiddenForTemporaryScreenSwitch,"window focus loss retains temporary interruption path");
   Console.WriteLine("PASS "+checks+" production-method scene multi-job lifecycle checks; native and HTTP boundaries are doubles.");
  }
 }
