@@ -1,5 +1,5 @@
 ﻿<a id="native-memory-continuity-fix-20261009"></a>
-## Native 未压缩记忆连续性、游戏时间边界与远端语义合并（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
+## Native 未压缩记忆连续性、游戏时间边界与远端语义合并（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 
 本条收敛用户“重进/跨天遗忘”“做”及拉取合并/功能去重请求。工作区 `F:/AnimusForge-main` / `main`，raw冻结 `c77d448e5577fc83d5a74489bedb60202fc22a2d`、elapsed `d4beb7b762b3c141ee7c55babc5af0772103201e`。WIP保护点 `5c13cc419` 与远端 `8f7e38e6f` 已由 `cce41183743c19df6e10909fb3ea77e76721a523` 合并；本条替代HANDOFF“Native WIP、统一构建待验”的当前状态，保留各历史receipt当时边界，不复用历史部署/推送授权。
 
@@ -32,11 +32,19 @@ raw运行于每次请求：复用当前NPC已有snapshot和最终HistoryLineLimi
 
 14个符号一基坐标/source与method SHA位于 `artifacts/native-memory-continuity-fix-20261009/independent-code-evidence.json`，owner/consumer范围见[当前代码导航](architecture/af-framework-code-scope.md#native-memory-continuity-fix-20261009)。独立notes/progress保存设计风险、具体差异和最终修复状态；不用测试数量替代实际consumer。
 
+### 本轮部署（用户再次明确授权）
+
+部署复用上述冻结产物，正式 `scripts/build/deploy_module.ps1` 未改、没有重复整库构建。目标仅 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。首次事务 `deploy-00c02cf1a2c04324902849ea908b4a32` 删除旧Bootstrap临时备份时被BannerlordLauncher/Watchdog占用；ACL/readonly排除，Windows锁查询确认持有者。脚本完整回滚，9个目标旧hash和9份备份独立核验；失败日志、锁证据与rolled-back记录保留。运行中的应用曾并发改变日志，不将首轮日志变化归为部署写入。
+
+用户正常关闭启动器/Watchdog后，独占锁释放；只清理已绑定Recovery旧Bootstrap hash、绝对路径位于该模块bin下的本次失败临时残留，未广泛删除、修改ACL或结束进程。第二次原脚本exit0更新9个受管文件。完整3381个Stage/安装文件逐项SHA一致；三DLL的SHA与上表一致，XML Id/Name均AnimusForge且只声明Bootstrap；本轮重试基线中的2439个清单外文件长度/mtime无变化，ONNX、玩家数据及未知安装文件保留。2777个冻结源码/资源输入仍未变。
+
+成功事务 `deploy-fbc1ca10b4424cf499b5f9ff9b09d269` 为complete，9份旧文件备份的SHA全部匹配manifest。私有Recovery位于 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-fbc1ca10b4424cf499b5f9ff9b09d269`。本地部署回执 `artifacts/native-memory-continuity-fix-20261009/deployment/retry/receipt.json`，完整受管SHA列表 `retry/managed-installed-hashes.json`；首轮失败/rollback/cleanup及前后基线同目录分别保留。需要恢复安装时按这个精确manifest/files做focused受管文件恢复，不mirror/delete清单外目录或ONNX。没有推送、打包或主动启动游戏；安装成功仍不是Campaign/Mission/LLM实机验收。
+
 ### 保留项与回滚
 
 真实Campaign/Mission/按键/Gauntlet/GPU/网络provider/TTS、实际.sav引擎与代表性旧坏档修复未验。NativePreparationBoundary旧WarStats owner oracle仍NOT-PASS，未刷新；[六类补审](#migration-functional-review-20261009)Memory坏JSON下次Save证据丢失、Weekly缺块为空/无原损坏证据以及旧综合fixture风险不改绿；[外交闭环](#diplomacy-closure-audit-20261009)catalog整体civil-war JSON绑定失败和保存UI/队列恢复未验仍保留。
 
-本轮只有项目内单模块Stage，未覆盖游戏、打包或推送。产品回滚用 `git revert c77d448e5` 与 `git revert d4beb7b76` 的focused inverse；最初部分raw/elapsed在混合WIP保护 `5c13cc419`，需要按本代码图对应符号恢复，不能revert整个混合WIP或merge、hard reset远端/其他作者。文档用对应文档提交反向提交。保留NEW-10/GCCZ及两个原NuGet目录。
+用户随后授权的游戏模块部署已完成，安装回滚按上段精确Recovery；未打包或推送。源产品回滚用 `git revert c77d448e5` 与 `git revert d4beb7b76` 的focused inverse；最初部分raw/elapsed在混合WIP保护 `5c13cc419`，需要按本代码图对应符号恢复，不能revert整个混合WIP或merge、hard reset远端/其他作者。文档用对应文档提交反向提交。保留NEW-10/GCCZ及两个原NuGet目录。
 
 <a id="diplomacy-closure-audit-20261009"></a>
 ## 外交闭环异常修复与有限复核（2026-10-09，OFFLINE_VERIFIED_NOT_DEPLOYED）
