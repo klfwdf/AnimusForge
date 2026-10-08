@@ -10,6 +10,7 @@
     <Compile Include="../../src/Native/NativeOverlayVM.cs" />
     <Compile Include="../../src/Shout/ShoutUiAdapter.cs" />
     <Compile Include="../../src/Shout/ShoutPresentationVM.cs" />
+    <Compile Include="../../src/Scene/AFSceneAudienceDocketWidget.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" />
   </ItemGroup>
