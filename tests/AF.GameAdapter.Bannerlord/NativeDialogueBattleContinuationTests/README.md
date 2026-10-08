@@ -20,3 +20,5 @@ Integration: the existing custom native-dialogue option calls Begin; session sta
 existing application tick consumes queued work; LordEncounterBehavior.TryGetCustomEncounterMenuDisableReason
 honors the transient bypass while the native encounter menu initializes. No manual game DLL replacement,
 Stage, deployment or automatic attack mission launch is part of these tests.
+
+Readback now requires the same encounter and both parties sharing the current Battle, plus native encounter menu or battle mission. Empty menus may resume; unrelated menus wait up to 15 seconds. Pending checks are throttled to 250ms, activations to 500ms and three attempts. Silent no-ops retain work; unknown partial exceptions cancel. Callback reentry, scope changes, leave/surrender and prior peaceful-cleanup ownership are regression tested. These remain fixtures, not live-game acceptance.

@@ -77,6 +77,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static float _pendingPostMissionCleanupDelay;
 
 	private static bool _pendingPeacefulMeetingBattleCleanup;
+    private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _peacefulCleanupOwner = new();
 
 	private static bool _cameraLockWasActive;
 
@@ -419,6 +420,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
         NativeDialogueBattleContinuation.Cancel("session_launched");
+        _peacefulCleanupOwner.Clear();
         ClearPendingNativeConversationNpcSurrender("session_launched");
         ClearNativeDialogueHandoff();
 		PlayerCaptivityGhostSafePatch.RepairMainHeroRosters("session_launched");
@@ -743,6 +745,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		_pendingPostMissionCleanup = true;
 		_pendingPostMissionCleanupDelay = 0f;
 		_pendingPeacefulMeetingBattleCleanup = flag10;
+        if (!flag10) _peacefulCleanupOwner.Clear();
 		_encounterMeetingMissionActive = false;
 		_meetingStartedForProactiveRequest = false;
 		_meetingStartedForProactiveRequestHero = null;
@@ -4622,6 +4625,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void TryRunPostMissionCleanupIfReady()
 	{
+        if (_pendingPeacefulMeetingBattleCleanup && !ValidatePeacefulCleanupScope()) return;
 		bool nativeEncounterMenuActive = false;
 		try
 		{
@@ -4682,6 +4686,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool TryResolvePendingPeacefulMeetingCleanupForExternal(string reason)
 	{
+        if (_pendingPeacefulMeetingBattleCleanup && !ValidatePeacefulCleanupScope()) return false;
 		if (!_pendingPeacefulMeetingBattleCleanup && !_pendingPostMissionCleanup)
 		{
 			return false;
@@ -4738,8 +4743,28 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+    internal static void DiscardPeacefulCleanupForNativeCombat()
+    {
+        if (_pendingPeacefulMeetingBattleCleanup && NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter)
+            ValidatePeacefulCleanupScope();
+    }
+
+    private static bool ValidatePeacefulCleanupScope()
+    {
+        if (_peacefulCleanupOwner.IsCurrent(PlayerEncounter.Current, GetCurrentEncounterPartySafe(),
+            SaveRuntimeGuard.CaptureGeneration()) && !NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter)
+            return true;
+        _pendingPeacefulMeetingBattleCleanup = false;
+        _pendingPostMissionCleanup = false;
+        _peacefulCleanupOwner.Clear();
+        ClearMeetingReleaseSafePassageFinalReapply("peaceful_cleanup_scope_changed_or_combat_requested");
+        LogEncounterDiagnostic("MeetingCleanup", "stale_or_combat_cleanup_discarded");
+        return false;
+    }
+
 	private static void RunPendingPeacefulMeetingBattleCleanupIfNeeded()
 	{
+        if (_pendingPeacefulMeetingBattleCleanup && !ValidatePeacefulCleanupScope()) return;
 		if (!_pendingPeacefulMeetingBattleCleanup)
 		{
 			return;
@@ -8612,6 +8637,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 			}
 			MeetingBattleRuntime.BeginMeeting(target);
+            _peacefulCleanupOwner.Mark(PlayerEncounter.Current, GetCurrentEncounterPartySafe(), SaveRuntimeGuard.CaptureGeneration());
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			SaveMainPartyPosition();
 			DisableMeetingSpawnOverride();
@@ -8726,7 +8752,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
                 (conversation.OtherSideConversationData.Party != encounterParty &&
                     !IsEncounterArmyMemberTarget(conversation.OtherSideConversationData.Character?.HeroObject, encounterParty))) return;
         }
-        if (HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult() ||
+        if (NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter ||
+            HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult() ||
             HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu() || HasPendingNativeConversationNpcSurrender() ||
             PlayerEncounterCompat.HasEncounterBattleContext() || PlayerEncounterCompat.HasCampaignBattleResult() ||
             PlayerEncounterCompat.IsInPostBattleResultFlow() || MeetingBattleRuntime.IsCombatEscalated ||
@@ -8750,7 +8777,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
     {
         bool release = PlayerEncounter.LeaveEncounter || _pendingNativeConversationMeetingRelease != null
             || _pendingNativeConversationNpcSurrender || _pendingMeetingReleaseSafePassageFinalReapply;
-        bool combat = HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult()
+        bool combat = NativeDialogueBattleContinuation.IsCombatRequestedForCurrentEncounter
+            || HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult()
             || HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu()
             || PlayerEncounterCompat.HasEncounterBattleContext() || PlayerEncounterCompat.HasCampaignBattleResult()
             || PlayerEncounterCompat.IsInPostBattleResultFlow() || MeetingBattleRuntime.IsCombatEscalated;
