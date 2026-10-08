@@ -7,5 +7,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs" Link="BannerlordWorldDiplomacyPersistenceAdapter.cs" />
+    <Compile Include="../../../../src/AF.Persistence/CampaignSaveChunkHelper.cs" Link="CampaignSaveChunkHelper.cs" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -102,7 +102,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static bool _patchesApplied;
 	private static int _internalDiplomaticActionDepth;
-	private static readonly BannerlordWorldDiplomacyPersistenceAdapter PersistenceAdapter =
+	private readonly BannerlordWorldDiplomacyPersistenceAdapter PersistenceAdapter =
 		new BannerlordWorldDiplomacyPersistenceAdapter();
 
 	private readonly ConcurrentQueue<LlmJobResult> _completedJobs = new ConcurrentQueue<LlmJobResult>();
@@ -126,6 +126,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private WorldDiplomacyStorage _storage => _orchestration.CurrentStorage;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
+    private bool _persistenceWarningShown;
+    internal const string PersistenceUnavailableMessage = "外交存档数据异常，外交已暂停并保留原数据。请查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志；当前外交操作已拒绝。";
+    internal string UnavailableReason => !ReferenceEquals(Instance, this) || !CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign)
+        ? "外交操作所属会话已结束，请重新打开。"
+        : PersistenceAdapter.HasCompleteRejectedEvidence ? PersistenceUnavailableMessage
+        : "外交存档读取异常，外交已暂停以保护原存档。请勿覆盖原档；查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志。";
 	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
 	private long _worldMessageTimelineRevision = 1L;
 
@@ -139,7 +145,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public static WorldDiplomacyBehavior Instance { get; private set; }
 	private readonly Campaign _owningCampaign = Campaign.Current;
-	internal bool IsLiveCampaign => ReferenceEquals(Instance, this) && CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign);
+	internal bool IsPersistenceAvailable => PersistenceAdapter.IsHealthy && _orchestration.IsPersistenceHealthy;
+	internal bool IsLiveCampaign => IsPersistenceAvailable && ReferenceEquals(Instance, this) && CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign);
 	internal WorldDiplomacyOrchestration Orchestration => _orchestration;
 
 	public WorldDiplomacyBehavior()
@@ -180,7 +187,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
-		if (!ReferenceEquals(Instance, this) || !CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign)) return;
+		if (!IsLiveCampaign) return;
 		var source = new TickSource(this);
 		WorldDiplomacyTickApplication.Run(ref source, _orchestration);
 	}
@@ -430,11 +437,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
-        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.NewGame); }
+        { PersistenceAdapter.ResetForNewGame(); _persistenceWarningShown = false; DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.NewGame); }
 	private void OnGameLoaded(CampaignGameStarter starter)
-        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Loaded); }
+        { if (IsPersistenceAvailable) DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Loaded); }
 	private void OnSessionLaunched(CampaignGameStarter starter)
-        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Session); }
+    {
+        if (IsPersistenceAvailable) { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Session); return; }
+        if (!_persistenceWarningShown)
+        {
+            _persistenceWarningShown = true;
+            InformationManager.DisplayMessage(new InformationMessage(UnavailableReason));
+        }
+    }
 
 	private void OnCampaignTick(float dt)
 	{
@@ -447,6 +461,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
 	{
+        if (!IsPersistenceAvailable) return;
 		Kingdom first = faction1 as Kingdom;
 		Kingdom second = faction2 as Kingdom;
 		if (first == null || second == null || first == second)
@@ -458,6 +473,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void OnMakePeace(IFaction faction1, IFaction faction2, MakePeaceAction.MakePeaceDetail detail)
 	{
+        if (!IsPersistenceAvailable) return;
 		Kingdom first = faction1 as Kingdom;
 		Kingdom second = faction2 as Kingdom;
 		if (first == null || second == null)
@@ -475,6 +491,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Hero capturerHero,
 		ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
 	{
+        if (!IsPersistenceAvailable) return;
 		if (settlement == null || (!settlement.IsTown && !settlement.IsCastle))
 		{
 			return;
@@ -493,6 +510,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void OnMapEventEnded(MapEvent mapEvent)
 	{
+        if (!IsPersistenceAvailable) return;
 		WorldDiplomacyBattleApplication.Record(new BattlePort(mapEvent), _orchestration);
 	}
 	private static List<string> ResolveMapEventSideKingdomIds(MapEventSide side)
@@ -882,6 +900,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			WorldDiplomacyBehavior behavior = ResolveInstance();
 			if (behavior == null)
 			{
+                var current = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+                if (current?.IsPersistenceAvailable == false && IsNativeDiplomacyDecision(kingdomDecision)) return false;
 				return true;
 			}
 			return !behavior.CaptureNativeDiplomacyDecision(__instance, kingdomDecision);
@@ -1915,7 +1935,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static WorldDiplomacyBehavior ResolveInstance()
 	{
-		return Instance ?? Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+        var owner = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+        return owner?.IsPersistenceAvailable == true ? owner : null;
 	}
 	private static Kingdom ResolveKingdom(string id)
 	{

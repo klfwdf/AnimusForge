@@ -2,12 +2,126 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Collections;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
 
 internal static class CampaignSaveChunkHelper
 {
+    // Opt-in protocol. The existing permissive readers/writers below stay unchanged.
+    internal enum StrictReadStatus { Absent, Complete, InvalidManifest, MissingChunk, InvalidChunk, ReadFailed }
+    internal sealed class StrictStringRead
+    {
+        internal StrictReadStatus Status;
+        internal string Text, Error;
+        internal bool EvidenceComplete;
+        internal readonly Dictionary<string, object> Records = new Dictionary<string, object>(StringComparer.Ordinal);
+    }
+    private static readonly Dictionary<Type, FieldInfo> StrictRecordFields = new Dictionary<Type, FieldInfo>();
+
+    // IDataStore has no key enumeration. Native BehaviorSaveData owns this exact
+    // dictionary on both supported lines. Resolve its field once per store type,
+    // only at SyncData; never retain a datastore, Campaign, or raw values statically.
+    internal static StrictStringRead LoadChunkedStringStrict(IDataStore store, string key)
+    {
+        var result = new StrictStringRead { Status = StrictReadStatus.ReadFailed };
+        try
+        {
+            if (store == null || !store.IsLoading) throw new InvalidOperationException("load_store_unavailable");
+            FieldInfo field;
+            Type type = store.GetType();
+            lock (StrictRecordFields)
+            {
+                if (!StrictRecordFields.TryGetValue(type, out field))
+                {
+                    field = type.GetField("_records", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    StrictRecordFields[type] = field;
+                }
+            }
+            if (!(field?.GetValue(store) is IDictionary records))
+                throw new InvalidOperationException("record_namespace_unavailable");
+            var keys = new List<string>();
+            foreach (object rawKey in records.Keys)
+                if (rawKey is string name && (name == key || name.StartsWith(key + StringChunkKeyPrefix, StringComparison.Ordinal))) keys.Add(name);
+            foreach (string name in keys)
+            {
+                object value = null;
+                if (!store.SyncData(name, ref value)) throw new InvalidOperationException("record_disappeared");
+                if (value != null && !(value is string) && !(value is int))
+                    throw new InvalidOperationException("unsupported_record_type");
+                result.Records.Add(name, value);
+            }
+            result.EvidenceComplete = true;
+            bool hasCount = result.Records.TryGetValue(key + StringChunkCountSuffix, out object rawCount);
+            bool hasInline = result.Records.TryGetValue(key, out object rawInline);
+            if (!hasCount && result.Records.Count == 0) { result.Status = StrictReadStatus.Absent; return result; }
+            if (hasCount && (!(rawCount is int) || (int)rawCount < 0 || (int)rawCount > MaxChunkCount))
+                return StrictFailure(result, StrictReadStatus.InvalidManifest, "invalid_chunk_count");
+            int count = hasCount ? (int)rawCount : 0;
+            if (count == 0)
+            {
+                int expected = (hasCount ? 1 : 0) + (hasInline ? 1 : 0);
+                if (result.Records.Count != expected)
+                    return StrictFailure(result, StrictReadStatus.InvalidManifest, "orphan_chunk_keys");
+                if (!hasInline || !(rawInline is string inline) || string.IsNullOrWhiteSpace(inline))
+                    return StrictFailure(result, StrictReadStatus.InvalidChunk, "declared_empty_payload");
+                result.Text = inline; result.Status = StrictReadStatus.Complete; return result;
+            }
+            var text = new StringBuilder();
+            foreach (string name in result.Records.Keys)
+            {
+                if (name == key || name == key + StringChunkCountSuffix) continue;
+                string suffix = name.Substring((key + StringChunkKeyPrefix).Length);
+                if (!int.TryParse(suffix, NumberStyles.None, CultureInfo.InvariantCulture, out int index) || index < 0 || index >= count)
+                    return StrictFailure(result, StrictReadStatus.InvalidManifest, "unexpected_chunk_key");
+            }
+            for (int i = 0; i < count; i++)
+            {
+                if (!result.Records.TryGetValue(key + StringChunkKeyPrefix + i, out object value))
+                    return StrictFailure(result, StrictReadStatus.MissingChunk, "missing_chunk_" + i);
+                if (!(value is string chunk) || chunk.Length == 0)
+                    return StrictFailure(result, StrictReadStatus.InvalidChunk, "invalid_chunk_" + i);
+                text.Append(chunk);
+            }
+            result.Text = text.ToString(); result.Status = StrictReadStatus.Complete; return result;
+        }
+        catch (Exception ex)
+        {
+            result.EvidenceComplete = false;
+            result.Error = "strict_read_failed:" + ex.GetType().Name;
+            return result;
+        }
+    }
+    private static StrictStringRead StrictFailure(StrictStringRead result, StrictReadStatus status, string error)
+    { result.Status = status; result.Error = error; result.Text = null; return result; }
+
+    internal static void SaveChunkedStringStrict(IDataStore store, string key, string value)
+    {
+        if (store == null || !store.IsSaving) throw new InvalidOperationException("save_store_unavailable");
+        string text = value ?? "";
+        var chunks = SplitUtf8Chunks(text, StorageChunkMaxBytes);
+        int count = chunks.Count; WriteRequired(store, key + StringChunkCountSuffix, count);
+        for (int i = 0; i < count; i++) WriteRequired(store, key + StringChunkKeyPrefix + i, chunks[i]);
+        WriteRequired(store, key, GetUtf8ByteCount(text) <= LegacyInlineStorageMaxBytes ? text : "");
+    }
+    internal static void ReplaySafeRawRecords(IDataStore store, IDictionary<string, object> records, string legacyKey)
+    {
+        foreach (var pair in records)
+        {
+            if (GetUtf8ByteCount(pair.Key) > StorageChunkMaxBytes) continue;
+            // The quarantine envelope preserves ALL original bytes and key/type
+            // identity. A long original scalar must not recreate a broken .sav.
+            if (pair.Value is string value && GetUtf8ByteCount(value) >
+                (pair.Key == legacyKey ? LegacyInlineStorageMaxBytes : StorageChunkMaxBytes)) continue;
+            WriteRequired(store, pair.Key, pair.Value);
+        }
+    }
+    private static void WriteRequired<T>(IDataStore store, string key, T value)
+    {
+        if (!store.SyncData(key, ref value)) throw new InvalidOperationException("save_write_rejected:" + key);
+    }
 	// TaleWorlds string save entries use a signed short data length; keep chunks well below 32767 bytes.
 	private const int StorageChunkMaxBytes = 12000;
 

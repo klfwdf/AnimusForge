@@ -1,0 +1,59 @@
+using AnimusForge;using AnimusForge.Refactor.Adapters;using Newtonsoft.Json;using Newtonsoft.Json.Linq;using System.Text;
+namespace TaleWorlds.CampaignSystem {public interface IDataStore {bool IsSaving{get;}bool IsLoading{get;}bool SyncData<T>(string key,ref T data);}}
+namespace AnimusForge {
+internal static class Logger {internal static bool IsModLogicEnabled=>false;internal static void Log(string tag,string message){}}
+public sealed class Budget {public int Count=7;public Budget Snapshot()=>new(){Count=Count};}
+public sealed class WorldDiplomacyStorage {public string Marker="fresh";public List<string> Documents=new();public Dictionary<string,string> TreatyStatuses=new();public Budget RequestBudget=new();}
+internal sealed class CurrentSyncReplay {private readonly WorldDiplomacyStateStore _stateStore=new();private bool _persistenceHealthy=true;public bool Healthy=>_persistenceHealthy;internal WorldDiplomacyStorage Storage=>_stateStore.Current;internal int Normalizations;private void NormalizeStorage(bool allowWorldValidation){Normalizations++;}@@SYNC@@}
+// Identical native key-add/cast semantics. Missing records are not auto-carried to Save.
+internal sealed class Store:TaleWorlds.CampaignSystem.IDataStore {
+ private readonly Dictionary<string,object> _records=new(StringComparer.Ordinal);
+ internal bool Saving;internal string FailReadKey,ThrowReadKey,FailWriteKey,ThrowWriteKey;
+ public bool IsSaving=>Saving;public bool IsLoading=>!Saving;
+ public bool SyncData<T>(string key,ref T data){if(Saving){if(key==ThrowWriteKey)throw new IOException("write-fault");if(key==FailWriteKey)return false;_records.Add(key,data);return true;}if(key==ThrowReadKey)throw new IOException("read-fault");if(key==FailReadKey)return false;if(_records.TryGetValue(key,out object value)){data=(T)value;return true;}return false;}
+ internal Store Set(string key,object value){_records[key]=value;return this;}internal void Remove(string key)=>_records.Remove(key);
+ internal bool Has(string key)=>_records.ContainsKey(key);internal object Get(string key)=>_records[key];internal IEnumerable<KeyValuePair<string,object>> Records=>_records;
+ internal Store Copy(){var next=new Store();foreach(var pair in _records)next._records.Add(pair.Key,pair.Value);return next;}
+}
+internal sealed class OpaqueStore:TaleWorlds.CampaignSystem.IDataStore {public bool IsSaving=>false;public bool IsLoading=>true;public bool SyncData<T>(string key,ref T data)=>false;}
+internal static class Program {
+ const string Key="_af_world_diplomacy_v1",Count=Key+"__af_chunk_count";static int checks;
+ static void Check(bool value,string label){checks++;if(!value)throw new InvalidOperationException(label);Console.WriteLine("PASS "+label);}
+ static Store Good(){var store=new Store{Saving=true};var storage=new WorldDiplomacyStorage{Marker="healthy"};storage.Documents.Add(new string('文',12000));new BannerlordWorldDiplomacyPersistenceAdapter().Save(store,storage);store.Saving=false;return store;}
+ static void ExpectThrow(Action action,string name){bool threw=false;try{action();}catch{threw=true;}Check(threw,name);}
+ static void VerifyQuarantine(Store input,string name){
+  var adapter=new BannerlordWorldDiplomacyPersistenceAdapter();var loaded=adapter.Load(input,out string error);Check(!adapter.IsHealthy&&error.Length>0,name+" load rejects, not healthy empty");
+  var sync=new CurrentSyncReplay();sync.Storage.Marker="prior-campaign";int resets=0;sync.SyncData(false,true,()=>adapter.Load(input,out error),()=>error,null,_=>{},()=>resets++);
+  Check(!sync.Healthy&&sync.Storage.Marker=="fresh"&&sync.Normalizations==0&&resets==1,name+" drops prior memory and resets without normalizing invalid domain");
+  var saved=new Store{Saving=true};sync.SyncData(true,false,null,null,state=>adapter.Save(saved,state),_=>{},()=>{});
+  Check(saved.Has(BannerlordWorldDiplomacyPersistenceAdapter.QuarantineKey+"__af_chunk_count")&&sync.Normalizations==0,name+" Save new record map carries quarantine, not empty domain");
+  foreach(var pair in saved.Records)if(pair.Value is string text)Check(Encoding.UTF8.GetByteCount(text)<=12000,name+" safe UTF8 record "+pair.Key);
+  saved.Saving=false;var again=new BannerlordWorldDiplomacyPersistenceAdapter();again.Load(saved,out error);Check(!again.IsHealthy&&error.Length>0,name+" reload still quarantined");
+  var next=new Store{Saving=true};again.Save(next,new WorldDiplomacyStorage{Marker="must-not-publish"});next.Saving=false;
+  string envelope=CampaignSaveChunkHelper.LoadChunkedStringStrict(next,BannerlordWorldDiplomacyPersistenceAdapter.QuarantineKey).Text;
+  var records=JObject.Parse(envelope)["Records"].ToObject<List<Dictionary<string,object>>>();
+  Check(records.Count==input.Records.Count(),name+" every original key/value represented across repeated saves");
+ }
+ static void Main(){
+  var adapter=new BannerlordWorldDiplomacyPersistenceAdapter();var absent=adapter.Load(new Store(),out string error);Check(adapter.IsHealthy&&error==""&&absent.Marker=="fresh","true absent namespace is normal new save");
+  var old=new Store().Set(Key,@"{""Marker"":""legacy""}");Check(adapter.Load(old,out error).Marker=="legacy"&&adapter.IsHealthy&&error=="","valid old inline remains compatible");
+  var zero=new Store().Set(Count,0).Set(Key,@"{""Marker"":""zero-valid""}");Check(adapter.Load(zero,out error).Marker=="zero-valid"&&adapter.IsHealthy,"zero count valid inline accepted");
+  var good=Good();Check(adapter.Load(good,out error).Documents[0].Length==12000&&adapter.IsHealthy,"complete real multi-chunk payload accepted");
+  var healthySync=new CurrentSyncReplay();healthySync.SyncData(false,true,()=>adapter.Load(good,out error),()=>error,null,_=>{},()=>{});var healthySave=new Store{Saving=true};healthySync.SyncData(true,false,null,null,s=>adapter.Save(healthySave,s),_=>{},()=>{});healthySave.Saving=false;Check(adapter.Load(healthySave,out error).Marker=="healthy"&&healthySync.Healthy,"healthy SyncData snapshot save/load unchanged");
+  foreach(string raw in new[]{"{bad json","null","[]","17","{}{}"," ",""})VerifyQuarantine(new Store().Set(Key,raw),"invalid-json "+raw);
+  var missing=good.Copy();missing.Remove(Key+"__af_chunk_0");VerifyQuarantine(missing,"missing-chunk");
+  var noFallback=good.Copy();noFallback.Remove(Key+"__af_chunk_0");noFallback.Set(Key,@"{""Marker"":""cannot-fallback""}");VerifyQuarantine(noFallback,"positive-manifest no-inline-fallback");
+  foreach(object raw in new object[]{null,"",9}){var bad=good.Copy().Set(Key+"__af_chunk_0",raw);VerifyQuarantine(bad,"null-empty-wrong-chunk");}
+  foreach(object count in new object[]{-1,262145,"3"})VerifyQuarantine(new Store().Set(Count,count).Set(Key,@"{""Marker"":""cannot-fallback""}"),"invalid-manifest");
+  VerifyQuarantine(new Store().Set(Key+"__af_chunk_1","orphan"),"orphan-chunk");VerifyQuarantine(new Store().Set(Count,0).Set(Key,""),"declared-empty");
+  string hugeKey=Key+"__af_chunk_"+new string('中',12000);var keyInput=Good().Set(hugeKey,"short");VerifyQuarantine(keyInput,"oversized orphan key");var keyAdapter=new BannerlordWorldDiplomacyPersistenceAdapter();keyAdapter.Load(keyInput,out error);var keySave=new Store{Saving=true};keyAdapter.Save(keySave,new());Check(!keySave.Has(hugeKey),"overlimit original key is archived and never replayed as unsafe .sav string");foreach(var pair in keySave.Records)Check(Encoding.UTF8.GetByteCount(pair.Key)<=12000,"all new save keys UTF8 bounded");keySave.Saving=false;var keyEnvelope=JObject.Parse(CampaignSaveChunkHelper.LoadChunkedStringStrict(keySave,BannerlordWorldDiplomacyPersistenceAdapter.QuarantineKey).Text);Check(keyEnvelope["Records"].Any(x=>(string)x["Key"]==hugeKey),"full oversized original key retained in safe envelope without truncation");
+  string oversized=new string('文',16000)+"{bad";var large=new Store().Set(Key,oversized);VerifyQuarantine(large,"oversized rejected scalar");var largeAdapter=new BannerlordWorldDiplomacyPersistenceAdapter();largeAdapter.Load(large,out error);var largeSave=new Store{Saving=true};largeAdapter.Save(largeSave,new());Check(!largeSave.Has(Key),"oversized original inline is archived, never rewritten as unsafe scalar");largeSave.Saving=false;var envelope=JObject.Parse(CampaignSaveChunkHelper.LoadChunkedStringStrict(largeSave,BannerlordWorldDiplomacyPersistenceAdapter.QuarantineKey).Text);Check((string)envelope["Records"][0]["Text"]==oversized,"oversized original content preserved exactly inside safe chunks");
+  foreach(bool throwing in new[]{false,true}){var read=Good();if(throwing)read.ThrowReadKey=Count;else read.FailReadKey=Count;var rejected=new BannerlordWorldDiplomacyPersistenceAdapter();rejected.Load(read,out error);Check(!rejected.IsHealthy&&error.Length>0,"read fault unavailable");ExpectThrow(()=>rejected.Save(new Store{Saving=true},new()),"incomplete raw evidence refuses save");}
+  var unsupported=new BannerlordWorldDiplomacyPersistenceAdapter();unsupported.Load(new OpaqueStore(),out error);ExpectThrow(()=>unsupported.Save(new Store{Saving=true},new()),"unknown native record map refuses save");
+  foreach(bool throwing in new[]{false,true}){var save=new Store{Saving=true};if(throwing)save.ThrowWriteKey=Count;else save.FailWriteKey=Count;ExpectThrow(()=>new BannerlordWorldDiplomacyPersistenceAdapter().Save(save,new()),"healthy strict write fault propagates");}
+  var broken=new BannerlordWorldDiplomacyPersistenceAdapter();broken.Load(new Store().Set(Key,"{bad"),out error);var failEvidence=new Store{Saving=true,FailWriteKey=BannerlordWorldDiplomacyPersistenceAdapter.QuarantineKey+"__af_chunk_count"};ExpectThrow(()=>broken.Save(failEvidence,new()),"quarantine write rejected, no fake successful save");
+  broken.ResetForNewGame();Check(broken.IsHealthy,"new game clears only own quarantine");broken.Load(new Store().Set(Key,"{bad"),out error);broken.Load(Good(),out error);Check(broken.IsHealthy,"later complete valid Load clears own quarantine");var a=new BannerlordWorldDiplomacyPersistenceAdapter();a.Load(new Store().Set(Key,"{bad"),out error);Check(!a.IsHealthy&&new BannerlordWorldDiplomacyPersistenceAdapter().IsHealthy,"another campaign adapter cannot inherit invalid evidence");
+  Console.WriteLine("PASS strict diplomacy checks="+checks+"; full actual helper/adapter/store + actual SyncData, synthetic native record/DTO/runtime leaves; live sav/save error UI NOT-RUN");
+ }
+}
+}

@@ -50,6 +50,7 @@ public sealed partial class WorldDiplomacyBehavior
         {
             get
             {
+                if (!_owner.IsLiveCampaign) return default;
                 Kingdom player = Clan.PlayerClan?.Kingdom;
                 return new WorldDiplomacyPlayerContext(_owner._runtimeGeneration, player?.StringId,
                     player != null && !player.IsEliminated && player.RulingClan?.Leader == Hero.MainHero,
@@ -57,8 +58,8 @@ public sealed partial class WorldDiplomacyBehavior
             }
         }
         public System.Collections.Generic.IReadOnlyList<WorldDiplomacyArchiveRecord> Archive() =>
-            WorldDiplomacyPresentationQueries.Archive(_owner._storage, FormatCampaignDate, _owner.ResolveRound, _owner.ResolveDocument, Player);
-        public string ArchiveSubtitle() => WorldDiplomacyPresentationQueries.ArchiveSubtitle(
+            _owner.IsLiveCampaign ? WorldDiplomacyPresentationQueries.Archive(_owner._storage, FormatCampaignDate, _owner.ResolveRound, _owner.ResolveDocument, Player) : Array.Empty<WorldDiplomacyArchiveRecord>();
+        public string ArchiveSubtitle() => !_owner.IsLiveCampaign ? _owner.UnavailableReason : WorldDiplomacyPresentationQueries.ArchiveSubtitle(
             _owner._storage, _owner.ResolveDocument, id =>
             {
                 Kingdom representative = ResolveWorldDiplomacyRepresentative(ResolveKingdom(id));
@@ -68,11 +69,12 @@ public sealed partial class WorldDiplomacyBehavior
                 Kingdom kingdom = ResolveKingdom(id);
                 return kingdom == null ? null : KingdomName(kingdom);
             });
-        public string Standing(string kingdomId) => WorldDiplomacyPresentationQueries.Standing(_owner._storage, kingdomId);
-        public string Submit(WorldDiplomacyPlayerDocumentCommand command) => WorldDiplomacyPlayerApplication.Execute(this, command, _owner._orchestration);
-        public bool MarkRead(string id) => _owner._orchestration.MarkDocumentRead(id);
+        public string Standing(string kingdomId) => _owner.IsLiveCampaign ? WorldDiplomacyPresentationQueries.Standing(_owner._storage, kingdomId) : "";
+        public string Submit(WorldDiplomacyPlayerDocumentCommand command) => _owner.IsLiveCampaign ? WorldDiplomacyPlayerApplication.Execute(this, command, _owner._orchestration) : _owner.UnavailableReason;
+        public bool MarkRead(string id) => _owner.IsLiveCampaign && _owner._orchestration.MarkDocumentRead(id);
         public string RetryAnalysis(string id, long generation)
         {
+            if (!_owner.IsLiveCampaign) return _owner.UnavailableReason;
             if (generation != _owner._runtimeGeneration) return "该公文页面已失效，请重新打开。";
             var document = _owner.ResolveDocument(id);
             if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return "该公文当前不能重新解析。";
@@ -83,20 +85,21 @@ public sealed partial class WorldDiplomacyBehavior
         }
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {
-            return generation == _owner._runtimeGeneration && _owner.ResolveDocument(documentId) != null
+            return _owner.IsLiveCampaign && generation == _owner._runtimeGeneration && _owner.ResolveDocument(documentId) != null
                 && string.Equals(_owner.ResolveDocument(documentId).RoundId, roundId, StringComparison.Ordinal)
                 && Detail(documentId)?.CanReply == true;
         }
         public WorldDiplomacyDocumentDetail Detail(string id)
         {
+            if (!_owner.IsLiveCampaign) return null;
             WorldDiplomacyDocument document = _owner.ResolveDocument(id);
             if (document == null) return null;
             WorldDiplomacyRound round = _owner.ResolveRound(document.RoundId);
             return WorldDiplomacyPresentationQueries.Detail(document, round, Player, FormatCampaignDate);
         }
-        public bool KingdomExists(string id) => ResolveKingdom(id) != null;
-        public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
+        public bool KingdomExists(string id) => _owner.IsLiveCampaign && ResolveKingdom(id) != null;
+        public WorldDiplomacyDocument ResolveDocument(string id) => _owner.IsLiveCampaign ? _owner.ResolveDocument(id) : null;
+        public WorldDiplomacyRound ResolveRound(string id) => _owner.IsLiveCampaign ? _owner.ResolveRound(id) : null;
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
     }
 }

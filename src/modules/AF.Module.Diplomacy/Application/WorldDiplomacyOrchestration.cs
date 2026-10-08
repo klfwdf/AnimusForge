@@ -424,6 +424,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     private readonly IWorldDiplomacyOrchestrationHost _host;
     private readonly WorldDiplomacyRuntimeState _runtime;
     private readonly WorldDiplomacyStateStore _stateStore = new WorldDiplomacyStateStore();
+    private bool _persistenceHealthy = true;
+    internal bool IsPersistenceHealthy => _persistenceHealthy;
 
     internal WorldDiplomacyOrchestration(IWorldDiplomacyOrchestrationHost host, WorldDiplomacyRuntimeState runtime)
     {
@@ -436,18 +438,20 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     // Read projection for host adapters; canonical writes stay inside the store.
     internal WorldDiplomacyStorage CurrentStorage => _stateStore.Current;
     public void ReplaceStorage(WorldDiplomacyStorage storage) { _stateStore.Replace(storage); NormalizeConcurrentWork(); }
-    internal bool MarkDocumentRead(string documentId) => WorldDiplomacyTimelineApplication.MarkRead(Storage, documentId);
+    internal bool MarkDocumentRead(string documentId) => _persistenceHealthy && WorldDiplomacyTimelineApplication.MarkRead(Storage, documentId);
 
     // ---------- leaf helpers shared by orchestration methods ----------
 
     public WorldDiplomacyRound ResolveRound(string roundId)
     {
+        if (!_persistenceHealthy) return null;
         WorldDiplomacyStorage storage = Storage;
         return FindIndexedDialogueRound(roundId);
     }
 
     public WorldDiplomacyDocument ResolveDocument(string documentId)
     {
+        if (!_persistenceHealthy) return null;
         return WorldDiplomacyRoundLifecycleRules.ResolveDocument(Storage?.Documents, documentId);
     }
 
@@ -458,6 +462,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void EnqueueJob(WorldDiplomacyJob job)
     {
+        if (!_persistenceHealthy) return;
         WorldDiplomacyRoundLifecycleRules.EnqueueJob(Storage, job, _host.MaxPendingJobs());
     }
 
@@ -935,12 +940,14 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ProcessCompletedJobs()
     {
+        if (!_persistenceHealthy) return;
         var source = _host.CompletionSource();
         WorldDiplomacyCompletionApplication.Run(ref source, this);
     }
 
     public void TryStartNextLlmJob()
     {
+        if (!_persistenceHealthy) return;
         long now = DateTime.UtcNow.Ticks;
         if (now < _nextDiplomacyDispatchUtcTicks) return;
         _nextDiplomacyDispatchUtcTicks = now + TimeSpan.TicksPerSecond;
@@ -965,6 +972,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void PollNotifications()
     {
+        if (!_persistenceHealthy) return;
         _host.PollNotifications();
     }
 
@@ -1121,6 +1129,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
     {
+        if (!_persistenceHealthy) return;
         if (document?.IsPlayerAuthored == true) EnsurePlayerDocumentRound(document);
         WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(
             document, priority, Storage, _host.CurrentDay(), _host.AnalysisMaxTokens(),
@@ -1736,6 +1745,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void NormalizeStorage(bool allowWorldValidation)
     {
+        if (!_persistenceHealthy) return;
         InvalidateDialogueIndex();
         WorldDiplomacyStorage storage = Storage;
         WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,
@@ -1753,6 +1763,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         if (isSaving)
         {
+            if (!_persistenceHealthy) { saveStorage?.Invoke(_stateStore.Current); return; }
             NormalizeStorage(allowWorldValidation: false);
             var liveBudget = Storage.RequestBudget;
             try { Storage.RequestBudget = liveBudget.Snapshot(); saveStorage?.Invoke(_stateStore.Current); }
@@ -1760,10 +1771,17 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             return;
         }
         if (!isLoading) return;
-        _stateStore.Replace(loadStorage?.Invoke());
+        // A failed current load cannot expose the prior campaign's in-memory
+        // domain. The read owner separately retains exact rejected evidence.
+        _persistenceHealthy = false;
+        _stateStore.Replace(new WorldDiplomacyStorage());
+        WorldDiplomacyStorage loaded = loadStorage?.Invoke();
         string error = loadError?.Invoke();
-        if (!string.IsNullOrWhiteSpace(error)) log?.Invoke("load failed: " + error);
+        _persistenceHealthy = string.IsNullOrWhiteSpace(error);
+        _stateStore.Replace(_persistenceHealthy ? loaded : new WorldDiplomacyStorage());
+        if (!_persistenceHealthy) log?.Invoke("load rejected; diplomacy quarantined: " + error);
         resetTransientRuntime?.Invoke();
+        if (!_persistenceHealthy) return;
         NormalizeStorage(allowWorldValidation: false);
     }
 
@@ -1771,6 +1789,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ResetStorageForNewGame(bool initialPeacePending)
     {
+        _persistenceHealthy = true;
         _stateStore.Replace(new WorldDiplomacyStorage
         {
             HistoryMemorySchemaVersion = _host.TargetHistoryMemorySchemaVersion(),
@@ -2020,6 +2039,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document)
     {
+        if (!_persistenceHealthy) return;
         WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(document, _host.Publication(), this);
     }
 
@@ -2130,6 +2150,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void FinalizePublishedDocumentAfterAnalysis(WorldDiplomacyDocument document, string authorId, string targetId,
         string normalizedIntent, bool recordNoActionDecision)
     {
+        if (!_persistenceHealthy) return;
         WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(
             document,
             authorId,

@@ -12,6 +12,8 @@ public sealed partial class WorldDiplomacyBehavior
     public static string SubmitOralDiplomaticCommitment(Hero npc, string payload)
     {
         var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+        if (owner == null) return "外交约定暂未提交：世界外交系统尚未准备好。";
+        if (!owner.IsLiveCampaign) return owner.UnavailableReason;
         return owner?._orchestration.SubmitOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId,
             payload, DiplomacyDialogueSourceScope.Current) ?? "外交约定暂未提交：世界外交系统未启用。";
     }

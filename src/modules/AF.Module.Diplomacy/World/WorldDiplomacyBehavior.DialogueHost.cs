@@ -18,6 +18,7 @@ public sealed partial class WorldDiplomacyBehavior
         }
         public (bool success, bool changed, string reason) ExecuteTreaty(string intent, string receivingId, string joiningId)
         {
+            if (!_owner.IsLiveCampaign) return (false, false, "diplomacy_persistence_unavailable");
             var receiving = ResolveKingdom(receivingId); var joining = ResolveKingdom(joiningId);
             if (receiving == null || joining == null) return (false, false, "treaty_participants_not_available");
             string reason = "treaty_runtime_unavailable";
@@ -42,7 +43,7 @@ public sealed partial class WorldDiplomacyBehavior
         }
         public MemoryCommitResult CommitFact(string rulerId, string sourceId, string fact, int day,
             string locationId, int hour = -1, string npcName = null, string gameDate = "") =>
-            MyBehavior.CommitDiplomacyFactForExternal(Hero.Find(rulerId), sourceId, fact, day, locationId, hour, npcName, gameDate);
+            !_owner.IsLiveCampaign ? new MemoryCommitResult(MemoryCommitStatus.Rejected, "diplomacy_persistence_unavailable") : MyBehavior.CommitDiplomacyFactForExternal(Hero.Find(rulerId), sourceId, fact, day, locationId, hour, npcName, gameDate);
         public string PersonalMemory(string rulerId, string topic, string counterpart) =>
             MyBehavior.BuildDiplomacyPersonalMemoryForExternal(Hero.Find(rulerId), topic, counterpart);
     }

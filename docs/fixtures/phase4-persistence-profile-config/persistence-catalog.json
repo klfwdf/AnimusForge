@@ -222,6 +222,7 @@
     "_af_proactive_npc_request_state_v1",
     "_af_worldBulletin_v1",
     "_af_world_diplomacy_v1",
+    "_af_world_diplomacy_quarantine_v1",
     "_eventRecordEntries_v1",
     "_eventSourceMaterials_v1",
     "_eventWorldOpeningSummary_v1",
@@ -229,6 +230,15 @@
     "_voiceMapping_v1",
     "af_coup_detentions_v1"
   ],
+  "optInStrictChunkedStringStorage": {
+    "keys": ["_af_world_diplomacy_v1", "_af_world_diplomacy_quarantine_v1"],
+    "owner": "src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs",
+    "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
+    "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
+    "failedDomainPolicy": "no partial or prior-campaign live state; exact primitive namespace evidence in safe UTF8 chunks, digest checked; unsafe raw keys/values remain only in envelope; incomplete read refuses save",
+    "runtimeBoundary": "only world diplomacy opts in; legacy helper interfaces and other domains remain unchanged",
+    "currentReplay": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyPersistenceAdapter.SmokeTests/run_strict.py"
+  },
   "flattenedDictionaryStorageKeys": [
     "_afCustomPolicyActiveEffects_v1",
     "_afCustomPolicyRecordHistory_v1",
