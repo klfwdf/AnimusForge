@@ -7,7 +7,7 @@ namespace AnimusForge
     public sealed partial class WorldDiplomacyBehavior
     {
         internal static IWorldDiplomacyImmediateActionPort NewImmediatePort() => new ImmediateActionPort(new());
-        private bool CanDeclareWar(Kingdom a,Kingdom b,out string reason,bool enforcing) { reason="";return !Engine.AtWar; }
+        private bool CanDeclareWar(Kingdom a,Kingdom b,out string reason,bool enforcing,bool playerAuthored = false) { reason="";return !Engine.AtWar; }
         private static bool CanAiAuthorDiplomaticDocument(Kingdom a,out string reason) { reason="";return true; }
         internal static IWorldDiplomacyOfferActionPort NewOfferPort() => new OfferActionPort(new());
         private readonly WorldDiplomacyStorage _storage = new();
