@@ -1,4 +1,15 @@
-﻿<a id="illustrator-prompt-persistence-20261008"></a>
+﻿<a id="news-mode-restart-calendar-20261008"></a>
+# 周报切换／新档重新收集与历法日期（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户确认切换后周报重新累计7个游戏日；追加新档“第3588周目标已变更”截图，并要求游戏年月日与365天历法兼容。检查点 `c62a5d6db`，产品 `1241b702d`。本机日志19:53:11发出298年冬季第三周wave1/3，多个Gateway 200 success=True后19:55:31明确报素材/目标变化；证实提交守卫拒绝，旧日志不能定位具体revision调用。累计周号来自世界绝对日数/7，不是游玩时长。
+- 源码定位（产品修订）：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.NewsCollection.cs:19–59,63–92`负责模式变更、独立epoch、旧UI/队列退休、新档或切换起168小时窗口与事件序号边界。`MyBehavior.cs:1790`新档标记，`:4850,5119`自动快照，`:5156`附近自动成功后主线程推进周期；`MyBehavior.WeeklyRuntime.cs:6–21`捕获epoch保护owner；`UI/Editors/WeeklyReportEditorController.cs:113–122`取消旧弹窗/回调，手动结果主线程推进游标。快报`Generation/WorldBulletinStateOwner.cs:8–20`只重置收集cutoff/窗口，旧响应先比epoch，不清新请求InFlight。已发HTTP不承诺立即终止，但旧结果和重试不进入新周期。已发档案、事件与期号保留。
+- 素材修正：`src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs:19–81`区分append、普通世界/保留期变化和显式编辑/导入。冻结自动周报不再因新增或普通记录清理/世界事件整批失效；目标记录、显式编辑/导入/开局背景仍有守卫。`AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs:17–48`与`NpcActionRecordOwner.cs:11–60`新增可选append回调，原调用者默认不变；宿主事件更新保持live preview失效而非冻结报稿失效。切换时只遍历已有日维护队列，平时既有Tick为O(1)状态比较，小时回调检查时限，收集沿用分帧预算；无额外全场扫描/网络/序列化。
+- 持久化：`Bulletin/WorldBulletinPolicy.cs:88–92`追加CollectionBulletinMode、WeeklyCollectionStartHour、WeeklyCollectionStartSequence可选字段，沿用规范目录已有 `_af_worldBulletin_v1` 分块键，无新键或类型身份。旧档缺字段仅采用现模式、不自动重放；新档和明确切换起新周期，读档保留起点。此修复不修复旧坏档。
+- 日期：`MyBehavior.cs:28030–28038`调用 `CampaignTime.Days(day).ToString()`；`Panel/WeeklyReportArchivePolicy.cs:223–232`仅处理显示前缀，取消累计千周元数据。失败/重试/进度、通知、档案日期和提示词展示游戏年月日，内部WeekIndex/ID保持，历史正文不重写。没有硬编码一年84天/一季21天；第三方需接入游戏日期接口，仅自绘日期UI的模组不能据此保证支持。7日周期不随一年天数改变。
+- 验证：新周期27、editor50、归档/旧字段/迟到快报/日期193、记录42、日期适配7、最终两DLL各8、波次/队列竞态回放、PersistenceChunkReplayTests与chunk-contract-only PASS。原脚本最终1.3 v1.3.15.110062／1.4 v1.4.6.115628、Bootstrap/双接缝通过，17产品输入与隔离快照一致。首轮旧editor DTO缺BulletinAnecdote、日期接线重复初始化已修；原失败日志保留。证据 `artifacts/news-mode-restart-20261008/receipt.json`、build-approved.log、news-delivery.log、editor-mainthread.log、archive-date.log、calendar.log、memory-records.log、waves.log、persistence.log、chunk-contract-final.log、compiled-1.3.log/compiled-1.4.log。
+- NOT-RUN：截图新档/玩家故障档、真实365天历法模组、真实模型与实机；未部署/打包/推送。并行Illustrator画廊未提交改动不在本包构建/提交内；其既有MCM持久化提交保留。回滚仅 `git revert 1241b702d`，不reset其他作者。
+
+<a id="illustrator-prompt-persistence-20261008"></a>
 # 生图MCM大文本编辑保存修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户反馈画风提示词编辑后退出重进复原。检查点 `45aeed8`，产品 `32a7de4e8`。真实MCM反编译确认BaseSettingsJsonConverter只序列化注册字段；画风/负面词/导演文本只有按钮、未注册正文，旧画风与负面词回调也未SaveCurrentSettings。MCM复制页面还复制绑定源对象的按钮委托；仅补保存不足以防确认页面覆盖旧值。
