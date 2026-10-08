@@ -11,11 +11,16 @@
 - NOT-RUN：实际游戏画廊布局/按钮/GPU刷新、玩家原图问题复现、真实生图API；未调用付费API、Stage、部署、打包或推送。回滚仅 `git revert f21c03a3b`；候选位于证据目录source/bin/Debug/single_module_artifacts。保留其他会话外交修改及NuGet目录。
 
 <a id="terminal-map-icon-size-20261008"></a>
-# 终端地图图标尺寸兼容（2026-10-08，ACTIVE）
+# 终端地图图标尺寸兼容（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户截图显示终端图标越过正常导航按钮边界，仅部分玩家遇到。本包核实PNG128×128、runtime Sprite直接使用纹理像素尺寸与原版IconBrushWidget.UseIconSize/BrushRenderer.Original行为；没有玩家模板/配置，具体触发方尚未确认。
 - 范围仅 WarStats/AfTerminalMapBarIconSprite.cs 与 content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml：纹理分辨率与逻辑40×40图标分离，显式Source层Contain/StretchToTarget策略；保持背景、ItemId、导航位置、热键、点击和 fallback。只在导航入口插入/开关时更新，缓存纹理，不新增Tick。
 - 完成门：旧逻辑尺寸反例、生产类链接的原始尺寸/容器缩放/缓存/fallback边界、内容映射核对、隔离已提交源码加本次修改运行原双API/Bootstrap/接缝。实机/玩家冲突模板未验；不部署、打包、推送。其他作者外交/生图dirty及NuGet缓存保留。
+- 产品 `a97b3067e`、检查点 `a267f67b4`。`WarStats/AfTerminalMapBarIconSprite.cs:26-27,98-119` 分离原128×128纹理与40×40逻辑Sprite；原版60×40模板和UseIconSize模式均有界。`:34-57` 在入口插入/开关时显式设置源层StretchToTarget/Contain/居中，即使缓存命中或PNG缺失也保持策略；`content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml:12` 为native fallback同步显式宽高策略。纹理缓存/UV、ItemId、背景、导航开关/点击行为不变，不新增每帧工作。
+- PASS：真实生产完整加载类+本地原版1.4.5 IconBrushWidget回放16项，原生texture/resource/base widget为替身；旧检查点编译后失败 `skin-use-original-sprite-size-stays-inside-native-icon-slot`，证实原尺寸模板读取128×128可越界。资源映射及背景保持PASS；隔离Git基线 `d63d9290911a63227f1c8770a63951d26b703ece` 仅叠加本包两个产品输入，两输入SHA与构建副本一致。原统一构建1.3 v1.3.15.110062、1.4 v1.4.6.115628、Bootstrap、双接缝PASS；两个最终实际DLL分别创建runtime Sprite确认40×40，不依赖native texture宽高。证据 `artifacts/terminal-map-icon-size-20261008/verification-receipt.json`、sizing-final/run.log、sizing-before/run.log、content-check.log、build.log、compiled-1.3.log/compiled-1.4.log。
+- 实际DLL核对脚本首轮缺游戏bin中的共享TwoDimension，补充与生产构建相同的目录后再遇Vec2大小写属性导致PowerShell绑定异常；尺寸核对已通过，实际DLL UV检查未执行，完整UV只由生产链接fixture覆盖。失败日志保留，不当作产品反例。
+- NOT-RUN：真实Gauntlet/GPU绘制、玩家模板/缩放/模组组合；不能凭截图断言某个模组或Windows DPI是唯一原因。当前修复封住已确认的原尺寸路径，不能保证第三方后来直接重写widget/brush的全部情况。未部署、打包、推送；其他外交/生图未提交内容未进入隔离候选。回滚仅 `git revert a97b3067e`。
+
 
 <a id="mission-photo-review-fixes-20261008"></a>
 ## 自由取景审查三项修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
