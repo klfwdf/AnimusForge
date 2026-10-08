@@ -21,7 +21,7 @@ public sealed partial class WorldDiplomacyBehavior
         {
             Kingdom author = WorldDiplomacyBehavior.ResolveKingdom(authorId); Kingdom target = WorldDiplomacyBehavior.ResolveKingdom(targetId);
             bool enforcing = WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_owner._storage?.DiplomaticThreats, authorId, targetId);
-            if (!_owner.CanDeclareWar(author, target, out string reason, enforcing)) return new(false, "宣战未执行：" + reason);
+            if (!_owner.CanDeclareWar(author, target, out string reason, enforcing, document?.IsPlayerAuthored == true)) return new(false, "宣战未执行：" + reason);
             return Measure(() => RunDiplomaticAction("world_diplomacy_declare_war", () => DeclareWarAction.ApplyByKingdomDecision(author, target)),
                 () => FactionManager.IsAtWarAgainstFaction(author, target), "宣战", "已宣战");
         }

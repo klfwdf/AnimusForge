@@ -2392,6 +2392,13 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             document, intent, commitment, authorId, targetId, partiesEligible,
             normalizedIntent =>
             {
+                if (normalizedIntent == "declare_war" && document?.IsPlayerAuthored == true)
+                {
+                    IWorldDiplomacyWarAdmissionPort admission = _host.WarAdmission(authorId, targetId);
+                    bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(
+                        ref admission, out string warReason, isPlayerAuthored: true);
+                    return (!allowed, allowed ? "" : "declare_war_not_legal:" + warReason);
+                }
                 bool violation = TryGetDiplomaticStateViolation(normalizedIntent, authorId, targetId, out string stateReason);
                 return (violation, stateReason);
             },

@@ -39,12 +39,13 @@ internal static class WorldDiplomacyWarAdmissionApplication
         return true;
     }
 
-    internal static bool CanDeclareWar<T>(ref T port, out string reason, bool enforceRejectedUltimatum = false)
+    internal static bool CanDeclareWar<T>(ref T port, out string reason, bool enforceRejectedUltimatum = false, bool isPlayerAuthored = false)
         where T : IWorldDiplomacyWarAdmissionPort
     {
         if (!CanIssueWarThreat(ref port, out reason)) return false;
         if (port.BlocksNewOffensiveWar)
         { reason = "该国正在内战，不能新开主动战争"; return false; }
+        if (isPlayerAuthored) return true;
         if (port.PendingThreatDecision)
         { reason = "已发出的谴责或最后通牒仍在等待对象国一次性决定"; return false; }
         if (enforceRejectedUltimatum) return true;

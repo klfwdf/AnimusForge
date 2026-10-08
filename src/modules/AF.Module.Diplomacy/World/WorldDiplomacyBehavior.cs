@@ -860,10 +860,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		var port = new WarAdmissionPort(this, initiator, target);
 		return WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref port, out reason);
 	}
-	private bool CanDeclareWar(Kingdom initiator, Kingdom target, out string reason, bool enforceRejectedUltimatum = false)
+	private bool CanDeclareWar(Kingdom initiator, Kingdom target, out string reason, bool enforceRejectedUltimatum = false, bool isPlayerAuthored = false)
 	{
 		var port = new WarAdmissionPort(this, initiator, target);
-		return WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref port, out reason, enforceRejectedUltimatum);
+		return WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref port, out reason, enforceRejectedUltimatum, isPlayerAuthored);
 	}
 
 		private void NotifyExternalDiplomacyResolvedInternal(string action, Kingdom initiator, Kingdom target, string reason)

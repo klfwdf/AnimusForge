@@ -176,6 +176,15 @@ internal static class WorldDiplomacyDocumentExecutionApplication
         ExecuteItems(port, orchestration, document, command, legacy, receipts);
     }
 
+    private static bool TryGetExecutionStateViolation(IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyDocument document, bool isPlayerAuthored, string intent, string commitment,
+        string author, string target, out string reason)
+    {
+        if (isPlayerAuthored && WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "declare_war")
+            return orchestration.TryGetPlayerWorldStateIntentViolation(document, intent, commitment, author, target, out reason);
+        return orchestration.TryGetDiplomaticStateViolation(intent, author, target, out reason);
+    }
+
     private static void ExecuteItems(IWorldDiplomacyDocumentExecutionPort port,
         IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document,
         WorldDiplomacyDocumentExecutionCommand command, bool legacy,
@@ -249,7 +258,9 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                     port.Notify("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。");
                 return;
             }
-			List<string> finalLiveIntents = command.IsPlayerAuthored
+			List<string> finalLiveIntents = command.IsPlayerAuthored && intent == "declare_war"
+                ? new List<string> { "declare_war" } // Player admission is checked below, independently of AI pacing.
+                : command.IsPlayerAuthored
                 ? orchestration.BuildLegalDiplomaticActionIntents(null, author, target)
                     .Concat(orchestration.BuildLegalDiplomaticActionIntents(round, author, target)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 				: orchestration.BuildLegalDiplomaticDeclarationIntents(
@@ -293,7 +304,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "kingdom_not_in_relay_route");
 				return;
 			}
-			if (orchestration.TryGetDiplomaticStateViolation(intent, author, target, out string liveStateReason))
+			if (TryGetExecutionStateViolation(orchestration, document, command.IsPlayerAuthored, intent, input.Commitment, author, target, out string liveStateReason))
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_state_guard:" + liveStateReason);
                 if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
@@ -405,7 +416,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			bool outcomeKnown = true;
 			try
 			{
-				if (!legacy && !noAction && orchestration.TryGetDiplomaticStateViolation(input.Intent, author, target, out string executionBlockReason))
+				if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document, command.IsPlayerAuthored, input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
 					document.MechanicalResult = "外交动作未执行：" + executionBlockReason;
 					port.Log("multi-target diplomatic action became invalid during batch execution document="
