@@ -1,3 +1,12 @@
+<a id="player-camera-direction-20261008"></a>
+# 双平视机位改用玩家镜头水平方向（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户最终澄清“第一张跟现在一样，只不过以玩家镜头方向”：替代身体朝向基准，保留原独立双平视机位、人物区域中心、距离算法与固定60度垂直视野。A沿点击时玩家镜头的水平朝向观察，B从对侧回望；不直接导出玩家当前屏幕，不继承其位置、俯仰和缩放。两图仅现场资料，导演自行推演最终机位/景别/构图。检查点 `6ca2e99`，产品 `23776e412`。
+- 源码坐标（产品修订 `23776e412`）：`extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:59,89–95,173–188`，构造器优先读取原CustomCamera，否则使用CombatCamera快照，取相机负u轴为视线；BuildLevelPositions仅归一化XY，以pivot减/加方向距离生成A/B。近乎垂直而无有效水平朝向时明确失败；既有碰撞、4帧且250ms等待、8秒预算、UI清理与恢复保持。`src/Core/MissionScreenshotIllustration.cs:121,161–162`（相对同扩展）移除身体朝向输入并同步参考标签；`src/Core/MissionScreenshotRules.cs:14–17`明确独立平视机位与导演自由构图。无新公共API、存档/配置键、模型调用或后台游戏对象读取。
+- 性能：每次手动请求仅新增一次相机方向读取，现有向量几何及两条碰撞射线不增量；不增加Tick扫描。此前连续后台生图/画廊提交 `7a3fcdccc` 完整保留。本次没有实现坡地高度自适应、额外遮挡选址或敌我身份补充，不能把方向切换宣称为全部参考图问题修复。
+- 验证：原采集/codec/rules专项243 PASS，覆盖CustomCamera与CombatCamera方向不同、远位置/俯视/变焦不改变采集构图、A/B方向、恢复与无水平朝向拒绝。原脚本隔离双API／Bootstrap／两接缝构建PASS（1.3 v1.3.15.110062，1.4 v1.4.6.115628，Debug）；两版实际DLL请求链各129 PASS（HTTP内存拦截），几何/亮度各15 PASS。8个修改文件与成功构建快照一致，三DLL哈希记录。未调用付费API，未运行Illustrator旧离线审计。
+- 证据 `artifacts/player-camera-pair-20261008/receipt.json`、capture.log、build.log、request-1.3.log/request-1.4.log、geometry-1.3.log/geometry-1.4.log。NOT-RUN：真实GPU方向与画面对应、坡地/草叶/人物遮挡、真实导演构图；未部署/打包/推送。回滚仅 `git revert 23776e412`，保留前包及其他作者改动。
+
 <a id="scene-multi-image-20261008"></a>
 # 场景喊话／战斗连续后台生图与画廊入口（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
