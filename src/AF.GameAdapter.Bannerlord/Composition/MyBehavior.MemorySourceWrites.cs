@@ -50,28 +50,7 @@ public partial class MyBehavior
         }).ToList();
     }
 
-    private static List<PartyTransferPromptEntry> CopyMemoryPartyOptions(List<PartyTransferPromptEntry> values)
-    {
-        return values?.Select(x => x == null ? null : new PartyTransferPromptEntry
-        {
-            PromptIndex = x.PromptIndex, Section = x.Section, Character = x.Character,
-            DisplayName = x.DisplayName, Count = x.Count, WoundedCount = x.WoundedCount,
-            WageDenarsPerDay = x.WageDenarsPerDay, HirePriceDenarsPerUnit = x.HirePriceDenarsPerUnit,
-            BuyPriceDenarsPerUnit = x.BuyPriceDenarsPerUnit, IsHero = x.IsHero,
-            OwnerParty = x.OwnerParty, SourceSettlement = x.SourceSettlement, VolunteerOwner = x.VolunteerOwner,
-            VolunteerSlotIndices = x.VolunteerSlotIndices?.ToList()
-        }).ToList();
-    }
+    private static List<PartyTransferPromptEntry> CopyMemoryPartyOptions(List<PartyTransferPromptEntry> values) => MemoryEntityIdentityBannerlordAdapter.CopyMemoryPartyOptions(values);
 
-    private static List<SettlementTransferPromptEntry> CopyMemorySettlementOptions(List<SettlementTransferPromptEntry> values)
-    {
-        return values?.Select(x => x == null ? null : new SettlementTransferPromptEntry
-        {
-            PromptIndex = x.PromptIndex, Section = x.Section, AssetKind = x.AssetKind,
-            Settlement = x.Settlement, Workshop = x.Workshop, CaravanParty = x.CaravanParty,
-            OwnerHero = x.OwnerHero, SettlementId = x.SettlementId, AssetId = x.AssetId,
-            DisplayName = x.DisplayName, TypeLabel = x.TypeLabel,
-            DailyIncomeDenars = x.DailyIncomeDenars, GuidePriceDenars = x.GuidePriceDenars, OwnerClan = x.OwnerClan
-        }).ToList();
-    }
+    private static List<SettlementTransferPromptEntry> CopyMemorySettlementOptions(List<SettlementTransferPromptEntry> values) => MemoryEntityIdentityBannerlordAdapter.CopyMemorySettlementOptions(values);
 }

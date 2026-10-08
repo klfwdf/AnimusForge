@@ -35,6 +35,34 @@ internal static class PatienceRules
 		return ClampInt((int)Math.Round(a), 10, 80);
 	}
 
+	private static readonly string[] RelationLevelTexts = new string[10] { "死敌", "敌对", "厌恶", "疏离", "冷漠", "中立", "熟络", "友好", "亲近", "至交" };
+
+	internal static int ToTenLevelIndexByRelation(int relation)
+	{
+		double num = ((double)ClampInt(relation, -100, 100) + 100.0) / 200.0;
+		int num2 = (int)Math.Floor(num * 10.0) + 1;
+		if (num2 < 1)
+		{
+			num2 = 1;
+		}
+		if (num2 > 10)
+		{
+			num2 = 10;
+		}
+		return num2;
+	}
+
+	internal static string GetRelationLevelText(int relation)
+	{
+		int num = ToTenLevelIndexByRelation(relation);
+		return RelationLevelTexts[num - 1];
+	}
+
+	internal static int GetRelationLevelIndex(int relation)
+	{
+		return ToTenLevelIndexByRelation(relation);
+	}
+
 	internal static int ToTenLevelIndexByRatio(float current, int max)
 	{
 		if (max <= 0)

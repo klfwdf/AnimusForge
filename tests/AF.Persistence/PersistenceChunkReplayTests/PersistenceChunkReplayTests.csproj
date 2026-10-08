@@ -6,6 +6,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="CurrentDllCompatibilityReplay.cs" />
     <Compile Include="../../../src/AF.Persistence/CampaignSaveChunkHelper.cs" Link="CampaignSaveChunkHelper.cs" />
   </ItemGroup>
 </Project>

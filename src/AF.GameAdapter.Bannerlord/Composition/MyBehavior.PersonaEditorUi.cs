@@ -106,14 +106,12 @@ public partial class MyBehavior
  private void SaveDevPersonaEditorText(Hero hero, string personality, string background)
  {
   NpcPersonaProfile profile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-  profile.Personality = personality; profile.Background = background;
-  SaveNpcPersonaProfile(hero, profile);
+  PersonaImportOwner.ApplyDeveloperText(profile, personality, background, p => SaveNpcPersonaProfile(hero,p));
  }
  private void SaveDevPersonaEditorVoice(Hero hero, string voice)
  {
   NpcPersonaProfile profile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-  profile.VoiceId = voice;
-  SaveNpcPersonaProfile(hero, profile);
+  PersonaImportOwner.ApplyDeveloperVoice(profile, voice, p => SaveNpcPersonaProfile(hero,p));
  }
 
 	private Action _devPersonaReturnAction { get => PersonaEditor.PersonaReturnAction; set => PersonaEditor.PersonaReturnAction = value; }

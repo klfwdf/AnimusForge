@@ -10,6 +10,7 @@ namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
+    private readonly NativeAdmissionApplicationAdapter NativeAdmissions;
     // 后端票据只覆盖本次完整请求；不把 Task 完成解释成 TTS 播放完成。
     private readonly NativeConversationAdmissionOwner<NativeConversationAdmission> _nativeAdmissionOwner =
         new NativeConversationAdmissionOwner<NativeConversationAdmission>();
@@ -45,227 +46,81 @@ public partial class ShoutBehavior
     // 不改变 CanSubmit：它还负责 Overlay 是否存在，busy 不能让正在生成的 UI 被关闭。
     internal static bool IsNativeConversationBackendBusy()
     {
-        ShoutBehavior owner = CurrentInstance;
-        return owner != null && owner.IsNativeConversationAdmissionCurrent(
-            owner._nativeAdmissionOwner.Current, out _);
+        return CurrentInstance?.NativeAdmissions.IsBusy() == true;
     }
 
     // UI tick observation only. Submission still uses the full target validation
     // above; never run its target/agent resolution every frame just to grey a button.
     internal static bool IsNativeConversationBackendBusyForUi()
     {
-        ShoutBehavior owner = CurrentInstance;
-        NativeConversationAdmission admission = owner?._nativeAdmissionOwner.Current;
-        return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true
-            && owner._nativeAdmissionOwner.Owns(admission)
-            && owner.IsNativeConversationContextStampCurrent(admission);
+        return CurrentInstance?.NativeAdmissions.IsBusyForUi() == true;
     }
 
     // 复用已注册的真实 ConversationEnded 事件，而不是 UI 关闭或可重用的 ActiveToken 推测会话结束。
     internal static void InvalidateNativeConversationAdmissionOnConversationEnd()
     {
-        ShoutBehavior owner = CurrentInstance;
-        if (owner != null)
-        {
-            // 同 token 重开也属于另一轮；尚未进入主线程的旧请求同样必须失效。
-            owner._nativeAdmissionOwner.Current?.Lifetime?.Retire();
-            owner._nativeAdmissionOwner.EndConversation();
-        }
+        CurrentInstance?.NativeAdmissions.EndConversation();
     }
 
-    private async Task<string> SubmitNativeConversationAdmittedAsync(string playerText,
+    private Task<string> SubmitNativeConversationAdmittedAsync(string playerText,
         Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted,
         Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening,
         NativeConversationPresentationScope presentationScope = null, CoreDialogueOperation moduleOperation = null)
     {
-        if (!npcInitiatedOpening && string.IsNullOrWhiteSpace(playerText))
-            return "";
-        long generation = SaveRuntimeGuard.CaptureGeneration();
-        long conversationEpoch = _nativeAdmissionOwner.ConversationEpoch;
-        NativeConversationAdmission admission = await CaptureNativeConversationAdmissionAsync(
-            generation, conversationEpoch, npcInitiatedOpening).ConfigureAwait(false);
-        if (admission == null)
-            return "";
-        try
-        {
-            // Overlay calls admission on the main thread, before its first stream callback can run.
-            admission.ModuleOperation = moduleOperation;
-            moduleOperation?.MarkOwnerAdmitted();
-            presentationScope?.Bind(admission);
-            return await Task.Run(async delegate
-            {
-                using IDisposable requestWorker = admission.Lifetime.Enter();
-                using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(admission.Lifetime.Token);
-                SynchronizationContext.SetSynchronizationContext(null);
-                return await SubmitNativeConversationTextInternalAsync(admission, playerText, onStreamText,
-                    currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening).ConfigureAwait(false);
-            }).ConfigureAwait(false);
-        }
-        finally
-        {
-            // 旧请求晚完成只能释放自己的票据，不能清除换会话后新请求的 busy。
-            admission.Lifetime.Retire();
-            _nativeAdmissionOwner.Release(admission);
-        }
+        return NativeAdmissions.SubmitNativeConversationAdmittedAsync(playerText,onStreamText,currentDialogTextOverride,onPostprocessStarted,onMainReplyReady,npcInitiatedOpening,presentationScope?.Lease,moduleOperation);
     }
 
     private Task<NativeConversationAdmission> CaptureNativeConversationAdmissionAsync(long generation, long conversationEpoch, bool npcInitiatedOpening)
     {
-        if (IsBannerlordMainThreadForNativeActions())
-            return Task.FromResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening));
-
-        var completion = new TaskCompletionSource<NativeConversationAdmission>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var dispatchClaim = new NativeConversationDispatchClaim();
-        _mainThreadActions.Enqueue(() =>
-        {
-            if (!dispatchClaim.TryStart())
-                return;
-            try { completion.TrySetResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening)); }
-            catch (Exception ex) { completion.TrySetException(ex); }
-        });
-        return AwaitCapture();
-
-        async Task<NativeConversationAdmission> AwaitCapture()
-        {
-            Task winner = await Task.WhenAny(completion.Task,
-                Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs)).ConfigureAwait(false);
-            if (winner != completion.Task && dispatchClaim.TryExpireBeforeStart())
-                throw new NativeConversationAdmissionException("native.admission_timeout", "对话请求尚未开始：主线程暂未处理，请稍后重试。");
-            // 一旦捕获已开始，就必须接收它的结果；不放弃一个可能已占用后端票据的返回值。
-            return await completion.Task.ConfigureAwait(false);
-        }
+        return NativeAdmissions.CaptureNativeConversationAdmissionAsync(generation,conversationEpoch,npcInitiatedOpening);
     }
 
     private NativeConversationAdmission CaptureNativeConversationAdmissionOnMainThread(long generation, long conversationEpoch, bool npcInitiatedOpening)
     {
-        if (!IsBannerlordMainThreadForNativeActions())
-            throw new InvalidOperationException("native.admission_requires_main_thread");
-        if (!ReferenceEquals(CurrentInstance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation)
-            || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)
-            || !CanSubmitNativeConversationForExternal())
-            return null;
-        if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))
-            throw new NativeConversationAdmissionException("native.busy", "上一轮对话仍在处理，请稍后再提交。");
-        NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
-        if (admission == null)
-            return null;
-        _nativeAdmissionOwner.Current?.Lifetime?.Retire();
-        admission.Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
-        _nativeAdmissionOwner.ReserveCaptured(admission);
-        try
-        {
-            // 主动开场与普通输入共用准入；拒绝 busy 之前绝不消费待开场状态。
-            if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
-                out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
-            {
-                admission.Lifetime.Retire();
-                _nativeAdmissionOwner.Release(admission);
-                return null;
-            }
-            admission.PresentationRevision = _nativeAdmissionOwner.BeginPresentation();
-            return admission;
-        }
-        catch
-        {
-            admission.Lifetime.Retire();
-            _nativeAdmissionOwner.Release(admission);
-            throw;
-        }
+        return NativeAdmissions.CaptureNativeConversationAdmissionOnMainThread(generation,conversationEpoch,npcInitiatedOpening);
     }
 
     // Capture-only snapshot: no reservation, opening consumption, network or action side effects.
     private NativeConversationAdmission CaptureNativeConversationContext(long generation, long conversationEpoch)
     {
-        if (!TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out string npcName))
-            return null;
-        ConversationManager manager = Campaign.Current?.ConversationManager;
-        if (manager == null || !manager.IsConversationInProgress)
-            return null;
-        var admission = new NativeConversationAdmission
-        {
-            Generation = generation,
-            ConversationEpoch = conversationEpoch,
-            PresentationRevision = _nativeAdmissionOwner.PresentationRevision,
-            ConversationManager = manager,
-            ConversationToken = manager.ActiveToken,
-            Mission = Mission.Current,
-            Hero = hero,
-            Character = character,
-            NpcName = npcName,
-            AgentIndex = TryResolveNativeConversationAgentIndex(hero, character)
-        };
-        if (!IsNativeConversationResponseTargetAvailableForActionDispatch(admission.AgentIndex, hero, character, out _))
-            return null;
-        return admission;
+        return NativeAdmissions.CaptureNativeConversationContext(generation,conversationEpoch);
     }
 
     private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
     {
-        reason = "native.admission_stale";
-        return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true
-            && _nativeAdmissionOwner.Owns(admission)
-            && IsNativeConversationContextCurrent(admission, out reason);
+        return NativeAdmissions.IsNativeConversationAdmissionCurrent(admission,out reason);
     }
 
     // Cheap stamp used from an existing UI Tick: no target/agent enumeration or provider work.
     private bool IsNativeConversationContextStampCurrent(NativeConversationAdmission admission)
     {
-        if (admission == null || !IsBannerlordMainThreadForNativeActions()
-            || !ReferenceEquals(CurrentInstance, this)
-            || !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)
-            || !_nativeAdmissionOwner.IsConversationEpochCurrent(admission.ConversationEpoch))
-            return false;
-        ConversationManager current = Campaign.Current?.ConversationManager;
-        return ReferenceEquals(current, admission.ConversationManager) && current?.IsConversationInProgress == true
-            && current.ActiveToken == admission.ConversationToken && ReferenceEquals(Mission.Current, admission.Mission);
+        return NativeAdmissions.IsNativeConversationContextStampCurrent(admission);
     }
 
     private bool IsNativeConversationContextCurrent(NativeConversationAdmission admission, out string reason)
     {
-        reason = "native.admission_stale";
-        if (!IsNativeConversationContextStampCurrent(admission) || PlayerEncounterCompat.IsInPostBattleResultFlow())
-            return false;
-        if (!TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out _)
-            || !ReferenceEquals(hero, admission.Hero) || !ReferenceEquals(character, admission.Character)
-            || TryResolveNativeConversationAgentIndex(hero, character) != admission.AgentIndex)
-            return false;
-        return IsNativeConversationResponseTargetAvailableForActionDispatch(admission.AgentIndex,
-            admission.Hero, admission.Character, out reason);
+        return NativeAdmissions.IsNativeConversationContextCurrent(admission,out reason);
     }
 
     // This is an internal read-only observation capability, not permission to execute an action.
     // It survives backend Task completion, but not a later admission or a conversation/save change.
     internal sealed class NativeConversationPresentationScope
     {
-        private readonly ShoutBehavior _owner;
-        private NativeConversationAdmission _snapshot;
-        private int _submissionStarted;
-
-        internal NativeConversationPresentationScope(ShoutBehavior owner, NativeConversationAdmission snapshot)
-        { _owner = owner; _snapshot = snapshot; }
-
-        internal bool IsOwnedBy(ShoutBehavior owner) => ReferenceEquals(_owner, owner);
-        internal bool TryBeginSubmission() => Interlocked.CompareExchange(ref _submissionStarted, 1, 0) == 0;
-        internal void Bind(NativeConversationAdmission admission) { _snapshot = admission; }
-        internal bool HasCurrentContext()
-            => _snapshot != null && _owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)
-                && _owner.IsNativeConversationContextStampCurrent(_snapshot);
-        internal bool IsCurrent()
-            => HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
-        // Mode text is scoped to the conversation/NPC, not to one request revision.
-        // Read-only display observation: never use this weaker check for action dispatch.
-        internal bool HasCurrentConversationContext()
-            => _snapshot != null && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
+        internal readonly NativeAdmissionApplicationAdapter.PresentationLease Lease;
+        internal NativeConversationPresentationScope(NativeAdmissionApplicationAdapter.PresentationLease lease) { Lease=lease; }
+        internal NativeConversationPresentationScope(ShoutBehavior owner,NativeConversationAdmission snapshot)
+        { Lease=new NativeAdmissionApplicationAdapter.PresentationLease(owner.NativeAdmissions,snapshot); }
+        internal bool IsOwnedBy(ShoutBehavior owner)=>Lease.IsOwnedBy(owner.NativeAdmissions);
+        internal bool TryBeginSubmission()=>Lease.TryBeginSubmission();
+        internal void Bind(NativeConversationAdmission admission)=>Lease.Bind(admission);
+        internal bool HasCurrentContext()=>Lease.HasCurrentContext();
+        internal bool IsCurrent()=>Lease.IsCurrent();
+        internal bool HasCurrentConversationContext()=>Lease.HasCurrentConversationContext();
     }
 
     internal static NativeConversationPresentationScope CaptureNativeConversationPresentationScopeForOverlay()
     {
-        ShoutBehavior owner = CurrentInstance;
-        if (owner == null || !IsBannerlordMainThreadForNativeActions() || !CanSubmitNativeConversationForExternal())
-            return null;
-        NativeConversationAdmission snapshot = owner.CaptureNativeConversationContext(SaveRuntimeGuard.CaptureGeneration(),
-            owner._nativeAdmissionOwner.ConversationEpoch);
-        return snapshot == null ? null : new NativeConversationPresentationScope(owner, snapshot);
+        var lease = CurrentInstance?.NativeAdmissions.CapturePresentation(); return lease == null ? null : new NativeConversationPresentationScope(lease);
     }
 
     internal static Task<string> SubmitNativeConversationForOverlayAsync(NativeConversationPresentationScope scope,

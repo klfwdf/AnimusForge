@@ -19,6 +19,66 @@ if a.original:
  code=code.replace('@@NATIVE_CALL@@','EnsureNativeConversationPersonaReadyAsync(a.Hero,_=>Probe.Read())').replace('@@COURIER_CALL@@','OldWait(hero,inbound)').replace('@@ADMIT_CALL@@','Task.FromResult(false)')
 else:
  code=code.replace('@@SHOUT_METHODS@@','').replace('@@COURIER_METHODS@@','').replace('@@NATIVE_CALL@@','EnsureNativeConversationPersonaReadyAsync(a,_=>Probe.Read())').replace('@@COURIER_CALL@@','EnsureCourierPersonaContextReadyAsync(hero,inbound?"inbound":"reply","session",Session,1)').replace('@@ADMIT_CALL@@','Probe.Run(()=>CaptureCourierPreparationAdmission("session",inbound,1)!=null)')
+# Actual capture/readiness algorithms are source-extracted unchanged; generation,
+# admission predicate, dispatcher, and persona fallback remain the original controlled seams.
+if a.original:
+ code=code.replace('@@CURRENT_ADAPTERS@@','')
+ for seam in ['  private readonly AnimusForge.Refactor.Adapters.NpcPersonaGenerationApplicationAdapter NpcPersonaGenerationApplication=new();',
+  '  private readonly AnimusForge.Refactor.Runtime.ConversationGameThreadDispatcher _conversationGameThreadDispatcher=new();',
+  '  private AnimusForge.Refactor.Adapters.NativeAdmissionApplicationAdapter NativeAdmissions=>new(this);']:
+  assert code.count(seam)==1;code=code.replace(seam,'',1)
+ code=code.replace('AnimusForge.Refactor.Runtime.SceneConversationHistoryOwner.SessionId=1;','').replace('AnimusForge.Refactor.Runtime.SceneConversationHistoryOwner.SessionId++;','')
+else:
+ owner=read('src/AF.GameAdapter.Bannerlord/Prompt/ScenePersonaPreparationAdapter.cs')
+ signatures=['internal ScenePersonaPreparationAdapter(', 'internal bool IsScenePersonaScopeCurrent(',
+  'internal async Task EnsurePersonaForCandidatesAsync(', 'internal async Task<bool> EnsureNativeConversationPersonaReadyAsync(',
+  'internal static NpcPersonaReadinessSnapshot CaptureNpcPersonaReadiness(']
+ declarations=[ex.declaration(owner,signature) for signature in signatures]
+ mutations={
+  'native_skip_admission':('if (!_nativeAdmission.IsNativeConversationAdmissionCurrent(admission, out _)) return null;','if (false) return null;'),
+  'native_accept_failure':('if (state.CoolingDown && !state.Active) break;','if (state.CoolingDown && !state.Active) return true;'),
+  'scene_generate_partial':('string.IsNullOrWhiteSpace(state.Personality) && string.IsNullOrWhiteSpace(state.Background)','string.IsNullOrWhiteSpace(state.Personality) || string.IsNullOrWhiteSpace(state.Background)'),
+  'scene_skip_scope':(ex.declaration(owner,'internal bool IsScenePersonaScopeCurrent('),'internal bool IsScenePersonaScopeCurrent(ScenePersonaPreparationScope scope) { return scope != null; }'),
+  'scene_accept_replaced':('!ReferenceEquals(current, prepared.Hero)','false')}
+ body='\n'.join(declarations)
+ if a.mutate in mutations:
+  before,after=mutations[a.mutate];assert body.count(before)==1,'Mutation anchor drift: '+a.mutate
+  body=body.replace(before,after,1)
+ body=body.replace('Task.Delay(500)','Task.Delay(1)')
+ adapters="""
+namespace AnimusForge.Refactor.Runtime {
+ internal static class SceneConversationHistoryOwner {internal static int SessionId=1;}
+ internal sealed class ConversationGameThreadDispatcher {
+  internal Task<T> RunAsync<T>(string name,string target,int index,Func<T> f,T fallback)=>Probe.Run(()=>{Probe.BeforeOperation?.Invoke(name);return f();});
+ }
+}
+namespace AnimusForge.Refactor.Adapters {
+ using AnimusForge.Refactor.Runtime;
+ using NpcDataPacket=AnimusForge.ShoutBehavior.NpcDataPacket;
+ using ScenePersonaPreparationScope=AnimusForge.ShoutBehavior.ScenePersonaPreparationScope;
+ using ScenePersonaCandidate=AnimusForge.ShoutBehavior.ScenePersonaCandidate;
+ using NativeConversationAdmission=AnimusForge.ShoutBehavior.NativeConversationAdmission;
+ internal sealed class NativeAdmissionApplicationAdapter {
+  readonly AnimusForge.ShoutBehavior owner;internal NativeAdmissionApplicationAdapter(AnimusForge.ShoutBehavior owner){this.owner=owner;}
+  internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason)=>owner.IsNativeConversationAdmissionCurrent(a,out reason);
+ }
+ internal sealed class NpcPersonaGenerationApplicationAdapter {
+  internal void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
+  internal void GetNpcPersonaGenerationRuntimeState(Hero h,out bool a,out bool c){Probe.Read();a=h.Active;c=h.Cooling;}
+ }
+ internal sealed class ScenePersonaPreparationAdapter {
+  readonly ConversationGameThreadDispatcher _dispatcher;readonly NativeAdmissionApplicationAdapter _nativeAdmission;
+  readonly Func<bool> _isCurrentOwner;readonly Func<int> _sceneEpoch;readonly int _nativeWaitTimeoutMs;
+  // Existing controlled factual-fallback leaf, not a replacement for readiness policy.
+  static void BuildHeroPersonaFallback(Hero h,out string p,out string b){Probe.Read();p="fallbackP";b="fallbackB";}
+  @BODY@
+ }
+}
+""".replace('@BODY@',body)
+ code=code.replace('@@CURRENT_ADAPTERS@@',adapters)
+ import hashlib,json
+ capture_inputs=[{'path':'src/AF.GameAdapter.Bannerlord/Prompt/ScenePersonaPreparationAdapter.cs','rawSha256':hashlib.sha256((ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/ScenePersonaPreparationAdapter.cs').read_bytes()).hexdigest(),'signatures':signatures,'declarationSha256':[hashlib.sha256(v.encode()).hexdigest() for v in declarations]}]
+
 code=code.replace('@@EXTRAS@@','' if a.original else read('tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/Extras.cs.txt'))
 code=code.replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
 out=util.new_run_root(ROOT,'ChannelPersonaPreparationTests',a.run_root);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
@@ -26,13 +86,6 @@ files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPerson
 if not a.original:
  for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:
   text=read(path).replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
-  if path=='ShoutBehavior.PersonaPreparation.cs':
-   if a.mutate=='native_skip_admission':text=text.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;','if (false) return null;',1)
-   if a.mutate=='native_accept_failure':text=text.replace('if (state.CoolingDown && !state.Active) break;','if (state.CoolingDown && !state.Active) return true;',1)
-   if a.mutate=='scene_generate_partial':text=text.replace('string.IsNullOrWhiteSpace(state.Personality) && string.IsNullOrWhiteSpace(state.Background)','string.IsNullOrWhiteSpace(state.Personality) || string.IsNullOrWhiteSpace(state.Background)',1)
-   if a.mutate=='scene_skip_scope':
-    old=ex.declaration(text,'private bool IsScenePersonaScopeCurrent(');text=text.replace(old,'private bool IsScenePersonaScopeCurrent(ScenePersonaPreparationScope scope) { return scope != null; }',1)
-   if a.mutate=='scene_accept_replaced':text=text.replace('!ReferenceEquals(current, prepared.Hero)','false',1)
   if path=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs':
    if a.mutate=='courier_drop_session':text=text.replace('!IsCourierHistoryOwnerCurrent(sessionId, session, hero, inbound) || hero.IsDead','hero.IsDead',1)
    if a.mutate=='courier_reject_fallback':text=text.replace('                    return true;','                    return false;',1)
@@ -41,6 +94,7 @@ if not a.original:
    if a.mutate=='waiter_ignore_deadline':text=text.replace('!hasTime() || !await isCurrent().ConfigureAwait(false)','!await isCurrent().ConfigureAwait(false)',1)
    if a.mutate=='waiter_ignore_scope':text=text.replace('!hasTime() || !await isCurrent().ConfigureAwait(false)','!hasTime()',1)
   dest=out/Path(path).name;dest.write_text(text,encoding='utf-8');files.append(dest)
+if not a.original: (out/'current-capture-inputs.json').write_text(json.dumps(capture_inputs,indent=2),encoding='utf-8')
 project=util.project(out,'ChannelPersona',files,executable=True)
 code,log=util.run_dotnet(a.dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

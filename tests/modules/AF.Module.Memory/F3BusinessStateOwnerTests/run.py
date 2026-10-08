@@ -16,7 +16,18 @@ for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest']:
     guards.append(m.group())
 (out/'Guards.cs').write_text('using System;using System.Linq;namespace AnimusForge { public partial class MyBehavior {'+'\n'.join(guards)+'}}',encoding='utf-8')
 newtonsoft=ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
-links=''.join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)+ '<Compile Include="'+str(HERE/'Program.cs')+'"/><Compile Include="Guards.cs"/>'
+# Reuse the existing actual-owner closure; generated engine/config leaves stay controlled.
+sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests'))
+from business_owner_fixture_support import include
+files={Path(path).name:(ROOT/path).read_text(encoding='utf-8-sig') for path in paths}
+files['Program.cs']=(HERE/'Program.cs').read_text(encoding='utf-8-sig')
+files['Guards.cs']=(out/'Guards.cs').read_text(encoding='utf-8-sig')
+files['ControlledUnusedQueueFacts.cs']='namespace AnimusForge {public partial class MyBehavior {private static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>throw new System.InvalidOperationException("Live eligibility outside state-only replay");private static int GetMemoryOverviewStartBlockCountFromSettings()=>throw new System.InvalidOperationException("Live settings outside state-only replay");private static int GetCurrentGameDayIndexSafe()=>throw new System.InvalidOperationException("Live clock outside state-only replay");}}'
+closure_manifest=[]
+include(ROOT,files,closure_manifest,ex)
+for name,value in files.items(): (out/name).write_bytes(value.encode('utf-8'))
+(out/'closure-manifest.json').write_text(json.dumps(closure_manifest,indent=2),encoding='utf-8')
+links=''.join('<Compile Include="'+name+'"/>' for name in files)
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 (out/'manifest.json').write_text(json.dumps({str(p):hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths},indent=2),encoding='utf-8')

@@ -57,10 +57,40 @@ if not baseline:
  assert 'return CommitDialogueHistoryWithScene(memoryId, isNonHero, npcName, playerText, aiText, extraFact, sceneSessionId, -1, null);' in wrapper, 'seven-argument Native memory ABI changed'
  canonical=ex.declaration(memory_owner,'internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex')
  prior=ex.declaration(subprocess.check_output(['git','show','29ca75c9:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig'),'public static MemoryCommitResult CommitExternalDialogueHistory(')
- inverse=canonical.replace(canonical.splitlines()[0],prior.splitlines()[0],1).replace('owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName)','owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact)',1).replace('owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName)','owner.AppendDialogueHistory(hero, playerText, aiText, extraFact)',1)
+ application_source=read('src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs')
+ application=ex.declaration(application_source,'internal MemoryCommitResult CommitDialogueHistoryWithScene(')
+ route='return owner._memoryHistoryCommit.CommitDialogueHistoryWithScene(memoryId,isNonHero,npcName,playerText,aiText,extraFact,sceneSessionId,playerTargetAgentIndex,playerTargetName);'
+ assert canonical.count(route)==1, 'strict scene ABI must call the sole history commit owner'
+ core=application[application.index('\t\t\tstring normalizedMemoryId'):application.index('\n  }\n  catch')]
+ inverse_core=core.replace('MemoryEntityIdentityBannerlordAdapter.FindHeroById(', 'FindHeroById(').replace('MemoryEntityIdentityBannerlordAdapter.IsHeroNpcEligibleForCompressedMemory(', 'IsHeroNpcEligibleForCompressedMemory(')
+ for name,args in [('AppendDialogueHistoryById','normalizedMemoryId, npcName, playerText, aiText, extraFact'),('AppendDialogueHistory','hero, playerText, aiText, extraFact')]:
+  current=name+'('+args+', sceneSessionId, playerTargetAgentIndex, playerTargetName)'
+  assert inverse_core.count(current)==1
+  inverse_core=inverse_core.replace(current,'owner.'+name+'('+args+')',1)
+ inverse=canonical.replace(canonical.splitlines()[0],prior.splitlines()[0],1).replace('\t\t\t'+route,inverse_core,1)
  assert inverse==prior, 'Strict owner logic changed beyond the explicit scene argument'
- if a.mutate=='lose-owner-scene':memory_owner=memory_owner.replace('extraFact, sceneSessionId, -1, null)','extraFact, -1, -1, null)')
- if a.mutate=='accept-owner-false':memory_owner=memory_owner.replace('new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed")','new MemoryCommitResult(MemoryCommitStatus.Applied)',1)
+ if a.mutate=='lose-owner-scene':
+  before='extraFact, sceneSessionId, -1, null)';assert memory_owner.count(before)==1;memory_owner=memory_owner.replace(before,'extraFact, -1, -1, null)',1)
+ if a.mutate=='accept-owner-false':
+  before='new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed")';assert application.count(before)==1;application=application.replace(before,'new MemoryCommitResult(MemoryCommitStatus.Applied)',1)
+ # Full current commit method, with only the original storage/game leaves controlled.
+ storage_leaves=r"""
+ private readonly MyBehavior _owner;
+ internal MemoryHistoryCommitBannerlordAdapter(MyBehavior owner){_owner=owner;}
+ private static string NormalizeMemoryHeroId(string id)=>MemoryRecordRules.NormalizeMemoryHeroId(id);
+ private static bool IsNonHeroMemoryId(string id)=>MemoryBusinessStateOwner.IsNonHeroMemoryId(id);
+ private bool AppendDialogueHistory(Hero hero,string p,string a,string f,int session,int target,string targetName)=>_owner.AppendDialogueHistory(hero,p,a,f,session,target,targetName);
+ private bool AppendDialogueHistoryById(string id,string name,string p,string a,string f,int session,int target,string targetName)=>_owner.AppendDialogueHistoryById(id,name,p,a,f,session,target,targetName);
+ """
+ (out/'MemoryApplication.cs').write_text('using System; using AnimusForge.Refactor.Contracts; using TaleWorlds.CampaignSystem; namespace AnimusForge { public partial class MyBehavior { internal sealed class MemoryHistoryCommitBannerlordAdapter {'+storage_leaves+application+'} } }',encoding='utf-8')
+ host_anchor='public partial class MyBehavior {';assert code.count(host_anchor)==1
+ code=code.replace(host_anchor,host_anchor+'\n private readonly MemoryHistoryCommitBannerlordAdapter _memoryHistoryCommit; public MyBehavior(){_memoryHistoryCommit=new MemoryHistoryCommitBannerlordAdapter(this);}\n',1)
+ (out/'Program.cs').write_text(code,encoding='utf-8')
+ identity=read('src/AF.GameAdapter.Bannerlord/Memory/MemoryEntityIdentityBannerlordAdapter.cs')
+ business=read('src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs')
+ identity_body=ex.declaration(identity,'internal static bool IsHeroNpcEligibleForCompressedMemory(')
+ nonhero_body=ex.declaration(business,'internal static bool IsNonHeroMemoryId(')
+ (out/'MemoryIdentity.cs').write_text('using System; using TaleWorlds.CampaignSystem; namespace AnimusForge { internal static class MemoryEntityIdentityBannerlordAdapter { internal static Hero FindHeroById(string id)=>Hero.Find(id); '+identity_body+' } internal static class MemoryBusinessStateOwner { private const string NonHeroMemoryIdPrefix="af_nonhero:"; '+nonhero_body+' } }',encoding='utf-8')
  if a.mutate=='drop-memory-thread':memory_owner=memory_owner.replace('if (!TWParallel.IsMainThread())','if (false)',1)
  if a.mutate=='public-scene-owner':memory_owner=memory_owner.replace('internal static MemoryCommitResult CommitDialogueHistoryWithScene','public static MemoryCommitResult CommitDialogueHistoryWithScene',1)
  (out/'MemoryOwner.cs').write_text(memory_owner,encoding='utf-8')
@@ -88,7 +118,20 @@ if not a.original:
  (out/'Completion.cs').write_text(completion,encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
 if not baseline:
- core_fixture.include_admission_owner(out);code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
+ core_fixture.include_admission_owner(out);code=core_fixture.migrate_admission_fixture(code)
+ # Execute current admission checks through the same sole adapter/state owner.
+ # Generation/opening capture are outside this completion suite, not fake admission algorithms.
+ dto=ex.declaration(ad,'internal sealed class NativeConversationAdmissionException')
+ anchor='public partial class ShoutBehavior {';assert code.count(anchor)==1
+ code=code.replace(anchor,anchor+'\n'+dto+'\nprivate readonly NativeAdmissionApplicationAdapter NativeAdmissions;\n',1)
+ ctor='internal ShoutBehavior(){CurrentInstance=this;';assert code.count(ctor)==1
+ binding='NativeAdmissions=new NativeAdmissionApplicationAdapter(_nativeAdmissionOwner,IsBannerlordMainThreadForNativeActions,()=>ReferenceEquals(CurrentInstance,this),()=>true,_mainThreadActions.Enqueue,NativeConversationMainThreadPreprocessTimeoutMs,TryResolveNativeConversationTarget,TryResolveNativeConversationAgentIndex,IsNativeConversationResponseTargetAvailableForActionDispatch,(a,t,s,d,p,r,o)=>Task.FromException<string>(new NotSupportedException("Generation is not a completion fixture capability")));'
+ code=code.replace(ctor,ctor+binding,1)
+ guard='static class SaveRuntimeGuard {internal static long Generation;';assert code.count(guard)==1
+ code=code.replace(guard,guard+'internal static long CaptureGeneration()=>Generation;',1)
+ (out/'NativeAdmissionApplicationAdapter.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ (out/'AdmissionOpeningLeaf.cs').write_text('using System;using TaleWorlds.CampaignSystem;namespace AnimusForge { internal static class NpcInitiatedOpeningRouter { internal static bool TryConsumePendingNativeOpening(Hero h,out string fact,out string prompt,out string source)=>throw new NotSupportedException("Opening capture is not requested by completion fixture"); } }',encoding='utf-8')
+ (out/'Program.cs').write_text(code,encoding='utf-8')
 if not baseline:
  memory_rules=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
  (out/'MemoryRecordRules.cs').write_text('namespace AnimusForge { internal static class MemoryRecordRules { '+ex.declaration(memory_rules,'internal static string NormalizeMemoryHeroId(')+' }}',encoding='utf-8')

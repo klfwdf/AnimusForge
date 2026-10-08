@@ -31,7 +31,7 @@ class MainReplySourceTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: turn dependency'):
                 inverse.restore_main_reply('ShoutBehavior.cs',live)
         # This deliberately mutated mapped-host input must now fail the strict outer terminal binding first.
-        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
+        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source J17: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
             inverse.restore_main_reply('ShoutBehavior.cs',live.replace('return NativeConversationTurnCoordinator.RunAsync(', 'return MissingTurnCoordinator.RunAsync(',1))
     def test_unreviewed_stage_change_rejected(self):
         original=Path.read_text;target=ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'
@@ -42,7 +42,8 @@ class MainReplySourceTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'Unreviewed main-reply dependency'):
                 inverse.restore_main_reply('ShoutBehavior.cs',(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
     def test_exact_byte_edit_preserves_line_endings_and_bom(self):
-        current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_bytes();self.assertEqual(current.count(b'\r\n'),current.count(b'\n'))
+        current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_bytes();self.assertEqual((current.count(b'\r\n'),current.count(b'\n')), (3381, 5640), 'c4de frozen current mixed layout')
+        self.assertNotEqual((current.replace(b'\r\n',b'\n',1).count(b'\r\n'),current.count(b'\n')), (3381, 5640), 'one lost current CRLF must be detected')
         raw=inverse.restore_observation('ShoutBehavior.cs',current.decode('utf-8-sig').replace('\r\n','\n')).replace('\n','\r\n').encode();old=subprocess.check_output(['git','show','dabee763:ShoutBehavior.cs'],cwd=ROOT)
         old=old.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n');edit=inverse.MAIN_REPLY_REVIEW['files']['ShoutBehavior.cs']['edits'][0]
         self.assertEqual(raw,old.replace(edit['before'].replace('\n','\r\n').encode(),edit['after'].replace('\n','\r\n').encode(),1))

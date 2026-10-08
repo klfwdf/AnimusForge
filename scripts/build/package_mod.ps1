@@ -8,6 +8,10 @@ param(
     [string]$Version,
     [string]$PackageLabel,
     [switch]$UseFirstMatch,
+    [switch]$Build,
+    [ValidateSet("Debug", "Release")]
+    [string]$Configuration = "Debug",
+    [string]$WorkshopContentDir = "",
     [switch]$NoBump,
     [switch]$BumpMicro,
     [switch]$IncludeOnnx,
@@ -883,23 +887,146 @@ function Write-ZipFromModule {
     }
 }
 
+function Get-PackageFileVersion {
+    param([Parameter(Mandatory = $true)][string]$PackageVersion)
+
+    $parts = Parse-Version -VersionText $PackageVersion -Label "Package version"
+    $micro = if ($null -eq $parts.Micro) { 0 } else { $parts.Micro }
+    foreach ($component in @($parts.Major, $parts.Minor, $parts.Patch, $micro)) {
+        if ($component -gt 65535) {
+            throw "DLL file version components must not exceed 65535: $PackageVersion"
+        }
+    }
+    return "$($parts.Major).$($parts.Minor).$($parts.Patch).$micro"
+}
+
+function Invoke-VersionedModulePackage {
+    param(
+        [Parameter(Mandatory = $true)][string]$ProjectRoot,
+        [Parameter(Mandatory = $true)][string]$StageModuleDir
+    )
+
+    $root = Get-FullPathSafe -Path $ProjectRoot
+    $stage = Get-FullPathSafe -Path $StageModuleDir
+    $expectedStage = Get-FullPathSafe -Path (Join-Path $root "bin\$Configuration\single_module_stage\AnimusForge")
+    if ($Build -and -not $stage.Equals($expectedStage, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Build/package Stage must match Configuration: $expectedStage"
+    }
+    Assert-AnimusForgePathUnderRoot -Path $stage -Root $root -Label "Package Stage"
+    Assert-AnimusForgeNoReparsePoint -Path $stage -Label "Package Stage"
+    $sourceXml = Join-Path $root "AnimusForge\SubModule.xml"
+    $assemblyInfo = Join-Path $root "Properties\AssemblyInfo.cs"
+    foreach ($path in @($sourceXml, $assemblyInfo)) {
+        Assert-AnimusForgeNoReparsePoint -Path $path -Label "Package version source"
+    }
+
+    # Serialize version selection across package processes; no file or Tick polling.
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $key = [System.BitConverter]::ToString($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($root.ToUpperInvariant()))).Replace("-", "")
+    }
+    finally { $sha.Dispose() }
+    $mutex = New-Object System.Threading.Mutex($false, "Local\AnimusForge.Package.$key")
+    $locked = $false
+    $changed = $false
+    $originals = [ordered]@{}
+    $written = [ordered]@{}
+    try {
+        try { $locked = $mutex.WaitOne(0) }
+        catch [System.Threading.AbandonedMutexException] {
+            $locked = $true
+            throw "Previous packaging was interrupted; inspect the source versions before retrying."
+        }
+        if (-not $locked) { throw "Another package operation is already running for this project." }
+        $currentVersion = Get-SubModuleVersion -SubModulePath $sourceXml
+        $packageVersion = Resolve-PackageVersion -CurrentVersion $currentVersion
+        $fileVersion = Get-PackageFileVersion -PackageVersion $packageVersion
+        $originals[$assemblyInfo] = [System.IO.File]::ReadAllBytes($assemblyInfo)
+        $originals[$sourceXml] = [System.IO.File]::ReadAllBytes($sourceXml)
+        $stageXml = Join-Path $stage "SubModule.xml"
+        if (Test-Path -LiteralPath $stageXml -PathType Leaf) {
+            $originals[$stageXml] = [System.IO.File]::ReadAllBytes($stageXml)
+        }
+        $text = [System.Text.Encoding]::UTF8.GetString($originals[$assemblyInfo])
+        $attribute = [regex]'\[assembly:\s*AssemblyFileVersion\("\d+\.\d+\.\d+\.\d+"\)\]'
+        if ($attribute.Matches($text).Count -ne 1) {
+            throw "Expected exactly one AssemblyFileVersion attribute in $assemblyInfo"
+        }
+        $versionedXml = Get-VersionedSubModuleBytes -SubModulePath $sourceXml -NewVersion $packageVersion
+        Write-Host "Version      : $currentVersion -> $packageVersion (DLL FileVersion=$fileVersion)"
+        $changed = $true
+        $written[$assemblyInfo] = [System.Text.Encoding]::UTF8.GetBytes($attribute.Replace($text, "[assembly: AssemblyFileVersion(`"$fileVersion`")]"))
+        $written[$sourceXml] = $versionedXml
+        [System.IO.File]::WriteAllBytes($assemblyInfo, $written[$assemblyInfo])
+        [System.IO.File]::WriteAllBytes($sourceXml, $versionedXml)
+        if ($Build) {
+            $buildArguments = @{
+                ProjectRoot = $root
+                BannerlordRoot = $BannerlordRoot
+                Configuration = $Configuration
+                Stage = $true
+            }
+            if (-not [string]::IsNullOrWhiteSpace($WorkshopContentDir)) {
+                $buildArguments.WorkshopContentDir = $WorkshopContentDir
+            }
+            & (Join-Path $root "scripts\build\build_single_module.ps1") @buildArguments | Out-Host
+        }
+        foreach ($path in @($assemblyInfo, $sourceXml)) {
+            if ([Convert]::ToBase64String([System.IO.File]::ReadAllBytes($path)) -cne [Convert]::ToBase64String($written[$path])) {
+                throw "Version source changed during packaging; refusing to publish: $path"
+            }
+        }
+        Assert-AnimusForgeCleanStage -ProjectRoot $root -StageModuleDir $stage -RequireCurrentArtifacts
+        foreach ($api in @("1.3", "1.4")) {
+            $dll = Join-Path $stage "bin\Win64_Shipping_Client\versions\$api\AnimusForge.dll"
+            $actualVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($dll).FileVersion
+            if ($actualVersion -ne $fileVersion) {
+                throw "API $api DLL FileVersion is '$actualVersion', expected '$fileVersion'. Use the one-click package entry or -Build; XML-only relabeling is not allowed."
+            }
+        }
+        $written[$stageXml] = Get-VersionedSubModuleBytes -SubModulePath $stageXml -NewVersion $packageVersion
+        [System.IO.File]::WriteAllBytes($stageXml, $written[$stageXml])
+        return Write-ZipFromModule -ModulePath $stage -PackageVersion $packageVersion -AutoDetected:$false
+    }
+    catch {
+        $failure = $_
+        $rollbackFailures = New-Object System.Collections.Generic.List[string]
+        if ($changed) {
+            foreach ($entry in $originals.GetEnumerator()) {
+                if (-not $written.Contains($entry.Key)) { continue }
+                try {
+                    $currentBytes = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($entry.Key))
+                    if ($currentBytes -ceq [Convert]::ToBase64String($entry.Value)) { continue }
+                    if ($currentBytes -cne [Convert]::ToBase64String($written[$entry.Key])) {
+                        throw "File changed during packaging; refusing to overwrite concurrent edits."
+                    }
+                    [System.IO.File]::WriteAllBytes($entry.Key, $entry.Value)
+                }
+                catch { $rollbackFailures.Add("$($entry.Key): $($_.Exception.Message)") }
+            }
+        }
+        if ($rollbackFailures.Count -gt 0) {
+            throw "Packaging failed and version rollback was incomplete.`nOriginal error: $($failure.Exception.Message)`n$($rollbackFailures -join "`n")"
+        }
+        throw $failure
+    }
+    finally {
+        if ($locked) { $mutex.ReleaseMutex() }
+        $mutex.Dispose()
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($ModuleDir)) {
     throw "AF2 packaging requires an explicit project-local -ModuleDir Stage path."
 }
 $projectRootFull = Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")
-Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $ModuleDir -RequireCurrentArtifacts
-$resolved = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
-$moduleFull = $resolved.Path
-$moduleXml = Join-Path $moduleFull "SubModule.xml"
+$moduleFull = Get-FullPathSafe -Path $ModuleDir
 $outputFullPreflight = (Get-FullPathSafe -Path $OutputDir).TrimEnd('\', '/')
 if ($outputFullPreflight.Equals($moduleFull.TrimEnd('\', '/'), [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "OutputDir must not be the module directory itself: $outputFullPreflight"
 }
 
-$currentVersion = Get-SubModuleVersion -SubModulePath $moduleXml
-$packageVersion = Resolve-PackageVersion -CurrentVersion $currentVersion
-Write-Host "Version      : $currentVersion -> $packageVersion (ZIP only; Stage/source unchanged)"
-$createdZipPath = Write-ZipFromModule -ModulePath $moduleFull -PackageVersion $packageVersion -AutoDetected:$resolved.AutoDetected
+$createdZipPath = Invoke-VersionedModulePackage -ProjectRoot $projectRootFull -StageModuleDir $moduleFull
 Write-Host "Package Result: success"
 Write-Host "Package       : $createdZipPath"
 

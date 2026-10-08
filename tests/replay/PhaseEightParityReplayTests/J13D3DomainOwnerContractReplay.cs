@@ -18,6 +18,10 @@ internal static class J13D3DomainOwnerContractReplay
         string policyUi = Read("PolicySystem/UI/PolicySystemUi.cs");
         string diplomacy = Read("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs");
         string terminal = Read("src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs");
+        string presentation = Read("src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyPresentation.cs");
+        string presentationBridge = Read("src/bridges/Diplomacy/DiplomacyPresentationBridge.cs");
+        string services = Read("src/bridges/Diplomacy/DiplomacyModuleServices.cs");
+        string worldModule = Read("src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs");
 
         Require(composition.Contains("AddBehavior(new AnimusForgeWorldEventBehavior())", StringComparison.Ordinal)
             && host.Contains("_inbox.Import(CampaignSaveChunkHelper.RestoreStringDictionary(stored, \"WorldEventInbox\"), unreadIds)", StringComparison.Ordinal)
@@ -35,9 +39,14 @@ internal static class J13D3DomainOwnerContractReplay
         Require(policy.Contains("AnimusForgeWorldEventBehavior.UpsertWorldEventForExternal(context.PublicFeedbackEntry, markUnread: true)", StringComparison.Ordinal)
             && policy.Contains("AnimusForgeWorldEventBehavior.GetInboxVersionForExternal() <= inboxVersion", StringComparison.Ordinal)
             && policyUi.Contains("AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(EventInboxDisplayLimit)", StringComparison.Ordinal)
-            && diplomacy.Contains("AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(160)", StringComparison.Ordinal)
+            && diplomacy.Contains("return WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(onClose);", StringComparison.Ordinal)
+            && presentation.Contains("AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(160)", StringComparison.Ordinal)
+            && presentation.Contains("BuildRoyalAnnouncementArchiveData()", StringComparison.Ordinal)
             && host.Contains("AnimusForgeWorldEventBehavior.MarkEventReadForExternal(selected.EventId)", StringComparison.Ordinal)
-            && terminal.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)", StringComparison.Ordinal),
+            && terminal.Contains("DiplomacyPresentationBridge.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)", StringComparison.Ordinal)
+            && presentationBridge.Contains("DiplomacyModuleServices.World.ShowRoyalAnnouncementArchive(onClose)", StringComparison.Ordinal)
+            && services.Contains("IWorldDiplomacyModulePort World => Module.World", StringComparison.Ordinal)
+            && worldModule.Contains("WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(onClose)", StringComparison.Ordinal),
             "policy acknowledgement and both archive/UI consumers remain wired");
 
         Console.WriteLine("PASS J13D3DomainOwnerContractReplay saveFacade=1 policyAck=1 archiveConsumers=2 readRoute=1; source-wiring-only live=NOT_RUN");

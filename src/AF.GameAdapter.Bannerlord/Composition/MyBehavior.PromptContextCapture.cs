@@ -57,6 +57,44 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+    private static readonly WeeklyPromptCaptureAdapter.RequestPromptCapturePorts WeeklyRequestPromptSettings = new WeeklyPromptCaptureAdapter.RequestPromptCapturePorts
+    {
+        Profile = GetWeeklyReportPromptProfile,
+        WritingRequirements = CaptureWeeklyReportWritingRequirements
+    };
+    private WeeklyPromptCaptureAdapter.RequestPromptCapturePorts _weeklyRequestPromptCapturePorts;
+    private WeeklyPromptCaptureAdapter.RequestPromptCapturePorts WeeklyRequestPromptCapturePorts => _weeklyRequestPromptCapturePorts ??= new WeeklyPromptCaptureAdapter.RequestPromptCapturePorts
+    {
+        Profile = GetWeeklyReportPromptProfile,
+        WritingRequirements = CaptureWeeklyReportWritingRequirements,
+        Stability = _kingdomStabilityGameAdapter.BuildWeeklyReportCurrentKingdomStabilityTierText,
+        Previous = (group, week) => _weeklyEventRecords.GetPreviousWeeklyReportText(group, week, PersonaIdentityPromptCaptureAdapter.GetSeasonTextZhForPrompt),
+        Materials = WeeklyPromptCaptureAdapter.BuildWeeklyReportPromptMaterialLines,
+        DefaultTitle = (group, week) => WeeklyEventRecordStateOwner.BuildDefaultWeeklyReportTitle(group, week, PersonaIdentityPromptCaptureAdapter.GetSeasonTextZhForPrompt, MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay)
+    };
+    private static WeeklyPromptCaptureAdapter.CapturePorts ResolveWeeklyCapturePorts() => Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.WeeklyCapturePorts;
+
+    private WeeklyPromptCaptureAdapter.CapturePorts _weeklyCapturePorts;
+    private WeeklyPromptCaptureAdapter.CapturePorts WeeklyCapturePorts => _weeklyCapturePorts ??= new WeeklyPromptCaptureAdapter.CapturePorts
+    {
+        BulletinEnabled = IsWorldBulletinPublishingEnabled,
+        BulletinEvents = () => _worldBulletinOwner.State?.Events,
+        LatestBulletin = () => WorldBulletinState.FindLatestWorldBulletinRecord(),
+        Records = () => _weeklyEventRecords.Records,
+        EnsureOpening = () => _weekZeroShortSummaries.EnsureWeekZeroOpeningSummaryEvents(),
+        NpcKingdom = MemoryEntityIdentityBannerlordAdapter.ResolveWeeklyReportNpcKingdomId,
+        SurroundingsKingdom = MemoryEntityIdentityBannerlordAdapter.ResolveWeeklyReportSurroundingsKingdomId,
+        EditableKingdoms = EventEditorProjection.GetDevEditableKingdoms,
+        Eligible = MemoryEntityIdentityBannerlordAdapter.IsKingdomEligibleForWeeklyReport,
+        Proximity = MemoryEntityIdentityBannerlordAdapter.GetKingdomIdsByPlayerProximity,
+        SelectSnapshot = WeeklyEventRecordStateOwner.SelectWeeklyShortReportKingdomIdsFromSnapshot,
+        SelectLive = MemoryEntityIdentityBannerlordAdapter.SelectWeeklyShortReportKingdomIds,
+        Latest = _weekZeroShortSummaries.FindLatestWeeklyReportRecord
+    };
+    private SharedPromptCaptureBannerlordAdapter.RequestCapturePorts _sharedRequestCapturePorts;
+    private SharedPromptCaptureBannerlordAdapter.RequestCapturePorts SharedRequestCapturePorts => _sharedRequestCapturePorts ??=
+        new SharedPromptCaptureBannerlordAdapter.RequestCapturePorts(() => _cachedPlayerClanTier, _memoryHistoryCommit.GetLatestNpcDialogueUtterance, _memoryHistoryCommit.LoadDialogueHistory);
+
 	private void CapturePromptSections(PromptBuildRequest request, PromptRoutingResult routing, PromptRetrievalCapture retrieval, MentionedWorldEntities directPreprocessMentionedEntities, Hero targetHero, CharacterObject targetCharacter, WeeklyPromptSnapshot weeklyPromptSnapshot, Stopwatch promptContextTotalSw, Stopwatch promptContextStageSw,
 		out PromptContextFlags contextFlags, out PromptExtrasSections extrasSections, out PromptEntityCapture entityCapture, out MentionedWorldEntities mentionedEntities)
 	{
@@ -66,6 +104,12 @@ public partial class MyBehavior
             out contextFlags, out extrasSections, out entityCapture, out mentionedEntities);
         extrasSections.CurrentFamilyStatus = WorldEntityRetrievalService.BuildCurrentFamilyPrompt(targetHero ?? targetCharacter?.HeroObject);
     }
+
+    private SharedPromptCaptureBannerlordAdapter.ExternalPromptBuildPorts _externalPromptBuildCapture;
+    private SharedPromptCaptureBannerlordAdapter.ExternalPromptBuildPorts ExternalPromptBuildCapture => _externalPromptBuildCapture ??=
+        new SharedPromptCaptureBannerlordAdapter.ExternalPromptBuildPorts(SharedRequestCapturePorts, CaptureSharedPromptRoutingWork,
+            (phases,hero,character) => CreatePromptContextCapturePorts(phases.Request, phases.Routing, phases.Retrieval,
+                hero ?? character?.HeroObject, character, phases.TotalStopwatch, phases.StageStopwatch));
 
     private PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(PromptBuildRequest request,
         PromptRoutingResult routing, PromptRetrievalCapture retrieval, Hero targetHero, CharacterObject targetCharacter,
@@ -78,11 +122,11 @@ public partial class MyBehavior
             WasRecentlyDefeated = id => _recentlyDefeatedByPlayer.Contains(id),
             WasRecentlyReleased = id => _recentlyReleasedPrisoners.Contains(id),
             BuildPlayerDisplayName = (hero, character, index) => BuildPlayerPublicDisplayNameForPrompt(hero, character, index),
-            BuildPrisonerStatus = BuildHeroPrisonerStatusPromptLineForExternal,
+            BuildPrisonerStatus = SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal,
             BuildHeroArmyFact = () => BuildHeroArmyRuntimeFactForPrompt(targetHero),
             BuildPlayerArmyFact = () => BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, request.TargetAgentIndex),
-            BuildResidentRecentActions = () => BuildResidentRecentActionsPrompt(targetHero, targetCharacter, request.TargetAgentIndex),
-            BuildTriggeredRules = flags => BuildTriggeredRuleInstructions(request.Input, targetHero, flags.UseDuelContext,
+            BuildResidentRecentActions = () => MemoryEntityIdentityBannerlordAdapter.BuildResidentRecentActionsPrompt(_memoryBusinessState, _npcActionRecords, MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe, BuildRuleTargetKeyForExternal, targetHero, targetCharacter, request.TargetAgentIndex),
+            BuildTriggeredRules = flags => PromptRuleCaptureBannerlordAdapter.BuildTriggeredRuleInstructions(NpcMajorRuleCapture, request.Input, targetHero, flags.UseDuelContext,
                 request.IsQualified, request.PlayerClanTier, flags.UseRewardContext, flags.IsLoanContext,
                 routing.Surroundings.Hit, request.HasAnyHero, targetCharacter, request.KingdomIdOverride,
                 request.TargetAgentIndex, request.NpcLastUtterance, flags.IncludeDuelStakeContext,
@@ -91,7 +135,7 @@ public partial class MyBehavior
                 retrieval?.FallbackExtraRuleHits),
             IsWorldBulletinEnabled = IsWorldBulletinPublishingEnabled,
             CaptureWorldBulletinSnapshot = () => CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, request.KingdomIdOverride),
-            ShouldExcludeWeeklyShortReport = (rules, snapshot) => ShouldExcludeNpcShortReportFromWeeklyShortLayer(rules, targetHero, targetCharacter, request.KingdomIdOverride, snapshot),
+            ShouldExcludeWeeklyShortReport = (rules, snapshot) => WeekZeroOpeningSummaryGenerationController.ShouldExcludeNpcShortReportFromWeeklyShortLayer(rules, targetHero, targetCharacter, request.KingdomIdOverride, snapshot),
             BuildWeeklyShortReports = (exclude, snapshot) => BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, request.KingdomIdOverride, exclude, snapshot),
             BuildWeeklyFullReports = (rules, snapshot) => BuildTriggeredWeeklyFullReportsPromptBlock(rules, targetHero, targetCharacter, request.KingdomIdOverride, snapshot),
             ObserverKnowsPlayer = () => DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, request.TargetAgentIndex),

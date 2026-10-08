@@ -30,7 +30,7 @@ extract = load('campaign_decl', 'tests/modules/AF.Module.Conversation/ChannelCut
 util = load('campaign_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root
 
 def read(path): return current_source_path(ROOT, path).read_text(encoding='utf-8-sig')
 def old(path): return subprocess.check_output(['git', 'show', f'{BASELINE}:{path}'], cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -110,9 +110,10 @@ def verify_source():
 def main():
     p=argparse.ArgumentParser(description=__doc__); p.add_argument('--skip-mutations',action='store_true'); p.add_argument('--source-only',action='store_true')
     p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE', r'G:\AFMOD\.dotnet-sdk\dotnet.exe'))
+    p.add_argument('--run-root', type=Path)
     args=p.parse_args(); verify_source()
     if args.source_only: return 0
-    out=HERE/'.generated/current'; out.mkdir(parents=True,exist_ok=True)
+    out=new_run_root(ROOT, 'campaign-composition', args.run_root)
     (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>',encoding='utf-8')
     prior=old('SubModule.cs'); current_submodule=read('SubModule.cs')
     names=re.findall(r'AddBehavior\(new (\w+)\(\)\)',extract(prior,INIT))

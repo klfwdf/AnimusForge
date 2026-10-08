@@ -13,8 +13,12 @@ internal static class CivilWarChunkRegression
     public static void Run(string[] args)
     {
         string repoRoot = args.Length > 0 ? Path.GetFullPath(args[0]) : FindRepoRoot();
-        string hostPath = Path.Combine(repoRoot, "src", "AF.GameAdapter.Bannerlord", "Composition", "MyBehavior.cs");
+        string hostPath = Path.Combine(repoRoot, "src", "AF.GameAdapter.Bannerlord", "Persistence", "CampaignCivilWarPersistenceAdapter.cs");
         string source = File.ReadAllText(hostPath);
+        string composition = File.ReadAllText(Path.Combine(repoRoot, "src", "AF.GameAdapter.Bannerlord", "Composition", "MyBehavior.cs"));
+        Check(composition.Contains("new CampaignCivilWarPersistenceAdapter(TeamModuleServices.CivilWar.Save, TeamModuleServices.CivilWar.Load)")
+            && composition.Contains("_civilWarPersistence.Save(dataStore)") && composition.Contains("_civilWarPersistence.Load(dataStore)"),
+            "actual host must delegate to the tested civil-war persistence adapter");
         Check(IsChunkedHost(source), "civil war host still writes/reads raw JSON instead of chunked storage");
         Check(!IsChunkedHost(source.Replace("CampaignSaveChunkHelper.SaveChunkedString", "dataStore.SyncData")),
             "host wiring guard did not reject an unchunked save mutation");
@@ -132,8 +136,8 @@ internal static class CivilWarChunkRegression
     {
         const string quotedKey = "\"_af_kingdom_civil_war_v2\"";
         return Regex.IsMatch(source, @"CampaignSaveChunkHelper\.SaveChunkedString\(\s*dataStore\s*,\s*" +
-                quotedKey + @"\s*,\s*_civilWarJsonStorage\b")
-            && Regex.IsMatch(source, @"_civilWarJsonStorage\s*=\s*CampaignSaveChunkHelper\.LoadChunkedString\(\s*dataStore\s*,\s*" + quotedKey)
+                quotedKey + @"\s*,\s*JsonStorage\b")
+            && Regex.IsMatch(source, @"JsonStorage\s*=\s*CampaignSaveChunkHelper\.LoadChunkedString\(\s*dataStore\s*,\s*" + quotedKey)
             && !Regex.IsMatch(source, @"dataStore\.SyncData(?:<[^>]+>)?\(\s*" + quotedKey);
     }
 

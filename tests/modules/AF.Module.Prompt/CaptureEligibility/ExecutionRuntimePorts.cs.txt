@@ -21,7 +21,7 @@ namespace TaleWorlds.MountAndBlade
 }
 namespace TaleWorlds.CampaignSystem.Conversation
 {
-    public sealed class ConversationManager { public event Action ConversationEndOneShot; }
+    public sealed class ConversationManager { public event Action ConversationEndOneShot; public void EndConversation() { AnimusForge.Probe.MainOnly(); ConversationEndOneShot?.Invoke(); } }
 }
 namespace TaleWorlds.CampaignSystem
 {

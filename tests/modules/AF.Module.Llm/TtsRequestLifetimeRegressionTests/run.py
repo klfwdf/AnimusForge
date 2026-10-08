@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).resolve().parent
 def main():
  p=argparse.ArgumentParser();p.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--output-name',default='current');p.add_argument('--mutation',choices=['accept-after-publication','accept-under-lock','revive-dequeued','network-token-none','duplicate-terminal','late-legacy-event','match-agent-only','ignore-scene-epoch']);p.add_argument('--consumer-source',type=Path,default=ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs');p.add_argument('--run-root',type=Path);a=p.parse_args()
  if not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('invalid output name')
- out=new_run_root(Path(__file__).resolve().parents[4], "TtsRequestLifetimeRegressionTests", a.run_root) if a.run_root else HERE/'.generated'/a.output_name;out.mkdir(parents=True,exist_ok=True)
+ out=new_run_root(ROOT, "TtsRequestLifetimeRegressionTests-"+a.output_name, a.run_root);out.mkdir(parents=True,exist_ok=True)
  raw=(ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs').read_text(encoding='utf-8-sig')
  # Keep every production lifecycle method. Every P/Invoke fails before loading a native library.
  source,n=re.subn(r'\[DllImport\([^\n]+\)\]\s*internal static extern ([^;]+);',r'internal static \1 { throw new InvalidOperationException("Native API forbidden in regression harness"); }',raw)

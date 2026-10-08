@@ -135,4 +135,132 @@ internal sealed class WeeklyActionOutcomePublicationOwner
             Interlocked.Exchange(ref _loadedGeneration, generation);
         return false;
     }
+
+private readonly WeeklyOutcomeApplicationCapabilities _application;
+    internal WeeklyActionOutcomePublicationOwner(WeeklyOutcomeApplicationCapabilities application = null) { _application = application; }
+
+
+internal bool TryBuildWeeklyActionOutcomePayload(WeeklyMemoryMaterialOutcomeCandidate candidate,
+        bool isNonHero, string npcName, out WeeklyMemoryMaterialFrozenPayload payload, out string errorCode)
+    {
+        payload = null;
+        if (!WeeklyMemoryMaterialValuePolicy.TryValidateOutcomeCandidate(candidate, SaveRuntimeGuard.IsCurrentGeneration, out errorCode)) return false;
+        if (!_application.CaptureOutcome(candidate, isNonHero, npcName, out var context, out var values, out errorCode)) return false;
+        return WeeklyMemoryMaterialValuePolicy.TryBuildFrozenOutcome(candidate, context, values, out payload, out errorCode);
+    }
+
+internal WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome(
+        string receiptId, string candidateHash)
+    {
+        int storageDay = -1;
+        var status = Publish(receiptId, candidateHash,
+            _application.CurrentDay(), DateTime.UtcNow.Ticks,
+            _application.IsEligible,
+            receipt => _application.Memory.AttachConfirmedWeeklyOutcome(receipt,
+                _application.CurrentDay(), _application.CurrentDate(), DateTime.UtcNow.Ticks,
+                out storageDay), out var applied);
+        if (applied != null)
+        {
+            Logger.Log("WeeklyActionOutcome", "material attached receipt=" + receiptId
+                + " memory=" + applied.Payload.MemoryId + " day=" + storageDay
+                + " value=" + applied.Payload.EstimatedValueDenars);
+        }
+        return status;
+    }
+
+internal void ProcessOneWeeklyActionOutcomeOnTick()
+    {
+        try
+        {
+            WeeklyMemoryMaterialOutcomeReceipt receipt = GetDue(SaveRuntimeGuard.CurrentGeneration, DateTime.UtcNow.Ticks);
+            if (receipt != null) TryPublishWeeklyActionOutcome(receipt.ReceiptId, receipt.CandidateHash);
+        }
+        catch (Exception ex)
+        {
+            ScheduleRetry(DateTime.UtcNow.Ticks);
+            Logger.Log("WeeklyActionOutcome", "[WARN] tick publish isolated error=" + ex.Message);
+        }
+    }
+
+internal void ActivateWeeklyActionOutcomeAfterLoad()
+    {
+        try
+        {
+            if (!IsActive(SaveRuntimeGuard.CurrentGeneration))
+            {
+                SuspendWork();
+                Logger.Log("WeeklyActionOutcome", "[WARN] load activation not confirmed");
+                return;
+            }
+            RefreshWork();
+            ProcessOneWeeklyActionOutcomeOnTick();
+        }
+        catch (Exception ex)
+        {
+            ScheduleRetry(DateTime.UtcNow.Ticks);
+            Logger.Log("WeeklyActionOutcome", "[WARN] load activation isolated error=" + ex.Message);
+        }
+    }
+
+internal WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcome(WeeklyMemoryMaterialOutcomeCandidate candidate, bool isNonHero, string npcName)
+{
+            WeeklyMemoryMaterialOutcomeLedger ledger = Ledger;
+            WeeklyMemoryMaterialOutcomeOperationStatus existing =
+                ledger.ProbeExistingCandidate(candidate, out string errorCode);
+            if (existing != WeeklyMemoryMaterialOutcomeOperationStatus.NotFound)
+            {
+                RefreshWork();
+                if (existing != WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate)
+                {
+                    Logger.Log("WeeklyActionOutcome",
+                        "prepare identity probe failed state=" + existing + " error=" + errorCode);
+                }
+                return existing;
+            }
+            if (!TryBuildWeeklyActionOutcomePayload(
+                    candidate,
+                    isNonHero,
+                    npcName,
+                    out WeeklyMemoryMaterialFrozenPayload payload,
+                    out errorCode))
+            {
+                if (!string.Equals(errorCode, "weekly_material_not_eligible", StringComparison.Ordinal))
+                {
+                    Logger.Log("WeeklyActionOutcome", "prepare rejected error=" + errorCode);
+                }
+                return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+            }
+
+            WeeklyMemoryMaterialOutcomeOperationStatus status = ledger.Prepare(
+                candidate, payload, out errorCode);
+            RefreshWork();
+            if (status != WeeklyMemoryMaterialOutcomeOperationStatus.Accepted
+                && status != WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate)
+            {
+                Logger.Log("WeeklyActionOutcome", "prepare failed state=" + status + " error=" + errorCode);
+            }
+            return status;
+}
+
+internal WeeklyMemoryMaterialOutcomeOperationStatus CompleteWeeklyActionOutcome(string receiptId, string candidateHash, WeeklyMemoryMaterialOutcomeState state, string errorCode)
+{
+            WeeklyMemoryMaterialOutcomeOperationStatus status = Ledger
+                .Complete(receiptId, candidateHash, state, errorCode, out string completionError);
+            RefreshWork();
+            if (status != WeeklyMemoryMaterialOutcomeOperationStatus.Accepted
+                && status != WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate)
+            {
+                Logger.Log("WeeklyActionOutcome", "complete failed state=" + status + " error=" + completionError);
+            }
+            return status;
+}
+}
+
+internal delegate bool WeeklyOutcomeContextCapture(WeeklyMemoryMaterialOutcomeCandidate candidate, bool isNonHero, string npcName, out WeeklyActionOutcomeMaterialContext context, out WeeklyMaterialValuePort values, out string errorCode);
+internal sealed class WeeklyOutcomeApplicationCapabilities {
+ internal MemoryBusinessStateOwner Memory;
+ internal Func<int> CurrentDay;
+ internal Func<string> CurrentDate;
+ internal Func<string,bool> IsEligible;
+ internal WeeklyOutcomeContextCapture CaptureOutcome;
 }

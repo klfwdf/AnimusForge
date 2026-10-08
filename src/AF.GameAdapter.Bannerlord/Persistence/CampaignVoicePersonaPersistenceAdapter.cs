@@ -3,8 +3,16 @@ using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
 // Codec and legacy IO only; existing VoiceMapper/unnamed persona remain authoritative.
-internal static class CampaignVoicePersonaPersistenceAdapter
+internal sealed class CampaignVoicePersonaPersistenceAdapter
 {
+    internal string VoiceJsonStorage = "";
+    internal string VoiceFolderStorage = "";
+    internal string UnnamedJsonStorage = "";
+    internal void Save(IDataStore store, Func<string> exportVoice, Func<string> preferredFolder, Func<string> exportUnnamed)
+        => Save(store, ref VoiceJsonStorage, ref VoiceFolderStorage, ref UnnamedJsonStorage, exportVoice, preferredFolder, exportUnnamed);
+    internal void Load(IDataStore store, Action<string> setPreferredFolder, Func<string,bool> importVoice, Action<string> importUnnamed)
+        => Load(store, ref VoiceJsonStorage, ref VoiceFolderStorage, ref UnnamedJsonStorage, setPreferredFolder, importVoice, importUnnamed);
+
     internal static void Save(IDataStore dataStore, ref string voiceJson, ref string voiceFolder, ref string unnamedJson, Func<string> exportVoice, Func<string> preferredFolder, Func<string> exportUnnamed)
     {
 					try

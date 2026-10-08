@@ -184,10 +184,7 @@ internal sealed class ScenePresentationController
 
 
  internal static void BumpPresentation() { _presentationVersion = unchecked(_presentationVersion + 1); }
- internal string TradeRequestMode;
- internal bool TradeOwnsState;
- internal bool TradeStaged;
- internal string TradeSummary = "";
+
 internal sealed class Member
 	{
 		internal Agent Agent;
@@ -390,7 +387,7 @@ internal void EndPresentationSession(string reason)
 		_lastAutoExcludeUnframedParticipants = false;
 		MergesHotkeyCharge=false;
 		_onEnd();
-		TradeRequestMode = null;
+        // The onEnd capability releases the sole SceneTradeController flow.
 		ClearRound();
 		if (wasActive)
 		{
@@ -635,38 +632,7 @@ internal void SetAllParticipants(bool include)
 		BumpPresentation();
 	}
 
- internal void ReleaseTrade(Action resetTransfer)
- {
-  if (TradeOwnsState) resetTransfer();
-  TradeOwnsState = false; TradeStaged = false; TradeSummary = "";
- }
- // UI selection validation only. The game transfer port still owns inventory and the actual commit.
- internal bool StageTrade(IReadOnlyList<ScenePresentationTradeOption> options, IReadOnlyList<int> indices,
-  IReadOnlyList<int> amounts, string verb, string targetName, Action clearItems, Action<int,int> stageItem, Action finishItems, out string status)
- {
-  status = "";
-  if (!TradeOwnsState || options == null || options.Count == 0) { status = "给予列表已失效，请重新打开。"; return false; }
-  if (indices == null || amounts == null || indices.Count == 0 || indices.Count != amounts.Count) { status = "请先选择要给予的资源。"; return false; }
-  clearItems();
-  HashSet<int> seen = new HashSet<int>(); List<string> labels = new List<string>();
-  for (int i=0; i<indices.Count; i++)
-  {
-   int index=indices[i]; if (index < 0 || index >= options.Count || !seen.Add(index)) continue;
-   ScenePresentationTradeOption option=options[index]; int amount=option.IsSettlement ? 1 : amounts[i];
-   if (amount < 1 || amount > option.Available) { clearItems(); status="数量超出可用范围："+(option.ValidationName ?? option.Name ?? "资源"); return false; }
-   stageItem(index,amount); labels.Add(option.Name+" ×"+amount);
-  }
-  if (labels.Count==0) { status="请先选择要给予的资源。"; return false; }
-  finishItems(); TradeStaged=true; TradeSummary=verb+" "+(targetName ?? "对方")+"："+string.Join("、",labels);
-  BumpPresentation(); return true;
- }
- internal bool ValidateStagedTrade(bool hasTargetAndItems, bool targetInAudience, Action resetTransfer, out string status)
- {
-  status="";
-  if (TradeOwnsState && hasTargetAndItems && targetInAudience) return true;
-  ReleaseTrade(resetTransfer); BumpPresentation(); status="给予对象已离开或给予已失效，本次没有交付，话也没有发出。"; return false;
- }
- internal void ConsumeStagedTrade() { TradeOwnsState=false; TradeStaged=false; TradeSummary=""; }
+ // Trade planning and stage identity are owned by SceneTradeController.
 internal HashSet<int> GetPresentationExcludedAgentIndices()
 	{
 		if (!IsPresentationSessionLive())

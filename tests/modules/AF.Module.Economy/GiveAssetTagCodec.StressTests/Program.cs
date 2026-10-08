@@ -34,14 +34,22 @@ private static string Section(string source, string start)
     {
         int first = source.IndexOf(start, StringComparison.Ordinal);
         if (first < 0) return string.Empty;
-        int opening = source.IndexOf('{', first), depth = 0; char quote = '\0'; bool escape = false;
+        int opening = source.IndexOf('{', first), arrow = source.IndexOf("=>", first), depth = 0;
+        bool expression = arrow >= 0 && (opening < 0 || arrow < opening);
+        if (expression) opening = arrow + 2;
+        int parentheses = 0, brackets = 0; char quote = '\0'; bool escape = false;
         for (int i = opening; i >= 0 && i < source.Length; i++)
         {
             char c = source[i];
             if (quote != '\0') { if (escape) escape = false; else if (c == '\\') escape = true; else if (c == quote) quote = '\0'; continue; }
             if (c == '"' || c == '\'') { quote = c; continue; }
+            if (expression) {
+                if (c == '(') parentheses++; else if (c == ')') parentheses--;
+                if (c == '[') brackets++; else if (c == ']') brackets--;
+                if (c == ';' && depth == 0 && parentheses == 0 && brackets == 0) return source.Substring(first, i + 1 - first);
+            }
             if (c == '{') depth++;
-            else if (c == '}' && --depth == 0) return source.Substring(first, i + 1 - first);
+            else if (c == '}' && --depth == 0 && !expression) return source.Substring(first, i + 1 - first);
         }
         return string.Empty;
     }
@@ -79,6 +87,10 @@ private static int Main()
 }
 private static int RunBody()
 {
+Test.Equal("int A() => 1;", Section("int A() => 1; int B(){return 2;}", "int A("), "expression declaration cannot capture a following body");
+Test.Equal("Func<int> A() => () => {return 1;};", Section("Func<int> A() => () => {return 1;}; int B(){return 2;}", "Func<int> A("), "expression parser keeps nested lambda body");
+Test.Equal("object A() => new {X=1};", Section("object A() => new {X=1}; int B(){return 2;}", "object A("), "expression parser keeps initializer");
+Test.Equal("string A() => \";{}\";", Section("string A() => \";{}\"; int B(){return 2;}", "string A("), "quoted tokens cannot terminate expression declaration");
 string[] importantNames =
 {
     "[ROT]佛雷甲",
@@ -199,10 +211,10 @@ string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Mo
 // J17-B7 (aa3539ca) moved the shared unified-action postprocess wrapper/completion out of
 // ShoutBehavior.ScenePostprocess.cs into Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs.
 string sharedPostprocessOwner = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ConversationActionPostprocessOwner.cs"));
-shoutBehavior += "\n" + sharedPostprocessOwner;
+// Keep facade and sole algorithm source distinct; validate their route below.
 string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
-scenePostprocess += "\n" + sharedPostprocessOwner;
+
 string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
 string courier = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))
@@ -217,8 +229,10 @@ Test.True(transferEligibility.Contains("GiveAssetTagCodec.TryParseWhole(text, ou
 string weeklyEvaluation = Section(weeklyPolicy,"internal static void TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(");
 Test.True(weeklyEvaluation.Contains("!ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(tags)",StringComparison.Ordinal), "weekly evaluation must consume the exact codec eligibility");
 string weeklyProductionConsumer = Section(weeklyAdapter,"private void MarkWeeklyMemoryMaterialTriggerInternal(");
+Test.True(weeklyProductionConsumer.Contains("_memoryHistoryCommit.MarkWeeklyMemoryMaterialTriggerInternal(", StringComparison.Ordinal), "weekly facade must route to sole history commit adapter");
+weeklyProductionConsumer = Section(File.ReadAllText(Path.Combine(repoRoot,"src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs")),"internal void MarkWeeklyMemoryMaterialTriggerInternal(");
 Test.True(weeklyProductionConsumer.Contains("WeeklyMemoryMaterialPolicy.TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);",StringComparison.Ordinal), "real weekly host consumer must reach the evaluation owner");
-Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
+Test.True(HasSharedRewardCodec(sharedPostprocessOwner, sharedPostprocessOwner), "shared Native/Scene/Courier reward codec chain missing");
 string nativeAdmission = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs"));
 string nativeCommit = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs"));
 string nativeCoordinator = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs"));
@@ -228,7 +242,9 @@ string scenePostprocessConsumer = Section(sceneChains, "private async Task<bool>
 string courierPostprocessConsumer = Section(courier, "private ConversationCourierPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(");
 Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
     && Section(nativeAdmission, "internal static Task<string> SubmitNativeConversationForOverlayAsync(").Contains("owner.SubmitNativeConversationAdmittedAsync(", StringComparison.Ordinal)
-    && Section(nativeAdmission, "private async Task<string> SubmitNativeConversationAdmittedAsync(").Contains("SubmitNativeConversationTextInternalAsync(", StringComparison.Ordinal)
+    && Section(nativeAdmission, "private Task<string> SubmitNativeConversationAdmittedAsync(").Contains("NativeAdmissions.SubmitNativeConversationAdmittedAsync(", StringComparison.Ordinal)
+    && Section(File.ReadAllText(Path.Combine(repoRoot,"src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs")), "internal async Task<string> SubmitNativeConversationAdmittedAsync(").Contains("await _runTurn(admission, playerText,", StringComparison.Ordinal)
+    && shoutBehavior.Contains("IsNativeConversationResponseTargetAvailableForActionDispatch,SubmitNativeConversationTextInternalAsync);", StringComparison.Ordinal)
     && nativeSubmit.Contains("NativeConversationTurnCoordinator.RunAsync(new NativeConversationTurnRuntime(", StringComparison.Ordinal)
     && nativeCoordinator.Contains("await host.PostprocessAndCommitAsync()", StringComparison.Ordinal)
     && nativePostprocess.Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
@@ -245,13 +261,13 @@ Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverl
     && courierPostprocessConsumer.Contains("ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal)
     && shoutBehavior.Contains("ConversationActionPostprocessOwner.NormalizeRewardPostprocessTagsForScene(", StringComparison.Ordinal),
     "real Native overlay and Courier owner must reach the shared Shout postprocessor");
-Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), scenePostprocess),
+Test.True(!HasSharedRewardCodec(sharedPostprocessOwner.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), sharedPostprocessOwner),
     "mutation must catch a translator that bypasses the real codec");
-Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.TryParseWhole(text2,", "RemovedCodec(text2,"), scenePostprocess),
+Test.True(!HasSharedRewardCodec(sharedPostprocessOwner.Replace("GiveAssetTagCodec.TryParseWhole(text2,", "RemovedCodec(text2,"), sharedPostprocessOwner),
     "mutation must catch a normalizer that bypasses whole-tag parsing");
-Test.True(!HasSharedRewardCodec(shoutBehavior, scenePostprocess.Replace("NormalizeRewardPostprocessTagsForScene(content,", "RemovedNormalizer(content,")),
+Test.True(!HasSharedRewardCodec(sharedPostprocessOwner, sharedPostprocessOwner.Replace("NormalizeRewardPostprocessTagsForScene(content,", "RemovedNormalizer(content,")),
     "mutation must catch disconnected shared postprocess completion");
-Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
+Test.True(sharedPostprocessOwner.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && sharedPostprocessOwner.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
 Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
 string fixedAssetFacade = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PartyAssetTransfers.cs"));
@@ -274,38 +290,38 @@ Test.True(!fixedAssetResolution.Contains("if (!LooksLikeFixedAssetTransferIdForE
     && !exactSettlementLookup.Contains("Settlement.All", StringComparison.Ordinal)
     && fixedAssetRewardConsumer.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal),
     "an exact custom Settlement.StringId must resolve as a fixed asset without a global settlement scan");
-Match tournamentParticipantPromptContract = Regex.Match(myBehavior,
-    @"private void RecordTournamentParticipantNpcActions\(.*?(?=\r?\n\s*private static Kingdom ResolveTournamentHostKingdom)",
-    RegexOptions.Singleline);
-Match tournamentParticipantSummaryContract = Regex.Match(myBehavior,
-    @"private static string BuildTournamentParticipantSummary\(.*?(?=\r?\n\s*private static string GetTournamentPrizeDisplayName)",
-    RegexOptions.Singleline);
-Test.True(tournamentParticipantPromptContract.Success
-    && tournamentParticipantPromptContract.Value.Contains("全部参赛者（含冠军）", StringComparison.Ordinal)
-    && tournamentParticipantPromptContract.Value.Contains("冠军是", StringComparison.Ordinal)
-    && tournamentParticipantPromptContract.Value.Contains("foreach (Hero tournamentHero in participantHeroes)", StringComparison.Ordinal)
-    && tournamentParticipantPromptContract.Value.Contains("RecordNpcRecentAction(tournamentHero, participantActionText", StringComparison.Ordinal)
-    && tournamentParticipantSummaryContract.Success
-    && tournamentParticipantSummaryContract.Value.Contains("GetTournamentCharacterDisplayName(participant, \"未命名参赛者\")", StringComparison.Ordinal)
-    && !tournamentParticipantSummaryContract.Value.Contains("list.Count >= 8", StringComparison.Ordinal)
-    && !tournamentParticipantSummaryContract.Value.Contains(".Take(8)", StringComparison.Ordinal),
+string tournamentOwner = File.ReadAllText(Path.Combine(repoRoot,"src/AF.GameAdapter.Bannerlord/Records/CampaignCharacterRecordCaptureAdapter.cs"));
+Test.True(Section(myBehavior,"private static string BuildTournamentParticipantSummary(").Contains("CampaignCharacterRecordCaptureAdapter.BuildTournamentParticipantSummary(", StringComparison.Ordinal) && Section(myBehavior,"private static Dictionary<string, string> BuildTournamentParticipantRankLabels(").Contains("CampaignCharacterRecordCaptureAdapter.BuildTournamentParticipantRankLabels(", StringComparison.Ordinal), "tournament facades must route to real record capture owner");
+string tournamentParticipantPromptContract = Section(tournamentOwner, "internal void RecordTournamentParticipantNpcActions(");
+string tournamentActionText = Section(tournamentOwner,"internal static string BuildTournamentParticipantActionText(");
+Test.True(tournamentParticipantPromptContract.Contains("BuildTournamentParticipantActionText(text, championName,", StringComparison.Ordinal), "participant record must consume actual truthful tournament action-text helper");
+string tournamentParticipantSummaryContract = Section(tournamentOwner, "internal static string BuildTournamentParticipantSummary(");
+Test.True(tournamentParticipantPromptContract.Length > 0
+    && tournamentActionText.Contains("全部参赛者（含冠军）", StringComparison.Ordinal)
+    && tournamentActionText.Contains("冠军是", StringComparison.Ordinal)
+    && tournamentParticipantPromptContract.Contains("foreach (Hero tournamentHero in participantHeroes)", StringComparison.Ordinal)
+    && tournamentParticipantPromptContract.Contains("RecordNpcRecentAction(tournamentHero, participantActionText", StringComparison.Ordinal)
+    && tournamentParticipantSummaryContract.Length > 0
+    && tournamentParticipantSummaryContract.Contains("GetTournamentCharacterDisplayName(participant, \"未命名参赛者\")", StringComparison.Ordinal)
+    && !tournamentParticipantSummaryContract.Contains("list.Count >= 8", StringComparison.Ordinal)
+    && !tournamentParticipantSummaryContract.Contains(".Take(8)", StringComparison.Ordinal),
     "tournament prompt context must keep the champion and every participant, including non-Hero entrants, without an eight-person cap");
-Match tournamentRankContract = Regex.Match(myBehavior,
-    @"private static Dictionary<string, string> BuildTournamentParticipantRankLabels\(.*?(?=\r?\n\s*private static Kingdom ResolveTournamentHostKingdom)",
-    RegexOptions.Singleline);
-Test.True(tournamentRankContract.Success
-    && tournamentRankContract.Value.Contains("Mission.Current?.GetMissionBehavior<TournamentBehavior>()", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("missionBehavior.Settlement?.Town != town", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("missionBehavior.Winner?.Character != winner", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("foreach (TournamentMatch match in tournamentRound.Matches)", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("foreach (TournamentParticipant participant in match.Participants)", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("冠军（第1名）", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("亚军（第2名）", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("四强（并列第3名）", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("八强（并列第5名）", StringComparison.Ordinal)
-    && tournamentRankContract.Value.Contains("十六强（并列第9名）", StringComparison.Ordinal)
-    && !tournamentRankContract.Value.Contains("GetLeaderBoardRank", StringComparison.Ordinal)
-    && !tournamentRankContract.Value.Contains("TournamentParticipant.Score", StringComparison.Ordinal),
+string tournamentRankContract = Section(tournamentOwner, "internal static Dictionary<string, string> BuildTournamentParticipantRankLabels(");
+string tournamentEliminationRank = Section(tournamentOwner,"internal static string BuildTournamentEliminationRankLabel(");
+Test.True(tournamentRankContract.Contains("BuildTournamentEliminationRankLabel(item.Value, missionBehavior.Rounds.Length)", StringComparison.Ordinal), "rank capture must use real elimination-tier helper");
+Test.True(tournamentRankContract.Length > 0
+    && tournamentRankContract.Contains("Mission.Current?.GetMissionBehavior<TournamentBehavior>()", StringComparison.Ordinal)
+    && tournamentRankContract.Contains("missionBehavior.Settlement?.Town != town", StringComparison.Ordinal)
+    && tournamentRankContract.Contains("missionBehavior.Winner?.Character != winner", StringComparison.Ordinal)
+    && tournamentRankContract.Contains("foreach (TournamentMatch match in tournamentRound.Matches)", StringComparison.Ordinal)
+    && tournamentRankContract.Contains("foreach (TournamentParticipant participant in match.Participants)", StringComparison.Ordinal)
+    && tournamentRankContract.Contains("冠军（第1名）", StringComparison.Ordinal)
+    && tournamentEliminationRank.Contains("亚军（第2名）", StringComparison.Ordinal)
+    && tournamentEliminationRank.Contains("四强（并列第3名）", StringComparison.Ordinal)
+    && tournamentEliminationRank.Contains("八强（并列第5名）", StringComparison.Ordinal)
+    && tournamentEliminationRank.Contains("十六强（并列第9名）", StringComparison.Ordinal)
+    && !tournamentRankContract.Contains("GetLeaderBoardRank", StringComparison.Ordinal)
+    && !tournamentRankContract.Contains("TournamentParticipant.Score", StringComparison.Ordinal),
     "tournament placement prompt context must derive only truthful bracket tiers from the completed live tournament tree");
 Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
 Test.True(rewardSystem.Contains("[RewardRpLiteral] generated", StringComparison.Ordinal), "literal RP generation diagnostic missing");
@@ -548,25 +564,27 @@ Test.True(!playerRpCrafting.Contains("candidate.StandardPrice < investedDenars",
     && !playerRpCrafting.Contains("杂物投入不能高于所选模板的标准价格", StringComparison.Ordinal)
     && playerRpCrafting.Contains("current.InvestedDenars >= current.TemplateBaseValue", StringComparison.Ordinal),
     "ordinary RP items must have no template-price investment cap while retaining the underfunded junk roll");
+string rpCraftObservation = Section(File.ReadAllText(Path.Combine(repoRoot,"src/AF.GameAdapter.Bannerlord/Memory/ExternalActionObservationBannerlordAdapter.cs")),"internal void RecordExternalPlayerHighValueRpCraft(");
+Test.True(Section(myBehavior,"public static void RecordPlayerHighValueRpCraftForExternal(").Contains("?.RecordExternalPlayerHighValueRpCraft(", StringComparison.Ordinal) && Section(myBehavior,"private void RecordExternalPlayerHighValueRpCraft(").Contains("ExternalActionObservations.RecordExternalPlayerHighValueRpCraft(", StringComparison.Ordinal),"RP craft ABI must reach sole external observation adapter");
 Test.True(playerRpCrafting.Contains("if (current.InvestedDenars > 10000)", StringComparison.Ordinal)
     && playerRpCrafting.IndexOf("transactionCommitted = true;", StringComparison.Ordinal)
         < playerRpCrafting.IndexOf("RecordPlayerHighValueRpCraftForExternal(", StringComparison.Ordinal)
-    && myBehavior.Contains("if (investedDenars <= 10000)", StringComparison.Ordinal)
-    && myBehavior.Contains("\"player_rp_craft_high_value:\"", StringComparison.Ordinal)
-    && myBehavior.Contains("\"player_rp_craft\"", StringComparison.Ordinal)
-    && myBehavior.Contains("isMajor: true", StringComparison.Ordinal)
-    && myBehavior.Contains("RecordEventSourceMaterial(", StringComparison.Ordinal)
-    && myBehavior.Contains("string outputValue = Math.Max(1, craftedItemValue)", StringComparison.Ordinal)
-    && myBehavior.Contains("\"；成品价值 \" + outputValue", StringComparison.Ordinal)
-    && myBehavior.Contains("includeInWorld: true", StringComparison.Ordinal),
+    && rpCraftObservation.Contains("if (investedDenars <= 10000)", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("\"player_rp_craft_high_value:\"", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("\"player_rp_craft\"", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("isMajor: true", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("RecordEventSourceMaterial(", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("string outputValue = Math.Max(1, craftedItemValue)", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("\"；成品价值 \" + outputValue", StringComparison.Ordinal)
+    && rpCraftObservation.Contains("includeInWorld: true", StringComparison.Ordinal),
     "successful RP crafts above 10,000 denars must enter weekly material, recent actions, and major history only after commit");
 Test.True(playerRpCrafting.Contains("NormalizePlayerRpStrictExactLookup", StringComparison.Ordinal)
     && playerRpCrafting.Contains("[\\\\s\\\\u3000]+", StringComparison.Ordinal),
     "strict exact display-name matching must preserve hyphen/underscore boundaries");
 Test.True(!myBehavior.Contains("TranslateRewardItemIndexes(", StringComparison.Ordinal)
-    && HasSharedRewardCodec(shoutBehavior, scenePostprocess),
+    && HasSharedRewardCodec(sharedPostprocessOwner, sharedPostprocessOwner),
     "free conversation must use the shared translator rather than retain a duplicate private implementation");
-Test.True(shoutBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !shoutBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
+Test.True(sharedPostprocessOwner.Contains("getItemDisplayName", StringComparison.Ordinal) && !sharedPostprocessOwner.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
 Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);
 Test.True(foodSuffixBlock.Success, "generated RP food suffix pool missing");
 int foodSuffixCount = Regex.Matches(foodSuffixBlock.Value, "\"(?:[^\"\\\\]|\\\\.)*\"").Count;

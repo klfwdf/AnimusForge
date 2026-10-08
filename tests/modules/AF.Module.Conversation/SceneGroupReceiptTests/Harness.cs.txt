@@ -60,7 +60,20 @@ internal sealed partial class SceneConversationSessionRuntime
     private void RegisterModuleSceneGroup(SceneGroupReceipt receipt) { }
     private void ReleaseModuleSceneGroup(SceneGroupReceipt receipt) { }
 
-    private readonly List<ConversationMessage> _history = new();
+    private readonly SceneConversationHistoryOwner _historyOwner = new(new object());
+    private readonly CurrentCapture SceneHistoryPromptCapture;
+    internal SceneConversationSessionRuntime(){SceneHistoryPromptCapture=new(_historyOwner,CaptureSceneHistoryMessageContext);}
+    private sealed class CurrentCapture {
+      private readonly Func<SceneConversationHistoryOwner> _history;
+      private readonly ScenePendingAfefFactsOwner _pendingFacts=new();
+      private readonly Func<int,bool,SceneHistoryMessageContext> _context;
+      internal CurrentCapture(SceneConversationHistoryOwner history,Func<int,bool,SceneHistoryMessageContext> context){_history=()=>history;_context=context;}
+      private SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int index,bool labels)=>_context(index,labels);
+      private static string BuildStrictSceneMessagesSystemPrompt(string text,bool suppress)=>text;
+      private static ConversationMessage StampConversationMessageWithCurrentMemoryContext(ConversationMessage message)=>message;
+      private static string GetStrictScenePlayerDisplayName()=>"Player";
+      @@CURRENT_CAPTURE@@
+    }
     private int _sceneHistorySessionId = 4;
     private int _epoch = 12;
     private bool _targetAvailable = true;
@@ -71,7 +84,7 @@ internal sealed partial class SceneConversationSessionRuntime
     private static void AppendStrictSceneUserSections(List<object> messages, IEnumerable<string> sections) { }
     private static List<ConversationMessage> ConsumePendingCurrentAfefFactMessagesForPrompt(int index) => new();
     private static string BuildConversationMessageDedupeKey(ConversationMessage message) => message.Role + ":" + message.Content;
-    private List<ConversationMessage> GetNpcConversationHistorySnapshot(int index) => new(_history);
+    private List<ConversationMessage> GetNpcConversationHistorySnapshot(int index) => _historyOwner.CaptureNpc(index,"",new());
     private static void AppendConversationMessages(List<ConversationMessage> target, IEnumerable<ConversationMessage> source)
     { if (source != null) target.AddRange(source.Where(message => message != null)); }
     private static List<ConversationMessage> SortConversationMessagesByEventSequence(List<ConversationMessage> messages) => messages;
@@ -112,7 +125,8 @@ internal sealed partial class SceneConversationSessionRuntime
         Check(candidates.Select(x => x.AgentIndex).SequenceEqual(new[] { 7, 8, 9 }), "actual group candidate order and one speaker per agent");
 
         var host = new SceneConversationSessionRuntime();
-        host._history.Add(new ConversationMessage { Role = "user", Content = "one player input" });
+        host._historyOwner.AppendNpc(7,new ConversationMessage { Role = "user", Content = "one player input" });
+        host._historyOwner.AppendNpc(8,new ConversationMessage { Role = "user", Content = "one player input" });
         var passiveMessages = host.BuildStrictSceneMessagesForNpc(7, "system", Array.Empty<string>(),
             new[] { "current trigger" }, currentInputAlreadyRecorded: true, currentPlayerInput: "one player input");
         Check(passiveMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content.EndsWith("one player input", StringComparison.Ordinal)) == 1,
@@ -257,3 +271,8 @@ internal static class MainPromptMessageAssemblyOwner { internal static object Cr
 internal static class ShoutUtils { internal static string StripConversationMetadataPrefix(string text)=>text; internal static string StripNamePrefixedLineSafely(string text,int maximum=30)=>text; }
 internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text)=>text; }
 internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text)=>text; }
+
+internal static class NativeConversationSessionOwner { @@CURRENT_LIMIT@@ }
+internal static class DuelSettings {internal const int DailyConversationHistoryLineLimitMax=100;internal static int GetDailyConversationHistoryLineLimitForExternal()=>20;}
+internal static class SceneAgentIdentityPromptCaptureAdapter {internal static float GetPlayerDistanceToAgentForScenePrompt(int index)=>1f;internal static string ResolveSceneHeroIdFromAgentIndex(int index)=>"";}
+internal static class LlmRequestConfigurationCaptureAdapter {internal static ConversationSpeechTextOptions CaptureSceneSpeechTextOptions()=>new();}

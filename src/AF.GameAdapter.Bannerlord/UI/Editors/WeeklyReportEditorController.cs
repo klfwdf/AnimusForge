@@ -1,4 +1,4 @@
-﻿using static AnimusForge.MyBehavior;
+using static AnimusForge.MyBehavior;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,6 +89,23 @@ internal sealed class WeeklyEditorPort : WeeklyEditorDisplayPort
 
 internal sealed class WeeklyReportEditorController
 {
+internal static void ShowWeeklyFullOnDemandProgressPopup(EventRecordEntry entry, Func<string,string,int,string> defaultTitle)
+	{
+		string text = (entry?.Title ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = defaultTitle(entry?.EventKind, entry?.ScopeKingdomId, entry?.WeekIndex ?? 0);
+		}
+		InformationManager.ShowInquiry(new InquiryData("正在生成完整周报", "正在使用该期保存的完整素材补写完整周报正文。\n\n周报：" + text + "\n\n请稍候，生成完成或失败前此窗口不会关闭。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+	}
+internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
+	{
+		InformationManager.HideInquiry();
+		InformationManager.ShowInquiry(new InquiryData("完整周报生成失败", string.IsNullOrWhiteSpace(message) ? "完整周报生成失败。" : message.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		{
+		}, null), pauseGameActiveState: true);
+	}
+
  private readonly WeeklyEditorPort _port;
  internal WeeklyReportRetryContext RetryContext;
  internal bool ManualRetryInProgress;

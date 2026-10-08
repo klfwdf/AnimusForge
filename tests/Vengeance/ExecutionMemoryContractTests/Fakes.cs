@@ -92,15 +92,22 @@ namespace AnimusForge
     internal static class ShoutUtils { internal static NpcData ExtractNpcData(TaleWorlds.MountAndBlade.Agent agent) => new(); }
     public partial class MyBehavior
     {
+        public MyBehavior()
+        { ExecutionWitnesses = new ExecutionWitnessObservationController(_executionTranscripts,GetCurrentGameDayIndexSafe,
+            BuildNonHeroMemoryIdForExternal,id=>GetDialogueHistoryEntriesByIdForExternal(id,1).Count>0,
+            CommitExternalDialogueHistoryRecoverable,GetKingdomId,RecordEventSourceMaterial,CaptureWorldBulletinEvent); }
+
         internal static List<AnimusForge.Refactor.Contracts.InteractionMemoryCommit> Memories = new();
         internal List<string> News = new();
         internal int Materials;
         internal static bool FailMemory;
+        internal static int MemoryAttempts;
         internal static int GetCurrentGameDayIndexSafe() => 3;
         internal static string BuildNonHeroMemoryIdForExternal(string key) => key;
         internal static List<string> GetDialogueHistoryEntriesByIdForExternal(string key, int max) => new();
         internal static AnimusForge.Refactor.Contracts.MemoryCommitResult CommitExternalDialogueHistoryRecoverable(AnimusForge.Refactor.Contracts.InteractionMemoryCommit commit, bool nonhero, string name)
         {
+            MemoryAttempts++;
             if (FailMemory) return new() { HistoryWritten = false, ErrorCode = "injected_failure" };
             Memories.Add(commit); return new() { HistoryWritten = true };
         }

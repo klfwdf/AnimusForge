@@ -47,6 +47,7 @@ MAX_SOURCE_TEXT_BYTES = 8 * 1024 * 1024
 MAX_FILE_BYTES = 512 * 1024 * 1024
 MAX_TOTAL_BYTES = 2 * 1024 * 1024 * 1024
 MAX_ITEMS = 256
+MAX_PROJECT_ENTRY_PATHS = 512
 MAX_AGE = timedelta(days=14)
 DOMAIN_EVIDENCE_KEYS = {"offline", "compiled", "live", "save", "release"}
 DOMAIN_EVIDENCE_STATES = {"LOCAL_PASS", "VERIFY", "NOT_RUN", "BLOCKED"}
@@ -223,7 +224,8 @@ def exact_keys(value: Any, keys: set[str], label: str) -> dict[str, Any]:
 
 
 def source_paths(files: EvidenceFiles, paths: Any, label: str) -> list[str]:
-    require(string_list(paths) and bool(paths), f"{label} requires bounded project file paths")
+    require(isinstance(paths, list) and 0 < len(paths) <= MAX_PROJECT_ENTRY_PATHS
+            and all(nonempty(path) for path in paths), f"{label} requires bounded project file paths")
     for path in paths:
         files.resolve("project", path)
     return paths

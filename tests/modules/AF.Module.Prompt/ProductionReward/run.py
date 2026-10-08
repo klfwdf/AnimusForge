@@ -6,6 +6,7 @@ import sys as _legacy_sys
 from pathlib import Path as _LegacyPath
 _legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
 from af2_terminal_migration_review import historical_source
+from output_isolation import new_run_root, minimal_test_environment
 AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import importlib.util
 import os
@@ -17,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--dotnet", default=os.environ.get("AF_DOTNET") or os.environ.get("DOTNET_EXE")
                     or r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
+parser.add_argument("--run-root", type=Path)
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -37,8 +39,7 @@ assert stubs.count("public static class RewardSystemBehavior") == 1
 stubs = stubs.replace("public static class RewardSystemBehavior", "public partial class RewardSystemBehavior")
 assert stubs.count("public sealed class Hero { public string StringId; }") == 1
 stubs = stubs.replace("public sealed class Hero { public string StringId; }", "public sealed class Hero { public string StringId; public CharacterObject CharacterObject; }")
-output = ROOT / "artifacts/tests/prompt-j03-production-reward/current"
-output.mkdir(parents=True, exist_ok=True)
+output = new_run_root(ROOT, "production-reward", args.run_root)
 (output / "Stubs.cs").write_text(stubs, encoding="utf-8")
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
 (output / "Program.cs").write_text(template.replace("@@METHODS@@", methods)
@@ -51,7 +52,7 @@ project = '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</Outp
 (output / "Proof.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
 dotnet = Path(args.dotnet)
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1")
+env = minimal_test_environment(dotnet, output)
 build = subprocess.run([str(dotnet), "build", str(output / "Proof.csproj"), "-c", "Release", "--nologo", "-p:UseAppHost=false", "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")],
                        cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 print(build.stdout + build.stderr)

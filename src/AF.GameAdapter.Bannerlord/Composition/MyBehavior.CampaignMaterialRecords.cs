@@ -57,85 +57,11 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
-		private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
-	{
-		string normalizedMaterialKind = (materialKind ?? "").Trim();
-		string normalizedActorHeroId = (actorHeroId ?? "").Trim();
-		bool isPlayerMaterial = IsPlayerWeeklySourceMaterial(normalizedMaterialKind, normalizedActorHeroId, stableKey);
-		string text = isPlayerMaterial
-			? PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(snapshotText)
-			: PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(snapshotText);
-		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-        int day = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
-        _campaignMaterialRecords.Record(new EventSourceMaterialEntry {
-            Day = day,
-            GameDate = string.IsNullOrWhiteSpace(gameDateOverride) ? GetCurrentGameDateTextSafe() : gameDateOverride.Trim(),
-            MaterialKind = normalizedMaterialKind,
-            Label = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(label).Trim(),
-            SnapshotText = text, StableKey = stableKey, KingdomId = kingdomId, SettlementId = settlementId,
-            ActorHeroId = normalizedActorHeroId, ActorKingdomId = actorKingdomId,
-            IncludeInWorld = includeInWorld, IncludeInKingdom = includeInKingdom
-        }, () => ++_npcActionGlobalOrderCounter, _weeklyReportMaterialRevisions.MarkDay);
-        CaptureCivilNewsMaterial(normalizedMaterialKind, stableKey, label, text,
-            kingdomId, actorKingdomId, actorHeroId, day, includeInWorld);
-    }
+		private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "") => _campaignCharacterRecordCapture.RecordEventSourceMaterial(materialKind, label, snapshotText, stableKey, kingdomId, settlementId, includeInWorld, includeInKingdom, actorHeroId, actorKingdomId, dayOverride, gameDateOverride);
 
-	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries, NpcActionFacts facts, bool isMajor, bool allowNonLordHero = false)
-	{
-		try
-		{
-			if (storage == null || !ShouldTrackNpcActionHero(hero, allowNonLordHero))
-			{
-				return;
-			}
-			if (hero == Hero.MainHero)
-			{
-				RecordPlayerNotorietyActionFromNpcAction(text, stableKey, facts, isMajor);
-				return;
-			}
-            _npcActionRecords.Record(storage, GetNpcActionHeroKey(hero), text, stableKey,
-                GetCurrentGameDayIndexSafe(), keepOnlyRecentWindow, dedupeAcrossWindow, maxEntries,
-                () => ++_npcActionGlobalOrderCounter,
-                (normalizedText, normalizedKey, day, order, sequence) =>
-                    CreateNpcActionEntry(hero, normalizedText, normalizedKey, day, order, sequence, facts, isMajor),
-                _weeklyReportMaterialRevisions.MarkAll, _weeklyReportMaterialRevisions.MarkDay);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcAction", "[ERROR] RecordNpcActionInternal: " + ex.Message);
-		}
-	}
+	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries, NpcActionFacts facts, bool isMajor, bool allowNonLordHero = false) => _campaignCharacterRecordCapture.RecordNpcActionInternal(storage, hero, text, stableKey, keepOnlyRecentWindow, dedupeAcrossWindow, maxEntries, facts, isMajor, allowNonLordHero);
 
-	private void RecordPlayerNotorietyActionFromNpcAction(string text, string stableKey, NpcActionFacts facts, bool isMajor)
-	{
-		try
-		{
-			string normalizedText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (string.IsNullOrWhiteSpace(normalizedText))
-			{
-				return;
-			}
-			int day = GetCurrentGameDayIndexSafe();
-			int sequence = ++_npcActionGlobalOrderCounter;
-			string actionKind = (facts?.ActionKind ?? "").Trim();
-			string settlementId = (facts?.SettlementId ?? "").Trim();
-			string settlementName = (facts?.SettlementName ?? "").Trim();
-			string locationText = (facts?.LocationText ?? "").Trim();
-			Settlement settlement = ResolveSettlementById(settlementId);
-			string settlementCultureId = settlement?.Culture?.StringId ?? "";
-			string actorCultureId = Hero.MainHero?.Culture?.StringId ?? "";
-			string targetCultureId = ResolveHeroCultureId(facts?.TargetHeroId);
-			PlayerNotorietyBehavior.RecordPlayerActionForExternal(normalizedText, stableKey, actionKind, isMajor, day, GetCurrentGameDateTextSafe(), sequence, settlementId, settlementName, locationText, actorCultureId, targetCultureId, settlementCultureId, facts?.Won);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("PlayerNotoriety", "RecordPlayerNotorietyActionFromNpcAction failed: " + ex.Message);
-		}
-	}
+	private void RecordPlayerNotorietyActionFromNpcAction(string text, string stableKey, NpcActionFacts facts, bool isMajor) => _campaignCharacterRecordCapture.RecordPlayerNotorietyActionFromNpcAction(text, stableKey, facts, isMajor);
 
 	internal sealed class EventSourceMaterialEntry
 	{
@@ -179,38 +105,7 @@ public partial class MyBehavior
         => CampaignMaterialRecordOwner.SanitizeEventSourceMaterials(source);
     private static string BuildEventSourceMaterialIndexKey(int day, string stableKey)
         => CampaignMaterialRecordOwner.BuildEventSourceMaterialIndexKey(day, stableKey);
-	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor)
-	{
-		NpcActionFacts npcActionFacts = facts ?? CreateNpcActionFacts("", hero);
-		if (string.IsNullOrWhiteSpace(npcActionFacts.ActorHeroId))
-		{
-			ApplyActorFacts(npcActionFacts, hero);
-		}
-		npcActionFacts.IsMajor = isMajor;
-		var capture = new NpcActionEntry { GameDate = GetCurrentGameDateTextSafe(),
-            ActionKind = npcActionFacts.ActionKind,
-            ActorHeroId = npcActionFacts.ActorHeroId,
-            ActorClanId = npcActionFacts.ActorClanId,
-            ActorKingdomId = npcActionFacts.ActorKingdomId,
-            TargetHeroId = npcActionFacts.TargetHeroId,
-            TargetClanId = npcActionFacts.TargetClanId,
-            TargetKingdomId = npcActionFacts.TargetKingdomId,
-            SettlementId = npcActionFacts.SettlementId,
-            SettlementName = npcActionFacts.SettlementName,
-            SettlementOwnerHeroId = npcActionFacts.SettlementOwnerHeroId,
-            SettlementOwnerClanId = npcActionFacts.SettlementOwnerClanId,
-            SettlementOwnerKingdomId = npcActionFacts.SettlementOwnerKingdomId,
-            PreviousSettlementOwnerHeroId = npcActionFacts.PreviousSettlementOwnerHeroId,
-            PreviousSettlementOwnerClanId = npcActionFacts.PreviousSettlementOwnerClanId,
-            PreviousSettlementOwnerKingdomId = npcActionFacts.PreviousSettlementOwnerKingdomId,
-            LocationText = npcActionFacts.LocationText,
-            Won = npcActionFacts.Won,
-            RelatedHeroIds = npcActionFacts.RelatedHeroIds,
-            RelatedClanIds = npcActionFacts.RelatedClanIds,
-            RelatedKingdomIds = npcActionFacts.RelatedKingdomIds
-        };
-        return NpcActionRecordOwner.Create(capture, text, stableKey, day, order, sequence, isMajor);
-	}
+	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor) => CampaignCharacterRecordCaptureAdapter.CreateNpcActionEntry(hero, text, stableKey, day, order, sequence, facts, isMajor);
 
     private readonly NpcActionRecordOwner _npcActionRecords = new NpcActionRecordOwner();
     private Dictionary<string, HashSet<string>> _npcRecentActionStableKeyIndex => _npcActionRecords.RecentStableKeys;
@@ -235,17 +130,7 @@ public partial class MyBehavior
 	}
 
     private void ApplyImportedEventData(EventImportPayload payload, bool overwriteExisting)
-    {
-        if (payload == null) return;
-        WeeklyEventDataImportOwner.ApplyOpening(payload, overwriteExisting,
-            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, _weeklyReportMaterialRevisions.MarkOpening);
-        if (!payload.HasEventRecordsFile) return;
-        string previous = BuildPublishedWorldWeeklyProductsFingerprint();
-        WeeklyEventDataImportOwner.ApplyRecords(payload, overwriteExisting, ref _eventRecordEntries, SanitizeEventRecordEntries);
-        if (!string.Equals(previous, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
-            Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
-        NotifyWorldMessageWeeklyTimelineChanged();
-    }
+        => WeeklyEventFiles.ApplyImportedEventData(payload, overwriteExisting);
 
 
     private static List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> source)
@@ -254,27 +139,20 @@ public partial class MyBehavior
 
 
     private bool TryLoadEventDataFromImportDir(string importDir, out EventImportPayload payload, out string error)
-        => WeeklyEventDataImportOwner.TryLoadEventDataFromImportDir(importDir, out payload, out error,
-            path => PlayerExportsStore.ReadJson<EventWorldOpeningSummaryJson>(path)?.Summary,
-            PlayerExportsStore.ReadJson<Dictionary<string,string>>, PlayerExportsStore.ReadJson<List<EventRecordEntry>>,
-            SanitizeEventRecordEntries);
+        => WeeklyEventFiles.TryLoadEventDataFromImportDir(importDir, out payload, out error);
 
 
 	private void ReplaceDatabaseOpeningKnowledge(EventImportPayload payload)
 	{
         int removedOpeningRecordCount = WeeklyEventDataImportOwner.ReplaceOpening(payload,
-            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, ref _eventRecordEntries,
+            ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, ref _weeklyEventRecords.Records,
             _weeklyReportMaterialRevisions.MarkOpening, out bool removedWorldOpeningRecord);
-		// Pending requests are tied to old derived entries.  Keep in-flight requests: their source-hash guard rejects stale results safely.
-		lock (_weekZeroShortSummaryQueueLock)
-		{
-			_weekZeroShortSummaryPendingQueue.RemoveAll((WeekZeroShortSummaryRequest x) => IsDatabaseReloadOpeningEventId(x?.EventId));
-			_weekZeroShortSummaryGenerationAttempted.RemoveWhere(IsDatabaseReloadOpeningEventId);
-		}
+		// Opening reload keeps in-flight requests; original source-hash validation still guards their result.
+        _weekZeroShortSummaries.RemovePendingOpeningRequests(IsDatabaseReloadOpeningEventId);
 		// A blank world summary removes the published week-zero world report, so it needs a revision signal even though no new report is upserted.
 		if (removedWorldOpeningRecord && string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
 		{
-			Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+			Interlocked.Increment(ref _weeklyEventRecords.PublishedHistoryRevision);
 		}
 		// Reload owns only canonical week-zero entries.  Skipping the usual global sanitation keeps arbitrary dynamic history byte-for-byte untouched.
 		EnsureWeekZeroOpeningSummaryEvents(sanitizeAfter: false);
@@ -295,22 +173,22 @@ public partial class MyBehavior
         List<EventRecordEntry> restoredRecords, string previousWorldWeeklyProductsFingerprint)
     {
         WeeklyEventDataImportOwner.RestoreOpeningAndRecords(worldSummary, openingSummaries, restoredRecords,
-            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, ref _eventRecordEntries,
+            ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, ref _weeklyEventRecords.Records,
             _weeklyReportMaterialRevisions.MarkOpening);
         if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
-            Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+            Interlocked.Increment(ref _weeklyEventRecords.PublishedHistoryRevision);
     }
 
     private bool SetDeveloperWorldOpeningSummary(string input, long generation)
     {
         if (!IsMemorySourceEditorCurrent(generation)) return false;
-        WeeklyEventDataImportOwner.SetWorldOpeningSummary(input, ref _eventWorldOpeningSummary, _weeklyReportMaterialRevisions.MarkOpening);
+        WeeklyEventDataImportOwner.SetWorldOpeningSummary(input, ref _weeklyEventRecords.WorldOpening, _weeklyReportMaterialRevisions.MarkOpening);
         return true;
     }
     private bool ClearDeveloperOpeningSummaries(long generation)
     {
         if (!IsMemorySourceEditorCurrent(generation)) return false;
-        WeeklyEventDataImportOwner.ClearOpeningSummaries(ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, _weeklyReportMaterialRevisions.MarkOpening);
+        WeeklyEventDataImportOwner.ClearOpeningSummaries(ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, _weeklyReportMaterialRevisions.MarkOpening);
         return true;
     }
     private EventRecordEntry ApplyDeveloperEventTitle(EventRecordEntry entry, string input, long generation)
@@ -320,7 +198,7 @@ public partial class MyBehavior
     private EventRecordEntry ApplyDeveloperEventEdit(EventRecordEntry entry, string input, bool editTitle, long generation)
     {
         if (entry == null || !IsMemorySourceEditorCurrent(generation)) return null;
-        return WeeklyEventDataImportOwner.ApplyDeveloperEventEdit(entry, input, editTitle, ref _eventRecordEntries,
+        return WeeklyEventDataImportOwner.ApplyDeveloperEventEdit(entry, input, editTitle, ref _weeklyEventRecords.Records,
             FindWeeklyReportRecordById, BuildPublishedWorldWeeklyProductState,
             stored => BuildDefaultWeeklyReportTitle(new WeeklyEventMaterialPreviewGroup { GroupKind = stored.EventKind,
                 KingdomId = stored.ScopeKingdomId }, stored.WeekIndex), SanitizeEventRecordEntries,

@@ -30,16 +30,50 @@ else:
  # The current Native turn reconstruction is separately strict on algorithm/order;
  old=prior_body[pa:pb]
  expected=old[:old.index('\t\tstring nativeInitialTargetUnavailableReason')]+old[old.index('\t\tList<NpcDataPacket> presentNpcs'):].replace('\t\t// Do not feed vanilla conversation UI text into AF prompt history.\n\t\tstring currentNativeDialogText = "";\n','').replace('\t\tstring extraFact = npcOpeningPersistentFactText;\n','')
- capture=ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
- # Only the two named Movement leaf receiver changes are reviewed here; retain all original order/arguments.
- for leaf in ['BuildSceneSummonPromptTargets', 'BuildSceneGuidePromptTargets']:
-  assert expected.count(leaf+'(')==1
-  expected=expected.replace(leaf+'(', '_sceneMovement.'+leaf+'(',1)
- assert expected in capture, 'Preparation builder order/arguments differ from original'
+ capture_source=read('src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs')
+ capture=ex.declaration(capture_source,'internal static NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
+ ports=ex.declaration(capture_source,'internal sealed class NativePreparationPorts')
+ # Prove original builder order/arguments via only the reviewed named receiver/port changes.
+ inverse=capture
+ receiver_changes={
+  'ports.Identity.BuildNativeConversationNpcData(':'BuildNativeConversationNpcData(',
+  'HasNativeConversationSessionHistory(ports.Sessions, ':'HasNativeConversationSessionHistory(',
+  'ConversationActionBoundaryBannerlordAdapter.TryResolveNativeConversationMeetingTauntParty(':'TryResolveNativeConversationMeetingTauntParty(',
+  'ports.Summon(':'BuildSceneSummonPromptTargets(',
+  'ports.Guide(':'BuildSceneGuidePromptTargets(',
+  'ports.Excluded(':'BuildPreprocessExcludedRuleIdsForCurrentInteraction(',
+ }
+ for current,prior_receiver in receiver_changes.items():
+  assert inverse.count(current)==1, current
+  inverse=inverse.replace(current,prior_receiver,1)
+ assert expected in inverse, 'Preparation builder order/arguments differ from original'
  assert 'Task.Run' not in capture and 'await ' not in capture
- code=code.replace('@@SNAPSHOT@@',ex.declaration(snapshot,'internal sealed class NativeConversationPreparationSnapshot')).replace('@@CAPTURE@@',ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation('))
+ # Execute the actual complete capture and typed Ports declarations unchanged.
+ # Existing admission, history, identity and Movement engine leaves stay explicitly controlled.
+ controlled_ports=r"""
+ private sealed class NativeAdmissionApplicationAdapter {
+  private readonly ShoutBehavior _host; internal NativeAdmissionApplicationAdapter(ShoutBehavior host){_host=host;}
+  internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason)=>_host.IsNativeConversationAdmissionCurrent(a,out reason);
+ }
+ private sealed class NativeConversationSessionOwner { }
+ private sealed class SceneAgentIdentityPromptCaptureAdapter {
+  internal NpcDataPacket BuildNativeConversationNpcData(Hero h,CharacterObject c)=>ShoutBehavior.BuildNativeConversationNpcData(h,c);
+ }
+ private static class ConversationActionBoundaryBannerlordAdapter {
+  internal static bool TryResolveNativeConversationMeetingTauntParty(Hero h,CharacterObject c,int index,out PartyBase p)=>ShoutBehavior.TryResolveNativeConversationMeetingTauntParty(h,c,index,out p);
+ }
+ private SceneHistoryPromptCaptureAdapter.NativePreparationPorts NativePreparationCapturePorts => new(
+  new NativeAdmissionApplicationAdapter(this),new NativeConversationSessionOwner(),new SceneAgentIdentityPromptCaptureAdapter(),
+  (npcs,heroes)=>_sceneMovement.BuildSceneSummonPromptTargets(npcs,heroes),
+  _sceneMovement.BuildSceneGuidePromptTargets,BuildPreprocessExcludedRuleIdsForCurrentInteraction);
+ private static class SceneHistoryPromptCaptureAdapter {
+  private static bool HasNativeConversationSessionHistory(NativeConversationSessionOwner sessions,Hero h,CharacterObject c,string name,int index,NpcDataPacket npc)
+   => ShoutBehavior.HasNativeConversationSessionHistory(h,c,name,index,npc);
+ """
+ wrapper=ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
+ code=code.replace('@@SNAPSHOT@@',ex.declaration(snapshot,'internal sealed class NativeConversationPreparationSnapshot')).replace('@@CAPTURE@@',wrapper+controlled_ports+ports+'\n'+capture+'\n}')
  mutations={
-  'drop-guard':('if (!IsNativeConversationAdmissionCurrent(admission, out reason)) return null;','reason = "";'),
+  'drop-guard':('if (!ports.Admissions.IsNativeConversationAdmissionCurrent(admission, out reason)) return null;','reason = "";'),
   'move-capture-background':('() => CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason)','() => Task.Run(() => CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason)).GetAwaiter().GetResult()'),
   'lose-culture':('CultureId = cultureId,','CultureId = "wrong",'),
   'lose-rules':('ExcludedRuleIds = preprocessExcludedRuleIds','ExcludedRuleIds = new List<string>()'),

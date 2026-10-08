@@ -63,7 +63,7 @@ internal static PromptRoutingInput CaptureInput(PromptBuildRequest request)
 			StickyTargetKey = request.StickyTargetKey
 		};
 	}
-private static void LogPromptRoutingDiagnostics(PromptBuildRequest request, PromptRoutingResult routing, PromptRoutingInput routingInput)
+internal static void LogPromptRoutingDiagnostics(PromptBuildRequest request, PromptRoutingResult routing, PromptRoutingInput routingInput)
 	{
 		string who = "targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null");
 		if (routing.AuxiliaryFailure != null)

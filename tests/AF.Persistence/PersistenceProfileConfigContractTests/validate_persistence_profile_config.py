@@ -13,10 +13,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
-from af2_terminal_migration_review import historical_fixture, historical_source
+from af2_terminal_migration_review import historical_fixture, historical_source, persistence_catalog_fixture, persistence_catalog_storage_sources
 FIXTURE_DIR = ROOT / "docs" / "fixtures" / "phase4-persistence-profile-config"
 KEY_PATTERN = re.compile(r'SyncData\("([^"\r\n]+)"')
-SYMBOLIC_PATTERN = re.compile(r'SyncData\((?!")')
+# The legacy inventory includes IDataStore lifecycle endpoints as well as symbolic
+# calls. A similarly named domain method is neither a datastore call nor endpoint.
+SYMBOLIC_PATTERN = re.compile(
+    r'(?:\.\s*SyncData\s*\((?!\s*")|'
+    r'\bvoid\s+SyncData\s*\(\s*IDataStore\b)'
+)
+SYMBOLIC_SOURCE_OWNERS = {
+    "MyBehavior.MemoryRecovery.cs": "src/AF.GameAdapter.Bannerlord/Persistence/CampaignMemoryRecoveryPersistenceAdapter.cs",
+    "MyBehavior.WeeklyActionOutcomeReceipts.cs": "src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyActionOutcomePersistenceAdapter.cs",
+}
+
+
+def current_symbolic_persistence_source(path: Path) -> bool:
+    """Current owner inventory, distinct from the pinned historical schema oracle."""
+    # The enclosing historical fixture still verifies current input bindings and
+    # preserves its literal/type/chunk oracle. Only this current inventory reads
+    # physical bytes, so a historical read_text inverse cannot restore retired calls.
+    return bool(SYMBOLIC_PATTERN.search(path.read_bytes().decode("utf-8-sig")))
 
 
 def load_json(path: Path) -> dict:
@@ -90,13 +107,7 @@ def extract_call_arguments(source: str, name: str):
 def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     resolved: set[str] = set()
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
-    source_paths = []
-    for source_path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "_codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
-            continue
-        if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
-            continue
-        source_paths.append(source_path)
+    source_paths = list(persistence_catalog_storage_sources())
     constant_values: dict[str, set[str]] = {}
     for source_path in source_paths:
         for const_name, value in constant_pattern.findall(source_path.read_text(encoding="utf-8")):
@@ -240,6 +251,7 @@ DECLARATION_PATTERN = re.compile(
 
 
 @historical_fixture
+@persistence_catalog_fixture
 def discover_typed_bindings() -> list[dict]:
     # Fixed legacy catalog oracle only. New typed persistence adapters have current-owner tests.
     rows: list[dict] = []
@@ -296,6 +308,7 @@ def validate_typed_bindings(binding_catalog: dict, persistence_catalog: dict) ->
     return {"typedBindings": len(actual_rows), "typedBindingKeys": len(catalog_keys), "typedBindingTypes": len({row["type"] for row in actual_rows})}
 
 @historical_fixture
+@persistence_catalog_fixture
 def validate_persistence(catalog: dict) -> dict:
     keys = catalog["literalSyncDataKeys"]
     assert_true(catalog["assemblyIdentity"] == "AnimusForge", "assembly identity changed")
@@ -306,7 +319,12 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(len(keys) == 178, f"expected 178 unique literal keys, got {len(keys)}")
 
     discovered: set[str] = set()
-    for relative in catalog["sourceFiles"]:
+    # The transcript step moved intact out of MyBehavior.SyncData. Keep the
+    # pinned key/schema oracle, and inspect its actual sole persistence adapter.
+    source_files = list(dict.fromkeys(catalog["sourceFiles"] + [
+        "src/AF.GameAdapter.Bannerlord/Persistence/CampaignExecutionTranscriptPersistenceAdapter.cs"
+    ]))
+    for relative in source_files:
         source = current_source_path(ROOT, relative)
         assert_true(source.is_file(), f"missing production owner source: {relative}")
         discovered.update(KEY_PATTERN.findall(source.read_text(encoding="utf-8")))
@@ -320,12 +338,12 @@ def validate_persistence(catalog: dict) -> dict:
             continue
         if any("原版游戏本体代码" in part for part in source.relative_to(ROOT).parts):
             continue
-        if SYMBOLIC_PATTERN.search(source.read_text(encoding="utf-8")):
+        if current_symbolic_persistence_source(source):
             symbolic_sources.append(source.relative_to(ROOT).as_posix())
-    assert_true(sorted(symbolic_sources) == sorted(current_source_path(ROOT, source).relative_to(ROOT).as_posix() for source in catalog["symbolicSyncDataSources"]), "symbolic SyncData source inventory drifted")
+    assert_true(sorted(symbolic_sources) == sorted(current_source_path(ROOT, SYMBOLIC_SOURCE_OWNERS.get(source, source)).relative_to(ROOT).as_posix() for source in catalog["symbolicSyncDataSources"]), "symbolic SyncData source inventory drifted")
     assert_true(any(item["path"] == "PlayerExports" and item["classification"] == "user-writable-merge-without-deletion" for item in catalog["contentRoots"]), "PlayerExports deletion boundary missing")
     chunk_result = validate_chunk_contract(catalog)
-    return {"literalKeys": len(keys), "sourceFiles": len(catalog["sourceFiles"]), "symbolicSources": len(symbolic_sources), "symbolicFamilies": len(catalog["symbolicKeyFamilies"]), **chunk_result}
+    return {"literalKeys": len(keys), "sourceFiles": len(source_files), "symbolicSources": len(symbolic_sources), "symbolicFamilies": len(catalog["symbolicKeyFamilies"]), **chunk_result}
 
 
 def validate_profiles(cases: dict) -> dict:

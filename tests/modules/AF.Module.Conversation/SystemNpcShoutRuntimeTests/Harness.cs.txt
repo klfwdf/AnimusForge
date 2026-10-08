@@ -97,6 +97,8 @@ namespace AnimusForge
     }
     internal static class VoteDealBehavior { internal static void ProcessAgendaTagsDispatch(Hero h,ref string text) { } }
     internal static class DiplomacyBehavior { internal static void ProcessDiplomacyTagsDispatch(Hero h,ref string text) { } }
+    // Module leaf only; current AF bridge source is compiled by the existing runner.
+    internal static class DiplomacyModuleServices { internal static readonly ConversationLeaf Conversation=new(); internal sealed class ConversationLeaf { internal void ProcessDiplomacyTags(string heroId,ref string text) { } } }
     internal static class WorldMapPartyCommandBehavior
     {
         internal class WorldMapOrderApplyResult { internal bool NeedsChannelExit; }

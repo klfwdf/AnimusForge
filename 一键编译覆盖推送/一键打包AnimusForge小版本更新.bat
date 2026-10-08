@@ -9,6 +9,6 @@ if not exist "%PACKAGE_SCRIPT%" (
     exit /b 1
 )
 
-call "%PACKAGE_SCRIPT%" -BumpMicro %*
+call "%PACKAGE_SCRIPT%" %*
 set "ERR=%ERRORLEVEL%"
 endlocal & exit /b %ERR%

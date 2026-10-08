@@ -4,9 +4,15 @@ using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
-// SyncData-only adapter; operates on original authoritative stores, with no host instance.
-internal static class CampaignPersonaPersistenceAdapter
+// Save-storage/reset adapter; operates on original authoritative stores, with no host instance.
+internal sealed class CampaignPersonaPersistenceAdapter
 {
+    private readonly PersonaProfileStateOwner _owner;
+    internal Dictionary<string, string> Storage = new Dictionary<string, string>();
+    internal CampaignPersonaPersistenceAdapter(PersonaProfileStateOwner owner) { _owner = owner ?? throw new ArgumentNullException(nameof(owner)); }
+    internal void Save(IDataStore store, Func<string, MyBehavior.NpcPersonaProfile, bool> prepare) => Save(store, _owner.Profiles, Storage, prepare);
+    internal void Load(IDataStore store) => Load(store, _owner.Profiles, ref Storage);
+
     internal static void Save(IDataStore dataStore, Dictionary<string, MyBehavior.NpcPersonaProfile> profiles, Dictionary<string, string> storage, Func<string, MyBehavior.NpcPersonaProfile, bool> prepare)
     {
 				storage.Clear();
@@ -59,4 +65,6 @@ internal static class CampaignPersonaPersistenceAdapter
 				}
 			}
     }
+
+internal void ResetForCurrentSave() { _owner.ResetForCurrentSave(); Storage = new Dictionary<string,string>(); }
 }

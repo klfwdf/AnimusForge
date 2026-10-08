@@ -18,23 +18,22 @@ internal static class WeeklyReportRecoveryReplay
         Type hostType = af.GetType("AnimusForge.MyBehavior", true);
         Type Nested(string name) => hostType.GetNestedType(name, BindingFlags.NonPublic);
         object New(string name) => Activator.CreateInstance(Nested(name), true);
-        bool UiForward(string name) => name == "_weeklyReportRetryContext" || name == "_weeklyReportManualRetryVersion";
-        object Get(object o, string name) => UiForward(name) && o.GetType() == hostType
-            ? o.GetType().GetProperty(name, M).GetValue(o) : o.GetType().GetField(name, M).GetValue(o);
+        object Get(object o, string name) => o.GetType().GetField(name, M) is FieldInfo field
+            ? field.GetValue(o) : o.GetType().GetProperty(name, M).GetValue(o);
         void Set(object o, string name, object value)
         {
-            if (UiForward(name) && o.GetType() == hostType) o.GetType().GetProperty(name, M).SetValue(o, value);
-            else o.GetType().GetField(name, M).SetValue(o, value);
+            if (o.GetType().GetField(name, M) is FieldInfo field) field.SetValue(o, value);
+            else o.GetType().GetProperty(name, M).SetValue(o, value);
         }
         object Call(object o, string name, params object[] args) => o.GetType().GetMethod(name, M).Invoke(o, args);
         void Check(bool ok, string label) { if (!ok) throw new InvalidOperationException("Weekly recovery: " + label); }
-        object host = RuntimeHelpers.GetUninitializedObject(hostType);
-        Set(host, "_memoryBusinessState", Activator.CreateInstance(af.GetType("AnimusForge.MemoryBusinessStateOwner", true), true));
-        Set(host, "_weeklyNoticeOwner", Activator.CreateInstance(af.GetType("AnimusForge.WeeklyNoticeStateOwner", true), true));
-        Set(host, "_campaignMaterialRecords", Activator.CreateInstance(af.GetType("AnimusForge.CampaignMaterialRecordOwner", true), true));
-        Type revisionType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
-        object revisions = Activator.CreateInstance(revisionType, true);
-        Set(host, "_weeklyReportMaterialRevisions", revisions);
+        FieldInfo instance = hostType.GetField("<Instance>k__BackingField", M);
+        object previous = instance.GetValue(null);
+        object host;
+        try { host = Activator.CreateInstance(hostType); }
+        finally { instance.SetValue(null, previous); }
+        // All captured adapters retain the same constructor-created authorities.
+        object revisions = Get(host, "_weeklyReportMaterialRevisions");
         object snapshot = Call(revisions, "Capture", 0, 6);
         IList records = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(Nested("EventRecordEntry")));
         Set(host, "_eventRecordEntries", records);
@@ -94,8 +93,7 @@ internal static class WeeklyReportRecoveryReplay
             Check(task.IsCompletedSuccessfully, "waiter completed");
             return task.GetType().GetProperty("Result").GetValue(task);
         }
-        FieldInfo instance = hostType.GetField("<Instance>k__BackingField", M);
-        object previous = instance.GetValue(null);
+
         Type info = Assembly.Load("TaleWorlds.Library").GetType("TaleWorlds.Library.InformationManager", true);
         EventInfo inquiryEvent = info.GetEvents(M).Single(e => e.EventHandlerType.GetMethod("Invoke").GetParameters().Any(p => p.ParameterType.Name == "InquiryData"));
         object inquiry = null;

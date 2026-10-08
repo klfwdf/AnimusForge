@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Adapters;
 using System;using System.Collections.Generic;using System.Linq;using System.Text;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.CampaignSystem.Settlements;using TaleWorlds.Core;using TaleWorlds.MountAndBlade;
 namespace TaleWorlds.CampaignSystem {
  public interface IFaction {object Name {get;}string StringId{get;}}
@@ -6,7 +7,7 @@ namespace TaleWorlds.CampaignSystem {
  public sealed class Kingdom {public object Name;}
  public sealed class Clan {public object Name;public int Tier;public Hero Leader;public Kingdom Kingdom;public bool IsUnderMercenaryService;}
  public enum Occupation {None,Wanderer,Merchant,Artisan,GangLeader,Headman,Preacher,RuralNotable}
- public sealed class Hero {public static Hero MainHero;public object Name;public float Age;public bool IsFemale,IsLord,IsPlayerCompanion,IsWanderer,IsNotable;public Occupation Occupation;public Kingdom RuledKingdom;public Clan Clan;public CultureObject Culture;public IFaction MapFaction;public string StringId;public Dictionary<EquipmentIndex,ItemObject> Items=new();}
+ public sealed class Hero {public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;public Equipment CivilianEquipment=>new(){Items=Items};public Equipment BattleEquipment=>new(){Items=Items};public static Hero MainHero;public object Name;public float Age;public bool IsFemale,IsLord,IsPlayerCompanion,IsWanderer,IsNotable;public Occupation Occupation;public Kingdom RuledKingdom;public Clan Clan;public CultureObject Culture;public IFaction MapFaction;public string StringId;public Dictionary<EquipmentIndex,ItemObject> Items=new();}
  public sealed class CharacterObject {}
 }
 namespace TaleWorlds.CampaignSystem.Party {public sealed class PartyBase {}public sealed class MobileParty {public static MobileParty MainParty;public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;}}
@@ -18,7 +19,7 @@ namespace TaleWorlds.Core {
  public sealed class Equipment {public Dictionary<EquipmentIndex,ItemObject> Items=new();public bool Fail;public EquipmentElement this[EquipmentIndex i]=>Fail?throw new Exception("equipment unavailable"):new(Items.GetValueOrDefault(i));}
 }
 namespace TaleWorlds.MountAndBlade {
- public sealed class Agent {public int Index;public object Character;public bool Active=true;public Equipment SpawnEquipment=new(),Equipment=new();public bool IsActive()=>Active;}
+ public sealed class Agent {public static Agent Main;public int Index;public object Character;public bool Active=true;public Equipment SpawnEquipment=new(),Equipment=new();public bool IsActive()=>Active;}
  public sealed class Mission {public static Mission Current;public List<Agent> Agents=new();public bool DoesMissionRequireCivilianEquipment;}
 }
 namespace AnimusForge {
@@ -92,3 +93,98 @@ internal static class LegacyRoles {
  internal static bool Hide(NpcDataPacket npc,Hero hero)=>ShouldHideSceneReputationForPrompt(npc,hero);
 }
 }
+
+// @@ROSTER_CURRENT_LEAVES@@
+using System;using System.Collections.Generic;using System.Linq;
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Hero {public static Hero MainHero;public string StringId,Name;public TaleWorlds.CampaignSystem.Party.MobileParty PartyBelongedTo;}
+ public sealed class CharacterObject {public string StringId,Name,Label;public bool IsHero;public Hero HeroObject;public int Tier;}
+}
+namespace TaleWorlds.CampaignSystem.Roster {
+ public struct TroopRosterElement {public TaleWorlds.CampaignSystem.CharacterObject Character;public int Number;}
+ public sealed class TroopRoster {public readonly List<TroopRosterElement> Elements=new();public int ThrowIndex=-1;public int Count=>Elements.Count;public int TotalManCount=>Elements.Sum(x=>Math.Max(0,x.Number));public TroopRosterElement GetElementCopyAtIndex(int i)=>i==ThrowIndex?throw new Exception("synthetic unreadable roster element"):Elements[i];}
+}
+namespace TaleWorlds.CampaignSystem.Party {
+ public sealed class PartyBase {public TaleWorlds.CampaignSystem.Hero LeaderHero;public MobileParty MobileParty;public TaleWorlds.CampaignSystem.Roster.TroopRoster MemberRoster,PrisonRoster;}
+ public sealed class MobileParty {public static MobileParty MainParty;public TaleWorlds.CampaignSystem.Hero LeaderHero;public PartyBase Party;public string Ship;}
+}
+namespace AnimusForge {
+ internal sealed class NpcDataPacket {internal string Name,RoleDesc,PersonalityDesc,BackgroundDesc,CultureId,UnnamedKey,TroopId,UnnamedRank,PromptGivenName,PromptDisplayName;internal int AgentIndex;internal bool IsHero,IsFemale,HasScenePosition;internal float Age,ScenePositionX,ScenePositionY,ScenePositionZ;}
+ internal static class MapSeaContextGuard {internal static string BuildMobilePartyShipPromptText(TaleWorlds.CampaignSystem.Party.MobileParty p)=>p?.Ship;}
+ internal static class ShoutUtils {internal static void EnsureScenePromptNames(List<NpcDataPacket> n) {}}
+}
+namespace AnimusForge.Refactor.Adapters {
+ internal static class PartyAssetTransferBannerlordAdapter {internal static string GetPartyTransferTroopTypeLabelForExternal(TaleWorlds.CampaignSystem.CharacterObject c)=>c.Label=="throw"?throw new Exception("synthetic type unavailable"):c.Label;}
+}
+
+// @@OBSERVER_CURRENT_LEAVES@@
+using System;using System.Collections.Generic;
+namespace TaleWorlds.CampaignSystem {
+ public interface IFaction {string Name {get;}string StringId {get;}} public sealed class Hero {public IFaction MapFaction;public static Hero MainHero;public string StringId,Name;public Clan Clan;public bool IsLord,IsFactionLeader,IsDead,IsPrisoner,IsFemale;public bool IsAlive=true;public float Age=30;public int Gold;public Hero Spouse;public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;public TaleWorlds.Core.Equipment CivilianEquipment=new(),BattleEquipment=new();}
+ public sealed class Clan:IFaction {public static Clan PlayerClan;public List<Hero> Lords{get;set;}public List<Hero> Heroes{get;set;}public Hero Leader;public string Name{get;set;}public string StringId{get;set;}public IFaction MapFaction;public Kingdom Kingdom;public bool IsUnderMercenaryService;public string Fortifications;public int Tier;}
+ public sealed class Kingdom:IFaction {public string Name{get;set;}public string StringId{get;set;}public Hero Leader;}
+ public sealed class CultureObject {public string StringId;}
+ public sealed class CharacterObject {public string StringId;public Hero HeroObject;public CultureObject Culture;}
+}
+namespace TaleWorlds.CampaignSystem.Settlements {public sealed class Settlement {public static Settlement CurrentSettlement;public string StringId,Name;public TaleWorlds.CampaignSystem.IFaction MapFaction;public bool IsVillage,IsTown,IsCastle;}}
+namespace TaleWorlds.MountAndBlade {public sealed class Mission {private static Mission _current;public static bool Throw;public static Mission Current {get=>Throw?throw new Exception("mission unavailable"):_current;set{_current=value;}}public bool DoesMissionRequireCivilianEquipment;public List<Agent> Agents=new();}public sealed class Origin {public object BattleCombatant;}public sealed class Agent {public static Agent Main;public bool Active=true;public bool IsActive()=>Active;public TaleWorlds.Core.Equipment SpawnEquipment=new(),Equipment=new();public Origin Origin;public int Index;public object Character;}}
+namespace AnimusForge {
+ internal sealed class NpcDataPacket {public int AgentIndex;public string CultureId,Name,PatienceName,HistoryName,UnnamedKey;}
+ internal static class ShoutUtils {public static string GetPromptPatienceName(NpcDataPacket npc)=>npc?.PatienceName;public static string GetPromptHistoryName(NpcDataPacket npc)=>npc?.HistoryName;public static string GetPromptIdentityName(NpcDataPacket npc)=>npc?.Name;}
+ internal static class PlayerNotorietyBehavior {public static bool Throw,Known;public static string Key,Culture;public static TaleWorlds.CampaignSystem.Hero Observer;public static bool DoesObserverKnowPlayerForExternal(TaleWorlds.CampaignSystem.Hero hero){Observer=hero;if(Throw)throw new Exception("query");return Known;}public static bool DoesObserverKnowPlayerForExternal(string key,string culture){Key=key;Culture=culture;if(Throw)throw new Exception("query");return Known;}}
+}
+namespace AnimusForge.Refactor.Adapters {internal static partial class PersonaIdentityPromptCaptureAdapter {public static string PublicName;public static string BuildPlayerPublicDisplayNameForExternal()=>PublicName;}}
+
+namespace TaleWorlds.CampaignSystem.Party {
+public enum PartyRole {None,Scout,Engineer,Surgeon,Quartermaster}
+public sealed class PartyBase {public TaleWorlds.CampaignSystem.IFaction MapFaction;}
+public sealed class MobileParty {public static MobileParty MainParty;public Dictionary<PartyRole,TaleWorlds.CampaignSystem.Hero> Roles=new();public TaleWorlds.CampaignSystem.Hero GetRoleHolder(PartyRole role)=>Roles.TryGetValue(role,out var hero)?hero:null;}
+}
+namespace AnimusForge {
+internal static class MyBehavior {
+internal static bool Throw,InlineSuccess=true;internal static string Inline=" state ",Target;
+internal static bool TryGetSceneHeroInlineStateForExternal(TaleWorlds.CampaignSystem.Hero hero,out string state,out bool speak){if(Throw)throw new Exception();state=Inline;speak=false;return InlineSuccess;}
+internal static bool TryGetSceneUnnamedInlineStateForExternal(string key,string name,string display,out string state,out bool speak){Target=key+":"+name+":"+display;return TryGetSceneHeroInlineStateForExternal(null,out state,out speak);}
+internal static string BuildPlayerVassalageRelationPromptLineForExternal(TaleWorlds.CampaignSystem.Hero hero,TaleWorlds.CampaignSystem.CharacterObject character,string kingdom,string subject,int agent){Target=agent+":"+kingdom;return "vassal";}
+}
+}
+namespace AnimusForge.Refactor.Adapters {
+internal static partial class SceneAgentIdentityPromptCaptureAdapter {internal static string TryGetKingdomIdOverrideFromAgent(TaleWorlds.MountAndBlade.Agent agent)=>agent==null?null:"selected";}
+internal static class SceneLocationPromptCaptureAdapter {internal static bool Hostile;internal static string NormalizeFactionRelationLabelForPrompt(TaleWorlds.CampaignSystem.IFaction a,TaleWorlds.CampaignSystem.IFaction b)=>Hostile?"敌对":"中立";}
+}
+
+namespace AnimusForge {internal class DuelSettings {internal static DuelSettings Current=new();internal static bool Throw;internal static int Reads;internal int MarriageCandidateMaxAge=55,MarriageCandidateMaxAgeGap=25;internal static DuelSettings GetSettings(){Reads++;if(Throw)throw new Exception();return Current;}}}
+
+namespace TaleWorlds.Core {
+public enum EquipmentIndex {Body,Weapon1}
+public class ItemObject {public string StringId;}
+public readonly struct EquipmentElement {public readonly ItemObject Item;public EquipmentElement(ItemObject item){Item=item;}}
+public sealed class Equipment {public Dictionary<EquipmentIndex,ItemObject> Items=new();public bool Fail;public EquipmentElement this[EquipmentIndex index]=>Fail?throw new Exception("equipment unavailable"):new(Items.GetValueOrDefault(index));}
+}
+
+namespace AnimusForge.Refactor.Adapters {
+internal static class MemoryEntityIdentityBannerlordAdapter {internal static string GetFactionDisplayName(TaleWorlds.CampaignSystem.IFaction faction,string fallback)=>faction?.Name??fallback;internal static string GetSettlementDisplayName(TaleWorlds.CampaignSystem.Settlements.Settlement settlement)=>settlement?.StringId;internal static string GetClanDisplayName(TaleWorlds.CampaignSystem.Clan clan)=>clan?.Name;internal static string GetHeroDisplayName(TaleWorlds.CampaignSystem.Hero hero)=>hero?.Name;}
+internal static class KingdomRebellionGameAdapter {internal static int BackgroundCaptures;internal static string BuildSettlementBackgroundForRebelNamingPrompt(TaleWorlds.CampaignSystem.Settlements.Settlement settlement){BackgroundCaptures++;return "captured:"+settlement.StringId;}}
+internal static class KingdomStabilityGameAdapter {internal static int FortificationCaptures;internal static string BuildClanFortificationSummary(TaleWorlds.CampaignSystem.Clan clan){FortificationCaptures++;return clan.Fortifications;}}
+}
+
+// @@IDENTITY_CURRENT_LEAVES@@
+namespace AnimusForge.Refactor.Adapters {internal static partial class PersonaIdentityPromptCaptureAdapter {
+ internal static void GetHeroFactionAndLiegeForPrompt(TaleWorlds.CampaignSystem.Hero hero,out string factionName,out string liegeName){factionName=hero.Clan?.Kingdom?.Name??"";liegeName="Liege";}
+ internal static string BuildHeroIdentityTitleForPrompt(TaleWorlds.CampaignSystem.Hero hero)=>"title";
+ internal static string GetHeroCultureNameForPrompt(TaleWorlds.CampaignSystem.Hero hero)=>"culture";
+ internal static string BuildHeroEquipmentSummaryForPrompt(TaleWorlds.CampaignSystem.Hero hero)=>"equipment";
+ internal static string BuildNpcClanRoleHintForPrompt(TaleWorlds.CampaignSystem.Hero hero)=>"role";
+ internal static string BuildNpcPlayerKinshipPromptLine(TaleWorlds.CampaignSystem.Hero hero,bool includeSameClanFallback)=>"kinship";
+}}
+namespace AnimusForge {
+internal class MentionedWorldEntities {}
+internal static class AIConfigHandler {internal static int Reads;internal static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal(){Reads++;return new();}}
+internal static class PromptListRetrievalService {internal static int GetMaxCandidateCount()=>8;}
+internal class RewardSystemBehavior {internal static RewardSystemBehavior Instance;internal int Reads;internal string Summary="inventory";internal string BuildVisibleEquipmentValueSummaryForAI(TaleWorlds.CampaignSystem.Hero hero,bool useGuidePrice){Reads++;return useGuidePrice?"guide":"price";}internal string BuildFilteredInventorySummaryForAI(TaleWorlds.CampaignSystem.Hero hero,MentionedWorldEntities mentions,int cap,bool includePrivateBattleEquipment){Reads++;return Summary;}}
+internal static class Logger {internal static bool Throw;internal static void Log(string area,string text){if(Throw)throw new System.Exception("log");}}
+}
+
+namespace TaleWorlds.Core {public enum BattleSideEnum {Attacker,Defender}}
+namespace TaleWorlds.CampaignSystem.Siege {public sealed class SiegeEvent {public Camp BesiegerCamp;}public sealed class Camp {public TaleWorlds.CampaignSystem.Party.PartyBase LeaderParty;}}
+namespace AnimusForge.Refactor.Adapters {internal static class CampaignBattleRecordCaptureAdapter {internal static int Captures;internal static string BuildTrackedHeroListText(TaleWorlds.CampaignSystem.Siege.SiegeEvent e,TaleWorlds.Core.BattleSideEnum side,int cap){Captures++;return e==null?"":side.ToString()+":"+cap;}}}

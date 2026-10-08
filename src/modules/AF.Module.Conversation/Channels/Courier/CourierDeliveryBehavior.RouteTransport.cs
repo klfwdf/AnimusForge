@@ -28,6 +28,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.ModuleManager;
 using TaleWorlds.ObjectSystem;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
@@ -40,13 +41,16 @@ public sealed partial class CourierDeliveryBehavior
 {
 	private static CourierRoutePlan BuildCourierRoutePlan(MobileParty courier, CampaignVec2 targetPosition, Settlement targetSettlement, MobileParty targetParty, bool preferPort)
 	{
-		bool requiresNaval = ShouldUseNavalRoute(courier, targetPosition, targetSettlement, targetParty, preferPort);
-		bool usePort = targetSettlement != null && targetSettlement.HasPort && (requiresNaval || preferPort || courier?.IsCurrentlyAtSea == true || targetParty?.IsCurrentlyAtSea == true);
+		bool navalAvailable = IsNavalRuntimeAvailable();
+		bool requiresNaval = navalAvailable && ShouldUseNavalRoute(courier, targetPosition, targetSettlement, targetParty, preferPort);
+		bool usePort = navalAvailable && targetSettlement != null && targetSettlement.HasPort && (requiresNaval || preferPort || courier?.IsCurrentlyAtSea == true || targetParty?.IsCurrentlyAtSea == true);
 		return new CourierRoutePlan
 		{
 			RequiresNaval = requiresNaval,
 			UsePort = usePort,
-			NavigationType = GetEffectiveCourierNavigationType(courier, requiresNaval),
+			// A reachable land destination can still need a sea leg/shortcut. Provision the
+			// courier before native pathfinding instead of waiting for the land-path test to fail.
+			NavigationType = navalAvailable ? MobileParty.NavigationType.All : MobileParty.NavigationType.Default,
 			Reason = BuildNavalRouteReason(courier, targetPosition, targetSettlement, targetParty, preferPort, requiresNaval)
 		};
 	}
@@ -109,12 +113,18 @@ public sealed partial class CourierDeliveryBehavior
 
 	private static bool EnsureCourierNavalReadiness(CourierSession session, MobileParty courier, CourierRoutePlan plan, string reason)
 	{
-		if (session == null || courier == null || plan == null || !plan.RequiresNaval)
+		if (session == null || courier == null || plan == null || plan.NavigationType != MobileParty.NavigationType.All)
 		{
 			return true;
 		}
 		try
 		{
+			if (!IsNavalRuntimeAvailable() || courier.Party == null)
+			{
+				LogVerbose("naval_unavailable:" + session.Id, "courier naval runtime unavailable session=" + session.Id + " reason=" + (reason ?? ""), 10.0);
+				LogCourierStatusVerbose("naval_unavailable:" + session.Id, "naval_unavailable session=" + session.Id + " reason=" + (reason ?? "") + " runtime=" + IsNavalRuntimeAvailable() + " hasParty=" + (courier.Party != null) + " courier=" + DescribeMobileParty(courier), 10.0);
+				return false;
+			}
 			if (courier.Ships != null && courier.Ships.Count > 0)
 			{
 				MarkExistingCourierTemporaryShips(session, courier);
@@ -123,12 +133,6 @@ public sealed partial class CourierDeliveryBehavior
 					LogCourierStatusVerbose("naval_existing_no_cap:" + session.Id, "naval_existing_no_cap session=" + session.Id + " reason=" + (reason ?? "") + " courier=" + DescribeMobileParty(courier) + " tempShipCreated=" + session.TemporaryShipCreated + " hull=" + (session.TemporaryShipHullId ?? ""), 10.0);
 				}
 				return courier.HasNavalNavigationCapability;
-			}
-			if (!IsNavalRuntimeAvailable() || courier.Party == null)
-			{
-				LogVerbose("naval_unavailable:" + session.Id, "courier naval runtime unavailable session=" + session.Id + " reason=" + (reason ?? ""), 10.0);
-				LogCourierStatusVerbose("naval_unavailable:" + session.Id, "naval_unavailable session=" + session.Id + " reason=" + (reason ?? "") + " runtime=" + IsNavalRuntimeAvailable() + " hasParty=" + (courier.Party != null) + " courier=" + DescribeMobileParty(courier), 10.0);
-				return false;
 			}
 			ShipHull hull = SelectCourierTemporaryShipHull(courier);
 			if (hull == null)
@@ -153,7 +157,7 @@ public sealed partial class CourierDeliveryBehavior
 			session.LastRouteKey = "";
 			Log("courier temporary ship created session=" + session.Id + " party=" + (courier.StringId ?? "") + " hull=" + (hull.StringId ?? "") + " reason=" + (reason ?? ""));
 			LogCourierStatus("temporary_ship_created session=" + session.Id + " reason=" + (reason ?? "") + " hull=" + (hull.StringId ?? "") + " capacity=" + hull.TotalCrewCapacity + " speed=" + hull.BaseSpeed + " courier=" + DescribeMobileParty(courier));
-			return courier.HasNavalNavigationCapability || (courier.Ships != null && courier.Ships.Count > 0);
+			return courier.HasNavalNavigationCapability;
 		}
 		catch (Exception ex)
 		{
@@ -310,16 +314,8 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		try
 		{
-			if (GetLoadedShipHulls().Count == 0 || Settlement.All == null || !Settlement.All.Any(x => x != null && x.HasPort))
-			{
-				return false;
-			}
-			string modelName = Campaign.Current?.Models?.PartyNavigationModel?.GetType()?.FullName ?? "";
-			if (modelName.IndexOf("Naval", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return true;
-			}
-			return MobileParty.All?.Any(x => x != null && x.IsActive && x.HasNavalNavigationCapability) == true;
+			return ModuleHelper.IsModuleActive(CampaignData.NavalDLCStringId)
+				&& Campaign.Current?.Models?.PartyNavigationModel?.IsTerrainTypeValidForNavigationType(TerrainType.Water, MobileParty.NavigationType.Naval) == true;
 		}
 		catch
 		{

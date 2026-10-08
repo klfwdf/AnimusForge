@@ -47,6 +47,10 @@ namespace AnimusForge
             Skip = skip;
         }
     }
+    internal static class NpcDataIdentityFileAdapter
+    {
+        internal static string FindNpcJsonByHeroId(string dir,string id) => throw new Exception("explicit file only");
+    }
     internal static class ImportSchemaChecks
     {
         private static int checks;

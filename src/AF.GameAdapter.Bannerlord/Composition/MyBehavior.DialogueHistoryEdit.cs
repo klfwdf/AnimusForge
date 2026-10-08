@@ -130,9 +130,5 @@ public partial class MyBehavior
 	}
 
 	// Same lookup as the host's other memory-id resolution: indexed Find first, full scan only on a case mismatch.
-	private static Hero ResolveDialogueHistoryEditHero(string memoryId)
-	{
-		return IsNonHeroMemoryId(memoryId) ? null
-			: Hero.Find(memoryId) ?? Hero.FindFirst(x => x != null && string.Equals(GetMemoryHeroId(x), memoryId, StringComparison.OrdinalIgnoreCase));
-	}
+	private static Hero ResolveDialogueHistoryEditHero(string memoryId) => CampaignCharacterRecordCaptureAdapter.ResolveMemoryHero(memoryId);
 }

@@ -22,6 +22,34 @@ def restore_packet(review,path,source):
     assert hashlib.sha256(expected.encode()).hexdigest()==evidence['afterSha256'], 'J07b candidate digest: '+path
     assert source==expected, 'Unreviewed J07b source drift: '+path
     return original
+ADMISSION_APPLICATION_BEFORE = '4fec662a60b022f6f16faffcec1c26117ea27bf5'
+ADMISSION_APPLICATION_FREEZE = 'c4de2460fbefdc4b2769a9dbb4451376da56b2dc'
+ADMISSION_FACADE_PATH = 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs'
+ADMISSION_APPLICATION_PATH = 'src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs'
+
+def restore_admission_application(source):
+    """Strict contextual owner-move inverse before the unchanged lifetime oracle.
+
+    The live adapter is verified even though its algorithms no longer reside in
+    the ABI facade. This is historical proof only, never a current behavior input.
+    """
+    import difflib
+    def committed(revision, path):
+        return subprocess.check_output(['git','show',revision+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    adapter=current_source_path(ROOT,ADMISSION_APPLICATION_PATH).read_bytes().decode('utf-8-sig').replace('\r\n','\n')
+    assert adapter == committed(ADMISSION_APPLICATION_FREEZE,ADMISSION_APPLICATION_PATH), 'Unreviewed J17 Native lifetime delta: actual admission application'
+    before=committed(ADMISSION_APPLICATION_BEFORE,ADMISSION_FACADE_PATH)
+    after=committed(ADMISSION_APPLICATION_FREEZE,ADMISSION_FACADE_PATH)
+    before_lines=before.splitlines(keepends=True);after_lines=after.splitlines(keepends=True)
+    groups=list(difflib.SequenceMatcher(a=before_lines,b=after_lines,autojunk=False).get_grouped_opcodes(3))
+    for group in reversed(groups):
+        old=''.join(before_lines[group[0][1]:group[-1][2]])
+        new=''.join(after_lines[group[0][3]:group[-1][4]])
+        assert new and source.count(new)==1, 'Unreviewed J17 Native lifetime delta: admission facade context'
+        source=source.replace(new,old,1)
+    assert source==before, 'Unreviewed J17 Native lifetime delta: unrelated admission facade drift'
+    return source
+
 def restore_request_lifetime(path,source):
     # Approved J17 request cancellation is tested by the real transport suite.
     # Keep the original admission/main-reply hashes; reverse exact additions only.
@@ -30,6 +58,30 @@ def restore_request_lifetime(path,source):
         assert source.count(after)==1, 'Unreviewed J17 Native lifetime delta: main reply token'
         return source.replace(after,'CallNativeConversationApiAsync(messages, onStreamText)',1)
     if path != 'ShoutBehavior.NativeAdmission.cs':return source
+    if 'private readonly NativeAdmissionApplicationAdapter NativeAdmissions;' in source:
+        source=restore_admission_application(source)
+    # These two approved read-only UI observations postdate the unchanged claim oracle.
+    # Remove complete, uniquely matched declarations only; never weaken action admission.
+    observation_blocks=[
+        '    // UI tick observation only. Submission still uses the full target validation\n'
+        '    // above; never run its target/agent resolution every frame just to grey a button.\n'
+        '    internal static bool IsNativeConversationBackendBusyForUi()\n'
+        '    {\n'
+        '        ShoutBehavior owner = CurrentInstance;\n'
+        '        NativeConversationAdmission admission = owner?._nativeAdmissionOwner.Current;\n'
+        '        return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true\n'
+        '            && owner._nativeAdmissionOwner.Owns(admission)\n'
+        '            && owner.IsNativeConversationContextStampCurrent(admission);\n'
+        '    }\n\n',
+        '        // Mode text is scoped to the conversation/NPC, not to one request revision.\n'
+        '        // Read-only display observation: never use this weaker check for action dispatch.\n'
+        '        internal bool HasCurrentConversationContext()\n'
+        '            => _snapshot != null && _owner.IsNativeConversationContextCurrent(_snapshot, out _);\n',
+    ]
+    if 'IsNativeConversationBackendBusyForUi()' in source or 'HasCurrentConversationContext()' in source:
+        for block in observation_blocks:
+            assert source.count(block)==1, 'Unreviewed J17 Native lifetime delta: read-only observation declaration'
+            source=source.replace(block,'',1)
     edits=[
         ('        internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime Lifetime;\n','',1),
         ('            owner._nativeAdmissionOwner.Current?.Lifetime?.Retire();\n','',1),

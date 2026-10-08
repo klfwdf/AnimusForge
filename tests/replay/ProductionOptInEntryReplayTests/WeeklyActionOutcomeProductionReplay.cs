@@ -62,12 +62,22 @@ internal static class WeeklyActionOutcomeProductionReplay
         Require(owner.GetField("_weeklyActionOutcomePublication", AnyInstance)?.FieldType == publication
             && publication.GetProperty("Ledger", AnyInstance)?.PropertyType == ledger,
             "weekly publication owner must retain the unique original ledger");
-        FieldInfo storage = owner.GetField("_weeklyActionOutcomeStorage", AnyInstance);
-        Require(storage != null
+        Type persistence = RequireType(assembly, "AnimusForge.CampaignWeeklyActionOutcomePersistenceAdapter");
+        FieldInfo persistenceField = owner.GetField("_weeklyActionOutcomePersistence", AnyInstance);
+        FieldInfo storage = persistence.GetField("Storage", AnyInstance);
+        PropertyInfo storageView = owner.GetProperty("_weeklyActionOutcomeStorage", AnyInstance);
+        Require(persistenceField?.FieldType == persistence
+            && storage != null
             && storage.FieldType.IsGenericType
             && storage.FieldType.GetGenericTypeDefinition() == typeof(Dictionary<,>)
-            && storage.FieldType.GetGenericArguments().SequenceEqual(new[] { typeof(string), typeof(string) }),
-            "weekly outcome storage type drifted");
+            && storage.FieldType.GetGenericArguments().SequenceEqual(new[] { typeof(string), typeof(string) })
+            && storageView?.PropertyType == storage.FieldType
+            && LoadsField(storageView.GetMethod, persistenceField)
+            && LoadsField(storageView.GetMethod, storage),
+            "weekly outcome storage must route to the unique persistence adapter with the original dictionary type");
+        Require(persistence.GetField("_owner", AnyInstance)?.FieldType == publication,
+            "weekly persistence must bind the unique publication owner");
+
 
         Require((int)ledger.GetField("MaximumPendingEntries", AnyStatic)
                 .GetRawConstantValue() == 64
@@ -77,12 +87,13 @@ internal static class WeeklyActionOutcomeProductionReplay
         Require((int)receipt.GetField("MaximumSerializedLength", AnyStatic)
                 .GetRawConstantValue() == 196608,
             "weekly outcome wire bound drifted");
+        AssertCallAcross(owner, "PrepareWeeklyActionOutcomeForExternal", publication, "PrepareWeeklyActionOutcome");
         AssertCallBefore(
-            owner,
-            "PrepareWeeklyActionOutcomeForExternal",
+            publication,
+            "PrepareWeeklyActionOutcome",
             ledger,
             "ProbeExistingCandidate",
-            owner,
+            publication,
             "TryBuildWeeklyActionOutcomePayload");
 
         Type trigger = assembly.GetType("AnimusForge.WeeklyMemoryMaterialTrigger", false);
@@ -127,11 +138,13 @@ internal static class WeeklyActionOutcomeProductionReplay
             "ProcessOneInteractionMemoryRecoveryOnTick");
         AssertCall(owner, "ProcessOneTailPersistenceRecoveryOnTick",
             "ProcessOneWeeklyActionOutcomeOnTick");
-        AssertCall(owner, "ProcessOneWeeklyActionOutcomeOnTick",
-            "TryPublishWeeklyActionOutcome");
+        AssertCallAcross(owner, "ProcessOneWeeklyActionOutcomeOnTick", publication,
+            "ProcessOneWeeklyActionOutcomeOnTick");
+        AssertCall(publication, "ProcessOneWeeklyActionOutcomeOnTick", "TryPublishWeeklyActionOutcome");
         Type memoryState = RequireType(assembly, "AnimusForge.MemoryBusinessStateOwner");
-        AssertCallAcross(owner, "TryPublishWeeklyActionOutcome", publication, "Publish");
-        AssertPublicationDraftBinding(owner, memoryState);
+        AssertCallAcross(owner, "TryPublishWeeklyActionOutcome", publication, "TryPublishWeeklyActionOutcome");
+        AssertCall(publication, "TryPublishWeeklyActionOutcome", "Publish");
+        AssertPublicationDraftBinding(publication, memoryState);
         AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "HasExactWeeklyActionOutcomeTrigger");
         AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "AddWeeklyTrigger");
         AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "SaveDrafts");
@@ -158,7 +171,7 @@ internal static class WeeklyActionOutcomeProductionReplay
             }
         }
 
-        MethodInfo tick = owner.GetMethod(
+        MethodInfo tick = publication.GetMethod(
             "ProcessOneWeeklyActionOutcomeOnTick",
             AnyInstance | BindingFlags.DeclaredOnly);
         MethodBody tickBody = tick?.GetMethodBody();
@@ -168,6 +181,7 @@ internal static class WeeklyActionOutcomeProductionReplay
                     fragment,
                     StringComparison.OrdinalIgnoreCase) >= 0)),
             "weekly load/tick path retained executable action authority");
+        Console.WriteLine("PASS weeklyActionOutcomeProductionReplay samePersistence=1 solePublication=1 originalSchema=1 probeBeforeCapture=1 actualMemoryBinding=1 executableAuthorityNegative=1");
     }
 
     private static void AssertCompiledTriggerSanitizer(Type owner, Type triggerType)
@@ -324,6 +338,16 @@ internal static class WeeklyActionOutcomeProductionReplay
             callerName + " does not probe durable identity before rebuilding live payload");
     }
 
+    private static bool LoadsField(MethodInfo caller, FieldInfo field)
+    {
+        if (caller == null || field == null) return false;
+        byte[] il = caller.GetMethodBody()?.GetILAsByteArray() ?? Array.Empty<byte>();
+        byte[] token = BitConverter.GetBytes(field.MetadataToken);
+        return Enumerable.Range(1, Math.Max(0, il.Length - token.Length))
+            .Any(offset => il[offset - 1] == 0x7b
+                && il.Skip(offset).Take(token.Length).SequenceEqual(token));
+    }
+
     private static bool CallsMethod(MethodInfo caller, MethodInfo callee)
         => FindCallOffset(caller, callee) >= 0;
 
@@ -371,6 +395,7 @@ internal static class WeeklyActionOutcomeProductionReplay
             "src/modules/AF.Module.Social/Notoriety/NotorietyConversationOutcomeReceipt.cs",
             "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs"
             , "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs"
+            , "src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyActionOutcomePersistenceAdapter.cs"
         };
         DateTime newestSource = sources
             .Select(relative => Path.Combine(directory.FullName,

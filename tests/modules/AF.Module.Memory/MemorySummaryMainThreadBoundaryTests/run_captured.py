@@ -64,26 +64,34 @@ def main():
         body=match.group();snippets.append(body)
         manifest.append(dict(file='MyBehavior.MemoryRecovery.cs',signature=name,line=recovery[:match.start()].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
     product='using System; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
-    capture=read('MyBehavior.MemorySummaryInput.cs');uses_typed_source='ComputeMemorySummarySourceFingerprint(source)' in capture
-    for sig,label in [('private MemorySummaryInput CaptureMemorySummaryInput(','Capture'),('private bool IsMemorySummaryInputCurrent(','Check'),('private static T CloneMemorySummarySource<T>(', 'Clone'),('private static string ComputeMemorySummaryFingerprint(', 'Fingerprint')]:
-        body=ex.declaration(capture,sig);opening=body.index('{')+1
-        capture=capture.replace(body,body[:opening]+'\n Probe.Call("'+label+'");'+body[opening:],1)
-    old='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
-    if capture.count(old)==1:
-        capture=capture.replace(old,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
+    if not a.source_baseline:
+        capture=support.captured_input_source(ROOT,manifest,ex);uses_typed_source=True
     else:
-        assert capture.count('milliseconds => Task.Delay(milliseconds)')==1
-        capture=capture.replace('milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
+        capture=read('MyBehavior.MemorySummaryInput.cs');uses_typed_source='ComputeMemorySummarySourceFingerprint(source)' in capture
+        for sig,label in [('private MemorySummaryInput CaptureMemorySummaryInput(','Capture'),('private bool IsMemorySummaryInputCurrent(','Check'),('private static T CloneMemorySummarySource<T>(', 'Clone'),('private static string ComputeMemorySummaryFingerprint(', 'Fingerprint')]:
+            body=ex.declaration(capture,sig);opening=body.index('{')+1
+            capture=capture.replace(body,body[:opening]+'\n Probe.Call("'+label+'");'+body[opening:],1)
+        old='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
+        if capture.count(old)==1:
+            capture=capture.replace(old,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
+        else:
+            assert capture.count('milliseconds => Task.Delay(milliseconds)')==1
+            capture=capture.replace('milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
     def mutation(text,old,new):
-        assert text.count(old)==1,old
+        if not a.source_baseline and text is capture:
+            # The same negative control follows the current sole policy member,
+            # not a retained private facade which no longer executes that policy.
+            for legacy,current in [('ComputeMemorySummarySourceFingerprint(', 'MemorySourceFingerprintRules.Compute('),('GetMemoryCompressionDenominatorFromSettings(', 'LlmRequestConfigurationCaptureAdapter.GetMemoryCompressionDenominatorFromSettings('),('GetMemoryOverviewStartBlockCountFromSettings(', 'LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewStartBlockCountFromSettings(')]:
+                old=re.sub(r'(?<![\w.])'+re.escape(legacy),current,old);new=re.sub(r'(?<![\w.])'+re.escape(legacy),current,new)
+        assert text.count(old)==1,(old,text.count(old))
         return text.replace(old,new)
     if a.mutate=='omit-state-presence':
         pass  # Applied to the source encoder below; do not skip reading the actual state.
     elif a.mutate=='ignore-context':capture=mutation(capture,'if (!string.Equals(CaptureMemorySummaryContextFingerprint(input), input.ContextFingerprint, StringComparison.Ordinal)) return false;','/* fault: context ignored */')
     elif a.mutate=='rebuild-on-check':
         capture=mutation(capture,'return IsMemorySummaryInputCurrent(input) ? input : null;','return input;')
-        old_check=ex.declaration(capture,'private bool IsMemorySummaryInputCurrent(')
-        capture=mutation(capture,old_check,'private bool IsMemorySummaryInputCurrent(MemorySummaryInput input) { Probe.Call("Check"); if(input==null)return false; var current=CaptureMemorySummaryInput(input.QueueJob,input.Generation); return current!=null && string.Equals(current.SourceFingerprint,input.SourceFingerprint,StringComparison.Ordinal) && string.Equals(current.ContextFingerprint,input.ContextFingerprint,StringComparison.Ordinal); }')
+        old_check=ex.declaration(capture,('private' if a.source_baseline else 'internal')+' bool IsMemorySummaryInputCurrent(')
+        capture=mutation(capture,old_check,('private' if a.source_baseline else 'internal')+' bool IsMemorySummaryInputCurrent(MemorySummaryInput input) { Probe.Call("Check"); if(input==null)return false; var current=CaptureMemorySummaryInput(input.QueueJob,input.Generation); return current!=null && string.Equals(current.SourceFingerprint,input.SourceFingerprint,StringComparison.Ordinal) && string.Equals(current.ContextFingerprint,input.ContextFingerprint,StringComparison.Ordinal); }')
     elif a.mutate=='clone-on-check':capture=mutation(capture,'var initialSource = ReadMemorySummarySource(input.QueueJob, input.Generation);','CloneMemorySummarySource(input.Job); var initialSource = ReadMemorySummarySource(input.QueueJob, input.Generation);')
     elif a.mutate=='stale-pre-getter-view':capture=mutation(capture,'var source = ReadMemorySummarySource(input.QueueJob, input.Generation);','var source = initialSource;')
     elif a.mutate=='skip-initial-binding':capture=mutation(capture,'return IsMemorySummaryInputCurrent(input) ? input : null;','return input;')
@@ -91,8 +99,8 @@ def main():
     elif a.mutate=='skip-overview-threshold':capture=mutation(capture,'if (input.Job is MemoryOverviewJob && input.OverviewBlockCount < GetMemoryOverviewStartBlockCountFromSettings()) return false;','/* fault: dynamic threshold ignored */')
     elif a.mutate=='raw-denominator-context':capture=mutation(capture,'Math.Max(80, input.Context.DailySourceCharCount / Math.Max(1, GetMemoryCompressionDenominatorFromSettings()))','GetMemoryCompressionDenominatorFromSettings()')
     elif a.mutate=='raw-scene-context':
-        original=ex.declaration(capture,'private static object CaptureMemorySummaryDailySceneContext(')
-        capture=mutation(capture,original,'private static object CaptureMemorySummaryDailySceneContext(MemorySummaryContextDependencies context) { return new {Day=GetCurrentGameDayIndexSafe(),Scene=ResolveCurrentMemorySceneLabel()}; }')
+        original=ex.declaration(capture,('private' if a.source_baseline else 'internal')+' static object CaptureMemorySummaryDailySceneContext(')
+        capture=mutation(capture,original,('private static object CaptureMemorySummaryDailySceneContext(MemorySummaryContextDependencies context) { return new {Day=GetCurrentGameDayIndexSafe(),Scene=ResolveCurrentMemorySceneLabel()}; }' if a.source_baseline else 'internal static object CaptureMemorySummaryDailySceneContext(MemorySummaryContextDependencies context) { return new {Day=MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(),Scene=SceneLocationPromptCaptureAdapter.ResolveCurrentMemorySceneLabel()}; }'))
     elif a.mutate=='ignore-initial-retry':
         for kind in ['daily','major','overview']:capture=mutation(capture,'if ('+kind+'.RetryCount >= 3) return null;','/* fault: initial retry gate omitted */')
     elif a.mutate=='retain-payload':
@@ -107,11 +115,21 @@ def main():
     elif a.mutate=='drop-plan-expected':product=mutation(product,'expectedJobFingerprint = planned.JobFingerprint;','expectedJobFingerprint = null;')
     elif a.mutate=='skip-planned-source-check':capture=mutation(capture,'if (expectedJobFingerprint != null && !string.Equals(expectedJobFingerprint,','if (false && !string.Equals(expectedJobFingerprint,')
     elif a.mutate=='ignore-fingerprint':capture=mutation(capture,'if (source == null || !string.Equals(ComputeMemorySummarySourceFingerprint(source),\n            input.SourceFingerprint, StringComparison.Ordinal)) return false;','if (source == null) return false;')
-    elif a.mutate=='worker-parse':capture=mutation(capture,'\n                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate','\n                accepted = await Task.Run(delegate')
-    elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryRunCaptureAsync','false && !await RunMemorySummaryRunCaptureAsync')
-    elif a.mutate=='drop-afef':product=mutation(product,'AfefLines = afefLines,','AfefLines = new List<string>(),')
-    elif a.mutate=='drop-overview-ids':product=mutation(product,'IncludedBlockIds = includedBlockIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),','IncludedBlockIds = new List<string>(),')
-    elif a.mutate=='drop-major-cursor':product=mutation(product,'LastSummarizedSequence = sequence,','LastSummarizedSequence = 0,')
+    elif a.mutate=='worker-parse':
+        if a.source_baseline:capture=mutation(capture,'\n                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate','\n                accepted = await Task.Run(delegate')
+        else:capture=mutation(capture,'bool current = await _dispatch(run, generation, delegate','bool current = await Task.Run(delegate')
+    elif a.mutate=='skip-retry-source':
+        if a.source_baseline:capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryRunCaptureAsync','false && !await RunMemorySummaryRunCaptureAsync')
+        else:capture=mutation(capture,'() => _dispatch(run, generation, () => _inputCurrent(result.Source)),','() => Task.FromResult(true),')
+    elif a.mutate=='drop-afef':
+        if a.source_baseline:product=mutation(product,'AfefLines = afefLines,','AfefLines = new List<string>(),')
+        else:capture=mutation(capture,'AfefLines = afefLines,','AfefLines = new List<string>(),')
+    elif a.mutate=='drop-overview-ids':
+        if a.source_baseline:product=mutation(product,'IncludedBlockIds = includedBlockIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),','IncludedBlockIds = new List<string>(),')
+        else:capture=mutation(capture,'IncludedBlockIds = includedBlockIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),','IncludedBlockIds = new List<string>(),')
+    elif a.mutate=='drop-major-cursor':
+        if a.source_baseline:product=mutation(product,'LastSummarizedSequence = sequence,','LastSummarizedSequence = 0,')
+        else:capture=mutation(capture,'LastSummarizedSequence = sequence,','LastSummarizedSequence = 0,')
     elif a.mutate=='drop-source-receipt':
         assert product.count('Source = captured.Source,')==3
         product=product.replace('Source = captured.Source,','Source = null,')
@@ -176,10 +194,13 @@ def main():
     weekly_span=ex.declaration(weekly_source,'internal static string TranslateNpcActionKindForPrompt(')
     files['WeeklyProductionTranslation.cs']='namespace AnimusForge { internal sealed class WeeklyAggregateEventLineOwner { '+weekly_span+' } }'
     manifest.append(dict(file=weekly_path,signature='TranslateNpcActionKindForPrompt',sha256=hashlib.sha256(weekly_span.encode()).hexdigest(),source_derived_span=True))
-    if not a.source_baseline:support.include(ROOT,files,manifest,ex)
+    if not a.source_baseline:
+        support.include_captured_leaves(ROOT,files,manifest,ex)
+        support.include(ROOT,files,manifest,ex)
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(source_baseline=a.source_baseline,mutation=a.mutate,observe_rebuilds=a.observe_rebuilds,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_hash_normalization="utf8-no-bom-lf",production_sha256={n:hashlib.sha256(read(n).encode()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Capture/check/clone/hash and six Build entry call counters without changed business conditions','Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])
+    metadata['currentCaptureExecutionScope'] = None if a.source_baseline else {'inputCapture': 'whole current MemorySummaryInputCaptureAdapter', 'application': 'current ExecuteAsync/parse/source-text/queue receipt members', 'commitAdmission': 'not linked through this captured component; terminal/business suite owns that acceptance', 'clock': 'single actual ExecuteAsync Task.Delay delegate to controlled fixture clock', 'legacyMyInventory': 'reviewed historical extraction, not a whole-current-host claim'}
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
     dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
     (out/'home').mkdir();(out/'appdata').mkdir()

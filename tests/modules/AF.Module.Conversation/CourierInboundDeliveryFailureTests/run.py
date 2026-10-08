@@ -44,9 +44,12 @@ if args.mutate == "skip-history":
 out = new_run_root(ROOT, "courier-inbound-delivery-failure", args.run_root)
 program = (HERE / "DeliveredMemoryHarness.cs.txt").read_text(encoding="utf-8-sig")
 memory_source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
-seed_builder = extract.declaration(memory_source, "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
+host_seed = extract.declaration(memory_source, "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
+assert "=> _memoryHistoryCommit.BuildInteractionMemoryRecoverySeed(commit, normalizedMemoryId, isNonHero, npcName, hero);" in host_seed
+actual_history = (ROOT / "src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs").read_text(encoding="utf-8-sig")
+seed_builder = extract.declaration(actual_history, "internal InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
 assert re.search(r"string\s+originDate\s*=\s*ResolveInteractionMemoryOriginGameDate\(originDay,\s*currentDay\);", seed_builder)
-memory_date = extract.declaration(memory_source, "private static string ResolveInteractionMemoryOriginGameDate(")
+memory_date = extract.declaration(actual_history, "internal static string ResolveInteractionMemoryOriginGameDate(")
 if args.mutate == "current-date":
     assert memory_date.count("CampaignTime.Days(Math.Max(0, originDay))") == 1
     memory_date = memory_date.replace("CampaignTime.Days(Math.Max(0, originDay))", "CampaignTime.Days(Math.Max(0, currentDay))", 1)

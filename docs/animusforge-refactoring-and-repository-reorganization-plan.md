@@ -1,3 +1,26 @@
+<a id="reviewed-refactor-source-delivery-20261008"></a>
+<a id="j17-host-responsibility-completion-20261004"></a>
+## 当前源码交付：主体重构与远端功能协调（2026-10-08）
+
+状态 **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。用户已确认目标main并接受验证边界，授权源码推送；推送完成以实际远端ref为准。此段是公开的当前说明，不携带本地详细交接/原始工件。下方既有部署和计划记录保留为各自历史，不代表本次重新部署或允许其他操作。
+
+- 本次是获准向 `origin/main` 交付的主体重构与远端功能协调源码；不是新的部署、打包或实机验收。保留最新远端功能、既有同DLL owner、三渠道及单模块 Bootstrap 双实现。
+- 生产输入与已验证隔离候选逐 LF 规范字节相同（2349项）。此前 Debug/Release × API1.3/API1.4/Bootstrap 六构建成功；当前 DLL 保存每 API 103、公报183、三渠道及 managed Coup 接缝定向检查通过。游戏/VM/provider 叶有替身，不能据此声称所有功能实机通过。
+- `AssemblyVersion=1.5.4.0` 按用户明确选择；模块 v1.5.6、`AssemblyFileVersion=1.5.6.0`。47旧 WarStats 键/类型保持，仅追加2个v6键；内战与Coup旧键保持，旧inline/分片新旧读取有定向证据。
+- 发布投影以固定远端 `c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce` 为父，只携带当前源码/测试与必要公开说明；不引入本地专用交接历史、缓存、日志、玩家资料或构建产物。本地记录与文件不删除、不重写。
+- 5项 J15 测试基线改用该公开祖先中的**完全相同原始 blob**；原历史/当前校验哈希、断言及故障反例不变，5项正向与2项负控通过。这不是刷新旧哈希追绿。
+- **限制保留**：1.3固定引用集仍不完整，部分库由既有游戏/共享参考补充；双构建不代表纯1.3全栈实机认证。旧 persistence/J15 冻结门仍非全绿，未重跑合并后整仓全套；玩家旧档、全部周零异步组合、渲染/GPU、真实provider和帧性能未验。直接构建/探针不替代正式发布的实际 CoupSeamGate marker。
+
+### 取舍与范围
+
+保留本地真实职责owner和安全门，把远端新增算法接入实际消费者，不整文件覆盖宿主。MyBehavior/ShoutBehavior保持注册/装配/兼容入口；周零、公报、记忆、场景输入/交易、战争账本等变化在相应controller/adapter/owner里承接。原生交易在提交时复验实际会话目标，避免改以遭遇军团长代替选中人物；动作/记忆仍保留一次提交与失效结果拒绝边界。
+
+当前源码坐标、文件规范SHA及未覆盖范围见[代码范围图](architecture/af-framework-code-scope.md#reviewed-refactor-source-delivery-20261008)；目录入口见[源码目录指南](architecture/af-source-directory-guide.md#reviewed-refactor-source-delivery-20261008)。这只说明具名受影响职责，不宣称整个AF、全部宿主或全仓验收完成。历史计划 `docs/plans/j17-host-responsibility-completion-20261004.md` 是编制时快照，不重放其中的实施授权。
+
+证据分层：六构建与原具名定向回归来自生产同源候选；本次发布检查另验证生产输入相同、5项公开基线同blob/正负控、出站树/祖先与文件保护。原始本地收据不上传；完整复验仍需要显式对应版本引用与独立输出路径。公开源码以本条所在main修订为准，不把本地审核注记修订当作远端可获取历史。
+
+回滚只对本次公开交付提交作获准的定向inverse/revert，不reset、force或改写他人历史。本次未部署、未Stage、未真实打包、未运行玩家旧档。
+
 <a id="release-v156-20261008"></a>
 # 1.5.6 编译、部署、打包与累计玩家公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 

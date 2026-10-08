@@ -26,7 +26,7 @@ internal sealed class ConversationMessage
         internal float PlayerDistanceMeters;
     }
 #endif
-    internal static class DuelSettings { internal static bool IsBuiltInSceneReplyFormatPromptDisabled() => true; }
+    internal static class DuelSettings { internal const int DailyConversationHistoryLineLimitMax=200; internal static int GetDailyConversationHistoryLineLimitForExternal()=>20; internal static bool IsBuiltInSceneReplyFormatPromptDisabled() => true; }
     internal static class TroopInspectionPrisonerSlaughterProfile { internal const string ActionTag = "[PRISONER_SLAUGHTER]"; }
     internal static class NoblePrisonerEscortBehavior { internal const string ExecuteActionTag = "[EXECUTE_PRISONER]"; }
     internal static class Logger
@@ -38,6 +38,7 @@ internal sealed class ConversationMessage
     internal static class LlmVisibleReplyNormalizer
     {
         internal static string NormalizeComplete(string text) => text;
+        internal static string NormalizeStreamingPreview(string text) => text;
         internal sealed class StreamFilter
         {
             internal string NormalizedText = "";
@@ -75,7 +76,8 @@ internal sealed class ConversationMessage
     public partial class ShoutBehavior
     {
 #if CURRENT
-        private static SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int agent, bool distance) => new SceneHistoryMessageContext { ViewerAgentIndex = agent, ViewerHeroId = "npc_1", PlayerName = "Player", GameDate = "", GameHour = 0, Scene = "", UseDistanceLabels = distance, SpeechTextOptions = new ConversationSpeechTextOptions(false, false) };
+        private readonly AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter SceneHistoryPromptCapture=new();
+        internal static SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int agent, bool distance) => new SceneHistoryMessageContext { ViewerAgentIndex = agent, ViewerHeroId = "npc_1", PlayerName = "Player", GameDate = "", GameHour = 0, Scene = "", UseDistanceLabels = distance, SpeechTextOptions = new ConversationSpeechTextOptions(false, false) };
 #endif
 
         private const int NativeConversationMainReplyTimeoutMs = 180000;

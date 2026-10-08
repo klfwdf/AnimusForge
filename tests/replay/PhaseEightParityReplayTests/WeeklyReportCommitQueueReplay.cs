@@ -58,6 +58,15 @@ internal static class WeeklyReportCommitQueueReplay
         Cancel();
         Check(newerTask.IsCompletedSuccessfully && newerTask.Result == "canceled" && !Pending(),
             "second reset settles new waiter");
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type runtime = af.GetType("AnimusForge.WeeklyReportRuntimeOwner", true);
+        MethodInfo runtimeGetter = behavior.GetProperty("WeeklyRuntime", Members).GetGetMethod(true);
+        foreach (string name in new[] { "CallWeeklyReportBatchApiAttemptAsync", "EnqueueWeeklyWaveLaunchAsync", "ProcessPendingWeeklyWaveLaunches", "CoordinateWeeklyReportWavesAsync" })
+        {
+            MethodInfo facade = behavior.GetMethod(name, Members);
+            Check(Calls(facade, runtimeGetter) && Calls(facade, runtime.GetMethod(name, Members)),
+                "host facade routes to the real unique weekly runtime: " + name);
+        }
         RunRecordStateReplay(af);
         RunBatchApiLaunchReplay(af);
         RunWaveLaunchReplay(af);
@@ -77,7 +86,10 @@ internal static class WeeklyReportCommitQueueReplay
         Type revisionsType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
         object revisions = Activator.CreateInstance(revisionsType, true);
         object snapshot = revisionsType.GetMethod("Capture", Members).Invoke(revisions, new object[] { 0, 6 });
-        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previousOwner = activeOwner.GetValue(null);
+        // Initialize the real dependency owners before its lazy WeeklyRuntime port is captured.
+        object host = CreateInitializedHost(behavior);
         behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, revisions);
         Type contextType = behavior.GetNestedType("PendingWeeklyWaveLaunchContext", BindingFlags.NonPublic);
         Type launchedType = typeof(List<>).MakeGenericType(typeof(Task<>).MakeGenericType(resultType));
@@ -100,8 +112,7 @@ internal static class WeeklyReportCommitQueueReplay
             return (Task)behavior.GetMethod("EnqueueWeeklyWaveLaunchAsync", Members).Invoke(host,
                 new object[] { batches, batchIndex, waveIndex, 2, 2, 2, 1, "fixture week", generation, snapshot });
         }
-        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
-        object previousOwner = activeOwner.GetValue(null);
+
         activeOwner.SetValue(null, host);
         try
         {
@@ -217,7 +228,7 @@ internal static class WeeklyReportCommitQueueReplay
         long generation = (long)guard.GetMethod("CaptureGeneration", Members).Invoke(null, null);
         FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
         object previousOwner = activeOwner.GetValue(null);
-        object host = Activator.CreateInstance(behavior);
+        object host = CreateInitializedHost(behavior);
         try
         {
             foreach (bool retired in new[] { true, false })
@@ -313,13 +324,11 @@ internal static class WeeklyReportCommitQueueReplay
         Delegate complete = Delegate.CreateDelegate(completeType, behavior.GetMethod("CompletePendingWeeklyReportCommit", Members));
         Delegate canceled = Expression.Lambda(typeof(Func<>).MakeGenericType(generationType), Expression.Constant(null, generationType)).Compile();
         object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
-        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        object host = CreateInitializedHost(behavior);
         behavior.GetField("_weeklyReportCommitQueue", Members).SetValue(host, queue);
-        object notices = Activator.CreateInstance(af.GetType("AnimusForge.WeeklyNoticeStateOwner", true), true);
-        behavior.GetField("_weeklyNoticeOwner", Members).SetValue(host, notices);
+        object notices = behavior.GetField("_weeklyNoticeOwner", Members).GetValue(host);
         Type revisionsType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
-        object revisions = Activator.CreateInstance(revisionsType, true);
-        behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, revisions);
+        object revisions = behavior.GetField("_weeklyReportMaterialRevisions", Members).GetValue(host);
         contextType.GetField("SourceSnapshot", Members).SetValue(context,
             revisionsType.GetMethod("Capture", Members).Invoke(revisions, new object[] { 0, 6 }));
         Type entryType = behavior.GetNestedType("EventRecordEntry", BindingFlags.NonPublic);
@@ -330,7 +339,7 @@ internal static class WeeklyReportCommitQueueReplay
         entryType.GetField("Summary", Members).SetValue(existingWorld, "already published");
         IList records = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entryType));
         records.Add(existingWorld);
-        behavior.GetField("_eventRecordEntries", Members).SetValue(host, records);
+        behavior.GetProperty("_eventRecordEntries", Members).SetValue(host, records);
         FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
         object previousOwner = activeOwner.GetValue(null);
         activeOwner.SetValue(null, host);
@@ -421,7 +430,7 @@ internal static class WeeklyReportCommitQueueReplay
         IDictionary map = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), groupType));
         map.Add("world", world);
         contextType.GetField("GroupMap", Members).SetValue(context, map);
-        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        object host = CreateInitializedHost(behavior);
         MethodInfo finalizeBatch = behavior.GetMethod("FinalizePendingWeeklyReportCommitBatch", Members);
         finalizeBatch.Invoke(host, new[] { context, batch, result });
         finalizeBatch.Invoke(host, new[] { context, batch, result });
@@ -497,10 +506,12 @@ internal static class WeeklyReportCommitQueueReplay
         Delegate complete = Delegate.CreateDelegate(completeType, behavior.GetMethod("CompletePendingWeeklyBatchApiAttempt", Members));
         Delegate canceled = Expression.Lambda(canceledType, Expression.Constant(null, attemptType)).Compile();
         object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
-        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
-        behavior.GetField("_weeklyBatchApiAttemptQueue", Members).SetValue(host, queue);
         FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
         object previousOwner = activeOwner.GetValue(null);
+        // Initialize the real dependency owners before its lazy WeeklyRuntime port is captured.
+        object host = CreateInitializedHost(behavior);
+        behavior.GetField("_weeklyBatchApiAttemptQueue", Members).SetValue(host, queue);
+
         Type guard = af.GetType("AnimusForge.SaveRuntimeGuard", true);
         long generation = (long)guard.GetMethod("CaptureGeneration", Members).Invoke(null, null);
         MethodInfo launch = behavior.GetMethod("CallWeeklyReportBatchApiAttemptAsync", Members);
@@ -650,6 +661,23 @@ internal static class WeeklyReportCommitQueueReplay
             "stale generation refuses next retry before API");
         Console.WriteLine("PASS WeeklyReportBatchPromptWorkerReplay unprepared/stale-rejected-before-network live=NOT_RUN");
         Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner/fresh-targets live=NOT_RUN");
+    }
+
+    private static object CreateInitializedHost(Type behavior)
+    {
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previous = activeOwner.GetValue(null);
+        try { return Activator.CreateInstance(behavior); }
+        finally { activeOwner.SetValue(null, previous); }
+    }
+
+    private static bool Calls(MethodInfo caller, MethodInfo callee)
+    {
+        byte[] il = caller.GetMethodBody().GetILAsByteArray();
+        byte[] token = BitConverter.GetBytes(callee.MetadataToken);
+        return Enumerable.Range(1, Math.Max(0, il.Length - token.Length))
+            .Any(offset => (il[offset - 1] == 0x28 || il[offset - 1] == 0x6f)
+                && il.Skip(offset).Take(token.Length).SequenceEqual(token));
     }
 
     private static void Check(bool passed, string name)

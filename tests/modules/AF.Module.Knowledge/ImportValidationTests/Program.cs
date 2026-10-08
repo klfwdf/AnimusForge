@@ -1,4 +1,4 @@
-﻿using AnimusForge;
+using AnimusForge;
 int n=0; void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
 KnowledgeLibraryBehavior.LoreRule Rule(string id,params string[] keys)=>new(){Id=id,Keywords=keys.ToList()};
 var kb=new KnowledgeLibraryBehavior(); string error;
@@ -20,7 +20,7 @@ Check(!KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb,"fix
 KnowledgeImportSupport.Imported=new();Check(!KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb,"fixture",false,out error),"empty batch");
 Check(UnnamedPersonaImportValidationOwner.TryGetUnnamedPersonaKeyFromImportFile("/fixture/NPC__export.json",_=>throw new Exception("badJSON"))=="npc","bad JSON filename fallback");
 Check(UnnamedPersonaImportValidationOwner.TryGetUnnamedPersonaKeyFromImportFile("/fixture/ignored.json",_=>" KEY ")=="key","valid key wins");
-var root=Path.GetFullPath("artifacts/af2-host-terminal-closeout/line-d/importvalidation/fixtures/"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);Directory.CreateDirectory(Path.Combine(root,"unnamed_persona"));
+var root=Path.Combine(Environment.GetEnvironmentVariable("AF_H7_FIXTURE_ROOT") ?? "artifacts/af2-host-terminal-closeout/line-d/importvalidation/fixtures",Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);Directory.CreateDirectory(Path.Combine(root,"unnamed_persona"));
 File.WriteAllText(Path.Combine(root,"one.json"),"{}");
 Check(UnnamedPersonaImportValidationOwner.ValidateUnnamedPersonaKeysForImport(root,_=>"one",_=>false,out error),"single unique key");
 Check(!UnnamedPersonaImportValidationOwner.ValidateUnnamedPersonaKeysForImport(root,_=>"one",_=>true,out error),"existing key prohibits overwrite");
@@ -131,4 +131,14 @@ Check(MemoryEditorProjection.BuildDevHistoryPreview(null)=="（空）","history 
 Check(MemoryEditorProjection.BuildDevHistoryPreview("  first\t second\n third  ")=="first second third","history preview whitespace collapsed and trimmed");
 Check(MemoryEditorProjection.BuildDevHistoryPreview("abcdef",3)=="abc...","history max length ellipsis unchanged");
 Check(MemoryEditorProjection.BuildDevHistoryPreview("abcdef",0)=="a...","history original minimum substring length retained");
+var sameLine=new DailyMemoryLine();var indexedDraft=new DailyMemoryDraft {Lines=new(){sameLine}};
+Check(ReferenceEquals(MemoryEditorProjection.FindDevDailyMemoryLine(indexedDraft,0),sameLine),"daily editor index returns same line reference");
+Check(MemoryEditorProjection.FindDevDailyMemoryLine(null,0)==null&&MemoryEditorProjection.FindDevDailyMemoryLine(indexedDraft,-1)==null&&MemoryEditorProjection.FindDevDailyMemoryLine(indexedDraft,1)==null,"daily editor null and bounds return null");
+var nativeOrder=new List<string>();var nativeHero=new TaleWorlds.CampaignSystem.Hero();
+Check(!PersonaEditorController.CanOpenNativePersonaEditor(()=>{nativeOrder.Add("target");return nativeHero;},()=>{nativeOrder.Add("enabled");return false;},h=>{nativeOrder.Add("player");return false;},h=>{nativeOrder.Add("character");return true;})&&nativeOrder.SequenceEqual(new[]{"target","enabled"}),"native permission original target-before-enabled and short-circuit metadata timing");
+Check(PersonaEditorController.CanOpenNativePersonaEditor(()=>nativeHero,()=>true,h=>false,h=>true)&&!PersonaEditorController.CanOpenNativePersonaEditor(()=>nativeHero,()=>true,h=>true,h=>true),"native permission exact hero versus player eligibility");
+int nativeReads=0,nativeOpens=0,nativeLogs=0;
+Check(!PersonaEditorController.OpenNativeEditor(()=>false,()=>{nativeReads++;return nativeHero;},(h,finish)=>nativeOpens++,null,ex=>nativeLogs++)&&nativeReads==0,"native disabled open does not recapture target or dispatch");
+Check(PersonaEditorController.OpenNativeEditor(()=>true,()=>{nativeReads++;return nativeHero;},(h,finish)=>nativeOpens++,null,ex=>nativeLogs++)&&nativeReads==1&&nativeOpens==1,"native actual UI entry dispatch once and reports acknowledgement not completion");
+Check(!PersonaEditorController.OpenNativeEditor(()=>true,()=>null,(h,finish)=>nativeOpens++,null,ex=>nativeLogs++)&&!PersonaEditorController.OpenNativeEditor(()=>true,()=>throw new Exception("controlled target failure"),(h,finish)=>nativeOpens++,null,ex=>nativeLogs++)&&nativeLogs==1&&nativeOpens==1,"native removed target or exception rejects dispatch and retains original catch log");
 Console.WriteLine($"PASS: {n} production import validation / complete Memory and Persona editor lifecycle assertions (synthetic fixtures, stubbed game/domain inputs).");

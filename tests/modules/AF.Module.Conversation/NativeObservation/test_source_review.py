@@ -37,8 +37,9 @@ class RawPresentationSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: turn dependency'):
                 inverse.restore_observation('ShoutBehavior.cs',live)
         # This deliberately mutated mapped-host input must now fail the strict outer terminal binding first.
-        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
+        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source J17: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
             inverse.restore_observation('ShoutBehavior.cs',live.replace('return NativeConversationTurnCoordinator.RunAsync(', 'return MissingTurnCoordinator.RunAsync(',1))
     def test_crlf_and_bom_unchanged(self):
-        raw=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_bytes();self.assertEqual(raw.count(b'\r\n'),raw.count(b'\n'));self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
+        raw=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_bytes();self.assertEqual((raw.count(b'\r\n'),raw.count(b'\n')), (3381, 5640), 'c4de frozen current mixed layout')
+        self.assertNotEqual((raw.replace(b'\r\n',b'\n',1).count(b'\r\n'),raw.count(b'\n')), (3381, 5640), 'one lost current CRLF must be detected');self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
 if __name__=='__main__':unittest.main(verbosity=2)

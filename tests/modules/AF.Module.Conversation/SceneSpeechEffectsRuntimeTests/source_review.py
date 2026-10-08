@@ -10,6 +10,12 @@ new=ex.declaration((src/'SceneSpeechEffectController.cs').read_text(encoding='ut
 guard_start=new.index('if (item == null) return;');guard_end=new.index('NpcDataPacket matchedNpc = item.Npc;')
 new=new[:guard_start]+new[guard_end:]
 new=new.replace('_ports.GetDuelLiteralHit()','_lastShoutDuelLiteralHit').replace('_ports.','')
+# Exact reviewed bridge relocation; the original body oracle remains immutable.
+bridge=(ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs').read_text(encoding='utf-8-sig')
+assert bridge.count('internal static void ProcessDiplomacyTagsDispatch(')==1
+assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(' in bridge
+assert new.count('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(')==1
+new=new.replace('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(', 'DiplomacyBehavior.ProcessDiplomacyTagsDispatch(',1)
 def tokens(s):
     pat=r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/|\w+|[^\s]'
     return [t for t in re.findall(pat,s,re.S) if not t.startswith('//') and not t.startswith('/*')]
@@ -21,7 +27,11 @@ assert 'private void HandleSceneTtsPlaybackFinishedOnMainThread(int agentIndex) 
 complete=ex.declaration((src/'SceneSpeechCompletionController.cs').read_text(encoding='utf-8-sig'),'internal void Complete(')
 complete=complete.replace('_movement.','_sceneMovement.').replace('_ports.MainThreadQueueCount()','_mainThreadActions.Count')
 for oldname,newname in [('PrepareInteractionCompletion','PrepareInteractionCompletion'),('RunSceneTtsPlaybackFinishedStep','RunStep'),('FlushPendingSceneDialogueFeedAfterSpeech','FlushDialogueFeed'),('FlushLordsHallMissionEntryAfterSpeech','TryFlushLordsHallEntry'),('FlushMeetingReleaseAfterSpeech','FlushMeetingRelease'),('FlushWorldMapMissionExitAfterSpeech','FlushWorldMapExit'),('FlushSceneAutonomyRestoreAfterSpeech','FlushAutonomyRestore'),('CleanupSceneLipSyncAfterPlaybackFinished','CleanupLipSync')]:complete=complete.replace('_ports.'+newname+'(',oldname+'(')
-atom=ex.declaration(audio,'private void PrepareInteractionCompletion(');atom=body(atom)[1:];atom=atom[:atom.rfind('}')]
+lifecycle=(src/'SceneInteractionLifecycleController.cs').read_text(encoding='utf-8-sig')
+atom=ex.declaration(lifecycle,'internal void PrepareInteractionCompletion(');atom=body(atom)[1:];atom=atom[:atom.rfind('}')]
+assert atom.count('_ports.UnmarkPlaybackStarted(agentIndex);')==1
+atom=atom.replace('_ports.UnmarkPlaybackStarted(agentIndex);','lock (_ttsBubbleSyncLock) { _ttsPlaybackStartedAgents.Remove(agentIndex); }',1)
+assert audio.count('private void PrepareInteractionCompletion(int agentIndex) => _j17SceneInteractionLifecycleController.PrepareInteractionCompletion(agentIndex);')==1
 assert complete.count('PrepareInteractionCompletion(agentIndex);')==1
 complete=complete.replace('PrepareInteractionCompletion(agentIndex);',atom)
 oldaudio=subprocess.check_output(['git','show','87e7a0b9:src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAudio.cs'],cwd=ROOT).decode('utf-8-sig')

@@ -6,6 +6,15 @@ internal readonly struct SceneHistoryScalarRecord {
 }
 // Sole scene-history authority. Uses the existing adapter gate to preserve atomic multi-write ordering.
 internal sealed class SceneConversationHistoryOwner {
+ internal static int SessionId = 0;
+ internal static long CurrentEventSequence = 0L;
+ internal static long NativeIllustrationHistoryBoundary = 0L;
+ internal static void CaptureNativeIllustrationHistoryBoundary() => Interlocked.Exchange(ref NativeIllustrationHistoryBoundary, Interlocked.Read(ref CurrentEventSequence));
+ internal static void ResetNativeIllustrationHistoryBoundary() => Interlocked.Exchange(ref NativeIllustrationHistoryBoundary, 0L);
+ internal static long ReadNativeIllustrationHistoryBoundary() => Interlocked.Read(ref NativeIllustrationHistoryBoundary);
+ internal static long NextEventSequence() => Interlocked.Increment(ref CurrentEventSequence);
+ internal object Gate => _gate;
+
  private readonly object _gate;private readonly Dictionary<int,List<ConversationMessage>> _npcHistory=new();private readonly List<ConversationMessage> _publicHistory=new();
  internal SceneConversationHistoryOwner(object gate){_gate=gate??throw new ArgumentNullException(nameof(gate));}
  internal void Reset(){lock(_gate){_npcHistory.Clear();_publicHistory.Clear();}}

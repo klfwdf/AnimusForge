@@ -68,3 +68,246 @@ namespace AnimusForge {
   @@METHODS@@
  }
 }
+
+// @@COURIER_CURRENT_LEAVES@@
+using System;using System.Collections.Generic;using System.Collections.Concurrent;using System.Threading;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using AnimusForge.Refactor.Runtime;
+namespace AnimusForge;
+public sealed partial class CourierDeliveryBehavior
+{
+    private static CourierDeliveryBehavior Instance;
+    private static readonly ConcurrentQueue<Action> MainThreadActions=new();
+    private readonly PendingOperationRegistry _pendingOwnerPhases=new();
+    private readonly HashSet<CourierSession> _activeSessionProcesses=new();
+    internal static string IssueModuleCourierTicket(string clientId)=>null;
+    internal static void RevokeModuleCourierTickets(string clientId){}
+    internal static void SubmitModuleCourierDialogue(AnimusForge.Refactor.Modules.CoreDialogueOperation operation)=>operation.Finish("courier.owner_unavailable");
+    internal static bool CurrentQueuedCommit=>MainThreadActions.TryPeek(out var action)&&action.Method.Name.Contains("DispatchCourierRefactorCommitAsync",StringComparison.Ordinal);
+    internal static void PumpCurrentOne(){if(MainThreadActions.TryDequeue(out var action))action();NativeHost.Pump();}
+    internal static void PumpCurrent(){while(MainThreadActions.TryDequeue(out var action))action();NativeHost.Pump();}
+    internal static CourierDeliveryBehavior CreateCurrent(){Instance=new CourierDeliveryBehavior();return Instance;}
+    private CourierSession _currentTestSession;private ConversationRequestLifetime _currentTestLifetime;
+    internal void StartCurrent(){Hero.MainHero.StringId="player";NativeHost.Hero.StringId="npc";NativeHost.Hero.IsLord=true;NativeHost.Hero.CharacterObject=NativeHost.Character;NativeHost.Character.HeroObject=NativeHost.Hero;var courier=new MobileParty{StringId="af_courier_current",Party=new PartyBase()};NativeHost.Hero.PartyBelongedTo=new MobileParty{StringId="target_party",Party=new PartyBase(),Position=new CampaignVec2{X=100}};MobileParty.MainParty=new MobileParty{StringId="player_party",Party=new PartyBase()};MobileParty.All.Add(NativeHost.Hero.PartyBelongedTo);MobileParty.All.Add(MobileParty.MainParty);MobileParty.All.Add(courier);_courierPartyCache[courier.StringId]=courier;var session=new CourierSession{Id="current",SenderHeroId=Hero.MainHero.StringId,RecipientHeroId=NativeHost.Hero.StringId,CourierPartyId=courier.StringId,Stage=CourierStage.Outbound.ToString(),LetterText="Question",DeliveryApplied=false};_currentTestSession=session;_sessions.Add(session.Id,session);StartCourierReplyGeneration(session,"current-whole-test");_currentTestLifetime=_courierRequestLifetimes[session];}
+    internal static (bool available,bool requiresNaval,MobileParty.NavigationType navigation) CurrentNavalRouteProbe(){var plan=BuildCourierRoutePlan(new MobileParty{Position=new CampaignVec2()},new CampaignVec2{X=100},null,null,false);return(IsNavalRuntimeAvailable(),plan.RequiresNaval,plan.NavigationType);}
+    internal bool CurrentReplyGenerated=>_currentTestSession.ReplyGenerated;
+    internal void CurrentDeliver(){_courierPartyCache[_currentTestSession.CourierPartyId].Position=NativeHost.Hero.PartyBelongedTo.Position;ProcessSession(_currentTestSession);}
+    internal void CurrentCancel(){_pendingOwnerPhases.Seal();RetireCourierRequestLifetimes();}
+    internal void CurrentChangeSource(){_currentTestSession.LetterText="Changed request";}
+    internal bool CurrentSettled=>(int)typeof(ConversationRequestLifetime).GetField("_workers",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(_currentTestLifetime)==0;
+    internal static void ResetCurrentFixture(){NativeHost.Reset();NativeHost.Mode="trace";MyBehavior.ResetCourierMemory();F.Current.Raw="";CourierNetworkLeaf.Calls=0;CourierNetworkLeaf.Reply="Hello";CourierNetworkLeaf.ThrowNetwork=false;CourierNetworkLeaf.AbandonRetry=false;CourierNetworkLeaf.PromptStarted=false;CourierNetworkLeaf.OnPromptComplete=null;CourierNetworkLeaf.OnAcceptedMemory=null;CourierNetworkLeaf.Gate=new(TaskCreationOptions.RunContinuationsAsynchronously);MainThreadActions.Clear();MobileParty.All.Clear();}
+    internal string CurrentReplyText=>_currentTestSession.ReplyText;
+    internal bool CurrentConsumed=>_currentTestSession.PostprocessConsumed;
+    internal bool CurrentDelivered=>_currentTestSession.DeliveryApplied;
+    internal bool CurrentSuccess=>_currentTestSession.ReplyText==CourierNetworkLeaf.Reply&&CourierNetworkLeaf.Calls>0;
+    internal string CurrentDiagnostic=>"sessions="+_sessions.Count+" stage="+_currentTestSession.Stage+" reply="+_currentTestSession.ReplyText+" calls="+CourierNetworkLeaf.Calls;
+
+}
+
+// @@COURIER_ENGINE_LEAVES@@
+using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.CampaignSystem.Settlements;
+// Controlled Bannerlord scalars/handles only; no AF scheduling, delivery acceptance or prompt algorithms.
+namespace TaleWorlds.CampaignSystem
+{
+    public partial class Hero {public bool IsDead=>!IsAlive;public bool IsPrisoner,IsPregnant;public MobileParty PartyBelongedTo;public PartyBase PartyBelongedToAsPrisoner;public Settlement CurrentSettlement;}
+    public partial struct CampaignVec2 {public float X,Y;}
+}
+namespace TaleWorlds.CampaignSystem.Party
+{
+    public partial class PartyBase {public static PartyBase MainParty;public bool IsMobile,IsSettlement;public MobileParty MobileParty;public Settlement Settlement;public Hero LeaderHero;public IFaction MapFaction;}
+    public partial class MobileParty {public string StringId="party",Name="Party";public static System.Collections.Generic.List<MobileParty> All=new();public bool IsActive=true;public Settlement CurrentSettlement,BesiegedSettlement;public Clan ActualClan;public PartyBase Party;public void SetMoveModeHold(){} }
+}
+namespace TaleWorlds.CampaignSystem.Settlements
+{
+    public partial class Settlement {public bool IsCastle,IsTown,IsVillage;public Clan OwnerClan;public IFaction MapFaction;}
+}
+
+namespace TaleWorlds.CampaignSystem
+{
+    public enum CampaignTimeControlMode {Stop,UnstoppablePlay,StoppablePlay}
+    public partial class Campaign {public CampaignTimeControlMode TimeControlMode;public bool TimeControlModeLock;public void SetTimeControlModeLock(bool value)=>TimeControlModeLock=value;public void SetTimeSpeed(int speed){} }
+}
+namespace TaleWorlds.Core
+{
+    public class InquiryData {internal System.Action Negative;public InquiryData(string title,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string affirmativeText,string negativeText,System.Action affirmativeAction,System.Action negativeAction){Negative=negativeAction;} }
+    public static partial class InformationManager {public static void ShowInquiry(InquiryData data,bool pauseGameActiveState=false,bool prioritize=false){if(AnimusForge.CourierNetworkLeaf.AbandonRetry)data.Negative?.Invoke();}public static void HideInquiry(){} }
+}
+namespace TaleWorlds.Library {public static class Colors {public static Color Red=>new();public static Color Yellow=>new();public static Color Green=>new();}}
+
+namespace AnimusForge
+{
+ internal static class CourierNetworkLeaf {internal static System.Action OnPromptComplete,OnAcceptedMemory;internal static volatile bool PromptStarted;internal static int Calls;internal static bool ThrowNetwork,AbandonRetry;internal static string Reply="Hello",Tags="";internal static System.Threading.Tasks.TaskCompletionSource<bool> Gate=new(System.Threading.Tasks.TaskCreationOptions.RunContinuationsAsynchronously);}
+ internal static class ShoutNetwork
+ {
+  public static void RecordPrimaryRequestBodyForTokenStats(System.Collections.Generic.List<object> messages,int maxTokens,string mode){}
+  public static async System.Threading.Tasks.Task<string> CallApiWithMessages(System.Collections.Generic.List<object> messages,int maxTokens,bool recordTokenStats=true,int? overrideMaxTokens=null,bool forceDisableThinking=false,bool promptRetryOnError=false,System.Threading.CancellationToken cancellationToken=default,float? overrideTemperature=null){System.Threading.Interlocked.Increment(ref CourierNetworkLeaf.Calls);await CourierNetworkLeaf.Gate.Task.WaitAsync(cancellationToken);if(CourierNetworkLeaf.ThrowNetwork)throw new System.Net.Http.HttpRequestException("controlled network failure");return CourierNetworkLeaf.Reply;}
+  public static System.Threading.Tasks.Task CallApiWithMessagesStream(System.Collections.Generic.List<object> messages,int maxTokens,System.Action<string> onChunk,System.Action<string> onComplete,System.Action<string> onError,System.Threading.CancellationToken cancellationToken=default,bool promptRetryOnError=true)=>throw new System.NotSupportedException("Courier nonstream fixture");
+ }
+ internal static partial class AIConfigHandler {public static bool TryCallAuxiliaryActionPostprocessOnceForExternal(string system,string user,int maxTokens,float temperature,out string content,out string error){content=CourierNetworkLeaf.Tags;error="";return true;}}
+}
+
+namespace TaleWorlds.CampaignSystem.Party { public partial class MobileParty { public enum NavigationType { None, Default, Land, Naval, All } } }
+namespace TaleWorlds.CampaignSystem { public enum AiBehavior { Hold, GoToPoint, GoToSettlement, EscortParty, EngageParty, None, BesiegeSettlement,AssaultSettlement,RaidSettlement,DefendSettlement } }
+namespace AnimusForge { internal class ShipHull {internal string StringId="hull";internal int TotalCrewCapacity=10;internal float BaseSpeed=1;} internal class Ship {internal ShipHull ShipHull;internal object Name;internal bool IsUsedByQuest,IsInvulnerable;internal Ship(ShipHull hull){ShipHull=hull;}internal void SetName(object name){Name=name;}} internal partial class MBObjectManager {internal static MBObjectManager Instance=new();internal MBReadOnlyList<T> GetObjectTypeList<T>()=>new();} internal class MBReadOnlyList<T>:List<T>{} internal class TextObject {private readonly string _text;internal static TextObject GetEmpty()=>new("");internal TextObject(string text){_text=text;}public override string ToString()=>_text;}  }
+
+namespace TaleWorlds.CampaignSystem.Party {
+public partial class MobileParty {
+public bool IsCurrentlyAtSea,HasNavalNavigationCapability,IsTargetingPort,IsCurrentlyUsedByAQuest;
+public NavigationType NavigationCapability=NavigationType.Land,DesiredAiNavigationType=NavigationType.Land;
+internal List<AnimusForge.Ship> Ships=new();public TaleWorlds.CampaignSystem.AiBehavior DefaultBehavior,ShortTermBehavior;
+public MobileParty TargetParty;public TaleWorlds.CampaignSystem.Settlements.Settlement TargetSettlement;public TaleWorlds.CampaignSystem.CampaignVec2 TargetPosition;
+internal AnimusForge.CourierAiLeaf Ai=new();public void SetPartyUsedByQuest(bool used){IsCurrentlyUsedByAQuest=used;}
+public void SetMoveGoToPoint(TaleWorlds.CampaignSystem.CampaignVec2 point,NavigationType navigation){TargetPosition=point;DesiredAiNavigationType=navigation;DefaultBehavior=TaleWorlds.CampaignSystem.AiBehavior.GoToPoint;}
+public void SetMoveGoToSettlement(TaleWorlds.CampaignSystem.Settlements.Settlement settlement,NavigationType navigation,bool port){TargetSettlement=settlement;DesiredAiNavigationType=navigation;IsTargetingPort=port;DefaultBehavior=TaleWorlds.CampaignSystem.AiBehavior.GoToSettlement;}
+public static bool IsFleeBehavior(TaleWorlds.CampaignSystem.AiBehavior behavior)=>false;
+}
+public partial class PartyBase {public object Name="Party";public TaleWorlds.CampaignSystem.Hero Owner;}
+}
+namespace TaleWorlds.CampaignSystem.Settlements {public partial class Settlement {public bool HasPort;public TaleWorlds.CampaignSystem.CampaignVec2 GatePosition,PortPosition;}}
+namespace TaleWorlds.CampaignSystem {
+public partial struct CampaignVec2 {public bool IsOnLand=>true;public static CampaignVec2 Invalid=>new();public float DistanceSquared(CampaignVec2 other)=>(X-other.X)*(X-other.X)+(Y-other.Y)*(Y-other.Y);}
+public partial class Hero {public int Gold;public bool IsHumanPlayerCharacter;}
+public partial class Campaign {internal AnimusForge.CourierModelsLeaf Models=new();}
+}
+namespace TaleWorlds.Library {public struct Vec2 {public float X,Y;}}
+namespace AnimusForge {
+internal sealed partial class DuelSettings {internal int NpcInitiatedLetterTargetChars=100;}
+internal partial class CourierAiLeaf {internal void CalculateFleePosition(out TaleWorlds.CampaignSystem.CampaignVec2 point,object threat,object vector){point=new();}}
+internal partial class CourierModelsLeaf {internal CourierAiModelLeaf MobilePartyAIModel=new();}
+internal class CourierAiModelLeaf {internal bool ShouldPartyCheckInitiativeBehavior(object party)=>false;internal void GetBestInitiativeBehavior(object party,out TaleWorlds.CampaignSystem.AiBehavior behavior,out TaleWorlds.CampaignSystem.Party.MobileParty threat,out float score,out TaleWorlds.Library.Vec2 vector){behavior=default;threat=null;score=0;vector=new();}}
+internal static class ChangeShipOwnerAction {internal static void ApplyByMobilePartyCreation(object party,Ship ship){}}
+internal static class DestroyShipAction {internal static void Apply(Ship ship){}}
+}
+
+namespace TaleWorlds.Core {public partial struct EquipmentElement {public ItemObject Item;}public partial class ItemObject {public int Value=1;}}
+namespace TaleWorlds.CampaignSystem.Party {public partial class MobileParty {internal AnimusForge.ItemRoster ItemRoster=new();}}
+namespace AnimusForge {
+internal struct ItemRosterElement {internal int Amount;internal TaleWorlds.Core.EquipmentElement EquipmentElement;}
+internal class ItemRoster {private readonly List<ItemRosterElement> _items=new();internal int Count=>_items.Count;internal ItemRosterElement GetElementCopyAtIndex(int index)=>_items[index];internal void AddToCounts(TaleWorlds.Core.EquipmentElement element,int amount){_items.Add(new(){EquipmentElement=element,Amount=amount});}}
+}
+
+namespace AnimusForge {
+internal struct TroopRosterElement {internal TaleWorlds.CampaignSystem.CharacterObject Character;internal int Number,WoundedNumber,Xp;}
+internal class TroopRoster {internal int TotalManCount=>0;internal static TroopRoster CreateDummyTroopRoster()=>new();internal void AddXpToTroop(TaleWorlds.CampaignSystem.CharacterObject c,int xp){} internal List<TroopRosterElement> GetTroopRoster()=>new();internal int FindIndexOfTroop(TaleWorlds.CampaignSystem.CharacterObject c)=>-1;internal TroopRosterElement GetElementCopyAtIndex(int index)=>default;internal void AddToCounts(TaleWorlds.CampaignSystem.CharacterObject c,int number,bool insertAtFront=false,int woundedCount=0,int xpChange=0,bool removeDepleted=true,int index=-1){} }
+internal class MapNotificationView {internal void RegisterMapNotificationType(System.Type a,System.Type b){} }
+internal static class MapScreen {internal static MapScreenLeaf Instance;}
+internal class MapScreenLeaf {internal MapNotificationView MapNotificationView;}
+internal class MapState {}
+internal static class CourierLetterReplyPopup {internal static bool ShowWithReply(string title,string header,string body,System.Action reply,string replyLabel,System.Action close,string closeLabel)=>true;}
+internal class AnimusForgeCourierReplyMapNotification {internal AnimusForgeCourierReplyMapNotification(string id,string name,string text){} }
+internal class AnimusForgeCourierReplyMapNotificationItemVM {}
+internal static partial class MBInformationManager {internal static void AddNotice(object notice){} }
+}
+namespace TaleWorlds.Core {public partial class Game {public static Game Current;public GameStateManagerLeaf GameStateManager;}public class GameStateManagerLeaf {public object ActiveState;}}
+
+namespace TaleWorlds.CampaignSystem {public interface IFaction {string StringId{get;}object Name{get;}Hero Leader{get;}bool IsBanditFaction=>false;bool IsAtWarWith(IFaction other)=>false;}public partial class Clan:IFaction {string IFaction.StringId=>StringId;object IFaction.Name=>Name;Hero IFaction.Leader=>Leader;public bool IsBanditFaction;}public partial class Kingdom:IFaction {string IFaction.StringId=>StringId;object IFaction.Name=>Name;Hero IFaction.Leader=>Leader;}}
+namespace AnimusForge {internal class MapEvent {internal bool IsFinished;}}
+
+namespace TaleWorlds.Core {public class InquiryElement {public object Identifier;public string Name;public InquiryElement(object identifier,string name,object imageIdentifier,bool isEnabled=true,string hint=null){Identifier=identifier;Name=name;}}}
+
+namespace TaleWorlds.CampaignSystem {
+public partial struct CampaignTime {public double ToHours=>24;}
+public partial class Hero {public bool IsFugitive;public TaleWorlds.CampaignSystem.Settlements.Settlement StayingInSettlement;}
+public partial class Campaign {internal AnimusForge.CourierVisualTrackerLeaf VisualTrackerManager=new();}
+public static class FactionManager {public static bool IsAtWarAgainstFaction(IFaction a,IFaction b)=>false;}
+}
+namespace TaleWorlds.CampaignSystem.Party {
+public partial class MobileParty {public bool IsBandit,IsVisible,IsInspected,IsTransitionInProgress;internal AnimusForge.TroopRoster MemberRoster=new(),PrisonRoster=new();internal AnimusForge.MapEvent MapEvent;public object BesiegerCamp,SiegeEvent;public MobileParty ShortTermTargetParty;public TaleWorlds.CampaignSystem.Settlements.Settlement ShortTermTargetSettlement;public TaleWorlds.CampaignSystem.CampaignVec2 MoveTargetPoint;public bool HasLandNavigationCapability=>true;}
+public partial class PartyBase {internal AnimusForge.TroopRoster MemberRoster=new(),PrisonRoster=new();internal AnimusForge.ItemRoster ItemRoster=new();public int RemainingFoodPercentage=100;public void SetVisualAsDirty(){}public void OnConsumedFood(){}public void SetCustomOwner(TaleWorlds.CampaignSystem.Hero hero){Owner=hero;}public void AddPrisoner(TaleWorlds.CampaignSystem.CharacterObject c,int number){}}
+}
+namespace TaleWorlds.CampaignSystem.Settlements {public partial class Settlement {public static Settlement Find(string id)=>null;public bool IsFortification,IsHideout,IsUnderSiege;public CourierTownLeaf Town;public TaleWorlds.CampaignSystem.Party.PartyBase Party;internal AnimusForge.ItemRoster ItemRoster=new();}}
+namespace TaleWorlds.Core {public partial class Game {internal AnimusForge.MBObjectManager ObjectManager=new();}public partial class ItemObject {public ObjectIdLeaf Id=>new();}public struct ObjectIdLeaf {public uint InternalValue=>1;}}
+namespace AnimusForge {
+internal partial class MBObjectManager {internal T GetObject<T>(string id)=>default;}
+internal partial class CourierAiLeaf {internal bool DoNotMakeNewDecisions;internal void SetDoNotMakeNewDecisions(bool value){DoNotMakeNewDecisions=value;}}
+internal partial class CourierModelsLeaf {internal CourierNavalNavigationLeaf PartyNavigationModel=new();internal CourierMapDistanceLeaf MapDistanceModel=new();internal CourierEncounterLeaf EncounterModel=new();}
+internal class CourierNavalNavigationLeaf {internal bool SupportWater=true,Throw;internal bool IsTerrainTypeValidForNavigationType(TaleWorlds.CampaignSystem.TerrainType terrain,MobileParty.NavigationType navigation){if(Throw)throw new System.InvalidOperationException("controlled navigation model failure");return SupportWater&&terrain==TaleWorlds.CampaignSystem.TerrainType.Water&&navigation==MobileParty.NavigationType.Naval;}}
+internal class CourierMapDistanceLeaf {internal bool PathExistBetweenPoints(object a,object b,TaleWorlds.CampaignSystem.Party.MobileParty.NavigationType n)=>true;}
+internal class CourierEncounterLeaf {internal float GetEncounterJoiningRadius=>1;}
+internal class CourierVisualTrackerLeaf {private readonly HashSet<object> _tracked=new();internal bool CheckTracked(object value)=>_tracked.Contains(value);internal void RegisterObject(object value)=>_tracked.Add(value);internal void RemoveTrackedObject(object value,bool force)=>_tracked.Remove(value);}
+internal static class DistanceHelper {internal static float FindClosestDistanceFromMobilePartyToMobileParty(TaleWorlds.CampaignSystem.Party.MobileParty a,TaleWorlds.CampaignSystem.Party.MobileParty b,TaleWorlds.CampaignSystem.Party.MobileParty.NavigationType nav)=>System.MathF.Sqrt(a.Position.DistanceSquared(b.Position));}
+internal static class GiveGoldAction {internal static void ApplyBetweenCharacters(Hero a,Hero b,int amount,bool flag=false){if(a!=null)a.Gold-=amount;if(b!=null)b.Gold+=amount;}}
+internal static class AddHeroToPartyAction {internal static void Apply(Hero hero,MobileParty target,bool flag){hero.PartyBelongedTo=target;}}
+internal static class TransferPrisonerAction {internal static void Apply(object character,object source,object target){}}
+internal static class TakePrisonerAction {internal static void Apply(object party,Hero hero){hero.IsPrisoner=true;}}
+internal static class DestroyPartyAction {internal static void Apply(object actor,MobileParty party){party.IsActive=false;}}
+}
+
+namespace AnimusForge {internal class PartyScreenLogic {internal enum TroopType {Member,Prisoner}internal enum PartyRosterSide {Left,Right}}}
+
+namespace TaleWorlds.CampaignSystem {public partial class Hero {public bool IsKnownToPlayer=true;}public partial class Clan {public IFaction MapFaction;}}
+namespace TaleWorlds.CampaignSystem.Party {public partial class MobileParty {public float Speed=4;internal AnimusForge.CourierPartyComponentLeaf PartyComponent=new();public bool IsGarrison;}public partial class PartyBase {internal void SetCustomName(AnimusForge.TextObject name){Name=name;}}}
+namespace TaleWorlds.CampaignSystem.Settlements {public class CourierTownLeaf {public TaleWorlds.CampaignSystem.Party.MobileParty GarrisonParty;}public partial class Settlement {public System.Collections.Generic.List<TaleWorlds.CampaignSystem.Party.MobileParty> Parties=new();}}
+namespace AnimusForge {
+internal delegate Tuple<bool,TextObject> PartyPresentationDoneButtonConditionDelegate(TroopRoster lm,TroopRoster lp,TroopRoster rm,TroopRoster rp,int ll,int rl);
+internal delegate void PartyScreenClosedDelegate(PartyBase left,TroopRoster lm,TroopRoster lp,PartyBase right,TroopRoster rm,TroopRoster rp,bool cancelled);
+internal delegate bool IsTroopTransferableDelegate(CharacterObject c,PartyScreenLogic.TroopType type,PartyScreenLogic.PartyRosterSide side,PartyBase owner);
+internal static class PartyScreenHelper {internal static void OpenScreenWithDummyRoster(TroopRoster lm,TroopRoster lp,TroopRoster rm,TroopRoster rp,TextObject lt,TextObject rt,int ll,int rl,PartyPresentationDoneButtonConditionDelegate done,PartyScreenClosedDelegate close,IsTroopTransferableDelegate transferable){}}
+internal class MultiSelectionInquiryData {internal MultiSelectionInquiryData(string title,string text,List<TaleWorlds.Core.InquiryElement> items,bool close,int min,int max,string ok,string cancel,Action<List<TaleWorlds.Core.InquiryElement>> accept,Action<List<TaleWorlds.Core.InquiryElement>> reject,string sound,bool flag){}}
+internal class TextInquiryData {internal TextInquiryData(string title,string text,bool accept,bool reject,string ok,string cancel,Action<string> done,Action close){}}
+internal static partial class MBInformationManager {internal static void ShowMultiSelectionInquiry(MultiSelectionInquiryData data,bool flag){}}
+internal static class CourierLetterInputPopup {internal static bool Show(string title,string a,string b,string c,Action<string> accept,Action close)=>true;}
+internal static class MBRandom {internal static int RandomInt(int max)=>0;internal static float RandomFloat=>0.5f;internal static int RandomInt(int min,int max)=>min;}
+internal static class CustomPartyComponent {internal static MobileParty CreateCustomPartyWithTroopRoster(CampaignVec2 pos,float radius,TaleWorlds.CampaignSystem.Settlements.Settlement settlement,TextObject name,Clan owner,TroopRoster troops,TroopRoster prisoners,Hero leader,string banner,string home,float speed,bool flag)=>new(){Party=new()};}
+}
+namespace TaleWorlds.Core {public static partial class InformationManager {internal static void ShowTextInquiry(AnimusForge.TextInquiryData data,bool flag){}}}
+
+namespace AnimusForge {internal sealed partial class DuelSettings {internal string ModelName="synthetic-model";}internal static partial class PlayerNotorietyBehavior {internal static NotorietyConversationOutcomeOperationStatus NoteConversationLineRecoverableForExternal(string id,string session,long runtime,long save,int day,int hour,string recovery,string hash,string part)=>NotorietyConversationOutcomeOperationStatus.NotReady;}}
+namespace TaleWorlds.CampaignSystem {public partial class Campaign {public bool GameStarted=true;}public partial struct CampaignTime {public int GetHourOfDay=>12;public double CurrentHourInDay=>12;public static CampaignTime Days(int day)=>new();public static int HoursInDay=>24;}}
+namespace AnimusForge {internal static partial class MemoryEntityIdentityBannerlordAdapter {internal static string GetCurrentGameDateTextSafe()=>"Day 3";}}
+
+namespace TaleWorlds.CampaignSystem {public partial struct CampaignTime {public static int DaysInSeason=>21;public static int DaysInYear=>84;public static int SunRise=>5;public static int SunSet=>18;public bool IsDayTime=>true;}}
+namespace AnimusForge {
+internal static class NonBlockingErrorReport {internal static void Show(string title,string body){CourierCurrentHost.Notices++;}}
+internal static class ModOnboardingBehavior {internal static bool EnsureSetupReady()=>true;}
+internal static class ProactiveNpcRequestBehavior {internal static void RecordLetterNeedDeliveredForExternal(string need){}}
+internal sealed partial class FixtureTeamLeaves {internal void TryProcessAcceptedAgendaTag(Hero hero,string channel,string input,string reply,ref string text,out string failure){failure=null;}}
+internal static partial class DuelBehavior {internal static void RejectDetachedDuelDispatchForExternal(object context,string reason){}}
+internal static partial class PlayerNotorietyBehavior {internal static void NoteCourierReplyForExternal(Hero hero){}internal static void NoteCourierSentForExternal(Hero hero){}internal static string BuildPlayerRecentRuntimeInstructionForExternal(Hero hero,bool courier=false)=>"";}
+internal sealed partial class RewardSystemBehavior {
+ internal void RecordPlayerPrepaidTransfer(Hero hero,int gold,string item,int amount){}
+ internal bool TryApplyPlayerSettlementTransferForExternal(Hero hero,string id,out string status){status="leaf-unavailable";return false;}
+ internal long EstimateItemValueForExternal(Hero hero,TaleWorlds.Core.ItemObject item,int count)=>item.Value*count;
+ internal static string DecoratePlayerCraftedAfefItemNameForExternal(string id,uint objectId,string name,Hero observer,CharacterObject character,string observerKey,string kind,bool commit)=>name;
+ internal static RpItemIntroductionContext CreateRpItemIntroductionContextForExternal(Hero hero,CharacterObject character,string name,string input,string reply)=>new();
+ internal static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster roster,string display,int count,out string itemId,out string itemName,string source,string identity,string template){itemId=identity;itemName=display;return 0;}
+ internal static bool TryPrimeGeneratedInventoryItemForExternal(string id,string display,string template,uint objectId,out string normalized,out string normalizedTemplate,out uint normalizedObject,string source){normalized=id;normalizedTemplate=template;normalizedObject=objectId;return false;}
+ internal static bool TryGetGeneratedRpItemIntroductionForExternal(string id,uint objectId,out string introduction){introduction="";return false;}
+}
+internal static class MapSeaContextGuard {internal static bool IsMobilePartyAtSeaOrOnWater(MobileParty party)=>false;internal static string BuildMobilePartyShipPromptText(MobileParty party)=>"";internal static string BuildMobilePartyLandTerrainPromptLabel(MobileParty party)=>"plain";internal static TaleWorlds.CampaignSystem.Settlements.Settlement FindNearestSettlementForPrompt(MobileParty party)=>party.CurrentSettlement;internal static string FormatSettlementNameWithTypeForPrompt(TaleWorlds.CampaignSystem.Settlements.Settlement settlement)=>settlement?.Name;}
+internal static partial class PlayerEncounterCompat {internal static MapEvent GetCurrentMapEventSafe()=>null;}
+internal static class CourierCurrentHost {internal static int Notices;}
+internal static partial class MBRandomFixture {}
+internal class CourierPartyComponentLeaf {internal void ChangePartyLeader(Hero hero){}}
+}
+
+namespace AnimusForge {internal static partial class PartyAssetTransferBannerlordAdapter {internal static bool IsPartyTransferLordEligibleForExternal(Hero hero,CharacterObject character)=>false;internal static bool IsSettlementTransferLeaderEligibleForExternal(Hero hero,CharacterObject character)=>false;}}
+
+namespace TaleWorlds.CampaignSystem {public partial class Hero {public static Hero OneToOneConversationHero;public Hero Father,Mother,Spouse;public System.Collections.Generic.List<Hero> Children=new();} }
+namespace TaleWorlds.CampaignSystem.Party {public partial class MobileParty {public static MobileParty ConversationParty;}}
+
+namespace TaleWorlds.CampaignSystem {public partial class Kingdom {public bool IsEliminated;public Clan RulingClan;} }
+namespace TaleWorlds.MountAndBlade {public partial class Agent {public CourierOriginLeaf Origin=new();}public class CourierOriginLeaf {public object BattleCombatant;}}
+namespace AnimusForge {internal static partial class PlayerNotorietyBehavior {internal static bool DoesObserverKnowPlayerForExternal(TaleWorlds.CampaignSystem.Hero observer)=>true;internal static void NoteConversationLineForExternal(string id){}}internal static partial class VassalageBehavior {internal static TaleWorlds.CampaignSystem.Kingdom ResolveKingdomById(string id)=>TaleWorlds.CampaignSystem.Kingdom.All.Find(k=>k.StringId==id);internal static string BuildKingdomVassalageRelationPromptLineForExternal(TaleWorlds.CampaignSystem.Kingdom observer,TaleWorlds.CampaignSystem.Kingdom player,string label)=>"";}}
+
+// Synthetic readonly scene-status leaves. Courier identity has AgentIndex -1; no scene-controller effects are simulated.
+namespace AnimusForge {internal sealed class SceneInteractionLifecycleController {internal bool TryGetInteractionSession(int id,out object session){session=null;return false;}}internal sealed class SceneAttentionController {internal bool IsStaringAgentIndex(int id)=>false;}}
+namespace TaleWorlds.MountAndBlade {public partial class Agent {public enum ActionCodeType {Other,Idle,Guard,Dash,JumpStart,Jump,JumpEnd,Mount,Dismount,Fall,ReadyRanged,ReleaseRanged,ReleaseThrowing,ReadyMelee,ReleaseMelee,Kick,KickContinue,KickHit,WeaponBash,HitObject,DefendFist,DefendLeftStaff,ParriedMelee,BlockedMelee,StrikeLight,StrikeMedium,StrikeHeavy,StrikeKnockBack,MountStrike}public ActionCodeType GetCurrentActionType(int channel)=>ActionCodeType.Other;public ActionIndexCache GetCurrentAction(int channel)=>ActionIndexCache.act_none;public CourierActionSetLeaf ActionSet=new();}public sealed class CourierActionSetLeaf {public string GetAnimationName(ActionIndexCache action)=>"";}public readonly struct ActionIndexCache {public static ActionIndexCache act_none=>default;public static bool operator ==(ActionIndexCache a,ActionIndexCache b)=>true;public static bool operator !=(ActionIndexCache a,ActionIndexCache b)=>false;public override bool Equals(object obj)=>obj is ActionIndexCache;public override int GetHashCode()=>0;}}
+
+namespace AnimusForge {internal sealed partial class SceneMovementController {internal bool IsAgentBusyWithSceneGuideErrand(int index)=>false;internal static CourierGuideEscortLeaf GetSceneGuideEscortBehavior(TaleWorlds.MountAndBlade.Agent a)=>null;internal bool HasGuideArrivalHold(int id)=>false;}internal sealed class CourierGuideEscortLeaf {}internal static partial class AfGcczShoutBridge {internal static string BuildOrdinarySpeakerVoiceContext(TaleWorlds.CampaignSystem.Hero h,NpcDataPacket n)=>"";}internal static partial class ShoutUtils {internal static string BuildCurrentSettlementHeroNpcLineForPrompt()=>"";}internal sealed partial class MyBehavior {public static string GetClanTierReputationLabelForExternal(int tier)=>PersonaIntroTextRules.GetClanTierReputationLabel(tier);public static string BuildAgeBracketLabelForExternal(float age)=>PersonaIntroTextRules.BuildAgeBracketLabel(age);public static string BuildHeroIdentityTitleForExternal(TaleWorlds.CampaignSystem.Hero hero)=>PersonaIdentityPromptCaptureAdapter.CaptureHeroIdentityTitle(hero);public static string BuildHeroEquipmentSummaryForExternal(TaleWorlds.CampaignSystem.Hero hero)=>"synthetic worn equipment";public static string BuildNobleEtiquettePromptForExternal(TaleWorlds.CampaignSystem.Hero hero)=>"";public static string BuildPlayerCrimeRatingPromptLineForExternal(TaleWorlds.CampaignSystem.IFaction faction)=>"";}internal partial class RewardSystemBehavior {internal string BuildFilteredInventorySummaryForAI(TaleWorlds.CampaignSystem.Hero h,MentionedWorldEntities mentions,int max,bool includePrivateBattleEquipment=false)=>"";internal string BuildFilteredSettlementMerchantInventorySummaryForAI(TaleWorlds.CampaignSystem.CharacterObject c,MentionedWorldEntities mentions,int max)=>"";internal string BuildVisibleEquipmentGuidePriceSummaryForAI(TaleWorlds.CampaignSystem.Hero h,MentionedWorldEntities mentions=null,int max=8)=>"";}}
+namespace TaleWorlds.CampaignSystem {public partial class Hero {public bool IsPlayerCompanion,IsLord,IsWanderer;}public partial class Clan {public bool IsUnderMercenaryService;}}
+namespace RichExecutions.Core {internal static class VengeanceIntegration {internal static bool IsActive=>false;internal static bool IsExecutedVictim(TaleWorlds.MountAndBlade.Agent agent)=>false;}}
+namespace TaleWorlds.MountAndBlade {public partial class Agent {public bool IsSitting()=>false;public bool IsUsingGameObject=>false;public bool IsInBeingStruckAction=>false;public AnimusForge.UsableMachine CurrentlyUsedGameObject;public TaleWorlds.Library.Vec3 GetCurrentVelocity()=>default;public T GetComponent<T>() where T:class=>null;}}
+namespace AnimusForge {public class UsableMachine {internal TaleWorlds.Engine.WeakGameEntity GameEntity;}internal class PlayMusicPoint:UsableMachine {}internal class AnimationPoint:UsableMachine {internal string ArriveAction,LoopStartAction,PairLoopStartAction,LeaveAction,LeftHandItem,RightHandItem;}internal class DynamicObjectAnimationPoint:UsableMachine {internal string ArriveAction,LoopStartAction,LeaveAction;}internal class AgentNavigator {internal AgentBehavior GetActiveBehavior()=>null;internal UsableMachine TargetUsableMachine;}internal class AgentBehavior {}internal class CampaignAgentComponent {internal AgentNavigator AgentNavigator;}}
+namespace TaleWorlds.Engine {public readonly struct WeakGameEntity {public bool IsValid=>false;public string Name=>"";}}
+
+namespace AnimusForge {internal sealed partial class MyBehavior {internal static void ResetCourierMemory(){Instance=new MyBehavior();}
+internal static int CourierRecoveryCompleted=>Instance._courierRecovery?.Ledger.CompletedCount??0;
+internal static int CourierHistoryLines=>Instance.MemoryReadState.History.Values.Sum(records=>records.Sum(day=>day.Lines.Count));internal static int CourierDailyLines=>Instance.MemoryReadState.Drafts.Values.Sum(records=>records.Sum(day=>day.Lines.Count));}}
+
+namespace AnimusForge {internal static partial class AIConfigHandler {internal static bool TryCallAuxiliaryRuleCodesForExternal(string user,string secondary,string runtime,int cap,out List<string> ids,out string error,IEnumerable<string> excluded){ids=new();error=null;return true;}}}
+
+namespace AnimusForge {internal static class TroopInspectionMissionLogic {internal static bool TryResolveInspectionPrisoner(TaleWorlds.MountAndBlade.Agent agent,out bool lord){lord=false;return false;}}internal class PrisonerAgentOrigin:TaleWorlds.MountAndBlade.CourierOriginLeaf {}}
+
+namespace AnimusForge {internal static class CourierCurrentContextProbe {internal static int Clears;}internal sealed partial class MyBehavior {internal SharedPromptCaptureBannerlordAdapter.ExternalPromptBuildPorts CurrentExternalPorts {get=>ExternalPromptBuildCapture;set=>_externalPromptBuildCapture=value;}}}
+
+namespace TaleWorlds.ModuleManager {internal static class ModuleHelper {internal static bool Active;internal static bool IsModuleActive(string id)=>Active&&id==TaleWorlds.CampaignSystem.CampaignData.NavalDLCStringId;}}
+namespace TaleWorlds.CampaignSystem {internal enum TerrainType {Water}internal static class CampaignData {internal const string NavalDLCStringId="NavalDLC";}}

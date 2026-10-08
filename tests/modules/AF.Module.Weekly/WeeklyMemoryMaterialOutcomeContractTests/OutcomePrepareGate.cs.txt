@@ -1,15 +1,22 @@
 
- internal WeeklyActionOutcomePublicationOwner _weeklyActionOutcomePublication=new();
+ internal WeeklyActionOutcomePublicationOwner _weeklyActionOutcomePublication;
  private Dictionary<string,string> _weeklyActionOutcomeStorage=new();
- internal void InitializeOutcomeFixture()=>_weeklyActionOutcomePublication.Import(null,SaveRuntimeGuard.CurrentGeneration,out _);
+ internal void InitializeOutcomeFixture() {
+  _weeklyActionOutcomePublication=new WeeklyActionOutcomePublicationOwner(new WeeklyOutcomeApplicationCapabilities {
+   Memory=_memoryBusinessState, CaptureOutcome=CaptureOutcomeFixture,
+   CurrentDay=()=>42,CurrentDate=()=>"now",IsEligible=_=>true
+  });
+  _weeklyActionOutcomePublication.Import(null,SaveRuntimeGuard.CurrentGeneration,out _);
+ }
  internal void DeveloperClearFixture(long generation)=>OnDeveloperClearWeeklyActionOutcomes(generation);
  internal Dictionary<string,string> OutcomeStorageFixture=>_weeklyActionOutcomeStorage;
  internal WeeklyActionOutcomePublicationOwner OutcomePublicationFixture=>_weeklyActionOutcomePublication;
  internal int FixtureBuildCalls;
  internal bool FixtureSubjectUnavailable;
- private bool TryBuildWeeklyActionOutcomePayload(WeeklyMemoryMaterialOutcomeCandidate candidate,bool nonhero,string name,out WeeklyMemoryMaterialFrozenPayload payload,out string error) {
-  FixtureBuildCalls++;payload=null;
+ private bool CaptureOutcomeFixture(WeeklyMemoryMaterialOutcomeCandidate candidate,bool nonhero,string name,out WeeklyActionOutcomeMaterialContext context,out WeeklyMaterialValuePort values,out string error) {
+  FixtureBuildCalls++;context=null;values=null;
   if(FixtureSubjectUnavailable){error="weekly_material_subject_unavailable";return false;}
-  if(!WeeklyMemoryMaterialValuePolicy.TryValidateOutcomeCandidate(candidate,SaveRuntimeGuard.IsCurrentGeneration,out error))return false;
-  return WeeklyMemoryMaterialValuePolicy.TryBuildFrozenOutcome(candidate,new(){MemoryId=candidate.SubjectId,NpcName=name,FootholdKingdomId="K",FootholdSettlementId="T",SubjectName=()=>"NPC",CurrentDay=()=>candidate.OriginGameDay,CurrentDate=()=>"now"},new(){IsGold=s=>false,RewardValue=(s,n)=>30000,DebtValue=s=>0},out payload,out error);
+  context=new(){MemoryId=candidate.SubjectId,NpcName=name,FootholdKingdomId="K",FootholdSettlementId="T",SubjectName=()=>"NPC",CurrentDay=()=>candidate.OriginGameDay,CurrentDate=()=>"now"};
+  values=new(){IsGold=s=>false,RewardValue=(s,n)=>30000,DebtValue=s=>0};
+  error="";return true;
  }

@@ -1,5 +1,5 @@
 from pathlib import Path
-import hashlib, importlib.util, unittest
+import hashlib, importlib.util, unittest, re
 from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[4]
@@ -68,13 +68,21 @@ class TurnSourceTests(unittest.TestCase):
     def test_new_owner_mutation_cannot_hide_behind_legacy_inverse(self):
         from af2_f5_migration_review import OWNERS, verify_owners
         original = Path.read_text
+        # These four original owners never entered the independent F5 delta layer.
+        # Every mutation still expects its exact owner/category; no broad error alternation.
+        legacy_categories={
+            'src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs':'Unreviewed F5 dependency: ',
+            'src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs':'Unreviewed F5 dependency: ',
+            'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs':'Unreviewed F5 dependency: ',
+            'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs':'Unreviewed F5 dependency: ',
+        }
         for name in OWNERS:
             target = current_source_path(ROOT, name)
             def changed(path, *args, **kwargs):
                 value = original(path, *args, **kwargs)
                 return value + "\n// unreviewed owner mutation\n" if path == target else value
             with self.subTest(owner=name), patch.object(Path, 'read_text', changed):
-                with self.assertRaisesRegex(AssertionError, 'Unreviewed F5 dependency'):
+                with self.assertRaisesRegex(AssertionError, '^' + re.escape(legacy_categories.get(name,'Unreviewed independent source: F5:') + name) + '$'):
                     verify_owners()
 
 if __name__=='__main__':unittest.main(verbosity=2)
