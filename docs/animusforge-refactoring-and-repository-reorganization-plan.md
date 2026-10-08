@@ -1,4 +1,11 @@
-﻿<a id="yj-endpoint-selection-20261008"></a>
+<a id="native-history-and-scene-exit-20261008"></a>
+# 自由对话单行历史同步与退出后场景动作（2026-10-08，ACTIVE）
+
+- 用户报告删除一两条历史后 NPC 失忆，以及场景动作提示退出后 Esc/F 重开闪退。本包只修确认的单条差量被当整日快照、原版退出事件内动作重入及旧待执行动作越过场景/会话生命周期；不改变压缩记忆、RAG预算、标签格式或原构建流程。
+- 调查基线：NativeConversationSessionOwner.SyncDay 匹配失败整日重建；dialogueui_delete/edit 传单行差量。原版 ConversationManager.EndConversation 在事件后才清 ConversationAgents、停用 flow、卸载 handler，AF 在事件内立即 drain 场景动作。
+- 范围：两历史 UI host、Native session owner、Scene ShoutBehavior 与生产链接回放测试；保留整日编辑重建语义、其他日期/NPC/AFEF、动作一次执行。完成门：缺陷旧版反例、单行回归、退出/重开/离场/读档回放、原双API/Bootstrap/接缝构建、差异核对。未获本轮部署/打包/推送授权；真实闪退堆栈与实机均尚缺。
+
+<a id="yj-endpoint-selection-20261008"></a>
 ## YJ 引导三线路测速（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品提交 `943f22227`；检查点 `ead2857`。保留现有 www，新增 `https://yjapi.shenlanqaq.com/v1`、`https://asia.shenlanqaq.com/v1`。点击 YJ 后并行测试三线路，每条两次无认证 `/models` 响应头请求，选择成功样本平均延迟最低者，再进入单/多分组菜单；全部失败留原选择，不覆盖配置。
