@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -43,6 +43,11 @@ namespace AnimusForge.Illustrator
             FetchModelList = RequestModelListFetch;
             TestImageApi = () => IllustratorApiTest.StartOrCancel(this);
             FetchDirectorModelList = RequestDirectorModelListFetch;
+            BindPromptEditors();
+        }
+
+        internal void BindPromptEditors()
+        {
             EditCustomStylePrompt = OpenCustomStylePromptEditor;
             EditNegativePrompt = OpenNegativePromptEditor;
             EditCustomDirectorPrompt = OpenCustomDirectorPromptEditor;
@@ -482,7 +487,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public Action EditCustomDirectorPrompt { get; set; }
 
-        // Persist with the existing MCM settings identity, like CustomStylePrompt; old configs default to empty.
+        // Hidden editor text is persisted by IllustratorPromptSettingsPersistence in the existing MCM JSON.
         public string CustomDirectorPrompt { get; set; } = "";
 
         [SettingPropertyBool("自动生图", HintText = "仅在“生图开启”开启时生效。开启：快报生成时提前生成插画；关闭：快报右侧面板打开且缓存未命中时再自动生成。", Order = 1, RequireRestart = false)]
@@ -595,6 +600,7 @@ namespace AnimusForge.Illustrator
                     {
                         Instance.CustomStylePrompt = CustomStylePrompt;
                     }
+                    SaveCurrentSettings();
                 }, null, "保存", "返回");
             }
             catch (Exception ex)
@@ -636,6 +642,7 @@ namespace AnimusForge.Illustrator
                     {
                         Instance.NegativePrompt = NegativePrompt;
                     }
+                    SaveCurrentSettings();
                 }, null, "保存", "返回");
             }
             catch (Exception ex)
