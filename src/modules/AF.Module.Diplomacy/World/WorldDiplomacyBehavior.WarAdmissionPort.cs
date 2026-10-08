@@ -16,6 +16,7 @@ public sealed partial class WorldDiplomacyBehavior
         internal WarAdmissionPort(WorldDiplomacyBehavior owner, Kingdom initiator, Kingdom target)
         { _owner = owner; _initiator = initiator; _target = target; }
         public bool ValidPair => _initiator != null && _target != null && _initiator != _target && !_initiator.IsEliminated && !_target.IsEliminated;
+        public bool InvolvesPlayer => IsPlayerAffiliatedKingdom(_initiator) || IsPlayerAffiliatedKingdom(_target);
         public bool HasIndependentAuthority => HasIndependentWorldDiplomacyAuthority(_initiator) && HasIndependentWorldDiplomacyAuthority(_target);
         public bool BlocksNewOffensiveWar => AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.BlocksNewOffensiveWar(_initiator);
         public bool AtWar => FactionManager.IsAtWarAgainstFaction(_initiator, _target);

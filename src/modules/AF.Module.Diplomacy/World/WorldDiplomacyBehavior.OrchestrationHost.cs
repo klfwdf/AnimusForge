@@ -31,7 +31,7 @@ public sealed partial class WorldDiplomacyBehavior
 
         // Settings scalars.
         public int GenerationMaxTokens() => WorldDiplomacyBehavior.GenerationMaxTokens;
-        public int AnalysisMaxTokens() => WorldDiplomacyBehavior.AnalysisMaxTokens;
+        public int AnalysisMaxTokens() => WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit();
         public int MaxPendingJobs() => WorldDiplomacyBehavior.MaxPendingJobs;
         public int MaxStoredDocuments() => WorldDiplomacyBehavior.MaxStoredDocuments;
         public int MaxAutomaticReplyDepth() => WorldDiplomacyBehavior.MaxAutomaticReplyDepth;

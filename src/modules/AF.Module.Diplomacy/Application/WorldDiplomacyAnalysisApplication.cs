@@ -27,7 +27,7 @@ internal static class WorldDiplomacyAnalysisApplication
             orchestration is WorldDiplomacyOrchestration live ? live.PlayerAnalysisOffers : null);
         var document = execution.ResolveDocument(job.DocumentId);
         if (document?.IsPlayerAuthored == true && document.AnalysisStatus == "analysis_failed")
-            execution.Notify("外交宣言已发布，但分析失败，外交动作未执行。可打开该公文选择“重新解析”。");
+            execution.Notify(document.MechanicalResult);
     }
     internal static void Suppress(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
         WorldDiplomacyDocument document, string reason)
@@ -67,6 +67,87 @@ internal static class WorldDiplomacyAnalysisApplication
             if (document.IsPlayerAuthored && (document.PlayerAnalysisCommitted || document.ChangedDiplomaticState
                 || document.AnalysisStatus is "success" or "published_action_rejected")) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
+            if (document.IsPlayerAuthored && WorldDiplomacyEnvelopeJsonRules.ReadString(json, "failure_reason") == "output_truncated")
+            {
+                MarkPlayerAnalysisFailed(document, log);
+                document.MechanicalResult = "宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。";
+                return;
+            }
+            if (document.IsPlayerAuthored && json?["actions"] != null)
+            {
+                CommitPlayerActions();
+                return;
+            }
+            // Parse all entries before submitting one ordered execution command.
+            // Transient records reuse the scalar parser; they never enter storage or publish.
+            void CommitPlayerActions()
+            {
+                if (json["actions"] is not JArray entries || entries.Count == 0)
+                { MarkPlayerAnalysisFailed(document, log); return; }
+                var parsed = new List<WorldDiplomacyDocumentAction>(entries.Count);
+                WorldDiplomacyDocument primary = null;
+                foreach (JToken entry in entries)
+                {
+                    if (entry is not JObject action || action["actions"] != null)
+                    { MarkPlayerAnalysisFailed(document, log); return; }
+                    var single = (JObject)action.DeepClone();
+                    foreach (string field in new[] { "status", "title_summary", "tone", "confidence" })
+                        if (single[field] == null && json[field] != null) single[field] = json[field].DeepClone();
+                    string requestedTarget = WorldDiplomacyEnvelopeJsonRules.ReadString(single,
+                        "primary_target_kingdom_id", "target_kingdom_id", "target");
+                    string extractedIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(single, "intent"));
+                    if (WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(extractedIntent)
+                        && (string.IsNullOrWhiteSpace(requestedTarget) || string.IsNullOrWhiteSpace(resolveKingdomCanonicalId(requestedTarget))))
+                    { MarkPlayerAnalysisFailed(document, log); return; }
+                    var draft = new WorldDiplomacyDocument {
+                        DocumentId = document.DocumentId, RoundId = document.RoundId, ExchangeId = document.ExchangeId,
+                        AuthorKingdomId = document.AuthorKingdomId, AuthorKingdomName = document.AuthorKingdomName,
+                        TargetKingdomId = document.TargetKingdomId, TargetKingdomName = document.TargetKingdomName,
+                        Body = document.Body, Title = document.Title, IsPlayerAuthored = true,
+                        IsReadyForPublication = document.IsReadyForPublication, SourceDocumentId = document.SourceDocumentId,
+                        IsResponse = document.IsResponse, AutomaticReplyDepth = document.AutomaticReplyDepth,
+                        SubjectReleaseTokens = document.SubjectReleaseTokens
+                    };
+                    bool accepted = false; string rejection = null;
+                    CommitAnalysis(job, single.ToString(), maxAutomaticReplyDepth, threats,
+                        id => id == document.DocumentId ? draft : resolveDocument(id), resolveRound,
+                        resolveKingdomCanonicalId, resolveKingdomName, parseAndValidatePeaceTerms, normalizeKingdomIdList,
+                        (_, reason) => rejection = reason,
+                        (d, i, c, response, t, score) => {
+                            parsed.Add(new WorldDiplomacyDocumentAction {
+                                ActionId = "action_" + (parsed.Count + 1), TargetKingdomId = d.TargetKingdomId,
+                                TargetKingdomName = d.TargetKingdomName, Intent = i, Commitment = c, RequiresResponse = response,
+                                PeaceTerms = d.PeaceTerms, TreatyTerms = d.TreatyTerms,
+                                RespondingToOfferDocumentId = d.RespondingToOfferDocumentId, RespondingToOfferActionId = d.RespondingToOfferActionId,
+                                RespondingToThreatDocumentId = d.RespondingToThreatDocumentId, RespondingToThreatActionId = d.RespondingToThreatActionId
+                            }); accepted = true;
+                        }, log, liveOpenOffers);
+                    if (!accepted || rejection != null)
+                    {
+                        MarkPlayerAnalysisFailed(document, log);
+                        if (draft.AnalysisStatus == "analysis_failed") document.MechanicalResult = draft.MechanicalResult;
+                        log?.Invoke("player compound analysis failed action=" + parsed.Count + " reason=" + (rejection ?? draft.AnalysisStatus));
+                        return;
+                    }
+                    primary ??= draft;
+                }
+                document.Actions = parsed;
+                WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, parsed[0]);
+                document.Title = primary.Title;
+                document.Tone = primary.Tone; document.Confidence = primary.Confidence;
+                document.AnalysisStatus = primary.AnalysisStatus;
+                document.PresentedThreatDocumentIds = primary.PresentedThreatDocumentIds;
+                document.PresentedThreatFollowThroughDocumentIds = primary.PresentedThreatFollowThroughDocumentIds;
+                document.AddressedKingdomIds = normalizeKingdomIdList(parsed.Select(x => x.TargetKingdomId)
+                    .Concat(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "addressed_kingdom_ids")), document.AuthorKingdomId);
+                document.MentionedKingdomIds = normalizeKingdomIdList(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "mentioned_kingdom_ids"), document.AuthorKingdomId);
+                document.DiscussionRoundId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_round_id");
+                document.DiscussionSourceDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_public_document_id");
+                document.RequiresResponse = parsed.Any(x => x.RequiresResponse);
+                WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
+                document.PlayerAnalysisCommitted = true;
+                processAnalyzedDocument(document, document.Intent, document.Commitment, document.RequiresResponse, document.Tone, document.Confidence);
+            }
             if (document.IsPlayerAuthored)
             {
                 document.DiscussionRoundId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_round_id");

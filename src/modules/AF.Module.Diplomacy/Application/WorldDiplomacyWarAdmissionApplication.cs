@@ -4,6 +4,7 @@ namespace AnimusForge;
 internal interface IWorldDiplomacyWarAdmissionPort
 {
     bool ValidPair { get; }
+    bool InvolvesPlayer { get; }
     bool HasIndependentAuthority { get; }
     bool AtWar { get; }
     bool Allied { get; }
@@ -26,6 +27,8 @@ internal static class WorldDiplomacyWarAdmissionApplication
         reason = "";
         if (!port.ValidPair)
         { reason = "王国目标无效"; return false; }
+        // Player diplomacy is not subject to autonomous AI authority or pacing policy.
+        if (port.InvolvesPlayer) return true;
         if (!port.HasIndependentAuthority)
         { reason = "附庸国没有独立外交权，应由宗主国处理"; return false; }
         if (port.AtWar)
@@ -42,10 +45,16 @@ internal static class WorldDiplomacyWarAdmissionApplication
     internal static bool CanDeclareWar<T>(ref T port, out string reason, bool enforceRejectedUltimatum = false, bool isPlayerAuthored = false)
         where T : IWorldDiplomacyWarAdmissionPort
     {
+        if (isPlayerAuthored)
+        {
+            bool valid = port.ValidPair;
+            reason = valid ? "" : "王国目标无效";
+            return valid;
+        }
         if (!CanIssueWarThreat(ref port, out reason)) return false;
+        if (port.InvolvesPlayer) return true;
         if (port.BlocksNewOffensiveWar)
         { reason = "该国正在内战，不能新开主动战争"; return false; }
-        if (isPlayerAuthored) return true;
         if (port.PendingThreatDecision)
         { reason = "已发出的谴责或最后通牒仍在等待对象国一次性决定"; return false; }
         if (enforceRejectedUltimatum) return true;

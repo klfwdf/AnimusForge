@@ -8519,6 +8519,7 @@ internal static class Patch_Vassalage_DeclareWarAction
 {
 	public static bool Prefix(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail declareWarDetail)
 	{
+        if (PermanentAllianceGuard.IsPlayerDeclarationWarAuthorized(faction1, faction2)) return true;
 		return VassalageBehavior.Instance?.ShouldAllowDeclareWarAction(faction1, faction2, declareWarDetail) ?? true;
 	}
 }

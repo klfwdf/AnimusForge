@@ -5115,10 +5115,10 @@ public static class WorldDiplomacyRoundLifecycleRules
         string authorKingdomId,
         string targetKingdomId,
         Func<List<string>> buildPotentialActions,
-        Func<string, WorldDiplomacyDocument> resolveDocument)
+        Func<string, WorldDiplomacyDocument> resolveDocument, bool playerDiplomacy = false)
     {
         List<string> actions = buildPotentialActions?.Invoke() ?? new List<string>();
-        if (round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId)
+        if (!playerDiplomacy && round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId)
             && TryResolveUniqueOpenProposalForRound(round, authorKingdomId, targetKingdomId, "propose_peace", out _))
         {
             actions.Clear();
@@ -5126,7 +5126,7 @@ public static class WorldDiplomacyRoundLifecycleRules
             actions.Add("reject_peace");
             return actions;
         }
-        if (IsImmediateWarResponsePeaceSuppressed(round, round?.ResultSettlementCurrentSlotId,
+        if (!playerDiplomacy && IsImmediateWarResponsePeaceSuppressed(round, round?.ResultSettlementCurrentSlotId,
                 authorKingdomId, targetKingdomId, resolveDocument))
         {
             actions.RemoveAll(x => string.Equals(
@@ -5134,7 +5134,7 @@ public static class WorldDiplomacyRoundLifecycleRules
                 "propose_peace",
                 StringComparison.OrdinalIgnoreCase));
         }
-        if (round?.ResultSettlementPending == true && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
+        if (!playerDiplomacy && round?.ResultSettlementPending == true && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
         {
             WorldDiplomacyResultSettlementSlot currentSlot = SelectSettlementSlotBySlotAndKingdom(
                 round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, authorKingdomId);
@@ -5148,7 +5148,7 @@ public static class WorldDiplomacyRoundLifecycleRules
                 return NormalizeIdListPreserveOrder(actions);
             }
         }
-        if (round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
+        if (!playerDiplomacy && round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
         {
             HashSet<string> ownOpenProposalIntents = new HashSet<string>((round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
                 .Where(x => IsOpenDirectedOffer(x, authorKingdomId, targetKingdomId))

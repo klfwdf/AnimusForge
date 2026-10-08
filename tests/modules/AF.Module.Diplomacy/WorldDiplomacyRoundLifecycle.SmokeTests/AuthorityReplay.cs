@@ -27,7 +27,7 @@ internal static class AuthorityReplay
         {
             var result = WorldDiplomacyPresentationQueries.Detail(doc, round,
                 new WorldDiplomacyPlayerContext(2, "a", ruler, independent, ""), _ => "");
-            Test.True(result.CanReply == (ruler && independent), "query combines ruler, authority and outstanding reply");
+            Test.True(result.CanReply == ruler, "player ruler can answer outstanding reply regardless of independent authority");
         }
         round.Participants[0].MandatoryReplyPending = false;
         Test.True(!WorldDiplomacyPresentationQueries.Detail(doc, round, new WorldDiplomacyPlayerContext(2, "a", true, true, ""), _ => "").CanReply, "completed obligation removes reply eligibility");

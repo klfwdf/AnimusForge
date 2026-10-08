@@ -33,6 +33,7 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 	{
 		List<string> actions = new List<string>();
 		if (first == null || second == null || first == second) return actions;
+        if (_port.CaptureWarAdmission(first, second).InvolvesPlayer) return PlayerPotentialIntents();
         WorldDiplomacyPairFacts facts = _port.CapturePair(first, second);
         if (_port.HasAuthority(first) && _port.HasAuthority(second))
             actions.AddRange(new[] { "propose_annexation", "propose_tributary", "propose_garrison", "propose_vassal" });
@@ -75,14 +76,21 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 		return WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(actions);
 	}
 
+    private static List<string> PlayerPotentialIntents() => new() {
+        "statement", "condemn", "apology", "concession", "warning", "ultimatum", "declare_war",
+        "propose_peace", "propose_alliance", "break_alliance", "propose_trade", "cancel_trade",
+        "propose_annexation", "propose_tributary", "propose_garrison", "propose_vassal"
+    };
+
     internal List<string> BuildLegalDiplomaticActionIntents(
 		WorldDiplomacyRound round,
 		string author,
-		string target)
+		string target, bool playerContext = false)
 	{
+        bool playerDiplomacy = playerContext || _port.CaptureWarAdmission(author, target).InvolvesPlayer;
 		return WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
 			round, author, target,
-			() => BuildPotentialDiplomaticActionIntents(author, target), _port.ResolveDocument);
+			() => playerDiplomacy ? PlayerPotentialIntents() : BuildPotentialDiplomaticActionIntents(author, target), _port.ResolveDocument, playerDiplomacy);
 	}
 
     internal List<string> BuildLegalDiplomaticDeclarationIntents(
@@ -92,9 +100,9 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 		bool isRelayTurn,
 		string resultSettlementSlotId = null,
 		bool isExternalResponseOnly = false,
-		WorldDiplomacyDocument responseSource = null)
+		WorldDiplomacyDocument responseSource = null, bool playerContext = false)
 	{
-		List<string> intents = BuildLegalDiplomaticActionIntents(round, author, target);
+		List<string> intents = BuildLegalDiplomaticActionIntents(round, author, target, playerContext);
 		bool mustAnswerPeaceOffer = WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(intents);
 		if (!mustAnswerPeaceOffer && WorldDiplomacyNoActionApplication.IsAllowed(
 			round,

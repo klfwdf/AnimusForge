@@ -8,6 +8,8 @@ internal static class PlayerResponseRecoveryReplay
     private sealed class Host : ConcurrentOralMigrationReplay.Host
     {
         internal readonly HashSet<string> Unqualified = new();
+        internal readonly HashSet<string> Unavailable = new();
+        public override bool IsEliminatedParty(string id) => Unavailable.Contains(id);
         public override bool HasIndependentAuthority(string id) => !Unqualified.Contains(id) && base.HasIndependentAuthority(id);
         public override IWorldDiplomacyPromptWorld PromptWorld() => new PromptWorldFixture();
         public override IWorldDiplomacyJobPreparationPort JobPreparation() => new Preparation(this);
@@ -51,28 +53,33 @@ internal static class PlayerResponseRecoveryReplay
 
     internal static void Run()
     {
-        var (h, o, r, d) = Fixture(true); h.Unqualified.Add("p"); var old = Job(r,d); o.CurrentStorage.Jobs.Add(old);
-        Test.True(!o.CanDispatchDiplomacyJob(old), "old queued request rejects original player country authority before API");
+        var (h, o, r, d) = Fixture(true); h.Unavailable.Add("p"); var old = Job(r,d); o.CurrentStorage.Jobs.Add(old);
+        Test.True(!o.CanDispatchDiplomacyJob(old), "old queued request rejects nonexistent original player country before API");
         Test.True(r.PlayerResponses.Single().Status == "unavailable" && h.Notices.Count == 1,
-            "receiver eligible but original source author lost authority terminates once with explanation");
+            "receiver eligible but original source author eliminated terminates once with explanation");
         for (int i = 0; i < 100; i++) { o.ProcessRoundLifecycle(); o.CanDispatchDiplomacyJob(old); }
         Test.True(h.Notices.Count == 1 && o.CurrentStorage.ConcurrentRounds.All(x => x.EventSourceType != "player_followup"),
             "unavailable source cannot manufacture another followup or notifications");
         Test.True(!o.CurrentStorage.Jobs.Contains(old), "old saved unavailable job retired on reconciliation without API");
-        h.Unqualified.Clear(); h.CurrentDayValue++;
+        h.Unavailable.Clear(); h.CurrentDayValue++;
         o.ProcessRoundLifecycle();
         Test.True(r.PlayerResponses.Single().Status == "unavailable" && o.CurrentStorage.Jobs.Count == 0,
-            "restored authority never silently resumes old declaration or transfers its promise to a suzerain");
+            "restored identity never silently resumes terminated declaration or transfers its promise to a suzerain");
 
         foreach (bool source in new[] {false,true})
         {
-            var f = Fixture(); f.h.Unqualified.Add(source ? "p" : "a");
+            var f = Fixture(); f.h.Unavailable.Add(source ? "p" : "a");
             Invoke(f.o, "SchedulePlayerResponseWork", f.r);
             Test.True(f.r.PlayerResponses[0].Status == "unavailable" && !f.o.CurrentStorage.Jobs.Any(),
                 "schedule validates both original parties without request: " + source);
             f.o.CloseRound("relay_all_ai_withdrew", f.r);
             Test.True(!f.o.CurrentStorage.ConcurrentRounds.Any(x => x.EventSourceType == "player_followup"),
                 "original close never carries unavailable obligations: " + source);
+            var controlled = Fixture(); controlled.h.Unqualified.Add(source ? "p" : "a");
+            Invoke(controlled.o, "SchedulePlayerResponseWork", controlled.r);
+            var controlledJob = controlled.o.CurrentStorage.Jobs.Single();
+            Test.True(controlled.r.PlayerResponses[0].Status == "pending" && controlled.o.CanDispatchDiplomacyJob(controlledJob),
+                "controlled player-related original parties retain response and request eligibility: " + source);
         }
         var bad = Fixture(true); bad.d.IsReadyForPublication = false;
         Test.True(!bad.o.CanDispatchDiplomacyJob(Job(bad.r,bad.d)), "unpublished original source cannot dispatch");

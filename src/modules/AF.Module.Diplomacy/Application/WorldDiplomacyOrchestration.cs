@@ -743,7 +743,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string authorId, string targetId)
     {
         var intents = new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
-            .BuildLegalDiplomaticActionIntents(round, authorId, targetId);
+            .BuildLegalDiplomaticActionIntents(round, authorId, targetId,
+                WorldDiplomacyPlayerApplication.InvolvesPlayer(null, round, _host.IsPlayerAffiliatedParty));
         if (CanReleasePlayerSubject(authorId, targetId)) intents.Add("release_subject");
         return intents;
     }
@@ -754,7 +755,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         return new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
             .BuildLegalDiplomaticDeclarationIntents(round, authorId, targetId, isRelayTurn,
-                resultSettlementSlotId, isExternalResponseOnly, responseSource);
+                resultSettlementSlotId, isExternalResponseOnly, responseSource,
+                WorldDiplomacyPlayerApplication.InvolvesPlayer(responseSource, round, _host.IsPlayerAffiliatedParty));
     }
 
     public List<string> GetResultSettlementActionableTargetIds(WorldDiplomacyRound round, string authorId)
@@ -1003,7 +1005,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             Storage, receiverId, document,
             () => _host.IsRepresentativeForAddressedVassal(receiverId, document),
             () => _host.IsPlayerAffiliatedParty(receiverId),
-            () => _host.HasIndependentAuthority(receiverId),
+            () => IsPlayerDiplomacyDocument(document) || _host.HasIndependentAuthority(receiverId),
             ResolveRound,
             () => _host.ShowPlayerCourtDelivery(_host.PartyNameOrEmpty(receiverId)),
             (round, participant) => TryScheduleMandatoryCourtResponse(round, participant, receiverId, document),
@@ -1017,10 +1019,11 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(
             Storage, round, participant, receiverId, trigger,
             () => _host.IsPlayerParty(receiverId),
-            () => _host.HasIndependentAuthority(receiverId),
+            () => IsPlayerDiplomacyContext(receiverId, trigger?.AuthorKingdomId, round, trigger) || _host.HasIndependentAuthority(receiverId),
             () => _host.IsRepresentativeForAddressedVassal(receiverId, trigger),
             () =>
             {
+                if (IsPlayerDiplomacyContext(receiverId, trigger?.AuthorKingdomId, round, trigger)) return (false, "");
                 bool allowed = _host.CanAiAuthorParty(receiverId, out string reason);
                 return (!allowed, reason);
             },
@@ -1053,6 +1056,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         int scheduledDay = -1,
         string resultSettlementSlotId = null)
     {
+        bool playerDiplomacy = IsPlayerDiplomacyContext(authorId, targetId,
+            ResolveRound(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(roundId, exchange?.ExchangeId, sourceDocument?.RoundId)), sourceDocument);
         WorldDiplomacyGenerationTaskApplication.PrepareGenerationJob(
             authorId,
             targetId,
@@ -1074,8 +1079,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.MaxAutomaticDocumentsPerRound(),
             ResolveRound,
             PruneInvalidOffers,
-            GetAuthorDiplomacyBlockReason,
-            _host.HasIndependentAuthority,
+            id => playerDiplomacy ? null : GetAuthorDiplomacyBlockReason(id),
+            id => playerDiplomacy || _host.HasIndependentAuthority(id),
             _host.ResolvePartyId,
             _host.IsEliminatedParty,
             BuildLegalDiplomaticDeclarationIntents,
@@ -1098,7 +1103,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             AbandonRejectedGeneration,
             _host.IsAtWarByKingdomIds,
             EnqueueJob,
-            _host.Log);
+            _host.Log, playerDiplomacy);
     }
 
     public bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
@@ -1244,7 +1249,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             ResolveRound,
             ResolveDocument,
             id => _host.ResolveKingdomIdOrNull(id),
-            id => _host.CanAiAuthorDocumentBlockReason(id),
+            id => IsPlayerGeneratedEnvelope(job, WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw)) ? null : _host.CanAiAuthorDocumentBlockReason(id),
             (WorldDiplomacyJob j, Newtonsoft.Json.Linq.JObject json, string authorId, string fallbackId,
                 out string resolvedId, out string reason) =>
                 TryGetGeneratedIntentLegalityViolation(j, json, authorId, fallbackId, out resolvedId, out reason),
@@ -1284,13 +1289,14 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             reason = "diplomatic_actions_envelope_invalid";
             return true;
         }
+        bool playerDiplomacy = IsPlayerGeneratedEnvelope(job, json);
         return WorldDiplomacyGenerationValidationRules.TryGetGeneratedIntentLegalityViolation(
             job, json, _host.MaxDiplomaticActionsPerDocument(), _host.GetRoundParticipantLimit(),
             (single, isSingleAction) =>
             {
-                bool failed = TryGetGeneratedSingleActionLegalityViolation(
+                bool failed = TryGetGeneratedSingleActionLegalityViolationInContext(
                     job, single, authorId, isSingleAction ? fallbackTargetId : null,
-                    out string actionTargetId, out string actionReason);
+                    out string actionTargetId, out string actionReason, playerDiplomacy);
                 return (failed, actionTargetId ?? "", actionReason);
             },
             ResolveRound,
@@ -1302,7 +1308,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 job?.SourceDocumentId,
                 job != null && job.IsRelayTurn),
             ResolveDocument,
-            out generatedTargetId, out reason);
+            out generatedTargetId, out reason, playerDiplomacy);
     }
 
     public bool TryGetGeneratedSingleActionLegalityViolation(
@@ -1312,6 +1318,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         string fallbackTargetId,
         out string generatedTargetId,
         out string reason)
+        => TryGetGeneratedSingleActionLegalityViolationInContext(job, json, authorId, fallbackTargetId,
+            out generatedTargetId, out reason, false);
+
+    private bool TryGetGeneratedSingleActionLegalityViolationInContext(
+        WorldDiplomacyJob job, Newtonsoft.Json.Linq.JObject json, string authorId, string fallbackTargetId,
+        out string generatedTargetId, out string reason, bool playerDiplomacy)
     {
         generatedTargetId = "";
         return WorldDiplomacyGenerationValidationRules.TryGetGeneratedSingleActionLegalityViolation(
@@ -1374,7 +1386,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             },
             _host.Log,
             out generatedTargetId,
-            out reason);
+            out reason, playerDiplomacy || IsPlayerDiplomacyJob(job) || _host.IsPlayerAffiliatedParty(authorId)
+                || _host.IsPlayerAffiliatedParty(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "primary_target_kingdom_id", "target_kingdom_id", "target")));
     }
 
     private bool TryDeriveGeneratedDiplomaticStructure(
@@ -1435,6 +1448,9 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         bool relayTurn)
     {
         if (authorId == null) return false;
+        bool playerDiplomacy = IsPlayerDiplomacyDocument(document) || (json?["actions"] is Newtonsoft.Json.Linq.JArray a
+            && a.OfType<Newtonsoft.Json.Linq.JObject>().Any(x => _host.IsPlayerAffiliatedParty(
+                WorldDiplomacyEnvelopeJsonRules.ReadString(x, "target_kingdom_id", "primary_target_kingdom_id", "target"))));
         return WorldDiplomacyGenerationValidationRules.TryApplyGeneratedSemanticEnvelope(
             document,
             json,
@@ -1442,11 +1458,11 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             fallbackTargetId,
             allowUntargeted,
             relayTurn,
-            _host.MaxDiplomaticActionsPerDocument(),
+            playerDiplomacy ? int.MaxValue : _host.MaxDiplomaticActionsPerDocument(),
             (actionDocument, single, actionFallbackTargetId, actionAllowUntargeted, actionRelayTurn) =>
                 TryApplyGeneratedSingleActionSemanticEnvelope(
                     actionDocument, single, authorId, actionFallbackTargetId,
-                    actionAllowUntargeted, actionRelayTurn),
+                    actionAllowUntargeted, actionRelayTurn, playerDiplomacy),
             NormalizeKingdomIdList);
     }
 
@@ -1456,7 +1472,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         string authorId,
         string fallbackTargetId,
         bool allowUntargeted,
-        bool relayTurn)
+        bool relayTurn, bool playerDiplomacy = false)
     {        document.TreatyTerms = ParseFormalTreatyTerms(json,
             WorldDiplomacyEnvelopeJsonRules.ReadString(json, "intent", "diplomatic_intent"), authorId,
             _host.ResolveKingdomIdOrNull(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "target_kingdom_id", "primary_target_kingdom_id", "target")) ?? fallbackTargetId);
@@ -1485,7 +1501,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 CanUseResultSettlementTarget(round, actionAuthorId, actionTargetId),
             (termsJson, termAuthorId, termTargetId) =>
                 ParseAndValidatePeaceTerms(termsJson, termAuthorId, termTargetId),
-            NormalizeKingdomIdList);
+            NormalizeKingdomIdList, playerDiplomacy || IsPlayerDiplomacyDocument(document) || _host.IsPlayerAffiliatedParty(authorId)
+                || _host.IsPlayerAffiliatedParty(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "primary_target_kingdom_id", "target_kingdom_id", "target")));
     }
 
     // ---------- round spine ----------
@@ -2182,6 +2199,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public bool DeferUnresolvedRequiredThreatAction(
         WorldDiplomacyDocument document, string authorId, string targetId, string intent)
     {
+        if (IsPlayerDiplomacyDocument(document)) return false;
         return WorldDiplomacyThreatApplication.DeferUnresolvedRequiredAction(Storage, document,
             authorId, targetId, string.Equals(authorId, targetId, StringComparison.OrdinalIgnoreCase),
             intent, _host.CurrentDay, _host.Log);
@@ -2330,6 +2348,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "release_subject")
         { reason = CanReleasePlayerSubject(authorId, targetId) ? "" : "subject_not_directly_owned_by_player_ruler"; return reason != ""; }
+        if (_host.IsPlayerAffiliatedParty(authorId) || _host.IsPlayerAffiliatedParty(targetId))
+        { reason = ""; return false; }
         IWorldDiplomacyWarAdmissionPort warAdmission = _host.WarAdmission(authorId, targetId);
         return WorldDiplomacyGenerationValidationRules.TryGetDiplomaticStateViolation(
             intent, authorId, targetId, Storage?.DiplomaticThreats,
@@ -2385,25 +2405,18 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         }
         bool partiesEligible = document != null && authorId != null && targetId != null
             && !_host.PartiesShareIdentity(authorId, targetId)
-            && !_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId)
-            && _host.HasIndependentAuthority(authorId)
-            && _host.HasIndependentAuthority(targetId);
+            && !_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId);
         return WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
             document, intent, commitment, authorId, targetId, partiesEligible,
             normalizedIntent =>
             {
-                if (normalizedIntent == "declare_war" && document?.IsPlayerAuthored == true)
-                {
-                    IWorldDiplomacyWarAdmissionPort admission = _host.WarAdmission(authorId, targetId);
-                    bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(
-                        ref admission, out string warReason, isPlayerAuthored: true);
-                    return (!allowed, allowed ? "" : "declare_war_not_legal:" + warReason);
-                }
+                if (document.IsPlayerAuthored || IsPlayerDiplomacyDocument(document)) return (false, "");
                 bool violation = TryGetDiplomaticStateViolation(normalizedIntent, authorId, targetId, out string stateReason);
                 return (violation, stateReason);
             },
             (normalizedIntent, claimedThreatDocumentId) =>
             {
+                if ((document.IsPlayerAuthored || IsPlayerDiplomacyDocument(document)) && normalizedIntent != "comply_ultimatum") return (false, "");
                 bool violation = TryGetDiplomaticThreatIntentViolation(normalizedIntent, authorId, targetId,
                     claimedThreatDocumentId, out string threatReason);
                 return (violation, threatReason);
