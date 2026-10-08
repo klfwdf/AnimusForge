@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -21,16 +22,22 @@ internal static class NativeDialogueBattleContinuation
     private static Hero _target;
     private static string _combatSentence;
     private static bool _pending;
+    private static int _attempts, _revision;
+    private static float _queuedAt, _nextCheck;
+    private static string _waitReason;
+    internal static bool IsCombatRequestedForCurrentEncounter => _combatSentence != null && IsCurrent(_manager);
     private static bool _sentencePatched, _endPatched;
     internal static bool IsResumingNativeBattleMenu { get; private set; }
 
     internal static void Begin(Hero target)
     {
         Cancel("new_conversation");
-        if (!CanOwnHandoff(target) || !EnsurePatched()) return;
+        if (!CanOwnHandoff(target)) { Log("handoff_rejected", "ineligible_context"); return; }
+        if (!EnsurePatched()) { Log("handoff_rejected", "hooks_unavailable"); return; }
         _manager = Campaign.Current.ConversationManager;
         _target = target;
         Scope.Mark(PlayerEncounter.Current, PlayerEncounter.EncounteredParty, SaveRuntimeGuard.CaptureGeneration());
+        Log("handoff_captured", "native_dialogue");
     }
 
     private static bool CanOwnHandoff(Hero target)
@@ -62,7 +69,11 @@ internal static class NativeDialogueBattleContinuation
         {
             if (!IsCurrent(__instance)) return;
             _combatSentence = IsCombatEnding(__0.Id) ? __0.Id : null;
-            if (_combatSentence != null) Log("combat_sentence_confirmed", _combatSentence);
+            if (_combatSentence != null)
+            {
+                LordEncounterBehavior.DiscardPeacefulCleanupForNativeCombat();
+                Log("combat_sentence_confirmed", _combatSentence);
+            }
         }
         catch (Exception ex) { Cancel("sentence_capture_failed"); Logger.Log("LordEncounter", "Native combat sentence capture failed: " + ex.Message); }
     }
@@ -80,6 +91,8 @@ internal static class NativeDialogueBattleContinuation
             }
             if (_pending) return;
             _pending = true;
+            _queuedAt = Time.ApplicationTime;
+            _nextCheck = _queuedAt;
             Log("combat_menu_queued", _combatSentence);
         }
         catch (Exception ex) { Cancel("end_capture_failed"); Logger.Log("LordEncounter", "Native combat end capture failed: " + ex.Message); }
@@ -94,35 +107,80 @@ internal static class NativeDialogueBattleContinuation
             && !LordEncounterBehavior.IsNativeEncounterActivityContext(_target)
             && !MeetingBattleRuntime.IsMeetingActive;
 
+    private static bool HasConfirmedBattle()
+    {
+        var battle = PlayerEncounterCompat.GetBattleSafe();
+        if (battle == null || !ReferenceEquals(PartyBase.MainParty?.MapEvent, battle)
+            || !ReferenceEquals(PlayerEncounter.EncounteredParty?.MapEvent, battle)) return false;
+        if (Mission.Current != null) return Mission.Current.Mode == MissionMode.Battle;
+        return Game.Current?.GameStateManager?.ActiveState is MapState map && !map.MapConversationActive
+            && Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId == "encounter";
+    }
+
+    private static void WaitFor(string reason)
+    {
+        if (_waitReason == reason) return;
+        _waitReason = reason;
+        Log("combat_wait", reason);
+    }
+
     internal static void Tick()
     {
-        // Existing application tick; no work, allocations or game reads without a queued ending.
-        if (!_pending) return;
+        // No game reads without work. Throttle pending checks and bound total lifetime.
+        if (!_pending || IsResumingNativeBattleMenu) return;
+        float now = Time.ApplicationTime;
+        if (now < _nextCheck) return;
+        _nextCheck = now + 0.25f;
         try
         {
-            if (!IsCurrent(_manager) || !CanResumeCombat()) { Cancel("stale_or_released"); return; }
-            if (_manager.IsConversationInProgress) return;
+            if (!IsCurrent(_manager)) { Cancel("scope_changed"); return; }
+            if (PlayerEncounter.LeaveEncounter || PlayerEncounter.PlayerSurrender || PlayerEncounter.EnemySurrender)
+            { Cancel("leave_or_surrender"); return; }
+            if (HasConfirmedBattle())
+            { Log("combat_menu_resumed", _combatSentence); Cancel(null); return; }
+            if (!CanResumeCombat()) { Cancel("native_state_changed"); return; }
+            if (now - _queuedAt >= 15f) { Cancel("continuation_timeout"); return; }
+            if (_manager.IsConversationInProgress) { WaitFor("conversation_active"); return; }
             if (Mission.Current != null) { Cancel("mission_changed"); return; }
-            if (!(Game.Current?.GameStateManager?.ActiveState is MapState map) || map.MapConversationActive) return;
+            if (!(Game.Current?.GameStateManager?.ActiveState is MapState map) || map.MapConversationActive)
+            { WaitFor("map_conversation_teardown"); return; }
             string menu = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
-            if (menu != "AnimusForge_lord_encounter") { Cancel("native_flow_already_resumed"); return; }
+            if (!string.IsNullOrEmpty(menu) && menu != "AnimusForge_lord_encounter" && menu != "encounter")
+            { WaitFor("other_menu:" + menu); return; }
+            if (_attempts >= 3) { Cancel("activation_not_confirmed_after_3_attempts"); return; }
 
-            // Consume before entering native menu init: it may reenter callbacks. Do not replay diplomacy,
-            // force a mission, clear leave/surrender flags, or manufacture combat merely from hostility.
+            // Keep ownership until readback succeeds. Scoped guard prevents callback reentry.
+            _attempts++;
+            _nextCheck = now + 0.5f;
+            Log("combat_menu_attempt", _attempts.ToString());
+            int revision = _revision;
+            var manager = _manager;
             string sentence = _combatSentence;
-            Cancel(null);
             IsResumingNativeBattleMenu = true;
             try { GameMenu.ActivateGameMenu("encounter"); }
             finally { IsResumingNativeBattleMenu = false; }
-            Log("combat_menu_resumed", sentence);
+            // Menu callbacks may load a save or replace the encounter/conversation.
+            if (!_pending || revision != _revision || !ReferenceEquals(manager, _manager)) return;
+            if (!IsCurrent(manager)) { Cancel("scope_changed_during_activation"); return; }
+            if (PlayerEncounter.LeaveEncounter || PlayerEncounter.PlayerSurrender || PlayerEncounter.EnemySurrender)
+            { Cancel("leave_or_surrender_during_activation"); return; }
+            if (HasConfirmedBattle())
+            { Log("combat_menu_resumed", sentence); Cancel(null); }
+            else WaitFor("activation_not_confirmed");
         }
-        catch (Exception ex) { Cancel("resume_failed"); Logger.Log("LordEncounter", "Native combat continuation failed: " + ex); }
+        catch (Exception ex)
+        {
+            // Unknown partial native effects must never be blindly retried.
+            Cancel("resume_failed"); Logger.Log("LordEncounter", "Native combat continuation failed: " + ex);
+        }
     }
 
     internal static void Cancel(string reason)
     {
-        if (_pending && reason != null) Log("combat_menu_cancelled", reason);
+        if (Scope.IsPending && reason != null) Log("combat_menu_cancelled", reason);
+        unchecked { _revision++; }
         Scope.Clear(); _manager = null; _target = null; _combatSentence = null; _pending = false;
+        _attempts = 0; _nextCheck = _queuedAt = 0; _waitReason = null;
     }
 
     private static void Log(string stage, string reason)

@@ -66,6 +66,7 @@ def main():
     template = template.replace("@@DUEL_METHOD@@", EXTRACTOR.declaration(duel, "public static void GlobalSourceMissionLeaveTick("))
     focus = (ROOT / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8-sig")
     template = template.replace("@@FOCUS_METHOD@@", EXTRACTOR.declaration(focus, "public static void EnsurePatched("))
+    template = template.replace("@@PEACEFUL_SCOPE@@", EXTRACTOR.declaration(source, "private static bool ValidatePeacefulCleanupScope(") + "\n" + EXTRACTOR.declaration(source, "internal static void DiscardPeacefulCleanupForNativeCombat("))
     assert "@@" not in template
     output = new_run_root(ROOT, "encounter-lifecycle-boundary", args.run_root)
     (output / "Program.cs").write_text(template, encoding="utf-8")
