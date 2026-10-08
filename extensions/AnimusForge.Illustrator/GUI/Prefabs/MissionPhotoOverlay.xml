@@ -1,0 +1,23 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="120" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="40" DoNotAcceptEvents="true">
+          <Children>
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40" Brush="Popup.Title.Text" Brush.FontSize="24" Brush.FontColor="#FFFFFFFF" Brush.TextOutlineAmount="1.2" Brush.TextOutlineColor="#000000FF" Brush.TextHorizontalAlignment="Center" Text="@Hint" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="450" SuggestedHeight="52" HorizontalAlignment="Center" VerticalAlignment="Bottom" IsVisible="@ChoicesVisible" DoNotAcceptEvents="true">
+              <Children>
+                <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="48" Brush="Popup.Button" Command.Click="ExecuteFirst" DoNotAcceptEvents="false">
+                  <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@FirstText" DoNotAcceptEvents="true" /></Children>
+                </ButtonWidget>
+                <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="48" HorizontalAlignment="Right" Brush="Popup.Button" Command.Click="ExecuteSecond" DoNotAcceptEvents="false">
+                  <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@SecondText" DoNotAcceptEvents="true" /></Children>
+                </ButtonWidget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

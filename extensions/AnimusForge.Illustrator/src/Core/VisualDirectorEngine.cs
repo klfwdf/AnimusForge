@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AnimusForge.Illustrator.Engine;
 using System.Diagnostics;
 using System.Net.Http;
@@ -219,7 +219,7 @@ namespace AnimusForge.Illustrator.Core
                         ApplyResponseMetadata(direction, reply);
                         direction.UsedTextOnlyDirector = referenceImages == null || reply.VisionUnsupported;
                         if (plan.IsMissionScreenshot && (direction.UsedLocalFallback || direction.VisionUnsupported || direction.UsedTextOnlyDirector))
-                            fallbackReason = "双截图模式必须由识图导演完成画面推演：" + direction.FallbackReason;
+                            fallbackReason = "自由取景模式必须由识图导演完成画面推演：" + direction.FallbackReason;
                         else if (!string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && direction.UsedLocalFallback)
                             fallbackReason = "带提示词重绘不能使用本地构图：" + direction.FallbackReason;
                         else
@@ -290,7 +290,7 @@ namespace AnimusForge.Illustrator.Core
         {
             if (options?.EnableLlmPromptExpansion != true || string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl)
                 || string.IsNullOrWhiteSpace(options.DirectorModelName))
-                throw new InvalidOperationException("双截图生图需要启用并配置识图导演，未开始采集。");
+                throw new InvalidOperationException("现场截图生图需要启用并配置识图导演，未开始采集。");
         }
 
         private static void ApplyResponseMetadata(IllustrationDirection direction, DirectorResponse reply)

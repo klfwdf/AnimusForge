@@ -17,6 +17,7 @@ class Program {
  static IllustrationScope _scope;
  static Action _openProgress;
  static string _status;
+ static Mission _statusMission;
  static int statuses,checks;
  static void SetStatus(Mission mission,string status) { statuses++; _status = status; }
  __TickCapture__
@@ -39,8 +40,12 @@ class Program {
   b.Done.SetResult(null);TickCapture();Check(opens==2 && _capture==null,"second capture independently unlocks");
   Finish(second,b,mission,"second saved");Check(second.Closed && _scope==null && statuses==1,"latest completion cleans only itself");
   var third=new IllustrationScope();var c=new MissionScreenshotCapture();_scope=third;_capture=c;_openProgress=()=>{throw new Exception("UI");};
-  c.Done.SetResult(null);TickCapture();Check(_capture==null && !third.Closed,"UI open failure does not cancel admitted background work");
+  c.Done.SetResult(null);TickCapture();Check(_capture==null && third.Closed,"generation start failure closes unsubmitted scope");
   ScopeClosed(third,c,mission);Check(_scope==null && _openProgress==null,"current cancellation clears owned state");
+  var cancelledScope=new IllustrationScope();var cancelledCapture=new MissionScreenshotCapture();
+  _scope=cancelledScope;_capture=cancelledCapture;_openProgress=()=>opens++;
+  cancelledCapture.Done.SetCanceled();TickCapture();
+  Check(cancelledScope.Closed&&_capture==null&&_scope==null&&opens==2,"cancelled aiming never starts network/progress and closes scope");
   Console.WriteLine("PASS "+checks+" production-method scene multi-job lifecycle checks; native and HTTP boundaries are doubles.");
  }
 }

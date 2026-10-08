@@ -1127,6 +1127,11 @@
     },
     {
       "owner": "AnimusForge.Illustrator",
+      "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/MissionPhotoOverlay.xml",
+      "target": "GUI/Prefabs/MissionPhotoOverlay.xml"
+    },
+    {
+      "owner": "AnimusForge.Illustrator",
       "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/WeeklyReportIllustrationOverlay.xml",
       "target": "GUI/Prefabs/WeeklyReportIllustrationOverlay.xml"
     },
