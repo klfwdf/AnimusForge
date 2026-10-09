@@ -39,11 +39,17 @@ def main() -> int:
         raise AssertionError("AF UI localization resources are not mapped into the module")
     if 'xml_path="af_ui_strings.xml"' not in language_en or 'xml_path="CNs/af_ui_strings-zh-CN.xml"' not in language_zh:
         raise AssertionError("AF UI localization resources are not registered in LanguageData")
+    if "ModuleData/Languages/afd_ui_strings.xml" not in mapped_targets or "ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml" not in mapped_targets:
+        raise AssertionError("DialogueUI localization resources are not mapped into the module")
+    if 'xml_path="afd_ui_strings.xml"' not in language_en or 'xml_path="CNs/afd_ui_strings-zh-CN.xml"' not in language_zh:
+        raise AssertionError("DialogueUI localization resources are not registered in LanguageData")
     pairs = [
         (root / "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
          root / "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml"),
         (root / "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/sceneactions_strings.xml",
          root / "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml"),
+        (root / "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
+         root / "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml"),
     ]
     for english, chinese in pairs:
         en = strings(english)

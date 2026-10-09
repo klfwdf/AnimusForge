@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "owner": "AnimusForge.DialogueUI",
+      "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.DialogueUI",
+      "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
+      "target": "ModuleData/Languages/afd_ui_strings.xml"
+    },
+    {
       "owner": "AF.Module.UI",
       "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
       "target": "ModuleData/Languages/af_ui_strings.xml"

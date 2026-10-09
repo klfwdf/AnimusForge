@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AFD_UI_Aux_AllDates" text="全部日期" />
+    <string id="AFD_UI_Aux_CurrentTarget" text="当前对话对象" />
+    <string id="AFD_UI_Aux_Day" text="第 {DAY} 日" />
+    <string id="AFD_UI_Aux_HistoryDay" text="{DATE} · {COUNT} 条" />
+    <string id="AFD_UI_Aux_HistoryLoadFailed" text="历史暂时无法读取，请收起后重试。" />
+    <string id="AFD_UI_Aux_NoResources" text="当前类别没有可用资源，或此目标不符合接收条件。" />
+    <string id="AFD_UI_Aux_OperationFailed" text="操作未完成，请重新选择。" />
+    <string id="AFD_UI_Aux_OperationQueued" text="操作已交由游戏处理；实际结果以游戏提示和对话历史为准。" />
+    <string id="AFD_UI_Aux_ResourceLoadFailed" text="无法读取资源，请收起后重试。" />
+    <string id="AFD_UI_Aux_Title_History" text="对话历史" />
+    <string id="AFD_UI_Aux_Title_Trade" text="给予 / 展示" />
+    <string id="AFD_UI_Aux_TradeUnsupported" text="当前宿主版本不支持内联交易，未执行操作。" />
+    <string id="AFD_UI_Aux_WaitForConversation" text="请等待当前对话处理完成后再操作资源。" />
+    <string id="AFD_UI_Trade_Available" text="可用 {COUNT}" />
+    <string id="AFD_UI_Trade_Confirm_Give" text="确认给予 · {COUNT} 项" />
+    <string id="AFD_UI_Trade_Confirm_Show" text="确认展示 · {COUNT} 项" />
+    <string id="AFD_UI_Trade_Note_Give" text="确认即移交；收起不提交，动作记入历史。" />
+    <string id="AFD_UI_Trade_Note_Show" text="仅展示，不转移资源；动作记入历史。" />
+    <string id="AFD_UI_Trade_Page" text="{PAGE} / {TOTAL} · {COUNT} 项" />
+    <string id="AFD_UI_Trade_ResourceCount" text="可用资源  {COUNT}" />
+    <string id="AFD_UI_Trade_Select" text="选择" />
+    <string id="AFD_UI_Trade_Selected" text="已选" />
+    <string id="AFD_UI_Trade_Selection_Give" text="本次给予" />
+    <string id="AFD_UI_Trade_Selection_Show" text="本次展示" />
+    <string id="AFD_UI_Trade_SelectionCount" text="{COUNT} 项" />
+    <string id="AFD_UI_Trade_TotalValue" text="{VALUE} 第纳尔" />
+    <string id="AFD_UI_Illustration_Busy" text="截图中…" />
+    <string id="AFD_UI_Illustration_Button" text="生图" />
+    <string id="AFD_UI_Scene_Address" text="对 {NAME} 说：" />
+    <string id="AFD_UI_Scene_AudienceStats" text="{PARTICIPATING} 人参与 · {EXCLUDED} 人屏蔽" />
+    <string id="AFD_UI_Scene_AudienceTitle" text="场景受众名录 · {COUNT} 人" />
+    <string id="AFD_UI_Scene_Collapsed" text="展开场景对话 (T)" />
+    <string id="AFD_UI_Scene_CollapsedTarget" text=" · {NAME}{MORE}" />
+    <string id="AFD_UI_Scene_CurrentTarget" text="当前对话对象" />
+    <string id="AFD_UI_Scene_Docket" text="展开受众名录 · {COUNT} 人" />
+    <string id="AFD_UI_Scene_Interrupted" text="已打断，可以说下一句了。" />
+    <string id="AFD_UI_Scene_LeftArea" text="已离开范围" />
+    <string id="AFD_UI_Scene_MorePeople" text=" 等 {COUNT} 人" />
+    <string id="AFD_UI_Scene_NoEncyclopedia" text="当前对话对象没有图鉴条目。" />
+    <string id="AFD_UI_Scene_Send" text="发送 (Enter)" />
+    <string id="AFD_UI_Scene_StagedTrade" text="待交付 · {TRADE}（随下一句话一起交付）" />
+    <string id="AFD_UI_Scene_StateHidden" text="屏蔽" />
+    <string id="AFD_UI_Scene_StateLocked" text="锁定" />
+    <string id="AFD_UI_Scene_StateParticipating" text="参与" />
+    <string id="AFD_UI_Scene_TargetOutOfRange" text="此人已离开范围，不能作为对话对象。" />
+    <string id="AFD_UI_Scene_TradeCancelled" text="已取消待交付的给予。" />
+    <string id="AFD_UI_Scene_TradeNeedsText" text="给予会随话语一起交付，请先写一句要对对方说的话。" />
+    <string id="AFD_UI_Scene_Waiting" text="等待回应…" />
+    <string id="AFD_UI_Trade_Note" text="确认后回到对话；给予随你下一句话一起交付，关闭不执行。" />
+    <string id="AFD_UI_Trade_Prepare_Give" text="准备给予 · {COUNT} 项" />
+    <string id="AFD_UI_Trade_Prepare_Show" text="准备展示 · {COUNT} 项" />
+    <string id="AFD_UI_Trade_Staged" text="已准备好：发送下一句话时一起交付。" />
+    <string id="AFD_UI_Trade_Title" text="给予 / 展示" />
+    <string id="AFD_UI_Trade_Title_Show" text="展示物品" />
+    <string id="AFD_UI_Wheel_Actions" text="动 作" />
+    <string id="AFD_UI_Wheel_CloseActions" text="收起动作" />
+    <string id="AFD_UI_Wheel_DrawerHeader" text="动作分支 · {COUNT} 项" />
+    <string id="AFD_UI_Wheel_GiveItems" text="给予物品" />
+    <string id="AFD_UI_Wheel_GivePrisoners" text="给予俘虏" />
+    <string id="AFD_UI_Wheel_GiveTroops" text="给予部队" />
+    <string id="AFD_UI_Wheel_Nearby" text="附近的人" />
+    <string id="AFD_UI_Wheel_NpcSpeech" text="他人演讲" />
+    <string id="AFD_UI_Wheel_PlayerSpeech" text="当众演讲" />
+    <string id="AFD_UI_Wheel_ShowItems" text="展示物品" />
+    <string id="AFD_UI_Wheel_TagTest" text="开发测试 · 标签" />
+    <string id="AFD_UI_Wheel_TransferAssets" text="转移资产" />
+    <string id="AFD_UI_Shout_HideHistory" text="收起记录" />
+    <string id="AFD_UI_Shout_Hint" text="Enter 发送 · Shift+Enter 换行 · Esc 收起" />
+    <string id="AFD_UI_Shout_History" text="记录" />
+    <string id="AFD_UI_Shout_HistoryUnavailable" text="记录暂时不可用。" />
+    <string id="AFD_UI_Shout_NoHistory" text="当前场景暂无可见对话记录。" />
+    <string id="AFD_UI_Shout_TargetInvalid" text="当前交流对象已失效，请收起后重新框选。" />
+    <string id="AFD_UI_Shout_TargetInvalidHistory" text="当前交流对象已失效，无法读取记录。" />
+  </strings>
+</base>

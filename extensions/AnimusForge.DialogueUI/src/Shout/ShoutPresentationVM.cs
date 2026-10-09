@@ -17,11 +17,11 @@ namespace AnimusForge.DialogueUI.Shout
         private bool _isHistoryVisible;
         private bool _canSubmit = true;
         private string _historyText = "";
-        private string _statusText = "Enter 发送 · Shift+Enter 换行 · Esc 收起";
+        private string _statusText = DialogueUiLocalization.Text("AFD_UI_Shout_Hint", "Enter send · Shift+Enter new line · Esc close");
         private int _illustrationVersion = -1;
         [DataSourceProperty] public bool IsIllustrationVisible => Host is ShoutTextInputPopupVM vm && vm.IsIllustrationVisible;
         [DataSourceProperty] public bool CanIllustrate => Host is ShoutTextInputPopupVM vm && vm.CanIllustrate;
-        [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? "生图";
+        [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? DialogueUiLocalization.Text("AFD_UI_Illustration_Button", "Illustrate");
         public void ExecuteIllustrate() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteIllustrate(); }
         public void ExecuteOpenGallery() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteOpenGallery(); }
 
@@ -30,7 +30,7 @@ namespace AnimusForge.DialogueUI.Shout
         [DataSourceProperty] public float HistoryBottomMargin => HasSubtitle ? 426f : 310f;
         [DataSourceProperty] public bool CanSubmit => _canSubmit;
         [DataSourceProperty] public bool IsHistoryVisible => _isHistoryVisible;
-        [DataSourceProperty] public string HistoryButtonText => _isHistoryVisible ? "收起记录" : "记录";
+        [DataSourceProperty] public string HistoryButtonText => _isHistoryVisible ? DialogueUiLocalization.Text("AFD_UI_Shout_HideHistory", "Hide history") : DialogueUiLocalization.Text("AFD_UI_Shout_History", "History");
         [DataSourceProperty] public string HistoryText => _historyText;
         [DataSourceProperty] public string StatusText => _statusText;
 
@@ -81,7 +81,7 @@ namespace AnimusForge.DialogueUI.Shout
             if (_canSubmit != available)
             {
                 _canSubmit = available;
-                _statusText = available ? "Enter 发送 · Shift+Enter 换行 · Esc 收起" : "当前交流对象已失效，请收起后重新框选。";
+                _statusText = available ? DialogueUiLocalization.Text("AFD_UI_Shout_Hint", "Enter send · Shift+Enter new line · Esc close") : DialogueUiLocalization.Text("AFD_UI_Shout_TargetInvalid", "The current target is no longer available. Close and select again.");
                 OnPropertyChangedWithValue(available, nameof(CanSubmit));
                 OnPropertyChangedWithValue(_statusText, nameof(StatusText));
             }
@@ -90,11 +90,11 @@ namespace AnimusForge.DialogueUI.Shout
 
         private string ReadVisibleHistory()
         {
-            if (!RefreshAvailability()) return "当前交流对象已失效，无法读取记录。";
+            if (!RefreshAvailability()) return DialogueUiLocalization.Text("AFD_UI_Shout_TargetInvalidHistory", "The current target is no longer available; history cannot be read.");
             try
             {
                 List<string> lines = _readHistory(_context.AgentIndex, 260);
-                if (lines == null || lines.Count == 0) return "当前场景暂无可见对话记录。";
+                if (lines == null || lines.Count == 0) return DialogueUiLocalization.Text("AFD_UI_Shout_NoHistory", "No visible conversation history in this scene.");
                 var text = new StringBuilder();
                 int start = Math.Max(0, lines.Count - 260);
                 for (int i = start; i < lines.Count; i++)
@@ -103,12 +103,12 @@ namespace AnimusForge.DialogueUI.Shout
                     if (text.Length > 0) text.AppendLine().AppendLine();
                     text.Append(lines[i]);
                 }
-                return text.Length == 0 ? "当前场景暂无可见对话记录。" : text.ToString();
+                return text.Length == 0 ? DialogueUiLocalization.Text("AFD_UI_Shout_NoHistory", "No visible conversation history in this scene.") : text.ToString();
             }
             catch (Exception ex)
             {
                 DialogueUiRuntime.Log("Scene history read failed: " + ex.Message);
-                return "记录暂时不可用。";
+                return DialogueUiLocalization.Text("AFD_UI_Shout_HistoryUnavailable", "History is temporarily unavailable.");
             }
         }
 
