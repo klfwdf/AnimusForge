@@ -83,5 +83,19 @@
     <string id="AF_ILL_TEST_CANCEL" text="Test / Cancel" />
     <string id="AF_ILL_UNIT_IMAGES" text="0 images" />
     <string id="AF_ILL_UNIT_SECONDS" text="0 sec" />
+    <string id="AF_ILL_UI_GALLERY_TITLE" text="Calradia Visual Chronicle Gallery" />
+    <string id="AF_ILL_UI_ALL" text="All" />
+    <string id="AF_ILL_UI_FAVORITES" text="Favorites" />
+    <string id="AF_ILL_UI_REDRAW" text="Redraw" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT" text="Redraw with prompt" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE" text="Redraw from this image" />
+    <string id="AF_ILL_UI_COPY" text="Copy" />
+    <string id="AF_ILL_UI_GALLERY" text="Visual Chronicle" />
+    <string id="AF_ILL_UI_CLOSE" text="Close" />
+    <string id="AF_ILL_UI_SCENE_PROBE" text="Capture scene preview" />
+    <string id="AF_ILL_UI_CONVERT_RP" text="Convert to RP item" />
+    <string id="AF_ILL_UI_SET_DEFAULT" text="Set as default" />
+    <string id="AF_ILL_UI_DELETE" text="Delete" />
+    <string id="AF_ILL_UI_OPEN_FOLDER" text="Open image folder" />
   </strings>
 </base>

@@ -2,6 +2,7 @@ using System;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.UI.Gallery;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Overlays
 {
@@ -11,6 +12,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly Action _onRegenerate;
         private readonly Action _onSceneProbe;
         private readonly Action _onRegenerateWithPrompt;
+        private readonly string _redrawText;
+        private readonly string _redrawWithPromptText;
+        private readonly string _redrawBasedOnImageText;
+        private readonly string _copyText;
+        private readonly string _galleryText;
+        private readonly string _closeText;
+        private readonly string _sceneProbeText;
         internal Action OnRegenerateBasedOnImage;
         internal bool HasEditableImage;
         internal void SetEditableImage(bool value) { HasEditableImage = value; OnPropertyChanged(nameof(CanRegenerateBasedOnImage)); }
@@ -41,7 +49,22 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _onRegenerate = onRegenerate;
             _onSceneProbe = onSceneProbe;
             _onRegenerateWithPrompt = onRegenerateWithPrompt;
+            _redrawText = IllustratorUiText.Redraw;
+            _redrawWithPromptText = IllustratorUiText.RedrawWithPrompt;
+            _redrawBasedOnImageText = IllustratorUiText.RedrawBasedOnImage;
+            _copyText = IllustratorUiText.Copy;
+            _galleryText = IllustratorUiText.Gallery;
+            _closeText = IllustratorUiText.Close;
+            _sceneProbeText = IllustratorUiText.SceneProbe;
         }
+
+        [DataSourceProperty] public string RedrawText => _redrawText;
+        [DataSourceProperty] public string RedrawWithPromptText => _redrawWithPromptText;
+        [DataSourceProperty] public string RedrawBasedOnImageText => _redrawBasedOnImageText;
+        [DataSourceProperty] public string CopyText => _copyText;
+        [DataSourceProperty] public string GalleryText => _galleryText;
+        [DataSourceProperty] public string CloseText => _closeText;
+        [DataSourceProperty] public string SceneProbeText => _sceneProbeText;
 
         [DataSourceProperty]
         public string TitleText

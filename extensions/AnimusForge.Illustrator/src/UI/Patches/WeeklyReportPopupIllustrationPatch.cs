@@ -16,6 +16,7 @@ using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Gallery;
 using AnimusForge.Illustrator.UI.Overlays;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Patches
 {
@@ -30,6 +31,12 @@ namespace AnimusForge.Illustrator.UI.Patches
         private bool _showPrompt;
         private readonly Action _onRegenerate;
         private readonly Action _onRegenerateWithPrompt;
+        private readonly string _redrawText;
+        private readonly string _redrawWithPromptText;
+        private readonly string _redrawBasedOnImageText;
+        private readonly string _copyText;
+        private readonly string _galleryText;
+        private readonly string _closeText;
         internal Action OnRegenerateBasedOnImage;
         [DataSourceProperty] public bool CanRegenerateBasedOnImage => HasIllustration && !IsLoading && OnRegenerateBasedOnImage != null;
         public void ExecuteRegenerateBasedOnImage() { if (CanRegenerateBasedOnImage) OnRegenerateBasedOnImage(); }
@@ -44,7 +51,20 @@ namespace AnimusForge.Illustrator.UI.Patches
             _titleText = title ?? "帝国纪事油画";
             _onRegenerate = onRegenerate;
             _onRegenerateWithPrompt = onRegenerateWithPrompt;
+            _redrawText = IllustratorUiText.Redraw;
+            _redrawWithPromptText = IllustratorUiText.RedrawWithPrompt;
+            _redrawBasedOnImageText = IllustratorUiText.RedrawBasedOnImage;
+            _copyText = IllustratorUiText.Copy;
+            _galleryText = IllustratorUiText.Gallery;
+            _closeText = IllustratorUiText.Close;
         }
+
+        [DataSourceProperty] public string RedrawText => _redrawText;
+        [DataSourceProperty] public string RedrawWithPromptText => _redrawWithPromptText;
+        [DataSourceProperty] public string RedrawBasedOnImageText => _redrawBasedOnImageText;
+        [DataSourceProperty] public string CopyText => _copyText;
+        [DataSourceProperty] public string GalleryText => _galleryText;
+        [DataSourceProperty] public string CloseText => _closeText;
 
         [DataSourceProperty]
         public string SpriteName
