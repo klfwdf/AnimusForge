@@ -1585,5 +1585,49 @@
   <string id="AF_UI_KingdomRebellion_TargetMissing" text="无法启动强制叛乱：找不到目标王国或家族。" />
   <string id="AF_UI_KingdomRebellion_ThisKingdom" text="该王国" />
   <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="某王国" />
+  <string id="AF_UI_KingdomStability_NoKingdoms" text="当前没有可测试的王国。" />
+  <string id="AF_UI_KingdomStability_Back" text="返回" />
+  <string id="AF_UI_KingdomStability_LabDescription" text="这里用于实验王国稳定度与带城反出逻辑。" />
+  <string id="AF_UI_KingdomStability_DefaultDescription" text="默认所有王国稳定度都是 50（一般），不会自动叛乱。" />
+  <string id="AF_UI_KingdomStability_WeeklyReportDescription" text="周报中的 STAB_* 评级标签也会改变王国稳定度；手动调整与周报评级都会影响后续周结算。" />
+  <string id="AF_UI_KingdomStability_SelectKingdom" text="请选择一个王国进入详情。" />
+  <string id="AF_UI_KingdomStability_LabTitle" text="王国稳定度与叛乱实验" />
+  <string id="AF_UI_KingdomStability_Enter" text="进入" />
+  <string id="AF_UI_KingdomStability_KingdomNotFound" text="找不到对应的王国。" />
+  <string id="AF_UI_KingdomStability_UnknownKingdom" text="未知王国" />
+  <string id="AF_UI_KingdomStability_PlayerImmunitySuffix" text="（玩家王国稳定度叛乱免疫）" />
+  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}] 叛乱周概率 {CHANCE}{IMMUNITY}" />
+  <string id="AF_UI_KingdomStability_KingdomFallback" text="王国" />
+  <string id="AF_UI_KingdomStability_DetailKingdom" text="王国：{KINGDOM}" />
+  <string id="AF_UI_KingdomStability_DetailStability" text="当前稳定度：{VALUE}（{TIER}）" />
+  <string id="AF_UI_KingdomStability_DetailWeeklyBalance" text="动态平衡周修正：{VALUE}" />
+  <string id="AF_UI_KingdomStability_DetailRelation" text="当前非王族关系修正：{VALUE}（作用于国王与本国非王族家族成年成员）" />
+  <string id="AF_UI_KingdomStability_DetailClanCount" text="非王族有效家族数：{COUNT}；王室直辖地忠诚日修正：{VALUE}" />
+  <string id="AF_UI_KingdomStability_DetailImmuneChance" text="本周叛乱概率：0%（玩家王国稳定度叛乱免疫已开启）" />
+  <string id="AF_UI_KingdomStability_DetailChance" text="本周叛乱概率：{CHANCE}" />
+  <string id="AF_UI_KingdomStability_DetailKing" text="当前国王：{HERO}" />
+  <string id="AF_UI_KingdomStability_DetailRulingClan" text="执政家族：{CLAN}" />
+  <string id="AF_UI_KingdomStability_DetailImmuneCandidates" text="当前可自动叛乱候选：免疫状态下不执行本模组稳定度叛乱判定。" />
+  <string id="AF_UI_KingdomStability_DetailCandidates" text="当前可自动叛乱候选：" />
+  <string id="AF_UI_KingdomStability_DetailCandidate" text="- {CLAN} | 关系 {RELATION} | 城镇 {TOWNS} | 城堡 {CASTLES} | 评分 {SCORE}" />
+  <string id="AF_UI_KingdomStability_DetailNoCandidates" text="当前没有满足自动叛乱条件的家族。" />
+  <string id="AF_UI_KingdomStability_Adjust" text="调整稳定度" />
+  <string id="AF_UI_KingdomStability_TestRoll" text="测试本周叛乱判定" />
+  <string id="AF_UI_KingdomStability_ForceRebellion" text="强制触发该王国叛乱" />
+  <string id="AF_UI_KingdomStability_BackToList" text="返回王国列表" />
+  <string id="AF_UI_KingdomStability_DetailTitle" text="王国稳定度详情 - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_Execute" text="执行" />
+  <string id="AF_UI_KingdomStability_EditPrompt" text="请输入 0-100 之间的稳定度数值。\n\n当前值：{VALUE}（{TIER}）\n默认值：50（一般）\n\n档位：\n90-100 极高\n75-89 高\n60-74 较高\n40-59 一般\n25-39 较差\n10-24 很差\n0-9 极差" />
+  <string id="AF_UI_KingdomStability_EditTitle" text="调整稳定度 - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_Save" text="保存" />
+  <string id="AF_UI_KingdomStability_InvalidValue" text="请输入 0-100 的整数。" />
+  <string id="AF_UI_KingdomStability_Updated" text="{KINGDOM} 的稳定度已更新为 {VALUE}（{TIER}）。" />
+  <string id="AF_UI_KingdomStability_TestResultTitle" text="叛乱测试结果 - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_BackToDetails" text="返回详情" />
+  <string id="AF_UI_KingdomStability_ForceTitle" text="强制触发王国叛乱" />
+  <string id="AF_UI_KingdomStability_ForceBody" text="这会跳过稳定度概率，但不会放宽关系条件；系统仍只会从当前满足自动叛乱条件的家族中，选择一个最适合带城反出的家族执行。\n\n如果当前没有满足关系条件的候选家族，本次将不会发生叛乱。\n\n该操作会真实改动存档中的王国格局，是否继续？" />
+  <string id="AF_UI_KingdomStability_ForceExecute" text="强制执行" />
+  <string id="AF_UI_KingdomStability_Cancel" text="取消" />
+  <string id="AF_UI_KingdomStability_ForceResultTitle" text="强制叛乱结果 - {KINGDOM}" />
 </strings>
 </base>
