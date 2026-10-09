@@ -1,3 +1,11 @@
+<a id="mcm-model-preset-continuation-20261009"></a>
+## MCM 模型预设与快报战事修复接续（2026-10-09，ACTIVE）
+
+- 来源：用户要求接续会话 `01a11773-3ca3-7081-8721-040732168dca`；实际工作区 `F:/AnimusForge-main`，`main@d3fde95d4`。当前先完成新增预设模型复位与原会话未提交的战事数字切片；此前五项排查保留其未验结论，不把源码风险视为实机复现。
+- 原有 dirty：WorldBulletinPolicy、WorldBulletinStateOwner、WorldBulletinCampaignMaterialPolicy、随包写作要求和 smoke Program 共五文件；两 NuGet 目录保留。没有游戏部署、推送或外仓同步授权。
+- MCM 实证：UI SetSelectedIndexAction 原地修改索引，不走属性 setter；BaseSettingsJsonConverter 保存文本和下拉索引，DropdownJsonConverter 加载时复用 getter 对象。AF 旧版以对象身份判断加载，且下拉选择不更新文本、其他字段 hydrate 会先初始化默认模型。
+- 修改范围：现有模型设置 owner、MCM 下拉适配与终端消费者、专项测试；无新增 Tick 任务、HTTP 请求或存档格式变化。读取下拉避免重复分配/磁盘检查，写缓存只在显式列表操作。
+- 退出门：真实 MCM 转换器回放保存/载入、不同列表顺序、手动模式、默认预设、终端选择；快报 policy 与 host 回归；原统一 1.3/1.4 + Bootstrap 构建。实机和玩家配置未验，禁止标成实机完成。
 <a id="release-v1-5-7-20261009"></a>
 ## 1.5.7 本地打包与累计玩家公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
 
