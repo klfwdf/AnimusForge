@@ -57,26 +57,26 @@ internal static class PolicyPromptEditorUi
 			new PolicyPromptMenuEntry
 			{
 				Key = AutoDraftKey,
-				Title = "玩家AI编写",
-				Hint = "使用唯一的玩家可编辑提示词扩写当前输入；不会自动提交或发布。"
+				Title = PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftTitle", "Player AI drafting"),
+				Hint = PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftHint", "Uses the single player-editable prompt to expand the current input; it is not submitted or published automatically.")
 			},
 			new PolicyPromptMenuEntry
 			{
 				Key = PlayerEvaluationKey,
-				Title = "玩家政策评议",
-				Hint = "调整全国、地方和附庸政策的社会反应、成本、期限与总体强度偏好。"
+				Title = PolicyUiTexts.Get("AFPOL_UI_PromptPlayerEvaluationTitle", "Player policy evaluation"),
+				Hint = PolicyUiTexts.Get("AFPOL_UI_PromptPlayerEvaluationHint", "Adjusts social response, costs, duration, and overall strength preferences for kingdom, local, and vassal policies.")
 			},
 			new PolicyPromptMenuEntry
 			{
 				Key = NpcPolicyKey,
-				Title = "NPC 统治者政策",
-				Hint = "调整统治者制定政策时的题材、文风、现实依据和治理取向。"
+				Title = PolicyUiTexts.Get("AFPOL_UI_PromptNpcPolicyTitle", "NPC ruler policy"),
+				Hint = PolicyUiTexts.Get("AFPOL_UI_PromptNpcPolicyHint", "Adjusts themes, writing style, real-world grounding, and governance direction used by rulers when creating policies.")
 			},
 			new PolicyPromptMenuEntry
 			{
 				Key = EffectRequirementsKey,
-				Title = "政策效果要求",
-				Hint = "按效果类别分别调整政策理解和具体强度判断；玩家与统治者政策共用。"
+				Title = PolicyUiTexts.Get("AFPOL_UI_PromptEffectRequirementsTitle", "Policy effect requirements"),
+				Hint = PolicyUiTexts.Get("AFPOL_UI_PromptEffectRequirementsHint", "Adjusts policy understanding and concrete strength judgments by effect category; shared by player and ruler policies.")
 			}
 		};
 	}
@@ -103,8 +103,8 @@ internal static class PolicyPromptEditorUi
 		return new PolicyPromptMenuEntry
 		{
 			Key = CommonEffectRequirementsKey,
-			Title = "全部效果共同要求",
-			Hint = "只调整所有效果共用的持续时间、直接因果、多项效果和投入定标原则。"
+			Title = PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectTitle", "Shared requirements for all effects"),
+			Hint = PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectHint", "Adjusts only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects.")
 		};
 	}
 
@@ -117,14 +117,14 @@ internal static class PolicyPromptEditorUi
 				.Select(entry => new InquiryElement(entry.Key, entry.Title, null, isEnabled: true, entry.Hint))
 				.ToList();
 			MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-				"政策提示词管理",
-				"请选择要编辑的要求。输出格式、合法目标、效果边界和执行安全仍由模组固定保证。",
+				PolicyUiTexts.Get("AFPOL_UI_PromptRootTitle", "Policy prompt management"),
+				PolicyUiTexts.Get("AFPOL_UI_PromptRootDescription", "Choose a requirement to edit. Output format, legal targets, effect boundaries, and execution safety remain fixed by the module."),
 				options,
 				isExitShown: true,
 				0,
 				1,
-				"打开",
-				"关闭",
+				PolicyUiTexts.Get("AFPOL_UI_Open", "Open"),
+				PolicyUiTexts.Get("AFPOL_UI_Close", "Close"),
 				delegate(List<InquiryElement> selected)
 				{
 					string key = selected?.FirstOrDefault()?.Identifier as string;
@@ -149,40 +149,40 @@ internal static class PolicyPromptEditorUi
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "policy-prompt-root-open-failed", ex.Message, ex.ToString());
-			ShowFailure("打开政策提示词管理失败：" + ex.Message);
+			ShowFailure(PolicyUiTexts.Format("AFPOL_UI_PromptRootOpenFailed", "Unable to open policy prompt management: {ERROR}", "ERROR", ex.Message));
 		}
 	}
 
 	private static void OpenAutoDraftEditor(DuelSettings settings)
 	{
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑玩家AI编写提示词",
-			"这里只编辑扩写方式、文风和内容偏好；玩家原文和已填写标题会另行提供。",
-			"输出格式和字段由系统内置，无需也不应写入这里。留空保存会恢复默认内容。",
+			PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftEditorTitle", "Edit player AI drafting prompt"),
+			PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftEditorDescription", "Edit only expansion style, writing style, and content preferences here; the player's original text and filled title are supplied separately."),
+			PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftEditorHint", "Output format and fields are built in and should not be written here. Saving an empty value restores the default."),
 			PolicyEffectPromptService.GetAutoDraftPrompt(),
 			delegate(string input)
 			{
 				if (!PolicyEffectPromptService.TrySaveAutoDraftPrompt(input, out string error))
 				{
-					ShowFailure("保存玩家AI编写提示词失败：" + error);
+					ShowFailure(PolicyUiTexts.Format("AFPOL_UI_PromptAutoDraftSaveFailed", "Failed to save the player AI drafting prompt: {ERROR}", "ERROR", error));
 				}
 				else
 				{
-					ShowSaved("玩家AI编写提示词已保存。");
+					ShowSaved(PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftSaved", "Player AI drafting prompt saved."));
 				}
 				OpenRoot(settings);
 			},
 			delegate { OpenRoot(settings); },
-			"保存",
-			"返回");
+			PolicyUiTexts.Get("AFPOL_UI_Save", "Save"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"));
 	}
 
 	private static void OpenPlayerEvaluationEditor(DuelSettings settings)
 	{
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑玩家政策评议要求",
-			"全国、地方和附庸政策共用这份总体评议要求。",
-			"适合调整执行成本、社会反应、期限、文风和总体强度偏好。留空保存会恢复默认内容。",
+			PolicyUiTexts.Get("AFPOL_UI_PromptPlayerEvaluationEditorTitle", "Edit player policy evaluation requirements"),
+			PolicyUiTexts.Get("AFPOL_UI_PromptPlayerEvaluationEditorDescription", "Kingdom, local, and vassal policies share these overall evaluation requirements."),
+			PolicyUiTexts.Get("AFPOL_UI_PromptPlayerEvaluationEditorHint", "Use this to adjust execution costs, social response, duration, writing style, and overall strength preferences. Saving an empty value restores the default."),
 			settings.CustomPolicyEvaluatorPrompt ?? string.Empty,
 			delegate(string input)
 			{
@@ -190,16 +190,16 @@ internal static class PolicyPromptEditorUi
 				OpenRoot(settings);
 			},
 			delegate { OpenRoot(settings); },
-			"保存",
-			"返回");
+			PolicyUiTexts.Get("AFPOL_UI_Save", "Save"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"));
 	}
 
 	private static void OpenNpcPolicyEditor(DuelSettings settings)
 	{
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑 NPC 统治者政策要求",
-			"这段文字指导统治者如何依据身份、性格和当前局势制定政策。",
-			"可以调整题材、文风、现实依据和治理取向。留空保存会恢复默认内容。",
+			PolicyUiTexts.Get("AFPOL_UI_PromptNpcPolicyEditorTitle", "Edit NPC ruler policy requirements"),
+			PolicyUiTexts.Get("AFPOL_UI_PromptNpcPolicyEditorDescription", "This text guides rulers as they create policies based on identity, personality, and the current situation."),
+			PolicyUiTexts.Get("AFPOL_UI_PromptNpcPolicyEditorHint", "Adjust themes, writing style, real-world grounding, and governance direction. Saving an empty value restores the default."),
 			settings.NpcRulerPolicyPrompt ?? string.Empty,
 			delegate(string input)
 			{
@@ -207,8 +207,8 @@ internal static class PolicyPromptEditorUi
 				OpenRoot(settings);
 			},
 			delegate { OpenRoot(settings); },
-			"保存",
-			"返回");
+			PolicyUiTexts.Get("AFPOL_UI_Save", "Save"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"));
 	}
 
 	private static void OpenEffectList(DuelSettings settings)
@@ -232,16 +232,16 @@ internal static class PolicyPromptEditorUi
 					entry.DisplayName,
 					null,
 					isEnabled: true,
-					"分别编辑发生条件和数值判定要求。")));
+					PolicyUiTexts.Get("AFPOL_UI_PromptEffectEntryHint", "Edit occurrence conditions and numeric judgment requirements separately."))));
 			MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-				"政策效果要求",
-				"请选择一个当前可用的效果类别。新增并启用的效果类别会自动出现在这里。",
+				PolicyUiTexts.Get("AFPOL_UI_PromptEffectListTitle", "Policy effect requirements"),
+				PolicyUiTexts.Get("AFPOL_UI_PromptEffectListDescription", "Choose a currently available effect category. Newly registered and enabled categories appear here automatically."),
 				options,
 				isExitShown: true,
 				0,
 				1,
-				"打开",
-				"返回",
+				PolicyUiTexts.Get("AFPOL_UI_Open", "Open"),
+				PolicyUiTexts.Get("AFPOL_UI_Back", "Back"),
 				delegate(List<InquiryElement> selected)
 				{
 					string moduleId = selected?.FirstOrDefault()?.Identifier as string;
@@ -263,7 +263,7 @@ internal static class PolicyPromptEditorUi
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "policy-effect-prompt-list-open-failed", ex.Message, ex.ToString());
-			ShowFailure("打开政策效果要求列表失败：" + ex.Message);
+			ShowFailure(PolicyUiTexts.Format("AFPOL_UI_PromptEffectListOpenFailed", "Unable to open the policy effect requirements list: {ERROR}", "ERROR", ex.Message));
 			OpenRoot(settings);
 		}
 	}
@@ -271,45 +271,45 @@ internal static class PolicyPromptEditorUi
 	private static void OpenCommonEffectEditor(DuelSettings settings)
 	{
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑全部效果共同要求",
-			"这段文字只规定所有效果共同采用的持续时间、直接因果、多项效果和投入定标原则。",
-			"单项效果的发生条件和数值尺度请在对应效果类别中编辑。留空保存会恢复默认内容。",
+			PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectEditorTitle", "Edit shared requirements for all effects"),
+			PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectEditorDescription", "This text defines only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects."),
+			PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectEditorHint", "Edit occurrence conditions and numeric scales for individual effects in their respective categories. Saving an empty value restores the default."),
 			PolicyEffectPromptService.GetCommonEvaluationPrompt(),
 			delegate(string input)
 			{
 				if (!PolicyEffectPromptService.TrySaveCommonEvaluationPrompt(input, out string error))
 				{
-					ShowFailure("保存全部效果共同要求失败：" + error);
+					ShowFailure(PolicyUiTexts.Format("AFPOL_UI_PromptCommonEffectSaveFailed", "Failed to save shared effect requirements: {ERROR}", "ERROR", error));
 				}
 				else
 				{
-					ShowSaved("全部效果共同要求已保存。");
+					ShowSaved(PolicyUiTexts.Get("AFPOL_UI_PromptCommonEffectSaved", "Shared effect requirements saved."));
 				}
 				OpenEffectList(settings);
 			},
 			delegate { OpenEffectList(settings); },
-			"保存",
-			"返回");
+			PolicyUiTexts.Get("AFPOL_UI_Save", "Save"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"));
 	}
 
 	private static void OpenEffectModule(DuelSettings settings, PolicyEffectPromptEditorEntry entry)
 	{
 		List<InquiryElement> options = new List<InquiryElement>
 		{
-			new InquiryElement("understanding", "政策理解要求", null, isEnabled: true,
-				"指导主评议在什么情况下把这一类别视为政策的实际后果。"),
-			new InquiryElement("evaluation", "效果判定要求", null, isEnabled: true,
-				"指导效果评估如何判断方向、结算频率、单位和数值尺度。")
+			new InquiryElement("understanding", PolicyUiTexts.Get("AFPOL_UI_PromptUnderstandingTitle", "Policy understanding requirements"), null, isEnabled: true,
+				PolicyUiTexts.Get("AFPOL_UI_PromptUnderstandingHint", "Guides the main evaluation on when this category should be treated as an actual policy consequence.")),
+			new InquiryElement("evaluation", PolicyUiTexts.Get("AFPOL_UI_PromptEvaluationTitle", "Effect judgment requirements"), null, isEnabled: true,
+				PolicyUiTexts.Get("AFPOL_UI_PromptEvaluationHint", "Guides effect evaluation on direction, settlement frequency, units, and numeric scale."))
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			entry.DisplayName,
-			"请选择要编辑的要求。留空保存只会恢复当前这一项的默认内容。",
+			PolicyUiTexts.Get("AFPOL_UI_PromptModuleDescription", "Choose a requirement to edit. Saving an empty value restores only this item's default content."),
 			options,
 			isExitShown: true,
 			0,
 			1,
-			"编辑",
-			"返回",
+			PolicyUiTexts.Get("AFPOL_UI_Edit", "Edit"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"),
 			delegate(List<InquiryElement> selected)
 			{
 				string key = selected?.FirstOrDefault()?.Identifier as string;
@@ -337,37 +337,40 @@ internal static class PolicyPromptEditorUi
 		if (!PolicyEffectModuleCatalog.TryGetCanonical(entry.ModuleId, out IPolicyEffectModule module)
 			|| module.Descriptor.PromptVisible != true)
 		{
-			ShowFailure("所选效果类别已经不可用。");
+			ShowFailure(PolicyUiTexts.Get("AFPOL_UI_PromptEffectUnavailable", "The selected effect category is no longer available."));
 			OpenEffectList(settings);
 			return;
 		}
 		bool understanding = kind == PolicyEffectPromptKind.Understanding;
-		string title = entry.DisplayName + " - " + (understanding ? "政策理解要求" : "效果判定要求");
+		string requirementTitle = understanding
+			? PolicyUiTexts.Get("AFPOL_UI_PromptUnderstandingTitle", "Policy understanding requirements")
+			: PolicyUiTexts.Get("AFPOL_UI_PromptEvaluationTitle", "Effect judgment requirements");
+		string title = PolicyUiTexts.Format("AFPOL_UI_PromptModuleEditorTitle", "{NAME} - {REQUIREMENT}", "NAME", entry.DisplayName, "REQUIREMENT", requirementTitle);
 		string initial = understanding
 			? PolicyEffectPromptService.GetUnderstandingPrompt(module)
 			: PolicyEffectPromptService.GetEvaluationPrompt(module);
 		DevTextEditorHelper.ShowLongTextEditor(
 			title,
 			understanding
-				? "说明什么样的政策措施会直接影响这一效果类别。"
-				: "说明如何判断变化方向、结算频率、单位和数值尺度。",
-			"请使用自然语言。留空保存会恢复当前项默认内容；不会改变可用效果类别或合法作用范围。",
+				? PolicyUiTexts.Get("AFPOL_UI_PromptUnderstandingEditorDescription", "Explain what kinds of policy measures directly affect this effect category.")
+				: PolicyUiTexts.Get("AFPOL_UI_PromptEvaluationEditorDescription", "Explain how to judge direction, settlement frequency, units, and numeric scale."),
+			PolicyUiTexts.Get("AFPOL_UI_PromptModuleEditorHint", "Use natural language. Saving an empty value restores this item's default content; it does not change available categories or legal scopes."),
 			initial,
 			delegate(string input)
 			{
 				if (!PolicyEffectPromptService.TrySaveModulePrompt(entry.ModuleId, kind, input, out string error))
 				{
-					ShowFailure("保存政策效果要求失败：" + error);
+					ShowFailure(PolicyUiTexts.Format("AFPOL_UI_PromptModuleSaveFailed", "Failed to save policy effect requirements: {ERROR}", "ERROR", error));
 				}
 				else
 				{
-					ShowSaved(entry.DisplayName + "的" + (understanding ? "政策理解要求" : "效果判定要求") + "已保存。");
+					ShowSaved(PolicyUiTexts.Format("AFPOL_UI_PromptModuleSaved", "{NAME}'s {REQUIREMENT} saved.", "NAME", entry.DisplayName, "REQUIREMENT", requirementTitle));
 				}
 				OpenEffectModule(settings, entry);
 			},
 			delegate { OpenEffectModule(settings, entry); },
-			"保存",
-			"返回");
+			PolicyUiTexts.Get("AFPOL_UI_Save", "Save"),
+			PolicyUiTexts.Get("AFPOL_UI_Back", "Back"));
 	}
 
 	private static void ShowSaved(string message)
