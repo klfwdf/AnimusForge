@@ -299,5 +299,12 @@
   <string id="AF_UI_Terminal_HotkeyOn" text="Terminal hotkey access enabled (U key)." />
   <string id="AF_UI_Terminal_MapIconOff" text="World-map terminal icon entry disabled." />
   <string id="AF_UI_Terminal_MapIconOn" text="World-map terminal icon entry enabled." />
+  <string id="AF_UI_Terminal_WarBreadcrumb" text="War" />
+  <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="Current kingdom reports" />
+  <string id="AF_UI_Terminal_VassalBreadcrumb" text="Vassal tribute settlement history" />
+  <string id="AF_UI_Terminal_TagLabel" text="Tag:" />
+  <string id="AF_UI_Terminal_CategoryLabel" text="Category:" />
+  <string id="AF_UI_Terminal_DescriptionLabel" text="Description:" />
+  <string id="AF_UI_Terminal_SourcesLabel" text="Sources:" />
   </strings>
 </base>
