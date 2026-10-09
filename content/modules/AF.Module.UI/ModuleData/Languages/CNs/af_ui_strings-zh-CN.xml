@@ -157,4 +157,16 @@
   <string id="AF_UI_Onboarding_Target_Auxiliary" text="前处理 API（意图路由）" />
   <string id="AF_UI_Onboarding_Target_Postprocess" text="后处理 API（指令标签）" />
   <string id="AF_UI_Onboarding_Target_Event" text="每日与周报 API" />
+  <string id="AF_UI_Conversation_EditNpc" text="编辑NPC" />
+  <string id="AF_UI_Conversation_TagInput" text="标签输入" />
+  <string id="AF_UI_Conversation_History" text="对话历史" />
+  <string id="AF_UI_Conversation_GiveShow" text="给予/展示" />
+  <string id="AF_UI_Conversation_NormalMode" text="普通模式" />
+  <string id="AF_UI_Conversation_AiMode" text="AI模式" />
+  <string id="AF_UI_Shout_IllustrationBusy" text="截图中…" />
+  <string id="AF_UI_Shout_Illustration" text="生图" />
+  <string id="AF_UI_Courier_ReplyTitle" text="信使带回了回信" />
+  <string id="AF_UI_Courier_EmptyReply" text="（无回信正文）" />
+  <string id="AF_UI_Courier_Close" text="关闭" />
+  <string id="AF_UI_Courier_Reply" text="回信" />
 </strings>

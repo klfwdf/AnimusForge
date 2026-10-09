@@ -157,4 +157,16 @@
   <string id="AF_UI_Onboarding_Target_Auxiliary" text="Preprocessing API (intent routing)" />
   <string id="AF_UI_Onboarding_Target_Postprocess" text="Postprocessing API (action tags)" />
   <string id="AF_UI_Onboarding_Target_Event" text="Daily and weekly-report API" />
+  <string id="AF_UI_Conversation_EditNpc" text="Edit NPC" />
+  <string id="AF_UI_Conversation_TagInput" text="Tag input" />
+  <string id="AF_UI_Conversation_History" text="Conversation history" />
+  <string id="AF_UI_Conversation_GiveShow" text="Give / show" />
+  <string id="AF_UI_Conversation_NormalMode" text="Normal mode" />
+  <string id="AF_UI_Conversation_AiMode" text="AI mode" />
+  <string id="AF_UI_Shout_IllustrationBusy" text="Capturing..." />
+  <string id="AF_UI_Shout_Illustration" text="Generate image" />
+  <string id="AF_UI_Courier_ReplyTitle" text="The courier returned with a reply" />
+  <string id="AF_UI_Courier_EmptyReply" text="(No reply body)" />
+  <string id="AF_UI_Courier_Close" text="Close" />
+  <string id="AF_UI_Courier_Reply" text="Reply" />
 </strings>
