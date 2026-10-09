@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ID = re.compile(r"^[A-Za-z0-9_]+$")
-VAR = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
+VAR = re.compile(r"\{([A-Za-z][A-Za-z0-9_]*)\}")
 
 
 def strings(path: Path) -> dict[str, str]:

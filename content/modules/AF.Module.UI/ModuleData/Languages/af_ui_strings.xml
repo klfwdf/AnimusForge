@@ -903,7 +903,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Hint" text="Configure TTS Volc Dedicated API URL." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Group" text="7. Volcengine TTS (dedicated)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Title" text="TTS Volc Dedicated API Key" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Hint" text="Configure TTS Volc Dedicated API Key." />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Hint" text="Configure TTS Volc Dedicated API Key. The documented request header uses Authorization: Bearer {token}." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Group" text="7. Volcengine TTS (dedicated)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Title" text="TTS Volc Dedicated App Key" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Hint" text="Configure TTS Volc Dedicated App Key." />
@@ -915,7 +915,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Hint" text="Configure TTS Volc Dedicated Speaker." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. Volcengine TTS (dedicated)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Title" text="TTS Volc Dedicated Additions JSON" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="Configure TTS Volc Dedicated Additions JSON." />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="Write the TTS Volc Dedicated Additions JSON verbatim to request.extra_param as a string. Use a JSON object." />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. Volcengine TTS (dedicated)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Title" text="TTS Volc Dedicated Audio Format" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Hint" text="Configure TTS Volc Dedicated Audio Format." />

@@ -41,7 +41,7 @@ foreach ($language in @('English', $chineseLanguageId, 'French', 'English')) {
         $en = $row.GetAttribute('text')
         $expected = if ($language -eq $chineseLanguageId) { $zh[$id] } else { $en }
         $text = New-Object TaleWorlds.Localization.TextObject -ArgumentList @("{=$id}$en", $null)
-        foreach ($variable in [regex]::Matches($en, '\{([A-Z][A-Z0-9_]*)\}')) {
+        foreach ($variable in [regex]::Matches($en, '\{([A-Za-z][A-Za-z0-9_]*)\}')) {
             $key = $variable.Groups[1].Value
             [void]$text.SetTextVariable($key, "value_$key")
             $expected = $expected.Replace("{$key}", "value_$key")
