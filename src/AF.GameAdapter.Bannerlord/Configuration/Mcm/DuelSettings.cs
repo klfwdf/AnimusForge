@@ -1445,144 +1445,144 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryOverviewTargetChars { get; set; } = 200;
 
-	[SettingPropertyInteger("规则返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。")]
-	[SettingPropertyGroup("6. 规则触发（返回）")]
+	[SettingPropertyInteger("{=AF_MCM_Rules_TopN}Rule results limit", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Rules_TopN_Hint}Maximum additional rules supplied to AI per conversation. Recall and reranking counts are derived automatically and are not padded when highly relevant rules are insufficient. Default: 4.")]
+	[SettingPropertyGroup("{=AF_MCM_Rules_Group}6. Rule triggers (returned)")]
 	public int GuardrailDirectTopN { get; set; } = 4;
 
-	[SettingPropertyBool("启用 NPC 主动接触", Order = 0, RequireRestart = false, HintText = "开启后，有明确需求的 NPC 队伍可以在大地图主动追上玩家并发起对话。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyBool("{=AF_MCM_Proactive_Enable}Enable proactive NPC contact", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Enable_Hint}When enabled, NPC parties with a clear need can pursue the player on the campaign map and start a conversation.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public bool EnableProactiveNpcRequests { get; set; } = true;
 
-	[SettingPropertyBool("测试模式", Order = 1, RequireRestart = false, HintText = "开启后允许 Tier 0 玩家触发，并建议配合高概率、短冷却测试主动接触。正常游玩默认关闭。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyBool("{=AF_MCM_Proactive_Test}Test mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Test_Hint}Allows Tier 0 players to trigger contact and is useful with high chance and short cooldowns. Off by default for normal play.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public bool ProactiveNpcRequestTestMode { get; set; } = false;
 
-	[SettingPropertyInteger("最低家族等级", 0, 6, "0", Order = 2, RequireRestart = false, HintText = "测试模式关闭时生效；玩家家族等级低于该值则不会触发 NPC 主动接触。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_MinTier}Minimum clan tier", 0, 6, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Proactive_MinTier_Hint}Applies when test mode is off. NPC contact does not trigger below this player clan tier.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMinClanTier { get; set; } = 1;
 
-	[SettingPropertyInteger("每次扫描触发概率", 0, 100, "0", Order = 3, RequireRestart = false, HintText = "候选 NPC 的触发概率缩放值。正常游玩默认 35，测试时可拉到 100。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Chance}Trigger chance per scan", 0, 100, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Chance_Hint}Trigger probability scale for candidate NPCs. Default 35 for normal play; tests may use 100.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestChancePercent { get; set; } = 35;
 
-	[SettingPropertyInteger("扫描间隔(小时)", 1, 24, "0", Order = 4, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次附近有需求的 NPC 队伍。正常游玩默认 6 小时。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 24, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Interval_Hint}How often to scan nearby NPC parties with a need, in game hours. Default: 6.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestScanIntervalHours { get; set; } = 6;
 
-	[SettingPropertyInteger("全局冷却(小时)", 0, 240, "0", Order = 5, RequireRestart = false, HintText = "任意一次主动接触启动后，多少小时内不再启动下一次。正常游玩默认 24 小时。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_GlobalCooldown}Global cooldown (hours)", 0, 240, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Proactive_GlobalCooldown_Hint}After any proactive contact starts, no new contact starts during this many hours. Default: 24.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestGlobalCooldownHours { get; set; } = 24;
 
-	[SettingPropertyInteger("同 NPC 冷却(天)", 0, 60, "0", Order = 6, RequireRestart = false, HintText = "同一 NPC 主动接触玩家后，多少天内不会再次以同类需求来找玩家。正常游玩默认 14 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_HeroCooldown}Same-NPC cooldown (days)", 0, 60, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Proactive_HeroCooldown_Hint}After an NPC contacts the player, it cannot return with the same need during this many days. Default: 14.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestHeroCooldownDays { get; set; } = 14;
 
-	[SettingPropertyFloatingInteger("候选距离倍率", 0.5f, 5f, "0.0", Order = 7, RequireRestart = false, HintText = "候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。正常游玩默认 1.0。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Proactive_Distance}Candidate distance multiplier", 0.5f, 5f, "0.0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Distance_Hint}Maximum candidate distance equals player sight range multiplied by this value. Default: 1.0.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestDistanceMultiplier { get; set; } = 1.0f;
 
-	[SettingPropertyInteger("缺粮阈值(天)", 0, 15, "0", Order = 8, RequireRestart = false, HintText = "NPC 队伍剩余粮食天数小于等于该值，或已经饥饿时，可以触发缺粮主动接触。正常游玩默认 2 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Food}Food threshold (days)", 0, 15, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Food_Hint}A food need can trigger when an NPC party has at most this many food days or is already starving. Default: 2 days.")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFoodDaysThreshold { get; set; } = 2;
 
 	[SettingPropertyInteger("缺钱现金阈值", 1, 50000, "0", Order = 9, RequireRestart = false, HintText = "NPC 领主可用现金低于该值时，可以触发缺钱主动接触。运行时不会低于原版队伍现金下限。默认 5000。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMoneyGoldThreshold { get; set; } = 5000;
 
 	[SettingPropertyInteger("缺钱军饷阈值(天)", 0, 30, "0", Order = 10, RequireRestart = false, HintText = "NPC 领主现金可支付军饷天数小于等于该值时，可以触发缺钱主动接触；0 表示只看现金阈值和未付军饷。正常游玩默认 2 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMoneyWageDaysThreshold { get; set; } = 2;
 
 	[SettingPropertyInteger("缺兵兵力比例阈值(%)", 1, 100, "0", Order = 11, RequireRestart = false, HintText = "NPC 领主当前人数低于队伍人数上限的该比例时，可以触发缺兵主动接触。正常游玩默认 45；测试时可调到 90 或 100。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTroopRatioThresholdPercent { get; set; } = 45;
 
 	[SettingPropertyInteger("俘虏容量阈值(%)", 1, 150, "0", Order = 12, RequireRestart = false, HintText = "NPC 领主当前俘虏数量达到俘虏上限的该比例时，可以触发俘虏过载或赎买主动接触。正常游玩默认 90；100 表示接近满员，超过 100 表示只在超载时触发。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestPrisonerRatioThresholdPercent { get; set; } = 90;
 
 	[SettingPropertyInteger("低士气阈值", 0, 100, "0", Order = 13, RequireRestart = false, HintText = "NPC 领主队伍士气低于或等于该值时，可以触发低士气主动接触；0 表示关闭该需求。正常游玩默认 35。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestLowMoraleThreshold { get; set; } = 35;
 
 	[SettingPropertyInteger("缺马比例阈值(%)", 0, 100, "0", Order = 14, RequireRestart = false, HintText = "NPC 领主队伍坐骑数量低于队伍人数的该比例时，可以触发缺马/机动不足主动接触；0 表示关闭该需求。正常游玩默认 25。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMountRatioThresholdPercent { get; set; } = 25;
 
 	[SettingPropertyInteger("负重压力阈值(%)", 50, 150, "0", Order = 15, RequireRestart = false, HintText = "NPC 领主队伍总负重达到库存容量的该比例时，可以触发负重压力主动接触。正常游玩默认 92。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestOverburdenRatioThresholdPercent { get; set; } = 92;
 
 	[SettingPropertyInteger("家族金库阈值", 0, 200000, "0", Order = 16, RequireRestart = false, HintText = "NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestClanGoldThreshold { get; set; } = 15000;
 
 	[SettingPropertyInteger("家族债务阈值", 0, 200000, "0", Order = 17, RequireRestart = false, HintText = "NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
 
 	[SettingPropertyInteger("联姻压力成人阈值", 1, 12, "0", Order = 18, RequireRestart = false, HintText = "NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMarriageAdultClanThreshold { get; set; } = 3;
 
 	[SettingPropertyInteger("封地忠诚阈值", 0, 100, "0", Order = 19, RequireRestart = false, HintText = "NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefLoyaltyThreshold { get; set; } = 35;
 
 	[SettingPropertyInteger("封地治安阈值", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefSecurityThreshold { get; set; } = 35;
 
 	[SettingPropertyInteger("封地驻军阈值", 0, 1000, "0", Order = 21, RequireRestart = false, HintText = "NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefGarrisonThreshold { get; set; } = 80;
 
 	[SettingPropertyInteger("孤立影响力阈值", 0, 500, "0", Order = 22, RequireRestart = false, HintText = "NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestIsolationInfluenceThreshold { get; set; } = 40;
 
 	[SettingPropertyInteger("孤立友好家族上限", 0, 10, "0", Order = 23, RequireRestart = false, HintText = "同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestIsolationMaxFriendlyClans { get; set; } = 1;
 
 	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 24, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcKnownMajorMultiplier { get; set; } = 2f;
 
 	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 25, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcNotorietyChanceMultiplier { get; set; } = 0.35f;
 
 	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 26, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 
 	[SettingPropertyInteger("请求类型疲劳(天)", 0, 60, "0", Order = 27, RequireRestart = false, HintText = "玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTypeFatigueDays { get; set; } = 10;
 
 	[SettingPropertyFloatingInteger("疲劳类型概率倍率", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestTypeFatigueMultiplier { get; set; } = 0.2f;
 
 	[SettingPropertyFloatingInteger("缺马请求权重", 0f, 1f, "0.00", Order = 29, RequireRestart = false, HintText = "缺马/买马请求在地图主动接触和主动来信中的候选权重与触发概率倍率。默认 0.35；0 表示保留需求判定但不主动发起。测试模式下地图追踪仍按 1.00 计算。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestMountShortageWeight { get; set; } = 0.35f;
 
 	[SettingPropertyInteger("亲密互动全局冷却(天)", 1, 120, "0", Order = 30, RequireRestart = false, HintText = "异性且私人关系大于 30 的亲密互动，在地图追赶、主动来信和队内同伴聊天之间共享的硬冷却。默认 21 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestRomanticInteractionGlobalCooldownDays { get; set; } = 21;
 
 	[SettingPropertyInteger("主动问候全局冷却(天)", 1, 120, "0", Order = 31, RequireRestart = false, HintText = "私人关系大于 20 的 NPC 主动追上玩家或主动来信问候后，共享的硬冷却。默认 42 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestGreetingGlobalCooldownDays { get; set; } = 42;
 
 	[SettingPropertyFloatingInteger("领地盘问范围倍率", 0.5f, 10f, "0.0", Order = 32, RequireRestart = false, HintText = "玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier { get; set; } = 3f;
 
 	[SettingPropertyInteger("领地盘问全局冷却(天)", 1, 180, "0", Order = 33, RequireRestart = false, HintText = "领地盘问成功发起后共享的硬冷却。默认 42 天。")]
-	[SettingPropertyGroup("7. NPC主动接触")]
+	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays { get; set; } = 42;
 
 	[SettingPropertyBool("启用 NPC 主动来信", Order = 0, RequireRestart = false, HintText = "允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。")]
@@ -1597,7 +1597,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterMinBondScore { get; set; } = 10;
 
-	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterScanIntervalHours { get; set; } = 24;
 
@@ -1649,7 +1649,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public bool CompanionProactiveChatTestMode { get; set; } = false;
 
-	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。")]
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public int CompanionProactiveChatScanIntervalHours { get; set; } = 24;
 
