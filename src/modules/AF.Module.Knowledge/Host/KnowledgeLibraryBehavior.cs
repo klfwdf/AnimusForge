@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -7309,105 +7309,33 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		});
 	}
 
-	private static void AddStatusMappingKindOption(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string statusKey, string label)
+	private static void AddStatusMappingKindOption(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string statusKey)
 	{
-		AddTextMappingKindOption(list, categoryKey, BuildStatusMappingKind(sourceKey, statusKey), label);
+		AddTextMappingKindOption(list, categoryKey, BuildStatusMappingKind(sourceKey, statusKey), KnowledgeMappingUiTexts.StatusLabel(sourceKey, statusKey));
 	}
 
-	private static void AddHeroStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddHeroStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_alive", prefix + "：是否存活");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_dead", prefix + "：是否死亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_disabled", prefix + "：是否失能");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_missing", prefix + "：是否失踪/逃亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_married", prefix + "：是否已婚");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_widowed", prefix + "：是否丧偶");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_female", prefix + "：是否女性");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_male", prefix + "：是否男性");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_child", prefix + "：是否未成年");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_adult", prefix + "：是否成年");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_age_range", prefix + "：是否在年龄段内");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_clan_leader", prefix + "：是否家族族长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_kingdom_leader", prefix + "：是否王国领袖");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_governor", prefix + "：是否总督");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_prisoner", prefix + "：是否被俘");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_settlement", prefix + "：是否在定居点内");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_field", prefix + "：是否在野外");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_wanderer", prefix + "：是否流浪者");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_notable", prefix + "：是否要人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_lord", prefix + "：是否领主");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_merchant", prefix + "：是否商人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_gang_leader", prefix + "：是否帮派头目");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_artisan", prefix + "：是否工匠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_preacher", prefix + "：是否传教士");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_headman", prefix + "：是否村长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_minor_faction_hero", prefix + "：是否小势力英雄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_party_leader", prefix + "：是否带队");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_player_companion", prefix + "：是否玩家同伴");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebel", prefix + "：是否叛军");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_wounded", prefix + "：是否受伤");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_known_to_player", prefix + "：是否被玩家认识");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_children", prefix + "：是否有子女");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_father", prefix + "：是否有父亲");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_mother", prefix + "：是否有母亲");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_home_settlement", prefix + "：是否有家乡定居点");
+		foreach (string statusKey in new[] { "is_alive", "is_dead", "is_disabled", "is_missing", "is_married", "is_widowed", "is_female", "is_male", "is_child", "is_adult", "is_in_age_range", "is_clan_leader", "is_kingdom_leader", "is_governor", "is_prisoner", "is_in_settlement", "is_in_field", "is_wanderer", "is_notable", "is_lord", "is_merchant", "is_gang_leader", "is_artisan", "is_preacher", "is_headman", "is_minor_faction_hero", "is_party_leader", "is_player_companion", "is_rebel", "is_wounded", "is_known_to_player", "has_children", "has_father", "has_mother", "has_home_settlement" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddClanStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddClanStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_eliminated", prefix + "：是否已灭绝");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_kingdom", prefix + "：是否有所属王国");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_leader", prefix + "：是否有族长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_settlement", prefix + "：是否拥有任何定居点");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_town", prefix + "：是否拥有任何城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_castle", prefix + "：是否拥有任何城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_village", prefix + "：是否拥有任何村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_members", prefix + "：是否有成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_male_members", prefix + "：是否有男性成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_female_members", prefix + "：是否有女性成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_age_range_members", prefix + "：是否有年龄段成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_mercenary", prefix + "：是否雇佣兵家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_minor_faction", prefix + "：是否小势力");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebel_clan", prefix + "：是否叛军家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_noble", prefix + "：是否贵族家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_bandit_faction", prefix + "：是否匪帮势力");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_outlaw", prefix + "：是否法外势力");
+		foreach (string statusKey in new[] { "is_eliminated", "has_kingdom", "has_leader", "has_any_settlement", "has_any_town", "has_any_castle", "has_any_village", "has_members", "has_male_members", "has_female_members", "has_age_range_members", "is_mercenary", "is_minor_faction", "is_rebel_clan", "is_noble", "is_bandit_faction", "is_outlaw" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddKingdomStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddKingdomStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_eliminated", prefix + "：是否已灭亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_leader", prefix + "：是否有领袖");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_ruling_clan", prefix + "：是否有执政家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_settlement", prefix + "：是否拥有任何定居点");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_town", prefix + "：是否拥有任何城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_castle", prefix + "：是否拥有任何城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_village", prefix + "：是否拥有任何村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_clan", prefix + "：是否有任何家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_lord", prefix + "：是否有任何领主");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_active_policies", prefix + "：是否有生效政策");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_war", prefix + "：是否处于战争中");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_allies", prefix + "：是否有盟友");
+		foreach (string statusKey in new[] { "is_eliminated", "has_leader", "has_ruling_clan", "has_any_settlement", "has_any_town", "has_any_castle", "has_any_village", "has_any_clan", "has_any_lord", "has_active_policies", "has_any_war", "has_any_allies" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddSettlementStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddSettlementStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_active", prefix + "：是否活跃");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_town", prefix + "：是否城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_castle", prefix + "：是否城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_village", prefix + "：是否村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_fortification", prefix + "：是否堡垒");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_hideout", prefix + "：是否藏身处");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_under_siege", prefix + "：是否被围攻");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_under_raid", prefix + "：是否正在被劫掠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_raided", prefix + "：是否已被劫掠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_starving", prefix + "：是否饥荒");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebellious", prefix + "：是否处于叛乱状态");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_port", prefix + "：是否有港口");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_owner", prefix + "：是否有统治者");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_owner_clan", prefix + "：是否有统治家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_notables", prefix + "：是否有要人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_parties", prefix + "：是否有驻留队伍");
+		foreach (string statusKey in new[] { "is_active", "is_town", "is_castle", "is_village", "is_fortification", "is_hideout", "is_under_siege", "is_under_raid", "is_raided", "is_starving", "is_rebellious", "has_port", "has_owner", "has_owner_clan", "has_notables", "has_parties" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
 	private static List<TextMappingKindOption> BuildTextMappingKindOptions(string categoryKey)
@@ -7417,180 +7345,180 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		switch (text)
 		{
 		case "status":
-			AddHeroStatusKindOptions(list, text, "current_npc_hero", "当前NPC");
-			AddHeroStatusKindOptions(list, text, "player_hero", "玩家");
-			AddHeroStatusKindOptions(list, text, "bound_hero", "本知识绑定英雄");
-			AddHeroStatusKindOptions(list, text, "hero", "英雄");
-			AddClanStatusKindOptions(list, text, "current_npc_clan", "当前NPC所属家族");
-			AddClanStatusKindOptions(list, text, "player_clan", "玩家家族");
-			AddClanStatusKindOptions(list, text, "bound_settlement_owner_clan", "本知识绑定定居点统治家族");
-			AddClanStatusKindOptions(list, text, "bound_hero_clan", "本知识绑定英雄所属家族");
-			AddClanStatusKindOptions(list, text, "clan", "家族");
-			AddKingdomStatusKindOptions(list, text, "current_npc_kingdom", "当前NPC所属王国");
-			AddKingdomStatusKindOptions(list, text, "player_kingdom", "玩家所属王国");
-			AddKingdomStatusKindOptions(list, text, "bound_kingdom", "本知识绑定王国");
-			AddKingdomStatusKindOptions(list, text, "kingdom", "王国");
-			AddSettlementStatusKindOptions(list, text, "current_npc_settlement", "当前NPC所在定居点");
-			AddSettlementStatusKindOptions(list, text, "player_settlement", "玩家所在定居点");
-			AddSettlementStatusKindOptions(list, text, "bound_settlement", "本知识绑定定居点");
-			AddSettlementStatusKindOptions(list, text, "settlement", "定居点");
+			AddHeroStatusKindOptions(list, text, "current_npc_hero");
+			AddHeroStatusKindOptions(list, text, "player_hero");
+			AddHeroStatusKindOptions(list, text, "bound_hero");
+			AddHeroStatusKindOptions(list, text, "hero");
+			AddClanStatusKindOptions(list, text, "current_npc_clan");
+			AddClanStatusKindOptions(list, text, "player_clan");
+			AddClanStatusKindOptions(list, text, "bound_settlement_owner_clan");
+			AddClanStatusKindOptions(list, text, "bound_hero_clan");
+			AddClanStatusKindOptions(list, text, "clan");
+			AddKingdomStatusKindOptions(list, text, "current_npc_kingdom");
+			AddKingdomStatusKindOptions(list, text, "player_kingdom");
+			AddKingdomStatusKindOptions(list, text, "bound_kingdom");
+			AddKingdomStatusKindOptions(list, text, "kingdom");
+			AddSettlementStatusKindOptions(list, text, "current_npc_settlement");
+			AddSettlementStatusKindOptions(list, text, "player_settlement");
+			AddSettlementStatusKindOptions(list, text, "bound_settlement");
+			AddSettlementStatusKindOptions(list, text, "settlement");
 			break;
 		case "current_npc":
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcName, "名字");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanName, "所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomName, "所属家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomLeaderName, "所属家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMembers, "所属家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMaleMembers, "所属家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanFemaleMembers, "所属家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAgeRangeMembers, "所属家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllTowns, "所属家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllVillages, "所属家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllSettlements, "所属家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomRulingClanName, "所属王国执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomCultureName, "所属王国文化");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomInitialHomeSettlementName, "所属王国初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllClans, "所属王国全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllLords, "所属王国全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllTowns, "所属王国拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllCastles, "所属王国拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllVillages, "所属王国拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllSettlements, "所属王国拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomActivePolicies, "所属王国生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAlliedKingdoms, "所属王国盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomWarFactions, "所属王国交战势力");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcFatherName, "父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcMotherName, "母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementName, "所在定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerClanName, "所在定居点统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName, "所在定居点统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName, "所在定居点所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName, "所在定居点所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementCultureName, "所在定居点文化");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementNotables, "所在定居点要人");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementParties, "所在定居点驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementBoundVillages, "所在定居点绑定村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomWarFactions));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementBoundVillages));
 			break;
 		case "player":
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerName, "名字");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanName, "家族");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomName, "家族所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomLeaderName, "家族所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMembers, "家族成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMaleMembers, "家族男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanFemaleMembers, "家族女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAgeRangeMembers, "家族年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllTowns, "家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllVillages, "家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllSettlements, "家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerCurrentSettlementName, "所在定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerCurrentSettlementName));
 			break;
 		case "bound":
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomName, "王国名称");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomLeaderName, "王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomRulingClanName, "王国执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomCultureName, "王国文化");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomInitialHomeSettlementName, "王国初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllClans, "王国全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllLords, "王国全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllTowns, "王国拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllCastles, "王国拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllVillages, "王国拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllSettlements, "王国拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomActivePolicies, "王国生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAlliedKingdoms, "王国盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomWarFactions, "王国交战势力");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementName, "定居点名称");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanName, "定居点统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomName, "定居点统治家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomLeaderName, "定居点统治家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMembers, "定居点统治家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMaleMembers, "定居点统治家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanFemaleMembers, "定居点统治家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAgeRangeMembers, "定居点统治家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllTowns, "定居点统治家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllVillages, "定居点统治家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllSettlements, "定居点统治家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerLeaderName, "定居点统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomName, "定居点所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomLeaderName, "定居点所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementCultureName, "定居点文化");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementNotables, "定居点要人");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementParties, "定居点驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementBoundVillages, "定居点绑定村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroName, "英雄名字");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanName, "英雄所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomName, "英雄所属家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomLeaderName, "英雄所属家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMembers, "英雄所属家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMaleMembers, "英雄所属家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanFemaleMembers, "英雄所属家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAgeRangeMembers, "英雄所属家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllTowns, "英雄所属家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllVillages, "英雄所属家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllSettlements, "英雄所属家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomName, "英雄所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomLeaderName, "英雄效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroSpouseName, "英雄配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroFatherName, "英雄父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroMotherName, "英雄母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroCurrentSettlementName, "英雄所在定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomWarFactions));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementBoundVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroCurrentSettlementName));
 			break;
 		case "kingdom":
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, "当前领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomRulingClanName, "执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomCultureName, "文化");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomInitialHomeSettlementName, "初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllClans, "全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllLords, "全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllTowns, "拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllCastles, "拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllVillages, "拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllSettlements, "拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomActivePolicies, "生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAlliedKingdoms, "盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomWarFactions, "交战势力");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomWarFactions));
 			break;
 		case "settlement":
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerLeaderName, "统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerClanName, "统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomLeaderName, "所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementCultureName, "文化");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementNotables, "要人");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementParties, "驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementBoundVillages, "绑定村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementBoundVillages));
 			break;
 		case "clan":
-			AddTextMappingKindOption(list, text, TextMappingKindClanLeaderName, "当前族长");
-			AddTextMappingKindOption(list, text, TextMappingKindClanName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomLeaderName, "所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindClanMembers, "成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanMaleMembers, "男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanFemaleMembers, "女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAgeRangeMembers, "年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllTowns, "统治的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllVillages, "统治的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllSettlements, "统治的所有定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindClanLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllSettlements));
 			break;
 		case "hero":
-			AddTextMappingKindOption(list, text, TextMappingKindHeroName, "当前名字");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroClanName, "所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroFatherName, "父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroMotherName, "母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroCurrentSettlementName, "当前定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindHeroName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroCurrentSettlementName));
 			break;
 		}
 		return list;
