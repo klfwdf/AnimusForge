@@ -356,5 +356,25 @@
   <string id="AF_MCM_Dev_FreezeDump" text="【诊断】AI聊天卡死时生成线程 Dump" />
   <string id="AF_MCM_Dev_FreezeDump_Hint" text="仅在 AnimusForge 自由对话的 AI 模式或场景喊话正在处理时，主线程连续 5 秒无心跳才生成紧凑线程 dump。普通对话、非 AI 游玩和原版保存期间自动停用。默认开启。" />
   <string id="AF_MCM_Dev_Group" text="4. 开发者选项" />
+  <string id="AF_MCM_Knowledge_Group" text="5. 知识检索（返回）" />
+  <string id="AF_MCM_Knowledge_TopN" text="知识返回上限" />
+  <string id="AF_MCM_Knowledge_TopN_Hint" text="控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。" />
+  <string id="AF_MCM_Knowledge_Device" text="重排序推理设备" />
+  <string id="AF_MCM_Knowledge_Device_Hint" text="默认 CPU。GPU（CUDA）仅支持 NVIDIA，需要安装可选 CUDA 运行组件；向量检索仍使用 CPU。缺少组件、驱动不兼容或 GPU 推理失败时自动回退 CPU。GPU 会额外占用显存，可能与游戏争用。修改后完整重启游戏生效；模型、候选和检索规则不变。" />
+  <string id="AF_MCM_Knowledge_Entity" text="实体注入上限" />
+  <string id="AF_MCM_Knowledge_Entity_Hint" text="控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。" />
+  <string id="AF_MCM_Knowledge_Candidates" text="清单候选显示上限" />
+  <string id="AF_MCM_Knowledge_Candidates_Hint" text="控制每类物品、装备、部队、俘虏、固定资产和政策候选向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。" />
+  <string id="AF_MCM_Memory_Group" text="5. 压缩记忆" />
+  <string id="AF_MCM_Memory_History" text="日内聊天上下文条数" />
+  <string id="AF_MCM_Memory_History_Hint" text="控制信使、自由对话和场景喊话每次请求最多直接携带多少条尚未日结压缩的普通聊天历史。AFEF 事实不占此额度；不会限制玩家继续聊天，也不会删除每日原始记忆。数值越高，单次请求 token 与等待时间通常越高。默认 100，最低 10，最高 500。" />
+  <string id="AF_MCM_Memory_Denominator" text="记忆压缩比例分母" />
+  <string id="AF_MCM_Memory_Denominator_Hint" text="日结摘要目标字数为当天有效对话总字数的 1/N，默认 5。AFEF 行不计入总字数且不会被压缩；摘要最少 80 字。" />
+  <string id="AF_MCM_Memory_Rpm" text="记忆总结 RPM" />
+  <string id="AF_MCM_Memory_Rpm_Hint" text="跨天后每分钟最多并发总结多少个 NPC/日记忆。默认 3，最高 20。" />
+  <string id="AF_MCM_Memory_Candidates" text="记忆候选上限" />
+  <string id="AF_MCM_Memory_Candidates_Hint" text="进入前处理的压缩记忆候选块数量。默认 20；15-20 通常最合适。超过该数量时使用富标题语义检索。" />
+  <string id="AF_MCM_Memory_Final" text="最终注入记忆数" />
+  <string id="AF_MCM_Memory_Final_Hint" text="主链路最终注入的压缩记忆块数量。默认 4；运行时不会超过“记忆候选上限”。" />
   </strings>
 </base>
