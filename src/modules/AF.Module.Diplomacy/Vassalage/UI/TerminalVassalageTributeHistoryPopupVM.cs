@@ -123,10 +123,10 @@ public sealed class TerminalVassalageTributeHistoryPopupVM : ViewModel
 	{
 		_onClose = onClose;
 		TerminalTributaryPaymentHistoryData source = data ?? new TerminalTributaryPaymentHistoryData();
-		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "贡赋记录" : source.TitleText.Trim();
+		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryTitle", "Tribute records") : source.TitleText.Trim();
 		SubtitleText = (source.SubtitleText ?? "").Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? "尚无贡赋入库记录。" : source.EmptyStateText.Trim();
-		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? "返回臣属国管理" : source.CloseText.Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryEmpty", "No tribute deposits have been recorded.") : source.EmptyStateText.Trim();
+		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryClose", "Back to vassalage management") : source.CloseText.Trim();
 		RecordItems = new MBBindingList<TerminalVassalageTributeHistoryRecordItemVM>();
 		if (source.Records != null)
 		{
@@ -232,7 +232,7 @@ public sealed class TerminalVassalageTributeHistoryRecordItemVM : ViewModel
 
 	public TerminalVassalageTributeHistoryRecordItemVM(TerminalTributaryPaymentRecordData record)
 	{
-		DateText = (record?.DateText ?? "未知日期").Trim();
+		DateText = (record?.DateText ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Common_UnknownDate", "Unknown date")).Trim();
 		TributeValueText = (record?.TributeValueText ?? "").Trim();
 		PlayerGainSummaryText = (record?.PlayerGainSummaryText ?? "").Trim();
 		PlayerSettlementGainText = (record?.PlayerSettlementGainText ?? "").Trim();

@@ -244,7 +244,7 @@ internal sealed class VassalageInfoNoticeRecord
 
 public sealed class TerminalVassalageManagementData
 {
-	public string TitleText { get; set; } = "臣属国管理";
+	public string TitleText { get; set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_ManagementTitle", "Vassalage management");
 
 	public string DescriptionText { get; set; } = "";
 
@@ -278,13 +278,13 @@ public sealed class TerminalVassalageSubjectData
 
 public sealed class TerminalTributaryPaymentHistoryData
 {
-	public string TitleText { get; set; } = "贡赋记录";
+	public string TitleText { get; set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryTitle", "Tribute records");
 
 	public string SubtitleText { get; set; } = "";
 
-	public string EmptyStateText { get; set; } = "尚无贡赋入库记录。";
+	public string EmptyStateText { get; set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryEmpty", "No tribute deposits have been recorded.");
 
-	public string CloseText { get; set; } = "返回臣属国管理";
+	public string CloseText { get; set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributeHistoryClose", "Back to vassalage management");
 
 	public List<TerminalTributaryPaymentRecordData> Records { get; } = new List<TerminalTributaryPaymentRecordData>();
 }
@@ -313,10 +313,10 @@ internal sealed class AnimusForgeVassalageEstablishedMapNotification : Informati
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeVassalageEstablishedMapNotification(string agreementId, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "使节呈上盖有王印的臣属条约。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_ContractNotice", "An envoy presents a vassalage treaty bearing the royal seal.") : descriptionText))
 	{
 		AgreementId = (agreementId ?? "").Trim();
-		_titleText = new TextObject("臣属条约签署");
+		_titleText = DiplomacyUiLocalization.Object("AF_DIP_UI_Vassalage_ContractNoticeTitle", "Vassalage treaty signed");
 	}
 
 	public override bool IsValid()
@@ -353,10 +353,10 @@ internal sealed class AnimusForgeNpcTributaryVassalageMapNotification : Informat
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeNpcTributaryVassalageMapNotification(string noticeId, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "诸国使节送来朝贡条约的消息。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryNotice", "Envoys report a tributary treaty from another kingdom.") : descriptionText))
 	{
 		NoticeId = (noticeId ?? "").Trim();
-		_titleText = new TextObject("诸国朝贡条约");
+		_titleText = DiplomacyUiLocalization.Object("AF_DIP_UI_Vassalage_TributaryNoticeTitle", "Tributary treaty");
 	}
 
 	public override bool IsValid()
@@ -393,10 +393,10 @@ internal sealed class AnimusForgeVassalageInfoMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeVassalageInfoMapNotification(string noticeId, string titleText, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "边境使者送来一份臣属事务急报。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_InfoNotice", "A border envoy delivers an urgent vassalage report.") : descriptionText))
 	{
 		NoticeId = (noticeId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "臣属事务急报" : titleText);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_InfoNoticeTitle", "Vassalage report") : titleText);
 	}
 
 	public override bool IsValid()
@@ -433,10 +433,10 @@ internal sealed class AnimusForgeVassalageProtectionMapNotification : Informatio
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeVassalageProtectionMapNotification(string noticeId, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "臣属国派来急使，请求宗主国裁断战争义务。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_ProtectionNotice", "A subject sends an urgent envoy asking the suzerain to decide its wartime obligation.") : descriptionText))
 	{
 		NoticeId = (noticeId ?? "").Trim();
-		_titleText = new TextObject("臣属国求援");
+		_titleText = DiplomacyUiLocalization.Object("AF_DIP_UI_Vassalage_ProtectionNoticeTitle", "Subject requests protection");
 	}
 
 	public override bool IsValid()
@@ -473,10 +473,10 @@ internal sealed class AnimusForgeTributaryPaymentMapNotification : InformationDa
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeTributaryPaymentMapNotification(string noticeId, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "朝贡车队抵达宫廷，贡赋已经入库。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributePaymentNotice", "A tributary caravan has arrived at court and the tribute has been recorded.") : descriptionText))
 	{
 		NoticeId = (noticeId ?? "").Trim();
-		_titleText = new TextObject("贡赋入库");
+		_titleText = DiplomacyUiLocalization.Object("AF_DIP_UI_Vassalage_TributePaymentNoticeTitle", "Tribute deposited");
 	}
 
 	public override bool IsValid()
@@ -1350,7 +1350,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["campaignDate"] = FormatCampaignDate(agreement.CreatedDay),
 			["textLen"] = text?.Length ?? 0
 		});
-		InformationManager.ShowInquiry(new InquiryData("臣属条约签署", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_ContractNoticeTitle", "Vassalage treaty signed"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", null, null));
 		return true;
 	}
 
@@ -1363,7 +1363,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return true;
 		}
 		RemovePendingInfoNotice(key);
-		string title = string.IsNullOrWhiteSpace(record.Title) ? "臣属事务急报" : record.Title.Trim();
+		string title = string.IsNullOrWhiteSpace(record.Title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_InfoNoticeTitle", "Vassalage report") : record.Title.Trim();
 		string detail = string.IsNullOrWhiteSpace(record.Detail) ? record.Summary : record.Detail;
 		VassalageDiagnosticLog.Event("notice.open_info", new Dictionary<string, object>
 		{
@@ -1373,7 +1373,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["createdDay"] = record.CreatedDay,
 			["textLen"] = detail?.Length ?? 0
 		});
-		InformationManager.ShowInquiry(new InquiryData(title, detail, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(title, detail, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", null, null));
 		return true;
 	}
 
@@ -1398,7 +1398,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["suzerain"] = NpcTributeVassalageDiagnosticLog.DescribeKingdom(agreement.ResolveSuzerain()),
 			["textLen"] = text?.Length ?? 0
 		});
-		InformationManager.ShowInquiry(new InquiryData("诸国朝贡条约", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryNoticeTitle", "Tributary treaty"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", null, null));
 		return true;
 	}
 
@@ -1431,7 +1431,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["tributaryFoodLoss"] = record.TributaryFoodLoss,
 			["tributaryHearthLoss"] = record.TributaryHearthLoss
 		});
-		InformationManager.ShowInquiry(new InquiryData("贡赋入库", detail, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributePaymentNoticeTitle", "Tribute deposited"), detail, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", null, null));
 		return true;
 	}
 
@@ -1464,7 +1464,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			string message = attackerText + "已经向" + subjectText
 				+ "宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。";
-			InformationManager.ShowInquiry(new InquiryData("附庸国遭到宣战", message, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", delegate
+			InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_VassalWarNoticeTitle", "Vassal attacked"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", delegate
 			{
 				CompleteProtectionNoticeAcknowledgement(key, "vassal_notice_acknowledged");
 			}, null));
@@ -1474,7 +1474,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			string message = subjectText + "遭到" + attackerText
 				+ "宣战。朝贡国以贡赋换取宗主庇护，但不承担出兵义务。\n\n是否履行庇护，向进攻者宣战？若拒绝，朝贡条约将立即终止。";
-			InformationManager.ShowInquiry(new InquiryData("朝贡国请求庇护", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "履行庇护", "拒绝庇护", delegate
+			InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryProtectionTitle", "Tributary requests protection"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Protect", "Protect"), DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_RefuseTributaryProtection", "Refuse protection"), delegate
 			{
 				CompleteProtectionNoticeDecision(key, true, "tributary_protection_accepted");
 			}, delegate
@@ -1485,7 +1485,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		string garrisonMessage = subjectText + "遭到" + attackerText
 			+ "宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。\n\n是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。";
-		InformationManager.ShowInquiry(new InquiryData("卫戍国请求保护", garrisonMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "出兵保护", "拒绝出兵", delegate
+		InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_GarrisonProtectionTitle", "Garrison requests protection"), garrisonMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SendProtection", "Send protection"), DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_RefuseGarrisonProtection", "Refuse to send protection"), delegate
 		{
 			CompleteProtectionNoticeDecision(key, true, "garrison_protection_accepted");
 		}, delegate

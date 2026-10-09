@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_DIP_UI_Common_Acknowledge" text="知道了" />
+    <string id="AF_DIP_UI_Common_UnknownDate" text="未知日期" />
+    <string id="AF_DIP_UI_Compose_Title" text="撰写外交宣言" />
+    <string id="AF_DIP_UI_Compose_ReplyTitle" text="回应外交宣言" />
+    <string id="AF_DIP_UI_Compose_Hint" text="可先写下标题或要点，再请书记官代笔。" />
+    <string id="AF_DIP_UI_Compose_HintEmpty" text="请先写下标题或拟文要点。" />
+    <string id="AF_DIP_UI_Compose_Cancel" text="取消" />
+    <string id="AF_DIP_UI_Compose_Publish" text="发布外交文书" />
+    <string id="AF_DIP_UI_Compose_AutoDraft" text="书记官代笔" />
+    <string id="AF_DIP_UI_Compose_AutoDrafting" text="书记官拟稿中…" />
+    <string id="AF_DIP_UI_Compose_AutoDraftingHint" text="书记官正在拟稿，请稍候。" />
+    <string id="AF_DIP_UI_Compose_DraftCancelled" text="拟稿已取消，原文已保留。" />
+    <string id="AF_DIP_UI_Compose_DraftFailed" text="书记官拟稿失败，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftUnavailable" text="书记官暂时无法拟稿，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftEdited" text="拟稿期间内容已修改，保留您当前的文字。" />
+    <string id="AF_DIP_UI_Compose_DraftReady" text="稿件已回填，可修改后发布；再次代笔将重新拟稿。" />
+    <string id="AF_DIP_UI_Presentation_NotInitialized" text="AI 外交功能尚未初始化。" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyTitle" text="无法发布外交宣言" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyBody" text="只有王国统治者才能发布外交宣言。" />
+    <string id="AF_DIP_UI_Vote_AgendaDescription" text="点击查看这项王国议程。" />
+    <string id="AF_DIP_UI_Vote_AgendaTitle" text="新的王国议程" />
+    <string id="AF_DIP_UI_Vote_AgendaTitleWithName" text="王国议程：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_Invalidated" text="这项王国议程已经失效。" />
+    <string id="AF_DIP_UI_Vote_CannotView" text="当前无法查看王国议程。" />
+    <string id="AF_DIP_UI_Vote_CannotOpen" text="当前无法打开这项王国议程。" />
+    <string id="AF_DIP_UI_Vote_OpenFailed" text="打开王国议程失败，请稍后重试。" />
+    <string id="AF_DIP_UI_Vote_AgendaFuture" text="你可以参与这项议程，约 {DAYS} 天后进入投票。点击查看议程详情。" />
+    <string id="AF_DIP_UI_Vote_AgendaVoting" text="这项议程已经进入投票阶段。点击前往投票界面。" />
+    <string id="AF_DIP_UI_Vote_AgendaDetails" text="你可以参与这项王国议程。点击查看详情。" />
+    <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="臣属国管理" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="贡赋记录" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="尚无贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryClose" text="返回臣属国管理" />
+    <string id="AF_DIP_UI_Vassalage_ContractNotice" text="使节呈上盖有王印的臣属条约。" />
+    <string id="AF_DIP_UI_Vassalage_ContractNoticeTitle" text="臣属条约签署" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNotice" text="诸国使节送来朝贡条约的消息。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNoticeTitle" text="诸国朝贡条约" />
+    <string id="AF_DIP_UI_Vassalage_InfoNotice" text="边境使者送来一份臣属事务急报。" />
+    <string id="AF_DIP_UI_Vassalage_InfoNoticeTitle" text="臣属事务急报" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNotice" text="臣属国派来急使，请求宗主国裁断战争义务。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNoticeTitle" text="臣属国求援" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNotice" text="朝贡车队抵达宫廷，贡赋已经入库。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNoticeTitle" text="贡赋入库" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNoticeTitle" text="附庸国遭到宣战" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionTitle" text="朝贡国请求庇护" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionTitle" text="卫戍国请求保护" />
+    <string id="AF_DIP_UI_Vassalage_Protect" text="履行庇护" />
+    <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="拒绝庇护" />
+    <string id="AF_DIP_UI_Vassalage_SendProtection" text="出兵保护" />
+    <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="拒绝出兵" />
+  </strings>
+</base>

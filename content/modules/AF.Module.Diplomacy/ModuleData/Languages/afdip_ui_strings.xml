@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_DIP_UI_Common_Acknowledge" text="Got it" />
+    <string id="AF_DIP_UI_Common_UnknownDate" text="Unknown date" />
+    <string id="AF_DIP_UI_Compose_Title" text="Write diplomatic declaration" />
+    <string id="AF_DIP_UI_Compose_ReplyTitle" text="Reply to diplomatic declaration" />
+    <string id="AF_DIP_UI_Compose_Hint" text="Write a title or outline first, then ask the scribe to draft it." />
+    <string id="AF_DIP_UI_Compose_HintEmpty" text="Write a title or outline first." />
+    <string id="AF_DIP_UI_Compose_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_Compose_Publish" text="Publish diplomatic document" />
+    <string id="AF_DIP_UI_Compose_AutoDraft" text="Ask scribe to draft" />
+    <string id="AF_DIP_UI_Compose_AutoDrafting" text="Scribe is drafting..." />
+    <string id="AF_DIP_UI_Compose_AutoDraftingHint" text="The scribe is drafting. Please wait." />
+    <string id="AF_DIP_UI_Compose_DraftCancelled" text="Drafting was cancelled; the original text was kept." />
+    <string id="AF_DIP_UI_Compose_DraftFailed" text="The scribe could not draft the document; the original text was kept. Try again." />
+    <string id="AF_DIP_UI_Compose_DraftUnavailable" text="The scribe is temporarily unavailable; the original text was kept. Try again." />
+    <string id="AF_DIP_UI_Compose_DraftEdited" text="The text changed while drafting; your current text was kept." />
+    <string id="AF_DIP_UI_Compose_DraftReady" text="The draft has been inserted. Edit it before publishing; drafting again will replace it." />
+    <string id="AF_DIP_UI_Presentation_NotInitialized" text="AI diplomacy is not initialized yet." />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyTitle" text="Cannot publish diplomatic declaration" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyBody" text="Only a kingdom ruler can publish a diplomatic declaration." />
+    <string id="AF_DIP_UI_Vote_AgendaDescription" text="Click to view this kingdom agenda." />
+    <string id="AF_DIP_UI_Vote_AgendaTitle" text="New kingdom agenda" />
+    <string id="AF_DIP_UI_Vote_AgendaTitleWithName" text="Kingdom agenda: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_Invalidated" text="This kingdom agenda is no longer valid." />
+    <string id="AF_DIP_UI_Vote_CannotView" text="The kingdom agenda cannot be viewed right now." />
+    <string id="AF_DIP_UI_Vote_CannotOpen" text="The kingdom agenda cannot be opened right now." />
+    <string id="AF_DIP_UI_Vote_OpenFailed" text="The kingdom agenda could not be opened. Try again later." />
+    <string id="AF_DIP_UI_Vote_AgendaFuture" text="You can participate in this agenda. Voting begins in about {DAYS} days. Click to view the details." />
+    <string id="AF_DIP_UI_Vote_AgendaVoting" text="This agenda has entered the voting phase. Click to open the voting screen." />
+    <string id="AF_DIP_UI_Vote_AgendaDetails" text="You can participate in this kingdom agenda. Click to view the details." />
+    <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="Vassalage management" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="Tribute records" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="No tribute deposits have been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryClose" text="Back to vassalage management" />
+    <string id="AF_DIP_UI_Vassalage_ContractNotice" text="An envoy presents a vassalage treaty bearing the royal seal." />
+    <string id="AF_DIP_UI_Vassalage_ContractNoticeTitle" text="Vassalage treaty signed" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNotice" text="Envoys report a tributary treaty from another kingdom." />
+    <string id="AF_DIP_UI_Vassalage_TributaryNoticeTitle" text="Tributary treaty" />
+    <string id="AF_DIP_UI_Vassalage_InfoNotice" text="A border envoy delivers an urgent vassalage report." />
+    <string id="AF_DIP_UI_Vassalage_InfoNoticeTitle" text="Vassalage report" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNotice" text="A subject sends an urgent envoy asking the suzerain to decide its wartime obligation." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNoticeTitle" text="Subject requests protection" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNotice" text="A tributary caravan has arrived at court and the tribute has been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNoticeTitle" text="Tribute deposited" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNoticeTitle" text="Vassal attacked" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionTitle" text="Tributary requests protection" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionTitle" text="Garrison requests protection" />
+    <string id="AF_DIP_UI_Vassalage_Protect" text="Protect" />
+    <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="Refuse protection" />
+    <string id="AF_DIP_UI_Vassalage_SendProtection" text="Send protection" />
+    <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="Refuse to send protection" />
+  </strings>
+</base>
