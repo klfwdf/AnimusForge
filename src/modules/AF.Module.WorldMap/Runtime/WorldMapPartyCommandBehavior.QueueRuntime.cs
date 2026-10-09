@@ -73,7 +73,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				if (IsKind(command, CommandKind.AttackHero) || IsKind(command, CommandKind.AttackParty))
+				if (IsKind(command, CommandKind.AttackHero) || IsKind(command, CommandKind.AttackParty) || IsKind(command, CommandKind.ClearHideout))
 				{
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, BuildAttackTimeoutDetail(command, state), "timeout");
 					return;
@@ -102,6 +102,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			case WorldMapCommandRoute.AttackParty:
 				TickAttackParty(hero, party, state, command);
+				return;
+			case WorldMapCommandRoute.ClearHideout:
+				TickClearHideout(hero, party, state, command);
 				return;
 			case WorldMapCommandRoute.MergeToPlayer:
 				TickMergeToPlayer(hero, party, state, command);
@@ -138,6 +141,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		bool isFollowCommand = IsFollowCommand(command);
 		if (!isFollowCommand && !PreemptBlockingWorldActivityForCommand(hero, party, command, state, "start"))
 		{
+			return;
+		}
+		if (IsKind(command, CommandKind.ClearHideout))
+		{
+			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
+			TickClearHideout(hero, party, state, command);
 			return;
 		}
 		if (IsKind(command, CommandKind.GoToSettlement))

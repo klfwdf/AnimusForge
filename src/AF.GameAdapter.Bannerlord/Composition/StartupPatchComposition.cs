@@ -274,6 +274,14 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				WorldMapNpcHideoutCompletionPatch.EnsurePatched(harmony);
+			}
+			catch (Exception exHideout)
+			{
+				Logger.LogTrace("SubModule", ">>> NPC hideout completion isolation unavailable: " + exHideout.Message);
+			}
+			try
+			{
 				CampaignTickDiagnosticsPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex8ag)

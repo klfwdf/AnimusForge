@@ -411,6 +411,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			CaptureNpcHideoutClearBattleEnd(mapEvent);
 			foreach (PartyCommandQueueState state in GetActiveAttackStatesSnapshot())
 			{
 				PartyCommandEntry command = GetCurrentCommand(state);
