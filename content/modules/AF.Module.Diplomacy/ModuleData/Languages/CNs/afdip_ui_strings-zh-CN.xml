@@ -409,5 +409,7 @@
   <string id="AF_DIP_UI_Gathering_CrisisSiege" text="王国内的{SETTLEMENT}正遭围攻，主办人决定取消宴会。" />
   <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST}将在{SETTLEMENT}举办宴会。" />
   <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
+  <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="已选：{NAMES} 等 {COUNT} 人。" />
+  <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="已选：{NAMES}" />
 </strings>
 </base>
