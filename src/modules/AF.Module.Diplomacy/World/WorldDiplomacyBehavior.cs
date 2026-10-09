@@ -919,8 +919,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			TextObject explanation = new TextObject("该项已由AI外交接管，请在“王国公告”中发布外交宣言。");
-			TextObject hint = new TextObject("该项已由AI外交接管，请在“王国公告”中发布外交宣言。");
+			TextObject explanation = DiplomacyUiLocalization.Object("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.");
+			TextObject hint = DiplomacyUiLocalization.Object("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.");
 			AccessTools.Property(__instance.GetType(), "IsEnabled")?.SetValue(__instance, false);
 			AccessTools.Property(__instance.GetType(), "Explanation")?.SetValue(__instance, explanation.ToString());
 			AccessTools.Property(__instance.GetType(), "Hint")?.SetValue(__instance, new HintViewModel(hint));
@@ -936,7 +936,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("该项已由AI外交接管，请在“王国公告”中发布外交宣言。"));
+		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.")));
 		return false;
 	}
 	private bool CaptureNativeDiplomacyDecision(Kingdom hostKingdom, KingdomDecision decision)

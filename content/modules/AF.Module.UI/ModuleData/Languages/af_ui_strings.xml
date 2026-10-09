@@ -2302,6 +2302,15 @@ Estimated requests: " />
   <string id="AF_TAUNT_UI_MerchantMarket" text="market" />
   <string id="AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty" text="{SETTLEMENT} loyalty -{AMOUNT}: you harmed {TARGET} in your own settlement." />
   <string id="AF_TAUNT_UI_Npc" text="NPC" />
-  <string id="AF_TAUNT_UI_GoldPickedUp" text="You picked up {AMOUNT} denars." /></strings>
+  <string id="AF_TAUNT_UI_GoldPickedUp" text="You picked up {AMOUNT} denars." />
+    <string id="AF_UI_KingdomRebellion_PlayerNamingTitle" text="Name the new kingdom" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="Your faction is about to leave {OLD_KINGDOM} and establish a new kingdom led by the {CLAN} clan.\n\nEnter a new kingdom name (2–24 characters; it must be unique). Cancel uses “{FALLBACK}”." />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingConfirm" text="Found kingdom" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingDefault" text="Use default name" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingTooShort" text="The name must contain at least 2 characters." />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="A kingdom with that name already exists." />
+  <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="Regenerating rebel kingdom name" />
+  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes." />
+</strings>
 </base>
 

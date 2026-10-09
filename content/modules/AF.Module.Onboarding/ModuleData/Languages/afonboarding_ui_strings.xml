@@ -295,5 +295,8 @@
     <string id="AF_ONBOARDING_UNKNOWN_VERSION" text="Unknown version" />
     <string id="AF_ONBOARDING_LATENCY_SUFFIX" text=" ms." />
     <string id="AF_COMMON_PERIOD" text="." />
-  </strings>
+          <string id="AF_ONBOARDING_INITIAL_GUIDE_TITLE" text="Welcome to AnimusForge" />
+    <string id="AF_ONBOARDING_INITIAL_GUIDE_BODY" text="You do not need to open MCM to configure the APIs. The first-use setup guide will walk you through the API settings after you enter a save." />
+    <string id="AF_COMMON_GOT_IT" text="Got it" />
+</strings>
 </base>

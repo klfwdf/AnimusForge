@@ -737,7 +737,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (showConfigError && kingdom?.IsEliminated == true)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped", "The eliminated kingdom keeps its current profile; no new LLM generation will be requested.")));
 			}
 			return false;
 		}
@@ -774,7 +774,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			profile.LastGenerationError = string.IsNullOrWhiteSpace(configError) ? "事件与叛乱 API 尚未配置。" : configError;
 			if (showConfigError)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(profile.LastGenerationError));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationConfigError", "The kingdom founding profile could not be generated because the event/rebellion API is not configured.")));
 			}
 			if (_lastMissingApiLogDay != day)
 			{
@@ -954,7 +954,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 					profile.LongTermStrategy = profile.DefaultLongTermStrategy;
 				}
 				profile.UpdatedDay = day;
-				InformationManager.DisplayMessage(new InformationMessage("已为新国家“" + (profile.KingdomName ?? id) + "”生成并固化国家性格与长期战略。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix", "Generated and locked the national personality and long-term strategy for new kingdom “") + (profile.KingdomName ?? id) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix", "”.")));
 				Log("founding generation committed kingdom=" + id);
 			}
 			else

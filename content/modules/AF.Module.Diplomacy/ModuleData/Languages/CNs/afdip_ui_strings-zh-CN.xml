@@ -287,7 +287,13 @@
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="朝贡车队抵达宫廷，贡赋已经入库。" />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY}按期送来贡赋，宗主国各领地已完成入账。" />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="贡赋簿册已经失效。" />
-    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="朝贡车队已抵达宫廷，贡赋入库簿册如下：\n\n臣属国：{TRIBUTARY}\n入库日期：{DATE}\n贡赋价值：{VALUE}\n\n【宗主国各领地所得】\n{GAINS}\n【臣属国贡赋消耗】\n{COST}" /></strings>
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="朝贡车队已抵达宫廷，贡赋入库簿册如下：\n\n臣属国：{TRIBUTARY}\n入库日期：{DATE}\n贡赋价值：{VALUE}\n\n【宗主国各领地所得】\n{GAINS}\n【臣属国贡赋消耗】\n{COST}" />
+        <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="国家建国卡生成失败：事件/叛乱 API 尚未配置。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="已为新国家“" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”生成并固化国家性格与长期战略。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管，请在“王国公告”中发布外交宣言。" />
+</strings>
 </base>
 
 
