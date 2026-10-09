@@ -349,5 +349,65 @@
     <string id="AF_DIP_UI_Faction_KingFirst" text="King first, " />
     <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="your clan first, " />
     <string id="AF_DIP_UI_Faction_OthersByGrievance" text="others by grievance, highest first" />
+  <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="The clan has no town or castle available as a gathering venue." />
+  <string id="AF_DIP_UI_Gathering_NoVenue" text="No eligible gathering venue is available." />
+  <string id="AF_DIP_UI_Gathering_VenueTitle" text="Host a gathering: choose a venue" />
+  <string id="AF_DIP_UI_Gathering_VenueDescription" text="The venue must be a town or castle owned by your clan." />
+  <string id="AF_DIP_UI_Gathering_Next" text="Next" />
+  <string id="AF_DIP_UI_Gathering_Cancel" text="Cancel" />
+  <string id="AF_DIP_UI_Gathering_VenueAvailable" text="Available as the gathering venue." />
+  <string id="AF_DIP_UI_Gathering_NoClans" text="There are no noble clans available to invite." />
+  <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="Confirm current list ({COUNT})" />
+  <string id="AF_DIP_UI_Gathering_ClearList" text="Clear selected guests" />
+  <string id="AF_DIP_UI_Gathering_ClearHint" text="Choose the gathering guests again." />
+  <string id="AF_DIP_UI_Gathering_ClanSelected" text="selected {COUNT}" />
+  <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="This clan has {COUNT} selected guest(s)." />
+  <string id="AF_DIP_UI_Gathering_ClanTitle" text="Host a gathering: choose clans" />
+  <string id="AF_DIP_UI_Gathering_ClanDescription" text="Venue: {SETTLEMENT}&#10;Selected guests: {COUNT}.&#10;Choose a clan to open its member list." />
+  <string id="AF_DIP_UI_Gathering_NoHeroes" text="The selected clan has no noble members to show." />
+  <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[Selected] " />
+  <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO} ({IDENTITY})" />
+  <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+  <string id="AF_DIP_UI_Gathering_AlreadyInList" text="Already on the current guest list." />
+  <string id="AF_DIP_UI_Gathering_CanInvite" text="Available to invite; heroes without an independent party will travel to the venue using the native travel system." />
+  <string id="AF_DIP_UI_Gathering_CannotInvite" text="Cannot invite: {REASON}" />
+  <string id="AF_DIP_UI_Gathering_HeroTitle" text="Host a gathering: choose guests" />
+  <string id="AF_DIP_UI_Gathering_HeroDescription" text="Clan: {CLAN}&#10;This is a player-hosted gathering; governors may still be invited. Heroes with independent parties are dispatched directly. Nobles remaining in towns, governors, and heroes without parties travel to the venue using the native system, then return to their original settlement after the gathering.&#10;Selected guests: {COUNT}." />
+  <string id="AF_DIP_UI_Gathering_AddToList" text="Add to list" />
+  <string id="AF_DIP_UI_Gathering_Back" text="Back" />
+  <string id="AF_DIP_UI_Gathering_NoGuests" text="Gathering not started: no guests were selected." />
+  <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="Confirm gathering" />
+  <string id="AF_DIP_UI_Gathering_ConfirmBody" text="Venue: {SETTLEMENT}&#10;Cost: {COST} denars&#10;Duration: {DAYS} days&#10;Guests: {GUESTS}&#10;&#10;Confirming will deduct the cost and send gathering invitations to the guests." />
+  <string id="AF_DIP_UI_Gathering_PayAndInvite" text="Pay and send invitations" />
+  <string id="AF_DIP_UI_Gathering_NotSelected" text="No guests selected yet." />
+  <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="Unknown identity" />
+  <string id="AF_DIP_UI_Gathering_Governor" text="Governor" />
+  <string id="AF_DIP_UI_Gathering_Ruler" text="Ruler" />
+  <string id="AF_DIP_UI_Gathering_ClanLeader" text="Clan leader" />
+  <string id="AF_DIP_UI_Gathering_Lady" text="Lady" />
+  <string id="AF_DIP_UI_Gathering_Lord" text="Lord" />
+  <string id="AF_DIP_UI_Gathering_IdentityHint" text="Identity: {IDENTITY}" />
+  <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="Identity: {IDENTITY}&#10;Governed settlement: {SETTLEMENT}" />
+  <string id="AF_DIP_UI_Gathering_UnknownClan" text="Unknown clan" />
+  <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="Unknown settlement" />
+  <string id="AF_DIP_UI_Gathering_ClanHint" text="Members: {MEMBERS}; independent parties: {MOVABLE}; can travel to a gathering by the native system: {TRAVEL}." />
+  <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="Gathering cancelled: your gathering at {PLACE} has ended.{REASON}" />
+  <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="Gathering ended: your gathering at {PLACE} has ended." />
+  <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="Gathering cancelled: {HOST}&#x27;s gathering at {PLACE} has ended.{REASON}" />
+  <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="Gathering ended: {HOST}&#x27;s gathering at {PLACE} has ended." />
+  <string id="AF_DIP_UI_Gathering_Reason" text=" Reason: {REASON}" />
+  <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="Host a gathering" />
+  <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="I want to host a gathering. Help me arrange it." />
+  <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="I will prepare the guest list and invitations." />
+  <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="Understood. I will prepare the venue and guest list." />
+  <string id="AF_DIP_UI_Gathering_Disabled" text="Gatherings are disabled in MCM." />
+  <string id="AF_DIP_UI_Gathering_Created" text="Gathering invitations sent: {SETTLEMENT}; {GUESTS} guest(s), {DAYS} days." />
+  <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="Gatherings were disabled; active gatherings have been cancelled and hosts and guests will return over time." />
+  <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO} arrived at {SETTLEMENT} for the gathering." />
+  <string id="AF_DIP_UI_Gathering_AttendanceReward" text="You attended {HOST}&#x27;s gathering and your relation with the host increased." />
+  <string id="AF_DIP_UI_Gathering_CrisisWar" text="The kingdom has entered a war; the host decided to cancel the gathering." />
+  <string id="AF_DIP_UI_Gathering_CrisisSiege" text="{SETTLEMENT} in the kingdom is under siege; the host decided to cancel the gathering." />
+  <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST} will host a gathering at {SETTLEMENT}." />
+  <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
 </strings>
 </base>
