@@ -34,6 +34,29 @@ namespace AnimusForge;
 
 public partial class DuelBehavior : CampaignBehaviorBase
 {
+	private static TextObject DuelText(string id, string englishFallback)
+	{
+		return new TextObject("{=" + id + "}" + englishFallback);
+	}
+
+	private static string DuelString(string id, string englishFallback)
+	{
+		return DuelText(id, englishFallback).ToString();
+	}
+
+	private static string LocalizeDuelEligibilityReason(string reason)
+	{
+		if (string.Equals(reason, "决斗失败: 目标 NPC 不存在。", StringComparison.Ordinal))
+			return DuelString("AF_UI_Duel_TargetMissing", "Duel failed: the target NPC does not exist.");
+		if (string.Equals(reason, "决斗失败: 目标 NPC 当前没有可用实体。", StringComparison.Ordinal))
+			return DuelString("AF_UI_Duel_TargetUnavailable", "Duel failed: the target NPC has no usable entity right now.");
+		if (string.Equals(reason, "决斗失败: 不能把玩家自己作为决斗目标。", StringComparison.Ordinal))
+			return DuelString("AF_UI_Duel_TargetIsPlayer", "Duel failed: the player cannot be selected as the duel target.");
+		if (string.Equals(reason, "决斗失败: 目标 NPC 无效。", StringComparison.Ordinal))
+			return DuelString("AF_UI_Duel_TargetInvalid", "Duel failed: the target NPC is invalid.");
+		return reason;
+	}
+
 	private class DuelAfterLines
 	{
 		public string DuelOutcomeId;
@@ -1116,7 +1139,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				_localPostDuelFreezeActive = false;
 				_localDuelResultRecorded = false;
 				agent2.SetWatchState(Agent.WatchState.Alarmed);
-				AnimusForgeQuickInfo.Show("双方就位！5秒后开始决斗！(无敌保护中)", _targetCharacter);
+				AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_LocalReady", "Both sides are ready! The duel starts in 5 seconds (invulnerable during preparation)."), _targetCharacter);
 				Logger.Log("ArenaDuel", $"[Spawn] 已在竞技场生成双方 Agent。Player={mainHero.Name}, Enemy={_targetDisplayName}");
 			}
 			catch (Exception ex)
@@ -1662,7 +1685,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					}
 					(base.Mission?.MainAgent ?? Agent.Main)?.SetMortalityState(Agent.MortalityState.Mortal);
 					agent?.SetMortalityState(Agent.MortalityState.Mortal);
-					AnimusForgeQuickInfo.Show("决斗开始！", _targetCharacter);
+					AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Started", "The duel has begun!"), _targetCharacter);
 				}
 			}
 			if (_localPostDuelFreezeActive)
@@ -1703,7 +1726,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 							"player_exit_before_result",
 							"arena_tab_exit");
 					}
-					AnimusForgeQuickInfo.Show("正在退出竞技场...");
+					AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_LeavingArena", "Leaving the arena..."));
 					_arenaMissionLeaveRequested = true;
 					if (Instance != null)
 					{
@@ -1948,9 +1971,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 						"effects_unavailable",
 						"arena_local_result");
 				}
-				string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
+				string text2 = DuelString(flag ? "AF_UI_Duel_ResultWin" : "AF_UI_Duel_ResultLoss", flag ? "Duel result: you won!" : "Duel result: you lost!");
 				Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
-				string text3 = _isWildernessDuel ? " 10秒后返回大地图..." : " 10秒后退出竞技场...";
+				string text3 = _isWildernessDuel
+					? " " + DuelString("AF_UI_Duel_ReturnToMap", "Returning to the campaign map in 10 seconds...")
+					: " " + DuelString("AF_UI_Duel_ExitArena", "Leaving the arena in 10 seconds...");
 				AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
 				}
 				catch (Exception ex)
@@ -2710,7 +2735,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			Logger.Log("DuelBehavior", "[DuelEligibilityGate] " + blockedReason);
 			if (!string.IsNullOrWhiteSpace(blockedReason))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 			}
 			DiscardUnboundDuelArtifacts(target);
 			return;
@@ -2743,7 +2768,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				_queuedDuelConversationCloseAttempts = 0;
 				float num = currentMission.CurrentTime;
 				_leaveSourceMissionReadyTime = num + 10f;
-				InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往野外一决胜负！", Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_QueueWilderness", "Both sides glare at each other; the wilderness duel will begin in 10 seconds."), Color.FromUint(4294901760u)));
 				_leaveSourceMissionRequested = true;
 				AcceptDetachedDuelDispatch(duelDispatchContext);
 				return;
@@ -2756,7 +2781,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					delaySeconds,
 					wildernessDuel: true,
 					duelDispatchContext);
-				InformationManager.DisplayMessage(new InformationMessage("AnimusForge: wilderness duel will start after the current conversation closes.", Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_AfterConversation", "AnimusForge: the wilderness duel will start after the current conversation closes."), Color.FromUint(4294901760u)));
 				return;
 			}
 			if (Instance != null)
@@ -2770,7 +2795,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
 			RejectDetachedDuelDispatch(duelDispatchContext, "wilderness_open_failed");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_WildernessOpenFailed", "Unable to open the wilderness duel scene; this duel has been cancelled."), Color.FromUint(4294901760u)));
 			DiscardUnboundDuelArtifacts(target);
 			return;
 		}
@@ -2822,7 +2847,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					_queuedDuelConversationCloseAttempts = 0;
 					float num = currentMission.CurrentTime;
 					_leaveSourceMissionReadyTime = num + 10f;
-					InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往竞技场一决胜负！", Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_QueueArena", "Both sides glare at each other; the arena duel will begin in 10 seconds."), Color.FromUint(4294901760u)));
 					_leaveSourceMissionRequested = true;
 					AcceptDetachedDuelDispatch(duelDispatchContext);
 					return;
@@ -2851,7 +2876,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		}
 		_pendingDuelTarget = target;
 		_preDuelTimer = delaySeconds;
-		string information = $"[系统] 双方约定 {delaySeconds:F0} 秒后开始决斗！";
+		string information = DuelText("AF_UI_Duel_PrepareCountdown", "The duel will begin in {DELAY} seconds.")
+			.SetTextVariable("DELAY", delaySeconds.ToString("F0"))
+			.ToString();
 		InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4294901760u)));
 	}
 
@@ -2885,7 +2912,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				Logger.Log("DuelBehavior", "[AgentDuel][DuelEligibilityGate] " + blockedReason);
 				if (!string.IsNullOrWhiteSpace(blockedReason))
 				{
-					InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 				}
 				return;
 			}
@@ -2952,7 +2979,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				_queuedDuelConversationCloseAttempts = 0;
 				float num = currentMission.CurrentTime;
 				_leaveSourceMissionReadyTime = num + 10f;
-				InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往野外一决胜负！", Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_QueueWilderness", "Both sides glare at each other; the wilderness duel will begin in 10 seconds."), Color.FromUint(4294901760u)));
 				_leaveSourceMissionRequested = true;
 				AcceptDetachedDuelDispatch(duelDispatchContext);
 				return;
@@ -2966,7 +2993,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					wildernessDuel: true,
 					duelDispatchContext,
 					nonHeroMemoryId);
-				InformationManager.DisplayMessage(new InformationMessage("AnimusForge: wilderness duel will start after the current conversation closes.", Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_AfterConversation", "AnimusForge: the wilderness duel will start after the current conversation closes."), Color.FromUint(4294901760u)));
 				return;
 			}
 			if (Instance.TryOpenWildernessDuelMission(
@@ -2979,7 +3006,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("DuelBehavior", "[CharacterDuel][WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
 			RejectDetachedDuelDispatch(duelDispatchContext, "wilderness_open_failed");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_WildernessOpenFailed", "Unable to open the wilderness duel scene; this duel has been cancelled."), Color.FromUint(4294901760u)));
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(wildernessBlockedReason))
@@ -3017,7 +3044,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			_queuedDuelConversationCloseAttempts = 0;
 			float num2 = mission.CurrentTime;
 			_leaveSourceMissionReadyTime = num2 + 10f;
-			InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往竞技场一决胜负！", Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_QueueArena", "Both sides glare at each other; the arena duel will begin in 10 seconds."), Color.FromUint(4294901760u)));
 			_leaveSourceMissionRequested = true;
 			AcceptDetachedDuelDispatch(duelDispatchContext);
 			return;
@@ -4506,8 +4533,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					"effects_unavailable",
 					"wilderness_result");
 			}
-			string resultText = playerWon ? "[Duel Result] You won." : "[Duel Result] You lost.";
-			AnimusForgeQuickInfo.Show(resultText + renownText + text + " Returning to campaign map...", targetCharacter);
+			string resultText = DuelString(playerWon ? "AF_UI_Duel_ResultWin" : "AF_UI_Duel_ResultLoss", playerWon ? "Duel result: you won!" : "Duel result: you lost!");
+			string returnText = DuelString("AF_UI_Duel_ReturnToMap", "Returning to the campaign map in 10 seconds...");
+			AnimusForgeQuickInfo.Show(resultText + renownText + text + " " + returnText, targetCharacter);
 			LogWildernessDuelDiagnostic("vanilla_behavior.settled source=" + source + " playerWon=" + playerWon, runtime.DiagnosticId, targetHero);
 		}
 		catch (Exception ex)
@@ -5236,7 +5264,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					_queuedDuelDispatchContext = null;
 					RejectDetachedDuelDispatch(abortedDispatch, "encounter_close_failed");
 					DiscardUnboundDuelArtifacts(abortedTarget);
-					InformationManager.DisplayMessage(new InformationMessage("无法安全结束原遭遇，野外决斗已取消。", Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_EncounterCloseFailed", "Unable to safely close the current encounter; the wilderness duel has been cancelled."), Color.FromUint(4294901760u)));
 					return;
 				}
 				_queuedDuelReadyUtcTicks = DateTime.UtcNow.AddMilliseconds(750.0).Ticks;
@@ -5281,7 +5309,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					{
 						RejectDetachedDuelDispatch(queuedDuelDispatchContext, "queued_wilderness_open_failed");
 						Logger.Log("DuelBehavior", "[Queue][ERROR] queued wilderness mission failed; arena fallback is disabled.");
-						InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(DuelString("AF_UI_Duel_WildernessOpenFailed", "Unable to open the wilderness duel scene; this duel has been cancelled."), Color.FromUint(4294901760u)));
 						DiscardUnboundDuelArtifacts(queuedArenaDuelTarget);
 					}
 				}
@@ -6143,7 +6171,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				ApplyLegacyPendingMeetingDuelLocks(GetAgent(target));
 			}
-			AnimusForgeQuickInfo.Show("已接受决斗。请你手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期双方无法互相伤害）。", target?.CharacterObject);
+			AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Accepted", "Duel accepted. Close the conversation manually; a 10-second preparation period follows, then combat begins (neither side can harm the other during preparation)."), target?.CharacterObject);
 		}
 		else
 		{
@@ -6177,7 +6205,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			Logger.Log("DuelBehavior", "[AgentDuel] StartDuelViaAI blocked: " + blockedReason);
 			if (!string.IsNullOrWhiteSpace(blockedReason))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 			}
 			return;
 		}
@@ -6211,7 +6239,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				ApplyLegacyPendingMeetingDuelLocks(targetAgent);
 			}
-			AnimusForgeQuickInfo.Show("已接受决斗。请你手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期双方无法互相伤害）。", _targetCharacter);
+			AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Accepted", "Duel accepted. Close the conversation manually; a 10-second preparation period follows, then combat begins (neither side can harm the other during preparation)."), _targetCharacter);
 		}
 		else
 		{
@@ -6390,7 +6418,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				RefreshMeetingDuelParticipantLocks(main, agent, preFight: false);
 				float healthThreshold = DuelSettings.GetHealthThreshold();
 				string arg = mission.SceneName ?? "Unknown";
-				string information = $"【决斗开始】当前场景: {arg}。规则：任一方生命值低于 {healthThreshold:P0} 判定为战败。";
+				string information = DuelText("AF_UI_Duel_StartedInScene", "Duel started in scene {SCENE}. Rule: a side loses when health falls below {THRESHOLD}.")
+					.SetTextVariable("SCENE", arg)
+					.SetTextVariable("THRESHOLD", healthThreshold.ToString("P0"))
+					.ToString();
 				AnimusForgeQuickInfo.Show(information, _targetHero?.CharacterObject);
 			}
 			if (main.State == AgentState.Unconscious)
@@ -6962,7 +6993,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			if (_lastDuelRiskWarnUtcTicks == 0L || ticks - _lastDuelRiskWarnUtcTicks >= TimeSpan.FromSeconds(10.0).Ticks)
 			{
 				_lastDuelRiskWarnUtcTicks = ticks;
-				AnimusForgeQuickInfo.Show("【警告!决斗具有较大风险，你有可能在决斗中死亡】");
+				AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_RiskWarning", "Warning: dueling is dangerous and you may die."));
 			}
 		}
 		catch
@@ -7010,7 +7041,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		Logger.Log("DuelBehavior", "[FourberieCompat] Duel start blocked: " + blockedReason);
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 		}
 		catch
 		{
@@ -7048,7 +7079,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			Logger.Log("DuelBehavior", "决斗失败: 玩家家族等级不足");
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage($"[决斗] 家族等级不足（当前: {Hero.MainHero?.Clan?.Tier ?? 0}，要求最低: {settings.MinimumClanTier}），决斗未能启动。", Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(
+					DuelText("AF_UI_Duel_ClanTierBlocked", "[Duel] Your clan tier is too low (current: {CURRENT}; minimum required: {MINIMUM}). The duel could not start.")
+						.SetTextVariable("CURRENT", Hero.MainHero?.Clan?.Tier ?? 0)
+						.SetTextVariable("MINIMUM", settings.MinimumClanTier)
+						.ToString(),
+					Color.FromUint(4294901760u)));
 			}
 			catch
 			{
@@ -7257,7 +7293,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					_meetingPreFightActive = true;
 					_meetingPreFightEndTime = current.CurrentTime + 10f;
 					RefreshMeetingDuelParticipantLocks(Agent.Main, agent, preFight: true);
-					AnimusForgeQuickInfo.Show("双方就位！10秒后正式开战（此期间无法互相伤害）", _targetCharacter);
+					AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_PreFight", "Both sides are ready! Combat begins in 10 seconds (neither side can harm the other during preparation)."), _targetCharacter);
 				}
 				else
 				{
@@ -7273,7 +7309,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			string text2 = Mission.Current?.SceneName ?? "Unknown";
 			if (flag)
 			{
-				string information = $"【竞技场决斗已开始】当前场景: {text2}。规则：任一方生命值低于 {DuelSettings.GetHealthThreshold():P0} 判定为战败。";
+				string information = DuelText("AF_UI_Duel_ArenaStarted", "Arena duel started in scene {SCENE}. Rule: a side loses when health falls below {THRESHOLD}.")
+					.SetTextVariable("SCENE", text2)
+					.SetTextVariable("THRESHOLD", DuelSettings.GetHealthThreshold().ToString("P0"))
+					.ToString();
 				AnimusForgeQuickInfo.Show(information, _targetCharacter);
 			}
 			Logger.Log("DuelBehavior", $"决斗已启动/初始化! 目标: {GetCurrentDuelTargetDisplayName()}, 场景: {text2}, 模式已切换为 Duel");
@@ -7718,9 +7757,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			_activeDuelOutcomeStart = null;
 		}
 		FinishDuel();
-		string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
+		string text2 = DuelString(flag ? "AF_UI_Duel_ResultWin" : "AF_UI_Duel_ResultLoss", flag ? "Duel result: you won!" : "Duel result: you lost!");
 		Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
-		string text3 = (_currentDuelIsArena ? " 10秒后退出竞技场..." : "");
+		string text3 = _currentDuelIsArena ? " " + DuelString("AF_UI_Duel_ExitArena", "Leaving the arena in 10 seconds...") : "";
 		AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
 		}
 		catch (Exception ex)
@@ -7863,7 +7902,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 	{
 		_isDuelActive = false;
 		Logger.Log("DuelBehavior", "决斗流程彻底结束 (FinishDuel)。");
-		AnimusForgeQuickInfo.Show("决斗已结束。");
+		AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Finished", "The duel has ended."));
 	}
 
 	private void EnsureDeathBehaviorsPresent()

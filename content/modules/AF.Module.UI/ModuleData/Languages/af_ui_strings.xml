@@ -1992,6 +1992,30 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="Unable to open the player appearance and background editor: the Knowledge behavior is not initialized." />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="Returned to player appearance and background settings." />
   <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="Failed to open the player appearance and background editor." />
+  <string id="AF_UI_Duel_LocalReady" text="Both sides are ready! The duel starts in 5 seconds (invulnerable during preparation)." />
+  <string id="AF_UI_Duel_Started" text="The duel has begun!" />
+  <string id="AF_UI_Duel_LeavingArena" text="Leaving the arena..." />
+  <string id="AF_UI_Duel_ResultWin" text="Duel result: you won!" />
+  <string id="AF_UI_Duel_ResultLoss" text="Duel result: you lost!" />
+  <string id="AF_UI_Duel_ReturnToMap" text="Returning to the campaign map in 10 seconds..." />
+  <string id="AF_UI_Duel_ExitArena" text="Leaving the arena in 10 seconds..." />
+  <string id="AF_UI_Duel_QueueWilderness" text="Both sides glare at each other; the wilderness duel will begin in 10 seconds." />
+  <string id="AF_UI_Duel_AfterConversation" text="AnimusForge: the wilderness duel will start after the current conversation closes." />
+  <string id="AF_UI_Duel_WildernessOpenFailed" text="Unable to open the wilderness duel scene; this duel has been cancelled." />
+  <string id="AF_UI_Duel_QueueArena" text="Both sides glare at each other; the arena duel will begin in 10 seconds." />
+  <string id="AF_UI_Duel_PrepareCountdown" text="The duel will begin in {DELAY} seconds." />
+  <string id="AF_UI_Duel_EncounterCloseFailed" text="Unable to safely close the current encounter; the wilderness duel has been cancelled." />
+  <string id="AF_UI_Duel_Accepted" text="Duel accepted. Close the conversation manually; a 10-second preparation period follows, then combat begins (neither side can harm the other during preparation)." />
+  <string id="AF_UI_Duel_RiskWarning" text="Warning: dueling is dangerous and you may die." />
+  <string id="AF_UI_Duel_ClanTierBlocked" text="[Duel] Your clan tier is too low (current: {CURRENT}; minimum required: {MINIMUM}). The duel could not start." />
+  <string id="AF_UI_Duel_PreFight" text="Both sides are ready! Combat begins in 10 seconds (neither side can harm the other during preparation)." />
+  <string id="AF_UI_Duel_ArenaStarted" text="Arena duel started in scene {SCENE}. Rule: a side loses when health falls below {THRESHOLD}." />
+  <string id="AF_UI_Duel_StartedInScene" text="Duel started in scene {SCENE}. Rule: a side loses when health falls below {THRESHOLD}." />
+  <string id="AF_UI_Duel_Finished" text="The duel has ended." />
+  <string id="AF_UI_Duel_TargetMissing" text="Duel failed: the target NPC does not exist." />
+  <string id="AF_UI_Duel_TargetUnavailable" text="Duel failed: the target NPC has no usable entity right now." />
+  <string id="AF_UI_Duel_TargetIsPlayer" text="Duel failed: the player cannot be selected as the duel target." />
+  <string id="AF_UI_Duel_TargetInvalid" text="Duel failed: the target NPC is invalid." />
 </strings>
 </base>
 
