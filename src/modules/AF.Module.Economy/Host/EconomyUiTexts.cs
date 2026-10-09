@@ -153,4 +153,40 @@ internal static class EconomyUiTexts
 
 	public static string SettlementTrustNoDefeatedHostile
 		=> Text("AF_ECO_UI_SettlementTrustNoDefeatedHostile", "[Settlement trust settlement] No hostile force near a settlement was defeated, so no settlement trust was gained.");
+
+	public static string DebtSummaryNoDebt
+		=> Text("AF_ECO_UI_DebtSummaryNoDebt", "No outstanding debt.");
+
+	public static string DebtSummaryGold(object amount)
+		=> Text("AF_ECO_UI_DebtSummaryGold", "Total gold debt: {AMOUNT}", ("AMOUNT", amount));
+
+	public static string DebtSummaryItems(string items)
+		=> Text("AF_ECO_UI_DebtSummaryItems", "Total item debt: {ITEMS}", ("ITEMS", items));
+
+	public static string DebtSummaryLines(object count)
+		=> Text("AF_ECO_UI_DebtSummaryLines", "Unsettled lines: {COUNT}", ("COUNT", count));
+
+	public static string DebtSummaryLine(string id, string type, string remaining, string due, bool itemUnavailable)
+		=> Text("AF_ECO_UI_DebtSummaryLine", "- [{ID}] {TYPE}; remaining {REMAINING}{DUE}{UNAVAILABLE}", ("ID", id), ("TYPE", type), ("REMAINING", remaining), ("DUE", string.IsNullOrWhiteSpace(due) ? "" : ", " + due), ("UNAVAILABLE", itemUnavailable ? Text("AF_ECO_UI_DebtSummaryUnavailableSuffix", "; original item unavailable") : ""));
+
+	public static string DebtSummaryMore(object count)
+		=> Text("AF_ECO_UI_DebtSummaryMore", "... {COUNT} more line(s) hidden.", ("COUNT", count));
+
+	public static string DebtSummaryReadFailed
+		=> Text("AF_ECO_UI_DebtSummaryReadFailed", "Failed to read the debt summary.");
+
+	public static string DebtDueUnlimited
+		=> Text("AF_ECO_UI_DebtDueUnlimited", "repayment deadline: unlimited (debt remains active)");
+
+	public static string DebtDueDays(object days, string date)
+		=> Text("AF_ECO_UI_DebtDueDays", "repayment deadline: about {DAYS} day(s) (due {DATE})", ("DAYS", days), ("DATE", date));
+
+	public static string DebtDueToday(string date)
+		=> Text("AF_ECO_UI_DebtDueToday", "repayment deadline: due today ({DATE})", ("DATE", date));
+
+	public static string DebtOverdue(object days, string date)
+		=> Text("AF_ECO_UI_DebtOverdue", "repayment deadline: {DAYS} day(s) overdue (due {DATE})", ("DAYS", days), ("DATE", date));
+
+	public static string DebtNoDeadline
+		=> Text("AF_ECO_UI_DebtNoDeadline", "no deadline");
 }

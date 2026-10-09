@@ -51,5 +51,18 @@
     <string id="AF_ECO_UI_SettlementTrustNoNearby" text="[Settlement trust settlement] No affected settlement was found near this battle." />
     <string id="AF_ECO_UI_SettlementTrustDetails" text="[Settlement trust settlement]\n{DETAILS}" />
     <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="[Settlement trust settlement] No hostile force near a settlement was defeated, so no settlement trust was gained." />
+    <string id="AF_ECO_UI_DebtSummaryNoDebt" text="No outstanding debt." />
+    <string id="AF_ECO_UI_DebtSummaryGold" text="Total gold debt: {AMOUNT}" />
+    <string id="AF_ECO_UI_DebtSummaryItems" text="Total item debt: {ITEMS}" />
+    <string id="AF_ECO_UI_DebtSummaryLines" text="Unsettled lines: {COUNT}" />
+    <string id="AF_ECO_UI_DebtSummaryLine" text="- [{ID}] {TYPE}; remaining {REMAINING}{DUE}{UNAVAILABLE}" />
+    <string id="AF_ECO_UI_DebtSummaryUnavailableSuffix" text="; original item unavailable" />
+    <string id="AF_ECO_UI_DebtSummaryMore" text="... {COUNT} more line(s) hidden." />
+    <string id="AF_ECO_UI_DebtSummaryReadFailed" text="Failed to read the debt summary." />
+    <string id="AF_ECO_UI_DebtDueUnlimited" text="repayment deadline: unlimited (debt remains active)" />
+    <string id="AF_ECO_UI_DebtDueDays" text="repayment deadline: about {DAYS} day(s) (due {DATE})" />
+    <string id="AF_ECO_UI_DebtDueToday" text="repayment deadline: due today ({DATE})" />
+    <string id="AF_ECO_UI_DebtOverdue" text="repayment deadline: {DAYS} day(s) overdue (due {DATE})" />
+    <string id="AF_ECO_UI_DebtNoDeadline" text="no deadline" />
   </strings>
 </base>

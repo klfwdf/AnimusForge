@@ -51,5 +51,18 @@
     <string id="AF_ECO_UI_SettlementTrustNoNearby" text="【定居点信任结算】本次战斗附近没有可受影响的定居点。" />
     <string id="AF_ECO_UI_SettlementTrustDetails" text="【定居点信任结算】&#10;{DETAILS}" />
     <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="【定居点信任结算】本次战斗未击败附近定居点的敌对部队，因此没有获得定居点信任。" />
+    <string id="AF_ECO_UI_DebtSummaryNoDebt" text="当前无欠款。" />
+    <string id="AF_ECO_UI_DebtSummaryGold" text="金币总欠款：{AMOUNT}" />
+    <string id="AF_ECO_UI_DebtSummaryItems" text="物品总欠款：{ITEMS}" />
+    <string id="AF_ECO_UI_DebtSummaryLines" text="分笔未清：{COUNT} 笔" />
+    <string id="AF_ECO_UI_DebtSummaryLine" text="- [{ID}] {TYPE}，剩余 {REMAINING}{DUE}{UNAVAILABLE}" />
+    <string id="AF_ECO_UI_DebtSummaryUnavailableSuffix" text="，已标记无法归还原物" />
+    <string id="AF_ECO_UI_DebtSummaryMore" text="……还有 {COUNT} 笔未显示。" />
+    <string id="AF_ECO_UI_DebtSummaryReadFailed" text="欠款摘要读取失败。" />
+    <string id="AF_ECO_UI_DebtDueUnlimited" text="还款期限：无限期（债务仍有效）" />
+    <string id="AF_ECO_UI_DebtDueDays" text="还款期限：约 {DAYS} 天内（截止 {DATE}）" />
+    <string id="AF_ECO_UI_DebtDueToday" text="还款期限：今日到期（{DATE}）" />
+    <string id="AF_ECO_UI_DebtOverdue" text="还款期限：已逾期 {DAYS} 天（截止 {DATE}）" />
+    <string id="AF_ECO_UI_DebtNoDeadline" text="未设定期限" />
   </strings>
 </base>
