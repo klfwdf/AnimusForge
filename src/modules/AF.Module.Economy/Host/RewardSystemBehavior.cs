@@ -2315,7 +2315,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		PlaceDismissedFormerLord(hero, originalClan);
 		string heroName = hero.Name?.ToString() ?? "Hero";
 		string clanName = GetClanDisplayNameForNotification(originalClan);
-		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + heroName + " 已回到 " + clanName + "。", Color.FromUint(4278242559u)));
+		InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CompanionReturnedToClan(heroName, clanName), Color.FromUint(4278242559u)));
 		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] restored hero=" + (hero.StringId ?? "") + " clan=" + (originalClan.StringId ?? ""));
 	}
 
@@ -2359,8 +2359,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 		}
 		string heroName = hero.Name?.ToString() ?? "Hero";
-		string settlementName = originalSettlement.Name?.ToString() ?? originalSettlement.StringId ?? "原定居点";
-		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + heroName + " 已回到 " + settlementName + "。", Color.FromUint(4278242559u)));
+		string settlementName = originalSettlement.Name?.ToString() ?? originalSettlement.StringId ?? EconomyUiTexts.OriginalSettlement;
+		InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CompanionReturnedToSettlement(heroName, settlementName), Color.FromUint(4278242559u)));
 		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] restored_notable hero=" + (hero.StringId ?? "") + " settlement=" + (originalSettlement.StringId ?? "") + " occupation=" + targetOccupation);
 	}
 
@@ -2381,8 +2381,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		PlaceDismissedFormerLord(hero, null);
 		string heroName = hero.Name?.ToString() ?? "Hero";
 		string clanName = GetClanDisplayNameForNotification(originalClan);
-		string reasonText = originalClan != null ? (clanName + " 已灭亡，") : "原归属不可用，";
-		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + reasonText + heroName + " 已成为流浪者。", Color.FromUint(4294936661u)));
+		string reasonText = EconomyUiTexts.CompanionWandererReason(originalClan != null, clanName);
+		InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CompanionBecameWanderer(reasonText, heroName), Color.FromUint(4294936661u)));
 		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] wanderer hero=" + (hero.StringId ?? "") + " oldClan=" + (originalClan?.StringId ?? ""));
 	}
 
@@ -11978,7 +11978,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (notify)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("该特殊RP物品不能进入市场交易。"));
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.SpecialRpItemCannotEnterMarket));
 			}
 			try
 			{
@@ -15736,9 +15736,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (generated > 0)
 		{
 			itemName = requestedName;
-			string sourceName = string.IsNullOrWhiteSpace(giverName) ? "对方" : giverName.Trim();
+			string sourceName = string.IsNullOrWhiteSpace(giverName) ? EconomyUiTexts.OtherParty : giverName.Trim();
 			string displayName = string.IsNullOrWhiteSpace(itemName) ? assetName.Trim() : itemName;
-			ShowRewardMessage($"{sourceName} 给了你 {FormatItemAmount(generated, item, displayName)}。", giverCharacter);
+			ShowRewardMessage(EconomyUiTexts.GeneratedItemGiven(sourceName, FormatItemAmount(generated, item, displayName)), giverCharacter);
 		}
 		return generated;
 	}
@@ -16138,7 +16138,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						string text6 = string.IsNullOrWhiteSpace(text3) ? "无" : text3;
 						giverFacts.Add($"你已经记下：玩家的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
 						receiverFacts.Add($"你对 {giverName} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
-						ShowRewardMessage($"【承诺或欠款记录】{text6}，承诺等价：{result8}", Color.FromUint(4294936576u), giver);
+						ShowRewardMessage(EconomyUiTexts.PromiseRecorded(text6, result8.ToString()), Color.FromUint(4294936576u), giver);
 					}
 				}
 				return string.Empty;
@@ -16166,10 +16166,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						giverFacts.Add($"你确认债务ID {value4} 已解除。{statusText}");
 						receiverFacts.Add($"你的债务ID {value4} 已解除。{statusText}");
 						bool flag3 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-						ShowRewardMessage((flag3 ? "【债务解除】" : "【债务解除失败】") + statusText, flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
+						ShowRewardMessage(EconomyUiTexts.DebtRelease(statusText, flag3), flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
 						if (flag2)
 						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
+							ShowRewardMessage(EconomyUiTexts.AllDebtCleared(giverName), Color.FromUint(4278255360u), giver);
 						}
 					}
 				}
@@ -16189,7 +16189,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【王位转移】" : "【王位转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_KingdomTransfer" : "AF_ECO_UI_KingdomTransferFailed", flag2 ? "[Kingdom transfer] {STATUS}" : "[Kingdom transfer failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16209,7 +16209,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						giverFacts.Add(civilWarStatus);
 						receiverFacts.Add(civilWarStatus);
-						InformationManager.DisplayMessage(new InformationMessage("【内战派系】" + civilWarStatus, Color.FromUint(4278242559u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CivilWarFaction(civilWarStatus), Color.FromUint(4278242559u)));
 					}
 					return string.Empty;
 				}, RegexOptions.IgnoreCase);
@@ -16229,7 +16229,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【势力身份】" : "【势力身份失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16249,7 +16249,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【势力身份】" : "【势力身份失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16269,7 +16269,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【势力身份】" : "【势力身份失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16288,7 +16288,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【势力身份】" : "【势力身份失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16342,7 +16342,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【固定资产转移】" : "【固定资产转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FixedAssetTransfer" : "AF_ECO_UI_FixedAssetTransferFailed", flag2 ? "[Fixed asset transfer] {STATUS}" : "[Fixed asset transfer failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				else
@@ -16399,7 +16399,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 							receiverFacts.Add(statusText);
 						}
 						string notificationPrefix = flag2 ? (preservePlayerFamilyIdentity ? "【加入队伍】" : (joinedAsCompanion ? "【成为同伴】" : "【加入家族】")) : "【加入队伍失败】";
-						InformationManager.DisplayMessage(new InformationMessage(notificationPrefix + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.JoinResult(flag2, preservePlayerFamilyIdentity, joinedAsCompanion, statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -17076,10 +17076,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
 					bool flag2 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-					ShowRewardMessage((flag2 ? "【市场债务解除】" : "【市场债务解除失败】") + statusText, flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
+					ShowRewardMessage(EconomyUiTexts.MarketDebtRelease(statusText, flag2), flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 					if (flag)
 					{
-						ShowRewardMessage("【市场欠款】当前市场债务已全部结清。", Color.FromUint(4278255360u), giverCharacter);
+					ShowRewardMessage(EconomyUiTexts.MarketDebtCleared, Color.FromUint(4278255360u), giverCharacter);
 					}
 				}
 			}
@@ -17142,13 +17142,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (receiver == Hero.MainHero)
 		{
-			string arg = giver?.Name?.ToString() ?? "某人";
-			ShowRewardMessage($"{arg} 给了你 {total} 第纳尔。", giver);
+			string arg = giver?.Name?.ToString() ?? EconomyUiTexts.UnknownPerson;
+			ShowRewardMessage(EconomyUiTexts.DenarsReceived(arg, total), giver);
 		}
 		else if (giver == Hero.MainHero)
 		{
-			string arg2 = receiver?.Name?.ToString() ?? "某人";
-			ShowRewardMessage($"你给了 {arg2} {total} 第纳尔。", receiver);
+			string arg2 = receiver?.Name?.ToString() ?? EconomyUiTexts.UnknownPerson;
+			ShowRewardMessage(EconomyUiTexts.DenarsGiven(arg2, total), receiver);
 		}
 		return total;
 	}
@@ -17184,9 +17184,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		receiver.ChangeHeroGold(total);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? ("这座" + GetSettlementMarketTypeLabel(settlement) + "的商人")));
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {total} 第纳尔。"));
-			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {total} 第纳尔。", RewardQuickInfoDurationMs, giverCharacter);
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(GetSettlementMarketTypeLabel(settlement))));
+			InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.DenarsReceived(arg, total)));
+			AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.DenarsReceived(arg, total), RewardQuickInfoDurationMs, giverCharacter);
 		}
 		return total;
 	}
@@ -17233,9 +17233,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		receiver.ChangeHeroGold(total);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {total} 第纳尔。"));
-			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {total} 第纳尔。", RewardQuickInfoDurationMs, giverCharacter);
+			string arg = string.IsNullOrWhiteSpace(giverName) ? EconomyUiTexts.OtherParty : giverName.Trim();
+			InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.DenarsReceived(arg, total)));
+			AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.DenarsReceived(arg, total), RewardQuickInfoDurationMs, giverCharacter);
 		}
 		return total;
 	}
@@ -17850,15 +17850,15 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (receiver == Hero.MainHero)
 		{
-			string arg = giver?.Name?.ToString() ?? "某人";
+			string arg = giver?.Name?.ToString() ?? EconomyUiTexts.UnknownPerson;
 			string arg2 = itemName ?? itemStringId;
-			ShowRewardMessage($"{arg} 给了你 {FormatItemAmount(total, itemObject, arg2)}。", giver);
+			ShowRewardMessage(EconomyUiTexts.ItemsReceived(arg, FormatItemAmount(total, itemObject, arg2)), giver);
 		}
 		else if (giver == Hero.MainHero)
 		{
-			string arg3 = receiver?.Name?.ToString() ?? "某人";
+			string arg3 = receiver?.Name?.ToString() ?? EconomyUiTexts.UnknownPerson;
 			string arg4 = itemName ?? itemStringId;
-			ShowRewardMessage($"你给了 {arg3} {FormatItemAmount(total, itemObject, arg4)}。", receiver);
+			ShowRewardMessage(EconomyUiTexts.ItemsGiven(arg3, FormatItemAmount(total, itemObject, arg4)), receiver);
 		}
 		return total;
 	}
@@ -17981,9 +17981,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (receiver == Hero.MainHero)
 			{
-				string arg = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
-				InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num, itemObject, itemName)}。"));
-				AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {FormatItemAmount(num, itemObject, itemName)}。", RewardQuickInfoDurationMs, giverCharacter);
+				string arg = string.IsNullOrWhiteSpace(giverName) ? EconomyUiTexts.OtherParty : giverName.Trim();
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.PartyItemsReceived(arg, FormatItemAmount(num, itemObject, itemName))));
+				AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.PartyItemsReceived(arg, FormatItemAmount(num, itemObject, itemName)), RewardQuickInfoDurationMs, giverCharacter);
 			}
 		}
 		return num;
@@ -18018,7 +18018,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			itemName = (equipmentElement.Item != null) ? (equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId) : (itemObject?.Name?.ToString() ?? itemStringId);
 			if (giver == Hero.MainHero)
 			{
-				ShowRewardMessage($"你给了对方部队 {FormatItemAmount(num, itemObject, itemName)}。", giver);
+				ShowRewardMessage(EconomyUiTexts.PartyItemsGiven(FormatItemAmount(num, itemObject, itemName)), giver);
 			}
 		}
 		return num;
@@ -18212,9 +18212,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? ("这座" + GetSettlementMarketTypeLabel(settlement) + "的商人")));
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, displayItem, itemName)}。"));
-			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {FormatItemAmount(num2, displayItem, itemName)}。", RewardQuickInfoDurationMs, giverCharacter);
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(GetSettlementMarketTypeLabel(settlement))));
+			InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.ItemsReceived(arg, FormatItemAmount(num2, displayItem, itemName))));
+			AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.ItemsReceived(arg, FormatItemAmount(num2, displayItem, itemName)), RewardQuickInfoDurationMs, giverCharacter);
 		}
 		return num2;
 	}

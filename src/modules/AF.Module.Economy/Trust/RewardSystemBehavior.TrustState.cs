@@ -321,11 +321,11 @@ public partial class RewardSystemBehavior
 			return;
 		}
 		int num2 = AdjustTrust(giver, num, 0, "auto_gift_value_accumulated", out var appliedUnits);
-		string text = (num2 > 0) ? $"，公共信任提升 {num2}" : "";
+		string text = (num2 > 0) ? EconomyUiTexts.PublicTrustGain(num2) : "";
 		string text2 = FormatTrustUnits(appliedUnits);
 		giverFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的个人信任提升了 {text2}{text}。");
 		receiverFacts?.Add($"{giverName} 因累计向你实际交付的价值达到阈值，对你的个人信任提升了 {text2}{text}。");
-		string message = $"【信任变化】{giverName} 因累计向你实际交付的价值，对你的个人信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : "");
+		string message = EconomyUiTexts.TrustChanged(giverName, text2, text);
 		InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4278242559u)));
 		ShowRewardQuickInfo(message, giver);
 	}
@@ -343,11 +343,11 @@ public partial class RewardSystemBehavior
 		}
 		int num2 = AdjustSettlementMerchantTrust(settlement, kind, num, "merchant_auto_gift_value_accumulated", out var appliedUnits);
 		string settlementMerchantDebtLabel = BuildSettlementMerchantDebtLabel(settlement, kind);
-		string text = (num2 > 0) ? $"，公共信任提升 {num2}" : "";
+		string text = (num2 > 0) ? EconomyUiTexts.PublicTrustGain(num2) : "";
 		string text2 = FormatTrustUnits(appliedUnits);
 		merchantFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的市场信任提升了 {text2}{text}。");
 		playerFacts?.Add($"{giverName} 代表的{settlementMerchantDebtLabel}因累计向你实际交付的价值达到阈值，对你的市场信任提升了 {text2}{text}。");
-		string message = $"【市场信任变化】{settlementMerchantDebtLabel} 对你的市场信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : "");
+		string message = EconomyUiTexts.MarketTrustChanged(settlementMerchantDebtLabel, text2, text);
 		ShowRewardMessage(message, Color.FromUint(4278242559u), giverCharacter);
 	}
 
@@ -514,9 +514,9 @@ public partial class RewardSystemBehavior
 			}
 			int num = AdjustTrust(hero, TrustGainOnQuestSuccess, 0, "quest_completed_success", out var appliedUnits);
 			string text = FormatTrustUnits(appliedUnits);
-			string text2 = hero.Name?.ToString() ?? "任务发布人";
+			string text2 = hero.Name?.ToString() ?? EconomyUiTexts.TaskGiverFallback;
 			Logger.Log("Trust", $"quest={quest.StringId} giver={hero.StringId} completed=success personalGain={text} publicGain={num}");
-			string message = $"【信任变化】完成{text2}交付的任务，个人信任 +{text}" + ((num > 0) ? $"，公共信任 +{num}" : "");
+			string message = EconomyUiTexts.QuestTrustChanged(text2, text, num > 0 ? EconomyUiTexts.PublicTrustGain(num) : "");
 			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4278242559u)));
 			ShowRewardQuickInfo(message, hero);
 		}
@@ -715,13 +715,13 @@ public partial class RewardSystemBehavior
 			}
 			if (mapEvent.WinningSide != mapEvent.PlayerSide)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗未获胜，未获得定居点信任。", Color.FromUint(4294945365u)));
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.SettlementTrustBattleLost, Color.FromUint(4294945365u)));
 				return;
 			}
 			List<Settlement> nearbySettlements = GetNearbySettlementsForTrust(mapEvent).ToList();
 			if (nearbySettlements.Count <= 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗附近没有可受影响的定居点。", Color.FromUint(4291611750u)));
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.SettlementTrustNoNearby, Color.FromUint(4291611750u)));
 				return;
 			}
 			List<string> list = new List<string>();
@@ -759,24 +759,24 @@ public partial class RewardSystemBehavior
 				}
 				int num10 = AccumulateSettlementTrustCenti(item, num9);
 				int num11 = ApplyPublicTrustPoolDeltaByKey(BuildSettlementSharedPublicTrustKey(item), num9, "battle_hostile_party_defeated_local_public_pool");
-				string text = (num4 > 0) ? "估算实击" : "实击";
+				string text = (num4 > 0) ? EconomyUiTexts.EstimatedHits : EconomyUiTexts.ActualHits;
 				if (num10 != 0)
 				{
 					ApplySettlementLocalTrustWholeDeltaDirect(item, num10, "battle_hostile_party_defeated");
-					list.Add($"{item.Name}: 定居点信任 +{num10}" + ((num11 > 0) ? $"，公共信任 +{num11}" : "") + $"\n{text} {FormatTrustUnits(num5)}，分成 {FormatTrustUnits(num7)}，本次累计 {FormatTrustUnits(num9)}");
+					list.Add(EconomyUiTexts.SettlementTrustGain(item.Name?.ToString(), num10, num11 > 0 ? num11 : null, text, FormatTrustUnits(num5), FormatTrustUnits(num7), FormatTrustUnits(num9)));
 				}
 				else
 				{
-					list.Add($"{item.Name}: 定居点信任累计 +{FormatTrustUnits(num9)}" + ((num11 > 0) ? $"，公共信任 +{num11}" : "") + $"\n{text} {FormatTrustUnits(num5)}，分成 {FormatTrustUnits(num7)}，未满1点");
+					list.Add(EconomyUiTexts.SettlementTrustCarry(item.Name?.ToString(), FormatTrustUnits(num9), num11 > 0 ? num11 : null, text, FormatTrustUnits(num5), FormatTrustUnits(num7)));
 				}
 			}
 			if (list.Count > 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】\n" + string.Join("\n\n", list), Color.FromUint(4278242559u)));
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.SettlementTrustDetails(string.Join("\n\n", list)), Color.FromUint(4278242559u)));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗未击败附近定居点的敌对部队，因此没有获得定居点信任。", Color.FromUint(4291611750u)));
+				InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.SettlementTrustNoDefeatedHostile, Color.FromUint(4291611750u)));
 			}
 		}
 		catch (Exception ex)
