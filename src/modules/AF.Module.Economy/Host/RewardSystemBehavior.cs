@@ -16166,7 +16166,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						giverFacts.Add($"你确认债务ID {value4} 已解除。{statusText}");
 						receiverFacts.Add($"你的债务ID {value4} 已解除。{statusText}");
 						bool flag3 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-						ShowRewardMessage(EconomyUiTexts.DebtRelease(statusText, flag3), flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
+						ShowRewardMessage(EconomyUiTexts.DebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag3), flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
 						if (flag2)
 						{
 							ShowRewardMessage(EconomyUiTexts.AllDebtCleared(giverName), Color.FromUint(4278255360u), giver);
@@ -17076,7 +17076,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
 					bool flag2 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-					ShowRewardMessage(EconomyUiTexts.MarketDebtRelease(statusText, flag2), flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
+					ShowRewardMessage(EconomyUiTexts.MarketDebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag2), flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 					if (flag)
 					{
 					ShowRewardMessage(EconomyUiTexts.MarketDebtCleared, Color.FromUint(4278255360u), giverCharacter);

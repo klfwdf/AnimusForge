@@ -18,6 +18,13 @@
     <string id="AF_ECO_UI_PromiseRecorded" text="【承诺或欠款记录】{NOTE}；承诺等价：{VALUE}" />
     <string id="AF_ECO_UI_DebtReleased" text="【债务解除】{STATUS}" />
     <string id="AF_ECO_UI_DebtReleaseFailed" text="【债务解除失败】{STATUS}" />
+    <string id="AF_ECO_UI_DebtStatusInvalidNpc" text="参数无效：缺少NPC或债务ID。" />
+    <string id="AF_ECO_UI_DebtStatusNpcRecordMissing" text="未找到该NPC的债务记录。" />
+    <string id="AF_ECO_UI_DebtStatusNpcNoDebt" text="该NPC当前没有可还债务。" />
+    <string id="AF_ECO_UI_DebtStatusInvalidMarket" text="参数无效：缺少市场债主或债务ID。" />
+    <string id="AF_ECO_UI_DebtStatusMarketRecordMissing" text="未找到该市场的债务记录。" />
+    <string id="AF_ECO_UI_DebtStatusLineMissing" text="未找到可结算的债务ID，或该债务已清。" />
+    <string id="AF_ECO_UI_DebtStatusReleased" text="债务ID {ID} 已按协商解除（{AMOUNT}）。" />
     <string id="AF_ECO_UI_AllDebtCleared" text="【欠款已清】你对 {GIVER} 的全部欠款已还清！" />
     <string id="AF_ECO_UI_MarketDebtReleased" text="【市场债务解除】{STATUS}" />
     <string id="AF_ECO_UI_MarketDebtReleaseFailed" text="【市场债务解除失败】{STATUS}" />
