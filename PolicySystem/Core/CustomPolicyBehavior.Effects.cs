@@ -1047,7 +1047,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (total > 0)
 		{
-			result.Add(-total, includeDescriptions ? new TextObject("自定义政策维护费") : null);
+			result.Add(-total, includeDescriptions ? new TextObject("{=AF_POL_EFFECT_MaintenanceCost}Custom policy maintenance") : null);
 		}
 	}
 
@@ -1058,7 +1058,9 @@ public sealed partial class CustomPolicyBehavior
 		{
 			name = name.Substring(0, 47).TrimEnd() + "…";
 		}
-		return new TextObject("《" + (name.Length == 0 ? "未命名政策" : name) + "》政策收入");
+		TextObject text = new TextObject("{=AF_POL_EFFECT_PolicyIncome}{POLICY} policy income");
+		text.SetTextVariable("POLICY", name.Length == 0 ? new TextObject("{=AFPOL_UI_UnnamedPolicy}Unnamed Policy").ToString() : name);
+		return text;
 	}
 
 	private static void PatchPolicySettlementModelMethod(Harmony harmony, object model, string methodName, Type[] argumentTypes, string postfixName)
@@ -1287,7 +1289,11 @@ public sealed partial class CustomPolicyBehavior
 		{
 			policyName = policyName.Substring(0, 47).TrimEnd() + "…";
 		}
-		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》");
+		TextObject text = new TextObject("{=AF_POL_EFFECT_PolicyLabel}{POLICY}");
+		text.SetTextVariable("POLICY", string.IsNullOrWhiteSpace(policyName)
+			? new TextObject("{=AFPOL_UI_UnnamedPolicy}Unnamed Policy").ToString()
+			: policyName);
+		return text;
 	}
 
 	private static void AddIndexedPolicyContributions(
@@ -1607,7 +1613,12 @@ public sealed partial class CustomPolicyBehavior
 		{
 			policyName = policyName.Substring(0, 39).TrimEnd() + "…";
 		}
-		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》税收 " + FormatSigned(contribution?.Value ?? 0f) + "%");
+		TextObject text = new TextObject("{=AF_POL_EFFECT_PolicyTax}{POLICY} tax {VALUE}%");
+		text.SetTextVariable("POLICY", string.IsNullOrWhiteSpace(policyName)
+			? new TextObject("{=AFPOL_UI_UnnamedPolicy}Unnamed Policy").ToString()
+			: policyName);
+		text.SetTextVariable("VALUE", FormatSigned(contribution?.Value ?? 0f));
+		return text;
 	}
 
 	private static TextObject BuildPolicyConstructionSpeedEffectExplanation(PolicyEffectRuntimeContribution contribution)
@@ -1617,7 +1628,12 @@ public sealed partial class CustomPolicyBehavior
 		{
 			policyName = policyName.Substring(0, 39).TrimEnd() + "…";
 		}
-		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》建造力 " + FormatSigned(contribution?.Value ?? 0f));
+		TextObject text = new TextObject("{=AF_POL_EFFECT_PolicyConstruction}{POLICY} construction {VALUE}");
+		text.SetTextVariable("POLICY", string.IsNullOrWhiteSpace(policyName)
+			? new TextObject("{=AFPOL_UI_UnnamedPolicy}Unnamed Policy").ToString()
+			: policyName);
+		text.SetTextVariable("VALUE", FormatSigned(contribution?.Value ?? 0f));
+		return text;
 	}
 
 	private PolicyApplicationResult ApplyPolicyEffects(PolicyDraftRequest request, PolicyPostprocessResult postprocess)
