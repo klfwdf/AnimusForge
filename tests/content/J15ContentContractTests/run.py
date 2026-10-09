@@ -634,11 +634,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/coup_strings.xml": {
         "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
-        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "d41cce6ab",
+        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "6c2c03e63",
     },
     "ModuleData/Languages/CNs/coup_strings-zh-CN.xml": {
         "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml",
-        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "d41cce6ab",
+        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "6c2c03e63",
     },
     "ModuleData/Languages/afd_ui_strings.xml": {
         "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
@@ -702,11 +702,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "981F0695F5BFAFFBC6455D936743425D10090431BE10D9ECF73274431E8A5313", "revision": "a7cc13efe",
+        "sha256": "5899F46D116DC7EDBE829117012D7710E9ABD07FDA2903889086594BECCFABB7", "revision": "gathering-ui-6c2c03e63",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "E34B6AB883898DD89F7A16453FA153890C2DAC99CD5080A71571288890CFE2E4", "revision": "a7cc13efe",
+        "sha256": "296ABF96BE7F23EFCD12CA2C83F17E377556E7DCB4A4CEF7992371C938CA7518", "revision": "gathering-ui-6c2c03e63",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",

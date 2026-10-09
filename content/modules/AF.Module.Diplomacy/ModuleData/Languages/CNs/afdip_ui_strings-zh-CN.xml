@@ -349,5 +349,65 @@
     <string id="AF_DIP_UI_Faction_KingFirst" text="国王在前，" />
     <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="你的家族置顶，" />
     <string id="AF_DIP_UI_Faction_OthersByGrievance" text="其余按不满由高到低" />
+  <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="你的家族没有可作为举办地的城镇或城堡。" />
+  <string id="AF_DIP_UI_Gathering_NoVenue" text="没有可用举办地。" />
+  <string id="AF_DIP_UI_Gathering_VenueTitle" text="召开宴会：选择举办地" />
+  <string id="AF_DIP_UI_Gathering_VenueDescription" text="举办地必须是你的家族拥有的城镇或城堡。" />
+  <string id="AF_DIP_UI_Gathering_Next" text="下一步" />
+  <string id="AF_DIP_UI_Gathering_Cancel" text="取消" />
+  <string id="AF_DIP_UI_Gathering_VenueAvailable" text="可作为宴会举办地。" />
+  <string id="AF_DIP_UI_Gathering_NoClans" text="没有可邀请的贵族家族。" />
+  <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="确认当前名单（{COUNT}人）" />
+  <string id="AF_DIP_UI_Gathering_ClearList" text="清空已选名单" />
+  <string id="AF_DIP_UI_Gathering_ClearHint" text="重新选择宴会宾客。" />
+  <string id="AF_DIP_UI_Gathering_ClanSelected" text="已选 {COUNT}" />
+  <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="该家族已选宾客 {COUNT} 人。" />
+  <string id="AF_DIP_UI_Gathering_ClanTitle" text="召开宴会：选择家族" />
+  <string id="AF_DIP_UI_Gathering_ClanDescription" text="举办地：{SETTLEMENT}&#10;已选宾客：{COUNT} 人。&#10;请选择一个家族打开成员名单。" />
+  <string id="AF_DIP_UI_Gathering_NoHeroes" text="所选家族没有可显示的贵族成员。" />
+  <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[已选] " />
+  <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO}（{IDENTITY}）" />
+  <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+  <string id="AF_DIP_UI_Gathering_AlreadyInList" text="已经在当前宴会名单中。" />
+  <string id="AF_DIP_UI_Gathering_CanInvite" text="可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" />
+  <string id="AF_DIP_UI_Gathering_CannotInvite" text="不可邀请：{REASON}" />
+  <string id="AF_DIP_UI_Gathering_HeroTitle" text="召开宴会：选择宾客" />
+  <string id="AF_DIP_UI_Gathering_HeroDescription" text="家族：{CLAN}&#10;这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。&#10;已选宾客：{COUNT} 人。" />
+  <string id="AF_DIP_UI_Gathering_AddToList" text="加入名单" />
+  <string id="AF_DIP_UI_Gathering_Back" text="返回" />
+  <string id="AF_DIP_UI_Gathering_NoGuests" text="宴会未召开：没有可邀请的宾客。" />
+  <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="确认召开宴会" />
+  <string id="AF_DIP_UI_Gathering_ConfirmBody" text="举办地：{SETTLEMENT}&#10;费用：{COST} 第纳尔&#10;持续：{DAYS} 天&#10;宾客：{GUESTS} 人&#10;&#10;确认后将扣款并向宾客下达前往举办地的宴会邀请。" />
+  <string id="AF_DIP_UI_Gathering_PayAndInvite" text="支付并发出邀请" />
+  <string id="AF_DIP_UI_Gathering_NotSelected" text="尚未选择宾客。" />
+  <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="身份未知" />
+  <string id="AF_DIP_UI_Gathering_Governor" text="总督" />
+  <string id="AF_DIP_UI_Gathering_Ruler" text="君主" />
+  <string id="AF_DIP_UI_Gathering_ClanLeader" text="族长" />
+  <string id="AF_DIP_UI_Gathering_Lady" text="女士" />
+  <string id="AF_DIP_UI_Gathering_Lord" text="领主" />
+  <string id="AF_DIP_UI_Gathering_IdentityHint" text="身份：{IDENTITY}" />
+  <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="身份：{IDENTITY}&#10;管辖：{SETTLEMENT}" />
+  <string id="AF_DIP_UI_Gathering_UnknownClan" text="未知家族" />
+  <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="未知定居点" />
+  <string id="AF_DIP_UI_Gathering_ClanHint" text="成员 {MEMBERS} 人；有独立部队 {MOVABLE} 人；可原版旅行赴宴 {TRAVEL} 人。" />
+  <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="宴会已取消：你在{PLACE}举办的宴会已经散场。{REASON}" />
+  <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="宴会已结束：你在{PLACE}举办的宴会已经散场。" />
+  <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="宴会已取消：{HOST}在{PLACE}举办的宴会已经散场。{REASON}" />
+  <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="宴会已结束：{HOST}在{PLACE}举办的宴会已经散场。" />
+  <string id="AF_DIP_UI_Gathering_Reason" text=" 原因：{REASON}" />
+  <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="召开宴会" />
+  <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="我想举办一场宴会，你帮我安排。" />
+  <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="我会为您准备名单与请柬。" />
+  <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="明白，我会按您的意思准备举办地和宾客名单。" />
+  <string id="AF_DIP_UI_Gathering_Disabled" text="宴会功能已在 MCM 中关闭。" />
+  <string id="AF_DIP_UI_Gathering_Created" text="宴会已发出邀请：{SETTLEMENT}，宾客 {GUESTS} 人，持续 {DAYS} 天" />
+  <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。" />
+  <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO}已抵达{SETTLEMENT}参加宴会。" />
+  <string id="AF_DIP_UI_Gathering_AttendanceReward" text="你参加了{HOST}的宴会，与主办方的好感提升了。" />
+  <string id="AF_DIP_UI_Gathering_CrisisWar" text="王国已经卷入战争，主办人决定取消宴会。" />
+  <string id="AF_DIP_UI_Gathering_CrisisSiege" text="王国内的{SETTLEMENT}正遭围攻，主办人决定取消宴会。" />
+  <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST}将在{SETTLEMENT}举办宴会。" />
+  <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
 </strings>
 </base>
