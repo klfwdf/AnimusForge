@@ -1992,6 +1992,67 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="Unable to open the player appearance and background editor: the Knowledge behavior is not initialized." />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="Returned to player appearance and background settings." />
   <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="Failed to open the player appearance and background editor." />
+  <string id="AF_TERMINAL_UI_Forge_SelectCrafter" text="Select crafter" />
+  <string id="AF_TERMINAL_UI_Forge_NoCrafters" text="No clan member or companion is currently available." />
+  <string id="AF_TERMINAL_UI_Forge_Back" text="Back" />
+  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}\nSmithing skill: {SKILL}\nCrafting stamina: {STAMINA} ({COST} cost)" />
+  <string id="AF_TERMINAL_UI_Forge_Unavailable" text="unavailable" />
+  <string id="AF_TERMINAL_UI_Forge_StaminaReadFailed" text="Unable to read this crafter&apos;s crafting stamina." />
+  <string id="AF_TERMINAL_UI_Forge_StaminaInsufficient" text="Crafting stamina is insufficient; at least {COST} points are required." />
+  <string id="AF_TERMINAL_UI_Forge_Select" text="Select" />
+  <string id="AF_TERMINAL_UI_Forge_OpenFailed" text="Unable to open the player RP item crafting interface." />
+  <string id="AF_TERMINAL_UI_Forge_TemplateCandidatesFailed" text="Unable to build a safe template candidate list." />
+  <string id="AF_TERMINAL_UI_Forge_TemplateSelectionOpenFailed" text="Unable to open template selection" />
+  <string id="AF_TERMINAL_UI_Forge_NoSelectableTemplates" text="No safe templates are available for selection." />
+  <string id="AF_TERMINAL_UI_Forge_NoDisplayableTemplates" text="No safe templates can be displayed." />
+  <string id="AF_TERMINAL_UI_Forge_UnknownType" text="Unknown type" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="#{RANK} {NAME}\n{TYPE}\n{PRICE} denars" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="Template ID: {ID}\nType: {TYPE}\nStandard price: {PRICE} denars" />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplateTitle" text="Select RP item template" />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplateDescription" text="Choose one of {COUNT} safe candidates (up to 50). Search is available; each entry shows the native item icon, type, and standard price." />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplate" text="Select template" />
+  <string id="AF_TERMINAL_UI_Forge_ReturnToEdit" text="Return to edit" />
+  <string id="AF_TERMINAL_UI_Forge_PreviewFailed" text="Unable to preview crafting result" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionTitle" text="Enter RP item introduction" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionItem" text="Item: {NAME}" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionPrompt" text="Enter an introduction for this item; cancelling or leaving it blank will keep the existing introduction." />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionNotSaved" text="Item introduction was not saved: " />
+  <string id="AF_TERMINAL_UI_Forge_UnknownReason" text="unknown reason." />
+  <string id="AF_TERMINAL_UI_Forge_CompletedFallback" text="RP item crafted successfully." />
+  <string id="AF_TERMINAL_UI_Forge_CompletionTitle" text="Crafting complete" />
+  <string id="AF_TERMINAL_UI_Forge_ReturnToTerminal" text="Return to terminal" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="Name: {NAME}\nInvestment: {INVESTMENT} denars\nMode: {MODE}\n\nDenars will be deducted and the item crafted only after confirmation." />
+  <string id="AF_TERMINAL_UI_Forge_ModeEquipment" text="Weapon and equipment" />
+  <string id="AF_TERMINAL_UI_Forge_ModeItem" text="Regular RP item" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationTitle" text="Confirm crafting" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationWeaponTitle" text="Craft &quot;{NAME}&quot; · {INVESTMENT} denars" />
+  <string id="AF_TERMINAL_UI_Forge_Confirm" text="Confirm crafting" />
+  <string id="AF_TERMINAL_UI_Forge_CommitFailed" text="Crafting did not complete" />
+  <string id="AF_TERMINAL_UI_Forge_CommitSuccess" text="&quot;{NAME}&quot; was crafted successfully." />
+  <string id="AF_TERMINAL_UI_Forge_ReasonUnavailable" text="No reason was provided." />
+  <string id="AF_TERMINAL_UI_Forge_ErrorTitle" text="Player RP item crafting" />
+  <string id="AF_TERMINAL_UI_Trust_QueryTitle" text="Trust query" />
+  <string id="AF_TERMINAL_UI_Trust_SearchSettlement" text="Search settlement trust" />
+  <string id="AF_TERMINAL_UI_Trust_SearchHero" text="Search hero trust" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementBrowserTitle" text="Settlement trust query" />
+  <string id="AF_TERMINAL_UI_Trust_HeroBrowserTitle" text="Hero trust query" />
+  <string id="AF_TERMINAL_UI_Trust_Hint" text="Trust: {TRUST}" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementDetailsTitle" text="Settlement trust details" />
+  <string id="AF_TERMINAL_UI_Trust_HeroDetailsTitle" text="Hero trust details" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementNotFound" text="Settlement not found." />
+  <string id="AF_TERMINAL_UI_Trust_HeroNotFound" text="Hero not found." />
+  <string id="AF_TERMINAL_UI_Trust_UnknownSettlement" text="Unknown settlement" />
+  <string id="AF_TERMINAL_UI_Trust_UnknownHero" text="Unknown hero" />
+  <string id="AF_TERMINAL_UI_Trust_UnknownFaction" text="Unknown faction" />
+  <string id="AF_TERMINAL_UI_Trust_NameLine" text="Name: {NAME}" />
+  <string id="AF_TERMINAL_UI_Trust_FactionLine" text="Faction: {FACTION}" />
+  <string id="AF_TERMINAL_UI_Trust_LevelLine" text="Trust: {TRUST}" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantTrustHeading" text="Merchant trust:" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantWeapon" text="Weaponsmith" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantArmor" text="Armorsmith" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantHorse" text="Horse trader" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantGoods" text="Goods merchant" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantBlacksmith" text="Blacksmith" />
   <string id="AF_UI_Duel_LocalReady" text="Both sides are ready! The duel starts in 5 seconds (invulnerable during preparation)." />
   <string id="AF_UI_Duel_Started" text="The duel has begun!" />
   <string id="AF_UI_Duel_LeavingArena" text="Leaving the arena..." />

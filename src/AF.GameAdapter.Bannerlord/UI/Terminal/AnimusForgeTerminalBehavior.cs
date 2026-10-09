@@ -390,6 +390,19 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		return new TextObject("{=" + id + "}" + fallback).ToString();
 	}
 
+	private static string UiFormat(string id, string fallback, params (string Key, object Value)[] variables)
+	{
+		TextObject textObject = new TextObject("{=" + id + "}" + fallback);
+		if (variables != null)
+		{
+			foreach ((string key, object value) in variables)
+			{
+				textObject.SetTextVariable(key, value?.ToString() ?? "");
+			}
+		}
+		return textObject.ToString();
+	}
+
 	private bool ExecuteTerminalLeaf(string id)
 	{
 		AnimusForgeTerminalPopupVM popupVm = AnimusForgeTerminalPopup.ActivePopup?.ViewModel;
@@ -577,13 +590,13 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			InformationManager.ShowInquiry(
 				new InquiryData(
-					"选择制造者",
+					Ui("AF_TERMINAL_UI_Forge_SelectCrafter", "Select crafter"),
 					string.IsNullOrWhiteSpace(error)
-						? "当前没有可用的家族成员或同伴。"
+						? Ui("AF_TERMINAL_UI_Forge_NoCrafters", "No clan member or companion is currently available.")
 						: error.Trim(),
 					isAffirmativeOptionShown: true,
 					isNegativeOptionShown: false,
-					"返回",
+					Ui("AF_TERMINAL_UI_Forge_Back", "Back"),
 					"",
 					OpenRootMenu,
 					null),
@@ -594,31 +607,26 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<InquiryElement> entries = crafters.Select(crafter =>
 			new InquiryElement(
 				crafter.HeroId,
-				crafter.DisplayName
-					+ "　锻造等级：" + crafter.SmithingSkill
-					+ "　锻造体力："
-					+ (crafter.HasCraftingStamina
-						? crafter.CraftingStamina + "/" + crafter.MaxCraftingStamina
-							+ "（消耗 " + crafter.CraftingStaminaCost + "）"
-						: "不可用"),
+				UiFormat("AF_TERMINAL_UI_Forge_CrafterEntry", "{NAME}\nSmithing skill: {SKILL}\nCrafting stamina: {STAMINA} ({COST} cost)",
+					("NAME", crafter.DisplayName), ("SKILL", crafter.SmithingSkill),
+					("STAMINA", crafter.HasCraftingStamina ? crafter.CraftingStamina + "/" + crafter.MaxCraftingStamina : Ui("AF_TERMINAL_UI_Forge_Unavailable", "unavailable")),
+					("COST", crafter.CraftingStaminaCost)),
 				null,
 				isEnabled: crafter.HasEnoughCraftingStamina,
 				!crafter.HasCraftingStamina
-					? "无法读取该制造者的锻造体力。"
+					? Ui("AF_TERMINAL_UI_Forge_StaminaReadFailed", "Unable to read this crafter's crafting stamina.")
 					: crafter.HasEnoughCraftingStamina
 						? ""
-						: "锻造体力不足，至少需要 "
-							+ crafter.CraftingStaminaCost
-							+ " 点。")).ToList();
+						: UiFormat("AF_TERMINAL_UI_Forge_StaminaInsufficient", "Crafting stamina is insufficient; at least {COST} points are required.", ("COST", crafter.CraftingStaminaCost))).ToList();
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"选择制造者",
+			Ui("AF_TERMINAL_UI_Forge_SelectCrafter", "Select crafter"),
 			"",
 			entries,
 			isExitShown: true,
 			1,
 			1,
-			"选择",
-			"返回",
+			Ui("AF_TERMINAL_UI_Forge_Select", "Select"),
+			Ui("AF_TERMINAL_UI_Forge_Back", "Back"),
 			delegate(List<InquiryElement> selected)
 			{
 				string crafterHeroId = selected?.FirstOrDefault()?.Identifier as string;
@@ -673,7 +681,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("无法打开玩家RP物品制造界面。"));
+		InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_Forge_OpenFailed", "Unable to open the player RP item crafting interface.")));
 		OpenPlayerRpCrafterSelection();
 	}
 
@@ -701,7 +709,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(
 				new InformationMessage(
 					string.IsNullOrWhiteSpace(error)
-						? "无法建立安全模板候选榜单。"
+						? Ui("AF_TERMINAL_UI_Forge_TemplateCandidatesFailed", "Unable to build a safe template candidate list.")
 						: error.Trim()));
 			PlayerRpForgePopup.TryRestoreEditing(sessionId);
 			return;
@@ -725,8 +733,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		if (candidates == null || candidates.Count == 0)
 		{
 			ShowPlayerRpForgeError(
-				"无法打开模板选择",
-				"当前没有可选择的安全模板。",
+				Ui("AF_TERMINAL_UI_Forge_TemplateSelectionOpenFailed", "Unable to open template selection"),
+				Ui("AF_TERMINAL_UI_Forge_NoSelectableTemplates", "No safe templates are available for selection."),
 				runtimeGeneration,
 				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
 			return;
@@ -743,16 +751,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				}
 				string displayName = (candidate.DisplayName ?? templateId).Trim();
 				string typeLabel = string.IsNullOrWhiteSpace(candidate.TypeLabel)
-					? "未知类型"
+					? Ui("AF_TERMINAL_UI_Forge_UnknownType", "Unknown type")
 					: candidate.TypeLabel.Trim();
 				int price = Math.Max(0, candidate.StandardPrice);
-				string title = "#" + Math.Max(1, candidate.Rank).ToString()
-					+ " " + displayName
-					+ "\n" + typeLabel
-					+ "　" + price.ToString() + " 第纳尔";
-				string hint = "模板 ID：" + templateId
-					+ "\n类型：" + typeLabel
-					+ "\n标准价格：" + price.ToString() + " 第纳尔";
+				string title = UiFormat("AF_TERMINAL_UI_Forge_TemplateEntryTitle", "#{RANK} {NAME}\n{TYPE}\n{PRICE} denars", ("RANK", Math.Max(1, candidate.Rank)), ("NAME", displayName), ("TYPE", typeLabel), ("PRICE", price));
+				string hint = UiFormat("AF_TERMINAL_UI_Forge_TemplateEntryHint", "Template ID: {ID}\nType: {TYPE}\nStandard price: {PRICE} denars", ("ID", templateId), ("TYPE", typeLabel), ("PRICE", price));
 				entries.Add(new InquiryElement(
 					templateId,
 					title,
@@ -763,23 +766,22 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			if (entries.Count == 0)
 			{
 				ShowPlayerRpForgeError(
-					"无法打开模板选择",
-					"当前没有可显示的安全模板。",
+					Ui("AF_TERMINAL_UI_Forge_TemplateSelectionOpenFailed", "Unable to open template selection"),
+					Ui("AF_TERMINAL_UI_Forge_NoDisplayableTemplates", "No safe templates can be displayed."),
 					runtimeGeneration,
 					() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
 				return;
 			}
 			int callbackGate = 0;
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-				"选择 RP 物品模板",
-				"请从 " + entries.Count.ToString()
-					+ " 个安全候选（最多 50）中手动选择。可搜索；每项显示原版物品图标、类型和标准价格。",
+				Ui("AF_TERMINAL_UI_Forge_SelectTemplateTitle", "Select RP item template"),
+				UiFormat("AF_TERMINAL_UI_Forge_SelectTemplateDescription", "Choose one of {COUNT} safe candidates (up to 50). Search is available; each entry shows the native item icon, type, and standard price.", ("COUNT", entries.Count)),
 				entries,
 				isExitShown: true,
 				1,
 				1,
-				"选择模板",
-				"返回修改",
+				Ui("AF_TERMINAL_UI_Forge_SelectTemplate", "Select template"),
+				Ui("AF_TERMINAL_UI_Forge_ReturnToEdit", "Return to edit"),
 				delegate(List<InquiryElement> selected)
 				{
 					if (Interlocked.Exchange(ref callbackGate, 1) != 0
@@ -817,7 +819,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("PlayerRpCraft", "[WARN] template_selection_ui_failed " + ex.Message);
 			ShowPlayerRpForgeError(
-				"无法打开模板选择",
+				Ui("AF_TERMINAL_UI_Forge_TemplateSelectionOpenFailed", "Unable to open template selection"),
 				ex.Message,
 				runtimeGeneration,
 				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
@@ -840,7 +842,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			out string error))
 		{
 			ShowPlayerRpForgeError(
-				"无法预览制造结果",
+				Ui("AF_TERMINAL_UI_Forge_PreviewFailed", "Unable to preview crafting result"),
 				error,
 				runtimeGeneration,
 				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
@@ -920,9 +922,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		string completionMessage = pending.CompletionMessage;
 		long runtimeGeneration = pending.RuntimeGeneration;
 		bool opened = CourierLetterInputPopup.Show(
-			"填写 RP 物品介绍",
-			"物品：" + displayName,
-			"请填写该物品的介绍；取消或留空不会覆盖已有介绍。",
+			Ui("AF_TERMINAL_UI_Forge_IntroductionTitle", "Enter RP item introduction"),
+			UiFormat("AF_TERMINAL_UI_Forge_IntroductionItem", "Item: {NAME}", ("NAME", displayName)),
+			Ui("AF_TERMINAL_UI_Forge_IntroductionPrompt", "Enter an introduction for this item; cancelling or leaving it blank will keep the existing introduction."),
 			"",
 			introduction => CompletePlayerRpItemIntroductionInput(
 				itemId,
@@ -995,8 +997,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			InformationManager.DisplayMessage(
 				new InformationMessage(
-					"物品介绍未保存："
-						+ (string.IsNullOrWhiteSpace(error) ? "未知原因。" : error.Trim())));
+					Ui("AF_TERMINAL_UI_Forge_IntroductionNotSaved", "Item introduction was not saved: ")
+						+ (string.IsNullOrWhiteSpace(error) ? Ui("AF_TERMINAL_UI_Forge_UnknownReason", "unknown reason.") : error.Trim())));
 		}
 		ShowPlayerRpForgeCompletion(completionMessage, runtimeGeneration);
 	}
@@ -1012,15 +1014,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		string message = (completionMessage ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(message))
 		{
-			message = "已成功制造 RP 物品。";
+			message = Ui("AF_TERMINAL_UI_Forge_CompletedFallback", "RP item crafted successfully.");
 		}
 		InformationManager.ShowInquiry(
 			new InquiryData(
-				"制造完成",
+				Ui("AF_TERMINAL_UI_Forge_CompletionTitle", "Crafting complete"),
 				SanitizePlayerRpForgeInquiryText(message),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: false,
-				"返回终端",
+				Ui("AF_TERMINAL_UI_Forge_ReturnToTerminal", "Return to terminal"),
 				"",
 				delegate
 				{
@@ -1057,12 +1059,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		string confirmationText = (preview?.ConfirmationText ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(confirmationText))
 		{
-			confirmationText = "名称：" + (itemName ?? "").Trim()
-				+ "\n投入：" + investmentDenars + " 第纳尔"
-				+ "\n模式：" + (forgeAsWeapon ? "武器与装备" : "普通RP物品")
-				+ "\n\n确认后才会扣除第纳尔并制造物品。";
+			confirmationText = UiFormat("AF_TERMINAL_UI_Forge_ConfirmationText", "Name: {NAME}\nInvestment: {INVESTMENT} denars\nMode: {MODE}\n\nDenars will be deducted and the item crafted only after confirmation.", ("NAME", (itemName ?? "").Trim()), ("INVESTMENT", investmentDenars), ("MODE", forgeAsWeapon ? Ui("AF_TERMINAL_UI_Forge_ModeEquipment", "Weapon and equipment") : Ui("AF_TERMINAL_UI_Forge_ModeItem", "Regular RP item")));
 		}
-		string confirmationTitle = "确认制造";
+		string confirmationTitle = Ui("AF_TERMINAL_UI_Forge_ConfirmationTitle", "Confirm crafting");
 		if (forgeAsWeapon)
 		{
 			string compactItemName = (itemName ?? "").Trim();
@@ -1077,8 +1076,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				}
 				compactItemName = compactItemName.Substring(0, takeLength) + "…";
 			}
-			confirmationTitle = "制造“" + compactItemName + "” · "
-				+ investmentDenars + " 第纳尔";
+			confirmationTitle = UiFormat("AF_TERMINAL_UI_Forge_ConfirmationWeaponTitle", "Craft \"{NAME}\" · {INVESTMENT} denars", ("NAME", compactItemName), ("INVESTMENT", investmentDenars));
 		}
 		string safeConfirmationTitle =
 			SanitizePlayerRpForgeInquiryText(confirmationTitle);
@@ -1091,8 +1089,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				safeConfirmationText,
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"确认制造",
-				"返回修改",
+				Ui("AF_TERMINAL_UI_Forge_Confirm", "Confirm crafting"),
+				Ui("AF_TERMINAL_UI_Forge_ReturnToEdit", "Return to edit"),
 				delegate
 				{
 					if (!IsPlayerRpForgeUiCallbackCurrent(runtimeGeneration)
@@ -1106,7 +1104,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 						out string commitError))
 					{
 						ShowPlayerRpForgeError(
-							"制造未完成",
+							Ui("AF_TERMINAL_UI_Forge_CommitFailed", "Crafting did not complete"),
 							commitError,
 							runtimeGeneration,
 							() => OpenPlayerRpForgePopup(preview.CrafterHeroId));
@@ -1116,7 +1114,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 					string resultMessage = (result?.Message ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(resultMessage))
 					{
-						resultMessage = "已成功制造“" + (itemName ?? "").Trim() + "”。";
+						resultMessage = UiFormat("AF_TERMINAL_UI_Forge_CommitSuccess", "\"{NAME}\" was crafted successfully.", ("NAME", (itemName ?? "").Trim()));
 					}
 					resultMessage = SanitizePlayerRpForgeInquiryText(resultMessage);
 					QueuePlayerRpItemIntroduction(
@@ -1153,15 +1151,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		string message = SanitizePlayerRpForgeInquiryText(error);
 		if (string.IsNullOrWhiteSpace(message))
 		{
-			message = "原因未提供。";
+			message = Ui("AF_TERMINAL_UI_Forge_ReasonUnavailable", "No reason was provided.");
 		}
 		InformationManager.ShowInquiry(
 			new InquiryData(
-				string.IsNullOrWhiteSpace(safeTitle) ? "玩家RP物品制造" : safeTitle,
+				string.IsNullOrWhiteSpace(safeTitle) ? Ui("AF_TERMINAL_UI_Forge_ErrorTitle", "Player RP item crafting") : safeTitle,
 				message,
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: false,
-				"返回修改",
+				Ui("AF_TERMINAL_UI_Forge_ReturnToEdit", "Return to edit"),
 				"",
 				delegate
 				{
@@ -1226,38 +1224,38 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private static void ShowTrustQuery(AnimusForgeTerminalPopupVM popupVm)
 	{
-		popupVm.ShowBrowser("信任度查询", new[]
+		popupVm.ShowBrowser(Ui("AF_TERMINAL_UI_Trust_QueryTitle", "Trust query"), new[]
 		{
-			new AnimusForgeTerminalNode { Title = "搜索定居点信任", OnExecute = () => ShowSettlementTrustBrowser(popupVm) },
-			new AnimusForgeTerminalNode { Title = "搜索NPC信任", OnExecute = () => ShowHeroTrustBrowser(popupVm) }
+			new AnimusForgeTerminalNode { Title = Ui("AF_TERMINAL_UI_Trust_SearchSettlement", "Search settlement trust"), OnExecute = () => ShowSettlementTrustBrowser(popupVm) },
+			new AnimusForgeTerminalNode { Title = Ui("AF_TERMINAL_UI_Trust_SearchHero", "Search hero trust"), OnExecute = () => ShowHeroTrustBrowser(popupVm) }
 		});
 	}
 
 	private static void ShowSettlementTrustBrowser(AnimusForgeTerminalPopupVM popupVm)
 	{
 		RewardSystemBehavior reward = RewardSystemBehavior.Instance;
-		popupVm.ShowBrowser("定居点信任查询", Settlement.All.Where(x => x != null)
+		popupVm.ShowBrowser(Ui("AF_TERMINAL_UI_Trust_SettlementBrowserTitle", "Settlement trust query"), Settlement.All.Where(x => x != null)
 			.OrderBy(x => x.Name?.ToString() ?? x.StringId).Select(settlement => new AnimusForgeTerminalNode
 			{
 				Id = settlement.StringId,
 				ImageFactory = () => GetSettlementImageIdentifier(settlement),
 				Title = settlement.Name?.ToString() ?? settlement.StringId,
-				Hint = "信任度：" + FormatTrustDisplay(ClampTrustForDisplay((reward?.GetSettlementLocalPublicTrust(settlement) ?? 0) + (reward?.GetSettlementSharedPublicTrust(settlement) ?? 0))),
-				OnExecute = () => popupVm.ShowDetails("定居点信任详情", BuildSettlementTrustReport(settlement, RewardSystemBehavior.Instance))
+				Hint = UiFormat("AF_TERMINAL_UI_Trust_Hint", "Trust: {TRUST}", ("TRUST", FormatTrustDisplay(ClampTrustForDisplay((reward?.GetSettlementLocalPublicTrust(settlement) ?? 0) + (reward?.GetSettlementSharedPublicTrust(settlement) ?? 0))))),
+				OnExecute = () => popupVm.ShowDetails(Ui("AF_TERMINAL_UI_Trust_SettlementDetailsTitle", "Settlement trust details"), BuildSettlementTrustReport(settlement, RewardSystemBehavior.Instance))
 			}));
 	}
 
 	private static void ShowHeroTrustBrowser(AnimusForgeTerminalPopupVM popupVm)
 	{
 		RewardSystemBehavior reward = RewardSystemBehavior.Instance;
-		popupVm.ShowBrowser("NPC信任查询", Hero.AllAliveHeroes.Where(x => x != null)
+		popupVm.ShowBrowser(Ui("AF_TERMINAL_UI_Trust_HeroBrowserTitle", "Hero trust query"), Hero.AllAliveHeroes.Where(x => x != null)
 			.OrderBy(x => x.Name?.ToString() ?? x.StringId).Select(hero => new AnimusForgeTerminalNode
 			{
 				Id = hero.StringId,
 				ImageFactory = () => GetHeroImageIdentifier(hero),
 				Title = hero.Name?.ToString() ?? hero.StringId,
-				Hint = "信任度：" + FormatTrustDisplay(reward?.GetEffectiveTrust(hero) ?? 0),
-				OnExecute = () => popupVm.ShowDetails("NPC信任详情", BuildHeroTrustReport(hero, RewardSystemBehavior.Instance))
+				Hint = UiFormat("AF_TERMINAL_UI_Trust_Hint", "Trust: {TRUST}", ("TRUST", FormatTrustDisplay(reward?.GetEffectiveTrust(hero) ?? 0))),
+				OnExecute = () => popupVm.ShowDetails(Ui("AF_TERMINAL_UI_Trust_HeroDetailsTitle", "Hero trust details"), BuildHeroTrustReport(hero, RewardSystemBehavior.Instance))
 			}));
 	}
 
@@ -1265,19 +1263,19 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		if (settlement == null)
 		{
-			return "未找到定居点。";
+			return Ui("AF_TERMINAL_UI_Trust_SettlementNotFound", "Settlement not found.");
 		}
-		string text = settlement.Name?.ToString() ?? settlement.StringId ?? "未知定居点";
-		string text2 = settlement.MapFaction?.Name?.ToString() ?? settlement.OwnerClan?.Kingdom?.Name?.ToString() ?? settlement.OwnerClan?.Name?.ToString() ?? "未知势力";
+		string text = settlement.Name?.ToString() ?? settlement.StringId ?? Ui("AF_TERMINAL_UI_Trust_UnknownSettlement", "Unknown settlement");
+		string text2 = settlement.MapFaction?.Name?.ToString() ?? settlement.OwnerClan?.Kingdom?.Name?.ToString() ?? settlement.OwnerClan?.Name?.ToString() ?? Ui("AF_TERMINAL_UI_Trust_UnknownFaction", "Unknown faction");
 		int num = reward?.GetSettlementLocalPublicTrust(settlement) ?? 0;
 		int num2 = reward?.GetSettlementSharedPublicTrust(settlement) ?? 0;
 		int num3 = ClampTrustForDisplay(num + num2);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"名称：{text}");
-		stringBuilder.AppendLine($"所属势力：{text2}");
-		stringBuilder.AppendLine($"信任度：{FormatTrustDisplay(num3)}");
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_NameLine", "Name: {NAME}", ("NAME", text)));
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_FactionLine", "Faction: {FACTION}", ("FACTION", text2)));
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_LevelLine", "Trust: {TRUST}", ("TRUST", FormatTrustDisplay(num3))));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("商贩信任度：");
+		stringBuilder.AppendLine(Ui("AF_TERMINAL_UI_Trust_MerchantTrustHeading", "Merchant trust:"));
 		foreach (RewardSystemBehavior.SettlementMerchantKind value in Enum.GetValues(typeof(RewardSystemBehavior.SettlementMerchantKind)))
 		{
 			if (value == RewardSystemBehavior.SettlementMerchantKind.None)
@@ -1294,15 +1292,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		if (hero == null)
 		{
-			return "未找到 NPC。";
+			return Ui("AF_TERMINAL_UI_Trust_HeroNotFound", "Hero not found.");
 		}
-		string text = hero.Name?.ToString() ?? hero.StringId ?? "未知NPC";
-		string text2 = hero.MapFaction?.Name?.ToString() ?? hero.Clan?.Kingdom?.Name?.ToString() ?? hero.Clan?.Name?.ToString() ?? hero.Culture?.Name?.ToString() ?? "未知势力";
+		string text = hero.Name?.ToString() ?? hero.StringId ?? Ui("AF_TERMINAL_UI_Trust_UnknownHero", "Unknown hero");
+		string text2 = hero.MapFaction?.Name?.ToString() ?? hero.Clan?.Kingdom?.Name?.ToString() ?? hero.Clan?.Name?.ToString() ?? hero.Culture?.Name?.ToString() ?? Ui("AF_TERMINAL_UI_Trust_UnknownFaction", "Unknown faction");
 		int num3 = reward?.GetEffectiveTrust(hero) ?? 0;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"名称：{text}");
-		stringBuilder.AppendLine($"所属势力：{text2}");
-		stringBuilder.AppendLine($"信任度：{FormatTrustDisplay(num3)}");
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_NameLine", "Name: {NAME}", ("NAME", text)));
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_FactionLine", "Faction: {FACTION}", ("FACTION", text2)));
+		stringBuilder.AppendLine(UiFormat("AF_TERMINAL_UI_Trust_LevelLine", "Trust: {TRUST}", ("TRUST", FormatTrustDisplay(num3))));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -1311,15 +1309,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		switch (kind)
 		{
 		case RewardSystemBehavior.SettlementMerchantKind.Weapon:
-			return "武器商";
+			return Ui("AF_TERMINAL_UI_Trust_MerchantWeapon", "Weaponsmith");
 		case RewardSystemBehavior.SettlementMerchantKind.Armor:
-			return "防具商";
+			return Ui("AF_TERMINAL_UI_Trust_MerchantArmor", "Armorsmith");
 		case RewardSystemBehavior.SettlementMerchantKind.Horse:
-			return "马商";
+			return Ui("AF_TERMINAL_UI_Trust_MerchantHorse", "Horse trader");
 		case RewardSystemBehavior.SettlementMerchantKind.Goods:
-			return "杂货商";
+			return Ui("AF_TERMINAL_UI_Trust_MerchantGoods", "Goods merchant");
 		case RewardSystemBehavior.SettlementMerchantKind.Blacksmith:
-			return "铁匠";
+			return Ui("AF_TERMINAL_UI_Trust_MerchantBlacksmith", "Blacksmith");
 		default:
 			return kind.ToString();
 		}
