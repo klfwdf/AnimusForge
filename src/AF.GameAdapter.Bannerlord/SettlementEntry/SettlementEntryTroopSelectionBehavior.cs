@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -2181,7 +2181,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			IncreaseSettlementHealthAction.Apply(settlement, -settlement.SettlementHitPoints * SetsVillageVictoryRewardProfile.SettlementHitPointLossRatio);
 			SkillLevelingManager.OnForceSupplies(MobileParty.MainParty, loot, TaleWorlds.CampaignSystem.MapEvents.MapEvent.PlayerMapEvent == null);
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsVillageVictoryRewardProfile.BuildRewardMessage(gold, itemCount),
+				SiegeAftermathUiText.BuildVillageRewardMessage(gold, itemCount),
 				Color.FromUint(SuccessColor)));
 			InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
 			{
@@ -3125,7 +3125,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (civilianAgentIndexes.Count <= 0)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.NoEligibleCivilianMessage,
+					SiegeAftermathUiText.NoEligibleCivilianMessage,
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 				SettlementEntryTroopSelectionLog.Log("No eligible ordinary-settlement civilians found for queued gather. settlement="
 					+ _settlementId
@@ -3147,7 +3147,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_settlementCivilianGatherOrderFinalizePending = false;
 			_nextSettlementCivilianGatherBatchTime = mission.CurrentTime + SetsSettlementCivilianGatherProfile.FormationAssignmentInitialDelaySeconds;
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsSettlementCivilianGatherProfile.BuildQueuedMessage(_settlementCivilianGatherRequestedCount),
+				SiegeAftermathUiText.BuildQueuedCivilianMessage(_settlementCivilianGatherRequestedCount),
 				Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			SettlementEntryTroopSelectionLog.Log("Prepared staged ordinary-settlement civilian gather. settlement="
 				+ _settlementId
@@ -3247,13 +3247,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				civilianFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
 				EnsureSetsCommandUiReadyForExternal(mission, "sets_settlement_civilian_gather_complete", force: true, preserveSelection: true);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.BuildGatheredMessage(_settlementCivilianGatherAssignedCount),
+					SiegeAftermathUiText.BuildGatheredCivilianMessage(_settlementCivilianGatherAssignedCount),
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			}
 			else
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.NoEligibleCivilianMessage,
+					SiegeAftermathUiText.NoEligibleCivilianMessage,
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			}
 			SettlementEntryTroopSelectionLog.Log("Completed staged ordinary-settlement civilian gather. settlement="
@@ -3838,7 +3838,7 @@ if (_spawnedAlliedCount > 0)
 				EnsureSetsCommandUiReadyForExternal(mission, "conflict_start", force: true, preserveSelection: true);
 				RefreshSetsUsableProtectionState("conflict_start");
 				SpawnInitialDefenderReserveWave();
-				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Conflict started. settlement=" + _settlementId + ", source=" + source + ", enemies=" + _enemyAgentIndexes.Count + ", readiedAllies=" + readiedAllies + ", commandableSceneHeroes=" + commandableSceneHeroes + ", followersCommandable=true, scatteredHeroesCommandable=true, autoCharge=false");
 			}
 			catch (Exception ex)
@@ -4829,7 +4829,7 @@ if (_spawnedAlliedCount > 0)
 				EnsureSetsCommandUiReadyForExternal(mission, "owned_settlement_incident", force: true, preserveSelection: true);
 				MaintainOwnedSettlementIncidentPanic(force: true);
 				ClearSetsUsableProtectionState("owned_settlement_incident");
-				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildOwnedIncidentMessage(_sceneKind), Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.BuildOwnedIncidentMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Owned/attached settlement incident started. settlement=" + _settlementId + ", source=" + (source ?? "") + ", target=" + SafeCharacterId(initialTarget?.Character as CharacterObject));
 			}
 			catch (Exception ex)
@@ -5918,7 +5918,7 @@ if (_spawnedAlliedCount > 0)
 				RefreshEnemyNativeCombatOrders();
 				if (spawned > 0)
 				{
-					string message = !_armedCoup ? SetsSettlementEntryProfile.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves)
+					string message = !_armedCoup ? SiegeAftermathUiText.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves)
 						: IsCoupHall ? "【宣权篡位】大厅护卫部署：本批 " + spawned + " 人，待部署 " + _remainingDefenderReserve.Count + " 人。"
 						: "【宣权篡位】守军增援第 " + waveNumber + " 批，待入场 " + _remainingDefenderReserve.Count + " 人（场上最多 " + _maxActiveDefenderWaves + " 批；突破大厅入口后停止增援）。";
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(WarningColor)));
@@ -7652,7 +7652,7 @@ agent.Controller = AgentControllerType.None;
 			if (exitBlocked)
 			{
 				canPlayerLeave = false;
-				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
+				return new InquiryData("{=AF_SETS_ConflictTitle}Internal unrest", SiegeAftermathUiText.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_SETS_Confirm}Confirm").ToString(), "", null, null);
 			}
 			canPlayerLeave = true;
 			return null;
@@ -7709,7 +7709,7 @@ agent.Controller = AgentControllerType.None;
 			QueueVictoryPostMissionFlow(source);
 			InformationManager.DisplayMessage(new InformationMessage(_armedCoup
 				? "【宣权篡位】本场守军已被击溃。继续完成政变目标；大厅胜利后确认旧王处置，离场查看登基动画与战报。"
-				: SetsSettlementEntryProfile.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
+				: SiegeAftermathUiText.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_SETS_Noun_Castle" text="城堡" />
+    <string id="AF_SETS_Noun_Village" text="村庄" />
+    <string id="AF_SETS_Noun_Town" text="城镇" />
+    <string id="AF_SETS_Noun_Settlement" text="定居点" />
+    <string id="AF_SETS_Defenders_Castle" text="守卫、民兵、驻军与驻堡领主部队" />
+    <string id="AF_SETS_Defenders_Village" text="村庄民兵" />
+    <string id="AF_SETS_Defenders_Town" text="守卫、民兵、驻军与驻城领主部队" />
+    <string id="AF_SETS_Defenders_Default" text="守军" />
+    <string id="AF_SETS_Spawn_Castle" text="领主大厅门口" />
+    <string id="AF_SETS_Spawn_Village" text="村庄地图边缘" />
+    <string id="AF_SETS_Spawn_Town" text="城镇工坊区" />
+    <string id="AF_SETS_Spawn_Default" text="场景边缘" />
+    <string id="AF_SETS_Phase_VillageMilitia" text="村庄民兵" />
+    <string id="AF_SETS_Phase_Garrison" text="{NOUN}驻军" />
+    <string id="AF_SETS_Phase_Militia" text="{NOUN}民兵" />
+    <string id="AF_SETS_Phase_Lord" text="敌对领主部队" />
+    <string id="AF_SETS_Civilians_None" text="【SETS】当前没有可召集的成年平民。" />
+    <string id="AF_SETS_Civilians_Queued" text="【SETS】正在召集 {COUNT} 名成年平民，完成后将编入3号民众编队。" />
+    <string id="AF_SETS_Civilians_Gathered" text="【SETS】已召集 {COUNT} 名成年平民并编入3号民众编队。" />
+    <string id="AF_SETS_VillageReward" text="【SETS村庄战果】获得 {GOLD} 第纳尔；{ITEMS} 件村庄物资已送入原版战利品界面。" />
+    <string id="AF_SETS_ConflictStarted" text="【SETS内部暴乱】{DEFENDERS}已进入敌对状态（第0波）。选中的随行士兵、同伴与家族成员已加入你的编队，等待你的指挥。" />
+    <string id="AF_SETS_ReserveWave" text="【SETS内部暴乱】{PHASE}从{SPAWN}加入战斗（第{WAVE}波，场上最多{MAX}波）。" />
+    <string id="AF_SETS_ExitBlocked" text="内部暴乱尚未结束。击溃{DEFENDERS}后才能退出。" />
+    <string id="AF_SETS_Victory_Village" text="【SETS内部暴乱】村庄民兵已被击溃。按 TAB 退出后领取金钱，并进入原版战利品界面。" />
+    <string id="AF_SETS_Victory" text="【SETS内部暴乱】{DEFENDERS}已被击溃。按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。" />
+    <string id="AF_SETS_OwnedIncident_Village" text="【SETS】自有/附属村庄事件已触发，村民正在逃散。可随时按 TAB 退出并进入 GCCZ 村庄处置菜单。" />
+    <string id="AF_SETS_OwnedIncident" text="【SETS】自有/附属{NOUN}事件已触发，居民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。" />
+    <string id="AF_SETS_ConflictTitle" text="内部暴乱" />
+    <string id="AF_SETS_Confirm" text="确定" />
+    <string id="AF_SETS_Memory_UnknownCommander" text="未知统帅" />
+    <string id="AF_SETS_Memory_Aftermath" text="当事人“{ACTOR}”在该城的战后处置已结算为“{OUTCOME}”。" />
+    <string id="AF_SETS_Memory_Completed" text="{AFTERMATH}已结算物资掠取估值{LOOT}，掠取第纳尔{GOLD}，平民死亡{CIVILIANS}，要人死亡{NOTABLES}；已落实救济第纳尔{RELIEF_GOLD}、食物{RELIEF_FOOD}。上述为实际结算记录，不代表后续承诺已兑现。" />
+    <string id="AF_SETS_Memory_Policy" text="地方政策《{TITLE}》在该城{STATUS}。这只确认政策状态，不代表预期经济或民心效果已经发生。" />
+    <string id="AF_SETS_Policy_Published" text="已发布" />
+    <string id="AF_SETS_Policy_Renewed" text="已续期" />
+    <string id="AF_SETS_Policy_Abolished" text="已废除" />
+    <string id="AF_SETS_Policy_Expired" text="已到期" />
+    <string id="AF_SETS_Action_Pillage" text="劫掠" />
+    <string id="AF_SETS_Action_Devastate" text="摧毁" />
+    <string id="AF_SETS_Action_Mercy" text="宽恕" />
+  </strings>
+</base>
