@@ -1185,7 +1185,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 				if (s != null)
 				{
 					SettingDef.Setter(s, value);
-					DisplayValue = string.IsNullOrWhiteSpace(value) ? "点击填写 ✎" : (value.Length > 24 ? value.Substring(0, 24) + "..." : value);
+					DisplayValue = string.IsNullOrWhiteSpace(value) ? new TextObject("{=AF_UI_Terminal_EditValue}Click to enter ✎").ToString() : (value.Length > 24 ? value.Substring(0, 24) + "..." : value);
 					OnPropertyChangedWithValue(value, nameof(TextValue));
 					OnPropertyChanged(nameof(DisplayValue));
 					_onModified?.Invoke();
@@ -1316,7 +1316,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 				ItemKind = TerminalItemKind.TextSetting;
 				BadgeText = new TextObject("{=AF_UI_Terminal_Text}Text").ToString();
 				string raw = def.Getter(settings)?.ToString() ?? "";
-				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+				DisplayValue = string.IsNullOrWhiteSpace(raw) ? new TextObject("{=AF_UI_Terminal_EditValue}Click to enter ✎").ToString() : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
 				break;
 
 			case TerminalSettingType.Button:

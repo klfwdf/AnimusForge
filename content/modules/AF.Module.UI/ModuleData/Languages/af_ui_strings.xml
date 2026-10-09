@@ -306,5 +306,6 @@
   <string id="AF_UI_Terminal_CategoryLabel" text="Category:" />
   <string id="AF_UI_Terminal_DescriptionLabel" text="Description:" />
   <string id="AF_UI_Terminal_SourcesLabel" text="Sources:" />
+  <string id="AF_UI_Terminal_EditValue" text="Click to enter ✎" />
   </strings>
 </base>
