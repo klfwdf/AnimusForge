@@ -192,13 +192,13 @@ public static partial class TroopInspectionBehavior
 				return;
 			}
 			OpenInspectionMissionAfterSelection(mainParty);
-			Display("士兵检阅开始。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionStarted", "Troop inspection started."));
 		}
 		catch (Exception ex)
 		{
 			Log("queued inspection_open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
 			CleanupRuntime("queued_open_failed");
-			Display("打开检阅士兵失败。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionOpenFailed", "Failed to open troop inspection."));
 		}
 		finally
 		{
@@ -228,7 +228,7 @@ public static partial class TroopInspectionBehavior
 		Log("terminal_open");
 		if (_isOpening)
 		{
-			Display("检阅正在准备中。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionPreparing", "Troop inspection is preparing."));
 			Log("precheck blocked: already opening");
 			return;
 		}
@@ -236,7 +236,7 @@ public static partial class TroopInspectionBehavior
 		{
 			if (IsPartyScreenStillActive())
 			{
-				Display("检阅队伍选择界面已经打开。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionSelectionOpen", "The troop inspection selection screen is already open."));
 				Log("precheck blocked: selection screen active");
 				return;
 			}
@@ -259,19 +259,19 @@ public static partial class TroopInspectionBehavior
 			Log($"precheck {BuildMainHeroInspectionStateSummary()} healthy_non_player={healthyInspectableTroops} mission_current={Mission.Current != null} player_encounter={PlayerEncounter.Current != null} player_mapevent={MapEvent.PlayerMapEvent != null}");
 			if (Hero.MainHero?.IsWounded == true)
 			{
-				Display("你受伤了，无法检阅部队。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionPlayerWounded", "You are wounded and cannot inspect troops."));
 				ResetPendingSelection("player_wounded");
 				return;
 			}
 			if (healthyInspectableTroops <= 0)
 			{
-				Display("没有可检阅的健康士兵。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionNoHealthyTroops", "There are no healthy soldiers available for inspection."));
 				ResetPendingSelection("no_healthy_troops");
 				return;
 			}
 			if (PlayerEncounter.Current != null || MapEvent.PlayerMapEvent != null || mainParty.MapEvent != null)
 			{
-				Display("当前遭遇状态无法检阅部队。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionEncounterBlocked", "The current encounter state prevents troop inspection."));
 				Log("precheck blocked: existing encounter or player map event");
 				ResetPendingSelection("existing_encounter");
 				return;
@@ -283,7 +283,7 @@ public static partial class TroopInspectionBehavior
 		{
 			Log("open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
 			ResetPendingSelection("open_failed");
-			Display("打开检阅士兵失败。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionOpenFailed", "Failed to open troop inspection."));
 		}
 		finally
 		{
@@ -818,22 +818,22 @@ public static partial class TroopInspectionBehavior
 		{
 			if (Campaign.Current == null || mainParty == null || PartyBase.MainParty == null)
 			{
-				blockedReason = "当前状态无法检阅部队。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_InspectionStateBlocked", "The current state prevents troop inspection.");
 				return false;
 			}
 			if (Mission.Current != null)
 			{
-				blockedReason = "当前任务中无法检阅部队。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_InspectionMissionBlocked", "Troop inspection is unavailable during a mission.");
 				return false;
 			}
 			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
 			{
-				blockedReason = "当前对话中无法检阅部队。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_InspectionConversationBlocked", "Troop inspection is unavailable during a conversation.");
 				return false;
 			}
 			if (Settlement.CurrentSettlement != null || mainParty.CurrentSettlement != null)
 			{
-				blockedReason = "当前地点无法检阅部队。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_InspectionLocationBlocked", "Troop inspection is unavailable at the current location.");
 				return false;
 			}
 			return true;
@@ -841,7 +841,7 @@ public static partial class TroopInspectionBehavior
 		catch (Exception ex)
 		{
 			Log("precheck exception: " + ex.GetType().Name + ": " + ex.Message);
-			blockedReason = "当前状态无法检阅部队。";
+			blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_InspectionStateBlocked", "The current state prevents troop inspection.");
 			return false;
 		}
 	}
@@ -879,8 +879,8 @@ public static partial class TroopInspectionBehavior
 			PlayerOriginalHitPoints = Hero.MainHero?.HitPoints ?? 0,
 			PlayerOriginalWasWounded = Hero.MainHero?.IsWounded ?? false
 		};
-		TextObject leftName = new TextObject("可选成员 / 未参加检阅");
-		TextObject rightName = new TextObject("检阅队（玩家固定属于此队）");
+		TextObject leftName = ExerciseUiLocalization.Object("AF_EX_UI_InspectionSelectableMembers", "Selectable members / not in inspection");
+		TextObject rightName = ExerciseUiLocalization.Object("AF_EX_UI_InspectionTeam", "Inspection team (the player is fixed to this team)");
 		int leftMemberLimit = Math.Max(selectableMembers.TotalManCount, 0);
 		int leftPrisonerLimit = Math.Max(selectablePrisoners.TotalManCount, 0);
 		int rightMemberLimit = Math.Max(mainParty.Party?.PartySizeLimit ?? (selectableMembers.TotalManCount + 1), selectableMembers.TotalManCount + 1);
@@ -950,7 +950,7 @@ public static partial class TroopInspectionBehavior
 			if (fromCancel)
 			{
 				ResetPendingSelection("inspection_cancel");
-				Display("已取消士兵检阅。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionCancelled", "Troop inspection cancelled."));
 				return;
 			}
 			if (_pendingSelection == null)
@@ -983,7 +983,7 @@ public static partial class TroopInspectionBehavior
 				CleanupSplitRuntime("split_failed");
 				ResetPendingSelection("split_failed");
 				_runtime = null;
-				Display("士兵检阅准备失败：队伍选择数据不一致，请重新选择。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_InspectionPreparationFailed", "Troop inspection preparation failed: the team selection is inconsistent. Please select again."));
 				return;
 			}
 			_pendingSelection = null;
@@ -994,7 +994,7 @@ public static partial class TroopInspectionBehavior
 		{
 			Log("inspection_team_screen failed: " + ex.GetType().Name + ": " + ex.Message);
 			ResetPendingSelection("inspection_exception");
-			Display("选择失败。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_SelectionFailed", "Selection failed."));
 		}
 	}
 
@@ -3493,8 +3493,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			_inspectionMessageShown = true;
 			AnimusForgeQuickInfo.Show(_externalCastleRuntime
-				? "城堡处置：可用原版指挥系统调整士兵与俘虏站位。按TAB结束处置。"
-				: "检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
+				? ExerciseUiLocalization.Text("AF_EX_UI_CastleDispositionHint", "Castle disposition: use the native command system to arrange soldiers and prisoners. Press TAB to finish.")
+				: ExerciseUiLocalization.Text("AF_EX_UI_InspectionModeHint", "Inspection mode: command the formation freely during inspection. Press TAB to retreat and finish."));
 			Log("inspection_message_shown");
 		}
 	}
@@ -3923,7 +3923,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			Log("spawn_prisoners skipped: PrisonRoster null source=" + prisonerSource + " main_party=" + (PartyBase.MainParty != null));
 			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: PrisonRoster null");
-			AnimusForgeQuickInfo.Show("阅兵：无法访问囚犯名册。");
+			AnimusForgeQuickInfo.Show(ExerciseUiLocalization.Text("AF_EX_UI_PrisonerRosterUnavailable", "Parade: the prisoner roster is unavailable."));
 			return;
 		}
 		int totalCount = 0;
@@ -3949,7 +3949,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			Log("spawn_prisoners skipped: no selected prisoners source=" + prisonerSource + " roster=" + PrisonerRosterDiag(prisonRoster) + " main_roster=" + PrisonerRosterDiag(PartyBase.MainParty?.PrisonRoster));
 			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: no prisoners at all");
-			AnimusForgeQuickInfo.Show("阅兵：没有囚犯可参加阅兵。");
+			AnimusForgeQuickInfo.Show(ExerciseUiLocalization.Text("AF_EX_UI_NoPrisoners", "Parade: there are no prisoners available to participate."));
 			return;
 		}
 		Team playerTeam = base.Mission.PlayerTeam;
@@ -4064,24 +4064,24 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		NotifyExternalPrisonerSpawnCompleted(totalCount, spawnedRegulars, spawnedHeroes);
 		if (!_externalCastleRuntime && spawned > 0)
 		{
-			string msg = "阅兵：";
+			string msg = ExerciseUiLocalization.Text("AF_EX_UI_ParadePrefix", "Parade: ");
 			if (spawnedHeroes > 0)
 			{
-				msg += spawnedHeroes + " 名领主俘虏（8号领主编队），";
+				msg += ExerciseUiLocalization.Text("AF_EX_UI_ParadeLords", "{COUNT} lord prisoners (lord formation 8),", ("COUNT", spawnedHeroes));
 			}
 			if (spawnedRegulars > 0)
 			{
-				msg += spawnedRegulars + " 名士兵俘虏（7号俘虏编队）";
+				msg += ExerciseUiLocalization.Text("AF_EX_UI_ParadeRegulars", "{COUNT} soldier prisoners (prisoner formation 7)", ("COUNT", spawnedRegulars));
 			}
 			AnimusForgeQuickInfo.Show(msg);
 		}
 		else if (!_externalCastleRuntime && totalErrors > 0)
 		{
-			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError);
+			AnimusForgeQuickInfo.Show(ExerciseUiLocalization.Text("AF_EX_UI_PrisonerSpawnFailed", "Parade: prisoner spawning failed ({ERRORS}/{TOTAL}). Error: {ERROR}", ("ERRORS", totalErrors), ("TOTAL", totalCount), ("ERROR", lastError)));
 		}
 		else if (!_externalCastleRuntime)
 		{
-			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
+			AnimusForgeQuickInfo.Show(ExerciseUiLocalization.Text("AF_EX_UI_PrisonerSpawnAllFailed", "Parade: prisoner spawning failed ({COUNT} attempts, 0 succeeded).", ("COUNT", totalCount)));
 		}
 	}
 

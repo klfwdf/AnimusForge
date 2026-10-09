@@ -16974,6 +16974,16 @@
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Exercise",
+      "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/afexercise_ui_strings.xml",
+      "target": "ModuleData/Languages/afexercise_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Exercise",
+      "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml"
     }
   ]
 }
