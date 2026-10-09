@@ -1,3 +1,14 @@
+<a id="release-v1-5-7-20261009"></a>
+## 1.5.7 本地打包与累计玩家公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
+
+本轮按用户要求打包，并对比上次正式 1.5.6 至当前远端的累计变化。基线产品 `fe40e43f942dd54fab5f63fba30ebb15838df690`，上次发布远端 `c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce`；本次冻结产品/资源/脚本来自 `46ce63e960335300a2565ad5a634d220fe8bf7e3`，本地检查点 `e6a6881ddb3dd1915e54a4fd0f112ecbfd77d6c0`。只经官方脚本把模块版本设为 v1.5.7、FileVersion 设为 1.5.7.0，AssemblyVersion 保持真实的 1.5.4.0；其余 32,196 个冻结跟踪输入未变。未修改构建脚本或产品逻辑，本轮没有覆盖游戏。
+
+原 `package_mod.ps1 -Configuration Debug -Build -ExcludeOnnx` exit0；引用 v1.3.15.110062 / v1.4.6.115628，双实现各348警告、0错误，Bootstrap及探针0警告、0错误；双Coup接缝、注册、Stage、ZIP成功。ZIP为 `一键编译覆盖推送/packages/AnimusForge_v1.5.7_20261009_103006_373.zip`，85,472,485字节，SHA-256 `ca8c3679d6ffc6fa2615ffe1c5bf8d4675ec436a1c60598685259f35dfa92318`。3,381文件全量CRC及Stage/ZIP SHA、9程序产物与marker通过，唯一AnimusForge根、Bootstrap-only XML、双实现身份/版本通过；不含ONNX、日志或未知玩家导出。3139份PlayerExports是现有契约具名的内置世界书，逐项符合tracked源码/content-map/Stage/ZIP SHA；独立验收最初误用整目录禁令的记录保留于本地，修正该错误oracle后通过，未修改官方包或白名单。
+
+[累计玩家公告](releases/AnimusForge_1.5.7_累计更新公告_20261009.md)及纯文本同名txt已放在包旁；主题涵盖接力上下文、Native记忆和输入、自由取景、画廊、外交、新闻与工具。保留被替代规则：旧自动双机位由自由取景取代；旧仅玩家宣战例外由 `04f07b12c` 的最终玩家行动策略接续，公告不把中间规则叠加。详细主题提交列表与收据在 `artifacts/release-v1.5.7-20261009/`，实际消费者和源码坐标继续引用[现有代码导航](architecture/af-framework-code-scope.md)及各功能台账。
+
+本轮安装文件仍与旧Stage的3381项SHA一致，新1.5.7只生成本地包。实机两版本UI/行为、旧档、第三方MOD、真实provider/LLM/TTS/GPU及全仓回归未验；不保证每次接满八轮、自动恢复历史丢失记忆或修复所有坏档。用户要求停止扩展检查，必要包验证已完成后收尾。版本/公告/交接按明确提交和普通推送授权交付，真实远端结果以本地 `publication-receipt.json` 为准；不提交ZIP/artifacts/NuGet。回滚只定向inverse本次release提交；旧Stage完整保留 `.tmp/release-v1.5.7-20261009/previous-stage-46ce63e96`，旧1.5.6 ZIP保持SHA，游戏安装无需本轮回滚。此前功能的部署/推送和实机限制仍按所属台账，以下历史保留。
+
 <a id="scene-relay-natural-flow-20261009"></a>
 ## 场景接力续聊上下文修复与交付（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 

@@ -1,4 +1,10 @@
-# 当前交接：场景接力续聊上下文修复（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+# 当前交接：1.5.7 本地包与累计公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
+
+- 以正式1.5.6产品 `fe40e43f9` 为基线，累计到远端产品 `46ce63e96`；官方流程生成v1.5.7，FileVersion1.5.7.0、AssemblyVersion1.5.4.0。原命令exit0，双API/Bootstrap/双Coup gate/Stage/ZIP通过；3,381项CRC与SHA、9程序产物及3139份具名内置世界书白名单通过。两个实现各348警告、0错误。
+- 包 `一键编译覆盖推送/packages/AnimusForge_v1.5.7_20261009_103006_373.zip`，85,472,485字节，SHA `ca8c3679d6ffc6fa2615ffe1c5bf8d4675ec436a1c60598685259f35dfa92318`；[玩家公告](docs/releases/AnimusForge_1.5.7_累计更新公告_20261009.md)及txt在包旁。本轮未部署，新包不代表1.5.7已安装；实机/旧档/真实AI/全仓未验。
+- [唯一主台账、基线和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-v1-5-7-20261009)、[代码导航](docs/architecture/af-framework-code-scope.md)；本地证据 `artifacts/release-v1.5.7-20261009/`。精确提交版本/公告/交接并按授权普通推送，真实远端由publication-receipt核实；ZIP/artifacts/两NuGet目录不提交。回滚定向inverse本release提交；检查点 `e6a6881dd`，旧Stage保留 `.tmp/release-v1.5.7-20261009/previous-stage-46ce63e96`，旧包保留。
+
+## 历史交接：场景接力续聊上下文修复（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 
 - 产品与构建源码 `3022b12717878d246ce5b3068a78b2db235c45e1`，检查点 `81a1f2ea3`，修前 `fb0c4e46f`。正文请求在真实历史后接入原始话题、上一位发言、轮次和已发言名单，后处理独立获得同一上下文；第二跳玩家动作资格仍关闭。保持八轮上限和合法自选结束，不保证模型必然接满。
 - 同源专项49断言、15停止案例双归一化、修前真实调用点负控通过验收；最终双DLL各12调用/边界检查与26源码坐标双模式通过。官方1.3.15/1.4.6、Bootstrap、双Coup gate和Stage原命令exit0；全仓代码图仍有既有ModuleFrameworkRuntime过期项，未改绿。
