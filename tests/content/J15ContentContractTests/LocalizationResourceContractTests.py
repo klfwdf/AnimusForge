@@ -45,6 +45,7 @@ def main() -> int:
         raise AssertionError("DialogueUI localization resources are not registered in LanguageData")
     required_resources = [
         ("ModuleData/Languages/coup_strings.xml", "ModuleData/Languages/CNs/coup_strings-zh-CN.xml", "coup_strings.xml", "CNs/coup_strings-zh-CN.xml"),
+        ("ModuleData/Languages/vengeance_strings-en.xml", "ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml", "vengeance_strings-en.xml", "CNs/vengeance_strings-zh-CN.xml"),
         ("ModuleData/Languages/illustrator_strings.xml", "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml", "illustrator_strings.xml", "CNs/illustrator_strings-zh-CN.xml"),
     ]
     for en_target, zh_target, en_path, zh_path in required_resources:
@@ -63,6 +64,8 @@ def main() -> int:
          root / "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml"),
         (root / "content/modules/AnimusForge.Illustrator/ModuleData/Languages/illustrator_strings.xml",
          root / "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml"),
+        (root / "AnimusForge/ModuleData/Languages/vengeance_strings-en.xml",
+         root / "AnimusForge/ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml"),
     ]
     for english, chinese in pairs:
         en = strings(english)
@@ -72,6 +75,16 @@ def main() -> int:
         for key in en:
             if sorted(VAR.findall(en[key])) != sorted(VAR.findall(zh[key])):
                 raise AssertionError(f"placeholder mismatch: {key}")
+    # Vengeance source code must never introduce a player-facing REX_ key without both language entries.
+    vengeance_source = root / "Vengeance/Source"
+    source_text = "\n".join(path.read_text(encoding="utf-8") for path in vengeance_source.rglob("*.cs"))
+    referenced = set(re.findall(r"REX_[A-Za-z0-9_]+", source_text))
+    vengeance_en = strings(root / "AnimusForge/ModuleData/Languages/vengeance_strings-en.xml")
+    vengeance_zh = strings(root / "AnimusForge/ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml")
+    missing_en = referenced - set(vengeance_en)
+    missing_zh = referenced - set(vengeance_zh)
+    if missing_en or missing_zh:
+        raise AssertionError(f"Vengeance source keys missing: EN={sorted(missing_en)} zh={sorted(missing_zh)}")
     print(f"PASS localization resource pairs={len(pairs)}")
     return 0
 

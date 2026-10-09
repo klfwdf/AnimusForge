@@ -454,5 +454,37 @@
     <string id="REX_Speech2_Close_Terror_2" text="The warning is given. I await your word." />
     <string id="REX_Speech2_Close_Terror_3" text="Your command will be carried out." />
     <string id="REX_Speech2_Close_Terror_4" text="Give the word." />
-</strings>
+
+    <string id="REX_Name" text="Vengeance" />
+    <string id="REX_UI_Consequences" text="Security {SECURITY} · Loyalty {LOYALTY} · Influence {INFLUENCE} · Honor {HONOR} · Mercy {MERCY} · Local relations {RELATION}" />
+    <string id="REX_Select_Prisoner_Title" text="Choose the condemned" />
+    <string id="REX_Select_Prisoner_Description" text="Choose a living adult hero prisoner who is not protected by a quest." />
+    <string id="REX_Prisoner_Hint" text="Held at: {SOURCE}&#10;Clan: {CLAN}" />
+    <string id="REX_Select_Method_Title" text="Choose the sentence" />
+    <string id="REX_Select_Method_Description" text="Choose the public execution method. Methods without dedicated native assets use a safe placeholder performance." />
+    <string id="REX_Select_Charge_Title" text="Choose the charge" />
+    <string id="REX_Select_Charge_Description" text="Any charge may be announced, but an unsupported accusation lowers legitimacy." />
+    <string id="REX_Charge_Hint" text="{DESCRIPTION}&#10;Evidence: {EVIDENCE}" />
+    <string id="REX_Charge_Banditry" text="Banditry" />
+    <string id="REX_Charge_Banditry_Hint" text="Living by robbery, extortion and extrajudicial violence." />
+    <string id="REX_Charge_Public_Enemy" text="Enemy of the realm" />
+    <string id="REX_Charge_Public_Enemy_Hint" text="Waging war against our realm and its people." />
+    <string id="REX_Select_Tone_Title" text="Set the ceremonial tone" />
+    <string id="REX_Select_Tone_Description" text="The ceremonial tone changes legitimacy, public consequences and crowd reaction." />
+    <string id="REX_Tone_Judicial_Hint" text="Present the ceremony as a restrained lawful sentence." />
+    <string id="REX_Tone_Spectacle_Hint" text="A public spectacle for the crowd, meant to be remembered across the town." />
+    <string id="REX_Tone_Terror_Hint" text="Rule through fear; this severely damages loyalty and reputation." />
+    <string id="REX_Confirm_Title" text="Review the public sentence" />
+    <string id="REX_Confirm_Text" text="Condemned: {VICTIM}&#10;Town: {TOWN}&#10;Sentence: {METHOD}&#10;Charge: {CHARGE} ({EVIDENCE})&#10;Tone: {TONE}&#10;Legitimacy: {TIER}&#10;&#10;Expected public consequences&#10;Security: {SECURITY}&#10;Loyalty: {LOYALTY}&#10;Influence: {INFLUENCE}&#10;Honor: {HONOR}&#10;Mercy: {MERCY}&#10;Local relations: {RELATION}&#10;Venue cost: {COST}&#10;&#10;After entering the square, speak to the executioner to give the order, or carry out the sentence yourself at the marked point with F. The prisoner will not die and no cost is charged before the lethal moment." />
+    <string id="REX_Button_Continue" text="Continue" />
+    <string id="REX_Button_Cancel" text="Cancel" />
+    <string id="REX_Button_Hold_Now" text="Hold now" />
+    <string id="REX_Scene_Ground_Fallback" text="The square is too narrow to safely build the complete scaffold; the scene has fallen back to a ground ceremony." />
+    <string id="REX_Error_Ignition_Playback" text="The required fire effect could not start safely. No cost was charged and the prisoner remains alive." />
+    <string id="REX_Continue_Cancel" text="Leave" />
+    <string id="REX_Continue_Confirm" text="Continue" />
+    <string id="REX_Continue_Description" text="The sentence is settled. Choose another escorted prisoner, or leave." />
+    <string id="REX_Continue_Leave" text="Leave the execution site." />
+    <string id="REX_Continue_Title" text="Choose the next prisoner" />
+  </strings>
 </base>

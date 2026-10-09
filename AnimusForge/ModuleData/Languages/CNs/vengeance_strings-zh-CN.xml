@@ -492,5 +492,11 @@
     <string id="REX_Speech2_Close_Terror_2" text="告诫已传达。等候您下令。" />
     <string id="REX_Speech2_Close_Terror_3" text="听候您的命令。" />
     <string id="REX_Speech2_Close_Terror_4" text="请您下令。" />
-</strings>
+
+    <string id="REX_Continue_Cancel" text="离开" />
+    <string id="REX_Continue_Confirm" text="继续" />
+    <string id="REX_Continue_Description" text="判决已经确定。选择另一名押送中的犯人，或离开。" />
+    <string id="REX_Continue_Leave" text="离开刑场。" />
+    <string id="REX_Continue_Title" text="选择下一名犯人" />
+  </strings>
 </base>
