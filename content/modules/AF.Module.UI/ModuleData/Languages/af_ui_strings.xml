@@ -574,5 +574,31 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_UI_Terminal_Prefab_019" text="Save after editing; press ESC or Close to exit" />
     <string id="AF_UI_Terminal_Prefab_020" text="Back to previous level" />
     <string id="AF_UI_Terminal_Prefab_021" text="Save settings" />
-    <string id="AF_UI_Terminal_Prefab_022" text="Close" />  </strings>
+    <string id="AF_UI_Terminal_Prefab_022" text="Close" />
+    <string id="AF_MCM_CivilWar_Group" text="Civil war factions" />
+    <string id="AF_MCM_CivilWar_Enable" text="Enable civil war factions" />
+    <string id="AF_MCM_CivilWar_Enable_Hint" text="When enabled, executions, fief decisions, forced policies/wars/peace, raids, and similar events build discontent inside kingdoms. Opposition factions can petition the king, and rejected demands may escalate into a civil war (a temporary rebel kingdom and an actual war). Kingdom Stability and Rebellion must also be enabled." />
+    <string id="AF_MCM_CivilWar_PlayerKingdom" text="Allow factions when the player is king" />
+    <string id="AF_MCM_CivilWar_PlayerKingdom_Hint" text="When enabled, kingdoms ruled by the player can also form opposition factions and deliver ultimatums. New ultimatums allow four weeks for a reply. Disabled by default. If player immunity to stability rebellions is enabled, these factions cannot escalate into civil war." />
+    <string id="AF_MCM_CivilWar_Randomness" text="Outcome randomness" />
+    <string id="AF_MCM_CivilWar_Randomness_Hint" text="1 = roll by probability (each check is clamped to 5%–95%); 0 = decide directly from the expected value (it occurs when probability exceeds 50%). Default: 1." />
+    <string id="AF_MCM_CivilWar_DiscontentThreshold" text="Faction discontent threshold" />
+    <string id="AF_MCM_CivilWar_DiscontentThreshold_Hint" text="A clan can lead an opposition faction only after its accumulated discontent reaches this value. Royal-aligned NPC clans that reach it after a negative event immediately withdraw support and become neutral; the king’s clan and the player’s clan are exempt. Default: 35." />
+    <string id="AF_MCM_CivilWar_UltimatumDelay" text="Ultimatum interval (weeks)" />
+    <string id="AF_MCM_CivilWar_UltimatumDelay_Hint" text="How many weeks after a faction forms or a demand is rejected before another ultimatum is sent to the king. Default: 4." />
+    <string id="AF_MCM_CivilWar_MaxWarWeeks" text="Maximum civil war duration (weeks)" />
+    <string id="AF_MCM_CivilWar_MaxWarWeeks_Hint" text="Force an outcome when a civil war reaches this many weeks. Default: 12." />
+    <string id="AF_MCM_CivilWar_CooldownWeeks" text="Faction cooldown (weeks)" />
+    <string id="AF_MCM_CivilWar_CooldownWeeks_Hint" text="How many weeks after a faction is dissolved or a civil war ends before a new faction can form. Default: 8." />
+    <string id="AF_MCM_CivilWar_MaxFactions" text="Maximum simultaneous factions" />
+    <string id="AF_MCM_CivilWar_MaxFactions_Hint" text="Maximum number of factions that can exist in one kingdom at the same time. Each has its own demands, discontent, ultimatums, and civil war. When one faction rises, the others enter cooldown and pause ultimatums. Default: 3." />
+    <string id="AF_MCM_CivilWar_ConcurrentWars" text="Allow concurrent civil wars" />
+    <string id="AF_MCM_CivilWar_ConcurrentWars_Hint" text="Disabled (default): only one faction can rise at a time; the others pause until the civil war ends. Enabled: each faction can establish its own rebel kingdom and wage war against the royal house simultaneously." />
+    <string id="AF_MCM_CivilWar_PlayerStrengthPercent" text="Player uprising strength ratio (%)" />
+    <string id="AF_MCM_CivilWar_PlayerStrengthPercent_Hint" text="The player clan’s strength must reach this percentage of the total strength of the kingdom’s established political clans to rise manually or propose a rising to a faction leader. 0 disables the strength gate; default: 20%. A player faction leader does not rise automatically, and refusing a dissolution order still requires this threshold." />
+    <string id="AF_MCM_CivilWar_MinRefusals" text="Minimum refusals before uprising" />
+    <string id="AF_MCM_CivilWar_MinRefusals_Hint" text="A faction’s demands must be rejected by the king at least this many times before it can automatically escalate to civil war, including event-triggered escalation. A faction that has not risen after four refusals is dissolved, so the maximum is 4. Manual player uprisings are exempt. Default: 2." />
+    <string id="AF_MCM_CivilWar_WorldMaxWars" text="World rebellion cap" />
+    <string id="AF_MCM_CivilWar_WorldMaxWars_Hint" text="When the global cap for civil-war factions currently fighting or waiting to establish a kingdom is reached, NPC factions pause their uprisings and resume when a slot opens. Player uprisings, approved proposals, and defiant uprisings are exempt from the cap but count toward it; registered coup wars also count, while starting a coup is not capped. Lowering the cap does not end existing wars. Native town rebellions are excluded. Default: 3 wars." />
+  </strings>
 </base>
