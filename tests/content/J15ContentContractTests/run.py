@@ -644,6 +644,22 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
         "sha256": "9C3EAF88B2493A47697D5F415F72E17F6A51B9E3C7702809690387E6EE2607D5", "revision": "be7c7681d",
     },
+    "ModuleData/Languages/afeconomy_strings.xml": {
+        "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
+        "sha256": "4E733B2868F2BD67E7EC9D6B643E7D0C834B84DCC1AEF1300744F423FC0BB70E", "revision": "6a00653b1",
+    },
+    "ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml": {
+        "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml",
+        "sha256": "C37A72E24A43DC1F1F04C1949A23CA48ADCA3736AC57D1525276F75010BE062A", "revision": "6a00653b1",
+    },
+    "ModuleData/Languages/afknowledge_strings.xml": {
+        "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
+        "sha256": "2801CEF5C7715A275E212D71B18F99E7D9B56FA4ED54109BE7F7843EC98CAB56", "revision": "6a00653b1",
+    },
+    "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml": {
+        "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
+        "sha256": "DC73CEE6408DAB6F9739E14EE961905FD483D378AD4A2EF3C0E0EC088ACE9170", "revision": "6a00653b1",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
