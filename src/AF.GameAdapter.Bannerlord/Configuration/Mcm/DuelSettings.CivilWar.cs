@@ -6,53 +6,53 @@ namespace AnimusForge;
 // Civil war faction settings (v2). Kept in its own partial file so DuelSettings.cs stays untouched.
 public partial class DuelSettings
 {
-	private const string CivilWarGroup = "12b. 内战派系";
+	private const string CivilWarGroup = "{=AF_MCM_CivilWar_Group}Civil war factions";
 
-	[SettingPropertyBool("启用内战派系", Order = 0, RequireRestart = false, HintText = "开启后，王国内部会因处决、封地落选、强推政策/战争/和约、领地遭劫等事件积累不满，形成反对派并向国王提出诉求；诉求被拒可能升级为内战（临时叛军王国 + 真实战争）。需要同时开启“启用王国稳定度与叛乱”。")]
+	[SettingPropertyBool("{=AF_MCM_CivilWar_Enable}Enable civil war factions", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_Enable_Hint}When enabled, executions, fief decisions, forced policies/wars/peace, raids, and similar events build discontent inside kingdoms. Opposition factions can petition the king, and rejected demands may escalate into a civil war (a temporary rebel kingdom and an actual war). Kingdom Stability and Rebellion must also be enabled.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool EnableCivilWarFactions { get; set; } = true;
 
-	[SettingPropertyBool("玩家为国王时也形成派系", Order = 1, RequireRestart = false, HintText = "开启后，玩家统治的王国同样会形成反对派并向玩家递交最后通牒。新通牒答复期限为4周。默认关闭。若“玩家为国王时免疫稳定度叛乱”开启，派系不会升级为内战。")]
+	[SettingPropertyBool("{=AF_MCM_CivilWar_PlayerKingdom}Allow factions when the player is king", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_PlayerKingdom_Hint}When enabled, kingdoms ruled by the player can also form opposition factions and deliver ultimatums. New ultimatums allow four weeks for a reply. Disabled by default. If player immunity to stability rebellions is enabled, these factions cannot escalate into civil war.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool CivilWarAllowPlayerKingdomFactions { get; set; } = false;
 
-	[SettingPropertyFloatingInteger("结果随机度", 0f, 1f, "0.00", Order = 2, RequireRestart = false, HintText = "1 = 按概率掷骰（每个判定保底 5%~95%）；0 = 按期望值直接决定（概率过半即发生）。默认 1。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_CivilWar_Randomness}Outcome randomness", 0f, 1f, "0.00", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_Randomness_Hint}1 = roll by probability (each check is clamped to 5%–95%); 0 = decide directly from the expected value (it occurs when probability exceeds 50%). Default: 1.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public float CivilWarRandomness { get; set; } = 1f;
 
-	[SettingPropertyInteger("成派不满阈值", 10, 100, "0", Order = 3, RequireRestart = false, HintText = "某家族累计不满达到该值后，才有机会牵头成立反对派。王室阵营的NPC家族在负面事件后达到该值，会立即撤回支持、转为中立；国王家族与玩家家族除外。默认 35。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_DiscontentThreshold}Faction discontent threshold", 10, 100, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_DiscontentThreshold_Hint}A clan can lead an opposition faction only after its accumulated discontent reaches this value. Royal-aligned NPC clans that reach it after a negative event immediately withdraw support and become neutral; the king’s clan and the player’s clan are exempt. Default: 35.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarDiscontentThreshold { get; set; } = 35;
 
-	[SettingPropertyInteger("最后通牒间隔（周）", 1, 8, "0", Order = 4, RequireRestart = false, HintText = "派系成立或诉求被拒后，隔多少周再次向国王递交最后通牒。默认 4。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_UltimatumDelay}Ultimatum interval (weeks)", 1, 8, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_UltimatumDelay_Hint}How many weeks after a faction forms or a demand is rejected before another ultimatum is sent to the king. Default: 4.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarUltimatumDelayWeeks { get; set; } = 4;
 
-	[SettingPropertyInteger("内战最长周数", 4, 30, "0", Order = 5, RequireRestart = false, HintText = "内战持续到该周数时强制结算结局。默认 12。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_MaxWarWeeks}Maximum civil war duration (weeks)", 4, 30, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_MaxWarWeeks_Hint}Force an outcome when a civil war reaches this many weeks. Default: 12.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarMaxWarWeeks { get; set; } = 12;
 
-	[SettingPropertyInteger("派系冷却周数", 0, 30, "0", Order = 6, RequireRestart = false, HintText = "派系解散或内战结束后，多少周内不再形成新派系。默认 8。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_CooldownWeeks}Faction cooldown (weeks)", 0, 30, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_CooldownWeeks_Hint}How many weeks after a faction is dissolved or a civil war ends before a new faction can form. Default: 8.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarCooldownWeeks { get; set; } = 8;
 
-	[SettingPropertyInteger("同时存在的派系上限", 1, 4, "0", Order = 7, RequireRestart = false, HintText = "一个王国内可同时存在的派系数量。每个派系有各自的诉求、不满、最后通牒与内战。一个派系起兵后，其余派系进入冷却，暂停递交最后通牒。默认 3。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_MaxFactions}Maximum simultaneous factions", 1, 4, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_MaxFactions_Hint}Maximum number of factions that can exist in one kingdom at the same time. Each has its own demands, discontent, ultimatums, and civil war. When one faction rises, the others enter cooldown and pause ultimatums. Default: 3.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarMaxFactions { get; set; } = 3;
 
-	[SettingPropertyBool("允许多个派系同时内战", Order = 8, RequireRestart = false, HintText = "关闭（默认）：同一时间只允许一个派系起兵，其余派系暂停，等内战结束后再继续。开启：每个派系可各自建立叛军王国，与王室同时开战。")]
+	[SettingPropertyBool("{=AF_MCM_CivilWar_ConcurrentWars}Allow concurrent civil wars", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_ConcurrentWars_Hint}Disabled (default): only one faction can rise at a time; the others pause until the civil war ends. Enabled: each faction can establish its own rebel kingdom and wage war against the royal house simultaneously.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool CivilWarAllowConcurrentWars { get; set; } = false;
 
-	[SettingPropertyInteger("玩家手动起兵实力占比（%）", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "玩家家族军力须达到所属王国正式政治家族总军力的此百分比，才能手动起兵或向派系领袖提议起兵。0 表示关闭实力门槛；默认 20%。玩家担任派系领袖时不会自动起兵，拒绝解散令也须满足此门槛。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_PlayerStrengthPercent}Player uprising strength ratio (%)", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_PlayerStrengthPercent_Hint}The player clan’s strength must reach this percentage of the total strength of the kingdom’s established political clans to rise manually or propose a rising to a faction leader. 0 disables the strength gate; default: 20%. A player faction leader does not rise automatically, and refusing a dissolution order still requires this threshold.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarPlayerDetonationStrengthPercent { get; set; } = 20;
 
-	[SettingPropertyInteger("起兵所需最少被拒次数", 1, 4, "0", Order = 10, RequireRestart = false, HintText = "派系的诉求至少被国王拒绝这么多次之后，才可能自动升级为内战（含事件触发的升级）。被拒次数达到 4 次仍未起兵的派系会解散，所以上限为 4。玩家手动起兵不受此限。默认 2。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_MinRefusals}Minimum refusals before uprising", 1, 4, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_MinRefusals_Hint}A faction’s demands must be rejected by the king at least this many times before it can automatically escalate to civil war, including event-triggered escalation. A faction that has not risen after four refusals is dissolved, so the maximum is 4. Manual player uprisings are exempt. Default: 2.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarMinRefusalsBeforeWar { get; set; } = 2;
 
-	[SettingPropertyInteger("世界叛乱上限", 1, 20, "0", Order = 11, RequireRestart = false, HintText = "全球正在进行或等待建国的内战派系达到上限后，NPC派系暂停起兵，名额释放后恢复。玩家手动起兵、提议获准或抗命起兵不受此上限限制，但会计入数量；已登记政变战争也计入，政变发起本身不受此限制。降低上限不会结束已有战争。不统计原版城镇叛乱。默认3场。")]
+	[SettingPropertyInteger("{=AF_MCM_CivilWar_WorldMaxWars}World rebellion cap", 1, 20, "0", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_WorldMaxWars_Hint}When the global cap for civil-war factions currently fighting or waiting to establish a kingdom is reached, NPC factions pause their uprisings and resume when a slot opens. Player uprisings, approved proposals, and defiant uprisings are exempt from the cap but count toward it; registered coup wars also count, while starting a coup is not capped. Lowering the cap does not end existing wars. Native town rebellions are excluded. Default: 3 wars.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarWorldMaxWars { get; set; } = 3;
 

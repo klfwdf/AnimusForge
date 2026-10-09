@@ -572,5 +572,31 @@
     <string id="AF_UI_Terminal_Prefab_019" text="修改后可保存；ESC 或关闭退出" />
     <string id="AF_UI_Terminal_Prefab_020" text="返回上一级" />
     <string id="AF_UI_Terminal_Prefab_021" text="保存设置" />
-    <string id="AF_UI_Terminal_Prefab_022" text="关闭" />  </strings>
+    <string id="AF_UI_Terminal_Prefab_022" text="关闭" />
+    <string id="AF_MCM_CivilWar_Group" text="内战派系" />
+    <string id="AF_MCM_CivilWar_Enable" text="启用内战派系" />
+    <string id="AF_MCM_CivilWar_Enable_Hint" text="开启后，王国内部会因处决、封地落选、强推政策/战争/和约、领地遭劫等事件积累不满，形成反对派并向国王提出诉求；诉求被拒可能升级为内战（临时叛军王国 + 真实战争）。需要同时开启“启用王国稳定度与叛乱”。" />
+    <string id="AF_MCM_CivilWar_PlayerKingdom" text="玩家为国王时也形成派系" />
+    <string id="AF_MCM_CivilWar_PlayerKingdom_Hint" text="开启后，玩家统治的王国同样会形成反对派并向玩家递交最后通牒。新通牒答复期限为4周。默认关闭。若“玩家为国王时免疫稳定度叛乱”开启，派系不会升级为内战。" />
+    <string id="AF_MCM_CivilWar_Randomness" text="结果随机度" />
+    <string id="AF_MCM_CivilWar_Randomness_Hint" text="1 = 按概率掷骰（每个判定保底 5%~95%）；0 = 按期望值直接决定（概率过半即发生）。默认 1。" />
+    <string id="AF_MCM_CivilWar_DiscontentThreshold" text="成派不满阈值" />
+    <string id="AF_MCM_CivilWar_DiscontentThreshold_Hint" text="某家族累计不满达到该值后，才有机会牵头成立反对派。王室阵营的NPC家族在负面事件后达到该值，会立即撤回支持、转为中立；国王家族与玩家家族除外。默认 35。" />
+    <string id="AF_MCM_CivilWar_UltimatumDelay" text="最后通牒间隔（周）" />
+    <string id="AF_MCM_CivilWar_UltimatumDelay_Hint" text="派系成立或诉求被拒后，隔多少周再次向国王递交最后通牒。默认 4。" />
+    <string id="AF_MCM_CivilWar_MaxWarWeeks" text="内战最长周数" />
+    <string id="AF_MCM_CivilWar_MaxWarWeeks_Hint" text="内战持续到该周数时强制结算结局。默认 12。" />
+    <string id="AF_MCM_CivilWar_CooldownWeeks" text="派系冷却周数" />
+    <string id="AF_MCM_CivilWar_CooldownWeeks_Hint" text="派系解散或内战结束后，多少周内不再形成新派系。默认 8。" />
+    <string id="AF_MCM_CivilWar_MaxFactions" text="同时存在的派系上限" />
+    <string id="AF_MCM_CivilWar_MaxFactions_Hint" text="一个王国内可同时存在的派系数量。每个派系有各自的诉求、不满、最后通牒与内战。一个派系起兵后，其余派系进入冷却，暂停递交最后通牒。默认 3。" />
+    <string id="AF_MCM_CivilWar_ConcurrentWars" text="允许多个派系同时内战" />
+    <string id="AF_MCM_CivilWar_ConcurrentWars_Hint" text="关闭（默认）：同一时间只允许一个派系起兵，其余派系暂停，等内战结束后再继续。开启：每个派系可各自建立叛军王国，与王室同时开战。" />
+    <string id="AF_MCM_CivilWar_PlayerStrengthPercent" text="玩家手动起兵实力占比（%）" />
+    <string id="AF_MCM_CivilWar_PlayerStrengthPercent_Hint" text="玩家家族军力须达到所属王国正式政治家族总军力的此百分比，才能手动起兵或向派系领袖提议起兵。0 表示关闭实力门槛；默认 20%。玩家担任派系领袖时不会自动起兵，拒绝解散令也须满足此门槛。" />
+    <string id="AF_MCM_CivilWar_MinRefusals" text="起兵所需最少被拒次数" />
+    <string id="AF_MCM_CivilWar_MinRefusals_Hint" text="派系的诉求至少被国王拒绝这么多次之后，才可能自动升级为内战（含事件触发的升级）。被拒次数达到 4 次仍未起兵的派系会解散，所以上限为 4。玩家手动起兵不受此限。默认 2。" />
+    <string id="AF_MCM_CivilWar_WorldMaxWars" text="世界叛乱上限" />
+    <string id="AF_MCM_CivilWar_WorldMaxWars_Hint" text="全球正在进行或等待建国的内战派系达到上限后，NPC派系暂停起兵，名额释放后恢复。玩家手动起兵、提议获准或抗命起兵不受此上限限制，但会计入数量；已登记政变战争也计入，政变发起本身不受此限制。降低上限不会结束已有战争。不统计原版城镇叛乱。默认3场。" />
+  </strings>
 </base>
