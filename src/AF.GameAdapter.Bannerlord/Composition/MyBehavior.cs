@@ -5602,7 +5602,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		{
 			if (!IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Developer_data_management_is_disabled_enable_it_", "Developer data management is disabled (enable it in MCM).")));
 				try
 				{
 					onFinished?.Invoke();
@@ -5646,7 +5646,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null || hero == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("当前无法为该 Hero 重新生成个性与背景。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollUnavailable", "This Hero cannot regenerate personality and background right now.")));
 				return;
 			}
 			_ = myBehavior.RunHeroPersonaRerollAsync(hero, null);
@@ -5654,7 +5654,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		catch (Exception ex)
 		{
 			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 重生个性背景失败: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("打开重生个性背景功能失败。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollOpenFailed", "Could not open personality and background regeneration.")));
 		}
 	}
 
@@ -5669,7 +5669,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		{
 			if (!IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Developer_data_management_is_disabled_enable_it_", "Developer data management is disabled (enable it in MCM).")));
 				try
 				{
 					onFinished?.Invoke();
@@ -5752,9 +5752,9 @@ private void OpenKingdomRebellionApiRepairFlow()
 		string text = hero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "该NPC";
+			text = DeveloperUiText.T("AF_UI_Persona_NpcFallback", "this NPC");
 		}
-		return "正在生成" + text + "的个性与背景，请稍等......";
+		return DeveloperUiText.F("AF_UI_Persona_GeneratingHint", "Generating personality and background for {NAME}; please wait...", "NAME", text);
 	}
 
 	public static string BuildCurrentDateFactForExternal()
