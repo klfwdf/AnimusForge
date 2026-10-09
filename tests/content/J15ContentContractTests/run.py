@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "6EBC2FF65932881C1DD8EF2CF7E5C7B6BFE8C2FABE3B23FC8BF29712BDEE0F22",
-        "revision": "7b4ebf7f8",
+        "sha256": "CBC335DA464554BABFB76A0781F24DB1DDE06E20B9478F4D385A97BC8DBD198D",
+        "revision": "93755e85a",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "46AFBD9B95BE26B46DCB02595AA8C2652547FD237D6522442EC75E0D1B0B9808",
-        "revision": "7b4ebf7f8",
+        "sha256": "84D29C1E3D91C9DE8E46EA62A496FBBFB79AEBC8956C9D36A0AA9255E2AA0AF0",
+        "revision": "93755e85a",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
@@ -682,11 +682,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/sets_ui_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
-        "sha256": "A561B75E68D12A61531820BA5C2D8160E24C459CD7B5E12EFB28F154326E61D4", "revision": "c77cf9d3b",
+        "sha256": "03EE81DB608ED32B1B66AF9066B3C0F9CE4E8417AA8485FA2F133A3074C28E88", "revision": "060c4c97a",
     },
     "ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
-        "sha256": "F04F7C39ED59933C911DAF5320444DAE72FC7F7B589D2641560060AC33F868A5", "revision": "c77cf9d3b",
+        "sha256": "408B20E94E2B30456F427F82FFBC4D3734AA103152B75316C50162557B94606A", "revision": "060c4c97a",
     },
     "ModuleData/Languages/gccz_town_manual_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/gccz_town_manual_strings.xml",
@@ -710,11 +710,19 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
-        "sha256": "E37C1C756BA3DF19F7B26428E29185BCBC10D24A4424FAA48A240B29B545FA2D", "revision": "conversation-courier-ui",
+        "sha256": "AFEB245032494BCCC14BAAC75833852D69C505C7258DCABD3D81D180B178B0A5", "revision": "7ad5c1c86",
     },
     "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
-        "sha256": "619DAD14F48F923A51E47C159F16342CB7F4308A4AFC7AEBF869EE0AF723D441", "revision": "conversation-courier-ui",
+        "sha256": "5B69F7A1D8CC07657DE35642E6779A4CE91F0E3B1B3366647062A8298A895906", "revision": "7ad5c1c86",
+    },
+    "ModuleData/Languages/afsocial_ui_strings.xml": {
+        "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/afsocial_ui_strings.xml",
+        "sha256": "1021A6D18D1C8866CB218F68950F6813B05035A58208004F160E79E611A3DD76", "revision": "7ad5c1c86",
+    },
+    "ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml",
+        "sha256": "68BCDD929700B65CDAA6099B95FD61793DC61B8E29D5B37056D90538F226185D", "revision": "7ad5c1c86",
     },
     "ModuleData/Languages/afexercise_ui_strings.xml": {
         "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/afexercise_ui_strings.xml",
@@ -755,8 +763,8 @@ J15B_REVIEWED_EDITS = {
     "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
     "ModuleData/action_sets.xml": "DD52422AC7F6B5D0BF7049964CD64E1A79E109E62414B0235CF7F7432966DB2B",
     "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
-    "ModuleData/Languages/language_data.xml": "828C89218B412EA78E144C03A44808FC2E8FC9FAABD835A1E0968E773A8F1296",
-    "ModuleData/Languages/CNs/language_data.xml": "9BC7C05DB6E3E9C467B2FEFF2A9B51AD8EB1669721CB6EF2F536F965A87691D8",
+    "ModuleData/Languages/language_data.xml": "ED178B18DB1243E00DAFC17D9E8B28DDFE1143CC708D61702D7679518378F1F4",
+    "ModuleData/Languages/CNs/language_data.xml": "740E8855D044380F7A94195162883B4967634766E2312E403B43A009681BCFA9",
     # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
     # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
     "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2BB7A1574140F2F3CE6F561320DDE433AEF679D5FC1A7E3A9BE042CE6F60BF5B",
