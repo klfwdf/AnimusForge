@@ -636,6 +636,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml",
         "sha256": "476B9ED0E03A26EEDB1DA783952EAAF954657E63D5B5F454A1D5848EA5E9D203", "revision": "f1f2a726f",
     },
+    "ModuleData/Languages/afmemory_ui_strings.xml": {
+        "owner": "AF.Module.Memory", "source": "content/modules/AF.Module.Memory/ModuleData/Languages/afmemory_ui_strings.xml",
+        "sha256": "2C8AA7871C21FE6F266C33921719606EEDEC4F61DA32A305A8E0DFA6777008B9", "revision": "476bdb1d6",
+    },
+    "ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Memory", "source": "content/modules/AF.Module.Memory/ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml",
+        "sha256": "81807B8A6A49E6197136F66FFDC096093C0895DE83384503329BFF0C918A089F", "revision": "476bdb1d6",
+    },
     "ModuleData/Languages/afpol_ui_strings.xml": {
         "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_ui_strings.xml",
         "sha256": "4DCD130145AF35376071A9B677A16CCF87AE81F9E904948BD13AE52F620D1064", "revision": "0250513bc",
