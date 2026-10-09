@@ -31,6 +31,15 @@
     <string id="AF_DIP_UI_Vote_AgendaFuture" text="你可以参与这项议程，约 {DAYS} 天后进入投票。点击查看议程详情。" />
     <string id="AF_DIP_UI_Vote_AgendaVoting" text="这项议程已经进入投票阶段。点击前往投票界面。" />
     <string id="AF_DIP_UI_Vote_AgendaDetails" text="你可以参与这项王国议程。点击查看详情。" />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotAllowed" text="议程提交失败：当前王国规则不允许该议程。" />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotRetained" text="议程提交失败：王国未保留该议程。" />
+    <string id="AF_DIP_UI_Vote_ProposalSubmitted" text="{CLAN}家族提出新议程。" />
+    <string id="AF_DIP_UI_Vote_DealFulfilledChoice" text="投票交易完成：{NPC}已按承诺投票选择“{OPTION}”。" />
+    <string id="AF_DIP_UI_Vote_DealFulfilled" text="投票交易完成：{NPC}已按承诺投票。" />
+    <string id="AF_DIP_UI_Vote_DealPromised" text="{CLAN}家族承诺在“{AGENDA}”中投票选择“{OPTION}”。" />
+    <string id="AF_DIP_UI_Vote_MeetingInvalidated" text="该议程已经失效，无法召开投票会议。" />
+    <string id="AF_DIP_UI_Vote_MeetingOpened" text="已召开投票会议：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_MeetingOpenFailed" text="召开投票会议失败，请查看 AnimusForge 日志。" />
     <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="臣属国管理" />
     <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="贡赋记录" />
     <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="尚无贡赋入库记录。" />
@@ -295,5 +304,4 @@
     <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管，请在“王国公告”中发布外交宣言。" />
 </strings>
 </base>
-
 

@@ -614,8 +614,15 @@ namespace AnimusForge
 					processedDeals.Add(deal);
 
 					string completionText = !string.IsNullOrWhiteSpace(deal.TargetOptionTitle)
-						? $"投票交易完成：{npc.Name}已按承诺投票选择「{deal.TargetOptionTitle}」。"
-						: $"投票交易完成：{npc.Name}已按承诺投票。";
+						? DiplomacyUiLocalization.Format(
+							"AF_DIP_UI_Vote_DealFulfilledChoice",
+							"Vote deal fulfilled: {NPC} voted for “{OPTION}” as promised.",
+							("NPC", npc.Name),
+							("OPTION", deal.TargetOptionTitle))
+						: DiplomacyUiLocalization.Format(
+							"AF_DIP_UI_Vote_DealFulfilled",
+							"Vote deal fulfilled: {NPC} voted as promised.",
+							("NPC", npc.Name));
 					AnimusForgeQuickInfo.ShowForDuration(
 						completionText,
 						5000, npc.CharacterObject);
@@ -2593,7 +2600,12 @@ namespace AnimusForge
 
 				string clanName = clan.Name?.ToString() ?? "未知家族";
 				AnimusForgeQuickInfo.ShowForDuration(
-					$"{clanName}家族 承诺在「{agenda.Title}」中投票选择「{option.Title}」",
+					DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vote_DealPromised",
+						"{CLAN} promised to vote for “{OPTION}” on “{AGENDA}”.",
+						("CLAN", clanName),
+						("OPTION", option.Title),
+						("AGENDA", agenda.Title)),
 					6000, npc.CharacterObject);
 
 				Logger.Log("VoteDeal", $"Targeted vote deal created: id={record.DealId} clan={clanName} agenda={agenda.Code}:{agenda.Title} option={option.Code}:{option.Title} weight={weight}");
@@ -4780,7 +4792,11 @@ namespace AnimusForge
 					if (!decision.IsPlayerParticipant && !VoteDealBehavior.RequiresPlayerRulerResolution(decision)) return;
 					if (decision.ShouldBeCancelled())
 					{
-						InformationManager.DisplayMessage(new InformationMessage("该议程已经失效，无法召开投票会议", Color.FromUint(0xFFD166)));
+						InformationManager.DisplayMessage(new InformationMessage(
+							DiplomacyUiLocalization.Text(
+								"AF_DIP_UI_Vote_MeetingInvalidated",
+								"This agenda is no longer valid; the vote meeting cannot be opened."),
+							Color.FromUint(0xFFD166)));
 						Agenda?.RefreshAgendaItems();
 						return;
 					}
@@ -4796,13 +4812,20 @@ namespace AnimusForge
 					ViewModel.OnPropertyChanged("Decision");
 					Agenda?.ClearSelection();
 					InformationManager.DisplayMessage(new InformationMessage(
-						$"已召开投票会议：{decision.GetGeneralTitle()}",
+						DiplomacyUiLocalization.Format(
+							"AF_DIP_UI_Vote_MeetingOpened",
+							"Vote meeting opened: {TITLE}",
+							("TITLE", decision.GetGeneralTitle())),
 						Color.FromUint(0xFFD166)));
 				}
 				catch (Exception ex)
 				{
 					Logger.Log("VoteDeal", $"[AgendaMeeting] StartVoteMeeting error: {ex.Message}");
-					InformationManager.DisplayMessage(new InformationMessage("召开投票会议失败，请查看 AnimusForge 日志", Color.FromUint(0xFF6B6B)));
+					InformationManager.DisplayMessage(new InformationMessage(
+						DiplomacyUiLocalization.Text(
+							"AF_DIP_UI_Vote_MeetingOpenFailed",
+							"Could not open the vote meeting. Check the AnimusForge log."),
+						Color.FromUint(0xFF6B6B)));
 				}
 			}
 
