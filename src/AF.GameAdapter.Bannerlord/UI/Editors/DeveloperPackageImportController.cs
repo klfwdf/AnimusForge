@@ -69,7 +69,7 @@ internal sealed class DeveloperPackageImportController
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Import_failed_export_directory_not_found","Import failed: export directory not found.")));
 				return;
 			}
 			if (!_port.ValidateUnnamedPersonaKeysForImport(importDir, out var error))
@@ -115,7 +115,7 @@ internal sealed class DeveloperPackageImportController
 					{
 						_debtFiles.ApplyPreparedDebt(rs,existDebt,debtNew,true);
 					}
-					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件）：" + importDir : "导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed","Partial import completed (skipped {COUNT} invalid compressed-memory files): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", importDir) : DeveloperUiText.F("AF_UI_Developer_Import_completed_path","Import completed: {PATH}", "PATH", importDir)));
 				}
 			};
 			Action onSkipDuplicates = delegate
@@ -139,13 +139,13 @@ internal sealed class DeveloperPackageImportController
 					{
 						_debtFiles.ApplyPreparedDebt(rs,existDebt,debtNew,false);
 					}
-					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件，已跳过重复）：" + importDir : "导入完成（已跳过重复）：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed_duplicates","Partial import completed (skipped {COUNT} invalid compressed-memory files; duplicates were skipped): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", importDir) : DeveloperUiText.F("AF_UI_Developer_Import_completed_duplicates_path","Import completed (duplicates skipped): {PATH}", "PATH", importDir)));
 				}
 			};
 			if (flag)
 			{
-				string text7 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n压缩记忆：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n请选择处理方式：";
-				_port.ShowDuplicateImportInquiry("检测到重复 - HeroNPC 全量导入", text7, action, onSkipDuplicates, delegate
+				string text7 = DeveloperUiText.F("AF_UI_Developer_HeroImportDuplicates","Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nCompressed memory: {MEMORY}\nDebt: {DEBT}\nChoose how to proceed:", "PERSONA", num + "/" + num2, "MEMORY", num3 + "/" + num4, "DEBT", num5 + "/" + num6);
+				_port.ShowDuplicateImportInquiry(DeveloperUiText.T("AF_UI_Developer_Duplicates_detected_import_all_HeroNPC_data","Duplicates detected - import all HeroNPC data"), text7, action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -157,7 +157,7 @@ internal sealed class DeveloperPackageImportController
 		catch (Exception ex)
 		{
 			if (!_port.IsCurrent(importGeneration)) return;
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Import_failed","Import failed: ") + ex.Message));
 		}
 	}
 
@@ -171,7 +171,7 @@ internal sealed class DeveloperPackageImportController
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Import_failed_export_directory_not_found","Import failed: export directory not found.")));
 				return;
 			}
 			Dictionary<string, NpcPersonaProfile> pbNew = null;
@@ -249,11 +249,11 @@ if (eventPayload != null)
 				{
 if (kingdomProfileBehavior != null && kingdomProfileTotalCount > 0 && !kingdomProfileBehavior.ImportAllFromDirectory(importDir, overwriteExisting: overwrite, out var kingdomProfileMessage))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入失败，已跳过。原因：" + kingdomProfileMessage));
+					InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Warning_kingdom_strategy_personality_import_failed_and_was_s","Warning: kingdom strategy/personality import failed and was skipped. Reason: ") + kingdomProfileMessage));
 				}
 				else if (!string.IsNullOrWhiteSpace(kingdomProfileImportError))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入文件无效，已跳过。原因：" + kingdomProfileImportError));
+					InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Warning_kingdom_strategy_personality_import_file_is_invalid_","Warning: kingdom strategy/personality import file is invalid and was skipped. Reason: ") + kingdomProfileImportError));
 				}
 				},
 				UnnamedPersona = overwrite =>
@@ -264,7 +264,7 @@ _personaFiles.ApplyUnnamedPersonaDirectory(importDir,overwrite,_port.RefreshUnna
 				{
 if (!_port.ImportKnowledgeFromDir(importDir, overwriteExisting: overwrite, out var knowledgeImportMessage))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导入失败，已跳过。原因：" + (string.IsNullOrWhiteSpace(knowledgeImportMessage) ? "未知错误。" : knowledgeImportMessage)));
+					InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Warning_Knowledge_import_failed_and_was_skipped_Reason","Warning: Knowledge import failed and was skipped. Reason: ") + (string.IsNullOrWhiteSpace(knowledgeImportMessage) ? DeveloperUiText.T("AF_UI_Developer_Unknown_error","Unknown error.") : knowledgeImportMessage)));
 				}
 				else if (!string.IsNullOrWhiteSpace(knowledgeImportMessage))
 				{
@@ -273,7 +273,7 @@ if (!_port.ImportKnowledgeFromDir(importDir, overwriteExisting: overwrite, out v
 				},
 				Completed = overwrite =>
 				{
-InformationManager.DisplayMessage(new InformationMessage((overwrite ? "导入完成：" : "导入完成（已跳过重复）：") + importDir));
+InformationManager.DisplayMessage(new InformationMessage((overwrite ? DeveloperUiText.T("AF_UI_Developer_Import_completed","Import completed: ") : DeveloperUiText.T("AF_UI_Developer_Import_completed_duplicates_skipped","Import completed (duplicates skipped): ")) + importDir));
 				}
 			};
 			Action action = () => _execution.Execute(plan, true, importGeneration);
@@ -281,8 +281,8 @@ InformationManager.DisplayMessage(new InformationMessage((overwrite ? "导入完
 
 			if (flag2)
 			{
-				string text14 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n未命名NPC：" + num7 + "/" + num8 + "\nKnowledge：" + num9 + "/" + num10 + "\n声音映射：" + num11 + "/" + num12 + "\n世界开局概要：" + eventWorldDupCount + "/" + eventWorldTotalCount + "\n王国开局概要：" + eventKingdomDupCount + "/" + eventKingdomTotalCount + "\n事件记录：" + eventRecordDupCount + "/" + eventRecordTotalCount + "\n国家战略/性格：" + kingdomProfileDupCount + "/" + kingdomProfileTotalCount + "（无法匹配 " + kingdomProfileSkippedCount + "）\n请选择处理方式：";
-				_port.ShowDuplicateImportInquiry("检测到重复 - 全部导入", text14, action, onSkipDuplicates, delegate
+				string text14 = DeveloperUiText.F("AF_UI_Developer_AllImportDuplicates","Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nDialogue history: {HISTORY}\nDebt: {DEBT}\nUnnamed NPCs: {UNNAMED}\nKnowledge: {KNOWLEDGE}\nVoice mapping: {VOICE}\nWorld opening summary: {WORLD}\nKingdom opening summaries: {KINGDOM}\nEvent records: {EVENTS}\nKingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})\nChoose how to proceed:", "PERSONA", num + "/" + num2, "HISTORY", num3 + "/" + num4, "DEBT", num5 + "/" + num6, "UNNAMED", num7 + "/" + num8, "KNOWLEDGE", num9 + "/" + num10, "VOICE", num11 + "/" + num12, "WORLD", eventWorldDupCount + "/" + eventWorldTotalCount, "KINGDOM", eventKingdomDupCount + "/" + eventKingdomTotalCount, "EVENTS", eventRecordDupCount + "/" + eventRecordTotalCount, "PROFILES", kingdomProfileDupCount + "/" + kingdomProfileTotalCount, "UNMATCHED", kingdomProfileSkippedCount.ToString());
+				_port.ShowDuplicateImportInquiry(DeveloperUiText.T("AF_UI_Developer_Duplicates_detected_import_all_data","Duplicates detected - import all data"), text14, action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -294,7 +294,7 @@ InformationManager.DisplayMessage(new InformationMessage((overwrite ? "导入完
 		catch (Exception ex)
 		{
 			if (!_port.IsCurrent(importGeneration)) return;
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Import_failed","Import failed: ") + ex.Message));
 		}
 	}
 
