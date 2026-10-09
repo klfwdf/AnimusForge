@@ -17009,6 +17009,16 @@
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/afonboarding_ui_strings.xml",
+      "target": "ModuleData/Languages/afonboarding_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml"
     }
   ]
 }
