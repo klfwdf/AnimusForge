@@ -327,5 +327,34 @@
   <string id="AF_MCM_Shout_StareSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。" />
   <string id="AF_MCM_Shout_DirectAttack_Hint" text="开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。" />
   <string id="AF_MCM_Shout_InputBackground_Hint" text="只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。" />
+  <string id="AF_MCM_Dev_Trace" text="【开发者】开启全代码截获" />
+  <string id="AF_MCM_Dev_Trace_Hint" text="⚠️ 极其硬核的调试功能！\n开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。\n日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！" />
+  <string id="AF_MCM_Dev_Data" text="【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）" />
+  <string id="AF_MCM_Dev_Data_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、个性背景等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
+  <string id="AF_MCM_Dev_AdultPersona" text="新成年人物自动生成个性与背景" />
+  <string id="AF_MCM_Dev_AdultPersona_Hint" text="开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。" />
+  <string id="AF_MCM_Dev_ModLogic" text="【日志】写入 Mod_Logic.txt" />
+  <string id="AF_MCM_Dev_ModLogic_Hint" text="总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。" />
+  <string id="AF_MCM_Dev_Verbose" text="【日志】写入详细调试日志" />
+  <string id="AF_MCM_Dev_Verbose_Hint" text="只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。" />
+  <string id="AF_MCM_Dev_Observability" text="【日志】写入 Observability.jsonl" />
+  <string id="AF_MCM_Dev_Observability_Hint" text="结构化观测日志开关。关闭后不再写入 Observability.jsonl。" />
+  <string id="AF_MCM_Dev_HitRate" text="【日志】写入 HitRate_Stats.txt" />
+  <string id="AF_MCM_Dev_HitRate_Hint" text="命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。" />
+  <string id="AF_MCM_Dev_Token" text="【日志】写入 Token_Stats.txt" />
+  <string id="AF_MCM_Dev_Token_Hint" text="Token 统计日志开关。关闭后不再写入 Token_Stats.txt。" />
+  <string id="AF_MCM_Dev_Event" text="【日志】写入 Event_Logs.txt" />
+  <string id="AF_MCM_Dev_Event_Hint" text="事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。" />
+  <string id="AF_MCM_Dev_Cleanup" text="【日志】定时清理所有日志" />
+  <string id="AF_MCM_Dev_Cleanup_Hint" text="按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每3天。" />
+  <string id="AF_MCM_Dev_Performance" text="【性能】启用性能监控" />
+  <string id="AF_MCM_Dev_Performance_Hint" text="开启后每30秒向 Mod_Logic.txt 写入 FPS、慢帧和帧总耗时。只有同时开启详细调试日志时才采集各 Tick/Scope 耗时；普通游玩不承担逐 Scope 统计成本。默认关闭。" />
+  <string id="AF_MCM_Dev_Deferred" text="【性能】延后日结维护" />
+  <string id="AF_MCM_Dev_Deferred_Hint" text="开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按单帧预算分批执行。维护会在每个大地图 Tick 推进，不因行军暂停。默认开启。" />
+  <string id="AF_MCM_Dev_Budget" text="【性能】日结维护每帧预算(ms)" />
+  <string id="AF_MCM_Dev_Budget_Hint" text="延后日结维护开启时，只有存在待办才按每帧预算推进；不会因玩家行军暂停。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。" />
+  <string id="AF_MCM_Dev_FreezeDump" text="【诊断】AI聊天卡死时生成线程 Dump" />
+  <string id="AF_MCM_Dev_FreezeDump_Hint" text="仅在 AnimusForge 自由对话的 AI 模式或场景喊话正在处理时，主线程连续 5 秒无心跳才生成紧凑线程 dump。普通对话、非 AI 游玩和原版保存期间自动停用。默认开启。" />
+  <string id="AF_MCM_Dev_Group" text="4. 开发者选项" />
   </strings>
 </base>

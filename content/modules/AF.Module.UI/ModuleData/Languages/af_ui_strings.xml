@@ -327,5 +327,36 @@
   <string id="AF_MCM_Shout_StareSeconds_Hint" text="How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds." />
   <string id="AF_MCM_Shout_DirectAttack_Hint" text="When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict." />
   <string id="AF_MCM_Shout_InputBackground_Hint" text="Affects only the shout input box. Default is transparent black; transparent white or pink are also available." />
+  <string id="AF_MCM_Dev_Trace" text="Enable full-code interception" />
+  <string id="AF_MCM_Dev_Trace_Hint" text="⚠️ Advanced debugging feature!
+When enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace).
+Produces a very large log and is intended for developers only." />
+  <string id="AF_MCM_Dev_Data" text="Enable data management (history/debt/persona/player history)" />
+  <string id="AF_MCM_Dev_Data_Hint" text="Adds a Developer data-management entry to the town menu for NPC histories, debts, and persona data; the character screen also exposes player history editing." />
+  <string id="AF_MCM_Dev_AdultPersona" text="Generate persona and background for new adults" />
+  <string id="AF_MCM_Dev_AdultPersona_Hint" text="When enabled, the preprocessing API generates persona and history for hero children when they become adults. Existing persona or background is never overwritten." />
+  <string id="AF_MCM_Dev_ModLogic" text="Write Mod_Logic.txt" />
+  <string id="AF_MCM_Dev_ModLogic_Hint" text="Master logic-log switch. When disabled, Mod_Logic.txt is no longer written." />
+  <string id="AF_MCM_Dev_Verbose" text="Write verbose debug log" />
+  <string id="AF_MCM_Dev_Verbose_Hint" text="Enable only while investigating an issue. Writes detailed Mod_Logic diagnostics and may produce many lines in large campaigns." />
+  <string id="AF_MCM_Dev_Observability" text="Write Observability.jsonl" />
+  <string id="AF_MCM_Dev_Observability_Hint" text="Structured observability-log switch. When disabled, Observability.jsonl is no longer written." />
+  <string id="AF_MCM_Dev_HitRate" text="Write HitRate_Stats.txt" />
+  <string id="AF_MCM_Dev_HitRate_Hint" text="Hit-rate statistics log switch. When disabled, HitRate_Stats.txt is no longer written." />
+  <string id="AF_MCM_Dev_Token" text="Write Token_Stats.txt" />
+  <string id="AF_MCM_Dev_Token_Hint" text="Token statistics log switch. When disabled, Token_Stats.txt is no longer written." />
+  <string id="AF_MCM_Dev_Event" text="Write Event_Logs.txt" />
+  <string id="AF_MCM_Dev_Event_Hint" text="Event-system weekly-report log switch. When disabled, Event_Logs.txt is no longer written." />
+  <string id="AF_MCM_Dev_Cleanup" text="Schedule cleanup of all logs" />
+  <string id="AF_MCM_Dev_Cleanup_Hint" text="Periodically clears current log files under AnimusForge/Logs by real time. Files and the UTF-8 BOM are retained. Default: every 3 days." />
+  <string id="AF_MCM_Dev_Performance" text="Enable performance monitoring" />
+  <string id="AF_MCM_Dev_Performance_Hint" text="Every 30 seconds writes FPS, slow frames, and total frame time to Mod_Logic.txt. Tick/Scope timings are collected only with verbose logs enabled. Off by default." />
+  <string id="AF_MCM_Dev_Deferred" text="Defer daily maintenance" />
+  <string id="AF_MCM_Dev_Deferred_Hint" text="Daily settlement registers maintenance jobs; memory overview, kingdom maintenance, and weekly-report preparation run later in bounded per-frame batches. Advances on campaign-map ticks and is not paused by travel. Enabled by default." />
+  <string id="AF_MCM_Dev_Budget" text="Daily maintenance frame budget (ms)" />
+  <string id="AF_MCM_Dev_Budget_Hint" text="When deferred maintenance is enabled, work advances within this per-frame budget only when jobs are pending. Higher values finish faster but can create frame spikes. Default: 3." />
+  <string id="AF_MCM_Dev_FreezeDump" text="Create thread dump when AI chat freezes" />
+  <string id="AF_MCM_Dev_FreezeDump_Hint" text="Only while AF free-conversation AI mode or scene shout is processing, creates a compact thread dump after five seconds without a main-thread heartbeat. Disabled for ordinary chat, non-AI play, and native saving. Enabled by default." />
+  <string id="AF_MCM_Dev_Group" text="4. Developer options" />
   </strings>
 </base>
