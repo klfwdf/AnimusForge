@@ -1,3 +1,14 @@
+<a id="tts-test-feedback-20261010"></a>
+## 测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权修补上一轮确认的“测试中后不显示失败原因”，按原方式核验后发布 main，不扩大功能。基线 `34276f57`，检查点 `78a995c`，产品 `77ca7886`；实际工作区 `G:/AFMOD/AF-FIX-PERSONA-20261009`。远端结果以 publication 收据/实际 main ref 为准。
+- 根因：测试请求未注册 Scene owner，已有场景失败订阅会拒绝该请求。现在测试 job 直接携带独立失败回执，共用原终态/取消守卫；不添加长期全局订阅、不伪装 Scene 请求。失败只排入专用 UI 队列，现有 application tick 每帧最多消费一条，空队列无分配；主线程显示前重验取消，避免 Stop 后迟到提示。队列满或引擎停止时立即显示“未入队”，不再误报“测试中”。
+- 保留原双参数 SpeakTestAsync 签名/测试 bypass；正常对话、V1/V3 协议、音色映射、音频播放/嘴型、存档与 Scene 消费者未改。删除旧按钮不判断入队结果的调用及仅日志提示丢弃路径；不加成功提示、重试、AI 分析或新设置。
+- 工程师自审：最终 diff/直接调用链、取消竞态、重复回执、主线程边界和常规对话隔离检查通过；清理搜索、diff --check 通过。[一基源码职责](architecture/af-framework-code-scope.md#tts-test-feedback-20261010)。
+- 验证：真实 TtsEngine/路由/按钮 delegate/TtsTestFeedback 源码回放 **61 PASS**（旧 51 项保留 + 10 项新回执行为），UI stub 拒绝后台线程直接显示；覆盖 V1/V3 失败、成功不误报、普通对话不串提示、队满、Stop 前后、重复点击/终态、回执抛异常不影响下一条。**8/8 mutation** 由行为断言拒绝。最终 Debug **1.3/1.4 + Bootstrap** 与双 Coup 门禁通过，两个主体各有 350 个既有警告、0 错误。
+- 玩家视角：修前红例为 V3 0.1 倍速被拒绝但仅显示测试中；修后同类失败经应用 tick 显示具体错误。已验证的是源码回放，**未进行游戏内点击/声音实测、付费请求、部署或全仓测试**。人工只需保存 V3 0.1 语速并点击测试，确认红色原因可见，再改回 1.0；正常声音和按取消不误报仍需实机确认。
+- 证据 `artifacts/tts-test-feedback-20261010/receipt.json`、`lifetime.log`、`mutations.log`、`build.log`；前次只读复现 `artifacts/tts-v3-review-20261010/`。回滚仅逆向 `77ca7886`，不覆盖其他成员提交。之前 V3 升级记录保持其历史状态，本条仅补齐测试回执缺口。
+
 <a id="volc-tts-v3-compat-20261010"></a>
 ## 火山 TTS V3 兼容升级（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 

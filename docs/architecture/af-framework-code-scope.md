@@ -1,3 +1,15 @@
+<a id="tts-test-feedback-20261010"></a>
+### 测试语音失败回执修补
+
+源码 `77ca7886`；验证/限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-test-feedback-20261010)。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:76, 308–329, 637–647`，TestFailure / SpeakTestAsync / NotifyPlaybackFailed | 每测试 job 的回执，既有取消/一次终态/订阅者异常隔离；普通 job 不设置此回执 |
+| `src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs:8–29` | 只排队失败，应用主线程显示时重验取消；不读取场景对象、不合成或重试 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6729–6740`；`src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs:57, 101` | 原按钮绑定测试回执并检查入队结果；快速/观察 tick 均消费同一反馈队列 |
+| `tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 61 项生产源码回放与 8 个 mutation；游戏/UI/网络为 fixture，不能代替实机 |
+
 <a id="volc-tts-v3-compat-20261010"></a>
 ### 火山 TTS V3 兼容升级
 
