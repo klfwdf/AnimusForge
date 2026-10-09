@@ -1,3 +1,8 @@
+# 当前交接：测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品 `77ca7886`，基线 `34276f57`：只补测试语音失败主线程回执及未入队提示；取消/迟到不误报，未改 V1/V3、正常对话、播放、音色或存档。61 项回归、8 个 mutation、Debug 双实现 + Bootstrap 与双 Coup 门禁通过；未付费测试、未部署、未实机验声音/UI。
+- [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-test-feedback-20261010)；[源码定位](docs/architecture/af-framework-code-scope.md#tts-test-feedback-20261010)。本地证据 `artifacts/tts-test-feedback-20261010/`，发布以远端 main / publication 收据核实。上一条升级记录保留为历史。
+
 # 当前交接：火山 TTS V3 兼容升级（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 按本轮授权新增 V3 HTTP + 新控制台 API Key，保留 V1 配置、音色映射、队列、播放/口型和场景消费方式；不自动迁移或失败重试。最终源码 `0fe97a1a`（产品 `1b2fd919`），基线 `83ba3879`。
