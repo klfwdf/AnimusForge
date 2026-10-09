@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "17716D02F4F235245AF62575E7FA5B5FA8D3A403022B7DA7FF94C86156471BDB",
-        "revision": "92873bf58",
+        "sha256": "A79FC35BBB35DD2259FE2013128A93D56D7FEA7B21202FE82F245AB2B7B9C7D4",
+        "revision": "e123e03cb",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "54ADE90E09B7F901B8D42156FC7B52198F05DB6CAFE910B7CD020C084DBE34F7",
-        "revision": "92873bf58",
+        "sha256": "8E40E5EFEAF2664D18A0AD7AAED4C3FC9CE285E1074B134DC57AE97A4D7FBFB4",
+        "revision": "e123e03cb",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
@@ -702,11 +702,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "623795BC3406682730390194841BE6412060687F6F8F34A38273FFD9A92A9E99", "revision": "21bbdd52e",
+        "sha256": "190393A5DE019829C590485CB2D0620D3901B6750C6F3BE89964C53176BA4E1B", "revision": "34e38ff80",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "D72FD63BCC20FD1D8C62810EB939DE8B1AC0A3F7F3F62FF22169565D3D30983A", "revision": "21bbdd52e",
+        "sha256": "CF3A2A96685CE20C0F12A0F8656940D9E6BA06C4C3B776C7836C9C43CE64AF53", "revision": "34e38ff80",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
