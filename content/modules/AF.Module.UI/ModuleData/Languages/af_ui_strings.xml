@@ -87,4 +87,39 @@
   <string id="AF_MCM_MainApi_Temperature" text="Temperature" />
   <string id="AF_MCM_MainApi_MaxTokens" text="Maximum output tokens" />
   <string id="AF_MCM_MainApi_Streaming" text="Enable streaming" />
+  <string id="AF_MCM_Support_Hint" text="Opens the Afdian page in the system default browser." />
+  <string id="AF_MCM_MainApi_Url_Hint" text="Enter your endpoint, for example https://api.openai.com/v1 or https://api.openai.com/v1/chat/completions. When you enter /v1, the mod automatically requests /v1/chat/completions." />
+  <string id="AF_MCM_MainApi_Key_Hint" text="Enter your API key." />
+  <string id="AF_MCM_MainApi_Model_Hint" text="For example, gpt-4o-mini. Enter a model supported by your configured endpoint." />
+  <string id="AF_MCM_MainApi_Dropdown_Hint" text="Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above." />
+  <string id="AF_MCM_MainApi_Thinking_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_MCM_MainApi_Temperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
+  <string id="AF_MCM_MainApi_MaxTokens_Hint" text="The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
+  <string id="AF_MCM_MainApi_Streaming_Hint" text="When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request." />
+  <string id="AF_MCM_Duel_Group" text="2. Duel rules" />
+  <string id="AF_MCM_Shout_Group" text="3. Scene shout" />
+  <string id="AF_MCM_Items_Group" text="10. Items and trade" />
+  <string id="AF_MCM_Duel_MinClanTier" text="Minimum clan tier" />
+  <string id="AF_MCM_Duel_HealthThreshold" text="Defeat health threshold" />
+  <string id="AF_MCM_Duel_RenownTransfer" text="Enable duel clan renown transfer" />
+  <string id="AF_MCM_Duel_RenownMinimum" text="Minimum renown loss" />
+  <string id="AF_MCM_Duel_RenownPercent" text="Renown loss by current percentage (%)" />
+  <string id="AF_MCM_Duel_RenownMaximum" text="Maximum renown loss" />
+  <string id="AF_MCM_Items_Restore" text="Restore NPC equipment after it is given away" />
+  <string id="AF_MCM_Shout_Key" text="Scene shout key (one uppercase letter)" />
+  <string id="AF_MCM_Shout_SpecialKey" text="Complex interaction key (one uppercase letter)" />
+  <string id="AF_MCM_Shout_TerminalKey" text="Terminal key (one uppercase letter)" />
+  <string id="AF_MCM_Shout_GoldKey" text="Downed-gold pickup key (one uppercase letter)" />
+  <string id="AF_MCM_Shout_InitialRange" text="Initial shout range (m)" />
+  <string id="AF_MCM_Shout_MaxRange" text="Maximum shout range (m)" />
+  <string id="AF_MCM_Shout_MinLength" text="Minimum shout reply length" />
+  <string id="AF_MCM_Shout_MaxLength" text="Maximum shout reply length" />
+  <string id="AF_MCM_Shout_ThoughtLength" text="Minimum inner-thought length" />
+  <string id="AF_MCM_Shout_DisableThought" text="Disable inner thought" />
+  <string id="AF_MCM_Shout_BubbleFont" text="Bubble font size" />
+  <string id="AF_MCM_Shout_Timeout" text="Conversation timeout seconds per visible character" />
+  <string id="AF_MCM_Shout_StareSeconds" text="Stare trigger time (seconds)" />
+  <string id="AF_MCM_Shout_DirectAttack" text="Allow direct player attacks to trigger scene conflict" />
+  <string id="AF_MCM_Shout_InputBackground" text="Shout input background" />
 </strings>
