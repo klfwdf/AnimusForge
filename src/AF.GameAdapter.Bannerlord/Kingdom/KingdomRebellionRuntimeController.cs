@@ -522,7 +522,7 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
             return;
         }
 		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
-		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "自动叛乱建国命名 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate
@@ -612,12 +612,12 @@ private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellio
 		string clanName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan);
 		string oldName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(oldKingdom, "原王国");
 		string fallback = RebellionNamingRules.NormalizeName(clanName + "同盟", 24);
-		string text = "你的派系即将脱离" + oldName + "，以" + clanName + "家族为首建立新王国。\n\n请输入新王国的名称（2~24 个字，不能与现有王国重名）。取消则使用“" + fallback + "”。";
+		string text = KingdomUiText.F("AF_UI_KingdomRebellion_PlayerNamingBody", "Your faction is about to leave {OLD_KINGDOM} and establish a new kingdom led by the {CLAN} clan.\n\nEnter a new kingdom name (2–24 characters; it must be unique). Cancel uses “{FALLBACK}”.", ("OLD_KINGDOM", oldName), ("CLAN", clanName), ("FALLBACK", fallback));
 		Func<string, Tuple<bool, string>> condition = input =>
 		{
 			string name = RebellionNamingRules.NormalizeName(input ?? "", 24);
-			if (name.Length < 2) return new Tuple<bool, string>(false, "名称至少 2 个字。");
-			if (taken.Contains(name)) return new Tuple<bool, string>(false, "已有同名王国。");
+			if (name.Length < 2) return new Tuple<bool, string>(false, KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingTooShort", "The name must contain at least 2 characters."));
+			if (taken.Contains(name)) return new Tuple<bool, string>(false, KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingDuplicate", "A kingdom with that name already exists."));
 			return new Tuple<bool, string>(true, "");
 		};
 		void Complete(string input)
@@ -636,7 +636,7 @@ private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellio
 			};
 			Logger.Log("KingdomRebellion", "[PLAYER_NAMING] faction=" + (context.CivilWarFactionId ?? "") + " formal=" + formal);
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData("为新王国命名", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "建国", "使用默认名", Complete, () => Complete(""), shouldInputBeObfuscated: false, condition, "", fallback), pauseGameActiveState: true);
+		InformationManager.ShowTextInquiry(new TextInquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingTitle", "Name the new kingdom"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingConfirm", "Found kingdom"), KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingDefault", "Use default name"), Complete, () => Complete(""), shouldInputBeObfuscated: false, condition, "", fallback), pauseGameActiveState: true);
 	}
 
 internal static bool IsStaleCivilWarRebellion(PendingAutomaticKingdomRebellionContext context)
@@ -694,7 +694,7 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 		string[] rebellionExistingNames = CaptureRebellionExistingNames();
 		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		long namingRequestVersion = _pump.Automatic().BeginNaming();
-		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingTitle", "Regenerating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingBody", "The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "自动叛乱建国命名重试 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate

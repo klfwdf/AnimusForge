@@ -2333,6 +2333,15 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TAUNT_UI_MerchantMarket" text="市场" />
   <string id="AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty" text="{SETTLEMENT}忠诚度 -{AMOUNT}：你在自己的定居点内伤害了 {TARGET}。" />
   <string id="AF_TAUNT_UI_Npc" text="NPC" />
-  <string id="AF_TAUNT_UI_GoldPickedUp" text="你拾取了 {AMOUNT} 第纳尔。" /></strings>
+  <string id="AF_TAUNT_UI_GoldPickedUp" text="你拾取了 {AMOUNT} 第纳尔。" />
+    <string id="AF_UI_KingdomRebellion_PlayerNamingTitle" text="为新王国命名" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="你的派系即将脱离 {OLD_KINGDOM}，以 {CLAN} 家族为首建立新王国。\n\n请输入新王国的名称（2~24 个字，不能与现有王国重名）。取消则使用“{FALLBACK}”。" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingConfirm" text="建立王国" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingDefault" text="使用默认名" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingTooShort" text="名称至少 2 个字。" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="已有同名王国。" />
+  <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="正在重新生成叛乱建国命名" />
+  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="系统正在按修正后的事件/叛乱 API 配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。" />
+</strings>
 </base>
 

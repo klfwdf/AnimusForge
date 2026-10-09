@@ -287,7 +287,13 @@
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="A tributary caravan has arrived at court and the tribute has been recorded." />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY} delivered its tribute on schedule; the suzerain's fiefs have recorded the payment." />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="The tribute ledger is no longer valid." />
-    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="The tributary caravan has reached the court. The ledger records:\n\nSubject: {TRIBUTARY}\nRecorded: {DATE}\nTribute value: {VALUE}\n\n[SUZERAIN FIEF GAINS]\n{GAINS}\n[TRIBUTARY COST]\n{COST}" /></strings>
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="The tributary caravan has reached the court. The ledger records:\n\nSubject: {TRIBUTARY}\nRecorded: {DATE}\nTribute value: {VALUE}\n\n[SUZERAIN FIEF GAINS]\n{GAINS}\n[TRIBUTARY COST]\n{COST}" />
+        <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="The eliminated kingdom keeps its current profile; no new LLM generation will be requested." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="The kingdom founding profile could not be generated because the event/rebellion API is not configured." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="Generated and locked the national personality and long-term strategy for new kingdom “" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins." />
+</strings>
 </base>
 
 
