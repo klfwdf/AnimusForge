@@ -3,28 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 internal sealed class MemoryEditorDisplayPort
 {
- internal Func<DailyMemoryLine, string> BuildDailyMemoryLineForPrompt;
- internal Func<IEnumerable<WeeklyMemoryMaterialTrigger>, List<WeeklyMemoryMaterialTrigger>> SanitizeWeeklyMemoryMaterialTriggers;
- internal Func<string, string> BuildWeeklyMemoryMaterialTagLabel;
- internal Func<string, int, string> BuildCompressedMemoryBlockId;
- internal Func<int, int, string> FormatMemoryHourRange;
- internal Func<string, int, string> BuildDevHistoryPreview;
- internal Func<int> GetCurrentGameDayIndexSafe, GetCurrentHourOfDaySafeForPrompt;
- internal Func<string> ResolveCurrentMemorySceneLabel;
+	internal Func<DailyMemoryLine, string> BuildDailyMemoryLineForPrompt;
+	internal Func<IEnumerable<WeeklyMemoryMaterialTrigger>, List<WeeklyMemoryMaterialTrigger>> SanitizeWeeklyMemoryMaterialTriggers;
+	internal Func<string, string> BuildWeeklyMemoryMaterialTagLabel;
+	internal Func<string, int, string> BuildCompressedMemoryBlockId;
+	internal Func<int, int, string> FormatMemoryHourRange;
+	internal Func<string, int, string> BuildDevHistoryPreview;
+	internal Func<int> GetCurrentGameDayIndexSafe, GetCurrentHourOfDaySafeForPrompt;
+	internal Func<string> ResolveCurrentMemorySceneLabel;
 }
 
 internal static class MemoryEditorProjection
 {
+	private static string FormatDay(string gameDate, int gameDayIndex)
+	{
+		if (!string.IsNullOrWhiteSpace(gameDate))
+		{
+			return gameDate.Trim();
+		}
+		var text = new TextObject("{=AF_MEMORY_UI_Day}Day {DAY}");
+		text.SetTextVariable("DAY", gameDayIndex.ToString());
+		return text.ToString();
+	}
+
 	internal static string BuildDevHistoryPreview(string line, int maxLen = 56)
 	{
 		if (string.IsNullOrWhiteSpace(line))
 		{
-			return "（空）";
+			return new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString();
 		}
 		StringBuilder stringBuilder = new StringBuilder(line.Length);
 		bool flag = false;
@@ -51,7 +63,6 @@ internal static class MemoryEditorProjection
 		}
 		return text.Substring(0, Math.Max(1, maxLen)) + "...";
 	}
-
 
 	internal static bool IsDevDailyMemoryDraftMatch(MemoryEditorDisplayPort port, DailyMemoryDraft draft, string[] terms)
 	{
@@ -97,11 +108,20 @@ internal static class MemoryEditorProjection
 	{
 		if (draft == null)
 		{
-			return "（空）";
+			return new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString();
 		}
-		string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-		string flags = (draft.QueuedForSummary ? " 已入队" : "") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : " 有错误") + (((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault() > 0) ? (" 周报素材x" + draft.WeeklyMaterialTriggers.Count) : "");
-		return date + " | " + ((draft.Lines?.Count).GetValueOrDefault()) + " 行" + flags + " | " + port.BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 64);
+		string date = FormatDay(draft.GameDate, draft.GameDayIndex);
+		string queuedFlag = draft.QueuedForSummary ? (" " + new TextObject("{=AF_MEMORY_UI_FlagQueued}Queued").ToString()) : "";
+		string errorFlag = string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : (" " + new TextObject("{=AF_MEMORY_UI_FlagHasError}Has error").ToString());
+		string weeklyFlag = "";
+		if ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault() > 0)
+		{
+			var triggerFlagText = new TextObject("{=AF_MEMORY_UI_FlagWeeklyMaterialCount}Weekly material x{COUNT}");
+			triggerFlagText.SetTextVariable("COUNT", draft.WeeklyMaterialTriggers.Count.ToString());
+			weeklyFlag = " " + triggerFlagText.ToString();
+		}
+		string flags = queuedFlag + errorFlag + weeklyFlag;
+		return date + " | " + ((draft.Lines?.Count).GetValueOrDefault()) + new TextObject("{=AF_MEMORY_UI_Lines} lines").ToString() + flags + " | " + port.BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 64);
 	}
 
 	internal static string BuildDevDailyMemoryDraftSubtitle(MemoryEditorDisplayPort port, DailyMemoryDraft draft)
@@ -110,33 +130,40 @@ internal static class MemoryEditorProjection
 		{
 			return "";
 		}
-		string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-		return "日期：" + date + "\n行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "\n周报素材触发器：" + ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault()) + "\n已入总结队列：" + (draft.QueuedForSummary ? "是" : "否") + "\n最近总结错误：" + BuildDevStoredErrorReference(port, draft.LastSummaryError);
+		string date = FormatDay(draft.GameDate, draft.GameDayIndex);
+		string queuedText = draft.QueuedForSummary ? new TextObject("{=AF_MEMORY_UI_Yes}yes").ToString() : new TextObject("{=AF_MEMORY_UI_No}no").ToString();
+		return new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + "\n" +
+			new TextObject("{=AF_MEMORY_UI_LineCount}Lines: ").ToString() + ((draft.Lines?.Count).GetValueOrDefault()) + "\n" +
+			new TextObject("{=AF_MEMORY_UI_WeeklyMaterialTriggersLabel}Weekly material triggers: ").ToString() + ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault()) + "\n" +
+			new TextObject("{=AF_MEMORY_UI_QueuedForSummaryLabel}Queued for summary: ").ToString() + queuedText + "\n" +
+			new TextObject("{=AF_MEMORY_UI_LatestSummaryErrorLabel}Latest summary error: ").ToString() + BuildDevStoredErrorReference(port, draft.LastSummaryError);
 	}
 
 	internal static string BuildDevStoredErrorReference(MemoryEditorDisplayPort port, string error)
 	{
 		// 开发菜单会在返回和翻页时反复重建；这里只放固定短提示，避免历史 API 原文再次挤占操作项。
-		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（详情已在触发时显示于左下角）";
+		return string.IsNullOrWhiteSpace(error)
+			? new TextObject("{=AF_MEMORY_UI_None}None").ToString()
+			: new TextObject("{=AF_MEMORY_UI_ErrorRecordedNotice}Recorded (details shown in bottom-left when triggered)").ToString();
 	}
 
 	internal static string BuildDevDailyMemoryDraftEditorDescription(MemoryEditorDisplayPort port, DailyMemoryDraft draft)
 	{
 		if (draft == null)
 		{
-			return "找不到未压缩记忆。";
+			return new TextObject("{=AF_MEMORY_UI_RawMemoryNotFound}Uncompressed memory could not be found.").ToString();
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine(BuildDevDailyMemoryDraftSubtitle(port, draft));
-		sb.AppendLine("普通行：" + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && !x.IsAfef));
-		sb.AppendLine("AFEF行：" + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && x.IsAfef));
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_NormalLinesLabel}Normal lines: ").ToString() + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && !x.IsAfef));
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_AfefLinesLabel}AFEF lines: ").ToString() + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && x.IsAfef));
 		string triggerText = BuildDevWeeklyMemoryMaterialTriggerText(port, draft.WeeklyMaterialTriggers);
 		if (!string.IsNullOrWhiteSpace(triggerText))
 		{
-			sb.AppendLine("周报素材：");
+			sb.AppendLine(new TextObject("{=AF_MEMORY_UI_WeeklyMaterialLabel}Weekly material: ").ToString().TrimEnd());
 			sb.AppendLine(triggerText);
 		}
-		sb.AppendLine("预览：" + port.BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 180));
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_PreviewLabel}Preview: ").ToString() + port.BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 180));
 		return sb.ToString().TrimEnd();
 	}
 
@@ -147,14 +174,15 @@ internal static class MemoryEditorProjection
 		{
 			return "";
 		}
+		string listSeparator = new TextObject("{=AF_MEMORY_UI_ListSeparator}, ").ToString();
 		StringBuilder sb = new StringBuilder();
 		foreach (WeeklyMemoryMaterialTrigger trigger in list.Take(8))
 		{
 			List<string> labels = (trigger.Tags ?? new List<string>()).Select(port.BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			sb.Append("- 王国=").Append(trigger.FootholdKingdomId ?? "")
+			sb.Append(new TextObject("{=AF_MEMORY_UI_TriggerKingdomItem}- kingdom=").ToString()).Append(trigger.FootholdKingdomId ?? "")
 				.Append(" session=").Append(trigger.SceneSessionId >= 0 ? ("scene:" + trigger.SceneSessionId) : (trigger.DialogueSessionId >= 0 ? ("dialogue:" + trigger.DialogueSessionId) : "none"))
 				.Append(" value=").Append(Math.Max(0L, trigger.EstimatedValueDenars))
-				.Append(" tags=").Append(labels.Count > 0 ? string.Join("、", labels) : string.Join("、", trigger.Tags ?? new List<string>()));
+				.Append(" tags=").Append(labels.Count > 0 ? string.Join(listSeparator, labels) : string.Join(listSeparator, trigger.Tags ?? new List<string>()));
 			if (!string.IsNullOrWhiteSpace(trigger.TriggerReason))
 			{
 				sb.Append(" reason=").Append(trigger.TriggerReason.Trim());
@@ -163,7 +191,9 @@ internal static class MemoryEditorProjection
 		}
 		if (list.Count > 8)
 		{
-			sb.AppendLine("- ...还有 " + (list.Count - 8) + " 条");
+			var moreText = new TextObject("{=AF_MEMORY_UI_TriggerMoreCount}- ...and {COUNT} more");
+			moreText.SetTextVariable("COUNT", (list.Count - 8).ToString());
+			sb.AppendLine(moreText.ToString());
 		}
 		return sb.ToString().TrimEnd();
 	}
@@ -172,11 +202,11 @@ internal static class MemoryEditorProjection
 	{
 		if (line == null)
 		{
-			return "（空）";
+			return new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString();
 		}
-		string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM" : "普通");
-		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "手动") : line.Speaker.Trim();
-		return MBMath.ClampInt(line.GameHour, 0, 23) + "时 | " + type + " | " + speaker + " | " + port.BuildDevHistoryPreview(line.Text, 90);
+		string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM" : new TextObject("{=AF_MEMORY_UI_Normal}Normal").ToString());
+		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString()) : line.Speaker.Trim();
+		return MBMath.ClampInt(line.GameHour, 0, 23) + new TextObject("{=AF_MEMORY_UI_HourSeparator}h | ").ToString() + type + " | " + speaker + " | " + port.BuildDevHistoryPreview(line.Text, 90);
 	}
 
 	internal static string BuildDevDailyMemoryLineSubtitle(MemoryEditorDisplayPort port, DailyMemoryLine line)
@@ -185,17 +215,24 @@ internal static class MemoryEditorProjection
 		{
 			return "";
 		}
-		string date = string.IsNullOrWhiteSpace(line.GameDate) ? ("第" + line.GameDayIndex + "日") : line.GameDate.Trim();
-		return "日期：" + date + " " + MBMath.ClampInt(line.GameHour, 0, 23) + "时\n场景：" + (string.IsNullOrWhiteSpace(line.Scene) ? "未知场景" : line.Scene.Trim()) + "\n说话人：" + (string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "手动") : line.Speaker.Trim()) + "\n类型：" + (line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM对话" : "普通"));
+		string date = FormatDay(line.GameDate, line.GameDayIndex);
+		string scene = string.IsNullOrWhiteSpace(line.Scene) ? new TextObject("{=AF_MEMORY_UI_UnknownScene}Unknown scene").ToString() : line.Scene.Trim();
+		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString()) : line.Speaker.Trim();
+		string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? new TextObject("{=AF_MEMORY_UI_LlmDialogue}LLM dialogue").ToString() : new TextObject("{=AF_MEMORY_UI_Normal}Normal").ToString());
+		return new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + " " + MBMath.ClampInt(line.GameHour, 0, 23) + new TextObject("{=AF_MEMORY_UI_HourSuffix}h").ToString() + "\n" +
+			new TextObject("{=AF_MEMORY_UI_SceneLabel}Scene: ").ToString() + scene + "\n" +
+			new TextObject("{=AF_MEMORY_UI_SpeakerLabel}Speaker: ").ToString() + speaker + "\n" +
+			new TextObject("{=AF_MEMORY_UI_TypeLabel}Type: ").ToString() + type;
 	}
 
 	internal static string BuildDevDailyMemoryLineDescription(MemoryEditorDisplayPort port, DailyMemoryLine line)
 	{
 		if (line == null)
 		{
-			return "找不到未压缩记忆行。";
+			return new TextObject("{=AF_MEMORY_UI_UncompressedMemoryLineNotFound}Uncompressed memory line could not be found.").ToString();
 		}
-		return BuildDevDailyMemoryLineSubtitle(port, line) + "\n\n正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim());
+		string bodyText = string.IsNullOrWhiteSpace(line.Text) ? new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString() : line.Text.Trim();
+		return BuildDevDailyMemoryLineSubtitle(port, line) + "\n\n" + new TextObject("{=AF_MEMORY_UI_BodyPrefix}Body:\n").ToString() + bodyText;
 	}
 
 	internal static int GetDefaultDevDailyMemoryLineHour(MemoryEditorDisplayPort port, DailyMemoryDraft draft)
@@ -257,10 +294,10 @@ internal static class MemoryEditorProjection
 	{
 		if (block == null)
 		{
-			return displayIndex + "# （空）";
+			return displayIndex + "# " + new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString();
 		}
-		string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
-		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? "（无标题）" : block.RichTitle.Trim();
+		string date = FormatDay(block.GameDate, block.GameDayIndex);
+		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? new TextObject("{=AF_MEMORY_UI_Untitled}(untitled)").ToString() : block.RichTitle.Trim();
 		return displayIndex + "# " + date + " " + port.FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + port.BuildDevHistoryPreview(title, 44);
 	}
 
@@ -270,36 +307,39 @@ internal static class MemoryEditorProjection
 		{
 			return "";
 		}
-		string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
-		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? "（无标题）" : block.RichTitle.Trim();
-		return "ID：" + GetDevCompressedMemoryBlockId(port, block) + "\n日期：" + date + " " + port.FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n标题：" + title + "\n周报素材触发器：" + ((block.WeeklyMaterialTriggers?.Count).GetValueOrDefault());
+		string date = FormatDay(block.GameDate, block.GameDayIndex);
+		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? new TextObject("{=AF_MEMORY_UI_Untitled}(untitled)").ToString() : block.RichTitle.Trim();
+		return new TextObject("{=AF_MEMORY_UI_IdLabel}ID: ").ToString() + GetDevCompressedMemoryBlockId(port, block) + "\n" +
+			new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + " " + port.FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n" +
+			new TextObject("{=AF_MEMORY_UI_TitleLabel}Title: ").ToString() + title + "\n" +
+			new TextObject("{=AF_MEMORY_UI_WeeklyMaterialTriggersLabel}Weekly material triggers: ").ToString() + ((block.WeeklyMaterialTriggers?.Count).GetValueOrDefault());
 	}
 
 	internal static string BuildDevCompressedMemoryBlockEditorBody(MemoryEditorDisplayPort port, CompressedMemoryBlock block)
 	{
 		if (block == null)
 		{
-			return "找不到记忆块。";
+			return new TextObject("{=AF_MEMORY_UI_CompressedMemoryBlockNotFound}Compressed memory block could not be found.").ToString();
 		}
 		StringBuilder sb = new StringBuilder();
 		if (block.Scenes != null && block.Scenes.Count > 0)
 		{
-			sb.AppendLine("场景：" + string.Join(" / ", block.Scenes));
+			sb.AppendLine(new TextObject("{=AF_MEMORY_UI_SceneLabel}Scene: ").ToString() + string.Join(" / ", block.Scenes));
 		}
-		sb.AppendLine("正文预览：" + port.BuildDevHistoryPreview(block.Summary, 220));
-		sb.AppendLine("AFEF：" + (block.AfefLines?.Count ?? 0) + " 行");
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_BodyPreviewLabel}Body preview: ").ToString() + port.BuildDevHistoryPreview(block.Summary, 220));
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_AfefLabel}AFEF: ").ToString() + (block.AfefLines?.Count ?? 0) + new TextObject("{=AF_MEMORY_UI_Lines} lines").ToString());
 		string triggerText = BuildDevWeeklyMemoryMaterialTriggerText(port, block.WeeklyMaterialTriggers);
 		if (!string.IsNullOrWhiteSpace(triggerText))
 		{
-			sb.AppendLine("周报素材：");
+			sb.AppendLine(new TextObject("{=AF_MEMORY_UI_WeeklyMaterialLabel}Weekly material: ").ToString().TrimEnd());
 			sb.AppendLine(triggerText);
 		}
 		if (block.AfefLines != null && block.AfefLines.Count > 0)
 		{
-			sb.AppendLine("AFEF预览：" + port.BuildDevHistoryPreview(string.Join(" / ", block.AfefLines.Take(4)), 180));
+			sb.AppendLine(new TextObject("{=AF_MEMORY_UI_AfefPreviewLabel}AFEF preview: ").ToString() + port.BuildDevHistoryPreview(string.Join(" / ", block.AfefLines.Take(4)), 180));
 		}
 		sb.AppendLine();
-		sb.AppendLine("编辑或删除后，该NPC的记忆大总结会被清空并重新排队整理。");
+		sb.AppendLine(new TextObject("{=AF_MEMORY_UI_BlockEditOverviewClearNotice}Editing or deleting clears this NPC's memory overview and queues organization again.").ToString());
 		return sb.ToString().TrimEnd();
 	}
 
@@ -346,7 +386,8 @@ internal static class MemoryEditorProjection
 	{
 		return MemoryDeveloperEditOwner.ParseLineList(input, maxCount, ignoreCase);
 	}
-internal static DailyMemoryLine FindDevDailyMemoryLine(DailyMemoryDraft draft, int lineIndex)
+
+	internal static DailyMemoryLine FindDevDailyMemoryLine(DailyMemoryDraft draft, int lineIndex)
 	{
 		if (draft?.Lines == null || lineIndex < 0 || lineIndex >= draft.Lines.Count)
 		{
@@ -354,5 +395,4 @@ internal static DailyMemoryLine FindDevDailyMemoryLine(DailyMemoryDraft draft, i
 		}
 		return draft.Lines[lineIndex];
 	}
-
 }
