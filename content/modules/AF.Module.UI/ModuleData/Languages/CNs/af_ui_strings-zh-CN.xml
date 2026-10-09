@@ -376,5 +376,27 @@
   <string id="AF_MCM_Memory_Candidates_Hint" text="进入前处理的压缩记忆候选块数量。默认 20；15-20 通常最合适。超过该数量时使用富标题语义检索。" />
   <string id="AF_MCM_Memory_Final" text="最终注入记忆数" />
   <string id="AF_MCM_Memory_Final_Hint" text="主链路最终注入的压缩记忆块数量。默认 4；运行时不会超过“记忆候选上限”。" />
+  <string id="AF_MCM_Rules_Group" text="6. 规则触发（返回）" />
+  <string id="AF_MCM_Rules_TopN" text="规则返回上限" />
+  <string id="AF_MCM_Rules_TopN_Hint" text="控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。" />
+  <string id="AF_MCM_Proactive_Group" text="7. NPC主动接触" />
+  <string id="AF_MCM_Proactive_Enable" text="启用 NPC 主动接触" />
+  <string id="AF_MCM_Proactive_Enable_Hint" text="开启后，有明确需求的 NPC 队伍可以在大地图主动追上玩家并发起对话。" />
+  <string id="AF_MCM_Proactive_Test" text="测试模式" />
+  <string id="AF_MCM_Proactive_Test_Hint" text="开启后允许 Tier 0 玩家触发，并建议配合高概率、短冷却测试主动接触。正常游玩默认关闭。" />
+  <string id="AF_MCM_Proactive_MinTier" text="最低家族等级" />
+  <string id="AF_MCM_Proactive_MinTier_Hint" text="测试模式关闭时生效；玩家家族等级低于该值则不会触发 NPC 主动接触。" />
+  <string id="AF_MCM_Proactive_Chance" text="每次扫描触发概率" />
+  <string id="AF_MCM_Proactive_Chance_Hint" text="候选 NPC 的触发概率缩放值。正常游玩默认 35，测试时可拉到 100。" />
+  <string id="AF_MCM_Proactive_Interval" text="扫描间隔(小时)" />
+  <string id="AF_MCM_Proactive_Interval_Hint" text="每隔多少游戏小时扫描一次附近有需求的 NPC 队伍。正常游玩默认 6 小时。" />
+  <string id="AF_MCM_Proactive_GlobalCooldown" text="全局冷却(小时)" />
+  <string id="AF_MCM_Proactive_GlobalCooldown_Hint" text="任意一次主动接触启动后，多少小时内不再启动下一次。正常游玩默认 24 小时。" />
+  <string id="AF_MCM_Proactive_HeroCooldown" text="同 NPC 冷却(天)" />
+  <string id="AF_MCM_Proactive_HeroCooldown_Hint" text="同一 NPC 主动接触玩家后，多少天内不会再次以同类需求来找玩家。正常游玩默认 14 天。" />
+  <string id="AF_MCM_Proactive_Distance" text="候选距离倍率" />
+  <string id="AF_MCM_Proactive_Distance_Hint" text="候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。正常游玩默认 1.0。" />
+  <string id="AF_MCM_Proactive_Food" text="缺粮阈值(天)" />
+  <string id="AF_MCM_Proactive_Food_Hint" text="NPC 队伍剩余粮食天数小于等于该值，或已经饥饿时，可以触发缺粮主动接触。正常游玩默认 2 天。" />
   </strings>
 </base>

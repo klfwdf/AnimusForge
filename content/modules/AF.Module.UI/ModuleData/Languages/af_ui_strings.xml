@@ -378,5 +378,27 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Memory_Candidates_Hint" text="Number of compressed-memory candidate blocks entering preprocessing. Default: 20; 15-20 is usually suitable. Rich-title semantic retrieval is used above this count." />
   <string id="AF_MCM_Memory_Final" text="Final memory injection count" />
   <string id="AF_MCM_Memory_Final_Hint" text="Number of compressed memory blocks injected into the main chain. Default: 4; never exceeds the memory candidate limit." />
+  <string id="AF_MCM_Rules_Group" text="6. Rule triggers (returned)" />
+  <string id="AF_MCM_Rules_TopN" text="Rule results limit" />
+  <string id="AF_MCM_Rules_TopN_Hint" text="Maximum additional rules supplied to AI per conversation. Recall and reranking counts are derived automatically and are not padded when highly relevant rules are insufficient. Default: 4." />
+  <string id="AF_MCM_Proactive_Group" text="7. Proactive NPC contact" />
+  <string id="AF_MCM_Proactive_Enable" text="Enable proactive NPC contact" />
+  <string id="AF_MCM_Proactive_Enable_Hint" text="When enabled, NPC parties with a clear need can pursue the player on the campaign map and start a conversation." />
+  <string id="AF_MCM_Proactive_Test" text="Test mode" />
+  <string id="AF_MCM_Proactive_Test_Hint" text="Allows Tier 0 players to trigger contact and is useful with high chance and short cooldowns. Off by default for normal play." />
+  <string id="AF_MCM_Proactive_MinTier" text="Minimum clan tier" />
+  <string id="AF_MCM_Proactive_MinTier_Hint" text="Applies when test mode is off. NPC contact does not trigger below this player clan tier." />
+  <string id="AF_MCM_Proactive_Chance" text="Trigger chance per scan" />
+  <string id="AF_MCM_Proactive_Chance_Hint" text="Trigger probability scale for candidate NPCs. Default 35 for normal play; tests may use 100." />
+  <string id="AF_MCM_Proactive_Interval" text="Scan interval (hours)" />
+  <string id="AF_MCM_Proactive_Interval_Hint" text="How often to scan nearby NPC parties with a need, in game hours. Default: 6." />
+  <string id="AF_MCM_Proactive_GlobalCooldown" text="Global cooldown (hours)" />
+  <string id="AF_MCM_Proactive_GlobalCooldown_Hint" text="After any proactive contact starts, no new contact starts during this many hours. Default: 24." />
+  <string id="AF_MCM_Proactive_HeroCooldown" text="Same-NPC cooldown (days)" />
+  <string id="AF_MCM_Proactive_HeroCooldown_Hint" text="After an NPC contacts the player, it cannot return with the same need during this many days. Default: 14." />
+  <string id="AF_MCM_Proactive_Distance" text="Candidate distance multiplier" />
+  <string id="AF_MCM_Proactive_Distance_Hint" text="Maximum candidate distance equals player sight range multiplied by this value. Default: 1.0." />
+  <string id="AF_MCM_Proactive_Food" text="Food threshold (days)" />
+  <string id="AF_MCM_Proactive_Food_Hint" text="A food need can trigger when an NPC party has at most this many food days or is already starving. Default: 2 days." />
   </strings>
 </base>
