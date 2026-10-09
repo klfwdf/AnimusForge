@@ -2850,6 +2850,18 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Intimacy_PregnancyChance" text="怀孕几率（%）" />
   <string id="AF_MCM_Intimacy_PregnancyChance_Hint" text="当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。" />
   <string id="AF_MCM_Intimacy_Group" text="15. 亲密行为与怀孕" />
+  <string id="AF_WEEKLY_UnknownError" text="未知错误" />
+  <string id="AF_WEEKLY_NoGeneratableGroups" text="当前没有可生成周报的分组。" />
+  <string id="AF_WEEKLY_TargetChangedRetryCancelled" text="周报目标在失败后已变更，旧素材重试已取消；请重新生成本周周报。" />
+  <string id="AF_WEEKLY_BatchNoUsableBlock" text="{LABEL}：批量请求未恢复出可用周报区块 - {REASON}" />
+  <string id="AF_WEEKLY_GenerationStarted" text="开始生成{LABEL}，共 {TARGETS} 条周报目标，{BATCHES} 个批次；将按分钟整批发送，每分钟同时发送 {BURST} 个请求。" />
+  <string id="AF_WEEKLY_WaveLaunched" text="周报批次 {WAVE}/{TOTAL} 已发出，共 {COUNT} 个请求。" />
+  <string id="AF_WEEKLY_RecordNotFound" text="未找到该期周报记录。" />
+  <string id="AF_WEEKLY_NoUsableFullMaterial" text="该期周报没有可用的完整素材。" />
+  <string id="AF_WEEKLY_IssueOrMaterialChanged" text="该期周报或素材已变更，请重新选择后生成。" />
+  <string id="AF_WEEKLY_FullGenerationFailed" text="完整周报生成失败：{REASON}" />
+  <string id="AF_WEEKLY_UnparsableFullResponse" text="完整周报返回内容无法解析。" />
+  <string id="AF_WEEKLY_FullGenerated" text="完整周报已生成。" />
   </strings>
 </base>
 

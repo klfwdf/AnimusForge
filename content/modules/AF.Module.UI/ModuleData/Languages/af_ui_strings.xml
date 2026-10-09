@@ -2819,6 +2819,18 @@ Choose how to proceed:" />
   <string id="AF_MCM_Intimacy_PregnancyChance" text="Pregnancy chance (%)" />
   <string id="AF_MCM_Intimacy_PregnancyChance_Hint" text="After the intimacy action tag confirms intercourse and ejaculation occurred this round, the female partner pregnancy chance is applied. 0 means never; 100 means certain. Default: 50%." />
   <string id="AF_MCM_Intimacy_Group" text="15. Intimacy and pregnancy" />
+  <string id="AF_WEEKLY_UnknownError" text="unknown error" />
+  <string id="AF_WEEKLY_NoGeneratableGroups" text="There are no weekly-report groups available to generate." />
+  <string id="AF_WEEKLY_TargetChangedRetryCancelled" text="The weekly-report target changed after the failure, so the old material retry was cancelled. Generate this week's report again." />
+  <string id="AF_WEEKLY_BatchNoUsableBlock" text="{LABEL}: the batch request produced no usable weekly-report block - {REASON}" />
+  <string id="AF_WEEKLY_GenerationStarted" text="Started generating {LABEL}: {TARGETS} weekly-report targets in {BATCHES} batches. Requests are sent as minute-sized bursts, {BURST} requests per minute." />
+  <string id="AF_WEEKLY_WaveLaunched" text="Weekly-report batch {WAVE}/{TOTAL} launched with {COUNT} requests." />
+  <string id="AF_WEEKLY_RecordNotFound" text="No weekly-report record was found for that issue." />
+  <string id="AF_WEEKLY_NoUsableFullMaterial" text="That issue has no usable full-report material." />
+  <string id="AF_WEEKLY_IssueOrMaterialChanged" text="That weekly-report issue or its material changed. Select it again and regenerate." />
+  <string id="AF_WEEKLY_FullGenerationFailed" text="Full weekly-report generation failed: {REASON}" />
+  <string id="AF_WEEKLY_UnparsableFullResponse" text="The full weekly-report response could not be parsed." />
+  <string id="AF_WEEKLY_FullGenerated" text="The full weekly report has been generated." />
   </strings>
 </base>
 
