@@ -648,5 +648,21 @@ Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_MappingTargetValue" text="{LABEL} ({VALUE})" />
 
     <string id="AF_KNOWLEDGE_UnnamedKnowledge" text="Unnamed knowledge" />
+
+    <string id="AF_KNOWLEDGE_ImportRuleEmpty" text="Rule is empty." />
+    <string id="AF_KNOWLEDGE_ImportRuleIdEmpty" text="RuleId is empty." />
+    <string id="AF_KNOWLEDGE_ImportRagTooLong" text="RAG short text exceeds the {MAX}-character limit." />
+    <string id="AF_KNOWLEDGE_ImportDuplicateCondition" text="The rule contains duplicate prompt conditions: items {FIRST} and {SECOND} are identical." />
+    <string id="AF_KNOWLEDGE_ImportWriteFailed" text="Rule write failed because the rule structure did not pass validation." />
+    <string id="AF_KNOWLEDGE_ImportValidationFailed" text="Rule validation failed: {DETAIL}" />
+    <string id="AF_KNOWLEDGE_ImportBehaviorUnavailable" text="Import failed: the knowledge library is not initialized." />
+    <string id="AF_KNOWLEDGE_ImportDuplicateKeyword" text="Import failed: the imported rule contains a duplicate keyword ({KEYWORD})." />
+    <string id="AF_KNOWLEDGE_ImportExistingKeyword" text="Import failed: the current save already contains a duplicate keyword ({KEYWORD}). Fix it in game before importing." />
+    <string id="AF_KNOWLEDGE_ImportKeywordConflict" text="Import failed: keyword conflict ({KEYWORD}). The current save assigns it to rule {EXISTING}; the imported rule is {INCOMING}." />
+    <string id="AF_KNOWLEDGE_ImportNoRulesFound" text="Import failed: no knowledge rule files were found in the import directory." />
+    <string id="AF_KNOWLEDGE_ImportFolderDuplicateKeyword" text="Import failed: the import folder contains a duplicate keyword ({KEYWORD}) in rules {FIRST} and {SECOND}." />
+    <string id="AF_KNOWLEDGE_DatabaseReloadEmptyEntry" text="The package contains an empty knowledge entry." />
+    <string id="AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty" text="Knowledge entry {SOURCE} has an empty RuleId." />
+    <string id="AF_KNOWLEDGE_DatabaseReloadDuplicateId" text="Could not generate a stable ID for duplicate knowledge RuleId: {ID}" />
   </strings>
 </base>

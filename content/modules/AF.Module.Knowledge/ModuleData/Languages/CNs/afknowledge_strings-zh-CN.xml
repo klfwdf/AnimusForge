@@ -649,5 +649,21 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_MappingTargetValue" text="{LABEL}（{VALUE}）" />
 
     <string id="AF_KNOWLEDGE_UnnamedKnowledge" text="未命名知识" />
+
+    <string id="AF_KNOWLEDGE_ImportRuleEmpty" text="规则为空。" />
+    <string id="AF_KNOWLEDGE_ImportRuleIdEmpty" text="RuleId 为空。" />
+    <string id="AF_KNOWLEDGE_ImportRagTooLong" text="RAG 专用短句超过 {MAX} 字符限制。" />
+    <string id="AF_KNOWLEDGE_ImportDuplicateCondition" text="规则内部存在重复条件的提示词：第 {FIRST} 条与第 {SECOND} 条条件完全相同。" />
+    <string id="AF_KNOWLEDGE_ImportWriteFailed" text="规则写入失败，可能是规则结构未通过校验。" />
+    <string id="AF_KNOWLEDGE_ImportValidationFailed" text="规则校验异常：{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ImportBehaviorUnavailable" text="导入失败：KnowledgeLibraryBehavior 未初始化。" />
+    <string id="AF_KNOWLEDGE_ImportDuplicateKeyword" text="导入失败：导入规则中存在重复关键词（{KEYWORD}）。" />
+    <string id="AF_KNOWLEDGE_ImportExistingKeyword" text="导入失败：当前存档中已存在重复关键词（{KEYWORD}），请先在游戏内修复后再导入。" />
+    <string id="AF_KNOWLEDGE_ImportKeywordConflict" text="导入失败：关键词冲突（{KEYWORD}）。当前存档中该关键词属于规则 {EXISTING}，导入规则为 {INCOMING}。" />
+    <string id="AF_KNOWLEDGE_ImportNoRulesFound" text="导入失败：导入目录中未找到可导入的知识规则文件。" />
+    <string id="AF_KNOWLEDGE_ImportFolderDuplicateKeyword" text="导入失败：导入文件夹中存在重复关键词（{KEYWORD}），分别属于规则 {FIRST} 与 {SECOND}。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadEmptyEntry" text="资料包包含空知识条目。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty" text="知识条目“{SOURCE}”的 RuleId 为空。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadDuplicateId" text="无法为重复知识 RuleId 生成稳定 ID：{ID}" />
   </strings>
 </base>

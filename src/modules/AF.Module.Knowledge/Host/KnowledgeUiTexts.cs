@@ -186,6 +186,21 @@ internal static class KnowledgeUiTexts
 		return text.ToString();
 	}
 
+	public static string ImportRuleEmpty => Text("AF_KNOWLEDGE_ImportRuleEmpty", "Rule is empty.");
+	public static string ImportRuleIdEmpty => Text("AF_KNOWLEDGE_ImportRuleIdEmpty", "RuleId is empty.");
+	public static string ImportRagTooLong(int max) => Text("AF_KNOWLEDGE_ImportRagTooLong", "RAG short text exceeds the {MAX}-character limit.", ("MAX", max.ToString()));
+	public static string ImportDuplicateCondition(int first, int second) => Text("AF_KNOWLEDGE_ImportDuplicateCondition", "The rule contains duplicate prompt conditions: items {FIRST} and {SECOND} are identical.", ("FIRST", first.ToString()), ("SECOND", second.ToString()));
+	public static string ImportWriteFailed => Text("AF_KNOWLEDGE_ImportWriteFailed", "Rule write failed because the rule structure did not pass validation.");
+	public static string ImportValidationFailed(string detail) => Text("AF_KNOWLEDGE_ImportValidationFailed", "Rule validation failed: {DETAIL}", ("DETAIL", detail));
+	public static string ImportBehaviorUnavailable => Text("AF_KNOWLEDGE_ImportBehaviorUnavailable", "Import failed: the knowledge library is not initialized.");
+	public static string ImportDuplicateKeyword(string keyword) => Text("AF_KNOWLEDGE_ImportDuplicateKeyword", "Import failed: the imported rule contains a duplicate keyword ({KEYWORD}).", ("KEYWORD", keyword));
+	public static string ImportExistingKeyword(string keyword) => Text("AF_KNOWLEDGE_ImportExistingKeyword", "Import failed: the current save already contains a duplicate keyword ({KEYWORD}). Fix it in game before importing.", ("KEYWORD", keyword));
+	public static string ImportKeywordConflict(string keyword, string existingRule, string incomingRule) => Text("AF_KNOWLEDGE_ImportKeywordConflict", "Import failed: keyword conflict ({KEYWORD}). The current save assigns it to rule {EXISTING}; the imported rule is {INCOMING}.", ("KEYWORD", keyword), ("EXISTING", existingRule), ("INCOMING", incomingRule));
+	public static string ImportNoRulesFound => Text("AF_KNOWLEDGE_ImportNoRulesFound", "Import failed: no knowledge rule files were found in the import directory.");
+	public static string ImportFolderDuplicateKeyword(string keyword, string firstRule, string secondRule) => Text("AF_KNOWLEDGE_ImportFolderDuplicateKeyword", "Import failed: the import folder contains a duplicate keyword ({KEYWORD}) in rules {FIRST} and {SECOND}.", ("KEYWORD", keyword), ("FIRST", firstRule), ("SECOND", secondRule));
+	public static string DatabaseReloadEmptyEntry => Text("AF_KNOWLEDGE_DatabaseReloadEmptyEntry", "The package contains an empty knowledge entry.");
+	public static string DatabaseReloadRuleIdEmpty(string source) => Text("AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty", "Knowledge entry {SOURCE} has an empty RuleId.", ("SOURCE", source));
+	public static string DatabaseReloadDuplicateId(string id) => Text("AF_KNOWLEDGE_DatabaseReloadDuplicateId", "Could not generate a stable ID for duplicate knowledge RuleId: {ID}", ("ID", id));
 	public static string UnnamedKnowledge => Ui("AF_KNOWLEDGE_UnnamedKnowledge", "Unnamed knowledge");
 	public static string ExistingConditionFallback => Ui("AF_KNOWLEDGE_ExistingConditionFallback", "existing");
 	public static string GeneralCondition => Ui("AF_KNOWLEDGE_GeneralCondition", "General (no conditions)");
