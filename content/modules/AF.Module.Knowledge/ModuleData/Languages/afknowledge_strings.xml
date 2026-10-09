@@ -200,5 +200,250 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_RetrievalSelect" text="Select" />
     <string id="AF_KNOWLEDGE_RetrievalTopKTitle" text="Set knowledge return limit" />
     <string id="AF_KNOWLEDGE_RetrievalTopKPrompt" text="Enter an integer from 1 to 12:" />
+
+    <string id="AF_KNOWLEDGE_MappingSource_hero" text="Hero" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_hero" text="Current NPC" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_hero" text="Player" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_hero" text="Bound hero" />
+    <string id="AF_KNOWLEDGE_MappingSource_clan" text="Clan" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_clan" text="Current NPC clan" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_clan" text="Player clan" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_settlement_owner_clan" text="Bound settlement owner clan" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_hero_clan" text="Bound hero clan" />
+    <string id="AF_KNOWLEDGE_MappingSource_kingdom" text="Kingdom" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_kingdom" text="Current NPC kingdom" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_kingdom" text="Player kingdom" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_kingdom" text="Bound kingdom" />
+    <string id="AF_KNOWLEDGE_MappingSource_settlement" text="Settlement" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_settlement" text="Current NPC settlement" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_settlement" text="Player settlement" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_settlement" text="Bound settlement" />
+    <string id="AF_KNOWLEDGE_MappingSource_Unknown" text="Status object" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_alive" text="Is alive" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_dead" text="Is dead" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_disabled" text="Is disabled" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_missing" text="Is missing" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_married" text="Is married" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_widowed" text="Is widowed" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_female" text="Is female" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_male" text="Is male" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_child" text="Is child" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_adult" text="Is adult" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_age_range" text="Is in age range" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_clan_leader" text="Is clan leader" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_kingdom_leader" text="Is kingdom leader" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_governor" text="Is governor" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_prisoner" text="Is prisoner" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_settlement" text="Is in settlement" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_field" text="Is in field" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_wanderer" text="Is wanderer" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_notable" text="Is notable" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_lord" text="Is lord" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_merchant" text="Is merchant" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_gang_leader" text="Is gang leader" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_artisan" text="Is artisan" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_preacher" text="Is preacher" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_headman" text="Is headman" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_minor_faction_hero" text="Is minor faction hero" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_party_leader" text="Is party leader" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_player_companion" text="Is player companion" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebel" text="Is rebel" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_wounded" text="Is wounded" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_known_to_player" text="Is known to player" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_children" text="Has children" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_father" text="Has father" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_mother" text="Has mother" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_home_settlement" text="Has home settlement" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_eliminated" text="Is eliminated" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_kingdom" text="Has kingdom" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_leader" text="Has leader" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_ruling_clan" text="Has ruling clan" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_settlement" text="Has any settlement" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_town" text="Has any town" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_castle" text="Has any castle" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_village" text="Has any village" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_members" text="Has members" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_male_members" text="Has male members" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_female_members" text="Has female members" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_age_range_members" text="Has age range members" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_mercenary" text="Is mercenary" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_minor_faction" text="Is minor faction" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebel_clan" text="Is rebel clan" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_noble" text="Is noble" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_bandit_faction" text="Is bandit faction" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_outlaw" text="Is outlaw" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_clan" text="Has any clan" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_lord" text="Has any lord" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_active_policies" text="Has active policies" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_war" text="Has any war" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_allies" text="Has any allies" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_active" text="Is active" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_town" text="Is town" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_castle" text="Is castle" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_village" text="Is village" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_fortification" text="Is fortification" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_hideout" text="Is hideout" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_under_siege" text="Is under siege" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_under_raid" text="Is under raid" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_raided" text="Is raided" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_starving" text="Is starving" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebellious" text="Is rebellious" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_port" text="Has port" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_owner" text="Has owner" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_owner_clan" text="Has owner clan" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_notables" text="Has notables" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_parties" text="Has parties" />
+    <string id="AF_KNOWLEDGE_MappingCondition_Unknown" text="Unknown status" />
+    <string id="AF_KNOWLEDGE_MappingStatusLabel" text="Status check: {SOURCE}: {CONDITION}" />
+    <string id="AF_KNOWLEDGE_MappingKind_Unknown" text="Unknown mapping" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_name" text="Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_leader_name" text="Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_ruling_clan_name" text="Kingdom Ruling Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_culture_name" text="Kingdom Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_initial_home_settlement_name" text="Kingdom Initial Home Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_clans" text="Kingdom All Clans" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_lords" text="Kingdom All Lords" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_towns" text="Kingdom All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_castles" text="Kingdom All Castles" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_villages" text="Kingdom All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_settlements" text="Kingdom All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_active_policies" text="Kingdom Active Policies" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_allied_kingdoms" text="Kingdom Allied Kingdoms" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_war_factions" text="Kingdom War Factions" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_name" text="Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_clan_name" text="Settlement Owner Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_leader_name" text="Settlement Owner Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_kingdom_name" text="Settlement Owner Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_kingdom_leader_name" text="Settlement Owner Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_culture_name" text="Settlement Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_notables" text="Settlement Notables" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_parties" text="Settlement Parties" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_bound_villages" text="Settlement Bound Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_name" text="Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_leader_name" text="Clan Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_kingdom_name" text="Clan Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_kingdom_leader_name" text="Clan Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_towns" text="Clan All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_villages" text="Clan All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_settlements" text="Clan All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_members" text="Clan Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_male_members" text="Clan Male Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_female_members" text="Clan Female Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_age_range_members" text="Clan Age Range Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_name" text="Hero Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_clan_name" text="Hero Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_kingdom_name" text="Hero Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_kingdom_leader_name" text="Hero Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_spouse_name" text="Hero Spouse Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_father_name" text="Hero Father Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_mother_name" text="Hero Mother Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_current_settlement_name" text="Hero Current Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_name" text="Current NPC Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_name" text="Current NPC Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_kingdom_name" text="Current NPC Clan Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_kingdom_leader_name" text="Current NPC Clan Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_towns" text="Current NPC Clan All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_villages" text="Current NPC Clan All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_settlements" text="Current NPC Clan All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_members" text="Current NPC Clan Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_male_members" text="Current NPC Clan Male Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_female_members" text="Current NPC Clan Female Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_age_range_members" text="Current NPC Clan Age Range Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_name" text="Current NPC Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_leader_name" text="Current NPC Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_ruling_clan_name" text="Current NPC Kingdom Ruling Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_culture_name" text="Current NPC Kingdom Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_initial_home_settlement_name" text="Current NPC Kingdom Initial Home Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_clans" text="Current NPC Kingdom All Clans" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_lords" text="Current NPC Kingdom All Lords" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_towns" text="Current NPC Kingdom All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_castles" text="Current NPC Kingdom All Castles" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_villages" text="Current NPC Kingdom All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_settlements" text="Current NPC Kingdom All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_active_policies" text="Current NPC Kingdom Active Policies" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_allied_kingdoms" text="Current NPC Kingdom Allied Kingdoms" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_war_factions" text="Current NPC Kingdom War Factions" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_spouse_name" text="Current NPC Spouse Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_father_name" text="Current NPC Father Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_mother_name" text="Current NPC Mother Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_name" text="Current NPC Current Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_clan_name" text="Current NPC Current Settlement Owner Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_leader_name" text="Current NPC Current Settlement Owner Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_kingdom_name" text="Current NPC Current Settlement Owner Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_kingdom_leader_name" text="Current NPC Current Settlement Owner Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_culture_name" text="Current NPC Current Settlement Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_notables" text="Current NPC Current Settlement Notables" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_parties" text="Current NPC Current Settlement Parties" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_bound_villages" text="Current NPC Current Settlement Bound Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_name" text="Player Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_name" text="Player Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_kingdom_name" text="Player Clan Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_kingdom_leader_name" text="Player Clan Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_towns" text="Player Clan All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_villages" text="Player Clan All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_settlements" text="Player Clan All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_members" text="Player Clan Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_male_members" text="Player Clan Male Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_female_members" text="Player Clan Female Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_age_range_members" text="Player Clan Age Range Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_kingdom_name" text="Player Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_kingdom_leader_name" text="Player Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_spouse_name" text="Player Spouse Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_current_settlement_name" text="Player Current Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_name" text="Bound Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_leader_name" text="Bound Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_ruling_clan_name" text="Bound Kingdom Ruling Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_culture_name" text="Bound Kingdom Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_initial_home_settlement_name" text="Bound Kingdom Initial Home Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_clans" text="Bound Kingdom All Clans" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_lords" text="Bound Kingdom All Lords" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_towns" text="Bound Kingdom All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_castles" text="Bound Kingdom All Castles" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_villages" text="Bound Kingdom All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_settlements" text="Bound Kingdom All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_active_policies" text="Bound Kingdom Active Policies" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_allied_kingdoms" text="Bound Kingdom Allied Kingdoms" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_war_factions" text="Bound Kingdom War Factions" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_name" text="Bound Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_name" text="Bound Settlement Owner Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_kingdom_name" text="Bound Settlement Owner Clan Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_kingdom_leader_name" text="Bound Settlement Owner Clan Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_towns" text="Bound Settlement Owner Clan All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_villages" text="Bound Settlement Owner Clan All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_settlements" text="Bound Settlement Owner Clan All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_members" text="Bound Settlement Owner Clan Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_male_members" text="Bound Settlement Owner Clan Male Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_female_members" text="Bound Settlement Owner Clan Female Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_age_range_members" text="Bound Settlement Owner Clan Age Range Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_leader_name" text="Bound Settlement Owner Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_kingdom_name" text="Bound Settlement Owner Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_kingdom_leader_name" text="Bound Settlement Owner Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_culture_name" text="Bound Settlement Culture Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_notables" text="Bound Settlement Notables" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_parties" text="Bound Settlement Parties" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_bound_villages" text="Bound Settlement Bound Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_name" text="Bound Hero Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_name" text="Bound Hero Clan Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_kingdom_name" text="Bound Hero Clan Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_kingdom_leader_name" text="Bound Hero Clan Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_towns" text="Bound Hero Clan All Towns" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_villages" text="Bound Hero Clan All Villages" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_settlements" text="Bound Hero Clan All Settlements" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_members" text="Bound Hero Clan Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_male_members" text="Bound Hero Clan Male Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_female_members" text="Bound Hero Clan Female Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_age_range_members" text="Bound Hero Clan Age Range Members" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_kingdom_name" text="Bound Hero Kingdom Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_kingdom_leader_name" text="Bound Hero Kingdom Leader Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_spouse_name" text="Bound Hero Spouse Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_father_name" text="Bound Hero Father Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_mother_name" text="Bound Hero Mother Name" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_current_settlement_name" text="Bound Hero Current Settlement Name" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Hero" text="Hero" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Clan" text="Clan" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Kingdom" text="Kingdom" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Settlement" text="Settlement" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Automatic" text="Automatic target" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Generic" text="Target" />
   </strings>
 </base>
