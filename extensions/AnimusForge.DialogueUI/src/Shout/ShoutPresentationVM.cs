@@ -21,6 +21,11 @@ namespace AnimusForge.DialogueUI.Shout
         private int _illustrationVersion = -1;
         [DataSourceProperty] public bool IsIllustrationVisible => Host is ShoutTextInputPopupVM vm && vm.IsIllustrationVisible;
         [DataSourceProperty] public bool CanIllustrate => Host is ShoutTextInputPopupVM vm && vm.CanIllustrate;
+        [DataSourceProperty] public string SceneHistoryTitleText => DialogueUiLocalization.Text("AFD_UI_Shout_Title", "Visible scene records for the current target");
+        [DataSourceProperty] public string GalleryText => DialogueUiLocalization.Text("AFD_UI_Shout_Gallery", "Gallery");
+        [DataSourceProperty] public string EncyclopediaText => DialogueUiLocalization.Text("AFD_UI_Shout_Encyclopedia", "Encyclopedia");
+        [DataSourceProperty] public string CloseText => DialogueUiLocalization.Text("AFD_UI_Shout_Close", "Close");
+        [DataSourceProperty] public string SendText => DialogueUiLocalization.Text("AFD_UI_Shout_Send", "Send");
         [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? DialogueUiLocalization.Text("AFD_UI_Illustration_Button", "Illustrate");
         public void ExecuteIllustrate() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteIllustrate(); }
         public void ExecuteOpenGallery() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteOpenGallery(); }

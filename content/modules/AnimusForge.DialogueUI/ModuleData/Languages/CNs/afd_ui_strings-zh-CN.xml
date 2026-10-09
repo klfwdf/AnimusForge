@@ -75,5 +75,86 @@
     <string id="AFD_UI_Shout_NoHistory" text="当前场景暂无可见对话记录。" />
     <string id="AFD_UI_Shout_TargetInvalid" text="当前交流对象已失效，请收起后重新框选。" />
     <string id="AFD_UI_Shout_TargetInvalidHistory" text="当前交流对象已失效，无法读取记录。" />
+    <string id="AFD_UI_Native_InputPlaceholder" text="输入你要说的话……" />
+    <string id="AFD_UI_Native_InputHint" text="Enter 发送 · Shift+Enter 换行" />
+    <string id="AFD_UI_Native_ConversationHistory" text="对话历史" />
+    <string id="AFD_UI_Native_GiveShow" text="给予/展示" />
+    <string id="AFD_UI_Native_Illustration" text="场景插画" />
+    <string id="AFD_UI_Native_Leave" text="离开" />
+    <string id="AFD_UI_Aux_HistoryTab" text="对话历史" />
+    <string id="AFD_UI_Aux_TradeTab" text="给予 / 展示" />
+    <string id="AFD_UI_Aux_Close" text="收起面板" />
+    <string id="AFD_UI_Aux_FilterAll" text="全部" />
+    <string id="AFD_UI_Aux_FilterDialogue" text="对话" />
+    <string id="AFD_UI_Aux_FilterAction" text="行动" />
+    <string id="AFD_UI_Aux_SearchHistoryHint" text="搜索这位人物的记录" />
+    <string id="AFD_UI_Aux_LoadOlder" text="更早记录" />
+    <string id="AFD_UI_Aux_LoadNewer" text="更新记录" />
+    <string id="AFD_UI_Aux_Latest" text="回到最新" />
+    <string id="AFD_UI_Aux_DateFilter" text="按日期查看" />
+    <string id="AFD_UI_Aux_ItemsFilter" text="物品 / 第纳尔" />
+    <string id="AFD_UI_Aux_TroopsFilter" text="部队" />
+    <string id="AFD_UI_Aux_PrisonersFilter" text="俘虏" />
+    <string id="AFD_UI_Aux_AssetsFilter" text="固定资产" />
+    <string id="AFD_UI_Aux_Give" text="给予" />
+    <string id="AFD_UI_Aux_Show" text="展示" />
+    <string id="AFD_UI_Aux_SearchResourcesHint" text="搜索物品或第纳尔…" />
+    <string id="AFD_UI_Aux_ResourcesHeader" text="资源" />
+    <string id="AFD_UI_Aux_AvailableHeader" text="持有" />
+    <string id="AFD_UI_Aux_ValueHeader" text="估值" />
+    <string id="AFD_UI_Aux_NoResourcesText" text="没有符合条件的资源" />
+    <string id="AFD_UI_Aux_Clear" text="清空" />
+    <string id="AFD_UI_Aux_NoSelection" text="从左侧选择资源" />
+    <string id="AFD_UI_Aux_TotalValue" text="估值合计" />
+    <string id="AFD_UI_Aux_PreviousPage" text="上一页" />
+    <string id="AFD_UI_Aux_NextPage" text="下一页" />
+    <string id="AFD_UI_Trade_SelectAll" text="全部" />
+    <string id="AFD_UI_Scene_SessionTitle" text="场景对谈手札" />
+    <string id="AFD_UI_Scene_Collapse" text="收起界面" />
+    <string id="AFD_UI_Scene_IncludeAll" text="全部参与" />
+    <string id="AFD_UI_Scene_KeepLocked" text="只留锁定" />
+    <string id="AFD_UI_Scene_HistorySeparator" text="—— 场景对话记录 ——" />
+    <string id="AFD_UI_Scene_CancelGift" text="取消给予" />
+    <string id="AFD_UI_Scene_InputPlaceholder" text="输入你要对周围人说的话，或点名片向特定 NPC 交谈……" />
+    <string id="AFD_UI_Scene_InputHint" text="[Enter] 发送 · [Shift+Enter] 换行 · 按受众名单同步分发" />
+    <string id="AFD_UI_Scene_History" text="历史" />
+    <string id="AFD_UI_Scene_Gift" text="赠送" />
+    <string id="AFD_UI_Scene_Gallery" text="画廊" />
+    <string id="AFD_UI_Scene_Encyclopedia" text="图鉴" />
+    <string id="AFD_UI_Scene_Leave" text="离开" />
+    <string id="AFD_UI_Scene_Interrupt" text="打断 · 插话" />
+    <string id="AFD_UI_Scene_HistoryTitle" text="场景对话记录" />
+    <string id="AFD_UI_Scene_Close" text="关闭" />
+    <string id="AFD_UI_Scene_Return" text="返回对话" />
+    <string id="AFD_UI_Scene_ExpandFolio" text="展开\n对谈手札" />
+    <string id="AFD_UI_Scene_ExpandFolioHint" text="(按 T)" />
+    <string id="AFD_UI_Scene_DocketInstructions" text="点名片 = 选为对话对象 · 点印章 = 参与 / 屏蔽 / 锁定" />
+    <string id="AFD_UI_Scene_MoreHistory" text="滚轮查看更多" />
+    <string id="AFD_UI_Scene_RollUpDocket" text="卷起名录" />
+    <string id="AFD_UI_Trade_Return" text="返回对话" />
+    <string id="AFD_UI_Trade_ItemsFilter" text="物品 / 第纳尔" />
+    <string id="AFD_UI_Trade_TroopsFilter" text="部队" />
+    <string id="AFD_UI_Trade_PrisonersFilter" text="俘虏" />
+    <string id="AFD_UI_Trade_AssetsFilter" text="固定资产" />
+    <string id="AFD_UI_Trade_Give" text="给予" />
+    <string id="AFD_UI_Trade_Show" text="展示" />
+    <string id="AFD_UI_Trade_SearchHint" text="搜索物品或第纳尔…" />
+    <string id="AFD_UI_Trade_ResourcesHeader" text="资源" />
+    <string id="AFD_UI_Trade_AvailableHeader" text="持有" />
+    <string id="AFD_UI_Trade_ValueHeader" text="估值" />
+    <string id="AFD_UI_Trade_NoResources" text="没有符合条件的资源" />
+    <string id="AFD_UI_Trade_Clear" text="清空" />
+    <string id="AFD_UI_Trade_NoSelection" text="从左侧选择资源" />
+    <string id="AFD_UI_Trade_TotalValueLabel" text="估值合计" />
+    <string id="AFD_UI_Trade_PreviousPage" text="上一页" />
+    <string id="AFD_UI_Trade_NextPage" text="下一页" />
+    <string id="AFD_UI_Wheel_Talk" text="对 话" />
+    <string id="AFD_UI_Wheel_Leave" text="离 开" />
+    <string id="AFD_UI_Wheel_Give" text="给 予" />
+    <string id="AFD_UI_Shout_Title" text="当前对象可见的场景记录" />
+    <string id="AFD_UI_Shout_Gallery" text="画廊" />
+    <string id="AFD_UI_Shout_Encyclopedia" text="图鉴" />
+    <string id="AFD_UI_Shout_Close" text="关闭" />
+    <string id="AFD_UI_Shout_Send" text="发送" />
   </strings>
 </base>

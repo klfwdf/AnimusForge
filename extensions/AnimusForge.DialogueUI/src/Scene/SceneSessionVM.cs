@@ -25,6 +25,28 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
     [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? DialogueUiLocalization.Text("AFD_UI_Illustration_Busy", "Capturing…") : DialogueUiLocalization.Text("AFD_UI_Illustration_Button", "Illustrate");
+    [DataSourceProperty] public string SessionTitleText => DialogueUiLocalization.Text("AFD_UI_Scene_SessionTitle", "Scene conversation folio");
+    [DataSourceProperty] public string CollapseText => DialogueUiLocalization.Text("AFD_UI_Scene_Collapse", "Collapse interface");
+    [DataSourceProperty] public string IncludeAllText => DialogueUiLocalization.Text("AFD_UI_Scene_IncludeAll", "Include all");
+    [DataSourceProperty] public string KeepLockedText => DialogueUiLocalization.Text("AFD_UI_Scene_KeepLocked", "Keep locked only");
+    [DataSourceProperty] public string SceneHistorySeparatorText => DialogueUiLocalization.Text("AFD_UI_Scene_HistorySeparator", "—— Scene conversation record ——");
+    [DataSourceProperty] public string CancelGiftText => DialogueUiLocalization.Text("AFD_UI_Scene_CancelGift", "Cancel gift");
+    [DataSourceProperty] public string InputPlaceholderText => DialogueUiLocalization.Text("AFD_UI_Scene_InputPlaceholder", "Tell the people around you something…");
+    [DataSourceProperty] public string InputHintText => DialogueUiLocalization.Text("AFD_UI_Scene_InputHint", "[Enter] send · [Shift+Enter] new line · distribute to the audience");
+    [DataSourceProperty] public string HistoryText => DialogueUiLocalization.Text("AFD_UI_Scene_History", "History");
+    [DataSourceProperty] public string GiftText => DialogueUiLocalization.Text("AFD_UI_Scene_Gift", "Gift");
+    [DataSourceProperty] public string GalleryText => DialogueUiLocalization.Text("AFD_UI_Scene_Gallery", "Gallery");
+    [DataSourceProperty] public string EncyclopediaText => DialogueUiLocalization.Text("AFD_UI_Scene_Encyclopedia", "Encyclopedia");
+    [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Scene_Leave", "Leave");
+    [DataSourceProperty] public string InterruptText => DialogueUiLocalization.Text("AFD_UI_Scene_Interrupt", "Interrupt · interject");
+    [DataSourceProperty] public string SceneHistoryTitleText => DialogueUiLocalization.Text("AFD_UI_Scene_HistoryTitle", "Scene conversation record");
+    [DataSourceProperty] public string CloseText => DialogueUiLocalization.Text("AFD_UI_Scene_Close", "Close");
+    [DataSourceProperty] public string ReturnText => DialogueUiLocalization.Text("AFD_UI_Scene_Return", "Back to conversation");
+    [DataSourceProperty] public string ExpandFolioText => DialogueUiLocalization.Text("AFD_UI_Scene_ExpandFolio", "Expand\nconversation folio");
+    [DataSourceProperty] public string ExpandFolioHintText => DialogueUiLocalization.Text("AFD_UI_Scene_ExpandFolioHint", "(Press T)");
+    [DataSourceProperty] public string DocketInstructionsText => DialogueUiLocalization.Text("AFD_UI_Scene_DocketInstructions", "Click a nameplate = address that person · click a seal = participate / hide / lock");
+    [DataSourceProperty] public string MoreHistoryText => DialogueUiLocalization.Text("AFD_UI_Scene_MoreHistory", "Scroll for more");
+    [DataSourceProperty] public string RollUpDocketText => DialogueUiLocalization.Text("AFD_UI_Scene_RollUpDocket", "Roll up docket");
     public void ExecuteIllustrate() => Queue(() => { if (CanIllustrate) ShoutBehavior.RequestSceneIllustrationForExternal(() => !_released && ShoutBehavior.IsScenePresentationActiveForExternal); });
     public void ExecuteOpenGallery() => Queue(() => { if (!_released && IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); });
     internal void RefreshIllustration()
