@@ -2812,28 +2812,28 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				Hero hero = ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text5 = GetHeroDisplayName(hero);
 				string statusSourceLabel4 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text5) ? (statusSourceLabel4 + "（当前无值）") : (statusSourceLabel4 + "（" + text5 + "）");
+				return string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel4) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel4, text5);
 			}
 			case "clan":
 			{
 				Clan clan = ResolveRuntimeClanFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text4 = GetClanDisplayName(clan);
 				string statusSourceLabel3 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text4) ? (statusSourceLabel3 + "（当前无值）") : (statusSourceLabel3 + "（" + text4 + "）");
+				return string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel3) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel3, text4);
 			}
 			case "kingdom":
 			{
 				Kingdom kingdom = ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text3 = GetKingdomDisplayName(kingdom);
 				string statusSourceLabel2 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text3) ? (statusSourceLabel2 + "（当前无值）") : (statusSourceLabel2 + "（" + text3 + "）");
+				return string.IsNullOrWhiteSpace(text3) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel2) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel2, text3);
 			}
 			case "settlement":
 			{
 				Settlement settlement = ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text2 = GetSettlementDisplayName(settlement);
 				string statusSourceLabel = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text2) ? (statusSourceLabel + "（当前无值）") : (statusSourceLabel + "（" + text2 + "）");
+				return string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel, text2);
 			}
 			default:
 				return GetStatusSourceLabel(text);
@@ -3210,7 +3210,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text = (mapping?.TargetId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				return "（未选择）";
+				return KnowledgeUiTexts.MappingTargetNotSelected;
 			}
 			if (TryParseStatusMappingKind(mapping?.Kind, out var sourceKey, out var _))
 			{
@@ -3219,27 +3219,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (string.Equals(text, TextMappingTargetCurrentNpc, StringComparison.OrdinalIgnoreCase))
 			{
 				string text2 = GetHeroDisplayName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
-				return string.IsNullOrWhiteSpace(text2) ? "当前互动NPC" : ("当前互动NPC（" + text2 + "）");
+				return KnowledgeUiTexts.MappingTargetCurrentNpc(string.IsNullOrWhiteSpace(text2) ? "" : KnowledgeUiTexts.MappingTargetNameSuffix(text2));
 			}
 			if (string.Equals(text, TextMappingTargetPlayer, StringComparison.OrdinalIgnoreCase))
 			{
 				string text3 = GetHeroDisplayName(Hero.MainHero);
-				return string.IsNullOrWhiteSpace(text3) ? "玩家" : ("玩家（" + text3 + "）");
+				return KnowledgeUiTexts.MappingTargetPlayer(string.IsNullOrWhiteSpace(text3) ? "" : KnowledgeUiTexts.MappingTargetNameSuffix(text3));
 			}
 			if (string.Equals(text, TextMappingTargetBoundKingdom, StringComparison.OrdinalIgnoreCase))
 			{
 				string text4 = GetKingdomDisplayName(ResolveBoundKingdomFromRule(rule));
-				return string.IsNullOrWhiteSpace(text4) ? "本知识绑定王国（未唯一确定）" : ("本知识绑定王国（" + text4 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundKingdom(string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text4));
 			}
 			if (string.Equals(text, TextMappingTargetBoundSettlement, StringComparison.OrdinalIgnoreCase))
 			{
 				string text5 = GetSettlementDisplayName(ResolveBoundSettlementFromRule(rule));
-				return string.IsNullOrWhiteSpace(text5) ? "本知识绑定定居点（未唯一确定）" : ("本知识绑定定居点（" + text5 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundSettlement(string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text5));
 			}
 			if (string.Equals(text, TextMappingTargetBoundHero, StringComparison.OrdinalIgnoreCase))
 			{
 				string text6 = GetHeroDisplayName(ResolveBoundHeroFromRule(rule));
-				return string.IsNullOrWhiteSpace(text6) ? "本知识绑定英雄（未唯一确定）" : ("本知识绑定英雄（" + text6 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundHero(string.IsNullOrWhiteSpace(text6) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text6));
 			}
 			switch ((mapping?.Kind ?? "").Trim())
 			{
@@ -3575,37 +3575,37 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text = TrimPreview((mapping?.SourceText ?? "").Trim(), 28);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "（空）";
+			text = KnowledgeUiTexts.MappingSummaryEmpty;
 		}
 		string text2 = GetTextMappingKindLabel(mapping?.Kind);
 		string text3 = TrimPreview(GetTextMappingTargetDisplayName(mapping, rule), 24);
 		if (string.IsNullOrWhiteSpace(text3))
 		{
-			text3 = "（未选择）";
+			text3 = KnowledgeUiTexts.MappingSummaryNotSelected;
 		}
 		string text4 = TrimPreview(ResolveTextMappingValueOrFallback(mapping, rule), 24);
 		if (string.IsNullOrWhiteSpace(text4))
 		{
-			text4 = "（当前无值）";
+			text4 = KnowledgeUiTexts.MappingSummaryNoValue;
 		}
 		string text5 = TrimPreview(GetTextMappingEmptyValueText(mapping), 18);
 		if (IsTextMappingAgeRangeKind(mapping?.Kind))
 		{
 			int num = NormalizeMemberAgeBound(mapping?.AgeMin, 0);
 			int num2 = NormalizeMemberAgeBound(mapping?.AgeMax, 120);
-			text2 = text2 + $"（{num}-{num2}岁）";
+			text2 = KnowledgeUiTexts.MappingSummaryAgeRange(text2, num, num2);
 		}
 		if (IsStatusMappingKind(mapping?.Kind))
 		{
 			string text6 = TrimPreview(GetTextMappingStatusTrueText(mapping), 10);
 			string text7 = TrimPreview(GetTextMappingStatusFalseText(mapping), 10);
-			text2 = text2 + $"（真:{(string.IsNullOrWhiteSpace(text6) ? "空" : text6)}/假:{(string.IsNullOrWhiteSpace(text7) ? "空" : text7)}）";
+			text2 = KnowledgeUiTexts.MappingSummaryStatus(text2, string.IsNullOrWhiteSpace(text6) ? KnowledgeUiTexts.MappingSummaryEmpty : text6, string.IsNullOrWhiteSpace(text7) ? KnowledgeUiTexts.MappingSummaryEmpty : text7);
 		}
 		if (!string.IsNullOrWhiteSpace(text5))
 		{
-			text4 = text4 + " [空=>" + text5 + "]";
+			text4 = text4 + KnowledgeUiTexts.MappingSummaryEmptyFallback(text5);
 		}
-		return text + " -> " + text2 + "（" + text3 + "） => " + text4;
+		return KnowledgeUiTexts.MappingSummary(text, text2, text3, text4);
 	}
 
 	// 命中知识后，最终会在变体内容上执行这里的多轮替换。
@@ -4356,7 +4356,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			if (rule == null)
 			{
-				error = "知识条目为空。";
+				error = KnowledgeUiTexts.ExportRuleEmpty;
 				return false;
 			}
 			int num = 0;
@@ -4374,7 +4374,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					{
 						string text2 = GetRuleDisplayNameForExport(rule);
 						string text3 = (rule.Id ?? "").Trim();
-						error = (string.IsNullOrEmpty(text3) ? ("知识条目“" + text2 + "”存在超过 " + RagShortTextMaxLength + " 字符的 RAG专用短句，请先缩短后再继续。") : ("知识条目“" + text2 + "”（ID=" + text3 + "）存在超过 " + RagShortTextMaxLength + " 字符的 RAG专用短句，请先缩短后再继续。"));
+						error = KnowledgeUiTexts.ExportRagTooLong(text2, text3, RagShortTextMaxLength);
 						return false;
 					}
 				}
@@ -4383,13 +4383,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				string text4 = GetRuleDisplayNameForExport(rule);
 				string text5 = (rule.Id ?? "").Trim();
-				error = (string.IsNullOrEmpty(text5) ? ("知识条目“" + text4 + "”缺少 RAG专用短句，请先填写后再导出。") : ("知识条目“" + text4 + "”（ID=" + text5 + "）缺少 RAG专用短句，请先填写后再导出。"));
+				error = KnowledgeUiTexts.ExportRagMissing(text4, text5);
 				return false;
 			}
 		}
 		catch (Exception ex)
 		{
-			error = "校验 RAG专用短句失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportRagValidationFailed(ex.Message);
 			return false;
 		}
 		return true;
@@ -4408,7 +4408,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return (rule?.Id ?? "未命名知识").Trim();
+		return (rule?.Id ?? KnowledgeUiTexts.UnnamedKnowledge).Trim();
 	}
 
 	private static bool TryValidateRuleForExport(LoreRule rule, out string error)
@@ -4420,7 +4420,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "校验知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -4448,7 +4448,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "校验知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportValidationFailed(ex.Message);
 			return false;
 		}
 		return true;
@@ -4462,7 +4462,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text = (ruleId ?? "").Trim();
 			if (string.IsNullOrEmpty(text))
 			{
-				error = "RuleId 为空。";
+				error = KnowledgeUiTexts.ExportRuleIdEmpty;
 				return false;
 			}
 			if (_file == null)
@@ -4476,14 +4476,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LoreRule loreRule = _file.Rules.FirstOrDefault((LoreRule r) => r != null && string.Equals((r.Id ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 			if (loreRule == null)
 			{
-				error = "找不到该知识条目：" + text;
+				error = KnowledgeUiTexts.ExportRuleNotFound(text);
 				return false;
 			}
 			return TryValidateRuleForExport(loreRule, out error);
 		}
 		catch (Exception ex)
 		{
-			error = "校验单条知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportSingleValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -4741,7 +4741,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			if (sourceRules == null)
 			{
-				error = "资料包中没有可重载的知识规则。";
+				error = KnowledgeUiTexts.ReloadNoRules;
 				return false;
 			}
 			List<LoreRule> list = new List<LoreRule>();
@@ -4755,7 +4755,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				string text = (sourceRule.Id ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text))
 				{
-					error = "资料包中存在 RuleId 为空的知识条目。";
+					error = KnowledgeUiTexts.ReloadEmptyRuleId;
 					return false;
 				}
 				// A source package may contain its own player profile, but it must never replace this save's player data.
@@ -4765,20 +4765,20 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				if (!hashSet.Add(text))
 				{
-					error = "资料包中存在重复 RuleId：" + text;
+					error = KnowledgeUiTexts.ReloadDuplicateRuleId(text);
 					return false;
 				}
 				sourceRule.Id = text;
 				if (!TryValidateRagShortTexts(sourceRule, requireAtLeastOne: false, out var text2) || !ValidateVariantConditionsUnique(sourceRule, out var _, out var _))
 				{
-					error = string.IsNullOrWhiteSpace(text2) ? ("资料包中的知识条目无效：" + text) : text2;
+					error = string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.ReloadInvalidRule(text, "") : text2;
 					return false;
 				}
 				list.Add(sourceRule);
 			}
 			if (list.Count <= 0)
 			{
-				error = "资料包中没有可替换的非主角知识。";
+				error = KnowledgeUiTexts.ReloadNoReplaceableRules;
 				return false;
 			}
 			KnowledgeFile knowledgeFile = _file ?? new KnowledgeFile();
@@ -4807,7 +4807,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					}
 					if (dictionary.TryGetValue(text4, out var value) && !string.Equals(value, loreRule2.Id, StringComparison.OrdinalIgnoreCase))
 					{
-						error = "知识关键词与保留的主角资料或资料包规则冲突：" + text4;
+						error = KnowledgeUiTexts.ReloadKeywordConflict(text4);
 						return false;
 					}
 					dictionary[text4] = loreRule2.Id;
@@ -4830,7 +4830,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "重载知识库失败：" + ex.Message;
+			error = KnowledgeUiTexts.ReloadFailed(ex.Message);
 			return false;
 		}
 	}
@@ -5042,8 +5042,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private void ShowDuplicateVariantConditionPrompt(LoreWhen when, int existingIndex)
 	{
-		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : "已有");
-		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? "通用（无条件）" : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
+		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : KnowledgeUiTexts.ExistingConditionFallback);
+		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? KnowledgeUiTexts.GeneralCondition : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
 		InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_DuplicateConditionTitle}Duplicate condition").ToString(), KnowledgeUiTexts.DuplicateVariantCondition(text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), "", null, null));
 	}
 
@@ -6722,7 +6722,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text6 = string.Join("\n", list6.Take(8).Select((RuleIndexItem x) => "- " + TrimPreview((x.Label ?? x.Id ?? "").Trim(), 80)));
 			if (list6.Count > 8)
 			{
-				text6 = text6 + "\n- ... 以及另外 " + (list6.Count - 8) + " 条";
+				text6 = text6 + "\n- " + KnowledgeUiTexts.BulkDeleteMore(list6.Count - 8);
 			}
 			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_ConfirmBulkDeleteTitle}Confirm bulk deletion").ToString(), KnowledgeUiTexts.ConfirmBulkDelete(text6, list7.Count), isAffirmativeOptionShown: true, isNegativeOptionShown: true, new TextObject("{=AF_KNOWLEDGE_ConfirmDelete}Delete").ToString(), new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), delegate
 			{
@@ -6767,7 +6767,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 			};
 		}
-		string text = ((rule.Keywords != null && rule.Keywords.Count > 0) ? rule.Keywords[0] : (rule.Id ?? "知识"));
+		string text = ((rule.Keywords != null && rule.Keywords.Count > 0) ? rule.Keywords[0] : (rule.Id ?? "Knowledge"));
 		EnsureRagShortTexts(rule);
 		EnsureTextMappings(rule);
 		string descriptionText = KnowledgeUiTexts.RuleMenuDescription(rule.Keywords?.Count ?? 0, rule.RagShortTexts?.Count ?? 0, rule.Variants?.Count ?? 0, rule.TextMappings?.Count ?? 0);
@@ -6970,19 +6970,19 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = GetTextMappingEmptyValueText(loreTextMapping);
 		string text3 = GetTextMappingStatusTrueText(loreTextMapping);
 		string text4 = GetTextMappingStatusFalseText(loreTextMapping);
-		string text5 = (!string.IsNullOrWhiteSpace(text)) ? text : (string.IsNullOrWhiteSpace(text2) ? "（当前无值，空时保留原词）" : (text2 + "（空值兜底）"));
-		string descriptionText = "原文本：" + ((loreTextMapping.SourceText ?? "").Trim() == "" ? "（空）" : loreTextMapping.SourceText.Trim()) + "\n映射类型：" + GetTextMappingKindLabel(loreTextMapping.Kind) + "\n目标" + GetTextMappingTargetTypeLabel(loreTextMapping.Kind) + "：" + GetTextMappingTargetDisplayName(loreTextMapping, rule);
-		if (IsStatusMappingKind(loreTextMapping.Kind))
-		{
-			descriptionText = descriptionText + "\n状态为真文案：" + (string.IsNullOrWhiteSpace(text3) ? "（未设置）" : text3) + "\n状态为假文案：" + (string.IsNullOrWhiteSpace(text4) ? "（未设置）" : text4);
-		}
-		descriptionText = descriptionText + "\n空值返回文案：" + (string.IsNullOrWhiteSpace(text2) ? "（未设置，空时保留原词）" : text2) + "\n当前预览：" + text5;
+		string text5 = (!string.IsNullOrWhiteSpace(text)) ? text : (string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.MappingSummaryNoValue : text2);
+		string sourceText = string.IsNullOrWhiteSpace(loreTextMapping.SourceText) ? KnowledgeUiTexts.MappingSummaryEmpty : loreTextMapping.SourceText.Trim();
+		string ageRange = "";
 		if (IsTextMappingAgeRangeKind(loreTextMapping.Kind))
 		{
 			int num = NormalizeMemberAgeBound(loreTextMapping.AgeMin, 0);
 			int num2 = NormalizeMemberAgeBound(loreTextMapping.AgeMax, 120);
-			descriptionText = descriptionText + $"\n年龄范围：{num}-{num2} 岁";
+			ageRange = num + "-" + num2;
 		}
+		string statusText = IsStatusMappingKind(loreTextMapping.Kind) ? KnowledgeUiTexts.MappingEditorStatus(string.IsNullOrWhiteSpace(text3) ? KnowledgeUiTexts.NoValue : text3, string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.NoValue : text4) : "";
+		string emptyText = string.IsNullOrWhiteSpace(text2) ? "" : KnowledgeUiTexts.MappingEditorEmpty(text2);
+		string ageText = string.IsNullOrEmpty(ageRange) ? "" : KnowledgeUiTexts.MappingEditorAgeRange(ageRange);
+		string descriptionText = KnowledgeUiTexts.MappingEditorDescription(sourceText, GetTextMappingKindLabel(loreTextMapping.Kind), GetTextMappingTargetTypeLabel(loreTextMapping.Kind), GetTextMappingTargetDisplayName(loreTextMapping, rule), statusText, emptyText, text5, ageText);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("source", KnowledgeUiTexts.EditSource, null));
 		list.Add(new InquiryElement("target", KnowledgeUiTexts.EditTarget, null));

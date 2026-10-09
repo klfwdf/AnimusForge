@@ -186,6 +186,47 @@ internal static class KnowledgeUiTexts
 		return text.ToString();
 	}
 
+	public static string UnnamedKnowledge => Ui("AF_KNOWLEDGE_UnnamedKnowledge", "Unnamed knowledge");
+	public static string ExistingConditionFallback => Ui("AF_KNOWLEDGE_ExistingConditionFallback", "existing");
+	public static string GeneralCondition => Ui("AF_KNOWLEDGE_GeneralCondition", "General (no conditions)");
+	public static string BulkDeleteMore(int count) => Ui("AF_KNOWLEDGE_BulkDeleteMore", "... and {COUNT} more", ("COUNT", count.ToString()));
+	public static string MappingTargetNoValue(string label) => Ui("AF_KNOWLEDGE_MappingTargetNoValue", "{LABEL} (no current value)", ("LABEL", label));
+	public static string MappingTargetValue(string label, string value) => Ui("AF_KNOWLEDGE_MappingTargetValue", "{LABEL} ({VALUE})", ("LABEL", label), ("VALUE", value));
+	public static string MappingTargetNotSelected => Ui("AF_KNOWLEDGE_MappingTargetNotSelected", "(not selected)");
+	public static string MappingTargetCurrentNpc(string suffix) => Ui("AF_KNOWLEDGE_MappingTargetCurrentNpc", "Current NPC{SUFFIX}", ("SUFFIX", suffix));
+	public static string MappingTargetPlayer(string suffix) => Ui("AF_KNOWLEDGE_MappingTargetPlayer", "Player{SUFFIX}", ("SUFFIX", suffix));
+	public static string MappingTargetBoundKingdom(string suffix) => Ui("AF_KNOWLEDGE_MappingTargetBoundKingdom", "Bound kingdom{SUFFIX}", ("SUFFIX", suffix));
+	public static string MappingTargetBoundSettlement(string suffix) => Ui("AF_KNOWLEDGE_MappingTargetBoundSettlement", "Bound settlement{SUFFIX}", ("SUFFIX", suffix));
+	public static string MappingTargetBoundHero(string suffix) => Ui("AF_KNOWLEDGE_MappingTargetBoundHero", "Bound hero{SUFFIX}", ("SUFFIX", suffix));
+	public static string MappingTargetNameSuffix(string name) => Ui("AF_KNOWLEDGE_MappingTargetNameSuffix", " ({NAME})", ("NAME", name));
+	public static string MappingTargetUnresolvedSuffix => Ui("AF_KNOWLEDGE_MappingTargetUnresolvedSuffix", " (not uniquely identified)");
+	public static string MappingSummaryEmpty => Ui("AF_KNOWLEDGE_MappingSummaryEmpty", "(empty)");
+	public static string MappingSummaryNotSelected => Ui("AF_KNOWLEDGE_MappingSummaryNotSelected", "(not selected)");
+	public static string MappingSummaryNoValue => Ui("AF_KNOWLEDGE_MappingSummaryNoValue", "(no current value)");
+	public static string MappingSummaryAgeRange(string baseText, int min, int max) => Ui("AF_KNOWLEDGE_MappingSummaryAgeRange", "{BASE} ({MIN}-{MAX} years)", ("BASE", baseText), ("MIN", min.ToString()), ("MAX", max.ToString()));
+	public static string MappingSummaryStatus(string baseText, string trueText, string falseText) => Ui("AF_KNOWLEDGE_MappingSummaryStatus", "{BASE} (true: {TRUE}/false: {FALSE})", ("BASE", baseText), ("TRUE", trueText), ("FALSE", falseText));
+	public static string MappingSummaryEmptyFallback(string text) => Ui("AF_KNOWLEDGE_MappingSummaryEmptyFallback", " [empty => {TEXT}]", ("TEXT", text));
+	public static string MappingSummary(string source, string kind, string target, string value) => Ui("AF_KNOWLEDGE_MappingSummary", "{SOURCE} -> {KIND} ({TARGET}) => {VALUE}", ("SOURCE", source), ("KIND", kind), ("TARGET", target), ("VALUE", value));
+	public static string MappingEditorStatus(string trueText, string falseText) => Ui("AF_KNOWLEDGE_MappingEditorStatus", "\nTrue-state text: {TRUE}\nFalse-state text: {FALSE}", ("TRUE", trueText), ("FALSE", falseText));
+	public static string MappingEditorEmpty(string text) => Ui("AF_KNOWLEDGE_MappingEditorEmpty", "\nEmpty-value text: {TEXT}", ("TEXT", text));
+	public static string MappingEditorAgeRange(string range) => Ui("AF_KNOWLEDGE_MappingEditorAgeRange", "\nAge range: {RANGE}", ("RANGE", range));
+	public static string MappingEditorDescription(string source, string kind, string targetType, string target, string status, string empty, string preview, string ageRange) => Ui("AF_KNOWLEDGE_MappingEditorDescription", "Source text: {SOURCE}\nMapping type: {KIND}\nTarget {TARGET_TYPE}: {TARGET}{STATUS}{EMPTY}{AGE}\nCurrent preview: {PREVIEW}", ("SOURCE", source), ("KIND", kind), ("TARGET_TYPE", targetType), ("TARGET", target), ("STATUS", status), ("EMPTY", empty), ("AGE", ageRange), ("PREVIEW", preview));
+	public static string ExportRuleEmpty => Text("AF_KNOWLEDGE_ExportRuleEmpty", "Knowledge entry is empty.");
+	public static string ExportRagTooLong(string name, string id, int max) => Text("AF_KNOWLEDGE_ExportRagTooLong", "Knowledge entry {NAME}{ID} contains a RAG short text longer than {MAX} characters. Shorten it before continuing.", ("NAME", name), ("ID", string.IsNullOrEmpty(id) ? "" : " (ID=" + id + ")"), ("MAX", max.ToString()));
+	public static string ExportRagMissing(string name, string id) => Text("AF_KNOWLEDGE_ExportRagMissing", "Knowledge entry {NAME}{ID} has no RAG short text. Add one before exporting.", ("NAME", name), ("ID", string.IsNullOrEmpty(id) ? "" : " (ID=" + id + ")"));
+	public static string ExportRagValidationFailed(string detail) => Text("AF_KNOWLEDGE_ExportRagValidationFailed", "RAG short-text validation failed: {DETAIL}", ("DETAIL", detail));
+	public static string ExportValidationFailed(string detail) => Text("AF_KNOWLEDGE_ExportValidationFailed", "Knowledge export validation failed: {DETAIL}", ("DETAIL", detail));
+	public static string ExportSingleValidationFailed(string detail) => Text("AF_KNOWLEDGE_ExportSingleValidationFailed", "Single-entry knowledge export validation failed: {DETAIL}", ("DETAIL", detail));
+	public static string ExportRuleIdEmpty => Text("AF_KNOWLEDGE_ExportRuleIdEmpty", "RuleId is empty.");
+	public static string ExportRuleNotFound(string id) => Text("AF_KNOWLEDGE_ExportRuleNotFound", "Knowledge entry not found: {ID}", ("ID", id));
+	public static string ReloadNoRules => Text("AF_KNOWLEDGE_ReloadNoRules", "The package contains no reloadable knowledge rules.");
+	public static string ReloadEmptyRuleId => Text("AF_KNOWLEDGE_ReloadEmptyRuleId", "The package contains a knowledge entry with an empty RuleId.");
+	public static string ReloadDuplicateRuleId(string id) => Text("AF_KNOWLEDGE_ReloadDuplicateRuleId", "The package contains duplicate RuleId: {ID}", ("ID", id));
+	public static string ReloadInvalidRule(string id, string detail) => Text("AF_KNOWLEDGE_ReloadInvalidRule", "The package contains an invalid knowledge entry: {ID}{DETAIL}", ("ID", id), ("DETAIL", string.IsNullOrEmpty(detail) ? "" : " (" + detail + ")"));
+	public static string ReloadNoReplaceableRules => Text("AF_KNOWLEDGE_ReloadNoReplaceableRules", "The package contains no replaceable non-player knowledge entries.");
+	public static string ReloadKeywordConflict(string keyword) => Text("AF_KNOWLEDGE_ReloadKeywordConflict", "A knowledge keyword conflicts with retained player data or package rules: {KEYWORD}", ("KEYWORD", keyword));
+	public static string ReloadFailed(string detail) => Text("AF_KNOWLEDGE_ReloadFailed", "Knowledge reload failed: {DETAIL}", ("DETAIL", detail));
+
 	public static string DuplicateVariantCondition(string item, string condition) => Text("AF_KNOWLEDGE_DuplicateCondition", "Identical conditions cannot be used by multiple prompts.\n\nDuplicate item: {ITEM} prompt\n\nCondition:\n{CONDITION}", ("ITEM", item), ("CONDITION", condition));
 	public static string PlayerPersonaCreateFailed => Text("AF_KNOWLEDGE_PlayerPersonaCreateFailed", "Could not open the player profile editor: the knowledge entry could not be created.");
 	public static string PlayerAppearanceCreateFailed => Text("AF_KNOWLEDGE_PlayerAppearanceCreateFailed", "Could not open the player appearance and background editor: the knowledge entry could not be created.");

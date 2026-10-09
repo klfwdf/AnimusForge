@@ -604,5 +604,49 @@ There is no content on this page." />
     <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="
 Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" Select one to add it to the list." />
+
+    <string id="AF_KNOWLEDGE_BulkDeleteMore" text="... and {COUNT} more" />
+    <string id="AF_KNOWLEDGE_MappingTargetNotSelected" text="(not selected)" />
+    <string id="AF_KNOWLEDGE_MappingTargetCurrentNpc" text="Current NPC{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetPlayer" text="Player{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundKingdom" text="Bound kingdom{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundSettlement" text="Bound settlement{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundHero" text="Bound hero{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetNameSuffix" text=" ({NAME})" />
+    <string id="AF_KNOWLEDGE_MappingTargetUnresolvedSuffix" text=" (not uniquely identified)" />
+    <string id="AF_KNOWLEDGE_MappingSummaryEmpty" text="(empty)" />
+    <string id="AF_KNOWLEDGE_MappingSummaryNotSelected" text="(not selected)" />
+    <string id="AF_KNOWLEDGE_MappingSummaryNoValue" text="(no current value)" />
+    <string id="AF_KNOWLEDGE_MappingSummaryAgeRange" text="{BASE} ({MIN}-{MAX} years)" />
+    <string id="AF_KNOWLEDGE_MappingSummaryStatus" text="{BASE} (true: {TRUE}/false: {FALSE})" />
+    <string id="AF_KNOWLEDGE_MappingSummaryEmptyFallback" text=" [empty =&gt; {TEXT}]" />
+    <string id="AF_KNOWLEDGE_MappingSummary" text="{SOURCE} -&gt; {KIND} ({TARGET}) =&gt; {VALUE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="\nTrue-state text: {TRUE}\nFalse-state text: {FALSE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="\nEmpty-value text: {TEXT}" />
+    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="\nAge range: {RANGE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="Source text: {SOURCE}\nMapping type: {KIND}\nTarget {TARGET_TYPE}: {TARGET}{STATUS}{EMPTY}{AGE}\nCurrent preview: {PREVIEW}" />
+    <string id="AF_KNOWLEDGE_ExportRuleEmpty" text="Knowledge entry is empty." />
+    <string id="AF_KNOWLEDGE_ExportRagTooLong" text="Knowledge entry {NAME}{ID} contains a RAG short text longer than {MAX} characters. Shorten it before continuing." />
+    <string id="AF_KNOWLEDGE_ExportRagMissing" text="Knowledge entry {NAME}{ID} has no RAG short text. Add one before exporting." />
+    <string id="AF_KNOWLEDGE_ExportRagValidationFailed" text="RAG short-text validation failed: {DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportValidationFailed" text="Knowledge export validation failed: {DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportSingleValidationFailed" text="Single-entry knowledge export validation failed: {DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportRuleIdEmpty" text="RuleId is empty." />
+    <string id="AF_KNOWLEDGE_ExportRuleNotFound" text="Knowledge entry not found: {ID}" />
+    <string id="AF_KNOWLEDGE_ReloadNoRules" text="The package contains no reloadable knowledge rules." />
+    <string id="AF_KNOWLEDGE_ReloadEmptyRuleId" text="The package contains a knowledge entry with an empty RuleId." />
+    <string id="AF_KNOWLEDGE_ReloadDuplicateRuleId" text="The package contains duplicate RuleId: {ID}" />
+    <string id="AF_KNOWLEDGE_ReloadInvalidRule" text="The package contains an invalid knowledge entry: {ID}{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ReloadNoReplaceableRules" text="The package contains no replaceable non-player knowledge entries." />
+    <string id="AF_KNOWLEDGE_ReloadKeywordConflict" text="A knowledge keyword conflicts with retained player data or package rules: {KEYWORD}" />
+    <string id="AF_KNOWLEDGE_ReloadFailed" text="Knowledge reload failed: {DETAIL}" />
+
+    <string id="AF_KNOWLEDGE_ExistingConditionFallback" text="existing" />
+    <string id="AF_KNOWLEDGE_GeneralCondition" text="General (no conditions)" />
+
+    <string id="AF_KNOWLEDGE_MappingTargetNoValue" text="{LABEL} (no current value)" />
+    <string id="AF_KNOWLEDGE_MappingTargetValue" text="{LABEL} ({VALUE})" />
+
+    <string id="AF_KNOWLEDGE_UnnamedKnowledge" text="Unnamed knowledge" />
   </strings>
 </base>
