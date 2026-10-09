@@ -589,6 +589,18 @@ COMMITTED_CONTENT_ADDITIONS = {
         "sha256": "54ADE90E09B7F901B8D42156FC7B52198F05DB6CAFE910B7CD020C084DBE34F7",
         "revision": "92873bf58",
     },
+    "ModuleData/Languages/afevent_ui_strings.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/afevent_ui_strings.xml",
+        "sha256": "ABC909757F1373F600BFF07B532671A5D4ABEE473F2C18A6A6FF40CBCD1D151A",
+        "revision": "36efaa184",
+    },
+    "ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml",
+        "sha256": "A5C040CC45D7A2D7139230312AD0FFB3F83578D62BC9E334F87BDFB08173F9E6",
+        "revision": "36efaa184",
+    },
     "GUI/Prefabs/MissionPhotoOverlay.xml": {
         "owner": "AnimusForge.Illustrator",
         "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/MissionPhotoOverlay.xml",
