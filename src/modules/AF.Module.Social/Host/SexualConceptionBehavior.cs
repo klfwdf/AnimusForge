@@ -111,7 +111,7 @@ public static class SexualConceptionBehavior
 		}
 
 		string npcName = targetHero.Name?.ToString() ?? "NPC";
-		InformationManager.DisplayMessage(new InformationMessage("你与" + npcName + "发生了亲密行为。", Colors.Magenta));
+		InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_IntimacyCompleted", "You and {NAME} shared an intimate encounter.", ("NAME", npcName)), Colors.Magenta));
 
 		bool becamePregnant = false;
 		float pregnancyChance = ResolvePregnancyChance();
