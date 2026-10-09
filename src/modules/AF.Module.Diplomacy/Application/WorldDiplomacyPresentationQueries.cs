@@ -83,13 +83,9 @@ internal static class WorldDiplomacyPresentationQueries
         WorldDiplomacyPlayerContext player, Func<int, string> formatDate)
     {
         if (document == null) return null;
-        WorldDiplomacyRoundParticipant participant = player.IsRuler
-            ? round?.Participants?.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase))
-            : null;
-        bool canReply = player.IsRuler && round != null
-            && document.IsReadyForPublication && !document.IsPlayerAuthored
-            && !string.Equals(document.AuthorKingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase)
-            && (participant?.MandatoryReplyPending == true || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State));
+        // The notice already selects the relevant public document. Reply is a
+        // compose shortcut; only the player's ruler authority gates this entry.
+        bool canReply = player?.IsRuler == true;
         return Detail(document, player.Generation, canReply, formatDate,
             WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, player));
     }

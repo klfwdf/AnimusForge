@@ -138,14 +138,15 @@ internal static class LifecycleRepairReplay
     {
         var world = new PlayerWorld(); var orch = new PlayerOrch(world);
         string Submit() => WorldDiplomacyPlayerApplication.Execute(world, new WorldDiplomacyPlayerDocumentCommand("回应原文", 1, "source", "old"), orch);
-        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "old" && orch.Openings == 0, "normal reply uses original event");
+        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "new" && orch.Openings == 1,
+            "normal shortcut uses archive compose routing before semantic analysis");
         world.Round.State = "closed";
         Test.True(WorldDiplomacyPresentationQueries.Detail(world.Source, world.Round, world.Player, _ => "today").CanReply,
             "closed foreign public document retains existing reply entry");
         Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "new" && world.Published.SourceDocumentId == "source"
-            && orch.Openings == 1 && world.NewRound.RootDocumentId == world.Published.DocumentId, "late reply publishes once as independent root");
+            && orch.Openings == 2 && world.NewRound.RootDocumentId == world.Published.DocumentId, "late shortcut uses the same compose routing");
         world.Player = new(1, "p", false, true, "p");
-        Test.True(Submit().Contains("不再是王国统治者") && orch.Openings == 1, "reply submission revalidates ruler before effects");
+        Test.True(Submit().Contains("不再是王国统治者") && orch.Openings == 2, "reply submission revalidates ruler before effects");
     }
 
     private static void TreatyClauses()
@@ -183,7 +184,11 @@ internal static class LifecycleRepairReplay
         private readonly PlayerWorld _world;
         internal int Openings;
         internal PlayerOrch(PlayerWorld world) => _world = world;
-        public override WorldDiplomacyRound EnsureActiveRound(string author, string target, bool isPlayerInsertion) { Openings++; return _world.NewRound; }
+        public override WorldDiplomacyRound EnsureActiveRound(string author, string target, bool isPlayerInsertion)
+        {
+            Openings++;
+            return _world.NewRound = new() { RoundId = "new", State = "active", IsPlayerInsertion = true };
+        }
         public override WorldDiplomacyDocument CreateDocument(string author, string target, string title, string body, string origin,
             bool isPlayerAuthored, bool isResponse, string exchangeId) => new() { DocumentId = "reply-" + Openings, AuthorKingdomId = author,
                 TargetKingdomId = target, Body = body, IsPlayerAuthored = isPlayerAuthored, IsResponse = isResponse, ExchangeId = exchangeId };

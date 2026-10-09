@@ -87,7 +87,7 @@ internal static class Program
             source,
             "private void SuppressInvalidDocumentBeforePropagation(",
             "private bool TryApplyGeneratedSemanticEnvelope(");
-        string playerReplySubmission = ExtractMethod(source, "internal static string SubmitPlayerReply(");
+        string playerCommand = ExtractMethod(source, "internal static string Execute(IWorldDiplomacyPlayerWorld");
 
         Test.True(NaturalTradeProposal.Contains("商路", StringComparison.Ordinal), "fixture must describe the trade domain");
         Test.True(!new[] { "提议", "建议", "倡议", "邀请", "请求" }
@@ -159,11 +159,10 @@ internal static class Program
                   && playerSubmission.IndexOf("PublishPlayerAuthoredDocumentImmediately(document)", StringComparison.Ordinal)
                      < playerSubmission.IndexOf("EnqueueAnalysisJob(document", StringComparison.Ordinal),
             "a player declaration must become public before its semantic-analysis job is queued");
-        Test.True(playerReplySubmission.Contains("PublishPlayerAuthoredDocumentImmediately(response)", StringComparison.Ordinal)
-                  && playerReplySubmission.Contains("外交回应已经公开发布", StringComparison.Ordinal)
-                  && playerReplySubmission.IndexOf("PublishPlayerAuthoredDocumentImmediately(response)", StringComparison.Ordinal)
-                     < playerReplySubmission.IndexOf("EnqueueAnalysisJob(response", StringComparison.Ordinal),
-            "a player response must become public before its semantic-analysis job is queued");
+        Test.True(playerCommand.Contains("SubmitPlayerDocument(world, command.Body, orchestration, source)", StringComparison.Ordinal)
+                  && playerSubmission.Contains("document.SourceDocumentId = sourceDocument?.DocumentId", StringComparison.Ordinal)
+                  && !source.Contains("internal static string SubmitPlayerReply(", StringComparison.Ordinal),
+            "reply shortcut carries context through the same publish-before-analysis command without a second submission mechanism");
         Test.True(analysisCommit.Contains("MarkPlayerAnalysisFailed(document, log)", StringComparison.Ordinal)
                   && analysisCommit.Contains("IsSupportedDiplomacyIntent(intent)", StringComparison.Ordinal)
                   && !analysisCommit.Contains("intent = \"statement\"", StringComparison.Ordinal),
