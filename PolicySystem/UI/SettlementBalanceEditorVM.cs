@@ -18,24 +18,24 @@ internal sealed class SettlementBalanceEditorVM : ViewModel
 			Rows.Add(new SettlementBalanceRowVM(definition, snapshot.Get(definition.Metric), RefreshStatus));
 		RefreshStatus();
 	}
-	[DataSourceProperty] public string TitleText => "政策相关数值上限调整";
-	[DataSourceProperty] public string DescriptionText => "每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。";
-	[DataSourceProperty] public string FoodRuleText => "玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。";
-	[DataSourceProperty] public string RestoreDefaultsText => "恢复默认";
-	[DataSourceProperty] public string CancelText => "取消";
-	[DataSourceProperty] public string SaveText => "保存并关闭";
+	[DataSourceProperty] public string TitleText => PolicyUiTexts.Get("AFPOL_UI_BalanceTitle", "Settlement Balance Limits");
+	[DataSourceProperty] public string DescriptionText => PolicyUiTexts.Get("AFPOL_UI_BalanceDescription", "Each day, native and policy net changes are applied: positive changes are capped at the total limit; negative changes still apply, and existing stock above a new cap is not reduced.");
+	[DataSourceProperty] public string FoodRuleText => PolicyUiTexts.Get("AFPOL_UI_BalanceFoodRule", "Applies to players and NPCs. By default only city/castle food capacity 1000 is enabled; the other six limits are disabled. Prosperity food consumption remains controlled by its separate MCM switch. Garrison food, sieges, supply, and policy food changes are preserved.");
+	[DataSourceProperty] public string RestoreDefaultsText => PolicyUiTexts.Get("AFPOL_UI_RestoreDefaults", "Restore Defaults");
+	[DataSourceProperty] public string CancelText => PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel");
+	[DataSourceProperty] public string SaveText => PolicyUiTexts.Get("AFPOL_UI_SaveAndClose", "Save and Close");
 	[DataSourceProperty] public MBBindingList<SettlementBalanceRowVM> Rows { get; }
 	[DataSourceProperty] public string StatusText
 	{
 		get => _statusText;
 		private set { if (_statusText == value) return; _statusText = value; OnPropertyChangedWithValue(value, nameof(StatusText)); }
 	}
-	internal void SetSaveFailure(string error) { StatusText = "保存失败：" + error; }
+	internal void SetSaveFailure(string error) { StatusText = PolicyUiTexts.Format("AFPOL_UI_SaveFailed", "Save failed: {ERROR}", "ERROR", error); }
 	private void RefreshStatus()
 	{
 		foreach (var row in Rows)
 			if (!row.IsValid) { StatusText = row.NameText + "：" + row.ValidationError; return; }
-		StatusText = "未开启的预填数值不生效。保存后应用；取消或 Esc 丢弃编辑；恢复默认后需保存。";
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_BalanceInitialStatus", "Disabled prefilled values have no effect. Changes apply after saving; Cancel or Esc discards edits, and restored defaults must be saved.");
 	}
 	internal bool TryCreateSnapshot(out SettlementBalanceSnapshot snapshot, out string error)
 	{
@@ -91,7 +91,7 @@ internal sealed class SettlementBalanceRowVM : ViewModel
 			_changed?.Invoke();
 		}
 	}
-	[DataSourceProperty] public string StatusText => Enabled ? "已开启" : "关闭";
+	[DataSourceProperty] public string StatusText => Enabled ? PolicyUiTexts.Get("AFPOL_UI_Enabled", "Enabled") : PolicyUiTexts.Get("AFPOL_UI_Disabled", "Disabled");
 	[DataSourceProperty] public int ValueInt
 	{
 		get => _value;
@@ -110,7 +110,7 @@ internal sealed class SettlementBalanceRowVM : ViewModel
 			_text = value ?? string.Empty;
 			OnPropertyChangedWithValue(_text, nameof(ValueText));
 			if (!int.TryParse(_text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int number) || number < MinValue || number > MaxValue)
-				ValidationError = "请输入 " + MinValue + "–" + MaxValue + " 之间的整数。";
+				ValidationError = PolicyUiTexts.Format("AFPOL_UI_BalanceIntegerRange", "Enter an integer between {MIN} and {MAX}.", "MIN", MinValue.ToString(CultureInfo.InvariantCulture), "MAX", MaxValue.ToString(CultureInfo.InvariantCulture));
 			else
 			{
 				ValidationError = string.Empty;

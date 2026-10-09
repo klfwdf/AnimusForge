@@ -2,6 +2,26 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/illustrator_strings.xml",
+      "target": "ModuleData/Languages/illustrator_strings.xml"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/coup_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
+      "target": "ModuleData/Languages/coup_strings.xml"
+    },
+    {
       "owner": "AnimusForge.DialogueUI",
       "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml"
@@ -16884,6 +16904,16 @@
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/voice_mapping/VoiceMapping.json",
       "target": "PlayerExports/权游国度编年史-大帝版/voice_mapping/VoiceMapping.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_ui_strings.xml",
+      "target": "ModuleData/Languages/afpol_ui_strings.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml"
     }
   ]
 }
