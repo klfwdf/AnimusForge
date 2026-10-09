@@ -445,5 +445,155 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_MappingTarget_Settlement" text="Settlement" />
     <string id="AF_KNOWLEDGE_MappingTarget_Automatic" text="Automatic target" />
     <string id="AF_KNOWLEDGE_MappingTarget_Generic" text="Target" />
+    <string id="AF_KNOWLEDGE_PrototypeSearch" text="Search prototype sentences" />
+    <string id="AF_KNOWLEDGE_PrototypeClearSearch" text="Prototype Clear Search" />
+    <string id="AF_KNOWLEDGE_PrototypePreviousPage" text="Prototype Previous Page" />
+    <string id="AF_KNOWLEDGE_PrototypeNextPage" text="Prototype Next Page" />
+    <string id="AF_KNOWLEDGE_PrototypeBack" text="Back to prototype menu" />
+    <string id="AF_KNOWLEDGE_PrototypeViewTitle" text="View prototype sentences" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchTitle" text="Search prototype sentences" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchPrompt" text="Enter keywords:" />
+    <string id="AF_KNOWLEDGE_PrototypeDetailTitle" text="Prototype sentence" />
+    <string id="AF_KNOWLEDGE_PrototypeRemoveTitle" text="Delete prototype sentence" />
+    <string id="AF_KNOWLEDGE_PrototypeRemovePrompt" text="Select a prototype sentence to delete:" />
+    <string id="AF_KNOWLEDGE_PrototypeCountSummary" text="{COUNT} entries, page {PAGE}/{PAGES}.{SEARCH}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_VariantAdd" text="Add prompt" />
+    <string id="AF_KNOWLEDGE_VariantMenuTitle" text="Edit prompts" />
+    <string id="AF_KNOWLEDGE_VariantMenuDescription" text="Leave the condition empty for a general prompt; any condition makes it specific. The most specific matching prompt is selected." />
+    <string id="AF_KNOWLEDGE_VariantEnter" text="Variant Enter" />
+    <string id="AF_KNOWLEDGE_VariantEditorTitle" text="Prompt editor" />
+    <string id="AF_KNOWLEDGE_VariantEditContent" text="Edit prompt content" />
+    <string id="AF_KNOWLEDGE_VariantEditCondition" text="Edit conditions" />
+    <string id="AF_KNOWLEDGE_VariantDelete" text="Delete this prompt" />
+    <string id="AF_KNOWLEDGE_VariantCurrentCondition" text="Current conditions: {CONDITION}" />
+    <string id="AF_KNOWLEDGE_VariantContentPrompt" text="Enter content." />
+    <string id="AF_KNOWLEDGE_VariantTruncated" text="Variant Truncated" />
+    <string id="AF_KNOWLEDGE_WhenCulture" text="Culture (CultureId)" />
+    <string id="AF_KNOWLEDGE_WhenKingdom" text="Faction/kingdom (KingdomId)" />
+    <string id="AF_KNOWLEDGE_WhenSettlement" text="Settlement (SettlementId)" />
+    <string id="AF_KNOWLEDGE_WhenRole" text="Identity (category + specific NPC)" />
+    <string id="AF_KNOWLEDGE_WhenGender" text="Gender (any/male/female)" />
+    <string id="AF_KNOWLEDGE_WhenClanLeader" text="Clan leader (any/yes/no)" />
+    <string id="AF_KNOWLEDGE_WhenSkill" text="Skill level (SkillId &gt;= value)" />
+    <string id="AF_KNOWLEDGE_WhenClear" text="Clear all conditions (make general)" />
+    <string id="AF_KNOWLEDGE_WhenEditorTitle" text="Edit conditions" />
+    <string id="AF_KNOWLEDGE_RoleSearchOption" text="Role Search Option" />
+    <string id="AF_KNOWLEDGE_RoleClearSearch" text="Clear search" />
+    <string id="AF_KNOWLEDGE_RoleClearSpecificOption" text="Clear selected specific entries in this category ({COUNT})" />
+    <string id="AF_KNOWLEDGE_RoleToggleAll" text="Whole category: {ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}: select the whole category or individual NPCs.
+Whole category: {SELECTED}
+Specific entries selected: {SPECIFIC}
+Total results: {TOTAL}, page {PAGE}/{PAGES}" />
+    <string id="AF_KNOWLEDGE_RoleEditorTitle" text="Identity conditions" />
+    <string id="AF_KNOWLEDGE_RoleEditorDescription" text="Select a category first, then choose specific NPCs in it. Whole-category selection remains supported; specific entries can be searched and paged within the category." />
+    <string id="AF_KNOWLEDGE_RoleClearAllSpecific" text="Clear all specific identities" />
+    <string id="AF_KNOWLEDGE_RoleSwitchSelection" text="Switch selection" />
+    <string id="AF_KNOWLEDGE_RoleMultiSelectError" text="Search, paging, and whole-category operations cannot be selected together with specific NPCs." />
+    <string id="AF_KNOWLEDGE_RoleSearchPrompt" text="Enter a name, HeroId or CharacterId. Search is limited to this category." />
+    <string id="AF_KNOWLEDGE_PickerAdd" text="Add" />
+    <string id="AF_KNOWLEDGE_PickerSelect" text="Picker Select" />
+    <string id="AF_KNOWLEDGE_PickerNoNpc" text="No selectable NPCs found." />
+    <string id="AF_KNOWLEDGE_PickerNpcTitle" text="Select NPCs" />
+    <string id="AF_KNOWLEDGE_PickerMultiDescription" text="Select multiple entries; confirm to add them to the list." />
+    <string id="AF_KNOWLEDGE_PickerNoCulture" text="No selectable cultures found." />
+    <string id="AF_KNOWLEDGE_PickerCultureTitle" text="Select culture" />
+    <string id="AF_KNOWLEDGE_PickerNoFaction" text="No selectable factions found." />
+    <string id="AF_KNOWLEDGE_PickerFactionTitle" text="Select faction/kingdom" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeKingdom" text="Kingdom" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeFaction" text="Faction" />
+    <string id="AF_KNOWLEDGE_PickerNoSettlement" text="No selectable settlements found." />
+    <string id="AF_KNOWLEDGE_PickerSettlementTitle" text="Select settlement" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeVillage" text="Village" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeCastle" text="Castle" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeTown" text="Town" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeSettlement" text="Settlement" />
+    <string id="AF_KNOWLEDGE_PickerNoKingdom" text="No selectable kingdoms found." />
+    <string id="AF_KNOWLEDGE_PickerKingdomTitle" text="Select kingdom" />
+    <string id="AF_KNOWLEDGE_PickerKingdomDescription" text="Select one kingdom as the mapping target." />
+    <string id="AF_KNOWLEDGE_PickerNoHero" text="No selectable heroes found." />
+    <string id="AF_KNOWLEDGE_PickerHeroTitle" text="Select hero" />
+    <string id="AF_KNOWLEDGE_PickerNoClan" text="No selectable clans found." />
+    <string id="AF_KNOWLEDGE_PickerClanTitle" text="Select clan" />
+    <string id="AF_KNOWLEDGE_PickerStringListPick" text="Select from list" />
+    <string id="AF_KNOWLEDGE_PickerStringListAdd" text="Enter manually (one at a time)" />
+    <string id="AF_KNOWLEDGE_PickerDelete" text="Picker Delete" />
+    <string id="AF_KNOWLEDGE_PickerStringListDescription" text="Enter one value at a time; confirm to add it to the list." />
+    <string id="AF_KNOWLEDGE_PickerStringListInputPrompt" text="Enter a value:" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemoveTitle" text="Delete - {TITLE}" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemovePrompt" text="Select an item to delete:" />
+    <string id="AF_KNOWLEDGE_SkillPicker" text="Select skill from list" />
+    <string id="AF_KNOWLEDGE_SkillManual" text="Enter SkillId manually" />
+    <string id="AF_KNOWLEDGE_SkillRemove" text="Delete skill condition" />
+    <string id="AF_KNOWLEDGE_SkillTitle" text="Skill level conditions" />
+    <string id="AF_KNOWLEDGE_SkillDescription" text="Configure SkillId &gt;= value. A value of 0 means no threshold (Skill&gt;=0); a negative value removes the skill condition." />
+    <string id="AF_KNOWLEDGE_SkillManualTitle" text="Enter SkillId manually" />
+    <string id="AF_KNOWLEDGE_SkillPrompt" text="Enter SkillId:" />
+    <string id="AF_KNOWLEDGE_SkillRemoveTitle" text="Delete skill condition" />
+    <string id="AF_KNOWLEDGE_SkillRemovePrompt" text="Select an item to delete:" />
+    <string id="AF_KNOWLEDGE_SkillSetTitle" text="Set skill minimum" />
+    <string id="AF_KNOWLEDGE_SkillSetPrompt" text="Enter minimum skill level (integer):" />
+    <string id="AF_KNOWLEDGE_SkillNoSkills" text="No selectable skills found." />
+    <string id="AF_KNOWLEDGE_SkillPickerTitle" text="Select skill" />
+    <string id="AF_KNOWLEDGE_SkillPickerDescription" text="Select a skill, then set its minimum level." />
+    <string id="AF_KNOWLEDGE_WhenGeneral" text="General" />
+    <string id="AF_KNOWLEDGE_WhenCultureLabel" text="Culture" />
+    <string id="AF_KNOWLEDGE_WhenKingdomLabel" text="Faction" />
+    <string id="AF_KNOWLEDGE_WhenSettlementLabel" text="Settlement" />
+    <string id="AF_KNOWLEDGE_WhenRoleLabel" text="Hero" />
+    <string id="AF_KNOWLEDGE_WhenSpecificIdentityLabel" text="Specific identity" />
+    <string id="AF_KNOWLEDGE_WhenGenderLabel" text="Gender" />
+    <string id="AF_KNOWLEDGE_WhenClanLeaderLabel" text="Clan leader" />
+    <string id="AF_KNOWLEDGE_WhenSkillLabel" text="Skill" />
+    <string id="AF_KNOWLEDGE_WhenLabelExclusive" text="Specific ({CATEGORIES})" />
+    <string id="AF_KNOWLEDGE_WhenDetailGeneral" text="Current: general (no conditions)" />
+    <string id="AF_KNOWLEDGE_WhenDetail" text="Current conditions:
+CultureId: {CULTURE}
+KingdomId: {KINGDOM}
+SettlementId: {SETTLEMENT}
+Roles: {ROLES}
+Specific identities: {IDENTITIES}
+SkillMin: {SKILLS}
+Gender: {GENDER}
+ClanLeader: {CLAN_LEADER}" />
+    <string id="AF_KNOWLEDGE_WhenEmpty" text="(empty)" />
+    <string id="AF_KNOWLEDGE_WhenAny" text="Any" />
+    <string id="AF_KNOWLEDGE_WhenFemale" text="Female" />
+    <string id="AF_KNOWLEDGE_WhenMale" text="Male" />
+    <string id="AF_KNOWLEDGE_WhenYes" text="Yes" />
+    <string id="AF_KNOWLEDGE_WhenNo" text="No" />
+    <string id="AF_KNOWLEDGE_RoleLord" text="Lord" />
+    <string id="AF_KNOWLEDGE_RoleNotable" text="Notable" />
+    <string id="AF_KNOWLEDGE_RoleWanderer" text="Wanderer" />
+    <string id="AF_KNOWLEDGE_RoleSoldier" text="Soldier" />
+    <string id="AF_KNOWLEDGE_RoleVillager" text="Villager" />
+    <string id="AF_KNOWLEDGE_RoleTownsfolk" text="Townsfolk" />
+    <string id="AF_KNOWLEDGE_RoleCommoner" text="Unclassified" />
+    <string id="AF_KNOWLEDGE_RoleUnknown" text="Unknown" />
+    <string id="AF_KNOWLEDGE_RoleEntryWithId" text="{NAME} ({TYPE}={ID})" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeader" text="{NAME} ({ID})" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeaderNamed" text="{NAME} ({LABEL}: {LEADER})" />
+    <string id="AF_KNOWLEDGE_PickerPageSummary" text="{COUNT} {KIND}, page {PAGE}/{PAGES}.{SUFFIX}{SEARCH}" />
+    <string id="AF_KNOWLEDGE_PickerNoMatch" text="No selectable {KIND} found." />
+    <string id="AF_KNOWLEDGE_PickerNoMatchQuery" text="No matching {KIND} found: {QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerCurrentLeader" text="current leader" />
+    <string id="AF_KNOWLEDGE_PickerCurrentClanLeader" text="current clan leader" />
+    <string id="AF_KNOWLEDGE_PickerCurrentRuler" text="current ruler" />
+    <string id="AF_KNOWLEDGE_PickerSearchTitle" text="Search {KIND}" />
+    <string id="AF_KNOWLEDGE_PickerSearchPrompt" text="Enter {KIND} name or {ID}: " />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchTitle" text="Search {ROLE}" />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchPrompt" text="Enter a name, HeroId or CharacterId. Search is limited to this category." />
+    <string id="AF_KNOWLEDGE_PickerNoSelectable" text="No selectable {KIND} found." />
+    <string id="AF_KNOWLEDGE_PickerSearchNoMatch" text="No matching {KIND} found: {QUERY}" />
+    <string id="AF_KNOWLEDGE_StringListRemoveTitle" text="Delete - {TITLE}" />
+    <string id="AF_KNOWLEDGE_SkillItem" text="{ID} &gt;= {VALUE}" />
+    <string id="AF_KNOWLEDGE_RoleCategoryItem" text="{PREFIX}{ROLE}{SPECIFIC}" />
+    <string id="AF_KNOWLEDGE_PickerKindHeroes" text="heroes" />
+    <string id="AF_KNOWLEDGE_PickerKindClans" text="clans" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlements" text="settlements" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlement" text="settlement" />
+    <string id="AF_KNOWLEDGE_PickerKindHero" text="hero" />
+    <string id="AF_KNOWLEDGE_PickerKindClan" text="clan" />
+    <string id="AF_KNOWLEDGE_RoleSpecificCount" text=" (specific entries selected: {COUNT})" />
   </strings>
 </base>

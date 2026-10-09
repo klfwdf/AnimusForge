@@ -4010,14 +4010,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		return ((roleKey ?? "").Trim().ToLowerInvariant()) switch
 		{
-			"lord" => "领主",
-			"notable" => "要人",
-			"wanderer" => "流浪者",
-			"soldier" => "士兵",
-			"villager" => "村民",
-			"townsfolk" => "镇民",
-			"commoner" => "未分类对象",
-			_ => string.IsNullOrWhiteSpace(roleKey) ? "未知" : roleKey
+			"lord" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord"),
+			"notable" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable"),
+			"wanderer" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"),
+			"soldier" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSoldier", "Soldier"),
+			"villager" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleVillager", "Villager"),
+			"townsfolk" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleTownsfolk", "Townsfolk"),
+			"commoner" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleCommoner", "Unclassified"),
+			_ => string.IsNullOrWhiteSpace(roleKey) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleUnknown", "Unknown") : roleKey
 		};
 	}
 
@@ -8649,20 +8649,20 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * 12;
 		List<string> list2 = filtered.Skip(num2).Take(12).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索原型句", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearch", "Search prototype sentences"), null));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
-		list3.Add(new InquiryElement("__back__", "返回原型句菜单", null));
+		list3.Add(new InquiryElement("__back__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeBack", "Back to prototype menu"), null));
 		if (list2.Count > 0)
 		{
 			list3.Add(new InquiryElement("__sep__", "----------------", null));
@@ -8674,17 +8674,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string title = $"{num4 + 1}. {TrimPreview(s, 90)}";
 			list3.Add(new InquiryElement("__item__" + num4, title, null));
 		}
-		string text2 = $"共 {count} 条";
-		if (!string.IsNullOrWhiteSpace(q))
-		{
-			text2 = text2 + "（搜索：" + TrimPreview(q, 40) + "）";
-		}
-		text2 += $"，第 {page + 1}/{num} 页。";
-		if (list2.Count <= 0)
-		{
-			text2 += "\n当前页无内容。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("查看原型句", text2, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text2 = KnowledgeUiTexts.PrototypeCountSummary(count, TrimPreview(q, 40), page + 1, num, list2.Count <= 0);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeViewTitle", "View prototype sentences"), text2, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8699,7 +8690,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenPrototypeMenu(rule, onReturn);
 					return;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索原型句", "输入关键词：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearchTitle", "Search prototype sentences"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearchPrompt", "Enter keywords:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 					{
 						OpenPrototypeViewMenu(rule, onReturn, 0, (input ?? "").Trim());
 					}, delegate
@@ -8721,7 +8712,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					if (text3.StartsWith("__item__", StringComparison.Ordinal) && int.TryParse(text3.Substring("__item__".Length), out var result) && result >= 0 && result < filtered.Count)
 					{
 						string text4 = filtered[result] ?? "";
-						InformationManager.ShowInquiry(new InquiryData("原型句详情", text4, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+						InformationManager.ShowInquiry(new InquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeDetailTitle", "Prototype sentence"), text4, isAffirmativeOptionShown: true, isNegativeOptionShown: false, KnowledgeUiTexts.Back, "", delegate
 						{
 							OpenPrototypeViewMenu(rule, onReturn, page, q);
 						}, null));
@@ -9196,7 +9187,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private void GenerateSemanticPrototypesByLlm(LoreRule rule, Action onDone)
 	{
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 原型句功能已停用。"));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PrototypeDisabled));
 		onDone?.Invoke();
 	}
 
@@ -9226,7 +9217,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(text, TrimPreview(text, 80), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除原型句", "选择要删除的原型句：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeRemoveTitle", "Delete prototype sentence"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeRemovePrompt", "Select a prototype sentence to delete:"), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9267,7 +9258,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			rule.Variants = new List<LoreVariant>();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "新增提示词", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantAdd", "Add prompt"), null));
 		for (int num = 0; num < rule.Variants.Count; num++)
 		{
 			LoreVariant loreVariant = rule.Variants[num];
@@ -9283,7 +9274,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(num, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑提示词", "条件留空=通用；填任意条件=专属。命中时会选最具体的一条。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantMenuTitle", "Edit prompts"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantMenuDescription", "Leave the condition empty for a general prompt; any condition makes it specific. The most specific matching prompt is selected."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9381,16 +9372,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text3 = (text2 ?? "").Replace("\r", "").Replace("\n", " ").Trim();
 		string text4 = TrimPreview(text2, 220);
 		bool flag = !string.IsNullOrEmpty(text3) && text3.Length > 220;
-		string text5 = "当前条件：" + text + "\n\n当前内容预览：\n" + (string.IsNullOrEmpty(text4) ? "（空）" : text4);
-		if (flag)
-		{
-			text5 += "\n……（内容过长，仅显示前 220 字）";
-		}
+		string text5 = KnowledgeUiTexts.VariantEditorDescription(text, text4, flag);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("content", "编辑提示词内容", null));
-		list.Add(new InquiryElement("when", "编辑条件", null));
-		list.Add(new InquiryElement("delete", "删除此提示词", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("提示词编辑", text5, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("content", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditContent", "Edit prompt content"), null));
+		list.Add(new InquiryElement("when", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditCondition", "Edit conditions"), null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantDelete", "Delete this prompt"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditorTitle", "Prompt editor"), text5, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9401,7 +9388,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					DevTextEditorHelper.ShowLongTextEditor("编辑提示词内容", "当前条件：" + text, "请输入内容。", v.Content ?? "", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditContent", "Edit prompt content"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantCurrentCondition", "Current conditions: {CONDITION}", ("CONDITION", text)), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantContentPrompt", "Enter content."), v.Content ?? "", delegate(string input)
 					{
 						int duplicateVariantIndex = FindDuplicateVariantIndex(rule, v.When, idx);
 						if (duplicateVariantIndex >= 0)
@@ -9416,7 +9403,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, "确定", "取消");
+					}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel);
 					break;
 				case "when":
 				{
@@ -9479,16 +9466,16 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("culture", "文化（CultureId）", null));
-		list.Add(new InquiryElement("kingdom", "势力/王国（KingdomId）", null));
-		list.Add(new InquiryElement("settlement", "定居点（SettlementId）", null));
-		list.Add(new InquiryElement("role", "身份（大类 + 细分NPC）", null));
-		list.Add(new InquiryElement("gender", "性别（不限/男/女）", null));
-		list.Add(new InquiryElement("clan_leader", "是否家族族长（不限/是/否）", null));
-		list.Add(new InquiryElement("skill", "技能等级（SkillId >= 值）", null));
-		list.Add(new InquiryElement("clear", "清空全部条件（变成通用）", null));
+		list.Add(new InquiryElement("culture", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCulture", "Culture (CultureId)"), null));
+		list.Add(new InquiryElement("kingdom", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdom", "Faction/kingdom (KingdomId)"), null));
+		list.Add(new InquiryElement("settlement", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlement", "Settlement (SettlementId)"), null));
+		list.Add(new InquiryElement("role", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRole", "Identity (category + specific NPC)"), null));
+		list.Add(new InquiryElement("gender", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGender", "Gender (any/male/female)"), null));
+		list.Add(new InquiryElement("clan_leader", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClanLeader", "Clan leader (any/yes/no)"), null));
+		list.Add(new InquiryElement("skill", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSkill", "Skill level (SkillId >= value)"), null));
+		list.Add(new InquiryElement("clear", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClear", "Clear all conditions (make general)"), null));
 		string descriptionText = BuildWhenDetail(when);
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑条件", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEditorTitle", "Edit conditions"), descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9503,7 +9490,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.Cultures = new List<string>();
 					}
-					OpenStringListEditor("文化（CultureId）", when.Cultures, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCulture", "Culture (CultureId)"), when.Cultures, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -9513,7 +9500,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.KingdomIds = new List<string>();
 					}
-					OpenStringListEditor("势力/王国（KingdomId）", when.KingdomIds, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdom", "Faction/kingdom (KingdomId)"), when.KingdomIds, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -9523,7 +9510,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.SettlementIds = new List<string>();
 					}
-					OpenStringListEditor("定居点（SettlementId）", when.SettlementIds, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlement", "Settlement (SettlementId)"), when.SettlementIds, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -9948,32 +9935,32 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num3 = CountSelectedRoleIdentities(when, roleKey);
 		bool flag2 = ListContainsIgnoreCase(when.Roles, roleKey);
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__toggle_all__", (flag2 ? "[√] " : "[ ] ") + "整类生效：" + GetRoleDisplayName(roleKey), null));
-		list3.Add(new InquiryElement("__search__", string.IsNullOrWhiteSpace(query) ? "搜索本类具体NPC…" : ("搜索：" + query), null));
+		list3.Add(new InquiryElement("__toggle_all__", (flag2 ? "[√] " : "[ ] ") + KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleToggleAll", "Whole category: {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.RoleSearchOption(query), null));
 		if (!string.IsNullOrWhiteSpace(query))
 		{
-			list3.Add(new InquiryElement("__clear_search__", "清除搜索", null));
+			list3.Add(new InquiryElement("__clear_search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleClearSearch", "Clear search"), null));
 		}
 		if (num3 > 0)
 		{
-			list3.Add(new InquiryElement("__clear_specific__", "清空本类细分已选（" + num3 + "）", null));
+			list3.Add(new InquiryElement("__clear_specific__", KnowledgeUiTexts.RoleClearSpecificOption(num3), null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page < num2 - 1)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		foreach (RoleDetailOption item3 in list2)
 		{
 			bool flag3 = IsRoleIdentitySelected(when, item3.EncodedId);
 			list3.Add(new InquiryElement(item3.EncodedId, (flag3 ? "[√] " : "[ ] ") + item3.Label, null));
 		}
-		string descriptionText = $"{GetRoleDisplayName(roleKey)}：可直接勾整类，也可只勾本类里的具体NPC。\n当前整类：{(flag2 ? "已选中" : "未选中")}\n当前细分已选：{num3}\n结果总数：{list.Count}，第 {page + 1}/{num2} 页";
+		string descriptionText = KnowledgeUiTexts.RoleDescription(GetRoleDisplayName(roleKey), flag2, num3, list.Count, page + 1, num2);
 		int num4 = Math.Max(1, list3.Count);
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份细分 - " + GetRoleDisplayName(roleKey), descriptionText, list3, isExitShown: true, 0, num4, "切换选中", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleDetailTitle", "Specific identity - {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), descriptionText, list3, isExitShown: true, 0, num4, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSwitchSelection", "Switch selection"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9991,7 +9978,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				if (list4.Count > 1)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("搜索、翻页、整类切换这类操作项不能和细分NPC一起多选。"));
+					InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleMultiSelectError", "Search, paging, and whole-category operations cannot be selected together with specific NPCs.")));
 					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
 					return;
 				}
@@ -10004,7 +9991,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
 					break;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索 " + GetRoleDisplayName(roleKey), "输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSearchTitle", "Search {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSearchPrompt", "Enter a name, HeroId or CharacterId. Search is limited to this category."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 					{
 						OpenRoleCategoryEditor(when, roleKey, onReturn, 0, input);
 					}, delegate
@@ -10071,18 +10058,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			bool flag = ListContainsIgnoreCase(when.Roles, roleCategoryKey);
 			int num = CountSelectedRoleIdentities(when, roleCategoryKey);
-			string text = (flag ? "[整类√] " : "") + GetRoleDisplayName(roleCategoryKey);
-			if (num > 0)
-			{
-				text += "（细分已选 " + num + "）";
-			}
+			string text = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleCategoryItem", "{PREFIX}{ROLE}{SPECIFIC}", ("PREFIX", flag ? "[√] " : ""), ("ROLE", GetRoleDisplayName(roleCategoryKey)), ("SPECIFIC", num > 0 ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSpecificCount", " (specific entries selected: {COUNT})", ("COUNT", num.ToString())) : ""));
 			list.Add(new InquiryElement(roleCategoryKey, text, null));
 		}
 		if (when.IdentityIds.Count > 0)
 		{
-			list.Add(new InquiryElement("__clear_all_specific__", "清空全部细分身份", null));
+			list.Add(new InquiryElement("__clear_all_specific__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleClearAllSpecific", "Clear all specific identities"), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份条件", "先选一个大类，再进入该类选择具体NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleEditorTitle", "Identity conditions"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleEditorDescription", "Select a category first, then choose specific NPCs in it. Whole-category selection remains supported; specific entries can be searched and paged within the category."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10190,7 +10173,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select h).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选NPC。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoNpc", "No selectable NPCs found.")));
 			onReturn();
 			return;
 		}
@@ -10205,7 +10188,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text2 = "";
 			try
 			{
-				text2 = (item.IsLord ? "领主" : (item.IsNotable ? "要人" : ((!item.IsWanderer) ? item.Occupation.ToString() : "流浪者")));
+				text2 = (item.IsLord ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord") : (item.IsNotable ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable") : ((!item.IsWanderer) ? item.Occupation.ToString() : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"))));
 			}
 			catch
 			{
@@ -10213,7 +10196,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item.StringId, text + " (" + text2 + ", " + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择NPC", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNpcTitle", "Select NPCs"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10270,7 +10253,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select c).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选文化。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoCulture", "No selectable cultures found.")));
 			onReturn();
 			return;
 		}
@@ -10284,7 +10267,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item2.StringId.ToLower(), text + " (" + item2.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择文化", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCultureTitle", "Select culture"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10337,7 +10320,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select f).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选势力。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoFaction", "No selectable factions found.")));
 			onReturn();
 			return;
 		}
@@ -10349,10 +10332,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				text = item.StringId;
 			}
-			string text2 = (item.IsKingdomFaction ? "王国" : "势力");
+			string text2 = (item.IsKingdomFaction ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTypeKingdom", "Kingdom") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTypeFaction", "Faction"));
 			list3.Add(new InquiryElement(item.StringId.ToLower(), text + " (" + text2 + ", " + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择势力/王国", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTitle", "Select faction/kingdom"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10423,7 +10406,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选定居点。" : ("未找到匹配的定居点：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoSettlement", "No selectable settlements found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("QUERY", text))));
 			onReturn();
 			return;
 		}
@@ -10436,18 +10419,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Settlement> list3 = list2.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list4 = new List<InquiryElement>();
-		list4.Add(new InquiryElement("__search__", "搜索定居点", null));
+		list4.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list4.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list4.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list4.Add(new InquiryElement("__prev__", "上一页", null));
+			list4.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list4.Add(new InquiryElement("__next__", "下一页", null));
+			list4.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list4.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Settlement item2 in list3)
@@ -10457,15 +10440,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				text4 = item2.StringId;
 			}
-			string text5 = (item2.IsVillage ? "村庄" : (item2.IsCastle ? "城堡" : (item2.IsTown ? "城镇" : "定居点")));
+			string text5 = (item2.IsVillage ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeVillage", "Village") : (item2.IsCastle ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeCastle", "Castle") : (item2.IsTown ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeTown", "Town") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeSettlement", "Settlement"))));
 			list4.Add(new InquiryElement(item2.StringId.ToLowerInvariant(), text4 + " (" + text5 + ", " + item2.StringId + ")", null));
 		}
-		string text6 = $"共 {list2.Count} 个定居点，第 {page + 1}/{num} 页。选择一个后会加入列表。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择定居点", text6, list4, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list2.Count, page + 1, num, TrimPreview(text, 60), "Select one to add it to the list.");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTitle", "Select settlement"), text6, list4, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10477,7 +10456,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索定居点", "输入定居点名称或 SettlementId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("ID", "SettlementId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenSettlementIdPickerPaged(list, onReturn, 0, input);
 					}, delegate
@@ -10642,7 +10621,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		list = list.OrderBy((Kingdom k) => (k.Name != null) ? k.Name.ToString() : "", StringComparer.OrdinalIgnoreCase).ThenBy((Kingdom k) => k.StringId, StringComparer.OrdinalIgnoreCase).ToList();
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选王国。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoKingdom", "No selectable kingdoms found.")));
 			onCancel();
 			return;
 		}
@@ -10655,9 +10634,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text = item2.StringId;
 			}
 			string text2 = (item2.Leader?.Name?.ToString() ?? "").Trim();
-			list2.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text2) ? (text + " (" + item2.StringId + ")") : (text + "（现任领袖：" + text2 + "）"), null));
+			list2.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentLeader", "current leader")), ("LEADER", text2)), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择王国", "选择一个王国作为映射目标。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKingdomTitle", "Select kingdom"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKingdomDescription", "Select one kingdom as the mapping target."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10748,7 +10727,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选英雄。" : ("未找到匹配的英雄：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoHero", "No selectable heroes found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -10761,18 +10740,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Hero> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索英雄", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Hero item in list2)
@@ -10784,12 +10763,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item.StringId, text4 + " (" + item.StringId + ")", null));
 		}
-		string text5 = $"共 {list.Count} 个英雄，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text5 = text5 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择英雄", text5, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text5 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindHeroes", "heroes"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerHeroTitle", "Select hero"), text5, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10801,7 +10776,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text6)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索英雄", "输入英雄名称或 HeroId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero")), ("ID", "HeroId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenHeroPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -10896,7 +10871,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选家族。" : ("未找到匹配的家族：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoClan", "No selectable clans found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -10909,18 +10884,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Clan> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索家族", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Clan item2 in list2)
@@ -10931,14 +10906,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text4 = item2.StringId;
 			}
 			string text5 = (item2.Leader?.Name?.ToString() ?? "").Trim();
-			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? (text4 + " (" + item2.StringId + ")") : (text4 + "（当前族长：" + text5 + "）"), null));
+			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text4), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text4), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentClanLeader", "current clan leader")), ("LEADER", text5)), null));
 		}
-		string text6 = $"共 {list.Count} 个家族，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择家族", text6, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindClans", "clans"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerClanTitle", "Select clan"), text6, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10950,7 +10921,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索家族", "输入家族名称或 ClanId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan")), ("ID", "ClanId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenClanPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11042,7 +11013,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选定居点。" : ("未找到匹配的定居点：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoSettlement", "No selectable settlements found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -11055,18 +11026,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Settlement> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索定居点", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Settlement item2 in list2)
@@ -11077,14 +11048,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text4 = item2.StringId;
 			}
 			string text5 = (item2.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
-			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? (text4 + " (" + item2.StringId + ")") : (text4 + "（当前统治者：" + text5 + "）"), null));
+			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text4), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text4), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentRuler", "current ruler")), ("LEADER", text5)), null));
 		}
-		string text6 = $"共 {list.Count} 个定居点，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择定居点", text6, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTitle", "Select settlement"), text6, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11096,7 +11063,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索定居点", "输入定居点名称或 SettlementId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("ID", "SettlementId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenSettlementPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11157,12 +11124,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		List<InquiryElement> list2 = new List<InquiryElement>();
 		if (canPickHero || canPickCulture || canPickKingdom || canPickSettlement)
 		{
-			list2.Add(new InquiryElement("__pick__", "从列表选择", null));
+			list2.Add(new InquiryElement("__pick__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListPick", "Select from list"), null));
 		}
-		list2.Add(new InquiryElement("__add__", "手动输入（一次一个）", null));
+		list2.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListAdd", "Enter manually (one at a time)"), null));
 		if (list.Count > 0)
 		{
-			list2.Add(new InquiryElement("__remove__", "删除", null));
+			list2.Add(new InquiryElement("__remove__", KnowledgeUiTexts.Delete, null));
 		}
 		foreach (string item in list)
 		{
@@ -11171,7 +11138,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list2.Add(new InquiryElement("__v__" + item, item, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, "一次输入一个值，确定后加入列表。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListDescription", "Enter one value at a time; confirm to add it to the list."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11211,7 +11178,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					break;
 				}
 				case "__add__":
-					InformationManager.ShowTextInquiry(new TextInquiryData(title, "请输入一个值：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(title, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListInputPrompt", "Enter a value:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string v = (input ?? "").Trim();
 						if (!string.IsNullOrEmpty(v) && !list.Any((string x) => string.Equals(x, v, StringComparison.OrdinalIgnoreCase)))
@@ -11260,7 +11227,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list2.Add(new InquiryElement(item, item, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除 - " + title, "选择要删除的项：", list2, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.StringListRemoveTitle(title), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListRemovePrompt", "Select an item to delete:"), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11301,21 +11268,21 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			when.SkillMin = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__pick__", "从列表选择技能", null));
-		list.Add(new InquiryElement("__add__", "手动输入 SkillId", null));
+		list.Add(new InquiryElement("__pick__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPicker", "Select skill from list"), null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillManual", "Enter SkillId manually"), null));
 		if (when.SkillMin.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除技能条件", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemove", "Delete skill condition"), null));
 		}
 		foreach (KeyValuePair<string, int> item in when.SkillMin.OrderBy((KeyValuePair<string, int> k) => k.Key, StringComparer.OrdinalIgnoreCase))
 		{
 			string text = (item.Key ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				list.Add(new InquiryElement(text, text + " >= " + item.Value, null));
+				list.Add(new InquiryElement(text, KnowledgeUiTexts.SkillItem(text, item.Value), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("技能等级条件", "配置 SkillId >= 数值。数值=0 表示无门槛（Skill>=0）；数值<0 表示移除该技能条件。", list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillTitle", "Skill level conditions"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillDescription", "Configure SkillId >= value. A value of 0 means no threshold (Skill>=0); a negative value removes the skill condition."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11339,7 +11306,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					});
 					break;
 				case "__add__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("手动输入 SkillId", "请输入 SkillId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillManualTitle", "Enter SkillId manually"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPrompt", "Enter SkillId:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text3 = (input ?? "").Trim();
 						if (string.IsNullOrEmpty(text3))
@@ -11410,10 +11377,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (item.Key ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				list.Add(new InquiryElement(text, text + " >= " + item.Value, null));
+				list.Add(new InquiryElement(text, KnowledgeUiTexts.SkillItem(text, item.Value), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除技能条件", "选择要删除的项：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemoveTitle", "Delete skill condition"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemovePrompt", "Select an item to delete:"), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11476,12 +11443,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			num = 0;
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置技能下限", "请输入最低技能等级（整数）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillSetTitle", "Set skill minimum"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillSetPrompt", "Enter minimum skill level (integer):"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 		{
 			string s = (input ?? "").Trim();
 			if (!int.TryParse(s, out var result))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入有效整数。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidInteger));
 				onReturn();
 			}
 			else
@@ -11541,7 +11508,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		list = list.OrderBy((SkillObject s) => (s.Name != null) ? s.Name.ToString() : "", StringComparer.OrdinalIgnoreCase).ThenBy((SkillObject s) => s.StringId, StringComparer.OrdinalIgnoreCase).ToList();
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选技能。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillNoSkills", "No selectable skills found.")));
 			onReturn();
 			return;
 		}
@@ -11555,7 +11522,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list2.Add(new InquiryElement(item.StringId, text + " (" + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择技能", "选择一个技能后，继续设置最低等级。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPickerTitle", "Select skill"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPickerDescription", "Select a skill, then set its minimum level."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11585,80 +11552,41 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		if (when == null)
 		{
-			return "通用";
+			return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGeneral", "General");
 		}
 		List<string> list = new List<string>();
-		if (when.Cultures != null && when.Cultures.Count > 0)
-		{
-			list.Add("文化");
-		}
-		if (when.KingdomIds != null && when.KingdomIds.Count > 0)
-		{
-			list.Add("势力");
-		}
-		if (when.SettlementIds != null && when.SettlementIds.Count > 0)
-		{
-			list.Add("定居点");
-		}
-		if (when.Roles != null && when.Roles.Count > 0)
-		{
-			list.Add("身份");
-		}
-		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0))
-		{
-			list.Add("细分身份");
-		}
-		if (when.IsFemale.HasValue)
-		{
-			list.Add("性别");
-		}
-		if (when.IsClanLeader.HasValue)
-		{
-			list.Add("族长");
-		}
-		if (when.SkillMin != null && when.SkillMin.Count > 0)
-		{
-			list.Add("技能");
-		}
-		if (list.Count == 0)
-		{
-			return "通用";
-		}
-		return "专属(" + string.Join("+", list) + ")";
+		if (when.Cultures != null && when.Cultures.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCultureLabel", "Culture"));
+		if (when.KingdomIds != null && when.KingdomIds.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdomLabel", "Faction"));
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"));
+		if (when.Roles != null && when.Roles.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Identity"));
+		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0)) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSpecificIdentityLabel", "Specific identity"));
+		if (when.IsFemale.HasValue) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGenderLabel", "Gender"));
+		if (when.IsClanLeader.HasValue) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClanLeaderLabel", "Clan leader"));
+		if (when.SkillMin != null && when.SkillMin.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSkillLabel", "Skill"));
+		if (list.Count == 0) return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGeneral", "General");
+		return KnowledgeUiTexts.WhenLabelExclusive(string.Join("+", list));
 	}
 
 	private static string BuildWhenDetail(LoreWhen when)
 	{
-		if (when == null)
-		{
-			return "当前：通用（无条件）";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("当前条件：");
-		stringBuilder.AppendLine("CultureId: " + ListOrEmpty(when.Cultures));
-		stringBuilder.AppendLine("KingdomId: " + ListOrEmpty(when.KingdomIds));
-		stringBuilder.AppendLine("SettlementId: " + ListOrEmpty(when.SettlementIds));
-		stringBuilder.AppendLine("Roles: " + ListOrEmpty(FormatRoleListForDisplay(when.Roles)));
-		stringBuilder.AppendLine("细分身份: " + ListOrEmpty(FormatEffectiveIdentityListForDisplay(when)));
-		string text = "（空）";
+		if (when == null) return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenDetailGeneral", "Current: general (no conditions)");
+		string skills = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		try
 		{
 			if (when.SkillMin != null && when.SkillMin.Count > 0)
 			{
-				text = string.Join(", ", from kv in when.SkillMin.Where((KeyValuePair<string, int> kv) => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value > 0).OrderBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.OrdinalIgnoreCase)
+				skills = string.Join(", ", from kv in when.SkillMin.Where((KeyValuePair<string, int> kv) => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value > 0).OrderBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.OrdinalIgnoreCase)
 					select (kv.Key ?? "").Trim() + ">=" + kv.Value);
 			}
 		}
 		catch
 		{
-			text = "（空）";
+			skills = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		}
-		stringBuilder.AppendLine("SkillMin: " + text);
-		stringBuilder.AppendLine("Gender: " + ((!when.IsFemale.HasValue) ? "不限" : (when.IsFemale.Value ? "女" : "男")));
-		stringBuilder.AppendLine("ClanLeader: " + ((!when.IsClanLeader.HasValue) ? "不限" : (when.IsClanLeader.Value ? "是" : "否")));
-		return stringBuilder.ToString();
+		string gender = !when.IsFemale.HasValue ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenAny", "Any") : (when.IsFemale.Value ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenFemale", "Female") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenMale", "Male"));
+		string clanLeader = !when.IsClanLeader.HasValue ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenAny", "Any") : (when.IsClanLeader.Value ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenYes", "Yes") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenNo", "No"));
+		return KnowledgeUiTexts.WhenDetail(ListOrEmpty(when.Cultures), ListOrEmpty(when.KingdomIds), ListOrEmpty(when.SettlementIds), ListOrEmpty(FormatRoleListForDisplay(when.Roles)), ListOrEmpty(FormatEffectiveIdentityListForDisplay(when)), skills, gender, clanLeader);
 	}
-
 	private static List<string> FormatRoleListForDisplay(List<string> list)
 	{
 		List<string> result = new List<string>();
@@ -11750,7 +11678,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		if (list == null || list.Count == 0)
 		{
-			return "（空）";
+			return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		}
 		return string.Join(", ", list.Where((string x) => !string.IsNullOrWhiteSpace(x)));
 	}
