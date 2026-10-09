@@ -149,8 +149,16 @@ class Program {
         Check(Relay.NormalizeAutoGroupRelayPostprocessTagsForScene("[RELAY:999]", candidates, 17) == "", "normalizer rejects invented id");
         string prompt = Relay.BuildSceneRelayTargetListForPostprocess(candidates, 17, 27);
         Check(prompt.Contains("已经发言的人仍可再次接话") && prompt.Contains("[RELAY:17]"), "runtime prompt permits repeats and explicit self stop");
+        Check(prompt.Contains("当前发言者编号: 17") && prompt.Contains("主对话对象编号: 27"), "runtime relay prompt identifies speaker/primary even when speaker omitted from candidates");
         var fallback = Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false);
         Check(fallback[0].Description.Contains("接力选择协议") && fallback[0].Description.Contains("接力终止"), "fallback prompt uses the same protocol");
+        AIConfigHandler.Rules = new() { new() { Tag="[RELAY:接力编号]", Description=@@CONFIG_GROUP@@, SingleFramedNpcDescription=@@CONFIG_SINGLE@@ } };
+        string configuredGroup = Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description;
+        string configuredSingle = Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description;
+        Check(configuredGroup.Contains("对话调度") && configuredGroup.Contains("动作许可门槛"), "canonical scene relay is scheduling, not consent-based action execution");
+        Check(configuredGroup.Contains("当前NPC的回答只代表自己") && configuredGroup.Contains("整个群体都已回应"), "canonical group-address rule does not treat first NPC as everyone's answer");
+        Check(configuredSingle.Contains("不能因只有一人被框选就忽略群体问话"), "single framed speaker still recognizes plural audience addressed by latest utterance");
+        Check(configuredGroup.Contains("明确告别") && configuredGroup.Contains("没有合适接话者") && configuredGroup.Contains("当前发言者自己的编号"), "configured prompt retains legal self-stop and unsuitable-audience boundary");
         AIConfigHandler.Rules = new() { new() { Tag="[RELAY:接力编号]", Description="custom", SingleFramedNpcDescription="single-custom" } };
         Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description == "custom" && Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description == "single-custom", "existing custom rules retained");
         Console.WriteLine("PASS " + tests + " production relay boundary assertions; no live game or network");
