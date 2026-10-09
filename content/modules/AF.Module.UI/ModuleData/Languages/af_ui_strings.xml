@@ -358,5 +358,25 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Dev_FreezeDump" text="Create thread dump when AI chat freezes" />
   <string id="AF_MCM_Dev_FreezeDump_Hint" text="Only while AF free-conversation AI mode or scene shout is processing, creates a compact thread dump after five seconds without a main-thread heartbeat. Disabled for ordinary chat, non-AI play, and native saving. Enabled by default." />
   <string id="AF_MCM_Dev_Group" text="4. Developer options" />
+  <string id="AF_MCM_Knowledge_Group" text="5. Knowledge retrieval (returned)" />
+  <string id="AF_MCM_Knowledge_TopN" text="Knowledge results limit" />
+  <string id="AF_MCM_Knowledge_TopN_Hint" text="Maximum related knowledge entries supplied to AI per conversation. Terms are assigned independent slots by importance; later results fill unused slots. Default: 4." />
+  <string id="AF_MCM_Knowledge_Device" text="Reranker inference device" />
+  <string id="AF_MCM_Knowledge_Device_Hint" text="Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value." />
+  <string id="AF_MCM_Knowledge_Entity" text="Entity injection limit" />
+  <string id="AF_MCM_Knowledge_Entity_Hint" text="Maximum people, places, clans, and kingdoms injected into each AI request. Terms receive distinct entity slots by preprocessing importance; unused slots are filled only when the limit exceeds the term count. Default: 6." />
+  <string id="AF_MCM_Knowledge_Candidates" text="List candidate display limit" />
+  <string id="AF_MCM_Knowledge_Candidates_Hint" text="Number of item, equipment, party, prisoner, asset, and policy candidates injected into AI. Fills to the limit when available; otherwise shows all. Default: 10." />
+  <string id="AF_MCM_Memory_Group" text="5. Compressed memory" />
+  <string id="AF_MCM_Memory_History" text="In-day chat context lines" />
+  <string id="AF_MCM_Memory_History_Hint" text="Maximum ordinary chat-history lines carried directly in courier, free-conversation, and scene-shout requests before daily compression. AFEF facts do not count. Default: 100; range 10-500." />
+  <string id="AF_MCM_Memory_Denominator" text="Memory compression denominator" />
+  <string id="AF_MCM_Memory_Denominator_Hint" text="Daily summary target length is 1/N of the day's valid conversation characters. AFEF lines are excluded and never compressed. Default: 5; minimum summary length 80." />
+  <string id="AF_MCM_Memory_Rpm" text="Memory summary RPM" />
+  <string id="AF_MCM_Memory_Rpm_Hint" text="Maximum NPC/day-memory summaries per minute after a day changes. Default: 3; maximum 20." />
+  <string id="AF_MCM_Memory_Candidates" text="Memory candidate limit" />
+  <string id="AF_MCM_Memory_Candidates_Hint" text="Number of compressed-memory candidate blocks entering preprocessing. Default: 20; 15-20 is usually suitable. Rich-title semantic retrieval is used above this count." />
+  <string id="AF_MCM_Memory_Final" text="Final memory injection count" />
+  <string id="AF_MCM_Memory_Final_Hint" text="Number of compressed memory blocks injected into the main chain. Default: 4; never exceeds the memory candidate limit." />
   </strings>
 </base>

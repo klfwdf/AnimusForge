@@ -1392,57 +1392,57 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return ReadLogCleanupIntervalSelection(_logCleanupIntervalDropdown);
 	}
 
-	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。")]
-	[SettingPropertyGroup("5. 知识检索（返回）")]
+	[SettingPropertyInteger("{=AF_MCM_Knowledge_TopN}Knowledge results limit", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Knowledge_TopN_Hint}Maximum related knowledge entries supplied to AI per conversation. Terms are assigned independent slots by importance; later results fill unused slots. Default: 4.")]
+	[SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-    [SettingPropertyDropdown("重排序推理设备", Order = 3, RequireRestart = true, HintText = "默认 CPU。GPU（CUDA）仅支持 NVIDIA，需要安装可选 CUDA 运行组件；向量检索仍使用 CPU。缺少组件、驱动不兼容或 GPU 推理失败时自动回退 CPU。GPU 会额外占用显存，可能与游戏争用。修改后完整重启游戏生效；模型、候选和检索规则不变。")]
-    [SettingPropertyGroup("5. 知识检索（返回）")]
+    [SettingPropertyDropdown("{=AF_MCM_Knowledge_Device}Reranker inference device", Order = 3, RequireRestart = true, HintText = "{=AF_MCM_Knowledge_Device_Hint}Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value.")]
+    [SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
     public Dropdown<string> RerankerDeviceDropdown { get; set; } = new Dropdown<string>(new List<string> { "CPU（默认）", "GPU（CUDA / NVIDIA）" }, 0);
 
 
-	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
-	[SettingPropertyGroup("5. 知识检索（返回）")]
+	[SettingPropertyInteger("{=AF_MCM_Knowledge_Entity}Entity injection limit", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Knowledge_Entity_Hint}Maximum people, places, clans, and kingdoms injected into each AI request. Terms receive distinct entity slots by preprocessing importance; unused slots are filled only when the limit exceeds the term count. Default: 6.")]
+	[SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
-	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏、固定资产和政策候选向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
-	[SettingPropertyGroup("5. 知识检索（返回）")]
+	[SettingPropertyInteger("{=AF_MCM_Knowledge_Candidates}List candidate display limit", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Knowledge_Candidates_Hint}Number of item, equipment, party, prisoner, asset, and policy candidates injected into AI. Fills to the limit when available; otherwise shows all. Default: 10.")]
+	[SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
 	public int PromptListCandidateMaxCount { get; set; } = 10;
 
 	public int RecentDialogueTurns { get; set; } = 20;
 
 	public int HistoryRecallTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("日内聊天上下文条数", DailyConversationHistoryLineLimitMin, DailyConversationHistoryLineLimitMax, "0", Order = 0, RequireRestart = false, HintText = "控制信使、自由对话和场景喊话每次请求最多直接携带多少条尚未日结压缩的普通聊天历史。AFEF 事实不占此额度；不会限制玩家继续聊天，也不会删除每日原始记忆。数值越高，单次请求 token 与等待时间通常越高。默认 100，最低 10，最高 500。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_History}In-day chat context lines", DailyConversationHistoryLineLimitMin, DailyConversationHistoryLineLimitMax, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Memory_History_Hint}Maximum ordinary chat-history lines carried directly in courier, free-conversation, and scene-shout requests before daily compression. AFEF facts do not count. Default: 100; range 10-500.")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int DailyConversationHistoryLineLimit { get; set; } = DefaultDailyConversationHistoryLineLimit;
 
-	[SettingPropertyInteger("记忆压缩比例分母", 3, 10, "0", Order = 1, RequireRestart = false, HintText = "日结摘要目标字数为当天有效对话总字数的 1/N，默认 5。AFEF 行不计入总字数且不会被压缩；摘要最少 80 字。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_Denominator}Memory compression denominator", 3, 10, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Memory_Denominator_Hint}Daily summary target length is 1/N of the day's valid conversation characters. AFEF lines are excluded and never compressed. Default: 5; minimum summary length 80.")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryCompressionDenominator { get; set; } = 5;
 
-	[SettingPropertyInteger("记忆总结 RPM", 1, 20, "0", Order = 2, RequireRestart = false, HintText = "跨天后每分钟最多并发总结多少个 NPC/日记忆。默认 3，最高 20。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_Rpm}Memory summary RPM", 1, 20, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Memory_Rpm_Hint}Maximum NPC/day-memory summaries per minute after a day changes. Default: 3; maximum 20.")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemorySummaryRequestsPerMinute { get; set; } = 3;
 
-	[SettingPropertyInteger("记忆候选上限", 5, 40, "0", Order = 3, RequireRestart = false, HintText = "进入前处理的压缩记忆候选块数量。默认 20；15-20 通常最合适。超过该数量时使用富标题语义检索。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_Candidates}Memory candidate limit", 5, 40, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Memory_Candidates_Hint}Number of compressed-memory candidate blocks entering preprocessing. Default: 20; 15-20 is usually suitable. Rich-title semantic retrieval is used above this count.")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryCandidateLimit { get; set; } = 20;
 
-	[SettingPropertyInteger("最终注入记忆数", 2, 20, "0", Order = 4, RequireRestart = false, HintText = "主链路最终注入的压缩记忆块数量。默认 4；运行时不会超过“记忆候选上限”。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_Final}Final memory injection count", 2, 20, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Memory_Final_Hint}Number of compressed memory blocks injected into the main chain. Default: 4; never exceeds the memory candidate limit.")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryFinalInjectCount { get; set; } = 4;
 
 	[SettingPropertyInteger("前处理模式", 1, 2, "0", Order = 5, RequireRestart = false, HintText = "1=同体模式：规则 Code 与记忆编号放进同一个前处理 JSON 请求；2=并发模式：规则筛选与记忆筛选同时请求，全部成功解析后进入主链路。默认 1。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryPreprocessMode { get; set; } = 1;
 
 	[SettingPropertyInteger("记忆大总结启动块数", 3, 10, "0", Order = 6, RequireRestart = false, HintText = "当某个 Hero NPC 的压缩记忆块达到该数量后，后台生成并滚动更新“过往记忆总览”。默认 5。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryOverviewStartBlockCount { get; set; } = 5;
 
 	[SettingPropertyInteger("记忆大总结目标字数", 100, 1000, "0", Order = 7, RequireRestart = false, HintText = "控制“过往记忆总览”的目标中文字符数。默认 200；越短越省 token，越长越保留细节。")]
-	[SettingPropertyGroup("5. 压缩记忆")]
+	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryOverviewTargetChars { get; set; } = 200;
 
 	[SettingPropertyInteger("规则返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。")]
