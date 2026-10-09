@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using TaleWorlds.InputSystem;
+using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
@@ -55,7 +56,7 @@ public sealed class DevPopupInputLease : IDisposable
         _layer.IsFocusLayer = _wasFocusLayer;
         if (!_externallyChanged && _wasActive && !_layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
             ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
-        _layer.LastActiveState = _lastActiveState;
+        if (!_externallyChanged) _layer.LastActiveState = _lastActiveState;
         if (!_externallyChanged && _wasFocused && _layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
             ScreenManager.TrySetFocus(_layer);
     }
