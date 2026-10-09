@@ -44,7 +44,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		ApiValidation,
 		ModelFetch,
 		ModelSelect,
-		Import
+		Import,
+        PlayerPersona
 	}
 
 	internal enum ApiSetupTarget
@@ -289,6 +290,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
         CancelYjEndpointSelection();
+        _activeOnboardingStage = OnboardingUiStage.None;
+        _welcomeInProgress = false;
 		// Campaign behaviors can survive a return to the campaign setup flow. A new
 		// sandbox must never inherit the previous campaign's completed onboarding bit.
 		_setupDone = false;
@@ -300,6 +303,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
         CancelYjEndpointSelection();
+        _activeOnboardingStage = OnboardingUiStage.None;
+        _welcomeInProgress = false;
 		MarkPendingStartupNotice();
 		if (!_setupDone)
 		{
@@ -3382,48 +3387,46 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	}
 
 	private void CompleteOnboardingAndOpenPlayerPersonaSetup(Action onReturn, bool importedDatabase)
-	{
-		try
-		{
-			ResetYjApiSetup();
-			_setupDone = true;
-			_activeOnboardingStage = OnboardingUiStage.None;
-			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
-			if (knowledgeLibraryBehavior == null)
-			{
-				onReturn?.Invoke();
-				return;
-			}
-			if (importedDatabase)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
-				InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
-			}
-			else
-			{
-				InformationManager.DisplayMessage(new InformationMessage("已跳过数据库导入。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
-			}
-			knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
-			{
-				ShowPeaceSceneConflictChoiceAfterPersona(delegate
-				{
-					try
-					{
-						(MyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.QueueMissingOnnxGateCheckAfterOnboarding();
-					}
-					catch
-					{
-					}
-					onReturn?.Invoke();
-				});
-			});
-		}
-		catch (Exception ex)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex.Message));
-			onReturn?.Invoke();
-		}
-	}
+    {
+        long generation = SaveRuntimeGuard.CaptureGeneration();
+        Campaign campaign = Campaign.Current;
+        bool finished = false;
+        bool personaSubmitted = false;
+        bool IsCurrent() => !finished && ReferenceEquals(Instance, this)
+            && ReferenceEquals(campaign, Campaign.Current) && SaveRuntimeGuard.IsCurrentGeneration(generation);
+        void Finish()
+        {
+            if (!IsCurrent()) return;
+            finished = true;
+            _setupDone = true;
+            _welcomeInProgress = false;
+            _activeOnboardingStage = OnboardingUiStage.None;
+            (MyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.QueueMissingOnnxGateCheckAfterOnboarding();
+            onReturn?.Invoke();
+        }
+        try
+        {
+            ResetYjApiSetup();
+            _activeOnboardingStage = OnboardingUiStage.PlayerPersona;
+            KnowledgeLibraryBehavior knowledge = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+            if (knowledge == null) { Finish(); return; }
+            InformationManager.DisplayMessage(new InformationMessage(importedDatabase
+                ? "首次导入完成。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"
+                : "已跳过数据库导入。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
+            knowledge.OpenPlayerPersonaSetup(() =>
+            {
+                if (!IsCurrent() || personaSubmitted) return;
+                personaSubmitted = true;
+                ShowPeaceSceneConflictChoiceAfterPersona(Finish);
+            });
+        }
+        catch (Exception ex)
+        {
+            if (!IsCurrent()) return;
+            InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex.Message));
+            Finish();
+        }
+    }
 
 	private void ShowPeaceSceneConflictChoiceAfterPersona(Action onDone)
 	{
