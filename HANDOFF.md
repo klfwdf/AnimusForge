@@ -1,7 +1,8 @@
-# 当前交接：MCM 模型预设与快报战事接续（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
+# 当前交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 接续指定会话，MCM产品 `854e8559d` 修新增预设模型回默认/跨列表索引错配，覆盖五模型与终端；快报产品 `2ee1708aa` 验收原dirty切片并增加真实发布回归，数字战报拒收后回退事实模板。
-- MCM两快照各47 PASS（同版核心），修前16/47；快报policy141、generation95、新闻切换27通过。最终原统一1.3/1.4/Bootstrap/双Coup门禁通过。旧存储测试入口缺方法的CS0103保留；未验实机/玩家配置/真实模型/全仓，未部署/打包/推送。
+- MCM两快照各47 PASS（同版核心），修前16/47；快报policy141、generation95、新闻切换27通过。最终原统一1.3/1.4/Bootstrap/双Coup门禁通过。旧存储测试入口缺方法的CS0103保留；未验实机/玩家配置/真实模型/全仓。后续获准提交推送部署，重跑双构建后原脚本更新12文件，3381安装SHA和12旧备份通过；不启动游戏、不打包。远端以本地publication-receipt核验。
+- 安装Recovery：`deploy-dd151913940a4d33bd7f02b2cf91dee6` complete；2475清单外文件大小/mtime保持，旧Stage已完整保存在本包证据目录。
 - 画卷转RP、秘密背景、投降结算、模式提示、扯旗重复的只读结论与未实施项见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mcm-model-preset-continuation-20261009)；[源码范围图](docs/architecture/af-framework-code-scope.md#mcm-model-preset-continuation-20261009)。证据 `artifacts/mcm-preset-continuation-20261009/`；回滚仅上述两个产品提交的focused inverse，保留两个NuGet目录与其他作者。
 
 # 当前交接：NPC 委托清剿藏身处（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
