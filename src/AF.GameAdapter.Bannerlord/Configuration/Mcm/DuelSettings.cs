@@ -799,8 +799,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private long _modelDropdownCacheLastWriteUtcTicks;
 
-	private const string UnsupportedContextExtractionApiWarningMessage = "该站点使用的模型不满足本mod的上下文提取要求，你依然可以继续使用，但使用后产生的任何回复内容不合理问题，不由本mod负责。";
-
 	private const string AfdianSupportUrl = "https://www.ifdian.net/a/AnimusForge";
 
 	public const string ShoutInputUiBackgroundBlack = "黑色透明";
@@ -3319,14 +3317,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = PlayerCustomPromptRule ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家自定义规则文案", "这段内容会注入到对话 system prompt 前部。", "可输入超过 MCM 普通文本框 512 字符的内容；留空表示不注入。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_PlayerRule_Title", "Edit player custom rule text"), Ui("AF_MCM_Editor_PlayerRule_Description", "This text is injected at the beginning of the dialogue system prompt."), Ui("AF_MCM_Editor_PlayerRule_Hint", "You can enter more than the 512-character MCM text-box limit; leave it blank to inject nothing."), initialText, delegate(string input)
 			{
 				SavePlayerCustomPromptRuleFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开大文本编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3335,14 +3333,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = KingdomRebellionSystemPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑王国叛乱系统提示词", "这段内容会作为王国叛乱建国命名请求的 system prompt 前半部分。", "", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Rebellion_Title", "Edit kingdom rebellion system prompt"), Ui("AF_MCM_Editor_Rebellion_Description", "This text becomes the first part of the system prompt for the kingdom-founding name request."), "", initialText, delegate(string input)
 			{
 				SaveKingdomRebellionSystemPromptFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开王国叛乱系统提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3351,14 +3349,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = WeeklyReportWritingRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑周报写作要求文案", "这里编辑的是周报 system prompt 里的完整写作要求段。", "默认文本就是代码内置写作要求；可以删改或清空。输出格式、REPORT_BLOCK、TAGS 和稳定度标签仍由内置规则控制。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Weekly_Title", "Edit weekly-report writing requirements"), Ui("AF_MCM_Editor_Weekly_Description", "This edits the complete writing-requirements section in the weekly-report system prompt."), Ui("AF_MCM_Editor_Weekly_Hint", "The default text is built into the code; you can edit or clear it. Output format, REPORT_BLOCK, TAGS, and stability tags remain controlled by built-in rules."), initialText, delegate(string input)
 			{
 				SaveWeeklyReportWritingRequirementsFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开周报写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3367,14 +3365,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = NpcPersonaGenerationRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑NPC个性背景生成要求", "普通 Hero 与升格同伴共用此处的完整写作要求；内置仅保留生成任务、JSON 协议与事实约束。", "可直接修改篇幅、文风、素材取舍与重生避重要求。保存后替换默认文案；留空保存表示不注入写作要求。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Persona_Title", "Edit NPC personality/background requirements"), Ui("AF_MCM_Editor_Persona_Description", "Regular heroes and promoted companions share these complete writing requirements; built-in text keeps only the generation task, JSON protocol, and fact constraints."), Ui("AF_MCM_Editor_Persona_Hint", "You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements."), initialText, delegate(string input)
 			{
 				SaveNpcPersonaGenerationRequirementsFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开NPC个性背景生成要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3383,14 +3381,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = DailyMemoryCompressionWritingRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑日结压缩写作要求", "这里只修改日结摘要的文风、信息取舍与组织方式。", "标签结构、公开性判断、日期地点、AFEF、身份事实和长度规则由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_DailyMemory_Title", "Edit daily-memory compression requirements"), Ui("AF_MCM_Editor_DailyMemory_Description", "Edit only the style, information selection, and organization of the daily summary here."), Ui("AF_MCM_Editor_DailyMemory_Hint", "Tag structure, visibility, date and location, AFEF, identity facts, and length rules are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference."), initialText, delegate(string input)
 			{
 				SaveDailyMemoryCompressionWritingRequirementsFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开日结压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3399,14 +3397,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = MemoryOverviewCompressionWritingRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑记忆大压缩写作要求", "这里只修改长期记忆总览的文风、信息取舍与组织方式。", "SUMMARY 标签、日期地点、事实边界、身份自称规则和长度范围由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_MemoryOverview_Title", "Edit memory-overview compression requirements"), Ui("AF_MCM_Editor_MemoryOverview_Description", "Edit only the style, information selection, and organization of the long-term memory overview here."), Ui("AF_MCM_Editor_MemoryOverview_Hint", "The SUMMARY tag, dates and locations, fact boundaries, identity rules, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference."), initialText, delegate(string input)
 			{
 				SaveMemoryOverviewCompressionWritingRequirementsFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开记忆大压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3415,14 +3413,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = MajorActionCompressionWritingRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑重大履历压缩写作要求", "这里只修改 NPC 重大履历摘要的文风、信息取舍与组织方式。", "SUMMARY 标签、日期与事实边界、滚动融合方式和长度范围由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_MajorAction_Title", "Edit major-action compression requirements"), Ui("AF_MCM_Editor_MajorAction_Description", "Edit only the style, information selection, and organization of the NPC major-action summary here."), Ui("AF_MCM_Editor_MajorAction_Hint", "The SUMMARY tag, dates and fact boundaries, rolling-merge behavior, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference."), initialText, delegate(string input)
 			{
 				SaveMajorActionCompressionWritingRequirementsFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开重大履历压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_OpenFailed", "[Prompt extension] Failed to open the long-text editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3431,14 +3429,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = CustomPolicyEvaluatorPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这是全国政策与地方政策共用的主评议提示词。", "效果模块明细由 ONNX 按政策另行选择；这里适合调整成本、期限、民众反馈文风和强度偏好。明确的金额、倍率、范围或数值约束会经 numericIntent 传给效果后处理；输出 JSON 契约仍由模组保证。留空保存会恢复默认内容。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_PlayerPolicy_Title", "Edit player policy evaluation prompt"), Ui("AF_MCM_Editor_PlayerPolicy_Description", "This is the shared evaluation prompt for kingdom and local policies."), Ui("AF_MCM_Editor_PlayerPolicy_Hint", "Use it to adjust cost, duration, public-feedback style, and intensity preferences. Explicit amounts, multipliers, ranges, and numeric constraints are passed to effect postprocessing through numericIntent; the JSON contract remains enforced by the mod. Saving blank restores the default."), initialText, delegate(string input)
 			{
 				SaveCustomPolicyEvaluatorPromptFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 打开玩家政策评判提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_Policy_OpenFailed", "[Policy system] Failed to open the player policy evaluation prompt editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3446,14 +3444,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		try
 		{
-			DevTextEditorHelper.ShowLongTextEditor("编辑AI外交自定义偏好", "这里可以调整利益判断、行动取向与文风。", "留空表示不添加自定义偏好。固定共同契约、长期历史事实边界、MODE 与任务输出结构仍由模组保证。", WorldDiplomacyPrompt ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Diplomacy_Title", "Edit AI diplomacy preferences"), Ui("AF_MCM_Editor_Diplomacy_Description", "Adjust interest evaluation, action preferences, and style here."), Ui("AF_MCM_Editor_Diplomacy_Hint", "Leave blank to add no custom preference. The shared contract, long-term historical fact boundaries, MODE, and task output structure remain enforced by the mod."), WorldDiplomacyPrompt ?? "", delegate(string input)
 			{
 				SaveWorldDiplomacyPromptFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AI外交] 打开提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_Diplomacy_OpenFailed", "[AI diplomacy] Failed to open the prompt editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3462,18 +3460,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			InformationManager.ShowInquiry(new InquiryData(
-				"恢复默认AI外交偏好",
-				"这会覆盖当前自定义偏好，并恢复模组默认内容。是否继续？",
+				Ui("AF_MCM_Editor_Diplomacy_RestoreTitle", "Restore default AI diplomacy preferences"),
+				Ui("AF_MCM_Editor_Diplomacy_RestoreBody", "This overwrites the current custom preferences and restores the mod defaults. Continue?"),
 				true,
 				true,
-				"恢复默认",
-				"取消",
+				Ui("AF_MCM_Editor_RestoreDefault", "Restore default"),
+				Ui("AF_MCM_Common_Cancel", "Cancel"),
 				RestoreDefaultWorldDiplomacyPromptNow,
 				null), true);
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AI外交] 打开恢复默认确认框失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_Diplomacy_RestoreOpenFailed", "[AI diplomacy] Failed to open the restore-default confirmation: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3487,14 +3485,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = NpcRulerPolicyPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑NPC统治者政策提示词", "这段文字决定 NPC 统治者政策、同期现象和数值影响的生成方式。", "你可以完整改写。留空保存会恢复默认内容；文字越长，单次请求需要处理的内容越多。输出格式、合法作用目标和数值落地安全仍由模组保证。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_RulerPolicy_Title", "Edit NPC ruler policy prompt"), Ui("AF_MCM_Editor_RulerPolicy_Description", "This text controls how NPC ruler policies, concurrent world phenomena, and numeric effects are generated."), Ui("AF_MCM_Editor_RulerPolicy_Hint", "You may rewrite it completely. Saving blank restores the default; longer text requires more processing per request. Output format, legal effect targets, and safe numeric application remain enforced by the mod."), initialText, delegate(string input)
 			{
 				SaveNpcRulerPolicyPromptFromEditor(input);
-			}, null, "保存", "返回");
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 打开NPC统治者政策提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_RulerPolicy_OpenFailed", "[Policy system] Failed to open the NPC ruler policy prompt editor: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3512,11 +3510,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			{
 				UseShellExecute = true
 			});
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 正在打开自定义提示词 JSON 文件夹。", Color.FromUint(4278255360u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_CustomFolder_Opening", "[Prompt extension] Opening the custom prompt JSON folder."), Color.FromUint(4278255360u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开自定义提示词 JSON 文件夹失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_CustomFolder_OpenFailed", "[Prompt extension] Failed to open the custom prompt JSON folder: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3562,10 +3560,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		ClearDiagnosticLog("贵族俘虏随行", NoblePrisonerEscortLog.GetDiagnosticLogPath, NoblePrisonerEscortLog.ClearLog);
 	}
 
+	private static string GetDiagnosticDisplayName(string featureName)
+	{
+		if (string.Equals(featureName, "贵族俘虏随行", StringComparison.Ordinal))
+			return Ui("AF_MCM_Diagnostics_NoblePrisonerEscort", "Noble prisoner escort");
+		return featureName;
+	}
+
 	private static void ExportDiagnosticLogToDesktop(string featureName, Func<string> getSourcePath, Func<string> getSourceDirectory, Func<string> exportLog)
 	{
 		try
 		{
+			string displayName = GetDiagnosticDisplayName(featureName);
 			string sourcePath = getSourcePath();
 			string sourceDirectory = getSourceDirectory();
 			string exportPath = exportLog();
@@ -3586,13 +3592,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					Logger.Log("DuelSettings", "[WARN] " + featureName + "日志已导出，但打开目录失败: " + openException.Message);
 				}
 			}
-			string openStatus = directoryOpened ? string.Empty : "；未自动打开目录";
-			InformationManager.DisplayMessage(new InformationMessage("[" + featureName + "] 日志已导出到桌面：" + Path.GetFileName(exportPath) + "；原始目录：" + sourceDirectory + openStatus, Color.FromUint(4278255360u)));
+			string openStatus = directoryOpened ? string.Empty : Ui("AF_MCM_Diagnostics_DirectoryNotOpened", "; the directory was not opened automatically");
+			InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Diagnostics_Exported", "[{FEATURE}] Log exported to the desktop: {FILE}; source directory: {DIRECTORY}{STATUS}", ("FEATURE", displayName), ("FILE", Path.GetFileName(exportPath)), ("DIRECTORY", sourceDirectory), ("STATUS", openStatus)), Color.FromUint(4278255360u)));
 			Logger.Log("DuelSettings", "[" + featureName + "] 导出日志成功 source=" + sourcePath + " export=" + exportPath);
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[" + featureName + "] 导出日志失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Diagnostics_ExportFailed", "[{FEATURE}] Log export failed: ", ("FEATURE", GetDiagnosticDisplayName(featureName))) + ex.Message, Color.FromUint(4294901760u)));
 			Logger.Log("DuelSettings", "[WARN] " + featureName + "日志导出失败: " + ex);
 		}
 	}
@@ -3601,14 +3607,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		try
 		{
+			string displayName = GetDiagnosticDisplayName(featureName);
 			string path = getLogPath();
 			clearLog();
-			InformationManager.DisplayMessage(new InformationMessage("[" + featureName + "] 日志已清空：" + path, Color.FromUint(4278255360u)));
+			InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Diagnostics_Cleared", "[{FEATURE}] Log cleared: {PATH}", ("FEATURE", displayName), ("PATH", path)), Color.FromUint(4278255360u)));
 			Logger.Log("DuelSettings", "[" + featureName + "] 清空日志成功 path=" + path);
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[" + featureName + "] 清空日志失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Diagnostics_ClearFailed", "[{FEATURE}] Log clear failed: ", ("FEATURE", GetDiagnosticDisplayName(featureName))) + ex.Message, Color.FromUint(4294901760u)));
 			Logger.Log("DuelSettings", "[WARN] " + featureName + "日志清空失败: " + ex);
 		}
 	}
@@ -3624,11 +3631,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		if (ExternalBrowserLauncher.TryOpen(AfdianSupportUrl, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
 			Logger.Log("DuelSettings", "用户点击了[支持作者（爱发电）]按钮。");
-			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开爱发电页面。" : "[系统] 正在打开爱发电页面。", Color.FromUint(4278255360u)));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? Ui("AF_MCM_Support_LocalBrowserFallback", "[System] The default browser could not start; the support page was opened with the local browser.") : Ui("AF_MCM_Support_Opening", "[System] Opening the support page."), Color.FromUint(4278255360u)));
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开爱发电页面失败: " + failureMessage, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Support_OpenFailed", "[System] Failed to open the support page: ") + failureMessage, Color.FromUint(4294901760u)));
 			Logger.Log("DuelSettings", "[WARN] 打开爱发电页面失败: " + failureMessage);
 		}
 	}
@@ -6409,6 +6416,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return ResolveEffectiveModelName(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, EventAndRebellionModelName, "", preserveBlankSelection: false);
 	}
 
+	private static string GetChannelDisplayName(string channelName)
+	{
+		if (string.Equals(channelName, "主API", StringComparison.Ordinal))
+			return Ui("AF_MCM_Api_ChannelMain", "main API");
+		if (string.Equals(channelName, "前处理API", StringComparison.Ordinal))
+			return Ui("AF_MCM_Api_ChannelPreprocess", "preprocessing API");
+		if (string.Equals(channelName, "后处理API", StringComparison.Ordinal))
+			return Ui("AF_MCM_Api_ChannelPostprocess", "postprocessing API");
+		if (string.Equals(channelName, "事件/叛乱API", StringComparison.Ordinal))
+			return Ui("AF_MCM_Api_ChannelEventRebellion", "event/rebellion API");
+		if (string.Equals(channelName, "环境 AI", StringComparison.Ordinal))
+			return Ui("AF_MCM_Api_ChannelAmbient", "ambient AI");
+		return channelName;
+	}
+
 	private void StartFetchModelList(string channelName, string rawApiUrl, string apiKey, Action<List<string>> applyModels)
 	{
 		LlmRetryPrompt.CaptureMainThreadContext();
@@ -6417,23 +6439,24 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			try
 			{
 				string text = (channelName ?? "").Trim();
+				string channelDisplayName = GetChannelDisplayName(text);
 				string text2 = (rawApiUrl ?? "").Trim();
 				string text3 = (apiKey ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					ShowLlmFailurePopup(text + "模型列表拉取失败", "API 地址未填写，无法拉取模型列表。");
+					ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), Ui("AF_MCM_Api_AddressMissing", "The API address is empty, so the model list cannot be fetched."));
 					return;
 				}
 				if (string.IsNullOrWhiteSpace(text3))
 				{
-					ShowLlmFailurePopup(text + "模型列表拉取失败", "API Key 未填写，无法拉取模型列表。");
+					ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), Ui("AF_MCM_Api_KeyMissing", "The API key is empty, so the model list cannot be fetched."));
 					return;
 				}
-				InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：正在拉取模型列表...", Color.FromUint(4294967040u)));
+				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetching", "[System] Fetching the {CHANNEL} model list...", ("CHANNEL", channelDisplayName)), Color.FromUint(4294967040u)));
 				ModelListFetchResult modelListFetchResult = await FetchModelListAsync(text2, text3);
 				if (!modelListFetchResult.Success)
 				{
-					string text4 = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments, legacyMessage: modelListFetchResult.ErrorMessage ?? "未知错误");
+					string text4 = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments, legacyMessage: modelListFetchResult.ErrorMessage ?? Ui("AF_MCM_Api_UnknownError", "Unknown error."));
 					if ((int)modelListFetchResult.StatusCode > 0)
 					{
 						string text5 = BuildApiErrorHint(modelListFetchResult.RequestUrl, "", modelListFetchResult.StatusCode, modelListFetchResult.ResponseBody);
@@ -6442,7 +6465,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							text4 = text4 + "；" + text5;
 						}
 					}
-					ShowLlmFailurePopup(text + "模型列表拉取失败", text4, "", modelListFetchResult.ResponseBody);
+					ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), text4, "", modelListFetchResult.ResponseBody);
 					Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表失败: " + text4 + " | url=" + (modelListFetchResult.RequestUrl ?? ""));
 					return;
 				}
@@ -6492,12 +6515,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					}
 					text6 = ManualDropdownModelName + " -> " + (string.IsNullOrWhiteSpace(text7) ? "(空)" : text7);
 				}
-				InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：模型列表拉取成功，共 " + modelListFetchResult.Models.Count + " 个，当前已选中 " + (string.IsNullOrWhiteSpace(text6) ? "空值" : text6), Color.FromUint(4278255360u)));
+				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetched", "[System] {CHANNEL} model list fetched: {COUNT} models; selected: {SELECTED}", ("CHANNEL", channelDisplayName), ("COUNT", modelListFetchResult.Models.Count), ("SELECTED", string.IsNullOrWhiteSpace(text6) ? Ui("AF_MCM_Api_EmptySelection", "empty") : text6)), Color.FromUint(4278255360u)));
 				Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表成功: count=" + modelListFetchResult.Models.Count + " url=" + (modelListFetchResult.RequestUrl ?? ""));
 			}
 			catch (Exception ex)
 			{
-				ShowLlmFailurePopup("模型列表拉取异常", ex.Message);
+				ShowLlmFailurePopup(Ui("AF_MCM_Api_ModelListExceptionTitle", "Model list fetch error"), ex.Message);
 				Logger.Log("DuelSettings", "[拉取模型列表异常] " + ex);
 			}
 		});
@@ -6536,7 +6559,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public static string GetContextExtractionCompatibilityWarningMessage()
 	{
-		return UnsupportedContextExtractionApiWarningMessage;
+		return Ui("AF_MCM_Api_ContextExtractionWarning", "The model used by this endpoint does not meet AnimusForge's context-extraction requirements. You can continue, but the mod is not responsible for unreasonable replies produced after using it.");
+	}
+
+	private static string Ui(string id, string englishFallback)
+	{
+		return DuelSettingsUiLocalization.Text(id, englishFallback);
+	}
+
+	private static string UiFormat(string id, string englishFallback, params (string Name, object Value)[] variables)
+	{
+		return DuelSettingsUiLocalization.Format(id, englishFallback, variables);
 	}
 
 	private static string TryExtractAssistantReplyText(string responseString)
@@ -6561,7 +6594,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		if ((int)statusCode == 522)
 		{
-			return "522 通常表示网关/代理已经收到你的请求，但它连接不到上游源站。若你在用自建中转、Cloudflare 域名或第三方面板，请先检查源站是否在线，以及代理到源站的网络是否通畅。";
+			return Ui("AF_MCM_Api_Hint522", "522 usually means that the gateway or proxy received your request but could not connect to the upstream server. If you use a self-hosted relay, a Cloudflare domain, or a third-party panel, check that the upstream is online and that the proxy can reach it.");
 		}
 		if (statusCode != HttpStatusCode.NotFound)
 		{
@@ -6570,9 +6603,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = (responseBody ?? "").ToLowerInvariant();
 		if (text.Contains("requested entity was not found") || text.Contains("\"status\": \"not_found\""))
 		{
-			return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址、自动补全后的聊天路径以及模型名称是否正确。";
+			return Ui("AF_MCM_Api_Hint404WithBody", "404 NotFound usually means that the endpoint path or model name does not exist. Check the API address, the automatically completed chat path, and the model name.");
 		}
-		return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址尾缀和模型名称。";
+		return Ui("AF_MCM_Api_Hint404", "404 NotFound usually means that the endpoint path or model name does not exist. Check the API URL suffix and the model name.");
 	}
 
 	private static Task<ConfiguredChatValidationExchange> SendConnectionTestJsonRequestAsync(string providerId, string endpoint, string model, string apiKey, string preparedJson, CancellationToken cancellationToken)
@@ -6700,37 +6733,37 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				TtsEngine instance = TtsEngine.Instance;
 				if (instance == null || !instance.IsReady)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 引擎未初始化，无法测试。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_NotReady", "[TTS] The engine is not initialized, so it cannot be tested."), Color.FromUint(4294901760u)));
 				}
 				else if (!runtimeSettings.EnableTtsSpeech)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先开启【启用TTS语音】。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableSpeech", "[TTS] Enable TTS speech first."), Color.FromUint(4294901760u)));
 				}
 				else if (!runtimeSettings.TtsVolcDedicatedEnabled)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先开启【启用火山专用模式】。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableVolc", "[TTS] Enable Volcengine dedicated mode first."), Color.FromUint(4294901760u)));
 				}
 				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedApiUrl))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 API 地址。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingUrl", "[TTS] Enter the Volcengine dedicated API URL first."), Color.FromUint(4294901760u)));
 				}
 				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 AppID。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingAppId", "[TTS] Enter the Volcengine dedicated App ID first."), Color.FromUint(4294901760u)));
 				}
 				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedResourceId))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 Resource ID。", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingResource", "[TTS] Enter the Volcengine dedicated resource ID first."), Color.FromUint(4294901760u)));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山V1测试中... (API={0}, 场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", runtimeSettings.TtsVolcDedicatedApiUrl, runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
-					instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed);
+						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Tts_Testing", "[TTS] Testing Volcengine V1... (API={API}, scene channel={CHANNEL}, main voice volume={VOLUME}, speed={SPEED}, lip-sync volume={LIP_VOLUME})", ("API", runtimeSettings.TtsVolcDedicatedApiUrl), ("CHANNEL", runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : Ui("AF_MCM_Tts_LipSyncChannel", "lip-sync")), ("VOLUME", runtimeSettings.TtsVolcDedicatedVolume.ToString("F2", CultureInfo.InvariantCulture)), ("SPEED", runtimeSettings.TtsVolcDedicatedSpeed.ToString("F2", CultureInfo.InvariantCulture)), ("LIP_VOLUME", runtimeSettings.TtsLipSyncSoundEventVolume.ToString("F2", CultureInfo.InvariantCulture))), Color.FromUint(4294967040u)));
+					instance.SpeakTestAsync(Ui("AF_MCM_Tts_TestPhrase", "At your service, traveler!"), runtimeSettings.TtsVolcDedicatedSpeed);
 				}
 			}
 			catch (Exception ex)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[TTS] 火山测试异常: " + ex.Message, Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_TestException", "[TTS] Volcengine test error: ") + ex.Message, Color.FromUint(4294901760u)));
 			}
 		};
 		FetchMainModelList = delegate
@@ -6760,26 +6793,26 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			{
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[环境 AI] 正在测试你填写的独立接口；测试请求会消耗少量 Token。", Color.FromUint(4294967040u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Ambient_Testing", "[Ambient AI] Testing the independent endpoint you entered; this test uses a small number of tokens."), Color.FromUint(4294967040u)));
 					TownAmbientAiResult result = await TownAmbientAiClient.TestConnectionAsync().ConfigureAwait(false);
 					if (result != null && result.Success)
 					{
-						InformationManager.DisplayMessage(new InformationMessage(string.Format("[环境 AI] 连接成功。本次约使用输入 {0} + 输出 {1} Token。", result.InputTokens, result.OutputTokens), Color.FromUint(4278255360u)));
+						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Ambient_Success", "[Ambient AI] Connection succeeded. This test used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens)), Color.FromUint(4278255360u)));
 						Logger.Log("DuelSettings", "环境 AI 独立接口测试成功 inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
 					}
 					else
 					{
-						string failure = result?.Error ?? "未知错误";
+						string failure = result?.Error ?? Ui("AF_MCM_Api_UnknownError", "Unknown error.");
 						if (result != null && (result.InputTokens > 0 || result.OutputTokens > 0))
 						{
-							failure += string.Format("\n\n本次请求已计入约 {0} 输入 + {1} 输出 Token。", result.InputTokens, result.OutputTokens);
+							failure += "\n\n" + UiFormat("AF_MCM_Ambient_TokenUsage", "This request used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens));
 						}
-						ShowLlmFailurePopup("环境 AI 接口测试失败", failure, result?.ModelReply, result?.RawResponse);
+						ShowLlmFailurePopup(Ui("AF_MCM_Ambient_FailureTitle", "Ambient AI connection test failed"), failure, result?.ModelReply, result?.RawResponse);
 					}
 				}
 				catch (Exception ex)
 				{
-					ShowLlmFailurePopup("环境 AI 接口测试异常", ex.Message);
+					ShowLlmFailurePopup(Ui("AF_MCM_Ambient_ExceptionTitle", "Ambient AI connection test error"), ex.Message);
 					Logger.Log("DuelSettings", "环境 AI 独立接口测试异常: " + ex.Message);
 				}
 			});
@@ -6795,15 +6828,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					string effectiveModelName = GetEffectiveMainModelName();
 					if (string.IsNullOrWhiteSpace(ApiKey))
 					{
-						ShowLlmFailurePopup("主API连接测试失败", "API 密钥未填写。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestFailed", "Main API connection test failed"), Ui("AF_MCM_Api_MainKeyMissing", "The main API key is empty."));
 					}
 					else if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						ShowLlmFailurePopup("主API连接测试失败", "模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestFailed", "Main API connection test failed"), Ui("AF_MCM_Api_MainModelMissing", "The model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above."));
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 正在呼叫哈宝 ...", Color.FromUint(4294967040u)));
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_MainTesting", "[System] Calling the main API..."), Color.FromUint(4294967040u)));
 						if (ShouldWarnForContextExtractionApi(ApiUrl))
 						{
 							InformationManager.DisplayMessage(new InformationMessage(GetContextExtractionCompatibilityWarningMessage(), Color.FromUint(4294936576u)));
@@ -6832,20 +6865,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							string aiReply = TryExtractAssistantReplyText(responseString);
 							if (!string.IsNullOrWhiteSpace(aiReply))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("链接正常！哈宝回复：" + aiReply.Trim(), Color.FromUint(4278255360u)));
+								InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_MainSuccess", "Connection is working. Main API reply: ") + aiReply.Trim(), Color.FromUint(4278255360u)));
 								Logger.Log("DuelSettings", "测试成功! AI回复: " + aiReply);
 							}
 							else
 							{
-								ShowLlmFailurePopup("主API回复解析失败", "连接成功，但未解析出模型回复。", "", responseString);
+								ShowLlmFailurePopup(Ui("AF_MCM_Api_MainReplyParseFailed", "Main API reply parsing failed"), Ui("AF_MCM_Api_ReplyMissing", "The connection succeeded, but no model reply could be parsed."), "", responseString);
 							}
 						}
 						else
 						{
 							HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
 							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
-							string reason = "连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(text) ? "" : ("\n排查建议：" + text));
-							ShowLlmFailurePopup("主API连接测试失败", reason, "", responseString);
+							string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(text) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + text));
+							ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestFailed", "Main API connection test failed"), reason, "", responseString);
 							Logger.Log("DuelSettings", $"测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 						}
 					}
@@ -6853,7 +6886,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				catch (Exception ex)
 				{
 					Exception ex2 = ex;
-					ShowLlmFailurePopup("主API连接测试异常", ex2.Message);
+					ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestException", "Main API connection test error"), ex2.Message);
 					Logger.Log("DuelSettings", "测试崩溃: " + ex2.Message);
 				}
 			});
@@ -6869,15 +6902,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					string effectiveModelName = GetEffectiveAuxiliaryModelName();
 					if (string.IsNullOrWhiteSpace(AuxiliaryApiKey))
 					{
-						ShowLlmFailurePopup("前处理API连接测试失败", "辅助API 密钥未填写。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestFailed", "Preprocessing API connection test failed"), Ui("AF_MCM_Api_PreprocessKeyMissing", "The preprocessing API key is empty."));
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						ShowLlmFailurePopup("前处理API连接测试失败", "辅助模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestFailed", "Preprocessing API connection test failed"), Ui("AF_MCM_Api_PreprocessModelMissing", "The preprocessing model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above."));
 						return;
 					}
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试辅助API连接...", Color.FromUint(4294967040u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_PreprocessTesting", "[System] Testing the preprocessing API connection..."), Color.FromUint(4294967040u)));
 					var requestPayload = new
 					{
 						model = effectiveModelName,
@@ -6915,26 +6948,26 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						}
 						if (!validEnvelope)
 						{
-							ShowLlmFailurePopup("前处理API回复解析失败", "辅助API可连接" + text + "，但前处理JSON格式不合格：" + formatError, reply, responseString);
+							ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessReplyParseFailed", "Preprocessing API reply parsing failed"), UiFormat("AF_MCM_Api_PreprocessInvalidJson", "The preprocessing API is reachable{MODE}, but its JSON envelope is invalid: {ERROR}", ("MODE", text), ("ERROR", formatError)), reply, responseString);
 							Logger.Log("DuelSettings", "辅助API连接成功但前处理格式错误: " + formatError + " | reply=" + (reply ?? ""));
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage("辅助API 连接及前处理JSON格式正常" + text + "：" + reply.Trim(), Color.FromUint(4278255360u)));
+							InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_PreprocessSuccess", "Preprocessing API connection and JSON format are valid{MODE}: {REPLY}", ("MODE", text), ("REPLY", reply.Trim())), Color.FromUint(4278255360u)));
 						}
 					}
 					else
 					{
 						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
-						string reason = "前处理API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
-						ShowLlmFailurePopup("前处理API连接测试失败", reason, "", responseString);
+						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestFailed", "Preprocessing API connection test failed"), reason, "", responseString);
 						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					ShowLlmFailurePopup("前处理API连接测试异常", ex.Message);
+					ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestException", "Preprocessing API connection test error"), ex.Message);
 					Logger.Log("DuelSettings", "辅助API测试崩溃: " + ex.Message);
 				}
 			});
@@ -6950,15 +6983,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					string effectiveModelName = GetEffectiveActionPostprocessModelName();
 					if (string.IsNullOrWhiteSpace(ActionPostprocessApiKey))
 					{
-						ShowLlmFailurePopup("后处理API连接测试失败", "后处理API 密钥未填写。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestFailed", "Postprocessing API connection test failed"), Ui("AF_MCM_Api_PostprocessKeyMissing", "The postprocessing API key is empty."));
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						ShowLlmFailurePopup("后处理API连接测试失败", "后处理模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestFailed", "Postprocessing API connection test failed"), Ui("AF_MCM_Api_PostprocessModelMissing", "The postprocessing model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above."));
 						return;
 					}
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试后处理API连接...", Color.FromUint(4294967040u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_PostprocessTesting", "[System] Testing the postprocessing API connection..."), Color.FromUint(4294967040u)));
 					if (ShouldWarnForContextExtractionApi(ActionPostprocessApiUrl))
 					{
 						InformationManager.DisplayMessage(new InformationMessage(GetContextExtractionCompatibilityWarningMessage(), Color.FromUint(4294936576u)));
@@ -6992,11 +7025,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						bool recoveredFromReasoningTokenLimit = false;
-						string emptyReplyReason = "连接成功，但未解析出模型回复。";
+						string emptyReplyReason = Ui("AF_MCM_Api_ReplyMissing", "The connection succeeded, but no model reply could be parsed.");
 						if (string.IsNullOrWhiteSpace(reply) && LlmApiCompat.IsReasoningOnlyTokenLimitResponse(responseString, out int completionTokens, out int reasoningTokens))
 						{
 							string firstResponseString = responseString;
-							emptyReplyReason = "连接成功，但模型把测试输出额度全部用于思考，尚未生成最终 content。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens + "。";
+							emptyReplyReason = UiFormat("AF_MCM_Api_ReasoningOnly", "The connection succeeded, but the model used the entire test output budget for reasoning and produced no final content. completion_tokens={COMPLETION}, reasoning_tokens={REASONING}.", ("COMPLETION", completionTokens), ("REASONING", reasoningTokens));
 							Logger.Log("DuelSettings", "后处理API测试首次回复仅含思考且达到token上限，关闭思考后重试: completion_tokens=" + completionTokens + " reasoning_tokens=" + reasoningTokens);
 							JObject retryPayload = (JObject)requestPayload.DeepClone();
 							ApplyThinkingControls(retryPayload, effectiveApiUrl, effectiveModelName, false, ReasoningEffortLow, out var retryControlMode);
@@ -7013,38 +7046,38 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 								}
 								else
 								{
-									emptyReplyReason += " 关闭思考重试后 content 仍为空。";
+									emptyReplyReason += " " + Ui("AF_MCM_Api_RetryContentEmpty", "Content is still empty after retrying with reasoning disabled.");
 									responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
 								}
 							}
 							else
 							{
-								emptyReplyReason += " 关闭思考重试失败，状态码：" + (HttpStatusCode)retryResponse.StatusCode + "。";
+								emptyReplyReason += " " + UiFormat("AF_MCM_Api_RetryFailed", "Retry with reasoning disabled failed with status code {STATUS}.", ("STATUS", (HttpStatusCode)retryResponse.StatusCode));
 								responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
 							}
 						}
 						if (string.IsNullOrWhiteSpace(reply))
 						{
-							ShowLlmFailurePopup("后处理API回复解析失败", emptyReplyReason, "", responseString);
+							ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessReplyParseFailed", "Postprocessing API reply parsing failed"), emptyReplyReason, "", responseString);
 						}
 						else
 						{
-							string recoveryHint = recoveredFromReasoningTokenLimit ? "（首次思考耗尽测试额度，已关闭思考重试；实际使用时请保留足够的最大输出Tokens）" : "";
-							InformationManager.DisplayMessage(new InformationMessage("后处理API 连接正常" + recoveryHint + "：" + reply.Trim(), Color.FromUint(4278255360u)));
+						string recoveryHint = recoveredFromReasoningTokenLimit ? Ui("AF_MCM_Api_ReasoningRecovery", " (The first reasoning attempt exhausted the test budget; reasoning was disabled for retry. Keep enough maximum output tokens in actual use.)") : "";
+						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_PostprocessSuccess", "Postprocessing API connection is working{RECOVERY}: {REPLY}", ("RECOVERY", recoveryHint), ("REPLY", reply.Trim())), Color.FromUint(4278255360u)));
 						}
 					}
 					else
 					{
 						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
-						string reason = "后处理API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
-						ShowLlmFailurePopup("后处理API连接测试失败", reason, "", responseString);
+						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestFailed", "Postprocessing API connection test failed"), reason, "", responseString);
 						Logger.Log("DuelSettings", $"后处理API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					ShowLlmFailurePopup("后处理API连接测试异常", ex.Message);
+					ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestException", "Postprocessing API connection test error"), ex.Message);
 					Logger.Log("DuelSettings", "后处理API测试崩溃: " + ex.Message);
 				}
 			});
@@ -7060,20 +7093,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					string effectiveModelName = GetEffectiveEventAndRebellionModelName();
 					if (string.IsNullOrWhiteSpace(EventAndRebellionApiUrl))
 					{
-						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱API 地址未填写。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestFailed", "Event/rebellion API connection test failed"), Ui("AF_MCM_Api_EventAddressMissing", "The event/rebellion API address is empty."));
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(EventAndRebellionApiKey))
 					{
-						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱API 密钥未填写。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestFailed", "Event/rebellion API connection test failed"), Ui("AF_MCM_Api_EventKeyMissing", "The event/rebellion API key is empty."));
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestFailed", "Event/rebellion API connection test failed"), Ui("AF_MCM_Api_EventModelMissing", "The event/rebellion model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above."));
 						return;
 					}
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试事件/叛乱专用API连接...", Color.FromUint(4294967040u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_EventTesting", "[System] Testing the event/rebellion API connection..."), Color.FromUint(4294967040u)));
 					string effectiveApiUrl = GetEffectiveApiUrl(EventAndRebellionApiUrl);
 					JObject requestPayload = new JObject
 					{
@@ -7104,25 +7137,25 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						string reply = TryExtractAssistantReplyText(responseString);
 						if (string.IsNullOrWhiteSpace(reply))
 						{
-							ShowLlmFailurePopup("事件/叛乱API回复解析失败", "连接成功，但未解析出模型回复。", "", responseString);
+							ShowLlmFailurePopup(Ui("AF_MCM_Api_EventReplyParseFailed", "Event/rebellion API reply parsing failed"), Ui("AF_MCM_Api_ReplyMissing", "The connection succeeded, but no model reply could be parsed."), "", responseString);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage("事件/叛乱API 连接正常：" + reply.Trim(), Color.FromUint(4278255360u)));
+							InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_EventSuccess", "Event/rebellion API connection is working: ") + reply.Trim(), Color.FromUint(4278255360u)));
 						}
 					}
 					else
 					{
 						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
-						string reason = "事件/叛乱API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
-						ShowLlmFailurePopup("事件/叛乱API连接测试失败", reason, "", responseString);
+						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
+						ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestFailed", "Event/rebellion API connection test failed"), reason, "", responseString);
 						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					ShowLlmFailurePopup("事件/叛乱API连接测试异常", ex.Message);
+					ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestException", "Event/rebellion API connection test error"), ex.Message);
 					Logger.Log("DuelSettings", "事件/叛乱API测试崩溃: " + ex.Message);
 				}
 			});

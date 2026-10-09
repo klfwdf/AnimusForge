@@ -2414,6 +2414,126 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Weekly_Notice_Missing" text="这条周报记录已经不存在。" />
   <string id="AF_UI_Weekly_Notice_OpenFailed" text="打开周报失败。" />
   <string id="AF_UI_Weekly_Notice_XpBatch" text="周报研读突破：累计研读 {COUNT} 篇，魅力 +{CHARM}，统御 +{LEADERSHIP}，管理 +{STEWARD}。" />
+  <string id="AF_MCM_Common_Save" text="保存" />
+  <string id="AF_MCM_Common_Back" text="返回" />
+  <string id="AF_MCM_Common_Cancel" text="取消" />
+  <string id="AF_MCM_Editor_PlayerRule_Title" text="编辑玩家自定义规则文案" />
+  <string id="AF_MCM_Editor_PlayerRule_Description" text="这段内容会注入到对话 system prompt 前部。" />
+  <string id="AF_MCM_Editor_PlayerRule_Hint" text="可输入超过 MCM 普通文本框 512 字符的内容；留空表示不注入。" />
+  <string id="AF_MCM_Editor_Rebellion_Title" text="编辑王国叛乱系统提示词" />
+  <string id="AF_MCM_Editor_Rebellion_Description" text="这段内容会作为王国叛乱建国命名请求的 system prompt 前半部分。" />
+  <string id="AF_MCM_Editor_Weekly_Title" text="编辑周报写作要求" />
+  <string id="AF_MCM_Editor_Weekly_Description" text="这里编辑周报 system prompt 中完整的写作要求段。" />
+  <string id="AF_MCM_Editor_Weekly_Hint" text="默认文本内置于代码中，可修改或清空。输出格式、REPORT_BLOCK、TAGS 和稳定度标签仍由内置规则控制。" />
+  <string id="AF_MCM_Editor_Persona_Title" text="编辑 NPC 个性背景生成要求" />
+  <string id="AF_MCM_Editor_Persona_Description" text="普通 Hero 与升格同伴共用此处的完整写作要求；内置文本只保留生成任务、JSON 协议和事实约束。" />
+  <string id="AF_MCM_Editor_Persona_Hint" text="可修改篇幅、文风、素材取舍和重生去重要求；留空保存会移除额外要求。" />
+  <string id="AF_MCM_Editor_DailyMemory_Title" text="编辑日结记忆压缩要求" />
+  <string id="AF_MCM_Editor_DailyMemory_Description" text="这里只修改日结摘要的文风、信息取舍和组织方式。" />
+  <string id="AF_MCM_Editor_DailyMemory_Hint" text="标签结构、公开性、日期地点、AFEF、身份事实和长度规则由模组固定；冲突内容不能覆盖硬规则。留空表示不追加写作偏好。" />
+  <string id="AF_MCM_Editor_MemoryOverview_Title" text="编辑记忆总览压缩要求" />
+  <string id="AF_MCM_Editor_MemoryOverview_Description" text="这里只修改长期记忆总览的文风、信息取舍和组织方式。" />
+  <string id="AF_MCM_Editor_MemoryOverview_Hint" text="SUMMARY 标签、日期地点、事实边界、身份规则和长度范围由模组固定；冲突内容不能覆盖硬规则。留空表示不追加写作偏好。" />
+  <string id="AF_MCM_Editor_MajorAction_Title" text="编辑重大行动压缩要求" />
+  <string id="AF_MCM_Editor_MajorAction_Description" text="这里只修改 NPC 重大行动摘要的文风、信息取舍和组织方式。" />
+  <string id="AF_MCM_Editor_MajorAction_Hint" text="SUMMARY 标签、日期和事实边界、滚动合并方式及长度范围由模组固定；冲突内容不能覆盖硬规则。留空表示不追加写作偏好。" />
+  <string id="AF_MCM_Editor_PlayerPolicy_Title" text="编辑玩家政策评判提示词" />
+  <string id="AF_MCM_Editor_PlayerPolicy_Description" text="这是全国政策和地方政策共用的主评议提示词。" />
+  <string id="AF_MCM_Editor_PlayerPolicy_Hint" text="可调整成本、期限、民众反馈文风和强度偏好。明确的金额、倍率、范围和数值约束会通过 numericIntent 传给效果后处理；JSON 契约仍由模组保证。留空保存会恢复默认。" />
+  <string id="AF_MCM_Editor_Policy_OpenFailed" text="[政策系统] 打开玩家政策评判提示词编辑器失败：" />
+  <string id="AF_MCM_Editor_Diplomacy_Title" text="编辑 AI 外交偏好" />
+  <string id="AF_MCM_Editor_Diplomacy_Description" text="可在这里调整利益判断、行动取向和文风。" />
+  <string id="AF_MCM_Editor_Diplomacy_Hint" text="留空表示不添加自定义偏好。共同契约、长期历史事实边界、MODE 和任务输出结构仍由模组保证。" />
+  <string id="AF_MCM_Editor_Diplomacy_OpenFailed" text="[AI 外交] 打开提示词编辑器失败：" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="恢复默认 AI 外交偏好" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreBody" text="这会覆盖当前自定义偏好并恢复模组默认内容。是否继续？" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreOpenFailed" text="[AI 外交] 打开恢复默认确认框失败：" />
+  <string id="AF_MCM_Editor_RestoreDefault" text="恢复默认" />
+  <string id="AF_MCM_Editor_RulerPolicy_Title" text="编辑 NPC 统治者政策提示词" />
+  <string id="AF_MCM_Editor_RulerPolicy_Description" text="这段文字控制 NPC 统治者政策、同期世界现象和数值效果的生成方式。" />
+  <string id="AF_MCM_Editor_RulerPolicy_Hint" text="可以完整改写。留空保存会恢复默认；文字越长，单次请求需要处理的内容越多。输出格式、合法作用目标和安全数值落地仍由模组保证。" />
+  <string id="AF_MCM_Editor_RulerPolicy_OpenFailed" text="[政策系统] 打开 NPC 统治者政策提示词编辑器失败：" />
+  <string id="AF_MCM_Editor_OpenFailed" text="[提示词扩展] 打开大文本编辑器失败：" />
+  <string id="AF_MCM_Editor_CustomFolder_Opening" text="[提示词扩展] 正在打开自定义提示词 JSON 文件夹。" />
+  <string id="AF_MCM_Editor_CustomFolder_OpenFailed" text="[提示词扩展] 打开自定义提示词 JSON 文件夹失败：" />
+  <string id="AF_MCM_Api_ContextExtractionWarning" text="该接口使用的模型不满足 AnimusForge 的上下文提取要求。你仍可继续使用，但模组不负责之后产生的不合理回复。" />
+  <string id="AF_MCM_Api_ChannelMain" text="主 API" />
+  <string id="AF_MCM_Api_ChannelPreprocess" text="前处理 API" />
+  <string id="AF_MCM_Api_ChannelPostprocess" text="后处理 API" />
+  <string id="AF_MCM_Api_ChannelEventRebellion" text="事件/叛乱 API" />
+  <string id="AF_MCM_Api_ChannelAmbient" text="环境 AI" />
+  <string id="AF_MCM_Api_ModelListFailureTitle" text="{CHANNEL} 模型列表拉取失败" />
+  <string id="AF_MCM_Api_AddressMissing" text="未填写 API 地址，无法拉取模型列表。" />
+  <string id="AF_MCM_Api_KeyMissing" text="未填写 API Key，无法拉取模型列表。" />
+  <string id="AF_MCM_Api_ModelListFetching" text="[系统] 正在拉取 {CHANNEL} 模型列表……" />
+  <string id="AF_MCM_Api_UnknownError" text="未知错误。" />
+  <string id="AF_MCM_Api_ModelListFetched" text="[系统] {CHANNEL} 模型列表拉取成功：共 {COUNT} 个；当前选中：{SELECTED}" />
+  <string id="AF_MCM_Api_EmptySelection" text="空值" />
+  <string id="AF_MCM_Api_ModelListExceptionTitle" text="模型列表拉取异常" />
+  <string id="AF_MCM_Api_Hint522" text="522 通常表示网关或代理收到请求，但无法连接上游源站。若使用自建中转、Cloudflare 域名或第三方面板，请检查源站在线状态及代理到源站的网络连通性。" />
+  <string id="AF_MCM_Api_Hint404WithBody" text="404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址、自动补全后的聊天路径和模型名称。" />
+  <string id="AF_MCM_Api_Hint404" text="404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址尾缀和模型名称。" />
+  <string id="AF_MCM_Tts_NotReady" text="[TTS] 引擎尚未初始化，无法测试。" />
+  <string id="AF_MCM_Tts_EnableSpeech" text="[TTS] 请先启用 TTS 语音。" />
+  <string id="AF_MCM_Tts_EnableVolc" text="[TTS] 请先启用火山专用模式。" />
+  <string id="AF_MCM_Tts_MissingUrl" text="[TTS] 请先填写火山专用 API 地址。" />
+  <string id="AF_MCM_Tts_MissingAppId" text="[TTS] 请先填写火山专用 App ID。" />
+  <string id="AF_MCM_Tts_MissingResource" text="[TTS] 请先填写火山专用 Resource ID。" />
+  <string id="AF_MCM_Tts_Testing" text="[TTS] 正在测试火山 V1……（API={API}，场景通道={CHANNEL}，主语音音量={VOLUME}，语速={SPEED}，口型链路音量={LIP_VOLUME}）" />
+  <string id="AF_MCM_Tts_LipSyncChannel" text="口型链路" />
+  <string id="AF_MCM_Tts_TestPhrase" text="为您服务，旅行者！" />
+  <string id="AF_MCM_Tts_TestException" text="[TTS] 火山测试异常：" />
+  <string id="AF_MCM_Ambient_Testing" text="[环境 AI] 正在测试你填写的独立接口；测试请求会消耗少量 Token。" />
+  <string id="AF_MCM_Ambient_Success" text="[环境 AI] 连接成功。本次约使用输入 {INPUT} + 输出 {OUTPUT} Token。" />
+  <string id="AF_MCM_Ambient_TokenUsage" text="本次请求约使用输入 {INPUT} + 输出 {OUTPUT} Token。" />
+  <string id="AF_MCM_Ambient_FailureTitle" text="环境 AI 接口测试失败" />
+  <string id="AF_MCM_Ambient_ExceptionTitle" text="环境 AI 接口测试异常" />
+  <string id="AF_MCM_Api_MainTestFailed" text="主 API 连接测试失败" />
+  <string id="AF_MCM_Api_MainKeyMissing" text="未填写主 API 密钥。" />
+  <string id="AF_MCM_Api_MainModelMissing" text="未填写模型名称。若在下拉框中选择了“*手动填写*”，请在上方文本框填写模型名。" />
+  <string id="AF_MCM_Api_MainTesting" text="[系统] 正在呼叫主 API……" />
+  <string id="AF_MCM_Api_MainSuccess" text="连接正常。主 API 回复：" />
+  <string id="AF_MCM_Api_MainReplyParseFailed" text="主 API 回复解析失败" />
+  <string id="AF_MCM_Api_ReplyMissing" text="连接成功，但未解析出模型回复。" />
+  <string id="AF_MCM_Api_StatusReason" text="连接失败，状态码：{STATUS}。" />
+  <string id="AF_MCM_Api_Troubleshooting" text="排查建议：" />
+  <string id="AF_MCM_Api_MainTestException" text="主 API 连接测试异常" />
+  <string id="AF_MCM_Api_PreprocessTestFailed" text="前处理 API 连接测试失败" />
+  <string id="AF_MCM_Api_PreprocessKeyMissing" text="未填写前处理 API 密钥。" />
+  <string id="AF_MCM_Api_PreprocessModelMissing" text="未填写前处理模型名称。若在下拉框中选择了“*手动填写*”，请在上方文本框填写模型名。" />
+  <string id="AF_MCM_Api_PreprocessTesting" text="[系统] 正在测试前处理 API 连接……" />
+  <string id="AF_MCM_Api_PreprocessReplyParseFailed" text="前处理 API 回复解析失败" />
+  <string id="AF_MCM_Api_PreprocessInvalidJson" text="前处理 API 可连接{MODE}，但前处理 JSON 格式不合格：{ERROR}" />
+  <string id="AF_MCM_Api_PreprocessSuccess" text="前处理 API 连接及 JSON 格式正常{MODE}：{REPLY}" />
+  <string id="AF_MCM_Api_PreprocessTestException" text="前处理 API 连接测试异常" />
+  <string id="AF_MCM_Api_PostprocessTestFailed" text="后处理 API 连接测试失败" />
+  <string id="AF_MCM_Api_PostprocessKeyMissing" text="未填写后处理 API 密钥。" />
+  <string id="AF_MCM_Api_PostprocessModelMissing" text="未填写后处理模型名称。若在下拉框中选择了“*手动填写*”，请在上方文本框填写模型名。" />
+  <string id="AF_MCM_Api_PostprocessTesting" text="[系统] 正在测试后处理 API 连接……" />
+  <string id="AF_MCM_Api_ReasoningOnly" text="连接成功，但模型将测试输出额度全部用于思考，尚未生成最终 content。completion_tokens={COMPLETION}，reasoning_tokens={REASONING}。" />
+  <string id="AF_MCM_Api_RetryContentEmpty" text="关闭思考重试后 content 仍为空。" />
+  <string id="AF_MCM_Api_RetryFailed" text="关闭思考重试失败，状态码：{STATUS}。" />
+  <string id="AF_MCM_Api_PostprocessReplyParseFailed" text="后处理 API 回复解析失败" />
+  <string id="AF_MCM_Api_ReasoningRecovery" text="（首次思考耗尽测试额度，已关闭思考重试；实际使用时请保留足够的最大输出 Tokens。）" />
+  <string id="AF_MCM_Api_PostprocessSuccess" text="后处理 API 连接正常{RECOVERY}：{REPLY}" />
+  <string id="AF_MCM_Api_PostprocessTestException" text="后处理 API 连接测试异常" />
+  <string id="AF_MCM_Api_EventTestFailed" text="事件/叛乱 API 连接测试失败" />
+  <string id="AF_MCM_Api_EventAddressMissing" text="未填写事件/叛乱 API 地址。" />
+  <string id="AF_MCM_Api_EventKeyMissing" text="未填写事件/叛乱 API 密钥。" />
+  <string id="AF_MCM_Api_EventModelMissing" text="未填写事件/叛乱模型名称。若在下拉框中选择了“*手动填写*”，请在上方文本框填写模型名。" />
+  <string id="AF_MCM_Api_EventTesting" text="[系统] 正在测试事件/叛乱 API 连接……" />
+  <string id="AF_MCM_Api_EventReplyParseFailed" text="事件/叛乱 API 回复解析失败" />
+  <string id="AF_MCM_Api_EventSuccess" text="事件/叛乱 API 连接正常：" />
+  <string id="AF_MCM_Api_EventTestException" text="事件/叛乱 API 连接测试异常" />
+  <string id="AF_MCM_Diagnostics_NoblePrisonerEscort" text="贵族俘虏随行" />
+  <string id="AF_MCM_Diagnostics_DirectoryNotOpened" text="；未自动打开目录" />
+  <string id="AF_MCM_Diagnostics_Exported" text="[{FEATURE}] 日志已导出到桌面：{FILE}；原始目录：{DIRECTORY}{STATUS}" />
+  <string id="AF_MCM_Diagnostics_ExportFailed" text="[{FEATURE}] 导出日志失败：" />
+  <string id="AF_MCM_Diagnostics_Cleared" text="[{FEATURE}] 日志已清空：{PATH}" />
+  <string id="AF_MCM_Diagnostics_ClearFailed" text="[{FEATURE}] 清空日志失败：" />
+  <string id="AF_MCM_Support_LocalBrowserFallback" text="[系统] 默认浏览器无法启动，已使用本机浏览器打开支持页面。" />
+  <string id="AF_MCM_Support_Opening" text="[系统] 正在打开支持页面。" />
+  <string id="AF_MCM_Support_OpenFailed" text="[系统] 打开支持页面失败：" />
 </strings>
 </base>
 

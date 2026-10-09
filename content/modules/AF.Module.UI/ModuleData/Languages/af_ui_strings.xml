@@ -2383,6 +2383,126 @@ Choose how to proceed:" />
   <string id="AF_UI_Weekly_Notice_Missing" text="This weekly report no longer exists." />
   <string id="AF_UI_Weekly_Notice_OpenFailed" text="The weekly report could not be opened." />
   <string id="AF_UI_Weekly_Notice_XpBatch" text="Weekly-report reading breakthrough: {COUNT} reports read; Charm +{CHARM}, Leadership +{LEADERSHIP}, Steward +{STEWARD}." />
+  <string id="AF_MCM_Common_Save" text="Save" />
+  <string id="AF_MCM_Common_Back" text="Back" />
+  <string id="AF_MCM_Common_Cancel" text="Cancel" />
+  <string id="AF_MCM_Editor_PlayerRule_Title" text="Edit player custom rule text" />
+  <string id="AF_MCM_Editor_PlayerRule_Description" text="This text is injected at the beginning of the dialogue system prompt." />
+  <string id="AF_MCM_Editor_PlayerRule_Hint" text="You can enter more than the 512-character MCM text-box limit; leave it blank to inject nothing." />
+  <string id="AF_MCM_Editor_Rebellion_Title" text="Edit kingdom rebellion system prompt" />
+  <string id="AF_MCM_Editor_Rebellion_Description" text="This text becomes the first part of the system prompt for the kingdom-founding name request." />
+  <string id="AF_MCM_Editor_Weekly_Title" text="Edit weekly-report writing requirements" />
+  <string id="AF_MCM_Editor_Weekly_Description" text="This edits the complete writing-requirements section in the weekly-report system prompt." />
+  <string id="AF_MCM_Editor_Weekly_Hint" text="The default text is built into the code; you can edit or clear it. Output format, REPORT_BLOCK, TAGS, and stability tags remain controlled by built-in rules." />
+  <string id="AF_MCM_Editor_Persona_Title" text="Edit NPC personality/background requirements" />
+  <string id="AF_MCM_Editor_Persona_Description" text="Regular heroes and promoted companions share these complete writing requirements; built-in text keeps only the generation task, JSON protocol, and fact constraints." />
+  <string id="AF_MCM_Editor_Persona_Hint" text="You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements." />
+  <string id="AF_MCM_Editor_DailyMemory_Title" text="Edit daily-memory compression requirements" />
+  <string id="AF_MCM_Editor_DailyMemory_Description" text="Edit only the style, information selection, and organization of the daily summary here." />
+  <string id="AF_MCM_Editor_DailyMemory_Hint" text="Tag structure, visibility, date and location, AFEF, identity facts, and length rules are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference." />
+  <string id="AF_MCM_Editor_MemoryOverview_Title" text="Edit memory-overview compression requirements" />
+  <string id="AF_MCM_Editor_MemoryOverview_Description" text="Edit only the style, information selection, and organization of the long-term memory overview here." />
+  <string id="AF_MCM_Editor_MemoryOverview_Hint" text="The SUMMARY tag, dates and locations, fact boundaries, identity rules, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference." />
+  <string id="AF_MCM_Editor_MajorAction_Title" text="Edit major-action compression requirements" />
+  <string id="AF_MCM_Editor_MajorAction_Description" text="Edit only the style, information selection, and organization of the NPC major-action summary here." />
+  <string id="AF_MCM_Editor_MajorAction_Hint" text="The SUMMARY tag, dates and fact boundaries, rolling-merge behavior, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference." />
+  <string id="AF_MCM_Editor_PlayerPolicy_Title" text="Edit player policy evaluation prompt" />
+  <string id="AF_MCM_Editor_PlayerPolicy_Description" text="This is the shared evaluation prompt for kingdom and local policies." />
+  <string id="AF_MCM_Editor_PlayerPolicy_Hint" text="Use it to adjust cost, duration, public-feedback style, and intensity preferences. Explicit amounts, multipliers, ranges, and numeric constraints are passed to effect postprocessing through numericIntent; the JSON contract remains enforced by the mod. Saving blank restores the default." />
+  <string id="AF_MCM_Editor_Policy_OpenFailed" text="[Policy system] Failed to open the player policy evaluation prompt editor: " />
+  <string id="AF_MCM_Editor_Diplomacy_Title" text="Edit AI diplomacy preferences" />
+  <string id="AF_MCM_Editor_Diplomacy_Description" text="Adjust interest evaluation, action preferences, and style here." />
+  <string id="AF_MCM_Editor_Diplomacy_Hint" text="Leave blank to add no custom preference. The shared contract, long-term historical fact boundaries, MODE, and task output structure remain enforced by the mod." />
+  <string id="AF_MCM_Editor_Diplomacy_OpenFailed" text="[AI diplomacy] Failed to open the prompt editor: " />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="Restore default AI diplomacy preferences" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreBody" text="This overwrites the current custom preferences and restores the mod defaults. Continue?" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreOpenFailed" text="[AI diplomacy] Failed to open the restore-default confirmation: " />
+  <string id="AF_MCM_Editor_RestoreDefault" text="Restore default" />
+  <string id="AF_MCM_Editor_RulerPolicy_Title" text="Edit NPC ruler policy prompt" />
+  <string id="AF_MCM_Editor_RulerPolicy_Description" text="This text controls how NPC ruler policies, concurrent world phenomena, and numeric effects are generated." />
+  <string id="AF_MCM_Editor_RulerPolicy_Hint" text="You may rewrite it completely. Saving blank restores the default; longer text requires more processing per request. Output format, legal effect targets, and safe numeric application remain enforced by the mod." />
+  <string id="AF_MCM_Editor_RulerPolicy_OpenFailed" text="[Policy system] Failed to open the NPC ruler policy prompt editor: " />
+  <string id="AF_MCM_Editor_OpenFailed" text="[Prompt extension] Failed to open the long-text editor: " />
+  <string id="AF_MCM_Editor_CustomFolder_Opening" text="[Prompt extension] Opening the custom prompt JSON folder." />
+  <string id="AF_MCM_Editor_CustomFolder_OpenFailed" text="[Prompt extension] Failed to open the custom prompt JSON folder: " />
+  <string id="AF_MCM_Api_ContextExtractionWarning" text="The model used by this endpoint does not meet AnimusForge's context-extraction requirements. You can continue, but the mod is not responsible for unreasonable replies produced after using it." />
+  <string id="AF_MCM_Api_ChannelMain" text="main API" />
+  <string id="AF_MCM_Api_ChannelPreprocess" text="preprocessing API" />
+  <string id="AF_MCM_Api_ChannelPostprocess" text="postprocessing API" />
+  <string id="AF_MCM_Api_ChannelEventRebellion" text="event/rebellion API" />
+  <string id="AF_MCM_Api_ChannelAmbient" text="ambient AI" />
+  <string id="AF_MCM_Api_ModelListFailureTitle" text="{CHANNEL} model list fetch failed" />
+  <string id="AF_MCM_Api_AddressMissing" text="The API address is empty, so the model list cannot be fetched." />
+  <string id="AF_MCM_Api_KeyMissing" text="The API key is empty, so the model list cannot be fetched." />
+  <string id="AF_MCM_Api_ModelListFetching" text="[System] Fetching the {CHANNEL} model list..." />
+  <string id="AF_MCM_Api_UnknownError" text="Unknown error." />
+  <string id="AF_MCM_Api_ModelListFetched" text="[System] {CHANNEL} model list fetched: {COUNT} models; selected: {SELECTED}" />
+  <string id="AF_MCM_Api_EmptySelection" text="empty" />
+  <string id="AF_MCM_Api_ModelListExceptionTitle" text="Model list fetch error" />
+  <string id="AF_MCM_Api_Hint522" text="522 usually means that the gateway or proxy received your request but could not connect to the upstream server. If you use a self-hosted relay, a Cloudflare domain, or a third-party panel, check that the upstream is online and that the proxy can reach it." />
+  <string id="AF_MCM_Api_Hint404WithBody" text="404 NotFound usually means that the endpoint path or model name does not exist. Check the API address, the automatically completed chat path, and the model name." />
+  <string id="AF_MCM_Api_Hint404" text="404 NotFound usually means that the endpoint path or model name does not exist. Check the API URL suffix and the model name." />
+  <string id="AF_MCM_Tts_NotReady" text="[TTS] The engine is not initialized, so it cannot be tested." />
+  <string id="AF_MCM_Tts_EnableSpeech" text="[TTS] Enable TTS speech first." />
+  <string id="AF_MCM_Tts_EnableVolc" text="[TTS] Enable Volcengine dedicated mode first." />
+  <string id="AF_MCM_Tts_MissingUrl" text="[TTS] Enter the Volcengine dedicated API URL first." />
+  <string id="AF_MCM_Tts_MissingAppId" text="[TTS] Enter the Volcengine dedicated App ID first." />
+  <string id="AF_MCM_Tts_MissingResource" text="[TTS] Enter the Volcengine dedicated resource ID first." />
+  <string id="AF_MCM_Tts_Testing" text="[TTS] Testing Volcengine V1... (API={API}, scene channel={CHANNEL}, main voice volume={VOLUME}, speed={SPEED}, lip-sync volume={LIP_VOLUME})" />
+  <string id="AF_MCM_Tts_LipSyncChannel" text="lip-sync" />
+  <string id="AF_MCM_Tts_TestPhrase" text="At your service, traveler!" />
+  <string id="AF_MCM_Tts_TestException" text="[TTS] Volcengine test error: " />
+  <string id="AF_MCM_Ambient_Testing" text="[Ambient AI] Testing the independent endpoint you entered; this test uses a small number of tokens." />
+  <string id="AF_MCM_Ambient_Success" text="[Ambient AI] Connection succeeded. This test used about {INPUT} input + {OUTPUT} output tokens." />
+  <string id="AF_MCM_Ambient_TokenUsage" text="This request used about {INPUT} input + {OUTPUT} output tokens." />
+  <string id="AF_MCM_Ambient_FailureTitle" text="Ambient AI connection test failed" />
+  <string id="AF_MCM_Ambient_ExceptionTitle" text="Ambient AI connection test error" />
+  <string id="AF_MCM_Api_MainTestFailed" text="Main API connection test failed" />
+  <string id="AF_MCM_Api_MainKeyMissing" text="The main API key is empty." />
+  <string id="AF_MCM_Api_MainModelMissing" text="The model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above." />
+  <string id="AF_MCM_Api_MainTesting" text="[System] Calling the main API..." />
+  <string id="AF_MCM_Api_MainSuccess" text="Connection is working. Main API reply: " />
+  <string id="AF_MCM_Api_MainReplyParseFailed" text="Main API reply parsing failed" />
+  <string id="AF_MCM_Api_ReplyMissing" text="The connection succeeded, but no model reply could be parsed." />
+  <string id="AF_MCM_Api_StatusReason" text="Connection failed with status code {STATUS}." />
+  <string id="AF_MCM_Api_Troubleshooting" text="Troubleshooting suggestion: " />
+  <string id="AF_MCM_Api_MainTestException" text="Main API connection test error" />
+  <string id="AF_MCM_Api_PreprocessTestFailed" text="Preprocessing API connection test failed" />
+  <string id="AF_MCM_Api_PreprocessKeyMissing" text="The preprocessing API key is empty." />
+  <string id="AF_MCM_Api_PreprocessModelMissing" text="The preprocessing model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above." />
+  <string id="AF_MCM_Api_PreprocessTesting" text="[System] Testing the preprocessing API connection..." />
+  <string id="AF_MCM_Api_PreprocessReplyParseFailed" text="Preprocessing API reply parsing failed" />
+  <string id="AF_MCM_Api_PreprocessInvalidJson" text="The preprocessing API is reachable{MODE}, but its JSON envelope is invalid: {ERROR}" />
+  <string id="AF_MCM_Api_PreprocessSuccess" text="Preprocessing API connection and JSON format are valid{MODE}: {REPLY}" />
+  <string id="AF_MCM_Api_PreprocessTestException" text="Preprocessing API connection test error" />
+  <string id="AF_MCM_Api_PostprocessTestFailed" text="Postprocessing API connection test failed" />
+  <string id="AF_MCM_Api_PostprocessKeyMissing" text="The postprocessing API key is empty." />
+  <string id="AF_MCM_Api_PostprocessModelMissing" text="The postprocessing model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above." />
+  <string id="AF_MCM_Api_PostprocessTesting" text="[System] Testing the postprocessing API connection..." />
+  <string id="AF_MCM_Api_ReasoningOnly" text="The connection succeeded, but the model used the entire test output budget for reasoning and produced no final content. completion_tokens={COMPLETION}, reasoning_tokens={REASONING}." />
+  <string id="AF_MCM_Api_RetryContentEmpty" text="Content is still empty after retrying with reasoning disabled." />
+  <string id="AF_MCM_Api_RetryFailed" text="Retry with reasoning disabled failed with status code {STATUS}." />
+  <string id="AF_MCM_Api_PostprocessReplyParseFailed" text="Postprocessing API reply parsing failed" />
+  <string id="AF_MCM_Api_ReasoningRecovery" text=" (The first reasoning attempt exhausted the test budget; reasoning was disabled for retry. Keep enough maximum output tokens in actual use.)" />
+  <string id="AF_MCM_Api_PostprocessSuccess" text="Postprocessing API connection is working{RECOVERY}: {REPLY}" />
+  <string id="AF_MCM_Api_PostprocessTestException" text="Postprocessing API connection test error" />
+  <string id="AF_MCM_Api_EventTestFailed" text="Event/rebellion API connection test failed" />
+  <string id="AF_MCM_Api_EventAddressMissing" text="The event/rebellion API address is empty." />
+  <string id="AF_MCM_Api_EventKeyMissing" text="The event/rebellion API key is empty." />
+  <string id="AF_MCM_Api_EventModelMissing" text="The event/rebellion model name is empty. If you selected “*manual entry*” in the dropdown, enter the model name in the text box above." />
+  <string id="AF_MCM_Api_EventTesting" text="[System] Testing the event/rebellion API connection..." />
+  <string id="AF_MCM_Api_EventReplyParseFailed" text="Event/rebellion API reply parsing failed" />
+  <string id="AF_MCM_Api_EventSuccess" text="Event/rebellion API connection is working: " />
+  <string id="AF_MCM_Api_EventTestException" text="Event/rebellion API connection test error" />
+  <string id="AF_MCM_Diagnostics_NoblePrisonerEscort" text="Noble prisoner escort" />
+  <string id="AF_MCM_Diagnostics_DirectoryNotOpened" text="; the directory was not opened automatically" />
+  <string id="AF_MCM_Diagnostics_Exported" text="[{FEATURE}] Log exported to the desktop: {FILE}; source directory: {DIRECTORY}{STATUS}" />
+  <string id="AF_MCM_Diagnostics_ExportFailed" text="[{FEATURE}] Log export failed: " />
+  <string id="AF_MCM_Diagnostics_Cleared" text="[{FEATURE}] Log cleared: {PATH}" />
+  <string id="AF_MCM_Diagnostics_ClearFailed" text="[{FEATURE}] Log clear failed: " />
+  <string id="AF_MCM_Support_LocalBrowserFallback" text="[System] The default browser could not start; the support page was opened with the local browser." />
+  <string id="AF_MCM_Support_Opening" text="[System] Opening the support page." />
+  <string id="AF_MCM_Support_OpenFailed" text="[System] Failed to open the support page: " />
 </strings>
 </base>
 
