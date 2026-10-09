@@ -10,5 +10,47 @@
     <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="【婚姻系统】检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。" />
     <string id="AF_SOCIAL_UI_MarriageStatus" text="【婚姻系统】{STATUS}" />
     <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} 忠诚度 +{AMOUNT}" />
+    <string id="AF_SOCIAL_UI_RecruitmentFailed" text="【招募失败】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSkipped" text="【招募跳过】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentIntercepted" text="【招募拦截】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSucceeded" text="【招募成功】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingClanHero" text="缺少要加入玩家家族的目标英雄。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPlayer" text="目标本来就是玩家本人。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPlayerPartyUnavailable" text="玩家家族或玩家队伍不可用。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingNonHero" text="缺少要加入队伍的非英雄 NPC。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTargetIsHero" text="目标是英雄，应走英雄入队链路。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingLiveAgent" text="找不到当前说话 NPC 的 live Agent，无法复制外观与装备，已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentInvalidAgentTemplate" text="当前 Agent 不是可升格的非英雄兵种模板。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingPromotedName" text="无法确定升格 Hero 的个人名，已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernAlreadyHandled" text="酒馆雇佣兵池已被原版选项或其他流程处理，未重复执行入队。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCaptivityCleanupFailed" text="目标英雄的俘虏状态或俘虏名册残留未能清除。" />
+    <string id="AF_SOCIAL_UI_RecruitmentHeroActivationFailed" text="目标英雄未能恢复为可加入队伍的活动状态。" />
+    <string id="AF_SOCIAL_UI_RecruitmentLordJoinFailed" text="目标英雄未能完成玩家家族成员身份或玩家主队归属更新。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCompanionJoinFailed" text="目标英雄未能完成同伴身份或玩家主队归属更新。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyCompanion" text="{NAME} 已经是玩家同伴并在玩家队伍中。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyClanMember" text="{NAME} 已经是玩家家族成员并在玩家队伍中。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPromoted" text="{NAME} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernSoldiers" text="酒馆中 {COUNT} 名{NAME} 已全部作为普通士兵加入玩家队伍。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedCompanion" text="{NAME} 已升格为玩家同伴“{HERO}”，并加入玩家队伍{FOLLOW}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedLord" text="{NAME} 已升格为玩家家族 Hero“{HERO}”，并加入玩家队伍{FOLLOW}。" />
+    <string id="AF_SOCIAL_UI_MarriageFormalFailed" text="正规联姻失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeFailed" text="私奔失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceFailed" text="离婚失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageFormalSucceeded" text="正规联姻成功：{LEFT} 与 {RIGHT} 已成婚。等级差D={TIER}，家族关系={RELATION}，族长综合信任={TRUST}。{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeSucceeded" text="私奔成功：你与 {TARGET} 已成婚。当前 L={LOVE}，对象私人信任={TRUST}，对象家族融洽度F={HARMONY}。" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceSucceeded" text="离婚成功：{LEFT} 与 {RIGHT} 已解除婚姻关系。{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPair" text="未找到婚配双方。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonSelf" text="不能让同一人与自己结婚。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAlreadyMarried" text="双方已经存在有效婚姻记录。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonSameClan" text="正规联姻要求双方来自不同家族。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTarget" text="未找到对方婚配对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayerCandidate" text="未找到玩家家族婚配人选。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNoClan" text="目标没有家族，无法走家族联姻流程。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoRecord" text="未找到有效婚姻记录。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNotSpouses" text="双方当前并非彼此配偶。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayer" text="未找到玩家英雄。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" 已核销你先前主动交付给族长的彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" 对方族长已向玩家支付彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" 已返还彩礼 {AMOUNT} 第纳尔。" />
   </strings>
 </base>

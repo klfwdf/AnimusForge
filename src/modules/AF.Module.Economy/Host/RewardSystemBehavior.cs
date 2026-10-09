@@ -16399,7 +16399,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 							receiverFacts.Add(statusText);
 						}
 						string notificationPrefix = flag2 ? (preservePlayerFamilyIdentity ? "【加入队伍】" : (joinedAsCompanion ? "【成为同伴】" : "【加入家族】")) : "【加入队伍失败】";
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.JoinResult(flag2, preservePlayerFamilyIdentity, joinedAsCompanion, statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.JoinResult(flag2, preservePlayerFamilyIdentity, joinedAsCompanion, SocialUiLocalization.RecruitmentStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
