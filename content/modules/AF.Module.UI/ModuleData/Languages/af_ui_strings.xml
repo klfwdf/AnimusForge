@@ -2503,6 +2503,24 @@ Choose how to proceed:" />
   <string id="AF_MCM_Support_LocalBrowserFallback" text="[System] The default browser could not start; the support page was opened with the local browser." />
   <string id="AF_MCM_Support_Opening" text="[System] Opening the support page." />
   <string id="AF_MCM_Support_OpenFailed" text="[System] Failed to open the support page: " />
+  <string id="AF_MCM_News_EditBulletinTitle" text="Edit bulletin writing requirements" />
+  <string id="AF_MCM_News_EditBulletinSubtitle" text="Edit bulletin requirements only; weekly reports are not changed." />
+  <string id="AF_MCM_News_EditBulletinBody" text="Changes apply to the next bulletin request. Clearing the field removes the extra requirements. Built-in prompts still control subject boundaries, output format, and length rules." />
+  <string id="AF_MCM_News_SaveFailed" text="Bulletin writing requirements could not be saved; the original text was kept. Check the log." />
+  <string id="AF_MCM_News_Saved" text="Bulletin writing requirements saved; they apply to the next request." />
+  <string id="AF_UI_Developer_NoData" text="(No data)" />
+  <string id="AF_UI_Developer_ChooseOperation" text="Choose an operation." />
+  <string id="AF_UI_Persona_PersonalitySection" text="Personality" />
+  <string id="AF_UI_Persona_BackgroundSection" text="History background" />
+  <string id="AF_UI_Persona_EditNpcButton" text="Edit NPC" />
+  <string id="AF_UI_Persona_RerollButton" text="Regenerate persona" />
+  <string id="AF_UI_Courier_DirectContactBlocked" text="This character is already talking with you, is in the current scene, or is in the same settlement; no courier letter is needed." />
+  <string id="AF_UI_Courier_AlreadyActive" text="A courier party is already delivering a letter to this character." />
+  <string id="AF_UI_Persona_RerollUnavailable" text="This Hero cannot regenerate personality and background right now." />
+  <string id="AF_UI_Persona_RerollOpenFailed" text="Could not open personality and background regeneration." />
+  <string id="AF_UI_Persona_NpcFallback" text="this NPC" />
+  <string id="AF_UI_Persona_GeneratingHint" text="Generating personality and background for {NAME}; please wait..." />
+  <string id="AF_UI_Courier_Button" text="Courier and letters" />
 </strings>
 </base>
 

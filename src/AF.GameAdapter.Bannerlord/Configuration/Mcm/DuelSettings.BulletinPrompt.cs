@@ -19,7 +19,7 @@ public partial class DuelSettings
 
     [SettingPropertyButton("{=AF_MCM_News_WritingRequirements}Bulletin writing requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 1,
         RequireRestart = false, HintText = "{=AF_MCM_News_WritingRequirements_Hint}Edit bulletin writing requirements separately. Changes apply to the next bulletin request; clearing the field removes the extra requirements.")]
-    [SettingPropertyGroup(NewsSettingsGroup + "/快报", GroupOrder = 1)]
+    [SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Bulletin}Bulletin", GroupOrder = 1)]
     public Action EditWorldBulletinWritingRequirements { get; set; }
 
     private static string LoadWorldBulletinWritingRequirementsFromDiskOrDefault()
@@ -38,9 +38,13 @@ public partial class DuelSettings
 
     private void OpenWorldBulletinWritingRequirementsEditor()
     {
-        DevTextEditorHelper.ShowLongTextEditor("编辑快报写作要求", "只编辑即时快报的写作要求，不修改周报。",
-            "保存后用于下一次快报请求；清空后不追加写作要求。主体与重大结果边界、输出格式和现有篇幅规则仍由内置提示词控制。",
-            WorldBulletinWritingRequirements ?? "", SaveWorldBulletinWritingRequirementsFromEditor, null, "保存", "返回");
+        DevTextEditorHelper.ShowLongTextEditor(
+            DuelSettingsUiLocalization.Text("AF_MCM_News_EditBulletinTitle", "Edit bulletin writing requirements"),
+            DuelSettingsUiLocalization.Text("AF_MCM_News_EditBulletinSubtitle", "Edit bulletin requirements only; weekly reports are not changed."),
+            DuelSettingsUiLocalization.Text("AF_MCM_News_EditBulletinBody", "Changes apply to the next bulletin request. Clearing the field removes the extra requirements. Built-in prompts still control subject boundaries, output format, and length rules."),
+            WorldBulletinWritingRequirements ?? "", SaveWorldBulletinWritingRequirementsFromEditor, null,
+            DuelSettingsUiLocalization.Text("AF_MCM_Common_Save", "Save"),
+            DuelSettingsUiLocalization.Text("AF_MCM_Common_Back", "Back"));
     }
 
     private void SaveWorldBulletinWritingRequirementsFromEditor(string input)
@@ -48,12 +52,12 @@ public partial class DuelSettings
         string text = NormalizeWorldBulletinWritingRequirementsText(input);
         if (!TryPersistCustomPromptTextFile(WorldBulletinWritingRequirementsJsonFileName, text))
         {
-            InformationManager.DisplayMessage(new InformationMessage("快报写作要求保存失败，原文保留；请查看日志。", Colors.Red));
+            InformationManager.DisplayMessage(new InformationMessage(DuelSettingsUiLocalization.Text("AF_MCM_News_SaveFailed", "Bulletin writing requirements could not be saved; the original text was kept. Check the log."), Colors.Red));
             return;
         }
         WorldBulletinWritingRequirements = text;
         var current = GetSettings();
         if (current != null) current.WorldBulletinWritingRequirements = text;
-        InformationManager.DisplayMessage(new InformationMessage("快报写作要求已保存，下次请求生效。", Colors.Green));
+        InformationManager.DisplayMessage(new InformationMessage(DuelSettingsUiLocalization.Text("AF_MCM_News_Saved", "Bulletin writing requirements saved; they apply to the next request."), Colors.Green));
     }
 }

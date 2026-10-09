@@ -2534,6 +2534,24 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Support_LocalBrowserFallback" text="[系统] 默认浏览器无法启动，已使用本机浏览器打开支持页面。" />
   <string id="AF_MCM_Support_Opening" text="[系统] 正在打开支持页面。" />
   <string id="AF_MCM_Support_OpenFailed" text="[系统] 打开支持页面失败：" />
+  <string id="AF_MCM_News_EditBulletinTitle" text="编辑快报写作要求" />
+  <string id="AF_MCM_News_EditBulletinSubtitle" text="只编辑即时快报的写作要求，不修改周报。" />
+  <string id="AF_MCM_News_EditBulletinBody" text="保存后用于下一次快报请求；清空后不追加写作要求。主体与重大结果边界、输出格式和现有篇幅规则仍由内置提示词控制。" />
+  <string id="AF_MCM_News_SaveFailed" text="快报写作要求保存失败，原文保留；请查看日志。" />
+  <string id="AF_MCM_News_Saved" text="快报写作要求已保存，下次请求生效。" />
+  <string id="AF_UI_Developer_NoData" text="（无数据）" />
+  <string id="AF_UI_Developer_ChooseOperation" text="请选择要执行的操作。" />
+  <string id="AF_UI_Persona_PersonalitySection" text="个性" />
+  <string id="AF_UI_Persona_BackgroundSection" text="历史背景" />
+  <string id="AF_UI_Persona_EditNpcButton" text="编辑NPC" />
+  <string id="AF_UI_Persona_RerollButton" text="重生个性背景" />
+  <string id="AF_UI_Courier_DirectContactBlocked" text="该角色正在与你交谈、与你同处当前场景或同一定居点，无需通过信使写信。" />
+  <string id="AF_UI_Courier_AlreadyActive" text="已经有一支信使队正在处理发往此人的信件。" />
+  <string id="AF_UI_Persona_RerollUnavailable" text="当前无法为该 Hero 重新生成个性与背景。" />
+  <string id="AF_UI_Persona_RerollOpenFailed" text="打开重生个性背景功能失败。" />
+  <string id="AF_UI_Persona_NpcFallback" text="该NPC" />
+  <string id="AF_UI_Persona_GeneratingHint" text="正在生成{NAME}的个性与背景，请稍等......" />
+  <string id="AF_UI_Courier_Button" text="信使与邮递" />
 </strings>
 </base>
 
