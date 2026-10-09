@@ -33,4 +33,40 @@
   <string id="AF_UI_Onboarding_TestCancelled" text="The test was cancelled by the user." />
   <string id="AF_UI_Onboarding_TestException" text="The test encountered an error. Check the network and API configuration." />
   <string id="AF_UI_Onboarding_TestPartialFailure" text="❌ Some API connectivity tests failed. Check the error details and return to edit." />
+  <string id="AF_MCM_TownAmbient_Group" text="3. Scene shout / Settlement life" />
+  <string id="AF_MCM_TownAmbient_AiGroup" text="Ambient AI interface" />
+  <string id="AF_MCM_TownAmbient_Enable" text="Enable settlement ambient chatter and extra residents" />
+  <string id="AF_MCM_TownAmbient_Enable_Hint" text="Covers towns, villages, ports, and lord halls. Disabling stops ambient bubbles and extra residents; it takes full effect after re-entering the scene." />
+  <string id="AF_MCM_TownAmbient_Density" text="Settlement-life performance tier" />
+  <string id="AF_MCM_TownAmbient_Density_Hint" text="0=off, 1=low, 2=standard, 3=high density. The tier adjusts chatter rates and extra residents across towns, villages, ports, and lord halls." />
+  <string id="AF_MCM_TownAmbient_Population" text="Extra resident target multiplier" />
+  <string id="AF_MCM_TownAmbient_Population_Hint" text="Uses the native resident count as the baseline. The standard target is about 2.0; high density can target up to 3x, limited by scene spawn points and safety caps." />
+  <string id="AF_MCM_TownAmbient_Echo" text="Enable ambient multi-person replies" />
+  <string id="AF_MCM_TownAmbient_Echo_Hint" text="Occasionally lets another nearby resident continue the previous line using local preset text without AI. Disabling reduces bubbles and scanning work." />
+  <string id="AF_MCM_TownAmbient_Ai" text="Enable ambient AI interface (explicit opt-in)" />
+  <string id="AF_MCM_TownAmbient_Ai_Hint" text="Off by default. Ambient replies use AI only after you enter a separate endpoint and opt in; otherwise they use local preset text and consume 0 tokens." />
+  <string id="AF_MCM_TownAmbient_ApiUrl" text="Ambient AI API address (Base URL supported)" />
+  <string id="AF_MCM_TownAmbient_ApiUrl_Hint" text="For example, https://api.openai.com/v1 or a full /v1/chat/completions URL. Only the address you enter is contacted; AnimusForge servers are not used." />
+  <string id="AF_MCM_TownAmbient_ApiKey" text="Ambient AI API key" />
+  <string id="AF_MCM_TownAmbient_ApiKey_Hint" text="Use your own API key. It is sent only to the local endpoint you configure; logs and usage notices never show the full key." />
+  <string id="AF_MCM_TownAmbient_Model" text="Ambient AI model name" />
+  <string id="AF_MCM_TownAmbient_Model_Hint" text="For example, gpt-4o-mini or deepseek-chat. Enter a model supported by the configured endpoint." />
+  <string id="AF_MCM_TownAmbient_Fetch" text="Fetch ambient AI model list" />
+  <string id="AF_MCM_TownAmbient_FetchContent" text="Fetch" />
+  <string id="AF_MCM_TownAmbient_Fetch_Hint" text="Requests /models using the ambient AI address and key. Fetching normally produces no chat tokens." />
+  <string id="AF_MCM_TownAmbient_Dropdown" text="Ambient AI model name (dropdown)" />
+  <string id="AF_MCM_TownAmbient_Dropdown_Hint" text="Fetch the model list first, then choose an entry. Selecting *manual entry* uses the text field above." />
+  <string id="AF_MCM_TownAmbient_Test" text="Test ambient AI interface" />
+  <string id="AF_MCM_TownAmbient_TestContent" text="Test" />
+  <string id="AF_MCM_TownAmbient_Test_Hint" text="Sends one short test request. The test consumes a small number of tokens and shows an explicit in-game notice." />
+  <string id="AF_MCM_TownAmbient_MaxTokens" text="Ambient AI maximum output tokens" />
+  <string id="AF_MCM_TownAmbient_MaxTokens_Hint" text="Ambient replies need only short sentences; 64-128 is recommended. Higher values increase potential per-request usage." />
+  <string id="AF_MCM_TownAmbient_Chance" text="Ambient AI trigger chance (%)" />
+  <string id="AF_MCM_TownAmbient_Chance_Hint" text="Only affects an existing multi-person reply event. It never makes AI scan or start events. 5-10 is recommended." />
+  <string id="AF_MCM_TownAmbient_Rate" text="Ambient AI requests per minute" />
+  <string id="AF_MCM_TownAmbient_Rate_Hint" text="0 forbids ambient AI requests; 0-1 is recommended for low-end systems and 1-2 for mid-range systems. Local text is used after the cap is reached." />
+  <string id="AF_MCM_TownAmbient_Budget" text="Ambient AI session token budget" />
+  <string id="AF_MCM_TownAmbient_Budget_Hint" text="Estimated input plus output limit for ambient AI during this session. Local text is used after the limit; 0 forbids calls." />
+  <string id="AF_MCM_TownAmbient_Usage" text="Show ambient AI usage notices" />
+  <string id="AF_MCM_TownAmbient_Usage_Hint" text="After each ambient AI reply, show estimated input/output tokens and the session total. Keeping this enabled is recommended." />
 </strings>
