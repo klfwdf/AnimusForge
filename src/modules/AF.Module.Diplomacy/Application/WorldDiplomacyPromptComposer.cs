@@ -480,7 +480,10 @@ internal static class WorldDiplomacyPromptComposer
 		WorldDiplomacyDocument sourceDocument = world.ResolveDocument(document.SourceDocumentId);
 		if (sourceDocument != null)
 		{
-			sb.AppendLine("该公文正在回应：");
+			sb.AppendLine(document.IsPlayerAuthored
+                ? "玩家从以下公文打开了撰写入口（仅作背景，是否回应、回应对象与动作均以玩家正文为准；不因入口恢复旧提案或强制加入原交涉）："
+                : "该公文正在回应：");
+			sb.AppendLine("背景公文ID：" + sourceDocument.DocumentId);
 			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId);
 			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId);
 		if (!string.IsNullOrWhiteSpace(sourceActionFact)) sb.AppendLine("与本国相关动作=" + sourceActionFact);

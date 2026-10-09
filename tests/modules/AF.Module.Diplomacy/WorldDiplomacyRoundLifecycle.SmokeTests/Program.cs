@@ -144,6 +144,7 @@ internal static class Program
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
+        ReplyShortcutReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
