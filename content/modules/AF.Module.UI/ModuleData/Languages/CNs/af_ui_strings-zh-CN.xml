@@ -280,6 +280,25 @@
   <string id="AF_UI_Notoriety_DisableLowProfile" text="关闭低调模式" />
   <string id="AF_UI_Notoriety_EnableLowProfile" text="开启低调模式" />
   <string id="AF_UI_Notoriety_UnknownCulture" text="未知文化" />
+  <string id="AF_UI_Notoriety_Button" text="玩家知名度/履历" />
+  <string id="AF_UI_Notoriety_Title" text="玩家知名度与履历" />
+  <string id="AF_UI_Notoriety_Close" text="关闭" />
+  <string id="AF_UI_Notoriety_OpenFailed" text="打开玩家知名度失败：" />
+  <string id="AF_UI_Notoriety_LowProfileActive" text="【低调模式】已开启。除当前主队伍内的士兵和同伴外，其他人暂时不会认出玩家；低调期间的新行为仍会进入重大履历、近期行动和周报素材。" />
+  <string id="AF_UI_Notoriety_RecentActions" text="【近期行动】" />
+  <string id="AF_UI_Notoriety_LowProfileEnabled" text="已开启低调模式。" />
+  <string id="AF_UI_Notoriety_LowProfileDisabled" text="已关闭低调模式。" />
+  <string id="AF_UI_Notoriety_DevDataDisabled" text="开发者数据管理未开启（请在 MCM 中启用）。" />
+  <string id="AF_UI_Notoriety_EditorTitle" text="编辑玩家履历" />
+  <string id="AF_UI_Notoriety_EditorSubtitle" text="这里编辑的是已总结玩家重大履历摘要；未总结素材、近期行动和知名度数值不会被修改。" />
+  <string id="AF_UI_Notoriety_EditorHint" text="请输入新的玩家履历摘要；留空=清空已总结履历。未总结素材仍会保留，并可在后续总结中重新融合。" />
+  <string id="AF_UI_Notoriety_Save" text="保存" />
+  <string id="AF_UI_Notoriety_Back" text="返回" />
+  <string id="AF_UI_Notoriety_EditorOpenFailed" text="打开玩家履历编辑器失败：" />
+  <string id="AF_UI_Notoriety_HistoryCleared" text="已清空玩家履历。" />
+  <string id="AF_UI_Notoriety_HistoryUpdated" text="玩家履历已更新。" />
+  <string id="AF_UI_Notoriety_HistorySaveFailed" text="保存玩家履历失败：" />
+  <string id="AF_UI_Scene_PassiveStare" text="你盯着 {NPC} 看了很久……" />
   <string id="AF_UI_Editor_EditDialogueLine" text="编辑对话行" />
   <string id="AF_UI_Editor_Empty" text="（空）" />
   <string id="AF_UI_Editor_EditHint" text="下方输入框可直接修改整条内容，留空则删除该行。" />
@@ -2278,5 +2297,42 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Onboarding_Import_Missing_unnamed_persona" text="导入 失败: unnamed_persona\\*.json 是missing." />
   <string id="AF_UI_Onboarding_Import_Missing_voice_mapping" text="导入 失败: voice_mapping\\VoiceMapping.json 是missing." />
   <string id="AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the" text="该 资料包 contains 没有 kingdom card that safely matches the current world." />
-</strings>
+  <string id="AF_TERMINAL_UI_VassalageManagement" text="臣属国管理" />
+  <string id="AF_TERMINAL_UI_VassalageNotInitialized" text="臣属国管理尚未初始化。" />
+  <string id="AF_TERMINAL_UI_VassalageManagementInfo" text="臣属管理说明" />
+  <string id="AF_UI_ErrorAnalysis_NoRecentError" text="[AnimusForge] 当前没有可分析的最近错误。" />
+  <string id="AF_UI_ErrorAnalysis_Title" text="分析报错？" />
+  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="刚才的“{TITLE}”完整详情已显示在左下角消息。\n\n是否使用前处理 API 分析原因和处理建议？当前操作窗口会在此确认后自动恢复。" />
+  <string id="AF_UI_ErrorAnalysis_Analyze" text="分析" />
+  <string id="AF_UI_ErrorAnalysis_Skip" text="暂不分析" />
+  <string id="AF_UI_ErrorAnalysis_AlreadyRunning" text="[AnimusForge] 已有一个报错正在分析，请稍候。" />
+  <string id="AF_UI_ErrorAnalysis_Starting" text="[AnimusForge] 正在调用前处理 API 分析报错……" />  <string id="AF_TAUNT_UI_ForcedExecutionCapture" text="{FACTION}认定你的罪行已满，俘虏后将处决你。" />
+  <string id="AF_TAUNT_UI_CrimeCommittedAfterScene" text="离开当前场景后，{FACTION}的累计犯罪度 +{AMOUNT}。" />
+  <string id="AF_TAUNT_UI_CrimeAccumulated" text="你在{FACTION}积累了{AMOUNT}犯罪度！" />
+  <string id="AF_TAUNT_UI_Criminal" text="匪类" />
+  <string id="AF_TAUNT_UI_CriminalKnockdownTrust" text="击倒 {VICTIM}：{SETTLEMENT}的公共信任 +1.3。" />
+  <string id="AF_TAUNT_UI_WantedExitBlocked" text="你现在正在被通缉，无法离开当前场景！请立刻跑出地图边缘红区，摆脱追击。" />
+  <string id="AF_TAUNT_UI_ConflictExitBlocked" text="这场冲突还没结束，不能离开场景。" />
+  <string id="AF_TAUNT_UI_CannotLeaveTitle" text="无法离开" />
+  <string id="AF_TAUNT_UI_Acknowledge" text="确定" />
+  <string id="AF_TAUNT_UI_CriminalOwnerPenalty" text="击倒 {VICTIM}：{OWNER}的个人信任 -1，私人关系 -1。" />
+  <string id="AF_TAUNT_UI_ArmedConflictAlert" text="持械冲突的警报蔓延到了这个场景，周围的人立刻紧张起来。" />
+  <string id="AF_TAUNT_UI_ArmedConflictCarryover" text="你的持械冲突已经蔓延到这个场景，守卫和武装平民立刻开始围堵你。" />
+  <string id="AF_TAUNT_UI_MerchantTrustPenalty" text="{SETTLEMENT}的{MERCHANT}信任 -10。" />
+  <string id="AF_TAUNT_UI_PublicTrustPenalty" text="{SETTLEMENT}的公共信任 -10。" />
+  <string id="AF_TAUNT_UI_Target" text="目标" />
+  <string id="AF_TAUNT_UI_KnockdownMerchantTrustPenalty" text="击倒 {VICTIM}：{SETTLEMENT}的{MERCHANT}信任 -{PENALTY}。" />
+  <string id="AF_TAUNT_UI_KnockdownPublicTrustPenalty" text="击倒 {VICTIM}：{SETTLEMENT}的公共信任 -{PENALTY}。" />
+  <string id="AF_TAUNT_UI_KnockdownCrimePenalty" text="击倒 {VICTIM}：累计犯罪度 +{AMOUNT}。超出 59 的部分会在离开定居点后再结算。" />
+  <string id="AF_TAUNT_UI_ForcedExecutionDefeat" text="你的累计犯罪度已达 {THRESHOLD}，你将被处决。" />
+  <string id="AF_TAUNT_UI_MerchantWeapon" text="武器市场" />
+  <string id="AF_TAUNT_UI_MerchantArmor" text="盔甲市场" />
+  <string id="AF_TAUNT_UI_MerchantHorse" text="马匹市场" />
+  <string id="AF_TAUNT_UI_MerchantGoods" text="杂货市场" />
+  <string id="AF_TAUNT_UI_MerchantBlacksmith" text="铁匠铺" />
+  <string id="AF_TAUNT_UI_MerchantMarket" text="市场" />
+  <string id="AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty" text="{SETTLEMENT}忠诚度 -{AMOUNT}：你在自己的定居点内伤害了 {TARGET}。" />
+  <string id="AF_TAUNT_UI_Npc" text="NPC" />
+  <string id="AF_TAUNT_UI_GoldPickedUp" text="你拾取了 {AMOUNT} 第纳尔。" /></strings>
 </base>
+

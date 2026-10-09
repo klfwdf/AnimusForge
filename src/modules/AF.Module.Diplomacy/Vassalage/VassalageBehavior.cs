@@ -1462,8 +1462,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string attackerText = BuildWarNoticeKingdomName(enemy);
 		if (type == AfVassalageType.Vassal)
 		{
-			string message = attackerText + "已经向" + subjectText
-				+ "宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。";
+			string message = DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Vassalage_VassalWarNotice",
+				"{ATTACKER} has declared war on {SUBJECT}. The vassal is under the suzerain's direct protection; the court has joined the war under the treaty.",
+				("ATTACKER", attackerText), ("SUBJECT", subjectText));
 			InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_VassalWarNoticeTitle", "Vassal attacked"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: false, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"), "", delegate
 			{
 				CompleteProtectionNoticeAcknowledgement(key, "vassal_notice_acknowledged");
@@ -1472,8 +1474,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (type == AfVassalageType.Tributary)
 		{
-			string message = subjectText + "遭到" + attackerText
-				+ "宣战。朝贡国以贡赋换取宗主庇护，但不承担出兵义务。\n\n是否履行庇护，向进攻者宣战？若拒绝，朝贡条约将立即终止。";
+			string message = DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Vassalage_TributaryProtectionRequest",
+				"{SUBJECT} has been attacked by {ATTACKER}. The tributary pays tribute in exchange for suzerain protection but has no duty to send troops.\n\nFulfill the protection obligation and declare war on the attacker? If you refuse, the tributary treaty ends immediately.",
+				("ATTACKER", attackerText), ("SUBJECT", subjectText));
 			InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryProtectionTitle", "Tributary requests protection"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Protect", "Protect"), DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_RefuseTributaryProtection", "Refuse protection"), delegate
 			{
 				CompleteProtectionNoticeDecision(key, true, "tributary_protection_accepted");
@@ -1483,8 +1487,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			}));
 			return true;
 		}
-		string garrisonMessage = subjectText + "遭到" + attackerText
-			+ "宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。\n\n是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。";
+		string garrisonMessage = DiplomacyUiLocalization.Format(
+			"AF_DIP_UI_Vassalage_GarrisonProtectionRequest",
+			"{SUBJECT} has been attacked by {ATTACKER}. The garrison kingdom is the suzerain's military shield, must campaign with the suzerain, and expects protection in return.\n\nProtect the garrison kingdom? Refusing will sharply reduce loyalty; if it falls too low, the kingdom will leave the vassalage.",
+			("ATTACKER", attackerText), ("SUBJECT", subjectText));
 		InformationManager.ShowInquiry(new InquiryData(DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_GarrisonProtectionTitle", "Garrison requests protection"), garrisonMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SendProtection", "Send protection"), DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_RefuseGarrisonProtection", "Refuse to send protection"), delegate
 		{
 			CompleteProtectionNoticeDecision(key, true, "garrison_protection_accepted");
@@ -1961,7 +1967,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 					["type"] = targetAgreement.Type,
 					["detail"] = detail
 				});
-				InformationManager.DisplayMessage(new InformationMessage("王国议会不能绕过臣属条约向" + GetKingdomDisplayName(targetKingdom, GetVassalageTypeDisplayName(targetAgreement.Type)) + "宣战。若要解除臣属关系，请先通过正式谈判处置条约。", Color.FromUint(4294936661u)));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Vassalage_DeclareWarBlocked",
+					"The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first.",
+					("TARGET", GetKingdomDisplayName(targetKingdom, GetVassalageTypeDisplayName(targetAgreement.Type)))), Color.FromUint(4294936661u)));
 				return false;
 			}
 			bool allowWar = HandlePlayerWarAgainstSubject(targetAgreement, detail);
@@ -2128,7 +2137,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			{
 				if (protectedSuzerain == playerKingdom)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("此战因保护" + GetKingdomDisplayName(suzerainProtectedSubject, "朝贡国") + "而起；敌国不能绕过受保护方直接向宗主国单独求和。", Color.FromUint(4294936661u)));
+					InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vassalage_ProtectedPeaceBlocked",
+						"This war began to protect {SUBJECT}; the enemy cannot bypass the protected subject and seek a separate peace with the suzerain.",
+						("SUBJECT", GetKingdomDisplayName(suzerainProtectedSubject, "the tributary"))), Color.FromUint(4294936661u)));
 				}
 				Logger.Log("Vassalage", "Blocked enemy peace offer to suzerain for protected subject war suzerain=" + (protectedSuzerain?.StringId ?? "") + " subject=" + (suzerainProtectedSubject?.StringId ?? "") + " enemy=" + (suzerainProtectedEnemy?.StringId ?? "") + " detail=" + detail);
 				VassalageDiagnosticLog.Event("diplomacy.make_peace.block", new Dictionary<string, object>
@@ -2169,7 +2181,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				string subjectName = GetKingdomDisplayName(protectedSubject, "朝贡国");
 				if (enemyIsOfferingPeaceToPlayer)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("此战因保护" + subjectName + "而起；敌国不能绕过受保护方直接向宗主国单独求和。", Color.FromUint(4294936661u)));
+					InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vassalage_ProtectedPeaceBlocked",
+						"This war began to protect {SUBJECT}; the enemy cannot bypass the protected subject and seek a separate peace with the suzerain.",
+						("SUBJECT", subjectName)), Color.FromUint(4294936661u)));
 					Logger.Log("Vassalage", "Blocked enemy peace offer to player for protected subject war subject=" + (protectedSubject?.StringId ?? "") + " enemy=" + (protectedEnemy?.StringId ?? "") + " detail=" + detail);
 					VassalageDiagnosticLog.Event("diplomacy.make_peace.block", new Dictionary<string, object>
 					{
@@ -2185,7 +2200,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 					});
 					return false;
 				}
-				InformationManager.DisplayMessage(new InformationMessage("此战因保护" + subjectName + "而起；宗主国和平将同步受保护朝贡国停战。", Color.FromUint(4294936661u)));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Vassalage_ProtectedPeaceAllowed",
+					"This war began to protect {SUBJECT}; peace for the suzerain will also end the protected tributary's war.",
+					("SUBJECT", subjectName)), Color.FromUint(4294936661u)));
 				Logger.Log("Vassalage", "Allowed player-side peace for protected subject war subject=" + (protectedSubject?.StringId ?? "") + " enemy=" + (protectedEnemy?.StringId ?? "") + " detail=" + detail + " willSyncSubject=true");
 				VassalageDiagnosticLog.Event("diplomacy.make_peace.allow", new Dictionary<string, object>
 				{
@@ -4616,9 +4634,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			RecordProtectedTributaryWar(agreement, vassal, enemy, reason);
 		}
 		BringControlledSubjectsIntoWar(enemy, reason ?? "subject_protection");
-		InformationManager.DisplayMessage(new InformationMessage(
-			GetKingdomDisplayName(playerKingdom, "宗主国") + "履行了对" + BuildPlayerSubjectWarNoticeName(vassal, type) + "的保护义务，已对" + BuildWarNoticeKingdomName(enemy) + (alreadyAtWar ? "维持战争状态。" : "宣战。"),
-			Color.FromUint(4278242559u)));
+		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+			"AF_DIP_UI_Vassalage_ProtectionApplied",
+			"{SUZERAIN} fulfilled its protection obligation toward {SUBJECT} and {ACTION} against {ENEMY}.",
+			("SUZERAIN", GetKingdomDisplayName(playerKingdom, "the suzerain")),
+			("SUBJECT", BuildPlayerSubjectWarNoticeName(vassal, type)),
+			("ENEMY", BuildWarNoticeKingdomName(enemy)),
+			("ACTION", alreadyAtWar ? "maintained the war" : "declared war")), Color.FromUint(4278242559u)));
 		VassalageDiagnosticLog.Event("protection.apply", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
@@ -4828,9 +4850,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		if (shouldDisplayControlledSubjectWarSyncNotice)
 		{
 			string subjectWarSyncNoticePrefix = declaredNowCount + queuedCount > 0 ? "宗主国战争状态已同步：" : "宗主国战争状态已确认：";
-			InformationManager.DisplayMessage(new InformationMessage(
-				subjectWarSyncNoticePrefix + "附庸国/卫戍国 " + declaredNowCount.ToString(CultureInfo.InvariantCulture) + " 个已参战，" + queuedCount.ToString(CultureInfo.InvariantCulture) + " 个将在局势安全时参战，" + alreadyAtWarCount.ToString(CultureInfo.InvariantCulture) + " 个原本已在战。",
-				Color.FromUint(4278242559u)));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Vassalage_SubjectWarSync",
+				"{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war.",
+				("PREFIX", declaredNowCount + queuedCount > 0 ? "Suzerain war status synchronized:" : "Suzerain war status confirmed:"),
+				("DECLARED", declaredNowCount.ToString(CultureInfo.InvariantCulture)),
+				("QUEUED", queuedCount.ToString(CultureInfo.InvariantCulture)),
+				("ALREADY", alreadyAtWarCount.ToString(CultureInfo.InvariantCulture))), Color.FromUint(4278242559u)));
 		}
 	}
 
@@ -5260,7 +5286,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return;
 		}
 		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
-		InformationManager.DisplayMessage(new InformationMessage(vassalName + "的独立度由 " + independenceBefore.ToString(CultureInfo.InvariantCulture) + " 变为 " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4294936661u)));
+		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+			"AF_DIP_UI_Vassalage_IndependenceChanged",
+			"{SUBJECT} independence changed from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION}).",
+			("SUBJECT", vassalName),
+			("BEFORE", independenceBefore.ToString(CultureInfo.InvariantCulture)),
+			("AFTER", independenceAfter.ToString(CultureInfo.InvariantCulture)),
+			("THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture)),
+			("RULER", rulerName),
+			("RELATION", FormatSignedRelation(rulerRelation))), Color.FromUint(4294936661u)));
 	}
 
 	private bool TryGetDirectVassalIndependence(string vassalKingdomId, out int independence)
@@ -5471,7 +5505,14 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage(vassalName + "的独立度由 " + before.ToString(CultureInfo.InvariantCulture) + " 变为 " + after.ToString(CultureInfo.InvariantCulture) + "；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（统治者关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4294936661u)));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Vassalage_IndependenceChangedNoName",
+				"{SUBJECT} independence changed from {BEFORE} to {AFTER}; the current breakaway threshold is {THRESHOLD} (ruler relation {RELATION}).",
+				("SUBJECT", vassalName),
+				("BEFORE", before.ToString(CultureInfo.InvariantCulture)),
+				("AFTER", after.ToString(CultureInfo.InvariantCulture)),
+				("THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture)),
+				("RELATION", FormatSignedRelation(rulerRelation))), Color.FromUint(4294936661u)));
 		}
 		return true;
 	}
@@ -5605,7 +5646,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return;
 		}
 		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
-		InformationManager.DisplayMessage(new InformationMessage(vassalName + "因宗主国履行保护义务，独立度由 " + independenceBefore.ToString(CultureInfo.InvariantCulture) + " 降至 " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4278242559u)));
+		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
+			"AF_DIP_UI_Vassalage_IndependenceReduced",
+			"Because the suzerain fulfilled its protection obligation, {SUBJECT} independence fell from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION}).",
+			("SUBJECT", vassalName),
+			("BEFORE", independenceBefore.ToString(CultureInfo.InvariantCulture)),
+			("AFTER", independenceAfter.ToString(CultureInfo.InvariantCulture)),
+			("THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture)),
+			("RULER", rulerName),
+			("RELATION", FormatSignedRelation(rulerRelation))), Color.FromUint(4278242559u)));
 	}
 
 	public int BreakAgreementsForAnnexedKingdom(Kingdom annexedKingdom, string reason = "kingdom_annexation", string message = null)
@@ -8038,15 +8087,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		Kingdom vassal = agreement?.ResolveVassal();
 		AfVassalageType type = NormalizeVassalageType(agreement?.Type ?? AfVassalageType.Military);
-		string subjectName = GetKingdomDisplayName(vassal, "臣属国");
+		string subjectName = GetKingdomDisplayName(vassal, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SubjectFallback", "the subject kingdom"));
 		switch (type)
 		{
 		case AfVassalageType.Tributary:
-			return subjectName + "已立誓为朝贡国，按期进献贡赋，接受你的庇护。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_EstablishedTributaryDescription", "{SUBJECT} has sworn as a tributary, sending regular tribute in exchange for your protection.", ("SUBJECT", subjectName));
 		case AfVassalageType.Garrison:
-			return subjectName + "已立誓为卫戍国，接受宗主号令，承担边境守卫与随军作战义务。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_EstablishedGarrisonDescription", "{SUBJECT} has sworn as a garrison kingdom, accepting the suzerain's command and its border-defense and campaign duties.", ("SUBJECT", subjectName));
 		default:
-			return subjectName + "已立誓为附庸国，接受宗主统辖，承担贡赋与出兵义务。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_EstablishedVassalDescription", "{SUBJECT} has sworn as a vassal, accepting suzerain rule and its tribute and military duties.", ("SUBJECT", subjectName));
 		}
 	}
 
@@ -8054,7 +8103,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		Kingdom suzerain = agreement?.ResolveSuzerain();
 		Kingdom vassal = agreement?.ResolveVassal();
-		return GetKingdomDisplayName(vassal, "某国") + "已承认" + GetKingdomDisplayName(suzerain, "另一国") + "的宗主权，成为朝贡国。";
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_NpcTributaryDescription", "{VASSAL} has recognized {SUZERAIN} as its suzerain and become a tributary.",
+			("VASSAL", GetKingdomDisplayName(vassal, "a kingdom")), ("SUZERAIN", GetKingdomDisplayName(suzerain, "another kingdom")));
 	}
 
 	private static string BuildEstablishedNoticeDetail(VassalageAgreement agreement)
@@ -8062,20 +8112,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		Kingdom suzerain = agreement?.ResolveSuzerain();
 		Kingdom vassal = agreement?.ResolveVassal();
 		AfVassalageType type = agreement?.Type ?? AfVassalageType.Military;
-		string suzerainName = GetKingdomDisplayName(suzerain, "宗主国");
-		string vassalName = GetKingdomDisplayName(vassal, "臣属国");
+		string suzerainName = GetKingdomDisplayName(suzerain, "the suzerain");
+		string vassalName = GetKingdomDisplayName(vassal, "the subject kingdom");
 		string subjectTypeText = GetVassalageTypeDisplayName(type);
-
-		return "使节呈上盖有王印的臣服誓书：\n\n"
-			+ "【臣属条约】\n"
-			+ "宗主国：" + suzerainName + "\n"
-			+ "臣属国：" + vassalName + "\n"
-			+ "条约类型：" + subjectTypeText + "\n"
-			+ "立约日：" + FormatCampaignDate(agreement?.CreatedDay ?? 0) + "\n\n"
-			+ "【基本条款】\n"
-			+ "一、" + subjectTypeText + "承认" + suzerainName + "的宗主权，并以本条约身份继续存在。\n"
-			+ "二、" + subjectTypeText + "保留王号、宫廷、家族与内部治理；本条约不视为吞并。\n"
-			+ BuildTreatySpecificClauses(type, suzerainName);
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_EstablishedDetail",
+			"An envoy presents a vassal oath sealed with the royal mark:\n\n[VASSALAGE TREATY]\nSuzerain: {SUZERAIN}\nSubject: {VASSAL}\nTreaty type: {TYPE}\nSigned: {DATE}\n\n[BASIC TERMS]\n1. The {TYPE} recognizes {SUZERAIN} as suzerain and continues under this treaty identity.\n2. The {TYPE} keeps its crown, court, clans, and internal governance; this treaty is not annexation.\n{CLAUSES}",
+			("SUZERAIN", suzerainName), ("VASSAL", vassalName), ("TYPE", subjectTypeText),
+			("DATE", FormatCampaignDate(agreement?.CreatedDay ?? 0)), ("CLAUSES", BuildTreatySpecificClauses(type, suzerainName)));
 	}
 
 	private static string BuildTreatySpecificClauses(AfVassalageType type, string suzerainName)
@@ -8083,18 +8126,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch (NormalizeVassalageType(type))
 		{
 		case AfVassalageType.Tributary:
-			return "三、朝贡国应定期输送贡赋，以换取" + suzerainName + "的庇护。\n"
-				+ "四、朝贡国保留军事自主权，不随宗主国出征；朝贡国主动挑起的战争，宗主国无义务介入。\n"
-				+ "五、朝贡国受外敌进攻时，可请求宗主国履行庇护；宗主国拒绝庇护，则朝贡条约终止。\n"
-				+ "六、立约时朝贡国已经承受的外敌战事，由宗主国按庇护义务接手处置。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributaryClauses", "3. The tributary sends regular tribute in exchange for {SUZERAIN}'s protection.\n4. The tributary keeps military autonomy and does not campaign with the suzerain; the suzerain need not join wars the tributary starts.\n5. When attacked, the tributary may request protection; refusal ends the tributary treaty.\n6. Wars already affecting the tributary when the treaty is signed are handled by the suzerain under the protection obligation.", ("SUZERAIN", suzerainName));
 		case AfVassalageType.Garrison:
-			return "三、卫戍国进入" + suzerainName + "的军事体系，承担随宗主作战与边境屏障义务，但不缴纳贡赋。\n"
-				+ "四、卫戍国不得自行宣战，也不得绕开宗主国单独处理战争事务。\n"
-				+ "五、宗主国拒绝防卫、攻击卫戍国或长期不能维护其安全，将削弱忠诚；忠诚崩溃时，卫戍国可宣布脱离宗主控制。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_GarrisonClauses", "3. The garrison kingdom enters {SUZERAIN}'s military system and must campaign with the suzerain and guard the borders, but pays no tribute.\n4. The garrison kingdom may not declare war or handle wars separately from the suzerain.\n5. Refusing defense, attacking the garrison kingdom, or failing to keep it safe will reduce loyalty; when loyalty collapses, it may leave suzerain control.", ("SUZERAIN", suzerainName));
 		default:
-			return "三、附庸国接受" + suzerainName + "控制，承担贡赋与出兵义务。\n"
-				+ "四、附庸国不得独立宣战或单独媾和，默认跟随宗主国战争；遭宣战时宗主国自动保护。\n"
-				+ "五、附庸国王权受宗主国约束；除宗主国主动放弃或另行议定外，不按卫戍国规则自动脱离。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_VassalClauses", "3. The vassal accepts {SUZERAIN}'s control and owes tribute and military service.\n4. The vassal may not declare war or make peace alone and normally follows the suzerain's wars; the suzerain protects it when attacked.\n5. The vassal's crown is bound by the suzerain; it does not leave automatically under garrison rules unless the suzerain releases it or a new treaty says so.", ("SUZERAIN", suzerainName));
 		}
 	}
 
@@ -8106,11 +8142,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch (type)
 		{
 		case AfVassalageType.Tributary:
-			return subjectText + "遭到" + attackerText + "宣战，急使请求履行庇护。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_ProtectionDescriptionTributary", "{SUBJECT} has been attacked by {ATTACKER}; an urgent envoy requests protection.", ("SUBJECT", subjectText), ("ATTACKER", attackerText));
 		case AfVassalageType.Garrison:
-			return subjectText + "遭到" + attackerText + "宣战，宫廷需裁定是否出兵保护。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_ProtectionDescriptionGarrison", "{SUBJECT} has been attacked by {ATTACKER}; the court must decide whether to send protection.", ("SUBJECT", subjectText), ("ATTACKER", attackerText));
 		default:
-			return subjectText + "遭到" + attackerText + "宣战；宗主国已按条约自动保护。";
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_ProtectionDescriptionVassal", "{SUBJECT} has been attacked by {ATTACKER}; the suzerain has intervened automatically under the treaty.", ("SUBJECT", subjectText), ("ATTACKER", attackerText));
 		}
 	}
 
@@ -8118,19 +8154,18 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		if (record == null)
 		{
-			return "朝贡车队抵达宫廷，贡赋已经入库。";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty", "A tributary caravan has arrived at court and the tribute has been recorded.");
 		}
-		return (string.IsNullOrWhiteSpace(record.TributaryName) ? "朝贡国" : record.TributaryName)
-			+ "按期送来贡赋，宗主国各领地已完成入账。";
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributePaymentDescription", "{TRIBUTARY} delivered its tribute on schedule; the suzerain's fiefs have recorded the payment.", ("TRIBUTARY", string.IsNullOrWhiteSpace(record.TributaryName) ? "the tributary" : record.TributaryName));
 	}
 
 	private static string BuildTributaryPaymentNoticeDetail(TributaryPaymentNoticeRecord record)
 	{
 		if (record == null)
 		{
-			return "贡赋簿册已经失效。";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributePaymentDetailInvalid", "The tribute ledger is no longer valid.");
 		}
-		string tributaryName = string.IsNullOrWhiteSpace(record.TributaryName) ? "朝贡国" : record.TributaryName;
+		string tributaryName = string.IsNullOrWhiteSpace(record.TributaryName) ? "the tributary" : record.TributaryName;
 		string playerGainText = BuildTributaryPaymentSettlementGainText(record);
 		string tributaryCostText = BuildTributaryPaymentClassifiedTributaryCostText(record);
 		if (string.IsNullOrWhiteSpace(tributaryCostText))
@@ -8139,15 +8174,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				+ "粮食 -" + FormatTributaryPaymentNumber(record.TributaryFoodLoss) + "\n"
 				+ "户数 -" + FormatTributaryPaymentNumber(record.TributaryHearthLoss) + "（村庄 " + record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture) + "）";
 		}
-		return "朝贡车队已抵达宫廷，贡赋入库簿册如下：\n\n"
-			+ "臣属国：" + tributaryName + "\n"
-			+ "入库日期：" + FormatCampaignDate(record.SettlementDay) + "\n"
-			+ "贡赋价值：" + FormatTributaryPaymentNumber(record.TributaryStrength) + "\n\n"
-			+ "【宗主国各领地所得】\n"
-			+ playerGainText
-			+ "\n"
-			+ "【臣属国贡赋消耗】\n"
-			+ tributaryCostText;
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributePaymentDetail",
+			"The tributary caravan has reached the court. The ledger records:\n\nSubject: {TRIBUTARY}\nRecorded: {DATE}\nTribute value: {VALUE}\n\n[SUZERAIN FIEF GAINS]\n{GAINS}\n[TRIBUTARY COST]\n{COST}",
+			("TRIBUTARY", tributaryName), ("DATE", FormatCampaignDate(record.SettlementDay)),
+			("VALUE", FormatTributaryPaymentNumber(record.TributaryStrength)), ("GAINS", playerGainText), ("COST", tributaryCostText));
 	}
 
 	private static string BuildTributaryPaymentSettlementGainText(TributaryPaymentNoticeRecord record)

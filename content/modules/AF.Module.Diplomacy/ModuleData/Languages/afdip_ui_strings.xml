@@ -253,5 +253,41 @@
     <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="There are no legal options right now." />
     <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="Confirm faction operation" />
     <string id="AF_DIP_UI_Common_Continue" text="Continue" />
-  </strings>
+    <string id="AF_DIP_CivilWar_LoyaltyText" text="Civil-war opposition fief" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationTitle" text="Royal negotiation" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationAccept" text="Accept / obey" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationRefuse" text="Refuse / defy" />
+    <string id="AF_DIP_CivilWar_FollowRebelsTitle" text="Follow the rebels" />
+    <string id="AF_DIP_CivilWar_FollowRebelsAccept" text="Follow the rebels" />
+    <string id="AF_DIP_CivilWar_FollowRebelsRefuse" text="Stay in the kingdom" />
+    <string id="AF_DIP_CivilWar_UltimatumTitle" text="Opposition ultimatum" />
+    <string id="AF_DIP_CivilWar_UltimatumAccept" text="Accept the demand" />
+    <string id="AF_DIP_CivilWar_UltimatumRefuse" text="Refuse" />
+      <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first." />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="This war began to protect {SUBJECT}; the enemy cannot bypass the protected subject and seek a separate peace with the suzerain." />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="This war began to protect {SUBJECT}; peace for the suzerain will also end the protected tributary's war." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN} fulfilled its protection obligation toward {SUBJECT} and {ACTION} against {ENEMY}." />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}; the current breakaway threshold is {THRESHOLD} (ruler relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="Because the suzerain fulfilled its protection obligation, {SUBJECT} independence fell from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER} has declared war on {SUBJECT}. The vassal is under the suzerain's direct protection; the court has joined the war under the treaty." />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The tributary pays tribute in exchange for suzerain protection but has no duty to send troops.\n\nFulfill the protection obligation and declare war on the attacker? If you refuse, the tributary treaty ends immediately." />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The garrison kingdom is the suzerain's military shield, must campaign with the suzerain, and expects protection in return.\n\nProtect the garrison kingdom? Refusing will sharply reduce loyalty; if it falls too low, the kingdom will leave the vassalage." />    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="the subject kingdom" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT} has sworn as a tributary, sending regular tribute in exchange for your protection." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT} has sworn as a garrison kingdom, accepting the suzerain's command and its border-defense and campaign duties." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT} has sworn as a vassal, accepting suzerain rule and its tribute and military duties." />
+    <string id="AF_DIP_UI_Vassalage_NpcTributaryDescription" text="{VASSAL} has recognized {SUZERAIN} as its suzerain and become a tributary." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedDetail" text="An envoy presents a vassal oath sealed with the royal mark:\n\n[VASSALAGE TREATY]\nSuzerain: {SUZERAIN}\nSubject: {VASSAL}\nTreaty type: {TYPE}\nSigned: {DATE}\n\n[BASIC TERMS]\n1. The {TYPE} recognizes {SUZERAIN} as suzerain and continues under this treaty identity.\n2. The {TYPE} keeps its crown, court, clans, and internal governance; this treaty is not annexation.\n{CLAUSES}" />
+    <string id="AF_DIP_UI_Vassalage_TributaryClauses" text="3. The tributary sends regular tribute in exchange for {SUZERAIN}'s protection.\n4. The tributary keeps military autonomy and does not campaign with the suzerain; the suzerain need not join wars the tributary starts.\n5. When attacked, the tributary may request protection; refusal ends the tributary treaty.\n6. Wars already affecting the tributary when the treaty is signed are handled by the suzerain under the protection obligation." />
+    <string id="AF_DIP_UI_Vassalage_GarrisonClauses" text="3. The garrison kingdom enters {SUZERAIN}'s military system and must campaign with the suzerain and guard the borders, but pays no tribute.\n4. The garrison kingdom may not declare war or handle wars separately from the suzerain.\n5. Refusing defense, attacking the garrison kingdom, or failing to keep it safe will reduce loyalty; when loyalty collapses, it may leave suzerain control." />
+    <string id="AF_DIP_UI_Vassalage_VassalClauses" text="3. The vassal accepts {SUZERAIN}'s control and owes tribute and military service.\n4. The vassal may not declare war or make peace alone and normally follows the suzerain's wars; the suzerain protects it when attacked.\n5. The vassal's crown is bound by the suzerain; it does not leave automatically under garrison rules unless the suzerain releases it or a new treaty says so." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionTributary" text="{SUBJECT} has been attacked by {ATTACKER}; an urgent envoy requests protection." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionGarrison" text="{SUBJECT} has been attacked by {ATTACKER}; the court must decide whether to send protection." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionVassal" text="{SUBJECT} has been attacked by {ATTACKER}; the suzerain has intervened automatically under the treaty." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="A tributary caravan has arrived at court and the tribute has been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY} delivered its tribute on schedule; the suzerain's fiefs have recorded the payment." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="The tribute ledger is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="The tributary caravan has reached the court. The ledger records:\n\nSubject: {TRIBUTARY}\nRecorded: {DATE}\nTribute value: {VALUE}\n\n[SUZERAIN FIEF GAINS]\n{GAINS}\n[TRIBUTARY COST]\n{COST}" /></strings>
 </base>
+
+

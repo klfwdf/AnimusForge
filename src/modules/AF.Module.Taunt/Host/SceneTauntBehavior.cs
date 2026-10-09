@@ -364,7 +364,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			Hero executor = capturer.LeaderHero ?? faction.Leader;
 			QueuePendingForcedPlayerExecutionForExternal(executor, "", "scene_taunt_capture_execution_threshold");
-			AnimusForgeQuickInfo.Show($"{faction.Name} 认定你的罪行已满，俘虏后将处决你。", executor?.CharacterObject);
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_ForcedExecutionCapture", "{FACTION} has judged your crime level to be full. You will be executed after capture.", ("FACTION", faction.Name)), executor?.CharacterObject);
 			Logger.Log("SceneTaunt", $"Queued forced execution after capture. Captor={capturer.Name}, Faction={faction.Name}, EffectiveCrime={effectiveCrimeRatingForExternal:0.##}, Executor={executor?.Name}");
 		}
 		catch (Exception ex)
@@ -843,7 +843,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				}
 				float num6 = _penaltyLedger.GetDeferredCrime(text);
 					ChangeCrimeRatingAction.Apply(factionById, num5, true);
-					AnimusForgeQuickInfo.Show($"离开当前场景后，{factionById.Name} 的累计犯罪度 +{num5:0.#}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeCommittedAfterScene", "After leaving the scene, {FACTION} crime increases by {AMOUNT}.", ("FACTION", factionById.Name), ("AMOUNT", num5.ToString("0.#"))));
 					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
 				}
 				catch (Exception ex)
@@ -1098,7 +1098,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			AnimusForgeQuickInfo.Show($"你在{faction.Name}积累了{trackedCrimeTotalAmount:0.#}犯罪度！");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeAccumulated", "You have accumulated {AMOUNT} crime with {FACTION}.", ("FACTION", faction.Name), ("AMOUNT", trackedCrimeTotalAmount.ToString("0.#"))));
 		}
 		catch (Exception ex)
 		{
@@ -1142,8 +1142,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, num2, "scene_taunt_criminal_knockdown_reward");
 			}
-			string text2 = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
-			AnimusForgeQuickInfo.Show($"击倒 {text2}：{settlement.Name} 的公共信任 +1.3。");
+			string text2 = string.IsNullOrWhiteSpace(victimName) ? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Criminal", "criminal") : victimName;
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CriminalKnockdownTrust", "Knocked down {VICTIM}: {SETTLEMENT} public trust +1.3.", ("VICTIM", text2), ("SETTLEMENT", settlement.Name)));
 			Logger.Log("SceneTaunt", $"Rewarded settlement trust for criminal knockdown. Settlement={settlement.Name}, Victim={text2}, GrantedTenths=13, WholeApplied={num2}, CarryTenths={num3}");
 		}
 		catch (Exception ex)
@@ -3735,8 +3735,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			float num = MBMath.ClampFloat(loyalty - penalty, 0f, 100f);
 			loyaltySettlement.Town.Loyalty = num;
 			float num2 = MathF.Max(0f, loyalty - num);
-			string text = targetAgent?.Name?.ToString() ?? "NPC";
-			AnimusForgeQuickInfo.Show($"{loyaltySettlement.Name} 忠诚度 -{num2:0.#}：你在自己的定居点内伤害了 {text}。", targetAgent?.Character as BasicCharacterObject);
+			string text = targetAgent?.Name?.ToString() ?? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Npc", "NPC");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty", "{SETTLEMENT} loyalty -{AMOUNT}: you harmed {TARGET} in your own settlement.", ("SETTLEMENT", loyaltySettlement.Name), ("AMOUNT", num2.ToString("0.#")), ("TARGET", text)), targetAgent?.Character as BasicCharacterObject);
 			Logger.Log("SceneTaunt", $"Owned settlement passive attack loyalty penalty. CurrentSettlement={currentSettlement?.StringId}, LoyaltySettlement={loyaltySettlement.StringId}, Target={text}, Reason={reason}, Loyalty={loyalty:0.##}->{num:0.##}, Requested={penalty}, Applied={num2:0.##}");
 		}
 		catch (Exception ex)
@@ -4894,7 +4894,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			RemoveSceneGoldDrop(nearestDrop, removeEntity: true);
 			if (pickedGold > 0)
 			{
-				AnimusForgeQuickInfo.Show($"你拾取了 {pickedGold} 第纳尔。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_GoldPickedUp", "You picked up {AMOUNT} denars.", ("AMOUNT", pickedGold)));
 				Logger.Log("SceneTaunt", $"Scene gold drop picked. AgentIndex={nearestDrop.AgentIndex}, Amount={pickedGold}, HeroDrop={nearestDrop.IsHeroDrop}");
 			}
 		}
@@ -6897,18 +6897,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		if (ShouldShowWantedSceneExitNoticeExternal(mission))
 		{
-			AnimusForgeQuickInfo.Show(WantedSceneExitNotice);
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_WantedExitBlocked", "You are wanted and cannot leave this scene. Run beyond the red map-edge zone to escape pursuit."));
 		}
 		else
 		{
-			AnimusForgeQuickInfo.Show("这场冲突还没结束，不能离开场景。");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ConflictExitBlocked", "You cannot leave while this conflict is still active."));
 		}
 	}
 
 	internal static InquiryData CreateBlockedSceneExitInquiry(Mission mission)
 	{
-		string text = ShouldShowWantedSceneExitNoticeExternal(mission) ? WantedSceneExitNotice : "这场冲突还没结束，不能离开场景。";
-		return new InquiryData("无法离开", text, isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "确定", null, null);
+		string text = ShouldShowWantedSceneExitNoticeExternal(mission)
+			? SceneTauntUiLocalization.Text("AF_TAUNT_UI_WantedExitBlocked", "You are wanted and cannot leave this scene. Run beyond the red map-edge zone to escape pursuit.")
+			: SceneTauntUiLocalization.Text("AF_TAUNT_UI_ConflictExitBlocked", "You cannot leave while this conflict is still active.");
+		return new InquiryData(SceneTauntUiLocalization.Text("AF_TAUNT_UI_CannotLeaveTitle", "Cannot leave"), text, isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", SceneTauntUiLocalization.Text("AF_TAUNT_UI_Acknowledge", "OK"), null, null);
 	}
 
 	private Agent ResolveTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -7257,8 +7259,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			RewardSystemBehavior.Instance?.AdjustTrustForExternal(ownerHero, -1, 0, "scene_taunt_criminal_owner_knockdown");
 			RomanceSystemBehavior.Instance?.AdjustPrivateLove(ownerHero, -1, "scene_taunt_criminal_owner_knockdown");
-			string text = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
-			AnimusForgeQuickInfo.Show($"击倒 {text}：{ownerHero.Name} 的个人信任 -1，私人关系 -1。", ownerHero.CharacterObject);
+			string text = string.IsNullOrWhiteSpace(victimName) ? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Criminal", "criminal") : victimName;
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CriminalOwnerPenalty", "Knocked down {VICTIM}: {OWNER} personal trust -1, private relation -1.", ("VICTIM", text), ("OWNER", ownerHero.Name)), ownerHero.CharacterObject);
 			Logger.Log("SceneTaunt", $"Applied criminal owner penalty after knockdown. Owner={ownerHero.Name}, Victim={text}, PersonalTrustDelta=-1, PrivateLoveDelta=-1");
 		}
 		catch (Exception ex)
@@ -7559,7 +7561,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (!_armedCarryoverNoAuthoritySceneNotified && !SceneTauntBehavior.HasShownCarryoverNoAuthorityAlertForCurrentLocationExternal())
 			{
 				AlarmNearbyBystanders();
-				AnimusForgeQuickInfo.Show("持械冲突的警报蔓延到了这个场景，周围的人立刻紧张起来。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ArmedConflictAlert", "The armed-conflict alarm has reached this scene. Everyone nearby is on edge."));
 				_armedCarryoverNoAuthoritySceneNotified = true;
 				_armedCarryoverHandledInThisMission = true;
 				SceneTauntBehavior.MarkCarryoverNoAuthorityAlertShownForCurrentLocationExternal();
@@ -7628,7 +7630,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			LogPerfElapsed("carryover.alarmNearbyBystanders", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
 			_armedCarryoverSceneInitialized = true;
 			_armedCarryoverHandledInThisMission = true;
-			AnimusForgeQuickInfo.Show("你的持械冲突已经蔓延到这个场景，守卫和武装平民立刻开始围堵你。");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ArmedConflictCarryover", "Your armed conflict has spread to this scene. Guards and armed civilians are closing in on you."));
 			Logger.Log("SceneTaunt", $"Activated armed settlement carryover in scene. Settlement={Settlement.CurrentSettlement?.Name}, Opponents={list2.Count}, Guards={guardAgents.Count}, Source={SceneTauntBehavior.GetArmedCarryoverSourceForCurrentSettlement()}");
 			LogPerfPoint("carryover.end", $"elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 		}
@@ -8643,12 +8645,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				if (targetCharacter != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var kind))
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementMerchantTrustForExternal(currentSettlement, kind, -10, "scene_taunt_brawl");
-					AnimusForgeQuickInfo.Show($"{currentSettlement.Name} 的{GetMerchantTrustLabel(kind)}信任 -10。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_MerchantTrustPenalty", "{SETTLEMENT} {MERCHANT} trust -10.", ("SETTLEMENT", currentSettlement.Name), ("MERCHANT", GetMerchantTrustLabel(kind))));
 				}
 				else
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(currentSettlement, -10, "scene_taunt_brawl");
-					AnimusForgeQuickInfo.Show($"{currentSettlement.Name} 的公共信任 -10。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_PublicTrustPenalty", "{SETTLEMENT} public trust -10.", ("SETTLEMENT", currentSettlement.Name)));
 				}
 			}
 		}
@@ -8830,7 +8832,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		string text = victimName ?? victimCharacter?.Name?.ToString() ?? "目标";
+		string text = victimName ?? victimCharacter?.Name?.ToString() ?? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Target", "target");
 		if (IsSettlementCriminalConflictTarget(victimCharacter?.HeroObject, victimCharacter))
 		{
 			TryRewardSettlementTrustForCriminalKnockdown(currentSettlement, text);
@@ -8849,12 +8851,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				if (victimCharacter != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(victimCharacter, out var kind))
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementMerchantTrustForExternal(currentSettlement, kind, -SceneTauntPerKnockdownTrustPenalty, "scene_taunt_armed_knockdown");
-					AnimusForgeQuickInfo.Show($"击倒 {text}：{currentSettlement.Name} 的{GetMerchantTrustLabel(kind)}信任 -{SceneTauntPerKnockdownTrustPenalty}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownMerchantTrustPenalty", "Knocked down {VICTIM}: {SETTLEMENT} {MERCHANT} trust -{PENALTY}.", ("VICTIM", text), ("SETTLEMENT", currentSettlement.Name), ("MERCHANT", GetMerchantTrustLabel(kind)), ("PENALTY", SceneTauntPerKnockdownTrustPenalty)));
 				}
 				else
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(currentSettlement, -SceneTauntPerKnockdownTrustPenalty, "scene_taunt_armed_knockdown");
-					AnimusForgeQuickInfo.Show($"击倒 {text}：{currentSettlement.Name} 的公共信任 -{SceneTauntPerKnockdownTrustPenalty}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownPublicTrustPenalty", "Knocked down {VICTIM}: {SETTLEMENT} public trust -{PENALTY}.", ("VICTIM", text), ("SETTLEMENT", currentSettlement.Name), ("PENALTY", SceneTauntPerKnockdownTrustPenalty)));
 				}
 			}
 		}
@@ -8868,7 +8870,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ApplySceneTauntCrimeWithDeferredCap(currentSettlement.MapFaction, SceneTauntPerKnockdownCrimeAmount, "scene_taunt_armed_knockdown");
 				_appliedCrimeRatingAmount += SceneTauntPerKnockdownCrimeAmount;
-				AnimusForgeQuickInfo.Show($"击倒 {text}：累计犯罪度 +{SceneTauntPerKnockdownCrimeAmount:0.#}。超出 59 的部分会在离开定居点后再结算。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownCrimePenalty", "Knocked down {VICTIM}: crime increases by {AMOUNT}. Any amount above 59 is settled after leaving the settlement.", ("VICTIM", text), ("AMOUNT", SceneTauntPerKnockdownCrimeAmount.ToString("0.#"))));
 			}
 		}
 		catch (Exception ex2)
@@ -9840,12 +9842,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		return kind switch
 		{
-			RewardSystemBehavior.SettlementMerchantKind.Weapon => "武器市场",
-			RewardSystemBehavior.SettlementMerchantKind.Armor => "盔甲市场",
-			RewardSystemBehavior.SettlementMerchantKind.Horse => "马匹市场",
-			RewardSystemBehavior.SettlementMerchantKind.Goods => "杂货市场",
-			RewardSystemBehavior.SettlementMerchantKind.Blacksmith => "铁匠铺",
-			_ => "市场"
+			RewardSystemBehavior.SettlementMerchantKind.Weapon => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantWeapon", "weapon market"),
+			RewardSystemBehavior.SettlementMerchantKind.Armor => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantArmor", "armor market"),
+			RewardSystemBehavior.SettlementMerchantKind.Horse => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantHorse", "horse market"),
+			RewardSystemBehavior.SettlementMerchantKind.Goods => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantGoods", "goods market"),
+			RewardSystemBehavior.SettlementMerchantKind.Blacksmith => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantBlacksmith", "blacksmith"),
+			_ => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantMarket", "market")
 		};
 	}
 
@@ -10194,7 +10196,7 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				SceneTauntBehavior.ClearDeferredCrimeForExternal(faction, "scene_taunt_execution_threshold");
 				SceneTauntBehavior.QueuePendingForcedPlayerExecutionForExternal(hero, executionMenuId, "scene_taunt_execution_threshold");
 				missionBehavior.MarkPlayerDefeatOutcomeHandled();
-				AnimusForgeQuickInfo.Show($"你的累计犯罪度已达 {SceneTauntBehavior.ForcedExecutionCrimeThreshold:0}，你将被处决。", hero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_ForcedExecutionDefeat", "Your accumulated crime has reached {THRESHOLD}. You will be executed.", ("THRESHOLD", SceneTauntBehavior.ForcedExecutionCrimeThreshold.ToString("0"))), hero?.CharacterObject);
 				try
 				{
 					Mission.Current.NextCheckTimeEndMission = 0f;

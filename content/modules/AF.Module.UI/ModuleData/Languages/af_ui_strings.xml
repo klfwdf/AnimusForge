@@ -280,6 +280,25 @@
   <string id="AF_UI_Notoriety_DisableLowProfile" text="Disable low-profile mode" />
   <string id="AF_UI_Notoriety_EnableLowProfile" text="Enable low-profile mode" />
   <string id="AF_UI_Notoriety_UnknownCulture" text="Unknown culture" />
+  <string id="AF_UI_Notoriety_Button" text="Player notoriety / history" />
+  <string id="AF_UI_Notoriety_Title" text="Player notoriety and history" />
+  <string id="AF_UI_Notoriety_Close" text="Close" />
+  <string id="AF_UI_Notoriety_OpenFailed" text="Unable to open player notoriety: " />
+  <string id="AF_UI_Notoriety_LowProfileActive" text="[Low-profile mode] Active. People outside the player's current party will not recognize the player for now; new actions during low-profile mode still enter major history, recent actions, and weekly report material." />
+  <string id="AF_UI_Notoriety_RecentActions" text="[Recent actions]" />
+  <string id="AF_UI_Notoriety_LowProfileEnabled" text="Low-profile mode enabled." />
+  <string id="AF_UI_Notoriety_LowProfileDisabled" text="Low-profile mode disabled." />
+  <string id="AF_UI_Notoriety_DevDataDisabled" text="Developer data management is disabled. Enable it in MCM." />
+  <string id="AF_UI_Notoriety_EditorTitle" text="Edit player history" />
+  <string id="AF_UI_Notoriety_EditorSubtitle" text="This edits the summarized major player history. Unsummarized material, recent actions, and notoriety values are unchanged." />
+  <string id="AF_UI_Notoriety_EditorHint" text="Enter a new major history summary; leave blank to clear the summary. Unsummarized material remains available for later compression." />
+  <string id="AF_UI_Notoriety_Save" text="Save" />
+  <string id="AF_UI_Notoriety_Back" text="Back" />
+  <string id="AF_UI_Notoriety_EditorOpenFailed" text="Unable to open the player history editor: " />
+  <string id="AF_UI_Notoriety_HistoryCleared" text="Player history cleared." />
+  <string id="AF_UI_Notoriety_HistoryUpdated" text="Player history updated." />
+  <string id="AF_UI_Notoriety_HistorySaveFailed" text="Unable to save player history: " />
+  <string id="AF_UI_Scene_PassiveStare" text="You have been staring at {NPC} for a while..." />
   <string id="AF_UI_Editor_EditDialogueLine" text="Edit dialogue line" />
   <string id="AF_UI_Editor_Empty" text="(Empty)" />
   <string id="AF_UI_Editor_EditHint" text="Edit the entire line in the field below; leave it empty to delete the line." />
@@ -2247,6 +2266,42 @@ Estimated requests: " />
   <string id="AF_UI_Onboarding_Import_Missing_unnamed_persona" text="Import failed: unnamed_persona\\*.json is missing." />
   <string id="AF_UI_Onboarding_Import_Missing_voice_mapping" text="Import failed: voice_mapping\\VoiceMapping.json is missing." />
   <string id="AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the" text="The package contains no kingdom card that safely matches the current world." />
-</strings>
+  <string id="AF_TERMINAL_UI_VassalageManagement" text="Vassalage management" />
+  <string id="AF_TERMINAL_UI_VassalageNotInitialized" text="Vassalage management is not initialized yet." />
+  <string id="AF_TERMINAL_UI_VassalageManagementInfo" text="Vassalage management details" />
+  <string id="AF_UI_ErrorAnalysis_NoRecentError" text="[AnimusForge] There is no recent error available for analysis." />
+  <string id="AF_UI_ErrorAnalysis_Title" text="Analyze the error?" />
+  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="The full details of “{TITLE}” were shown in the lower-left message feed.\n\nUse the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice." />
+  <string id="AF_UI_ErrorAnalysis_Analyze" text="Analyze" />
+  <string id="AF_UI_ErrorAnalysis_Skip" text="Skip for now" />
+  <string id="AF_UI_ErrorAnalysis_AlreadyRunning" text="[AnimusForge] Another error is already being analyzed. Please wait." />
+  <string id="AF_UI_ErrorAnalysis_Starting" text="[AnimusForge] Calling the preprocessing API to analyze the error..." />  <string id="AF_TAUNT_UI_ForcedExecutionCapture" text="{FACTION} has judged your crime level to be full. You will be executed after capture." />
+  <string id="AF_TAUNT_UI_CrimeCommittedAfterScene" text="After leaving the scene, {FACTION} crime increases by {AMOUNT}." />
+  <string id="AF_TAUNT_UI_CrimeAccumulated" text="You have accumulated {AMOUNT} crime with {FACTION}." />
+  <string id="AF_TAUNT_UI_Criminal" text="criminal" />
+  <string id="AF_TAUNT_UI_CriminalKnockdownTrust" text="Knocked down {VICTIM}: {SETTLEMENT} public trust +1.3." />
+  <string id="AF_TAUNT_UI_WantedExitBlocked" text="You are wanted and cannot leave this scene. Run beyond the red map-edge zone to escape pursuit." />
+  <string id="AF_TAUNT_UI_ConflictExitBlocked" text="You cannot leave while this conflict is still active." />
+  <string id="AF_TAUNT_UI_CannotLeaveTitle" text="Cannot leave" />
+  <string id="AF_TAUNT_UI_Acknowledge" text="OK" />
+  <string id="AF_TAUNT_UI_CriminalOwnerPenalty" text="Knocked down {VICTIM}: {OWNER} personal trust -1, private relation -1." />
+  <string id="AF_TAUNT_UI_ArmedConflictAlert" text="The armed-conflict alarm has reached this scene. Everyone nearby is on edge." />
+  <string id="AF_TAUNT_UI_ArmedConflictCarryover" text="Your armed conflict has spread to this scene. Guards and armed civilians are closing in on you." />
+  <string id="AF_TAUNT_UI_MerchantTrustPenalty" text="{SETTLEMENT} {MERCHANT} trust -10." />
+  <string id="AF_TAUNT_UI_PublicTrustPenalty" text="{SETTLEMENT} public trust -10." />
+  <string id="AF_TAUNT_UI_Target" text="target" />
+  <string id="AF_TAUNT_UI_KnockdownMerchantTrustPenalty" text="Knocked down {VICTIM}: {SETTLEMENT} {MERCHANT} trust -{PENALTY}." />
+  <string id="AF_TAUNT_UI_KnockdownPublicTrustPenalty" text="Knocked down {VICTIM}: {SETTLEMENT} public trust -{PENALTY}." />
+  <string id="AF_TAUNT_UI_KnockdownCrimePenalty" text="Knocked down {VICTIM}: crime increases by {AMOUNT}. Any amount above 59 is settled after leaving the settlement." />
+  <string id="AF_TAUNT_UI_ForcedExecutionDefeat" text="Your accumulated crime has reached {THRESHOLD}. You will be executed." />
+  <string id="AF_TAUNT_UI_MerchantWeapon" text="weapon market" />
+  <string id="AF_TAUNT_UI_MerchantArmor" text="armor market" />
+  <string id="AF_TAUNT_UI_MerchantHorse" text="horse market" />
+  <string id="AF_TAUNT_UI_MerchantGoods" text="goods market" />
+  <string id="AF_TAUNT_UI_MerchantBlacksmith" text="blacksmith" />
+  <string id="AF_TAUNT_UI_MerchantMarket" text="market" />
+  <string id="AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty" text="{SETTLEMENT} loyalty -{AMOUNT}: you harmed {TARGET} in your own settlement." />
+  <string id="AF_TAUNT_UI_Npc" text="NPC" />
+  <string id="AF_TAUNT_UI_GoldPickedUp" text="You picked up {AMOUNT} denars." /></strings>
 </base>
 

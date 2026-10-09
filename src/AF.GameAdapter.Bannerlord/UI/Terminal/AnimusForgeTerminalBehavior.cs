@@ -531,16 +531,16 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		TerminalVassalageManagementData data = owner?.BuildTerminalVassalageManagementData();
 		if (data == null || data.Subjects.Count == 0)
 		{
-			popupVm.ShowDetails(data?.TitleText ?? "臣属国管理", data?.DescriptionText ?? "VassalageBehavior 尚未初始化。");
+			popupVm.ShowDetails(data?.TitleText ?? Ui("AF_TERMINAL_UI_VassalageManagement", "Vassalage management"), data?.DescriptionText ?? Ui("AF_TERMINAL_UI_VassalageNotInitialized", "Vassalage management is not initialized yet."));
 			return;
 		}
-		popupVm.ShowBrowser(data.TitleText ?? "臣属国管理", new[]
+		popupVm.ShowBrowser(data.TitleText ?? Ui("AF_TERMINAL_UI_VassalageManagement", "Vassalage management"), new[]
 		{
 			new AnimusForgeTerminalNode
 			{
-				Title = "臣属管理说明",
+				Title = Ui("AF_TERMINAL_UI_VassalageManagementInfo", "Vassalage management details"),
 				Hint = data.DescriptionText,
-				OnExecute = () => popupVm.ShowDetails(data.TitleText ?? "臣属国管理", data.DescriptionText)
+				OnExecute = () => popupVm.ShowDetails(data.TitleText ?? Ui("AF_TERMINAL_UI_VassalageManagement", "Vassalage management"), data.DescriptionText)
 			}
 		}.Concat(data.Subjects.Select(subject => new AnimusForgeTerminalNode
 		{
