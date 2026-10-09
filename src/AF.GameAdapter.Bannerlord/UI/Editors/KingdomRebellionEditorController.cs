@@ -1,5 +1,6 @@
 using System; using System.Collections.Generic; using System.Linq; using System.Text; using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem; using TaleWorlds.Core; using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using static AnimusForge.MyBehavior;
 namespace AnimusForge;
 // Existing UI/result coordination only. Naming policy, game effects and the main-thread action queue remain sole H1 authorities.
@@ -10,6 +11,13 @@ internal sealed class KingdomRebellionEditorController
  private readonly Func<AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>> _automatic;
  private readonly Func<long> _captureGeneration;
  private readonly Action<Kingdom> _openStabilityDetail;
+ private static string Ui(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
+ private static string Ui(string id, string fallback, string variableName, string variableValue)
+ {
+  var text = new TextObject("{=" + id + "}" + fallback);
+  text.SetTextVariable(variableName, variableValue ?? string.Empty);
+  return text.ToString();
+ }
  internal KingdomRebellionEditorController(Func<KingdomRebellionRuntimeController> runtime,
   Func<AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>> automatic,
   Func<long> captureGeneration,Action<Kingdom> openStabilityDetail)
@@ -27,7 +35,7 @@ internal void OpenKingdomRebellionApiRepairFlow()
 		ReopenAfterApiConfigUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(300.0).Ticks;
 		if (!ModOnboardingBehavior.OpenEventAndRebellionApiRepairFlow())
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到 API 配置引导，请先检查 MCM 中的事件/叛乱API Base URL、API Key 与模型名。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_ApiRepairMissing", "The API setup guide was not found. Check the event/rebellion API Base URL, API key, and model in MCM first.")));
 		}
 	}
 internal void ProcessKingdomRebellionApiRepairResume()
@@ -72,7 +80,7 @@ internal void ProcessPendingDevForcedKingdomRebellionResult()
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			InformationManager.HideInquiry();
-			InformationManager.DisplayMessage(new InformationMessage("王国稳定度与叛乱功能已在 MCM 中关闭，已取消本次强制叛乱。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_DisabledForced", "Kingdom stability and rebellion are disabled in MCM. This forced rebellion was cancelled.")));
 			return;
 		}
 		if (pendingDevForcedKingdomRebellionContext == null)
@@ -87,12 +95,12 @@ internal void ProcessPendingDevForcedKingdomRebellionResult()
 		if (kingdom == null || clan == null)
 		{
 			flag = false;
-			text = "叛乱命名已完成，但目标王国或家族状态已变化，无法继续执行。";
+			text = Ui("AF_UI_KingdomRebellion_TargetChanged", "The rebellion name was generated, but the target kingdom or clan changed before execution could continue.");
 		}
 		else if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
 			flag = false;
-			text = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, "该王国") + " 当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次强制稳定度叛乱已跳过。";
+			text = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom")) + Ui("AF_UI_KingdomRebellion_PlayerImmunitySkipped", " is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. This forced stability rebellion was skipped.");
 		}
 		else
 		{
@@ -115,14 +123,14 @@ internal void ProcessPendingDevForcedKingdomRebellionResult()
 		}
 		if (list.Count > 0)
 		{
-			stringBuilder.AppendLine("联合响应家族：");
-			stringBuilder.AppendLine("- " + string.Join("、", list.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FollowerClans", "Coalition clans:"));
+			stringBuilder.AppendLine("- " + string.Join(Ui("AF_UI_KingdomRebellion_ClanSeparator", ", "), list.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
 			stringBuilder.AppendLine();
 		}
-		stringBuilder.AppendLine("执行结果：");
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_ExecutionResult", "Execution result:"));
 		stringBuilder.AppendLine((text ?? "").Trim());
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData(flag ? "强制叛乱执行完成" : "强制叛乱执行失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回详情", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(flag ? Ui("AF_UI_KingdomRebellion_ForcedCompleted", "Forced rebellion completed") : Ui("AF_UI_KingdomRebellion_ForcedFailed", "Forced rebellion failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Ui("AF_UI_KingdomRebellion_BackToDetails", "Back to details"), "", delegate
 		{
 			_openStabilityDetail(kingdom ?? MemoryEntityIdentityBannerlordAdapter.FindKingdomById(pendingDevForcedKingdomRebellionContext.KingdomId));
 		}, null));
@@ -130,27 +138,27 @@ internal void ProcessPendingDevForcedKingdomRebellionResult()
 internal void ShowDevForcedKingdomRebellionNamingFailurePopup(PendingDevForcedKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool afterApiRepair)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("强制叛乱已准备执行，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。");
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_ForcedNamingFailedBody", "The forced rebellion was ready, but the rebel kingdom name was not generated. The system will not continue with a local fallback name."));
 		stringBuilder.AppendLine();
 		if (kingdom != null)
 		{
-			stringBuilder.AppendLine("王国：" + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, "某王国"));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_KingdomLabel", "Kingdom:") + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomRebellion_UnknownKingdom", "an unknown kingdom")));
 		}
 		if (clan != null)
 		{
-			stringBuilder.AppendLine("主导家族：" + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_LeadClanLabel", "Lead clan:") + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
 		}
 		if (followerClans != null && followerClans.Count > 0)
 		{
-			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FollowerClansInline", "Coalition clans:") + string.Join(", ", followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
 		}
 		stringBuilder.AppendLine();
 		ReportRebelKingdomNamingFailure(context?.NamingResult);
 		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或返回王国稳定度详情。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
+		stringBuilder.AppendLine(afterApiRepair ? Ui("AF_UI_KingdomRebellion_ApiRepairReturned", "The API setup flow returned. Generate the rebel kingdom name again, or return to kingdom stability details.") : Ui("AF_UI_KingdomRebellion_ApiRepairRequired", "Fill in the event/rebellion API settings first. After fixing them, return here to generate the name again."));
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? "重试叛乱建国命名" : "叛乱建国命名失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? "重新生成命名" : "调整API信息", "返回详情", delegate
+		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? Ui("AF_UI_KingdomRebellion_RetryNaming", "Retry rebel kingdom naming") : Ui("AF_UI_KingdomRebellion_NamingFailedTitle", "Rebel kingdom naming failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? Ui("AF_UI_KingdomRebellion_RegenerateName", "Generate name again") : Ui("AF_UI_KingdomRebellion_AdjustApi", "Adjust API settings"), Ui("AF_UI_KingdomRebellion_BackToDetails", "Back to details"), delegate
 		{
 			if (afterApiRepair)
 			{
@@ -186,13 +194,13 @@ internal void RetryBlockedDevForcedKingdomRebellionNaming()
 		List<Clan> list = (context.FollowerClanIds ?? new List<string>()).Select(MemoryEntityIdentityBannerlordAdapter.FindClanById).Where((Clan x) => x != null && x != clan).ToList();
 		if (kingdom == null || clan == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("叛乱命名重试前目标王国或家族状态已变化，无法继续执行。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_RetryTargetChanged", "The target kingdom or clan changed before the rebellion naming retry could run.")));
 			_openStabilityDetail(kingdom);
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该王国当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，不能重试强制稳定度叛乱。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_RetryPlayerImmune", "The kingdom is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. The forced stability rebellion cannot be retried.")));
 			_openStabilityDetail(kingdom);
 			return;
 		}
@@ -202,22 +210,22 @@ internal void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, in
 	{
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
-			InformationManager.DisplayMessage(new InformationMessage("王国稳定度与叛乱功能已在 MCM 中关闭，不能启动强制叛乱。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_DisabledStart", "Kingdom stability and rebellion are disabled in MCM. The forced rebellion cannot start.")));
 			return;
 		}
 		if (DevForcedInProgress)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前已有一条强制叛乱任务正在后台运行，请稍候。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_AlreadyRunning", "A forced rebellion task is already running in the background. Please wait.")));
 			return;
 		}
 		if (kingdom == null || clan == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法启动强制叛乱：找不到目标王国或家族。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_TargetMissing", "The forced rebellion cannot start: the target kingdom or clan was not found.")));
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该王国当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，不能启动强制稳定度叛乱。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_PlayerImmuneStart", "The kingdom is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. The forced stability rebellion cannot start.")));
 			return;
 		}
 		List<Clan> list = followerClans?.Where((Clan x) => x != null && x != clan).GroupBy((Clan x) => MemoryEntityIdentityBannerlordAdapter.GetClanId(x), StringComparer.OrdinalIgnoreCase).Select((IGrouping<string, Clan> x) => x.First()).ToList() ?? new List<Clan>();
@@ -226,7 +234,7 @@ internal void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, in
 		DevForcedInProgress = true;
 		PendingDevReady = false;
 		PendingDevContext = null;
-		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), Ui("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = _captureGeneration();
 		string logTarget = "叛乱建国命名 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		PendingDevForcedKingdomRebellionContext pendingContext = new PendingDevForcedKingdomRebellionContext
@@ -263,15 +271,15 @@ internal void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingd
 		StringBuilder stringBuilder = new StringBuilder();
 		if (kingdom != null)
 		{
-			stringBuilder.AppendLine("王国：" + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, "某王国"));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_KingdomLabel", "Kingdom:") + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomRebellion_UnknownKingdom", "an unknown kingdom")));
 		}
 		if (!string.IsNullOrWhiteSpace(context?.StabilityTierText))
 		{
-			stringBuilder.AppendLine("触发时稳定度：" + context.StabilityValue + "（" + context.StabilityTierText + "）");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_StabilityAtTrigger", "Stability at trigger:") + context.StabilityValue + " (" + context.StabilityTierText + ")");
 		}
 		if (clan != null)
 		{
-			stringBuilder.AppendLine("主导家族：" + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_LeadClanLabel", "Lead clan:") + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
 		}
 		if (context?.NamingResult != null)
 		{
@@ -285,19 +293,19 @@ internal void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingd
 		if (followerClans != null && followerClans.Count > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("联合响应家族：");
-			stringBuilder.AppendLine("- " + string.Join("、", followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FollowerClans", "Coalition clans:"));
+			stringBuilder.AppendLine("- " + string.Join(Ui("AF_UI_KingdomRebellion_ClanSeparator", ", "), followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
 		}
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("执行结果：");
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_ExecutionResult", "Execution result:"));
 		stringBuilder.AppendLine((executionMessage ?? "").Trim());
 		if (_automatic().PendingCount > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("后续仍有 " + _automatic().PendingCount + " 场自动叛乱待处理。点击“继续”后将进入下一场。");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_PendingAutomatic", "There are still {COUNT} automatic rebellions pending. Click Continue to open the next one.", "COUNT", _automatic().PendingCount.ToString()));
 		}
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData(success ? "自动叛乱执行完成" : "自动叛乱执行失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "继续", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(success ? Ui("AF_UI_KingdomRebellion_AutomaticCompleted", "Automatic rebellion completed") : Ui("AF_UI_KingdomRebellion_AutomaticFailed", "Automatic rebellion failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Ui("AF_UI_KingdomRebellion_Continue", "Continue"), "", delegate
 		{
 			_runtime().ContinueAutomaticKingdomRebellionFlow();
 		}, null), pauseGameActiveState: true);
@@ -305,27 +313,27 @@ internal void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingd
 internal void ShowAutomaticKingdomRebellionNamingFailurePopup(PendingAutomaticKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool afterApiRepair)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("本周自动叛乱已命中，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。");
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_AutomaticNamingFailedBody", "This week's automatic rebellion was triggered, but the rebel kingdom name was not generated. The system will not continue with a local fallback name."));
 		stringBuilder.AppendLine();
 		if (kingdom != null)
 		{
-			stringBuilder.AppendLine("王国：" + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, "某王国"));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_KingdomLabel", "Kingdom:") + MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomRebellion_UnknownKingdom", "an unknown kingdom")));
 		}
 		if (clan != null)
 		{
-			stringBuilder.AppendLine("主导家族：" + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_LeadClanLabel", "Lead clan:") + MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan));
 		}
 		if (followerClans != null && followerClans.Count > 0)
 		{
-			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FollowerClansInline", "Coalition clans:") + string.Join(", ", followerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
 		}
 		stringBuilder.AppendLine();
 		ReportRebelKingdomNamingFailure(context?.NamingResult);
 		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或跳过本次自动叛乱。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
+		stringBuilder.AppendLine(afterApiRepair ? Ui("AF_UI_KingdomRebellion_ApiRepairReturnedAutomatic", "The API setup flow returned. Generate the rebel kingdom name again, or skip this automatic rebellion.") : Ui("AF_UI_KingdomRebellion_ApiRepairRequiredAutomatic", "Fill in the event/rebellion API settings first. After fixing them, return here to generate the name again."));
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? "重试叛乱建国命名" : "叛乱建国命名失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? "重新生成命名" : "调整API信息", "跳过本次", delegate
+		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? Ui("AF_UI_KingdomRebellion_RetryNaming", "Retry rebel kingdom naming") : Ui("AF_UI_KingdomRebellion_NamingFailedTitle", "Rebel kingdom naming failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? Ui("AF_UI_KingdomRebellion_RegenerateName", "Generate name again") : Ui("AF_UI_KingdomRebellion_AdjustApi", "Adjust API settings"), Ui("AF_UI_KingdomRebellion_Skip", "Skip this"), delegate
 		{
 			if (afterApiRepair)
 			{
@@ -354,40 +362,40 @@ internal static void AppendRebelKingdomNamingResultLines(StringBuilder stringBui
 		{
 			return;
 		}
-		stringBuilder.AppendLine("命名结果：");
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_NamingResult", "Naming result:"));
 		if (KingdomRebellionRuntimeController.IsRebelKingdomNamingSuccess(namingResult))
 		{
-			stringBuilder.AppendLine("- 正式名：" + ((namingResult.FormalName ?? "").Trim()));
-			stringBuilder.AppendLine("- 简称：" + ((namingResult.ShortName ?? "").Trim()));
-			stringBuilder.AppendLine("- 来源：LLM");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FormalName", "- Formal name:") + " " + ((namingResult.FormalName ?? "").Trim()));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_ShortName", "- Short name:") + " " + ((namingResult.ShortName ?? "").Trim()));
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_Source", "- Source: LLM"));
 			if (!string.IsNullOrWhiteSpace(namingResult.EncyclopediaText))
 			{
-				stringBuilder.AppendLine("- 百科简介：" + namingResult.EncyclopediaText.Trim());
+				stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_Encyclopedia", "- Encyclopedia:") + " " + namingResult.EncyclopediaText.Trim());
 			}
 			return;
 		}
-		stringBuilder.AppendLine("- 状态：失败");
-		stringBuilder.AppendLine("- 自动重试次数：" + Math.Max(namingResult?.AttemptsUsed ?? 0, 0) + "/" + RebelKingdomNamingMaxAttempts);
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_StatusFailed", "- Status: failed"));
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_Attempts", "- Automatic retries:") + " " + Math.Max(namingResult?.AttemptsUsed ?? 0, 0) + "/" + RebelKingdomNamingMaxAttempts);
 		if (namingResult?.IsRequestsPerMinuteLimit == true)
 		{
-			stringBuilder.AppendLine("- 限流判断：疑似 RPM 超限");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_RpmLimit", "- Rate-limit check: possible RPM limit"));
 		}
 		else if (namingResult?.IsQuotaLimit == true)
 		{
-			stringBuilder.AppendLine("- 限流判断：疑似额度/余额不足");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_QuotaLimit", "- Rate-limit check: possible quota or balance limit"));
 		}
 		else if (namingResult?.IsRateLimit == true)
 		{
-			stringBuilder.AppendLine("- 限流判断：接口限流");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_RateLimit", "- Rate-limit check: endpoint rate limit"));
 		}
 		if (namingResult?.RetryAfterSeconds != null)
 		{
-			stringBuilder.AppendLine("- 接口建议等待：" + namingResult.RetryAfterSeconds.Value + " 秒");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_RetryAfter", "- Endpoint suggested wait:") + " " + namingResult.RetryAfterSeconds.Value + " seconds");
 		}
 		if (!string.IsNullOrWhiteSpace(namingResult?.FailureReason))
 		{
 			// 避免完整模型/API 响应把重试或修复按钮推出可视区域。
-			stringBuilder.AppendLine("- 最后一次失败详情已显示在左下角消息并写入日志。");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FailureDetailsShown", "- The last failure details were shown in the lower-left message and written to the log."));
 		}
 	}
 internal static void ReportRebelKingdomNamingFailure(RebelKingdomNamingResult namingResult)
@@ -396,7 +404,7 @@ internal static void ReportRebelKingdomNamingFailure(RebelKingdomNamingResult na
 		if (!string.IsNullOrWhiteSpace(failureReason))
 		{
 			// 仅在失败 UI 已经准备显示时报告一次，避免后台重试过程反复打断玩家。
-			NonBlockingErrorReport.Show("叛乱建国命名失败", failureReason);
+			NonBlockingErrorReport.Show(Ui("AF_UI_KingdomRebellion_NamingFailedTitle", "Rebel kingdom naming failed"), failureReason);
 		}
 	}
 }

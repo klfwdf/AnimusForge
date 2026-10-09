@@ -1522,5 +1522,56 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Title" text="World Diplomacy Trade Alliance Failed Proposal Cooldown Days" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Hint" text="Configure World Diplomacy Trade Alliance Failed Proposal Cooldown Days." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
+  <string id="AF_UI_KingdomRebellion_AdjustApi" text="Adjust API settings" />
+  <string id="AF_UI_KingdomRebellion_AlreadyRunning" text="A forced rebellion task is already running in the background. Please wait." />
+  <string id="AF_UI_KingdomRebellion_ApiRepairMissing" text="The API setup guide was not found. Check the event/rebellion API Base URL, API key, and model in MCM first." />
+  <string id="AF_UI_KingdomRebellion_ApiRepairRequired" text="Fill in the event/rebellion API settings first. After fixing them, return here to generate the name again." />
+  <string id="AF_UI_KingdomRebellion_ApiRepairRequiredAutomatic" text="Fill in the event/rebellion API settings first. After fixing them, return here to generate the name again." />
+  <string id="AF_UI_KingdomRebellion_ApiRepairReturned" text="The API setup flow returned. Generate the rebel kingdom name again, or return to kingdom stability details." />
+  <string id="AF_UI_KingdomRebellion_ApiRepairReturnedAutomatic" text="The API setup flow returned. Generate the rebel kingdom name again, or skip this automatic rebellion." />
+  <string id="AF_UI_KingdomRebellion_Attempts" text="- Automatic retries:" />
+  <string id="AF_UI_KingdomRebellion_AutomaticCompleted" text="Automatic rebellion completed" />
+  <string id="AF_UI_KingdomRebellion_AutomaticFailed" text="Automatic rebellion failed" />
+  <string id="AF_UI_KingdomRebellion_AutomaticNamingFailedBody" text="This week's automatic rebellion was triggered, but the rebel kingdom name was not generated. The system will not continue with a local fallback name." />
+  <string id="AF_UI_KingdomRebellion_BackToDetails" text="Back to details" />
+  <string id="AF_UI_KingdomRebellion_Continue" text="Continue" />
+  <string id="AF_UI_KingdomRebellion_ClanSeparator" text=", " />
+  <string id="AF_UI_KingdomRebellion_DisabledForced" text="Kingdom stability and rebellion are disabled in MCM. This forced rebellion was cancelled." />
+  <string id="AF_UI_KingdomRebellion_DisabledStart" text="Kingdom stability and rebellion are disabled in MCM. The forced rebellion cannot start." />
+  <string id="AF_UI_KingdomRebellion_Encyclopedia" text="- Encyclopedia:" />
+  <string id="AF_UI_KingdomRebellion_ExecutionResult" text="Execution result:" />
+  <string id="AF_UI_KingdomRebellion_FailureDetailsShown" text="- The last failure details were shown in the lower-left message and written to the log." />
+  <string id="AF_UI_KingdomRebellion_FollowerClans" text="Coalition clans:" />
+  <string id="AF_UI_KingdomRebellion_FollowerClansInline" text="Coalition clans:" />
+  <string id="AF_UI_KingdomRebellion_ForcedCompleted" text="Forced rebellion completed" />
+  <string id="AF_UI_KingdomRebellion_ForcedFailed" text="Forced rebellion failed" />
+  <string id="AF_UI_KingdomRebellion_ForcedNamingFailedBody" text="The forced rebellion was ready, but the rebel kingdom name was not generated. The system will not continue with a local fallback name." />
+  <string id="AF_UI_KingdomRebellion_FormalName" text="- Formal name:" />
+  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically." />
+  <string id="AF_UI_KingdomRebellion_GeneratingTitle" text="Generating rebel kingdom name" />
+  <string id="AF_UI_KingdomRebellion_KingdomLabel" text="Kingdom:" />
+  <string id="AF_UI_KingdomRebellion_LeadClanLabel" text="Lead clan:" />
+  <string id="AF_UI_KingdomRebellion_NamingFailedTitle" text="Rebel kingdom naming failed" />
+  <string id="AF_UI_KingdomRebellion_NamingResult" text="Naming result:" />
+  <string id="AF_UI_KingdomRebellion_PendingAutomatic" text="There are still {COUNT} automatic rebellions pending. Click Continue to open the next one." />
+  <string id="AF_UI_KingdomRebellion_PlayerImmuneStart" text="The kingdom is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. The forced stability rebellion cannot start." />
+  <string id="AF_UI_KingdomRebellion_PlayerImmunitySkipped" text=" is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. This forced stability rebellion was skipped." />
+  <string id="AF_UI_KingdomRebellion_QuotaLimit" text="- Rate-limit check: possible quota or balance limit" />
+  <string id="AF_UI_KingdomRebellion_RateLimit" text="- Rate-limit check: endpoint rate limit" />
+  <string id="AF_UI_KingdomRebellion_RegenerateName" text="Generate name again" />
+  <string id="AF_UI_KingdomRebellion_RetryAfter" text="- Endpoint suggested wait:" />
+  <string id="AF_UI_KingdomRebellion_RetryNaming" text="Retry rebel kingdom naming" />
+  <string id="AF_UI_KingdomRebellion_RetryPlayerImmune" text="The kingdom is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. The forced stability rebellion cannot be retried." />
+  <string id="AF_UI_KingdomRebellion_RetryTargetChanged" text="The target kingdom or clan changed before the rebellion naming retry could run." />
+  <string id="AF_UI_KingdomRebellion_RpmLimit" text="- Rate-limit check: possible RPM limit" />
+  <string id="AF_UI_KingdomRebellion_ShortName" text="- Short name:" />
+  <string id="AF_UI_KingdomRebellion_Skip" text="Skip this" />
+  <string id="AF_UI_KingdomRebellion_Source" text="- Source: LLM" />
+  <string id="AF_UI_KingdomRebellion_StabilityAtTrigger" text="Stability at trigger:" />
+  <string id="AF_UI_KingdomRebellion_StatusFailed" text="- Status: failed" />
+  <string id="AF_UI_KingdomRebellion_TargetChanged" text="The rebellion name was generated, but the target kingdom or clan changed before execution could continue." />
+  <string id="AF_UI_KingdomRebellion_TargetMissing" text="The forced rebellion cannot start: the target kingdom or clan was not found." />
+  <string id="AF_UI_KingdomRebellion_ThisKingdom" text="this kingdom" />
+  <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="an unknown kingdom" />
 </strings>
 </base>

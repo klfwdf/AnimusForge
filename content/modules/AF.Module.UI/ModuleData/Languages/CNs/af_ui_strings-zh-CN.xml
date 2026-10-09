@@ -1534,5 +1534,56 @@
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Title" text="贸易/结盟失败冷却（天）" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Hint" text="贸易或结盟提议未达成后，同一提出国向同一对象国暂时不能再提出相同类型提议。反向提议与另一类型分别计算。默认168天；设为0关闭。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
+  <string id="AF_UI_KingdomRebellion_AdjustApi" text="调整 API 设置" />
+  <string id="AF_UI_KingdomRebellion_AlreadyRunning" text="当前已有一条强制叛乱任务正在后台运行，请稍候。" />
+  <string id="AF_UI_KingdomRebellion_ApiRepairMissing" text="未找到 API 配置引导，请先检查 MCM 中的事件/叛乱 API Base URL、API Key 与模型名。" />
+  <string id="AF_UI_KingdomRebellion_ApiRepairRequired" text="请先填写事件/叛乱 API 设置。修正后可回到这里重新生成命名。" />
+  <string id="AF_UI_KingdomRebellion_ApiRepairRequiredAutomatic" text="请先填写事件/叛乱 API 设置。修正后可回到这里重新生成命名。" />
+  <string id="AF_UI_KingdomRebellion_ApiRepairReturned" text="API 配置流程已返回。请重新生成叛乱建国命名，或返回王国稳定度详情。" />
+  <string id="AF_UI_KingdomRebellion_ApiRepairReturnedAutomatic" text="API 配置流程已返回。请重新生成叛乱建国命名，或跳过本次自动叛乱。" />
+  <string id="AF_UI_KingdomRebellion_Attempts" text="- 自动重试次数：" />
+  <string id="AF_UI_KingdomRebellion_AutomaticCompleted" text="自动叛乱执行完成" />
+  <string id="AF_UI_KingdomRebellion_AutomaticFailed" text="自动叛乱执行失败" />
+  <string id="AF_UI_KingdomRebellion_AutomaticNamingFailedBody" text="本周自动叛乱已命中，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。" />
+  <string id="AF_UI_KingdomRebellion_BackToDetails" text="返回详情" />
+  <string id="AF_UI_KingdomRebellion_Continue" text="继续" />
+  <string id="AF_UI_KingdomRebellion_ClanSeparator" text="、" />
+  <string id="AF_UI_KingdomRebellion_DisabledForced" text="王国稳定度与叛乱功能已在 MCM 中关闭，已取消本次强制叛乱。" />
+  <string id="AF_UI_KingdomRebellion_DisabledStart" text="王国稳定度与叛乱功能已在 MCM 中关闭，不能启动强制叛乱。" />
+  <string id="AF_UI_KingdomRebellion_Encyclopedia" text="- 百科简介：" />
+  <string id="AF_UI_KingdomRebellion_ExecutionResult" text="执行结果：" />
+  <string id="AF_UI_KingdomRebellion_FailureDetailsShown" text="- 最后一次失败详情已显示在左下角消息并写入日志。" />
+  <string id="AF_UI_KingdomRebellion_FollowerClans" text="联合响应家族：" />
+  <string id="AF_UI_KingdomRebellion_FollowerClansInline" text="联合响应家族：" />
+  <string id="AF_UI_KingdomRebellion_ForcedCompleted" text="强制叛乱执行完成" />
+  <string id="AF_UI_KingdomRebellion_ForcedFailed" text="强制叛乱执行失败" />
+  <string id="AF_UI_KingdomRebellion_ForcedNamingFailedBody" text="强制叛乱已准备执行，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。" />
+  <string id="AF_UI_KingdomRebellion_FormalName" text="- 正式名：" />
+  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。" />
+  <string id="AF_UI_KingdomRebellion_GeneratingTitle" text="正在生成叛乱建国命名" />
+  <string id="AF_UI_KingdomRebellion_KingdomLabel" text="王国：" />
+  <string id="AF_UI_KingdomRebellion_LeadClanLabel" text="主导家族：" />
+  <string id="AF_UI_KingdomRebellion_NamingFailedTitle" text="叛乱建国命名失败" />
+  <string id="AF_UI_KingdomRebellion_NamingResult" text="命名结果：" />
+  <string id="AF_UI_KingdomRebellion_PendingAutomatic" text="后续仍有 {COUNT} 场自动叛乱待处理。点击“继续”后将进入下一场。" />
+  <string id="AF_UI_KingdomRebellion_PlayerImmuneStart" text="该王国当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，不能启动强制稳定度叛乱。" />
+  <string id="AF_UI_KingdomRebellion_PlayerImmunitySkipped" text="当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次强制稳定度叛乱已跳过。" />
+  <string id="AF_UI_KingdomRebellion_QuotaLimit" text="- 限流判断：疑似额度/余额不足" />
+  <string id="AF_UI_KingdomRebellion_RateLimit" text="- 限流判断：接口限流" />
+  <string id="AF_UI_KingdomRebellion_RegenerateName" text="重新生成命名" />
+  <string id="AF_UI_KingdomRebellion_RetryAfter" text="- 接口建议等待：" />
+  <string id="AF_UI_KingdomRebellion_RetryNaming" text="重试叛乱建国命名" />
+  <string id="AF_UI_KingdomRebellion_RetryPlayerImmune" text="该王国当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，不能重试强制稳定度叛乱。" />
+  <string id="AF_UI_KingdomRebellion_RetryTargetChanged" text="叛乱命名重试前目标王国或家族状态已变化，无法继续执行。" />
+  <string id="AF_UI_KingdomRebellion_RpmLimit" text="- 限流判断：疑似 RPM 超限" />
+  <string id="AF_UI_KingdomRebellion_ShortName" text="- 简称：" />
+  <string id="AF_UI_KingdomRebellion_Skip" text="跳过本次" />
+  <string id="AF_UI_KingdomRebellion_Source" text="- 来源：LLM" />
+  <string id="AF_UI_KingdomRebellion_StabilityAtTrigger" text="触发时稳定度：" />
+  <string id="AF_UI_KingdomRebellion_StatusFailed" text="- 状态：失败" />
+  <string id="AF_UI_KingdomRebellion_TargetChanged" text="叛乱命名已完成，但目标王国或家族状态已变化，无法继续执行。" />
+  <string id="AF_UI_KingdomRebellion_TargetMissing" text="无法启动强制叛乱：找不到目标王国或家族。" />
+  <string id="AF_UI_KingdomRebellion_ThisKingdom" text="该王国" />
+  <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="某王国" />
 </strings>
 </base>
