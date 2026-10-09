@@ -574,6 +574,18 @@ COURIER_THEME_EXPECTED = {
 # SettlementBalancePopup is loaded by SettlementBalancePopup; the DialogueUI item
 # is referenced by AFDialogueConversation's ItemTemplate (Pen sizing/scrollbars).
 COMMITTED_CONTENT_ADDITIONS = {
+    "ModuleData/Languages/afconv_ambient_strings.xml": {
+        "owner": "AF.Module.Conversation",
+        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml",
+        "sha256": "CB342D78D50BA8AB340DAA2B9CAA4D318B6D2263D6D6A012DE1C6016D63F06F0",
+        "revision": "8b07db9d2",
+    },
+    "ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml": {
+        "owner": "AF.Module.Conversation",
+        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml",
+        "sha256": "D4FBA49FF40629A3F0704D3D29DE286DF21797B3596A2F8038758056436A8F5C",
+        "revision": "8b07db9d2",
+    },
     # Localization resources and the mission photo prefab were already mapped
     # before this contract entry was added; pin their reviewed source bytes
     # without changing the runtime projection.
@@ -758,13 +770,14 @@ EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, *
 # baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
 J15B_REVIEWED_EDIT_PARENT = "99ca85ae"
 J15B_REVIEWED_EDITS = {
+    "ModuleData/TownAmbientDialogue.json": "98053B7D88089486FA4E300EF8CD0451F36785DFA503AB4943FFC4CC5D7AD52F",
     "ModuleData/ActionPostprocessPrompts.json": "509EE9248F938042CCF7338AE4ED2401631224DA8DCB95D7ED26C7553D8F0C38",
     "ModuleData/RuleBehaviorPrompts.json": "3396D30D95CCB808A8C798023467FC1EB2AEF9DFAA984EAAEA2C661EBC679CCF",
     "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
     "ModuleData/action_sets.xml": "DD52422AC7F6B5D0BF7049964CD64E1A79E109E62414B0235CF7F7432966DB2B",
     "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
-    "ModuleData/Languages/language_data.xml": "ED178B18DB1243E00DAFC17D9E8B28DDFE1143CC708D61702D7679518378F1F4",
-    "ModuleData/Languages/CNs/language_data.xml": "740E8855D044380F7A94195162883B4967634766E2312E403B43A009681BCFA9",
+    "ModuleData/Languages/language_data.xml": "C33B861355BF8D06B974D7FF1D4103E81693FCBAC011B71E49CAABD4CA3A39D5",
+    "ModuleData/Languages/CNs/language_data.xml": "DF7DD38129105CCCF4F9FBD0C8EE501D2422B5F6D1EB78C8CF4E3B7B25B515D0",
     # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
     # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
     "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2BB7A1574140F2F3CE6F561320DDE433AEF679D5FC1A7E3A9BE042CE6F60BF5B",
