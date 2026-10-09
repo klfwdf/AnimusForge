@@ -398,6 +398,35 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 	}
 
+	// Detached relay facts are captured once per request; no game-object or layer lookup here.
+	internal static string BuildSceneRelayTurnContextForPrompt(string playerText, NpcDataPacket primaryNpc, NpcDataPacket currentSpeaker, NpcDataPacket previousSpeaker, string previousReply, IEnumerable<int> spokenAgentIndices, int turnNumber)
+	{
+		if (currentSpeaker == null) return "";
+		StringBuilder context = new StringBuilder();
+		context.AppendLine("【本轮接力话题】（仅对话调度上下文，不是新增玩家指令或成交事实）");
+		context.AppendLine("玩家本轮原话: " + (playerText ?? "").Trim());
+		context.AppendLine("当前发言轮次: " + Math.Max(1, turnNumber));
+		context.AppendLine("首位应答者: " + (primaryNpc == null ? "（无）" : GetSceneNpcHistoryNameForPrompt(primaryNpc) + " | 接力编号: " + primaryNpc.AgentIndex));
+		context.AppendLine("当前接话者: " + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " | 接力编号: " + currentSpeaker.AgentIndex);
+		string spoken = string.Join(", ", (spokenAgentIndices ?? Enumerable.Empty<int>()).OrderBy(id => id));
+		context.AppendLine("本轮已发言编号: " + (string.IsNullOrWhiteSpace(spoken) ? "（无）" : spoken) + "；已经发言者仍可再次接话。");
+		if (previousSpeaker == null)
+			context.AppendLine("上一位发言者: （无；当前为首位应答）");
+		else
+		{
+			context.AppendLine("上一位发言者: " + GetSceneNpcHistoryNameForPrompt(previousSpeaker) + " | 接力编号: " + previousSpeaker.AgentIndex);
+			context.AppendLine("上一位已经说过: " + (previousReply ?? "").Trim());
+		}
+		return context.ToString().Trim();
+	}
+
+	internal static string BuildSceneGroupTurnUserSectionForPrompt(bool firstTurn, string relayTurnContext, NpcDataPacket currentSpeaker, List<NpcDataPacket> engagedParticipants)
+	{
+		string continuation = firstTurn ? null : ScenePromptMessageProjectionComposer.BuildAutoGroupChatReplyInstruction(
+			GetSceneNpcHistoryNameForPrompt(currentSpeaker), engagedParticipants);
+		return BuildSceneCompositeUserBlock("", relayTurnContext, continuation);
+	}
+
 	internal async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		long sceneReplyGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -465,6 +494,8 @@ internal sealed partial class SceneConversationSessionRuntime
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 			HashSet<int> personaPreparedAgentIndices = new HashSet<int>();
 			bool firstTurn = true;
+			NpcDataPacket previousSpeaker = null;
+			string previousSpeakerReply = "";
 			bool battleSpeechClaimedRound = false;
 			bool useTownResponseBudget = AfGcczShoutBridge.ShouldUseTownNpcResponseBudgetForExternal();
 			HashSet<int> townBudgetAdmittedAgentIndices = useTownResponseBudget ? new HashSet<int>() : null;
@@ -747,7 +778,9 @@ internal sealed partial class SceneConversationSessionRuntime
 					List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(speakingHero, currentSpeaker.AgentIndex);
 					uncompressedSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_uncompressed_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
+					string relayTurnContext = multiNpcScene ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
+					string relayTurnUserSection = multiNpcScene ? BuildSceneGroupTurnUserSectionForPrompt(firstTurn, relayTurnContext, currentSpeaker, engagedParticipants) : null;
+					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), suffixUserSections: new[] { relayTurnUserSection }, persistentHistoryMessages: persistentMemoryRoleMessages);
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
@@ -769,6 +802,8 @@ internal sealed partial class SceneConversationSessionRuntime
 								// Freeze this speaker's authoritative request; capture above only supplies identity.
 								// In particular, current AFEF facts have already been consumed into messages.
 								PromptPackage preparedMainPrompt = LegacyConfiguredChatGateway.BuildPromptPackage(messages, 5000, "legacy-scene-shout");
+								if (multiNpcScene && Logger.IsVerboseModLogicEnabled && DuelSettings.GetSettings()?.EnableTokenStatsLog == true)
+									ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, 5000, "scene_relay_turn_preflight");
 								LegacyInteractionPipelinePorts ports = CreateSceneShoutMainReplyPorts(preparedMainPrompt);
 								ILlmGateway gateway = new LegacyShoutNetworkGateway();
 								using (LegacyChannelInteractionFacade facade = LegacyInteractionSnapshotAdapters.CreateSceneShoutInteractionFacade(
@@ -995,7 +1030,8 @@ internal sealed partial class SceneConversationSessionRuntime
 					if (flag11)
 					{
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
-						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId);
+						string relayConversationContext = relayPostprocessSelected ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
+						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext);
 						receipt?.AddPostprocess(postprocessTask);
 						if (relayPostprocessSelected)
 						{
@@ -1070,6 +1106,8 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					break;
 				}
+				previousSpeaker = currentSpeaker;
+				previousSpeakerReply = cleaned;
 				currentSpeaker = nextSpeaker;
 				firstTurn = false;
 			}
