@@ -8,9 +8,24 @@ using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
+
+internal static class KingdomFactionUiText
+{
+	internal static string T(string id, string englishFallback)
+		=> new TextObject("{=" + id + "}" + englishFallback).ToString();
+
+	internal static string F(string id, string englishFallback, params (string Name, object Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + englishFallback);
+		if (variables != null)
+			foreach ((string name, object value) in variables) text.SetTextVariable(name, value?.ToString() ?? string.Empty);
+		return text.ToString();
+	}
+}
 
 // ════════════════════════════════════════════════════════════════════════
 //  Faction half of the kingdom screen "内政" tab (layout in KingdomInteriorPanel.cs, Pen frame LEL0F).
@@ -165,7 +180,9 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	[DataSourceProperty] public bool IsAvailable => _panel.Available;
 	[DataSourceProperty] public bool IsCatalogVisible => _panel.Available && _catalogShown;
 	[DataSourceProperty] public bool HasEntry => IsCatalogVisible && _key.Length > 0;
-	[DataSourceProperty] public string CatalogCountText => (_panel.Factions.Count > 0 ? _panel.Factions.Count + " 派" : "尚无派系") + "  ·  门槛 " + _panel.Threshold;
+	[DataSourceProperty] public string CatalogCountText => _panel.Factions.Count > 0
+		? KingdomFactionUiText.F("AF_DIP_UI_Faction_CatalogCount", "{COUNT} factions  ·  threshold {THRESHOLD}", ("COUNT", _panel.Factions.Count), ("THRESHOLD", _panel.Threshold))
+		: KingdomFactionUiText.F("AF_DIP_UI_Faction_CatalogEmpty", "No factions  ·  threshold {THRESHOLD}", ("THRESHOLD", _panel.Threshold));
 	[DataSourceProperty] public string KingdomName => _panel.Name;
 	[DataSourceProperty] public string IdentityText => _panel.Identity;
 	[DataSourceProperty] public string StabilityValue => _panel.Stability.ToString();
@@ -194,22 +211,27 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	[DataSourceProperty] public string BlockNote { get; private set; } = "";
 	[DataSourceProperty] public MBBindingList<KingdomFactionStepVM> Steps { get; } = new MBBindingList<KingdomFactionStepVM>();
 	[DataSourceProperty] public string FigureGrievance => _faction?.Grievance.ToString() ?? "";
-	[DataSourceProperty] public string FigureGrievanceNote => _faction == null ? "" : (_faction.Grievance >= _panel.Threshold ? "高于" : "低于") + "成派门槛 " + _panel.Threshold;
+	[DataSourceProperty] public string FigureGrievanceNote => _faction == null ? "" : KingdomFactionUiText.F(
+		_faction.Grievance >= _panel.Threshold ? "AF_DIP_UI_Faction_AboveFormationThreshold" : "AF_DIP_UI_Faction_BelowFormationThreshold",
+		_faction.Grievance >= _panel.Threshold ? "Above formation threshold {THRESHOLD}" : "Below formation threshold {THRESHOLD}",
+		("THRESHOLD", _panel.Threshold));
 	[DataSourceProperty] public string FigurePower => _faction == null ? "" : _faction.PowerPercent + "%";
-	[DataSourceProperty] public string FigurePowerUnit => _faction == null ? "" : "王室 " + _panel.CrownPowerPercent + "%  ·  " + _faction.Fortifications + " 城";
+	[DataSourceProperty] public string FigurePowerUnit => _faction == null ? "" : KingdomFactionUiText.F("AF_DIP_UI_Faction_PowerUnit", "Crown {CROWN}%  ·  {FORTIFICATIONS} fiefs", ("CROWN", _panel.CrownPowerPercent), ("FORTIFICATIONS", _faction.Fortifications));
 	[DataSourceProperty] public string FigureRefusals => _faction?.Refusals.ToString() ?? "";
 	[DataSourceProperty] public string FigureRefusalUnit => _faction?.RefusalUnit ?? "";
 	// The chronicle box of the faction figures is a quarter of the dossier wide.
-	[DataSourceProperty] public string FigureSource1 => _panel.Chronicle.Count > 0 ? Clip(_panel.Chronicle[0], 18) : "暂无近期纪事";
+	[DataSourceProperty] public string FigureSource1 => _panel.Chronicle.Count > 0 ? Clip(_panel.Chronicle[0], 18) : KingdomFactionUiText.T("AF_DIP_UI_Faction_NoRecentChronicle", "No recent chronicle");
 	[DataSourceProperty] public string FigureSource2 => _panel.Chronicle.Count > 1 ? Clip(_panel.Chronicle[1], 18) : "";
 	[DataSourceProperty] public MBBindingList<KingdomFactionConditionVM> Conditions { get; } = new MBBindingList<KingdomFactionConditionVM>();
-	[DataSourceProperty] public string SourceLine1 => _panel.Chronicle.Count > 0 ? Clip(_panel.Chronicle[0], 40) : "暂无近期纪事";
+	[DataSourceProperty] public string SourceLine1 => _panel.Chronicle.Count > 0 ? Clip(_panel.Chronicle[0], 40) : KingdomFactionUiText.T("AF_DIP_UI_Faction_NoRecentChronicle", "No recent chronicle");
 	[DataSourceProperty] public string SourceLine2 => _panel.Chronicle.Count > 1 ? Clip(_panel.Chronicle[1], 40) : "";
 	[DataSourceProperty] public string TableTitle { get; private set; } = "";
-	[DataSourceProperty] public string GrievanceTitle => _rowThreshold > 0 ? "家族不满  ·  门槛 " + _rowThreshold : "家族不满";
+	[DataSourceProperty] public string GrievanceTitle => _rowThreshold > 0
+		? KingdomFactionUiText.F("AF_DIP_UI_Faction_GrievanceThreshold", "Clan grievance  ·  threshold {THRESHOLD}", ("THRESHOLD", _rowThreshold))
+		: KingdomFactionUiText.T("AF_DIP_UI_Faction_Grievance", "Clan grievance");
 	[DataSourceProperty] public MBBindingList<KingdomFactionRowVM> Rows { get; } = new MBBindingList<KingdomFactionRowVM>();
 	[DataSourceProperty] public string FooterText { get; private set; } = "";
-	[DataSourceProperty] public string LegendText => _rowThreshold > 0 ? "红色刻度为成派门槛" : "";
+	[DataSourceProperty] public string LegendText => _rowThreshold > 0 ? KingdomFactionUiText.T("AF_DIP_UI_Faction_FormationTickLegend", "Red tick marks the formation threshold") : "";
 	[DataSourceProperty] public bool HasPages => PageCount > 1;
 	[DataSourceProperty] public bool HasPrevPage => _page > 0;
 	[DataSourceProperty] public bool HasNextPage => _page < PageCount - 1;
@@ -238,12 +260,12 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	{
 		try
 		{
-			_panel = TeamModuleServices.CivilWar.GetPlayerKingdomPanel() ?? new CivilWarPanelKingdom { EmptyText = "派系数据不可用" };
+			_panel = TeamModuleServices.CivilWar.GetPlayerKingdomPanel() ?? new CivilWarPanelKingdom { EmptyText = KingdomFactionUiText.T("AF_DIP_UI_Faction_DataUnavailable", "Faction data unavailable") };
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("CivilWar", "[KingdomFactionTab] refresh failed: " + ex.Message);
-			_panel = new CivilWarPanelKingdom { EmptyText = "派系数据读取失败" };
+			_panel = new CivilWarPanelKingdom { EmptyText = KingdomFactionUiText.T("AF_DIP_UI_Faction_DataReadFailed", "Failed to read faction data") };
 		}
 		RefreshBanners();
 		RebuildSegments();
@@ -262,9 +284,9 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	private void RebuildSegments()
 	{
 		PowerSegments.Clear();
-		var parts = new List<Tuple<string, string, int>> { Tuple.Create("王室阵营", CrownColor, _panel.CrownPowerPercent) };
+		var parts = new List<Tuple<string, string, int>> { Tuple.Create(KingdomFactionUiText.T("AF_DIP_UI_Faction_Crown", "Crown faction"), CrownColor, _panel.CrownPowerPercent) };
 		foreach (CivilWarPanelFaction f in _panel.Factions) parts.Add(Tuple.Create(f.Tag, f.Color, f.PowerPercent));
-		parts.Add(Tuple.Create("未表态", "#5E5546FF", _panel.MiddlePowerPercent));
+		parts.Add(Tuple.Create(KingdomFactionUiText.T("AF_DIP_UI_Faction_Undecided", "Undecided"), "#5E5546FF", _panel.MiddlePowerPercent));
 		parts.RemoveAll(x => x.Item3 <= 0);
 		if (parts.Count == 0) return;
 		int track = KingdomInteriorPanelPatch.PowerTrack - KingdomInteriorPanelPatch.PowerGap * parts.Count;
@@ -314,22 +336,22 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 		if (_key.Length > 0 && !valid) _key = DefaultKey();
 		foreach (CivilWarPanelFaction f in _panel.Factions)
 		{
-			string mine = f.IsPlayerLeader ? "你领导 · " : f.IsPlayerFaction ? "你的派系 · " : "";
-			string meta = mine + f.MemberCount + " 家 · 不满 " + f.Grievance;
+			string mine = f.IsPlayerLeader ? KingdomFactionUiText.T("AF_DIP_UI_Faction_PlayerLeads", "You lead · ") : f.IsPlayerFaction ? KingdomFactionUiText.T("AF_DIP_UI_Faction_PlayerFaction", "Your faction · ") : "";
+			string meta = mine + KingdomFactionUiText.F("AF_DIP_UI_Faction_TabMeta", "{COUNT} clans · grievance {GRIEVANCE}", ("COUNT", f.MemberCount), ("GRIEVANCE", f.Grievance));
 			LeftTabs.Add(new KingdomFactionTabVM("f:" + f.Id, Clip(f.ShortName, 12), meta, f.Color, Badge(f), _key == "f:" + f.Id, SelectTab));
 		}
 		if (_panel.Factions.Count == 0)
-			LeftTabs.Add(new KingdomFactionTabVM(LedgerKey, "贵族不满账册", (_panel.CrownCount + _panel.MiddleCount) + " 家 · 最高 " + _panel.TopGrievance.ToString("0.0"), LedgerColor, "", _key == LedgerKey, SelectTab));
+			LeftTabs.Add(new KingdomFactionTabVM(LedgerKey, KingdomFactionUiText.T("AF_DIP_UI_Faction_GrievanceLedger", "Noble grievance ledger"), KingdomFactionUiText.F("AF_DIP_UI_Faction_LedgerMeta", "{COUNT} clans · highest {GRIEVANCE}", ("COUNT", _panel.CrownCount + _panel.MiddleCount), ("GRIEVANCE", _panel.TopGrievance.ToString("0.0"))), LedgerColor, "", _key == LedgerKey, SelectTab));
 		bool inCrown = _panel.Role == CivilWarPanelRole.Crown, inMiddle = _panel.Middle.Any(x => x.IsPlayer);
-		RightTabs.Add(new KingdomFactionTabVM(CrownKey, "王室阵营", _panel.CrownCount + " 家 · 军力 " + _panel.CrownPowerPercent + "%" + (inCrown ? " · 含你" : ""), CrownColor, "", _key == CrownKey, SelectTab));
-		RightTabs.Add(new KingdomFactionTabVM(MiddleKey, "未表态", _panel.MiddleCount + " 家 · 军力 " + _panel.MiddlePowerPercent + "%" + (inMiddle ? " · 含你" : ""), MiddleColor, "", _key == MiddleKey, SelectTab));
+		RightTabs.Add(new KingdomFactionTabVM(CrownKey, KingdomFactionUiText.T("AF_DIP_UI_Faction_Crown", "Crown faction"), KingdomFactionUiText.F("AF_DIP_UI_Faction_PowerMeta", "{COUNT} clans · power {POWER}%{PLAYER}", ("COUNT", _panel.CrownCount), ("POWER", _panel.CrownPowerPercent), ("PLAYER", inCrown ? KingdomFactionUiText.T("AF_DIP_UI_Faction_IncludesYou", " · includes you") : "")), CrownColor, "", _key == CrownKey, SelectTab));
+		RightTabs.Add(new KingdomFactionTabVM(MiddleKey, KingdomFactionUiText.T("AF_DIP_UI_Faction_Undecided", "Undecided"), KingdomFactionUiText.F("AF_DIP_UI_Faction_PowerMeta", "{COUNT} clans · power {POWER}%{PLAYER}", ("COUNT", _panel.MiddleCount), ("POWER", _panel.MiddlePowerPercent), ("PLAYER", inMiddle ? KingdomFactionUiText.T("AF_DIP_UI_Faction_IncludesYou", " · includes you") : "")), MiddleColor, "", _key == MiddleKey, SelectTab));
 	}
 
 	// Only urgent deadlines (ultimatum, royal reply, war) earn a catalog badge.
 	private static string Badge(CivilWarPanelFaction f)
 	{
 		if (!f.DeadlineUrgent || string.IsNullOrEmpty(f.DeadlineLabel)) return "";
-		string label = f.DeadlineLabel == "最后通牒" ? "通牒" : f.DeadlineLabel;
+		string label = f.DeadlineLabel == "最后通牒" ? KingdomFactionUiText.T("AF_DIP_UI_Faction_Ultimatum", "Ultimatum") : f.DeadlineLabel;
 		return Clip(label + " " + f.DeadlineValue + f.DeadlineUnit, 9);
 	}
 
@@ -397,46 +419,46 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 		for (int i = 0; i < f.Steps.Count; i++) Steps.Add(new KingdomFactionStepVM(f.Steps[i], i < f.Steps.Count - 1));
 		_source = f.Members;
 		_rowThreshold = _panel.Threshold;
-		TableTitle = "支持家族";
-		FooterText = _panel.Chronicle.Count > 0 ? "最新  ·  " + Clip(_panel.Chronicle[0], 48) : f.Stage;
+		TableTitle = KingdomFactionUiText.T("AF_DIP_UI_Faction_SupportingClans", "Supporting clans");
+		FooterText = _panel.Chronicle.Count > 0 ? KingdomFactionUiText.T("AF_DIP_UI_Faction_LatestPrefix", "Latest  ·  ") + Clip(_panel.Chronicle[0], 48) : f.Stage;
 	}
 
 	// No faction yet: who is closest to the formation threshold, and why it has not formed.
 	private void DescribeLedger()
 	{
-		TagText = "尚无派系"; TagColor = Color.ConvertStringToColor(LedgerColor);
-		HeaderMeta = "稳定度" + _panel.StabilityTier + "  ·  不满与稳定度分别计算";
-		HeaderTitle = _panel.StageText == "尚无派系成形" ? "王国内尚无反对派成立" : _panel.StageText;
+		TagText = KingdomFactionUiText.T("AF_DIP_UI_Faction_NoFaction", "No faction formed"); TagColor = Color.ConvertStringToColor(LedgerColor);
+		HeaderMeta = KingdomFactionUiText.F("AF_DIP_UI_Faction_StabilityMeta", "Stability {TIER}  ·  grievance and stability are calculated separately", ("TIER", _panel.StabilityTier));
+		HeaderTitle = _panel.StageText == "尚无派系成形" ? KingdomFactionUiText.T("AF_DIP_UI_Faction_NoOppositionFormed", "No opposition faction has formed in the kingdom") : _panel.StageText;
 		float gap = _panel.Threshold - _panel.TopGrievance;
-		HeaderNote = string.IsNullOrEmpty(_panel.TopGrievanceClan) ? "没有可以成派的正式封臣家族。"
-			: gap > 0 ? "最高家族不满 " + _panel.TopGrievance.ToString("0.0") + "，尚未达到成派门槛 " + _panel.Threshold + "。达到后按概率判定，同一王国每七日最多尝试一次。"
-			: "最高家族不满 " + _panel.TopGrievance.ToString("0.0") + "，已达成派门槛 " + _panel.Threshold + "，每七日按概率判定一次。";
+		HeaderNote = string.IsNullOrEmpty(_panel.TopGrievanceClan) ? KingdomFactionUiText.T("AF_DIP_UI_Faction_NoEligibleVassal", "No formal vassal clan can form a faction.")
+			: gap > 0 ? KingdomFactionUiText.F("AF_DIP_UI_Faction_FormationPending", "Highest clan grievance is {GRIEVANCE}; formation threshold is {THRESHOLD}. A probability check runs at most once every seven days.", ("GRIEVANCE", _panel.TopGrievance.ToString("0.0")), ("THRESHOLD", _panel.Threshold))
+			: KingdomFactionUiText.F("AF_DIP_UI_Faction_FormationReady", "Highest clan grievance is {GRIEVANCE}; formation threshold {THRESHOLD} reached. A probability check runs every seven days.", ("GRIEVANCE", _panel.TopGrievance.ToString("0.0")), ("THRESHOLD", _panel.Threshold));
 		HasBlock = true;
-		BlockLabel = gap > 0 ? "距成派门槛" : "成派门槛";
-		BlockValue = gap > 0 ? gap.ToString("0.0") : "已达";
-		BlockUnit = gap > 0 ? "点" : "";
+		BlockLabel = gap > 0 ? KingdomFactionUiText.T("AF_DIP_UI_Faction_FormationGap", "To formation threshold") : KingdomFactionUiText.T("AF_DIP_UI_Faction_FormationThreshold", "Formation threshold");
+		BlockValue = gap > 0 ? gap.ToString("0.0") : KingdomFactionUiText.T("AF_DIP_UI_Faction_Reached", "Reached");
+		BlockUnit = gap > 0 ? KingdomFactionUiText.T("AF_DIP_UI_Faction_Points", "points") : "";
 		BlockNote = string.IsNullOrEmpty(_panel.TopGrievanceClan) ? "" : _panel.TopGrievance.ToString("0.0") + " / " + _panel.Threshold + "  ·  " + _panel.TopGrievanceClan;
 		foreach (CivilWarPanelCondition c in _panel.Conditions) Conditions.Add(new KingdomFactionConditionVM(c));
 		_source = _panel.Crown.Concat(_panel.Middle).OrderByDescending(x => x.GrievanceValue).ToList();
 		_rowThreshold = _panel.Threshold; _rowDecimal = true; _rowThresholdHigh = true;
 		_pageSize = KingdomInteriorPanelPatch.LedgerRows;
-		TableTitle = "贵族家族";
-		FooterText = "按家族不满由高到低";
+		TableTitle = KingdomFactionUiText.T("AF_DIP_UI_Faction_NobleClans", "Noble clans");
+		FooterText = KingdomFactionUiText.T("AF_DIP_UI_Faction_SortGrievance", "Sorted by clan grievance, highest first");
 	}
 
 	private void DescribeSide(bool crown)
 	{
-		TagText = crown ? "王室阵营" : "未表态"; TagColor = Color.ConvertStringToColor(crown ? "#8A6E2EFF" : "#6A6052FF");
+		TagText = crown ? KingdomFactionUiText.T("AF_DIP_UI_Faction_Crown", "Crown faction") : KingdomFactionUiText.T("AF_DIP_UI_Faction_Undecided", "Undecided"); TagColor = Color.ConvertStringToColor(crown ? "#8A6E2EFF" : "#6A6052FF");
 		int count = crown ? _panel.CrownCount : _panel.MiddleCount;
-		HeaderMeta = count + " 家  ·  军事实力 " + (crown ? _panel.CrownPowerPercent : _panel.MiddlePowerPercent) + "%";
-		HeaderTitle = crown ? "王室阵营 · 随国王应对派系" : "未表态家族";
-		HeaderNote = crown ? "若派系起兵，王室阵营家族随国王应战；家族不满达到 " + _panel.Threshold + " 会撤回对王室的支持。"
-			: "尚未加入任何阵营，可加入王室或任一战前派系。";
+		HeaderMeta = KingdomFactionUiText.F("AF_DIP_UI_Faction_MilitaryMeta", "{COUNT} clans  ·  military power {POWER}%", ("COUNT", count), ("POWER", crown ? _panel.CrownPowerPercent : _panel.MiddlePowerPercent));
+		HeaderTitle = crown ? KingdomFactionUiText.T("AF_DIP_UI_Faction_CrownRespond", "Crown faction · stand with the king against factions") : KingdomFactionUiText.T("AF_DIP_UI_Faction_UndecidedClans", "Undecided clans");
+		HeaderNote = crown ? KingdomFactionUiText.F("AF_DIP_UI_Faction_CrownNote", "If a faction rebels, crown clans fight with the king; a clan withdraws support when grievance reaches {THRESHOLD}.", ("THRESHOLD", _panel.Threshold))
+			: KingdomFactionUiText.T("AF_DIP_UI_Faction_UndecidedNote", "Not yet in a faction; may join the crown or any pre-war faction.");
 		_source = crown ? _panel.Crown : _panel.Middle;
 		_pageSize = KingdomInteriorPanelPatch.SideRows;
-		TableTitle = crown ? "王室阵营家族" : "未表态家族";
+		TableTitle = crown ? KingdomFactionUiText.T("AF_DIP_UI_Faction_CrownClans", "Crown faction clans") : KingdomFactionUiText.T("AF_DIP_UI_Faction_UndecidedClans", "Undecided clans");
 		bool mine = _source.Any(x => x.IsPlayer);
-		FooterText = (crown ? "国王在前，" : "") + (mine ? "你的家族置顶，" : "") + "其余按不满由高到低";
+		FooterText = (crown ? KingdomFactionUiText.T("AF_DIP_UI_Faction_KingFirst", "King first, ") : "") + (mine ? KingdomFactionUiText.T("AF_DIP_UI_Faction_PlayerClanFirst", "your clan first, ") : "") + KingdomFactionUiText.T("AF_DIP_UI_Faction_OthersByGrievance", "others by grievance, highest first");
 	}
 
 	private void RebuildRows()

@@ -305,5 +305,49 @@
     <string id="AF_DIP_UI_Reward_VassalageTitle" text="臣属国条约" />
     <string id="AF_DIP_UI_Reward_AnnexationTitle" text="国家吞并" />
     <string id="AF_DIP_UI_Reward_FailureSuffix" text="失败" />
+    <string id="AF_DIP_UI_Faction_CatalogCount" text="{COUNT} 个派系  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_CatalogEmpty" text="尚无派系  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_AboveFormationThreshold" text="高于成派门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_BelowFormationThreshold" text="低于成派门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_PowerUnit" text="王室 {CROWN}%  ·  {FORTIFICATIONS} 个领地" />
+    <string id="AF_DIP_UI_Faction_NoRecentChronicle" text="暂无近期纪事" />
+    <string id="AF_DIP_UI_Faction_GrievanceThreshold" text="家族不满  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_Grievance" text="家族不满" />
+    <string id="AF_DIP_UI_Faction_FormationTickLegend" text="红色刻度为成派门槛" />
+    <string id="AF_DIP_UI_Faction_DataUnavailable" text="派系数据不可用" />
+    <string id="AF_DIP_UI_Faction_DataReadFailed" text="派系数据读取失败" />
+    <string id="AF_DIP_UI_Faction_Crown" text="王室阵营" />
+    <string id="AF_DIP_UI_Faction_Undecided" text="未表态" />
+    <string id="AF_DIP_UI_Faction_PlayerLeads" text="你领导 · " />
+    <string id="AF_DIP_UI_Faction_PlayerFaction" text="你的派系 · " />
+    <string id="AF_DIP_UI_Faction_TabMeta" text="{COUNT} 家 · 不满 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_GrievanceLedger" text="贵族不满账册" />
+    <string id="AF_DIP_UI_Faction_LedgerMeta" text="{COUNT} 家 · 最高 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_PowerMeta" text="{COUNT} 家 · 军力 {POWER}%{PLAYER}" />
+    <string id="AF_DIP_UI_Faction_IncludesYou" text=" · 含你" />
+    <string id="AF_DIP_UI_Faction_Ultimatum" text="通牒" />
+    <string id="AF_DIP_UI_Faction_SupportingClans" text="支持家族" />
+    <string id="AF_DIP_UI_Faction_LatestPrefix" text="最新  ·  " />
+    <string id="AF_DIP_UI_Faction_NoFaction" text="尚无派系" />
+    <string id="AF_DIP_UI_Faction_StabilityMeta" text="稳定度{TIER}  ·  不满与稳定度分别计算" />
+    <string id="AF_DIP_UI_Faction_NoOppositionFormed" text="王国内尚无反对派成立" />
+    <string id="AF_DIP_UI_Faction_NoEligibleVassal" text="没有可以成派的正式封臣家族。" />
+    <string id="AF_DIP_UI_Faction_FormationPending" text="最高家族不满 {GRIEVANCE}，尚未达到成派门槛 {THRESHOLD}。达到后按概率判定，同一王国每七日最多尝试一次。" />
+    <string id="AF_DIP_UI_Faction_FormationReady" text="最高家族不满 {GRIEVANCE}，已达成派门槛 {THRESHOLD}，每七日按概率判定一次。" />
+    <string id="AF_DIP_UI_Faction_FormationGap" text="距成派门槛" />
+    <string id="AF_DIP_UI_Faction_FormationThreshold" text="成派门槛" />
+    <string id="AF_DIP_UI_Faction_Reached" text="已达" />
+    <string id="AF_DIP_UI_Faction_Points" text="点" />
+    <string id="AF_DIP_UI_Faction_NobleClans" text="贵族家族" />
+    <string id="AF_DIP_UI_Faction_SortGrievance" text="按家族不满由高到低" />
+    <string id="AF_DIP_UI_Faction_MilitaryMeta" text="{COUNT} 家  ·  军事实力 {POWER}%" />
+    <string id="AF_DIP_UI_Faction_CrownRespond" text="王室阵营 · 随国王应对派系" />
+    <string id="AF_DIP_UI_Faction_UndecidedClans" text="未表态家族" />
+    <string id="AF_DIP_UI_Faction_CrownNote" text="若派系起兵，王室阵营家族随国王应战；家族不满达到 {THRESHOLD} 会撤回对王室的支持。" />
+    <string id="AF_DIP_UI_Faction_UndecidedNote" text="尚未加入任何阵营，可加入王室或任一战前派系。" />
+    <string id="AF_DIP_UI_Faction_CrownClans" text="王室阵营家族" />
+    <string id="AF_DIP_UI_Faction_KingFirst" text="国王在前，" />
+    <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="你的家族置顶，" />
+    <string id="AF_DIP_UI_Faction_OthersByGrievance" text="其余按不满由高到低" />
 </strings>
 </base>

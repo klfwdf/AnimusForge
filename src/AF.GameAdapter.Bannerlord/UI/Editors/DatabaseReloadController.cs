@@ -22,11 +22,19 @@ internal sealed class DatabaseReloadPort
  internal ReplaceNpcVoiceCapability ReplaceNpcVoiceAssignments;
 }
 
+internal static class DatabaseReloadUiText
+{
+	internal static string T(string id, string englishFallback) => DeveloperUiText.T(id, englishFallback);
+	internal static string F(string id, string englishFallback, params string[] variables) => DeveloperUiText.F(id, englishFallback, variables);
+}
+
 // One short-lived reload transaction coordinates real domain capabilities. It never retains snapshots or live save tables.
 internal sealed class DatabaseReloadController
 {
  private readonly DatabaseReloadPort _port;
  internal DatabaseReloadController(DatabaseReloadPort port) { _port = port; }
+	private static string T(string id, string englishFallback) => DatabaseReloadUiText.T(id, englishFallback);
+	private static string F(string id, string englishFallback, params string[] variables) => DatabaseReloadUiText.F(id, englishFallback, variables);
 	internal bool ApplyDatabaseReloadPlan(DatabaseReloadPlan plan, out string detail)
 	{
 		detail = "";
@@ -37,7 +45,7 @@ internal sealed class DatabaseReloadController
 		{
 			if (plan == null || string.IsNullOrWhiteSpace(plan.ImportDirectory))
 			{
-				detail = "重载计划无效。";
+				detail = T("AF_UI_Developer_ReloadPlanInvalid", "The reload plan is invalid.");
 				return false;
 			}
 			knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
@@ -45,26 +53,26 @@ internal sealed class DatabaseReloadController
 			string error = "";
 			if (knowledgeLibraryBehavior == null || kingdomStrategicProfileBehavior == null || !TryCaptureDatabaseReloadRollbackSnapshot(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, out databaseReloadRollbackSnapshot, out error))
 			{
-				detail = string.IsNullOrWhiteSpace(error) ? "知识库、王国资料行为未初始化或无法创建重载回滚快照。" : error;
+				detail = string.IsNullOrWhiteSpace(error) ? T("AF_UI_Developer_ReloadSnapshotUnavailable", "The knowledge library or kingdom profile service is unavailable, or a reload rollback snapshot could not be created.") : error;
 				return false;
 			}
 			if (!knowledgeLibraryBehavior.ReplaceDatabaseRulesPreservingPlayer(plan.KnowledgeRules, out var removedCount, out var importedCount, out error))
 			{
-				detail = string.IsNullOrWhiteSpace(error) ? "知识规则校验失败。" : error;
+				detail = string.IsNullOrWhiteSpace(error) ? T("AF_UI_Developer_ReloadKnowledgeValidationFailed", "Knowledge rule validation failed.") : error;
 				return false;
 			}
 			if (!VoiceMapper.ImportMappingJson(plan.VoiceMappingJson, overwriteExisting: true, saveToFile: false))
 			{
-				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, "声音映射导入失败。", out detail);
+				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, T("AF_UI_Developer_ReloadVoiceMappingImportFailed", "Voice mapping import failed."), out detail);
 			}
 			_port.SetVoiceMappingStorage(VoiceMapper.ExportMappingJson(pretty: false) ?? "");
 			int num = _port.ReplaceNpcVoiceAssignments(plan.NpcVoiceIds, out var appliedVoiceIdCount);
 			_port.ReplaceOpeningKnowledge(plan.OpeningKnowledge);
 			if (!kingdomStrategicProfileBehavior.TryApplyDatabaseReloadPlan(plan.KingdomProfilePlan, out var detailMessage))
 			{
-				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, "王国性格与战略导入失败：" + detailMessage, out detail);
+				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, T("AF_UI_Developer_ReloadKingdomProfileImportFailed", "Kingdom personality and strategy import failed: ") + detailMessage, out detail);
 			}
-			detail = "知识删除 " + removedCount + " 条、导入 " + importedCount + " 条" + ((plan.KnowledgeRuleIdDisambiguationCount > 0) ? ("（同 ID 稳定重命名 " + plan.KnowledgeRuleIdDisambiguationCount + " 条）") : "") + ((plan.KnowledgeKeywordDeduplicationCount > 0) ? ("（重复触发词去重 " + plan.KnowledgeKeywordDeduplicationCount + " 个）") : "") + "；NPC 声音 ID 清除 " + num + " 条、导入 " + appliedVoiceIdCount + " 条；" + detailMessage;
+			detail = F("AF_UI_Developer_ReloadCompletedDetail", "Knowledge removed {REMOVED}, imported {IMPORTED}{DISAMBIGUATION}{DEDUPLICATION}; NPC voice IDs cleared {CLEARED}, imported {VOICE_IMPORTED}; {KINGDOM}", "REMOVED", removedCount.ToString(), "IMPORTED", importedCount.ToString(), "DISAMBIGUATION", plan.KnowledgeRuleIdDisambiguationCount > 0 ? F("AF_UI_Developer_ReloadStableRenames", " (stable ID renames: {COUNT})", "COUNT", plan.KnowledgeRuleIdDisambiguationCount.ToString()) : "", "DEDUPLICATION", plan.KnowledgeKeywordDeduplicationCount > 0 ? F("AF_UI_Developer_ReloadKeywordDeduplication", " (duplicate trigger keywords removed: {COUNT})", "COUNT", plan.KnowledgeKeywordDeduplicationCount.ToString()) : "", "CLEARED", num.ToString(), "VOICE_IMPORTED", appliedVoiceIdCount.ToString(), "KINGDOM", detailMessage);
 			Logger.Log("DatabaseReload", "completed importDir=" + plan.ImportDirectory + " knowledgeRemoved=" + removedCount + " knowledgeImported=" + importedCount + " knowledgeRuleIdsDisambiguated=" + plan.KnowledgeRuleIdDisambiguationCount + " knowledgeKeywordsDeduplicated=" + plan.KnowledgeKeywordDeduplicationCount + " npcVoiceCleared=" + num + " npcVoiceImported=" + appliedVoiceIdCount + " kingdomProfiles=" + (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0));
 			return true;
 		}
@@ -88,18 +96,18 @@ internal sealed class DatabaseReloadController
 		{
 			if (knowledgeLibraryBehavior == null || kingdomStrategicProfileBehavior == null)
 			{
-				error = "知识库或王国资料行为未初始化。";
+				error = T("AF_UI_Developer_ReloadServicesUnavailable", "The knowledge library or kingdom profile service is unavailable.");
 				return false;
 			}
 			string knowledgeJson = knowledgeLibraryBehavior.ExportRulesJson(pretty: false);
 			if (string.IsNullOrWhiteSpace(knowledgeJson))
 			{
-				error = "无法导出当前知识库快照。";
+				error = T("AF_UI_Developer_ReloadKnowledgeSnapshotExportFailed", "Could not export the current knowledge library snapshot.");
 				return false;
 			}
 			if (!kingdomStrategicProfileBehavior.TryCaptureDatabaseReloadRollbackJson(out string kingdomProfilesJson, out string kingdomError))
 			{
-				error = "无法导出当前王国资料快照：" + kingdomError;
+				error = T("AF_UI_Developer_ReloadKingdomSnapshotExportFailed", "Could not export the current kingdom profile snapshot: ") + kingdomError;
 				return false;
 			}
 			snapshot = new DatabaseReloadRollbackSnapshot
@@ -120,7 +128,7 @@ internal sealed class DatabaseReloadController
 		catch (Exception ex)
 		{
 			snapshot = null;
-			error = "创建回滚快照失败：" + ex.Message;
+			error = T("AF_UI_Developer_ReloadSnapshotCreateFailed", "Failed to create a rollback snapshot: ") + ex.Message;
 			return false;
 		}
 	}
@@ -130,25 +138,25 @@ internal sealed class DatabaseReloadController
 		List<string> restoreErrors = new List<string>();
 		if (knowledgeLibraryBehavior == null || snapshot == null)
 		{
-			detail = (failure ?? "重载失败") + "；缺少回滚快照。";
+			detail = (failure ?? T("AF_UI_Developer_ReloadFailed", "Reload failed")) + T("AF_UI_Developer_ReloadNoSnapshot", "; no rollback snapshot is available.");
 			return false;
 		}
 		try
 		{
 			if (!knowledgeLibraryBehavior.ImportRulesJson(snapshot.KnowledgeJson, overwrite: true))
 			{
-				restoreErrors.Add("知识库");
+				restoreErrors.Add(T("AF_UI_Developer_ReloadKnowledgeLibrary", "knowledge library"));
 			}
 		}
 		catch (Exception ex)
 		{
-			restoreErrors.Add("知识库(" + ex.Message + ")");
+			restoreErrors.Add(T("AF_UI_Developer_ReloadKnowledgeLibrary", "knowledge library") + "(" + ex.Message + ")");
 		}
 		try
 		{
 			if (!VoiceMapper.ImportMappingJson(snapshot.VoiceMappingJson, overwriteExisting: true, saveToFile: false))
 			{
-				restoreErrors.Add("声音映射");
+				restoreErrors.Add(T("AF_UI_Developer_ReloadVoiceMapping", "voice mapping"));
 			}
 			else
 			{
@@ -157,14 +165,14 @@ internal sealed class DatabaseReloadController
 		}
 		catch (Exception ex2)
 		{
-			restoreErrors.Add("声音映射(" + ex2.Message + ")");
+			restoreErrors.Add(T("AF_UI_Developer_ReloadVoiceMapping", "voice mapping") + "(" + ex2.Message + ")");
 		}
 		try
 		{
 			Dictionary<string, NpcPersonaProfile> restoredProfiles = JsonConvert.DeserializeObject<Dictionary<string, NpcPersonaProfile>>(snapshot.NpcPersonaProfilesJson);
 			if (restoredProfiles == null)
 			{
-				restoreErrors.Add("NPC 声音 ID");
+				restoreErrors.Add(T("AF_UI_Developer_ReloadNpcVoiceIds", "NPC voice IDs"));
 			}
 			else
 			{
@@ -173,7 +181,7 @@ internal sealed class DatabaseReloadController
 		}
 		catch (Exception ex3)
 		{
-			restoreErrors.Add("NPC 声音 ID(" + ex3.Message + ")");
+			restoreErrors.Add(T("AF_UI_Developer_ReloadNpcVoiceIds", "NPC voice IDs") + "(" + ex3.Message + ")");
 		}
 		try
 		{
@@ -181,7 +189,7 @@ internal sealed class DatabaseReloadController
 			List<EventRecordEntry> restoredRecords = JsonConvert.DeserializeObject<List<EventRecordEntry>>(snapshot.EventRecordsJson);
 			if (restoredRecords == null)
 			{
-				restoreErrors.Add("开局知识和事件记录");
+				restoreErrors.Add(T("AF_UI_Developer_ReloadOpeningEvents", "opening knowledge and event records"));
 			}
 			else
 			{
@@ -190,27 +198,27 @@ internal sealed class DatabaseReloadController
 		}
 		catch (Exception ex4)
 		{
-			restoreErrors.Add("开局知识和事件记录(" + ex4.Message + ")");
+			restoreErrors.Add(T("AF_UI_Developer_ReloadOpeningEvents", "opening knowledge and event records") + "(" + ex4.Message + ")");
 		}
 		try
 		{
 			string kingdomError = "";
 			if (kingdomStrategicProfileBehavior == null || !kingdomStrategicProfileBehavior.TryRestoreDatabaseReloadRollbackJson(snapshot.KingdomProfilesJson, out kingdomError))
 			{
-				restoreErrors.Add("王国性格与战略" + (string.IsNullOrWhiteSpace(kingdomError) ? "" : "(" + kingdomError + ")"));
+				restoreErrors.Add(T("AF_UI_Developer_ReloadKingdomProfiles", "kingdom personality and strategy") + (string.IsNullOrWhiteSpace(kingdomError) ? "" : "(" + kingdomError + ")"));
 			}
 		}
 		catch (Exception ex5)
 		{
-			restoreErrors.Add("王国性格与战略(" + ex5.Message + ")");
+			restoreErrors.Add(T("AF_UI_Developer_ReloadKingdomProfiles", "kingdom personality and strategy") + "(" + ex5.Message + ")");
 		}
 		if (restoreErrors.Count <= 0)
 		{
-			detail = (failure ?? "重载失败") + "；已自动回滚本次重载。";
+			detail = (failure ?? T("AF_UI_Developer_ReloadFailed", "Reload failed")) + T("AF_UI_Developer_ReloadRollbackSucceeded", "; the reload was rolled back automatically.");
 		}
 		else
 		{
-			detail = (failure ?? "重载失败") + "；自动回滚不完整：" + string.Join("、", restoreErrors);
+			detail = (failure ?? T("AF_UI_Developer_ReloadFailed", "Reload failed")) + T("AF_UI_Developer_ReloadRollbackIncomplete", "; automatic rollback was incomplete: ") + string.Join(", ", restoreErrors);
 		}
 		Logger.Log("DatabaseReload", "[WARN] Reload failed and rollback was attempted: " + detail);
 		return false;
@@ -223,7 +231,8 @@ internal sealed class DatabaseReloadPreflight
  internal delegate bool ResolveNpcFileCapability(string file, out string heroId, out string warning);
  private readonly ResolveNpcFileCapability _resolveNpcFile;
  internal DatabaseReloadPreflight(ResolveNpcFileCapability resolveNpcFile) { _resolveNpcFile = resolveNpcFile; }
- private static readonly UTF8Encoding DatabaseReloadStrictUtf8 = new UTF8Encoding(false, true);
+	private static readonly UTF8Encoding DatabaseReloadStrictUtf8 = new UTF8Encoding(false, true);
+	private static string T(string id, string englishFallback) => DatabaseReloadUiText.T(id, englishFallback);
 	internal bool TryBuildDatabaseReloadPlan(string folderName, out DatabaseReloadPlan plan, out string error)
 	{
 		plan = null;
@@ -233,7 +242,7 @@ internal sealed class DatabaseReloadPreflight
 			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
-				error = "找不到资料包文件夹。";
+				error = T("AF_UI_Developer_ReloadPackageFolderMissing", "The data package folder was not found.");
 				return false;
 			}
 			if (!TryLoadDatabaseReloadKnowledgeRules(text, out List<KnowledgeLibraryBehavior.LoreRule> list, out int knowledgeRuleIdDisambiguationCount, out int knowledgeKeywordDeduplicationCount, out error))
@@ -243,13 +252,13 @@ internal sealed class DatabaseReloadPreflight
 			list = list.Where((KnowledgeLibraryBehavior.LoreRule x) => x != null && !KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(x.Id)).ToList();
 			if (list.Count <= 0)
 			{
-				error = "资料包中未找到可重载的非主角知识规则。";
+				error = T("AF_UI_Developer_ReloadNoKnowledgeRules", "The package contains no non-player knowledge rules eligible for reload.");
 				return false;
 			}
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 			if (knowledgeLibraryBehavior == null || !knowledgeLibraryBehavior.TryValidateDatabaseRulesPreservingPlayer(list, out var _, out var _, out error))
 			{
-				error = string.IsNullOrWhiteSpace(error) ? "知识库未初始化或知识规则校验失败。" : error;
+				error = string.IsNullOrWhiteSpace(error) ? T("AF_UI_Developer_ReloadKnowledgeValidationFailed", "Knowledge library is unavailable or knowledge rule validation failed.") : error;
 				return false;
 			}
 			string text2 = Path.Combine(text, "voice_mapping", "VoiceMapping.json");
@@ -259,12 +268,12 @@ internal sealed class DatabaseReloadPreflight
 			}
 			if (!File.Exists(text2) || !TryReadDatabaseReloadUtf8Text(text2, out string text3, out error))
 			{
-				error = string.IsNullOrWhiteSpace(error) ? "资料包中缺少 voice_mapping\\VoiceMapping.json。" : error;
+				error = string.IsNullOrWhiteSpace(error) ? T("AF_UI_Developer_ReloadVoiceMappingMissing", "The package does not contain voice_mapping\\VoiceMapping.json.") : error;
 				return false;
 			}
 			if (!TryValidateDatabaseReloadVoiceMapping(text3, out error))
 			{
-				error = "VoiceMapping.json 无法用于重载：" + error;
+				error = T("AF_UI_Developer_ReloadVoiceMappingInvalid", "VoiceMapping.json cannot be used for reload: ") + error;
 				return false;
 			}
 			if (!TryLoadDatabaseReloadOpeningKnowledge(text, out EventImportPayload eventImportPayload, out error))
@@ -274,7 +283,7 @@ internal sealed class DatabaseReloadPreflight
 			KingdomStrategicProfileBehavior kingdomStrategicProfileBehavior = KingdomStrategicProfileBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
 			if (kingdomStrategicProfileBehavior == null || !kingdomStrategicProfileBehavior.TryBuildDatabaseReloadPlan(text, out KingdomDatabaseReloadPlan kingdomDatabaseReloadPlan, out error))
 			{
-				error = string.IsNullOrWhiteSpace(error) ? "王国性格与战略数据行为尚未初始化。" : error;
+				error = string.IsNullOrWhiteSpace(error) ? T("AF_UI_Developer_ReloadKingdomServiceUnavailable", "The kingdom personality and strategy service is unavailable.") : error;
 				return false;
 			}
 			DatabaseReloadPlan databaseReloadPlan = new DatabaseReloadPlan
@@ -297,12 +306,12 @@ internal sealed class DatabaseReloadPreflight
 				{
 					if (!_resolveNpcFile(item, out string resolvedHeroId, out string warning))
 					{
-						error = "无法安全匹配声音文件 “" + Path.GetFileName(item) + "”：" + warning;
+						error = T("AF_UI_Developer_ReloadVoiceFileMatchFailed", "Could not safely match voice file \u201c") + Path.GetFileName(item) + "\u201d: " + warning;
 						return false;
 					}
 					if (!TryReadDatabaseReloadJson(item, out NpcPersonaProfile npcPersonaProfile, out error))
 					{
-						error = "无法读取声音文件 “" + Path.GetFileName(item) + "”：" + error;
+						error = T("AF_UI_Developer_ReloadVoiceFileReadFailed", "Could not read voice file \u201c") + Path.GetFileName(item) + "\u201d: " + error;
 						return false;
 					}
 					string text6 = (npcPersonaProfile.VoiceId ?? "").Trim();
@@ -313,7 +322,7 @@ internal sealed class DatabaseReloadPreflight
 					}
 					if (databaseReloadPlan.NpcVoiceIds.ContainsKey(text7))
 					{
-						error = "资料包中有多个声音文件映射到同一 NPC：" + text7;
+						error = T("AF_UI_Developer_ReloadDuplicateNpcVoice", "The package maps multiple voice files to the same NPC: ") + text7;
 						return false;
 					}
 					databaseReloadPlan.NpcVoiceIds[text7] = text6;
@@ -338,7 +347,7 @@ internal sealed class DatabaseReloadPreflight
 		{
 			if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
 			{
-				error = "文件不存在。";
+				error = T("AF_UI_Developer_ReloadFileMissing", "The file does not exist.");
 				return false;
 			}
 			text = File.ReadAllText(filePath, DatabaseReloadStrictUtf8);
@@ -346,7 +355,7 @@ internal sealed class DatabaseReloadPreflight
 		}
 		catch (DecoderFallbackException)
 		{
-			error = "文件不是有效的 UTF-8 编码。";
+			error = T("AF_UI_Developer_ReloadInvalidUtf8", "The file is not valid UTF-8.");
 			return false;
 		}
 		catch (Exception ex)
@@ -366,7 +375,7 @@ internal sealed class DatabaseReloadPreflight
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			error = "JSON 文件为空。";
+			error = T("AF_UI_Developer_ReloadJsonEmpty", "The JSON file is empty.");
 			return false;
 		}
 		try
@@ -374,14 +383,14 @@ internal sealed class DatabaseReloadPreflight
 			value = JsonConvert.DeserializeObject<T>(text);
 			if (value == null)
 			{
-				error = "JSON 内容为空或结构无效。";
+				error = T("AF_UI_Developer_ReloadJsonInvalid", "The JSON content is empty or has an invalid structure.");
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "JSON 解析失败：" + ex.Message;
+			error = T("AF_UI_Developer_ReloadJsonParseFailed", "JSON parsing failed: ") + ex.Message;
 			return false;
 		}
 	}
@@ -393,7 +402,7 @@ internal sealed class DatabaseReloadPreflight
 		{
 			if (string.IsNullOrWhiteSpace(json))
 			{
-				error = "文件为空。";
+				error = T("AF_UI_Developer_ReloadFileEmpty", "The file is empty.");
 				return false;
 			}
 			JObject root = JObject.Parse(json);
@@ -402,12 +411,12 @@ internal sealed class DatabaseReloadPreflight
 				JToken groupToken = root[groupKey];
 				if (groupToken == null)
 				{
-					error = "缺少声音分组：" + groupKey;
+				error = T("AF_UI_Developer_ReloadVoiceGroupMissing", "Voice group is missing: ") + groupKey;
 					return false;
 				}
 				if (groupToken.Type != JTokenType.Array)
 				{
-					error = "声音分组 “" + groupKey + "” 必须是数组。";
+				error = T("AF_UI_Developer_ReloadVoiceGroupNotArray", "Voice group \u201c") + groupKey + "\u201d must be an array.";
 					return false;
 				}
 				HashSet<string> voiceIds = new HashSet<string>(StringComparer.Ordinal);
@@ -415,13 +424,13 @@ internal sealed class DatabaseReloadPreflight
 				{
 					if (voiceToken.Type != JTokenType.String)
 					{
-						error = "声音分组 “" + groupKey + "” 包含非字符串声音 ID。";
+						error = T("AF_UI_Developer_ReloadVoiceGroupNonString", "Voice group \u201c") + groupKey + "\u201d contains a non-string voice ID.";
 						return false;
 					}
 					string voiceId = (voiceToken.ToString() ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(voiceId) || !voiceIds.Add(voiceId))
 					{
-						error = "声音分组 “" + groupKey + "” 包含空或重复声音 ID。";
+						error = T("AF_UI_Developer_ReloadVoiceGroupDuplicate", "Voice group \u201c") + groupKey + "\u201d contains an empty or duplicate voice ID.";
 						return false;
 					}
 				}
@@ -429,14 +438,14 @@ internal sealed class DatabaseReloadPreflight
 			JToken fallbackToken = root["fallback"];
 			if (fallbackToken == null || fallbackToken.Type != JTokenType.String)
 			{
-				error = "fallback 必须存在且为字符串。";
+				error = T("AF_UI_Developer_ReloadVoiceFallbackInvalid", "fallback must exist and be a string.");
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "JSON 解析失败：" + ex.Message;
+			error = T("AF_UI_Developer_ReloadJsonParseFailed", "JSON parsing failed: ") + ex.Message;
 			return false;
 		}
 	}
@@ -449,7 +458,7 @@ internal sealed class DatabaseReloadPreflight
 		error = "";
 		if (string.IsNullOrWhiteSpace(importDir) || !Directory.Exists(importDir))
 		{
-			error = "知识资料包目录不存在。";
+			error = T("AF_UI_Developer_ReloadKnowledgePackageMissing", "The knowledge package directory does not exist.");
 			return false;
 		}
 		HashSet<string> ruleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -478,7 +487,7 @@ internal sealed class DatabaseReloadPreflight
 				sourceFileCount++;
 				if (!TryReadDatabaseReloadJson(filePath, out KnowledgeLibraryBehavior.LoreRule rule, out string readError))
 				{
-					error = "知识文件 “" + fileName + "” 无法读取：" + readError;
+					error = T("AF_UI_Developer_ReloadKnowledgeFileReadFailed", "Could not read knowledge file \u201c") + fileName + "\u201d: " + readError;
 					return false;
 				}
 				if (!KnowledgeImportValidationOwner.TryAddDatabaseReloadKnowledgeRule(rule, fileName, ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
@@ -493,19 +502,19 @@ internal sealed class DatabaseReloadPreflight
 			sourceFileCount++;
 			if (!TryReadDatabaseReloadJson(aggregatePath, out KnowledgeLibraryBehavior.KnowledgeFile aggregate, out string aggregateError))
 			{
-				error = "知识汇总文件无法读取：" + aggregateError;
+				error = T("AF_UI_Developer_ReloadKnowledgeAggregateReadFailed", "Could not read the knowledge aggregate file: ") + aggregateError;
 				return false;
 			}
 			if (aggregate.Rules == null)
 			{
-				error = "知识汇总文件缺少 Rules 列表。";
+				error = T("AF_UI_Developer_ReloadKnowledgeAggregateRulesMissing", "The knowledge aggregate file has no Rules list.");
 				return false;
 			}
 			foreach (KnowledgeLibraryBehavior.LoreRule rule2 in aggregate.Rules)
 			{
 				if (rule2 == null)
 				{
-					error = "知识汇总文件包含空知识条目。";
+					error = T("AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule", "The knowledge aggregate file contains an empty rule entry.");
 					return false;
 				}
 				if (!KnowledgeImportValidationOwner.TryAddDatabaseReloadKnowledgeRule(rule2, "KnowledgeRules_" + (rules.Count + 1), ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
@@ -516,7 +525,7 @@ internal sealed class DatabaseReloadPreflight
 		}
 		if (sourceFileCount <= 0 || rules.Count <= 0)
 		{
-			error = "资料包中未找到 knowledge\\rules 下的知识文件或 knowledge\\KnowledgeRules.json。";
+			error = T("AF_UI_Developer_ReloadKnowledgePackageRulesMissing", "The package contains neither knowledge\\rules files nor knowledge\\KnowledgeRules.json.");
 			return false;
 		}
 		return true;
@@ -537,17 +546,17 @@ internal sealed class DatabaseReloadPreflight
 		string kingdomsPath = Path.Combine(eventDirectory, "KingdomOpeningSummaries.json");
 		if (!File.Exists(worldPath) || !File.Exists(kingdomsPath))
 		{
-			error = "资料包必须同时包含 event_data\\WorldOpeningSummary.json 与 event_data\\KingdomOpeningSummaries.json。";
+			error = T("AF_UI_Developer_ReloadOpeningFilesMissing", "The package must contain both event_data\\WorldOpeningSummary.json and event_data\\KingdomOpeningSummaries.json.");
 			return false;
 		}
 		if (!TryReadDatabaseReloadJson(worldPath, out OpeningSummarySourceJson worldSummary, out string worldError))
 		{
-			error = "世界开局知识无法读取：" + worldError;
+			error = T("AF_UI_Developer_ReloadWorldOpeningReadFailed", "Could not read world opening knowledge: ") + worldError;
 			return false;
 		}
 		if (!TryReadDatabaseReloadJson(kingdomsPath, out Dictionary<string, string> kingdomSummaries, out string kingdomsError))
 		{
-			error = "王国开局知识无法读取：" + kingdomsError;
+			error = T("AF_UI_Developer_ReloadKingdomOpeningReadFailed", "Could not read kingdom opening knowledge: ") + kingdomsError;
 			return false;
 		}
 		payload.HasWorldSummaryFile = true;
@@ -558,12 +567,12 @@ internal sealed class DatabaseReloadPreflight
 			string kingdomId = (kingdomSummary.Key ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(kingdomId))
 			{
-				error = "王国开局知识包含空王国 ID。";
+				error = T("AF_UI_Developer_ReloadEmptyKingdomId", "Kingdom opening knowledge contains an empty kingdom ID.");
 				return false;
 			}
 			if (payload.KingdomSummaries.ContainsKey(kingdomId))
 			{
-				error = "王国开局知识包含重复王国 ID：" + kingdomId;
+				error = T("AF_UI_Developer_ReloadDuplicateKingdomId", "Kingdom opening knowledge contains a duplicate kingdom ID: ") + kingdomId;
 				return false;
 			}
 			payload.KingdomSummaries[kingdomId] = (kingdomSummary.Value ?? "").Trim();

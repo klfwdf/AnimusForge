@@ -2549,6 +2549,57 @@ Choose how to proceed:" />
   <string id="AF_MCM_Editor_RulerPolicy_Saved" text="[Policy system] NPC ruler policy prompt saved." />
   <string id="AF_MCM_Editor_RulerPolicy_SessionOnly" text="[Policy system] NPC ruler policy prompt is active for this session, but local persistence failed. Check the log." />
   <string id="AF_MCM_Editor_RulerPolicy_SaveFailed" text="[Policy system] Saving the NPC ruler policy prompt failed; click Save again in MCM: " />
+  <string id="AF_UI_Developer_ReloadPlanInvalid" text="The reload plan is invalid." />
+  <string id="AF_UI_Developer_ReloadSnapshotUnavailable" text="The knowledge library or kingdom profile service is unavailable, or a reload rollback snapshot could not be created." />
+  <string id="AF_UI_Developer_ReloadKnowledgeValidationFailed" text="Knowledge rule validation failed." />
+  <string id="AF_UI_Developer_ReloadVoiceMappingImportFailed" text="Voice mapping import failed." />
+  <string id="AF_UI_Developer_ReloadKingdomProfileImportFailed" text="Kingdom personality and strategy import failed: " />
+  <string id="AF_UI_Developer_ReloadCompletedDetail" text="Knowledge removed {REMOVED}, imported {IMPORTED}{DISAMBIGUATION}{DEDUPLICATION}; NPC voice IDs cleared {CLEARED}, imported {VOICE_IMPORTED}; {KINGDOM}" />
+  <string id="AF_UI_Developer_ReloadStableRenames" text=" (stable ID renames: {COUNT})" />
+  <string id="AF_UI_Developer_ReloadKeywordDeduplication" text=" (duplicate trigger keywords removed: {COUNT})" />
+  <string id="AF_UI_Developer_ReloadServicesUnavailable" text="The knowledge library or kingdom profile service is unavailable." />
+  <string id="AF_UI_Developer_ReloadKnowledgeSnapshotExportFailed" text="Could not export the current knowledge library snapshot." />
+  <string id="AF_UI_Developer_ReloadKingdomSnapshotExportFailed" text="Could not export the current kingdom profile snapshot: " />
+  <string id="AF_UI_Developer_ReloadSnapshotCreateFailed" text="Failed to create a rollback snapshot: " />
+  <string id="AF_UI_Developer_ReloadFailed" text="Reload failed" />
+  <string id="AF_UI_Developer_ReloadNoSnapshot" text="; no rollback snapshot is available." />
+  <string id="AF_UI_Developer_ReloadKnowledgeLibrary" text="knowledge library" />
+  <string id="AF_UI_Developer_ReloadVoiceMapping" text="voice mapping" />
+  <string id="AF_UI_Developer_ReloadNpcVoiceIds" text="NPC voice IDs" />
+  <string id="AF_UI_Developer_ReloadOpeningEvents" text="opening knowledge and event records" />
+  <string id="AF_UI_Developer_ReloadKingdomProfiles" text="kingdom personality and strategy" />
+  <string id="AF_UI_Developer_ReloadRollbackSucceeded" text="; the reload was rolled back automatically." />
+  <string id="AF_UI_Developer_ReloadRollbackIncomplete" text="; automatic rollback was incomplete: " />
+  <string id="AF_UI_Developer_ReloadPackageFolderMissing" text="The data package folder was not found." />
+  <string id="AF_UI_Developer_ReloadNoKnowledgeRules" text="The package contains no non-player knowledge rules eligible for reload." />
+  <string id="AF_UI_Developer_ReloadVoiceMappingMissing" text="The package does not contain voice_mapping\VoiceMapping.json." />
+  <string id="AF_UI_Developer_ReloadVoiceMappingInvalid" text="VoiceMapping.json cannot be used for reload: " />
+  <string id="AF_UI_Developer_ReloadKingdomServiceUnavailable" text="The kingdom personality and strategy service is unavailable." />
+  <string id="AF_UI_Developer_ReloadVoiceFileMatchFailed" text="Could not safely match voice file “" />
+  <string id="AF_UI_Developer_ReloadVoiceFileReadFailed" text="Could not read voice file “" />
+  <string id="AF_UI_Developer_ReloadDuplicateNpcVoice" text="The package maps multiple voice files to the same NPC: " />
+  <string id="AF_UI_Developer_ReloadFileMissing" text="The file does not exist." />
+  <string id="AF_UI_Developer_ReloadInvalidUtf8" text="The file is not valid UTF-8." />
+  <string id="AF_UI_Developer_ReloadJsonEmpty" text="The JSON file is empty." />
+  <string id="AF_UI_Developer_ReloadJsonInvalid" text="The JSON content is empty or has an invalid structure." />
+  <string id="AF_UI_Developer_ReloadJsonParseFailed" text="JSON parsing failed: " />
+  <string id="AF_UI_Developer_ReloadFileEmpty" text="The file is empty." />
+  <string id="AF_UI_Developer_ReloadVoiceGroupMissing" text="Voice group is missing: " />
+  <string id="AF_UI_Developer_ReloadVoiceGroupNotArray" text="Voice group “" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupNonString" text="Voice group “" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupDuplicate" text="Voice group “" />
+  <string id="AF_UI_Developer_ReloadVoiceFallbackInvalid" text="fallback must exist and be a string." />
+  <string id="AF_UI_Developer_ReloadKnowledgePackageMissing" text="The knowledge package directory does not exist." />
+  <string id="AF_UI_Developer_ReloadKnowledgeFileReadFailed" text="Could not read knowledge file “" />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateReadFailed" text="Could not read the knowledge aggregate file: " />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateRulesMissing" text="The knowledge aggregate file has no Rules list." />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule" text="The knowledge aggregate file contains an empty rule entry." />
+  <string id="AF_UI_Developer_ReloadKnowledgePackageRulesMissing" text="The package contains neither knowledge\rules files nor knowledge\KnowledgeRules.json." />
+  <string id="AF_UI_Developer_ReloadOpeningFilesMissing" text="The package must contain both event_data\WorldOpeningSummary.json and event_data\KingdomOpeningSummaries.json." />
+  <string id="AF_UI_Developer_ReloadWorldOpeningReadFailed" text="Could not read world opening knowledge: " />
+  <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="Could not read kingdom opening knowledge: " />
+  <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="Kingdom opening knowledge contains an empty kingdom ID." />
+  <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="Kingdom opening knowledge contains a duplicate kingdom ID: " />
 </strings>
 </base>
 
