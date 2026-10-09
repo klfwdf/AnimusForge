@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<strings>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API Setup Wizard" />
   <string id="AF_UI_Onboarding_CustomMode" text="Fully custom" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="Configure the Base URL, key, and bound model for four API pipelines in one panel." />
@@ -250,4 +252,5 @@
   <string id="AF_UI_Terminal_Duel" text="Duels and parties" />
   <string id="AF_UI_Terminal_Scene" text="Scene interaction" />
   <string id="AF_UI_Terminal_Characters" text="Characters and companions" />
-</strings>
+  </strings>
+</base>

@@ -586,7 +586,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
         if (_yjProbeCts != null) return;
         _usingExistingConfig = false;
         var cts = _yjProbeCts = new CancellationTokenSource();
-        ShowToast("{=AF_UI_Onboarding_YjTesting}Testing the three YJ routes; the access-mode selection will open when it finishes...");
+        ShowToast(new TextObject("{=AF_UI_Onboarding_YjTesting}Testing the three YJ routes; the access-mode selection will open when it finishes...").ToString());
         _toastTimer = 9f;
         _ = ProbeYjAndOpenAsync(cts);
 	}
@@ -599,7 +599,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
             _uiDispatch.Post(() => {
                 if (!ReferenceEquals(_yjProbeCts, cts) || cts.IsCancellationRequested) return;
                 _yjProbeCts = null;
-                if (result == null) { ShowToast("{=AF_UI_Onboarding_YjAllFailed}All three YJ routes failed the speed test. Check the network and retry, or use custom configuration."); return; }
+                if (result == null) { ShowToast(new TextObject("{=AF_UI_Onboarding_YjAllFailed}All three YJ routes failed the speed test. Check the network and retry, or use custom configuration.").ToString()); return; }
                 _selectedYjUrl = result.Url;
                 SwitchView(OnboardingView.YjMenu);
                 var selectedRoute = new TextObject("{=AF_UI_Onboarding_YjSelectedRoute}Selected route: {HOST} · response about {MS} ms; choose an access mode");
@@ -609,7 +609,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
             });
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { _uiDispatch.Post(() => { if (ReferenceEquals(_yjProbeCts, cts)) { _yjProbeCts = null; ShowToast("{=AF_UI_Onboarding_YjProbeFailed}YJ route speed test failed. Please retry."); } }); }
+        catch (Exception) { _uiDispatch.Post(() => { if (ReferenceEquals(_yjProbeCts, cts)) { _yjProbeCts = null; ShowToast(new TextObject("{=AF_UI_Onboarding_YjProbeFailed}YJ route speed test failed. Please retry.").ToString()); } }); }
         finally { cts.Dispose(); }
     }
 
@@ -622,11 +622,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteSelectDeepSeekFlash()
 	{
         _usingExistingConfig = false;
-		OpenKeyPrompt("{=AF_UI_Onboarding_FlashTitle}DeepSeek Flash - Fast recommendation", "{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_FlashTitle}DeepSeek Flash - Fast recommendation").ToString(), new TextObject("{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string baseUrl = "https://api.deepseek.com";
@@ -675,11 +675,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteSelectDeepSeekPro()
 	{
         _usingExistingConfig = false;
-		OpenKeyPrompt("{=AF_UI_Onboarding_ProTitle}DeepSeek Pro - Deep reasoning", "{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_ProTitle}DeepSeek Pro - Deep reasoning").ToString(), new TextObject("{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string baseUrl = "https://api.deepseek.com";
@@ -737,11 +737,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	// ================= Actions: YJ Submenu =================
 	public void ExecuteYjSingleGroup()
 	{
-		OpenKeyPrompt("{=AF_UI_Onboarding_YjSingleTitle}YJ single-group key setup", "{=AF_UI_Onboarding_YjSingleHint}Enter one YJ API key; it will be applied to all four pipelines:", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_YjSingleTitle}YJ single-group key setup").ToString(), new TextObject("{=AF_UI_Onboarding_YjSingleHint}Enter one YJ API key; it will be applied to all four pipelines:").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string yjUrl = _selectedYjUrl;
@@ -781,7 +781,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		ExternalBrowserLauncher.TryOpen("https://yjapi.manqiaotechnology.com/keys", out _, out _);
 		ExternalBrowserLauncher.TryOpen("https://pay.ldxp.cn/shop/OF6AKWNI", out _, out _);
-		ShowToast("{=AF_UI_Onboarding_YjOpenManagement}Opening the YJ API key management and credit page...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_YjOpenManagement}Opening the YJ API key management and credit page...").ToString());
 	}
 
 	public void ExecuteCopyQqGroup()
@@ -789,11 +789,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		try
 		{
 			TaleWorlds.InputSystem.Input.SetClipboardText("1097237977");
-			ShowToast("{=AF_UI_Onboarding_QqCopied}YJ QQ group number copied: 1097237977");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopied}YJ QQ group number copied: 1097237977").ToString());
 		}
 		catch
 		{
-			ShowToast("{=AF_UI_Onboarding_QqCopyFailed}Could not copy the group number. Add it manually: 1097237977");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopyFailed}Could not copy the group number. Add it manually: 1097237977").ToString());
 		}
 	}
 
@@ -844,7 +844,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteFetchAllYjModels()
 	{
-		ShowToast("{=AF_UI_Onboarding_YjFetchingModels}Fetching available YJ models...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_YjFetchingModels}Fetching available YJ models...").ToString());
 		FetchModelsForTarget(PrimaryUrl, PrimaryKey, list =>
 		{
 			PrimaryModelSelector = CreateSelector(list, PrimaryModel, i =>
@@ -870,7 +870,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(key))
 		{
-			ShowToast("{=AF_UI_Onboarding_MissingEndpoint}Enter the Base URL and API key first.");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_MissingEndpoint}Enter the Base URL and API key first.").ToString());
 			return;
 		}
 
@@ -896,11 +896,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 						return;
 					}
 				}
-				_uiDispatch.Post(() => ShowToast("{=AF_UI_Onboarding_ModelParseFailed}The endpoint returned no parseable model list."));
+				_uiDispatch.Post(() => ShowToast(new TextObject("{=AF_UI_Onboarding_ModelParseFailed}The endpoint returned no parseable model list.").ToString()));
 			}
 			catch (Exception)
 			{
-				_uiDispatch.Post(() => ShowToast("{=AF_UI_Onboarding_ModelFetchFailed}Model fetch failed. Check the network and API configuration."));
+				_uiDispatch.Post(() => ShowToast(new TextObject("{=AF_UI_Onboarding_ModelFetchFailed}Model fetch failed. Check the network and API configuration.").ToString()));
 			}
 		});
 	}
@@ -918,7 +918,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		if (string.IsNullOrWhiteSpace(PrimaryKey) || string.IsNullOrWhiteSpace(PrimaryUrl))
 		{
-			ShowToast("{=AF_UI_Onboarding_PrimaryIncomplete}The main API configuration is incomplete. Check the URL and key.");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_PrimaryIncomplete}The main API configuration is incomplete. Check the URL and key.").ToString());
 			return;
 		}
 
@@ -927,22 +927,22 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		TestOverallNotice = Localize("{=AF_UI_Onboarding_TestPreparing}Preparing the API connectivity test...");
 		CanCancelTest = true;
 
-		PrimaryStatusText = "{=AF_UI_Onboarding_Handshaking}Handshaking...";
+		PrimaryStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		PrimaryLatencyText = "";
 		IsPrimarySuccess = false;
 		IsPrimaryFailed = false;
 
-		AuxiliaryStatusText = "{=AF_UI_Onboarding_Handshaking}Handshaking...";
+		AuxiliaryStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		AuxiliaryLatencyText = "";
 		IsAuxiliarySuccess = false;
 		IsAuxiliaryFailed = false;
 
-		PostprocessStatusText = "{=AF_UI_Onboarding_Handshaking}Handshaking...";
+		PostprocessStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		PostprocessLatencyText = "";
 		IsPostprocessSuccess = false;
 		IsPostprocessFailed = false;
 
-		EventStatusText = "{=AF_UI_Onboarding_Handshaking}Handshaking...";
+		EventStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		EventLatencyText = "";
 		IsEventSuccess = false;
 		IsEventFailed = false;
@@ -963,7 +963,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
         if (_usingExistingConfig && (string.IsNullOrWhiteSpace(EventUrl) || string.IsNullOrWhiteSpace(EventKey) || string.IsNullOrWhiteSpace(EventModel)))
         {
             targets.RemoveAt(targets.Count - 1);
-            EventStatusText = "{=AF_UI_Onboarding_EventSkipped}Not configured; skipping the optional weekly-report API.";
+            EventStatusText = new TextObject("{=AF_UI_Onboarding_EventSkipped}Not configured; skipping the optional weekly-report API.").ToString();
         }
         int targetCount = targets.Count;
 		TestOverallNotice = FormatLocalized("{=AF_UI_Onboarding_TestingMany}Testing {COUNT} API pipelines in parallel...", "COUNT", targetCount.ToString());
@@ -1071,7 +1071,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
         if (!_testSucceeded || _currentView != OnboardingView.Success)
         {
-            ShowToast("{=AF_UI_Onboarding_TestRequired}Complete the API connectivity test first.");
+            ShowToast(new TextObject("{=AF_UI_Onboarding_TestRequired}Complete the API connectivity test first.").ToString());
             return;
         }
 		DuelSettings settings = DuelSettings.GetSettings();
@@ -1139,7 +1139,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteOpenAfdianWeb()
 	{
 		DuelSettings.OpenAfdianSupportPageForExternal();
-		ShowToast("{=AF_UI_Onboarding_OpenSupport}Opening the Afdian support page...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_OpenSupport}Opening the Afdian support page...").ToString());
 	}
 
 	// Prompt Overlay Helpers
@@ -1166,14 +1166,14 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Direct input helper popups for pasting
-	public void ExecuteEditPrimaryUrl() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditPrimaryUrl}Edit main API Base URL", PrimaryUrl, v => PrimaryUrl = v);
-	public void ExecuteEditPrimaryKey() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditPrimaryKey}Edit main API key", PrimaryKey, v => PrimaryKey = v);
-	public void ExecuteEditAuxiliaryUrl() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditAuxUrl}Edit preprocessing Base URL", AuxiliaryUrl, v => AuxiliaryUrl = v);
-	public void ExecuteEditAuxiliaryKey() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditAuxKey}Edit preprocessing key", AuxiliaryKey, v => AuxiliaryKey = v);
-	public void ExecuteEditPostprocessUrl() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditPostUrl}Edit postprocessing Base URL", PostprocessUrl, v => PostprocessUrl = v);
-	public void ExecuteEditPostprocessKey() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditPostKey}Edit postprocessing key", PostprocessKey, v => PostprocessKey = v);
-	public void ExecuteEditEventUrl() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditEventUrl}Edit weekly-report API Base URL", EventUrl, v => EventUrl = v);
-	public void ExecuteEditEventKey() => OpenTextInquiryForField("{=AF_UI_Onboarding_EditEventKey}Edit weekly-report key", EventKey, v => EventKey = v);
+	public void ExecuteEditPrimaryUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPrimaryUrl}Edit main API Base URL").ToString(), PrimaryUrl, v => PrimaryUrl = v);
+	public void ExecuteEditPrimaryKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPrimaryKey}Edit main API key").ToString(), PrimaryKey, v => PrimaryKey = v);
+	public void ExecuteEditAuxiliaryUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditAuxUrl}Edit preprocessing Base URL").ToString(), AuxiliaryUrl, v => AuxiliaryUrl = v);
+	public void ExecuteEditAuxiliaryKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditAuxKey}Edit preprocessing key").ToString(), AuxiliaryKey, v => AuxiliaryKey = v);
+	public void ExecuteEditPostprocessUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPostUrl}Edit postprocessing Base URL").ToString(), PostprocessUrl, v => PostprocessUrl = v);
+	public void ExecuteEditPostprocessKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPostKey}Edit postprocessing key").ToString(), PostprocessKey, v => PostprocessKey = v);
+	public void ExecuteEditEventUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditEventUrl}Edit weekly-report API Base URL").ToString(), EventUrl, v => EventUrl = v);
+	public void ExecuteEditEventKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditEventKey}Edit weekly-report key").ToString(), EventKey, v => EventKey = v);
 	public void ExecuteEditPromptKey() => PromptKeyInput = TaleWorlds.InputSystem.Input.GetClipboardText() ?? PromptKeyInput;
 
 	private void OpenTextInquiryForField(string title, string initialText, Action<string> onConfirmed)

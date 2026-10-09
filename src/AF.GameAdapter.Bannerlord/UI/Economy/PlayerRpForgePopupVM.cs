@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -235,17 +236,17 @@ public sealed class PlayerRpForgePopupVM : ViewModel
 		string itemName = (ItemName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(itemName))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_NameRequired}Enter an item name first."));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_RpForge_NameRequired}Enter an item name first.").ToString()));
 			return;
 		}
 		if (InvestmentDenars <= 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_MinInvestment}At least 1 denar is required to craft an item."));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_RpForge_MinInvestment}At least 1 denar is required to craft an item.").ToString()));
 			return;
 		}
 		if (InvestmentDenars > MaxInvestmentDenars)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_InsufficientFunds}The investment cannot exceed the player's current denars."));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_RpForge_InsufficientFunds}The investment cannot exceed the player's current denars.").ToString()));
 			return;
 		}
 		_onSubmit?.Invoke(itemName, InvestmentDenars, ForgeAsWeapon);

@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -242,13 +243,13 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		_onGiveShow = onGiveShow;
 		_onEditPersona = onEditPersona;
 		_onTagTest = onTagTest;
-		PersonaEditButtonText = "{=AF_UI_Conversation_EditNpc}Edit NPC";
-		TagTestButtonText = "{=AF_UI_Conversation_TagInput}Tag input";
+		PersonaEditButtonText = new TextObject("{=AF_UI_Conversation_EditNpc}Edit NPC").ToString();
+		TagTestButtonText = new TextObject("{=AF_UI_Conversation_TagInput}Tag input").ToString();
 		IsPersonaEditVisible = false;
 		IsTagTestVisible = false;
 		InputText = "";
-		AIChatHistoryButtonText = "{=AF_UI_Conversation_History}Conversation history";
-		GiveShowButtonText = "{=AF_UI_Conversation_GiveShow}Give / show";
+		AIChatHistoryButtonText = new TextObject("{=AF_UI_Conversation_History}Conversation history").ToString();
+		GiveShowButtonText = new TextObject("{=AF_UI_Conversation_GiveShow}Give / show").ToString();
 		IsInputEnabled = true;
 		CanSwitchTalk = true;
 		AIChatboxOffset = 0f;
@@ -331,6 +332,6 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private void RefreshSwitchTitle()
 	{
-		SwitchTitle = IsCustomAnswerVisible ? "{=AF_UI_Conversation_NormalMode}Normal mode" : "{=AF_UI_Conversation_AiMode}AI mode";
+		SwitchTitle = IsCustomAnswerVisible ? new TextObject("{=AF_UI_Conversation_NormalMode}Normal mode").ToString() : new TextObject("{=AF_UI_Conversation_AiMode}AI mode").ToString();
 	}
 }

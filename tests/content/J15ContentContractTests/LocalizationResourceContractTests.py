@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -16,17 +17,21 @@ VAR = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
 def strings(path: Path) -> dict[str, str]:
     root = ET.parse(path).getroot()
     result: dict[str, str] = {}
-    for item in root.findall("string"):
+    if root.tag != "base" or root.attrib.get("type") != "string":
+        raise AssertionError(f"not a Bannerlord localization document: {path}")
+    for item in root.findall("strings/string"):
         key = item.attrib.get("id", "")
         if not ID.match(key) or key in result:
             raise AssertionError(f"invalid or duplicate localization id: {path}:{key}")
         result[key] = item.attrib.get("text", "")
+    if not result:
+        raise AssertionError(f"no loader-visible strings: {path}")
     return result
 
 
 def main() -> int:
     root = Path(__file__).resolve().parents[3]
-    content_map = __import__("json").loads((root / "content/content-map.json").read_text(encoding="utf-8"))
+    content_map = json.loads((root / "content/content-map.json").read_text(encoding="utf-8"))
     mapped_targets = {entry["target"] for entry in content_map["entries"]}
     language_en = (root / "content/foundation/AF.Foundation.Localization/ModuleData/Languages/language_data.xml").read_text(encoding="utf-8")
     language_zh = (root / "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/language_data.xml").read_text(encoding="utf-8")
