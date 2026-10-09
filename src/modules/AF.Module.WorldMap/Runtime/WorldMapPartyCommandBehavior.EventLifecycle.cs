@@ -172,7 +172,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			string destinationText = destination == null ? "原家族势力范围" : GetSettlementName(destination);
 			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此结束外族客军随队状态并离开玩家主队，返回" + destinationText + "；此前已并入玩家主队的普通兵员和物资不自动撤回。");
-			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，该外族客军 Hero 已离开玩家主队。", CommandMessageTone.Failure);
+			DisplayCommandMessage(WorldMapUiText.ForeignGuestDepart(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
 		catch (Exception ex)
@@ -200,7 +200,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return false;
 			}
 			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此其外族客军分队已脱离玩家指挥并回归原家族的原版AI；该分队现有兵员和物资不自动转回玩家主队。");
-			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，其外族客军分队已脱离玩家指挥。", CommandMessageTone.Failure);
+			DisplayCommandMessage(WorldMapUiText.ForeignGuestDetachmentReleased(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
 		catch (Exception ex)

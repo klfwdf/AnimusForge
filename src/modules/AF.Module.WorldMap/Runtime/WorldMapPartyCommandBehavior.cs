@@ -972,12 +972,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string normalizedSource = NormalizeExternalSourceId(sourceId);
 		if (string.IsNullOrWhiteSpace(normalizedSource))
 		{
-			message = "大地图命令失败：缺少外部命令来源。";
+			message = WorldMapUiText.MissingExternalSource;
 			return false;
 		}
 		if (hero == null || settlement == null)
 		{
-			message = "大地图命令失败：找不到有效的英雄或定居点。";
+			message = WorldMapUiText.InvalidHeroOrSettlement;
 			return false;
 		}
 		lock (_queueLock)
@@ -987,7 +987,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				string existingSource = NormalizeExternalSourceId(existing.SourceId);
 				if (!string.Equals(existingSource, normalizedSource, StringComparison.OrdinalIgnoreCase))
 				{
-					message = GetHeroName(hero) + "已有其它大地图命令，暂不能改派参加宴会。";
+					message = WorldMapUiText.ExistingCommand(GetHeroName(hero));
 					return false;
 				}
 			}
@@ -1014,7 +1014,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string normalizedSource = NormalizeExternalSourceId(sourceId);
 		if (hero == null || string.IsNullOrWhiteSpace(hero.StringId) || string.IsNullOrWhiteSpace(normalizedSource))
 		{
-			message = "大地图命令停止失败：缺少英雄或命令来源。";
+			message = WorldMapUiText.StopMissingHeroOrSource;
 			return false;
 		}
 		PartyCommandQueueState state = null;
@@ -1028,7 +1028,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!string.Equals(NormalizeExternalSourceId(state.SourceId), normalizedSource, StringComparison.OrdinalIgnoreCase))
 		{
-			message = GetHeroName(hero) + "当前命令不属于该宴会来源，未停止。";
+			message = WorldMapUiText.StopWrongSource(GetHeroName(hero));
 			return false;
 		}
 		StopQueue(hero, normalizedSource + ":stop_external", out _);
@@ -1042,13 +1042,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		acceptedCommandCount = 0;
 		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(hero.StringId))
 		{
-			message = "大地图命令失败：不能这样指挥玩家本人的部队。";
+			message = WorldMapUiText.CannotControlPlayerParty;
 			return false;
 		}
 		MobileParty party = ResolveActorParty(hero);
 		if (party == null)
 		{
-			message = "大地图命令失败：" + GetHeroName(hero) + "当前没有独立可控制部队。";
+			message = WorldMapUiText.NoControllableParty(GetHeroName(hero));
 			return false;
 		}
 		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
@@ -1061,8 +1061,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (safeCommands.Count == 0)
 		{
 			message = string.IsNullOrWhiteSpace(rejectedMergeReason)
-				? "大地图命令失败：没有通过 ID 校验的命令。"
-				: BuildMergeEligibilityFailureMessage(hero, rejectedMergeReason);
+				? WorldMapUiText.NoValidCommands
+				: WorldMapUiText.MergeEligibilityFailure(rejectedMergeReason, GetHeroName(hero));
 			return false;
 		}
 		safeCommands = ConvertGoToSettlementCommandsToAttacks(hero, party, safeCommands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount);
@@ -1074,12 +1074,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			_queues.TryGetValue(hero.StringId, out state);
 			if (IsStopPending(state))
 			{
-				message = GetHeroName(hero) + "正在等待当前战斗安全结算，暂不能追加新的大地图命令。";
+				message = WorldMapUiText.WaitingForBattle(GetHeroName(hero), replacing: false);
 				return false;
 			}
 			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
 			{
-				message = GetHeroName(hero) + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
+				message = WorldMapUiText.IsolatedSource(GetHeroName(hero));
 				return false;
 			}
 			if (state == null || state.Commands == null || state.Commands.Count == 0 || state.CurrentIndex >= state.Commands.Count)
@@ -1113,10 +1113,10 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
-		message = GetHeroName(hero) + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
+		message = WorldMapUiText.QueueAccepted(GetHeroName(hero), safeCommands.Count, startNew);
 		if (!string.IsNullOrWhiteSpace(rejectedMergeReason))
 		{
-			message += " " + BuildMergeEligibilityFailureMessage(hero, rejectedMergeReason);
+			message += " " + WorldMapUiText.MergeEligibilityFailure(rejectedMergeReason, GetHeroName(hero));
 		}
 		return true;
 	}
@@ -1127,14 +1127,14 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		message = "";
 		if (!IsValidNonHeroPartyFallbackParty(party))
 		{
-			message = "大地图命令失败：当前非英雄说话对象没有可接管的野外部队。";
+			message = WorldMapUiText.NonHeroNoParty;
 			return false;
 		}
 		string actorKey = BuildPartyActorKey(party, createGuid: true);
 		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
 		if (string.IsNullOrWhiteSpace(actorKey) || safeCommands.Count == 0)
 		{
-			message = "大地图命令失败：无法建立稳定的非英雄部队命令清单。";
+			message = WorldMapUiText.NonHeroQueueUnavailable;
 			return false;
 		}
 		safeCommands = ConvertGoToSettlementCommandsToAttacks(null, party, safeCommands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount);
@@ -1146,12 +1146,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			_queues.TryGetValue(actorKey, out state);
 			if (IsStopPending(state))
 			{
-				message = actorName + "正在等待当前战斗安全结算，暂不能追加新的大地图命令。";
+				message = WorldMapUiText.WaitingForBattle(actorName, replacing: false);
 				return false;
 			}
 			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
 			{
-				message = actorName + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
+				message = WorldMapUiText.IsolatedSource(actorName);
 				return false;
 			}
 			if (state == null || state.Commands == null || state.Commands.Count == 0 || state.CurrentIndex >= state.Commands.Count)
@@ -1186,7 +1186,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
 		fact = "[AFEF NPC行为补充] " + actorName + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
-		message = actorName + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
+		message = WorldMapUiText.QueueAccepted(actorName, safeCommands.Count, startNew);
 		return true;
 	}
 
@@ -1196,20 +1196,20 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		message = "";
 		if (hero == null || hero == Hero.MainHero)
 		{
-			message = "大地图命令失败：不能这样指挥玩家本人的部队。";
+			message = WorldMapUiText.CannotControlPlayerParty;
 			return false;
 		}
 		string normalizedSource = NormalizeExternalSourceId(sourceId);
 		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
 		if (safeCommands.Count == 0)
 		{
-			message = "大地图命令失败：没有通过 ID 校验的命令。";
+			message = WorldMapUiText.NoValidCommands;
 			return false;
 		}
 		MobileParty party = ResolveActorParty(hero);
 		if (party == null)
 		{
-			message = "大地图命令失败：" + GetHeroName(hero) + "当前没有独立可控制部队。";
+			message = WorldMapUiText.NoControllableParty(GetHeroName(hero));
 			return false;
 		}
 		PartyCommandQueueState existingState = null;
@@ -1219,12 +1219,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (IsStopPending(existingState))
 		{
-			message = GetHeroName(hero) + "正在等待当前战斗安全结算，暂不能替换大地图命令。";
+			message = WorldMapUiText.WaitingForBattle(GetHeroName(hero), replacing: true);
 			return false;
 		}
 		if (HasFollowSiegeState(existingState) && !TryExitFollowSiegeControl(party, existingState, detachPreexistingParticipation: false, "replace_queue"))
 		{
-			message = GetHeroName(hero) + "正在参与原版战斗，结算前不能替换当前大地图命令。";
+			message = WorldMapUiText.Result("AF_WM_NativeBattleReplaceBlocked", "{ACTOR} is participating in a native battle; the current world-map command cannot be replaced until it resolves.", ("ACTOR", GetHeroName(hero)));
 			return false;
 		}
 		TryReactivateGovernorExpedition(hero, party);
@@ -1254,9 +1254,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		StartCurrentCommand(hero, party, state);
 		string conversionFact = BuildGoToSettlementConversionSummary(hostileGoToConvertedCount, besiegedGoToConvertedCount);
-		string conversionMessage = BuildGoToSettlementConversionMessage(hostileGoToConvertedCount, besiegedGoToConvertedCount);
+		string conversionMessage = WorldMapUiText.ConversionMessage(hostileGoToConvertedCount, besiegedGoToConvertedCount);
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
-		message = GetHeroName(hero) + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
+		message = WorldMapUiText.AcceptedQueue(GetHeroName(hero), safeCommands.Count, conversionMessage);
 		return true;
 	}
 
@@ -1558,7 +1558,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.LastIssuedActionKey = escortActionKey;
 			if (isStarting)
 			{
-				DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + targetName + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+				DisplayCommandMessage(WorldMapUiText.FollowStart(GetActorName(state, hero, party), targetName, Math.Max(1, command.Days)), CommandMessageTone.Progress);
 			}
 			else
 			{
@@ -2447,7 +2447,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		if (!CanMergeToPlayer(hero, party, out string reason))
 		{
-			NotifyCommandStatus(state, "merge_to_player_invalid:" + reason, BuildMergeEligibilityFailureMessage(hero, reason), CommandMessageTone.Failure);
+			NotifyCommandStatus(state, "merge_to_player_invalid:" + reason, WorldMapUiText.MergeEligibilityFailure(reason, GetHeroName(hero)), CommandMessageTone.Failure);
 			AdvanceCommand(hero, party, state, "merge_invalid:" + reason, terminalFailure: true);
 			return;
 		}
@@ -3958,19 +3958,6 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			parts.Add(hostileSettlementConvertedCount + "道敌对定居点前往命令已按AI攻击处理");
 		}
 		return parts.Count > 0 ? "，其中" + string.Join("，", parts) : "";
-	}
-
-	private static string BuildGoToSettlementConversionMessage(int hostileSettlementConvertedCount, int besiegedSettlementConvertedCount)
-	{
-		if (hostileSettlementConvertedCount <= 0 && besiegedSettlementConvertedCount <= 0)
-		{
-			return "";
-		}
-		if (hostileSettlementConvertedCount > 0 && besiegedSettlementConvertedCount > 0)
-		{
-			return "，敌对定居点按AI攻击、被围攻定居点改攻敌对围城部队";
-		}
-		return besiegedSettlementConvertedCount > 0 ? "，被围攻定居点改攻敌对围城部队" : "，敌对定居点按AI攻击";
 	}
 
 	private static string NormalizeTargetType(PartyCommandEntry command)
@@ -5872,45 +5859,45 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (hero == null || hero == Hero.MainHero || hero.IsDead || !hero.IsActive || hero.IsDisabled || hero.IsPrisoner || hero.IsTraveling)
 			{
-				message = "该总督当前死亡、被俘、失能或不在可出征状态。";
+				message = WorldMapUiText.GovernorInvalidState;
 				return false;
 			}
 			Town town = hero.GovernorOf;
 			origin = town?.Settlement;
 			if (town == null || origin == null || town.Governor != hero || (!origin.IsTown && !origin.IsCastle))
 			{
-				message = "该人物已不是城市或城堡的有效现任总督。";
+				message = WorldMapUiText.GovernorNotCurrent;
 				return false;
 			}
 			if (hero.CurrentSettlement != origin)
 			{
-				message = "该总督当前不在其管辖地内。";
+				message = WorldMapUiText.GovernorAway;
 				return false;
 			}
 			if (hero.Clan == null || origin.OwnerClan != hero.Clan)
 			{
-				message = "管辖地归属与总督家族不一致。";
+				message = WorldMapUiText.GovernorClanMismatch;
 				return false;
 			}
 			if (hero.PartyBelongedTo != null || hero.PartyBelongedToAsPrisoner != null)
 			{
-				message = "该总督已经属于其他独立部队或俘虏队伍。";
+				message = WorldMapUiText.GovernorAlreadyAttached;
 				return false;
 			}
 			if (!hero.CanLeadParty())
 			{
-				message = "该总督当前因任务或游戏规则不能带领部队。";
+				message = WorldMapUiText.GovernorCannotLead;
 				return false;
 			}
 			if (origin.IsUnderSiege || HasActiveSettlementMapEvent(origin))
 			{
-				message = GetSettlementName(origin) + "正在被围攻或进行战斗，不能抽调驻军。";
+				message = WorldMapUiText.GovernorSettlementBusy(GetSettlementName(origin));
 				return false;
 			}
 			garrison = town.GarrisonParty;
 			if (!IsPartyUsable(garrison) || garrison.CurrentSettlement != origin || garrison.MemberRoster == null || HasActiveMapEvent(garrison))
 			{
-				message = GetSettlementName(origin) + "当前没有可安全抽调的驻军部队。";
+				message = WorldMapUiText.GovernorGarrisonUnavailable(GetSettlementName(origin));
 				return false;
 			}
 			partyCapacity = GetGovernorExpeditionPartyCapacity(hero, hero.Clan);
@@ -5922,7 +5909,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			message = "总督远征资格检查失败：" + ex.Message;
+			message = WorldMapUiText.GovernorValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -5951,7 +5938,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		message = "";
 		if (!IsPartyUsable(garrison) || garrison.MemberRoster == null)
 		{
-			message = "驻军部队不可用。";
+			message = WorldMapUiText.GovernorGarrisonUnavailableGeneric;
 			return false;
 		}
 		List<TroopRosterElement> candidates = new List<TroopRosterElement>();
@@ -5976,7 +5963,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		totalToMove = Math.Min(Math.Max(0, partyCapacity), Math.Min(healthyRegulars, movableByReserve));
 		if (totalToMove < GovernorExpeditionMinimumTroops)
 		{
-			message = "可抽调健康驻军不足" + GovernorExpeditionMinimumTroops + "人；必须保留至少" + reserve + "名普通驻军并遵守总督队伍上限。";
+			message = WorldMapUiText.GovernorTroopsInsufficient(GovernorExpeditionMinimumTroops, reserve);
 			return false;
 		}
 		int remaining = totalToMove;
@@ -6007,7 +5994,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			plan.Clear();
 			totalToMove = 0;
-			message = "驻军抽调计划未能形成完整兵员清单。";
+			message = WorldMapUiText.GovernorPlanIncomplete;
 			return false;
 		}
 		return true;
@@ -6027,7 +6014,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			List<PartyCommandEntry> safeCommands = SanitizeFollowUpCommands(followUpCommands);
 			if (safeCommands.Count == 0 || !safeCommands.Any(IsTaskCommandForImplicitPartyCreation))
 			{
-				message = "没有可用于远征的有效任务命令。";
+				message = WorldMapUiText.GovernorNoTask;
 				return false;
 			}
 			if (!TryValidateGovernorExpeditionCandidate(hero, out origin, out garrison, out int _, out message))
@@ -6037,14 +6024,14 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (!string.Equals(origin.StringId, expectedOriginId ?? "", StringComparison.OrdinalIgnoreCase)
 				|| !string.Equals(hero.Clan?.StringId ?? "", expectedClanId ?? "", StringComparison.OrdinalIgnoreCase))
 			{
-				message = "总督的管辖地或家族在请求等待期间已经变化。";
+				message = WorldMapUiText.GovernorRequestChanged;
 				return false;
 			}
 			garrisonSnapshot = garrison.MemberRoster.GetTroopRoster().ToList();
 			Town originTown = origin.Town;
 			if (hero.GovernorOf != originTown || originTown.Governor != hero || origin.OwnerClan != hero.Clan)
 			{
-				message = "总督身份或管辖地归属在建队前已经变化。";
+				message = WorldMapUiText.GovernorIdentityChanged;
 				return false;
 			}
 			ChangeGovernorAction.RemoveGovernorOf(hero);
@@ -6074,12 +6061,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				MyBehavior.AppendExternalDialogueHistory(hero, null, null, fact);
 			}
 			LogFact(hero, GetHeroName(hero) + "已卸任" + GetSettlementName(origin) + "总督并从驻军抽调" + totalToMove + "名健康士兵，临时远征队开始执行命令。");
-			message = GetHeroName(hero) + "已从" + GetSettlementName(origin) + "驻军抽调" + totalToMove + "人并开始远征。";
+			message = WorldMapUiText.GovernorStarted(GetHeroName(hero), GetSettlementName(origin), totalToMove);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			message = "组建总督远征队失败：" + ex.Message;
+			message = WorldMapUiText.GovernorCreationFailed(ex.Message);
 			Log("create governor expedition failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
 			RollbackGovernorExpeditionCreation(hero, origin, garrison, garrisonSnapshot, createdParty, transferRecords, "create_failed");
 			return false;
@@ -7752,38 +7739,6 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private bool CanMergeToPlayer(Hero hero, MobileParty party, out string reason)
 	{
 		return TryValidatePlayerWildernessPartyForMerge(hero, party, this, out reason);
-	}
-
-	private static string BuildMergeEligibilityFailureMessage(Hero hero, string reason)
-	{
-		string actorName = GetHeroName(hero);
-		switch ((reason ?? "").Trim())
-		{
-			case "not_player_companion_family_or_registered_detachment":
-				return "大地图命令失败：" + actorName + "不是玩家的家族成员、同伴或本模组登记的临时分队，不能执行回队合并。";
-			case "foreign_guest_missing_foreign_clan":
-				return "大地图命令失败：" + actorName + "既不是玩家成员，也没有可保留的外族家族身份。";
-			case "foreign_guest_inactive_or_captive":
-				return "大地图命令失败：" + actorName + "当前死亡、失效或被俘，不能作为外族客军并入玩家队伍。";
-			case "foreign_guest_not_own_lord_party":
-				return "大地图命令失败：" + actorName + "当前率领的不是自己家族的领主野外部队，不能整队并入。";
-			case "foreign_guest_is_governor":
-				return "大地图命令失败：" + actorName + "仍担任总督；为避免原版自动解除职位，不能作为外族客军并入。";
-			case "foreign_guest_in_army":
-				return "大地图命令失败：" + actorName + "当前正在军团中，必须先退出军团才能整队并入玩家。";
-			case "foreign_guest_at_war":
-				return "大地图命令失败：" + actorName + "所属势力正与玩家交战，不能以保留原家族身份的客军形式并入。";
-			case "not_independent_wilderness_party":
-				return "大地图命令失败：" + actorName + "当前没有可归并的独立野外队伍。";
-			case "hero_party_mismatch":
-				return "大地图命令失败：" + actorName + "已经不是该野外队伍的实际领队，已停止回队合并。";
-			case "hero_missing_from_party_roster":
-				return "大地图命令失败：" + actorName + "不在该野外队伍名册中，已停止回队合并。";
-			case "main_party_invalid":
-				return "大地图命令失败：玩家主队当前不可用，无法执行回队合并。";
-			default:
-				return "大地图命令失败：" + actorName + "当前不满足回队合并条件（" + ((reason ?? "").Trim()) + "）。";
-		}
 	}
 
 	private static int MoveAllMembersToMainParty(MobileParty sourceParty)

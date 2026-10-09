@@ -136,7 +136,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 		if (!IsPartyNearPosition(party, target.GatePosition, SettlementAttackCommitDistance))
 		{
 			if (state.Stage == CommandStage.New.ToString())
-				DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(target) + "，准备清剿藏身处。", CommandMessageTone.Progress);
+				DisplayCommandMessage(WorldMapUiText.HideoutTravel(GetActorName(state, hero, party), GetSettlementName(target)), CommandMessageTone.Progress);
 			MoveTowardSettlementAttackPoint(party, target);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "clear_hideout_travel:" + target.StringId;
@@ -152,7 +152,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 			HideoutEventComponent component = HideoutEventComponent.CreateHideoutEvent(party.Party, target.Party, false);
 			if (component?.MapEvent == null) throw new InvalidOperationException("Native hideout battle was not created.");
 			_npcHideoutClearBattles.GetValue(component.MapEvent, _ => new NpcHideoutClearBattle { State = state, CommandIndex = state.CurrentIndex });
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始清剿" + GetSettlementName(target) + "，胜败与伤亡由原版战斗结算。", CommandMessageTone.Progress);
+			DisplayCommandMessage(WorldMapUiText.HideoutEngage(GetActorName(state, hero, party), GetSettlementName(target)), CommandMessageTone.Progress);
 			Log("hideout clear committed actor=" + GetActorLogId(state, hero, party) + " target=" + target.StringId);
 		}
 		catch (Exception ex)

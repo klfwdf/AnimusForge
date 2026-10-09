@@ -13,6 +13,12 @@
     <string id="AF_WM_TrackParty" text="{ACTOR} is tracking {PARTY} to attack; limit: {DAYS} days ({MODE})." />
     <string id="AF_WM_MergeForeign" text="{HERO} is returning to the player's party and will merge as a guest force while keeping the original clan identity." />
     <string id="AF_WM_Merge" text="{HERO} is returning to the player's party to regroup and transfer troops." />
+    <string id="AF_WM_FollowStart" text="{ACTOR} is heading to and following {TARGET} for {DAYS} days." />
+    <string id="AF_WM_HideoutTravel" text="{ACTOR} is heading to {SETTLEMENT} to clear the hideout." />
+    <string id="AF_WM_HideoutEngage" text="{ACTOR} is starting a hideout-clear battle at {SETTLEMENT}; the native battle resolves the outcome and casualties." />
+    <string id="AF_WM_ForeignGuestDepart" text="{HERO}'s faction is now at war with the player; the foreign guest hero has left the player's party." />
+    <string id="AF_WM_ForeignGuestDetachmentReleased" text="{HERO}'s faction is now at war with the player; the foreign guest detachment is no longer under player control." />
+    <string id="AF_WM_PartyName" text="{HERO}'s party" />
     <string id="AF_WM_Target" text="target" />
     <string id="AF_WM_TrackRisk" text="{ACTOR} is near {TARGET}, but the strength assessment considers the risk too high; waiting for a better attack window." />
     <string id="AF_WM_TrackBlocked" text="{ACTOR} is near {TARGET}, but the attack requirements are not met; continuing to track the target." />
@@ -42,5 +48,56 @@
     <string id="AF_WM_Admission_GovernorNoTask" text="World-map command failed: a governor in a settlement needs at least one move, patrol, follow, or attack task to form an expedition." />
     <string id="AF_WM_Admission_GovernorOrder" text="Invalid world-map command order: a merge command before governor party creation cannot run; processing starts at the first effective task command." />
     <string id="AF_WM_Admission_ProcessingFailed" text="World-map command processing failed: {ERROR}" />
+    <string id="AF_WM_CommandMissingSource" text="World-map command failed: the external command source is missing." />
+    <string id="AF_WM_CommandInvalidHeroSettlement" text="World-map command failed: no valid hero or settlement was found." />
+    <string id="AF_WM_CommandExisting" text="{HERO} already has another world-map command and cannot be reassigned to the feast yet." />
+    <string id="AF_WM_StopMissingHeroSource" text="Stopping the world-map command failed: the hero or command source is missing." />
+    <string id="AF_WM_StopWrongSource" text="{HERO}'s current command does not belong to this feast source and was not stopped." />
+    <string id="AF_WM_CannotControlPlayerParty" text="World-map command failed: the player's own party cannot be commanded this way." />
+    <string id="AF_WM_NoControllableParty" text="World-map command failed: {HERO} has no independent controllable party." />
+    <string id="AF_WM_NoValidCommands" text="World-map command failed: no command passed ID validation." />
+    <string id="AF_WM_WaitingBattleReplace" text="{ACTOR} is waiting for the current battle to resolve safely; the world-map command cannot be replaced yet." />
+    <string id="AF_WM_WaitingBattleAppend" text="{ACTOR} is waiting for the current battle to resolve safely; new world-map commands cannot be appended yet." />
+    <string id="AF_WM_IsolatedSource" text="{ACTOR} is executing an isolated-source command; the chat command did not change that queue." />
+    <string id="AF_WM_QueueStarted" text="{ACTOR} {ACTION} {COUNT} world-map command(s)." />
+    <string id="AF_WM_QueueAppended" text="{ACTOR} {ACTION} {COUNT} world-map command(s)." />
+    <string id="AF_WM_QueueStartedAction" text="started executing" />
+    <string id="AF_WM_QueueAppendedAction" text="appended" />
+    <string id="AF_WM_NonHeroNoParty" text="World-map command failed: the current non-hero speaker has no field party that can be taken over." />
+    <string id="AF_WM_NonHeroQueueUnavailable" text="World-map command failed: a stable non-hero party command queue could not be created." />
+    <string id="AF_WM_AcceptedQueue" text="{ACTOR} accepted the world-map command queue ({COUNT} command(s){CONVERSION})." />
+    <string id="AF_WM_NativeBattleReplaceBlocked" text="{ACTOR} is participating in a native battle; the current world-map command cannot be replaced until it resolves." />
+    <string id="AF_WM_GovernorInvalidState" text="This governor is dead, captured, disabled, or not currently eligible to lead an expedition." />
+    <string id="AF_WM_GovernorNotCurrent" text="This hero is no longer the valid current governor of a town or castle." />
+    <string id="AF_WM_GovernorAway" text="The governor is not currently in the settlement under their authority." />
+    <string id="AF_WM_GovernorClanMismatch" text="The settlement ownership does not match the governor's clan." />
+    <string id="AF_WM_GovernorAlreadyAttached" text="The governor already belongs to another independent party or prisoner party." />
+    <string id="AF_WM_GovernorCannotLead" text="The governor cannot lead a party because of a quest or native game rule." />
+    <string id="AF_WM_GovernorSettlementBusy" text="{SETTLEMENT} is under siege or in battle; its garrison cannot be drafted." />
+    <string id="AF_WM_GovernorGarrisonUnavailable" text="{SETTLEMENT} has no garrison that can be safely drafted." />
+    <string id="AF_WM_GovernorValidationFailed" text="Governor expedition eligibility check failed: {ERROR}" />
+    <string id="AF_WM_GovernorGarrisonUnavailableGeneric" text="The garrison party is unavailable." />
+    <string id="AF_WM_GovernorTroopsInsufficient" text="Fewer than {MINIMUM} healthy garrison troops can be drafted; at least {RESERVE} regular troops must remain and the governor party limit must be respected." />
+    <string id="AF_WM_GovernorPlanIncomplete" text="The garrison draft plan could not produce a complete troop list." />
+    <string id="AF_WM_GovernorNoTask" text="No valid task command is available for the expedition." />
+    <string id="AF_WM_GovernorRequestChanged" text="The governor's settlement or clan changed while the request was waiting." />
+    <string id="AF_WM_GovernorIdentityChanged" text="The governor identity or settlement ownership changed before party creation." />
+    <string id="AF_WM_GovernorStarted" text="{HERO} drafted {TROOPS} troops from the garrison of {SETTLEMENT} and began the expedition." />
+    <string id="AF_WM_GovernorCreationFailed" text="Creating the governor expedition failed: {ERROR}" />
+    <string id="AF_WM_MergeNotPlayerMember" text="World-map command failed: {ACTOR} is not a player clan member, companion, or registered temporary detachment and cannot merge back." />
+    <string id="AF_WM_MergeMissingForeignClan" text="World-map command failed: {ACTOR} is not a player member and has no foreign clan identity to preserve." />
+    <string id="AF_WM_MergeInactiveOrCaptive" text="World-map command failed: {ACTOR} is dead, inactive, or captive and cannot join as a foreign guest force." />
+    <string id="AF_WM_MergeNotOwnParty" text="World-map command failed: {ACTOR} is not leading their own clan's lord party and cannot merge the whole party." />
+    <string id="AF_WM_MergeGovernor" text="World-map command failed: {ACTOR} is still a governor; the foreign guest force cannot merge without removing the native office." />
+    <string id="AF_WM_MergeInArmy" text="World-map command failed: {ACTOR} is currently in an army and must leave it before merging into the player's party." />
+    <string id="AF_WM_MergeAtWar" text="World-map command failed: {ACTOR}'s faction is at war with the player and cannot merge as a foreign guest force." />
+    <string id="AF_WM_MergeNoIndependentParty" text="World-map command failed: {ACTOR} has no independent field party to merge." />
+    <string id="AF_WM_MergePartyMismatch" text="World-map command failed: {ACTOR} no longer leads the field party and the merge was stopped." />
+    <string id="AF_WM_MergeHeroMissing" text="World-map command failed: {ACTOR} is not in the field party roster and the merge was stopped." />
+    <string id="AF_WM_MergeMainPartyInvalid" text="World-map command failed: the player's main party is unavailable for the merge." />
+    <string id="AF_WM_MergeEligibilityUnknown" text="World-map command failed: {ACTOR} does not meet the merge requirements ({REASON})." />
+    <string id="AF_WM_ConversionBoth" text=", hostile settlements were handled as AI attacks and besieged settlements were changed to attacks on the besieging force." />
+    <string id="AF_WM_ConversionBesieged" text=", besieged settlements were changed to attacks on the besieging force." />
+    <string id="AF_WM_ConversionHostile" text=", hostile settlements were handled as AI attacks." />
   </strings>
 </base>

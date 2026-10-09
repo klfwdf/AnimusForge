@@ -367,7 +367,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			rightMembers.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
 		}
-		TextObject partyName = new TextObject("{HERO}的队伍");
+		TextObject partyName = new TextObject("{=AF_WM_PartyName}{HERO}'s party");
 		partyName.SetTextVariable("HERO", hero.Name);
 		int partyLimit = Math.Max(1, MobileParty.MainParty?.Party?.PartySizeLimit ?? 1);
 		try

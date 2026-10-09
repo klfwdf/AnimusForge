@@ -285,7 +285,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (!CanMergeToPlayer(hero, party, out string mergeReason))
 			{
-				NotifyCommandStatus(state, "merge_to_player_invalid:" + mergeReason, BuildMergeEligibilityFailureMessage(hero, mergeReason), CommandMessageTone.Failure);
+				NotifyCommandStatus(state, "merge_to_player_invalid:" + mergeReason, WorldMapUiText.MergeEligibilityFailure(mergeReason, GetHeroName(hero)), CommandMessageTone.Failure);
 				AdvanceCommand(hero, party, state, "merge_invalid:" + mergeReason, terminalFailure: true);
 				return;
 			}
