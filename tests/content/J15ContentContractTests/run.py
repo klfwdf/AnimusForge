@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "CBC335DA464554BABFB76A0781F24DB1DDE06E20B9478F4D385A97BC8DBD198D",
-        "revision": "93755e85a",
+        "sha256": "C14D0F10166ADC1D0790E2F7E3C82AB6A3FA827AB5AD05E10A171332D099F65E",
+        "revision": "902c1531b",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "84D29C1E3D91C9DE8E46EA62A496FBBFB79AEBC8956C9D36A0AA9255E2AA0AF0",
-        "revision": "93755e85a",
+        "sha256": "9BC80718243C90ECFF9C182076852CEB92FEC5BC42E42FCE48167D64706B7A3D",
+        "revision": "902c1531b",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
@@ -682,11 +682,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/sets_ui_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
-        "sha256": "03EE81DB608ED32B1B66AF9066B3C0F9CE4E8417AA8485FA2F133A3074C28E88", "revision": "060c4c97a",
+        "sha256": "65BA5339D7E0B64D533B9F2F736B0F188C00E6F5602C6D7F13712B295A90589F", "revision": "2fcc2f240",
     },
     "ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
-        "sha256": "408B20E94E2B30456F427F82FFBC4D3734AA103152B75316C50162557B94606A", "revision": "060c4c97a",
+        "sha256": "501F8FB76F5765C454CC2D5D4C04A66FE40A431C64D83F0D5175B5179775DCA2", "revision": "2fcc2f240",
     },
     "ModuleData/Languages/gccz_town_manual_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/gccz_town_manual_strings.xml",
@@ -710,11 +710,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
-        "sha256": "AFEB245032494BCCC14BAAC75833852D69C505C7258DCABD3D81D180B178B0A5", "revision": "7ad5c1c86",
+        "sha256": "5411B4765D98E9EF00830FB782DCF78B3884901686F8B945F09C4AA45D010822", "revision": "22cfbfdf8",
     },
     "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
-        "sha256": "5B69F7A1D8CC07657DE35642E6779A4CE91F0E3B1B3366647062A8298A895906", "revision": "7ad5c1c86",
+        "sha256": "CA7763D1F5E39060ECA98504FA1698ACC6EEC9E6600F7F5F15EFDB41B9780600", "revision": "22cfbfdf8",
     },
     "ModuleData/Languages/afsocial_ui_strings.xml": {
         "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/afsocial_ui_strings.xml",
