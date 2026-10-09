@@ -2632,6 +2632,44 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="王国开局知识无法读取：" />
   <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="王国开局知识包含空王国 ID。" />
   <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="王国开局知识包含重复王国 ID：" />
-</strings>
+
+  <string id="AF_MCM_Letter_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_MCM_Companion_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_MCM_Notoriety_Group" text="8. 玩家知名度" />
+  <string id="AF_MCM_Memory_PreprocessMode" text="前处理模式" />
+  <string id="AF_MCM_Memory_PreprocessMode_Hint" text="1=同体模式：规则 Code 与记忆编号放进同一个前处理 JSON 请求；2=并发模式：规则筛选与记忆筛选同时请求，全部成功解析后进入主链路。默认 1。" />
+  <string id="AF_MCM_Memory_OverviewStart" text="记忆大总结启动块数" />
+  <string id="AF_MCM_Memory_OverviewStart_Hint" text="当某个 Hero NPC 的压缩记忆块达到该数量后，后台生成并滚动更新“过往记忆总览”。默认 5。" />
+  <string id="AF_MCM_Memory_OverviewTarget" text="记忆大总结目标字数" />
+  <string id="AF_MCM_Memory_OverviewTarget_Hint" text="控制“过往记忆总览”的目标中文字符数。默认 200；越短越省 token，越长越保留细节。" />
+  <string id="AF_MCM_Companion_Enable" text="启用队内 Hero 主动聊天" />
+  <string id="AF_MCM_Companion_Enable_Hint" text="允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。" />
+  <string id="AF_MCM_Companion_Test" text="队内主动聊天测试模式" />
+  <string id="AF_MCM_Companion_Test_Hint" text="每游戏小时扫描、触发概率为 100% 且忽略冷却；仍要求 Hero 合法、玩家状态安全且存在有效动机。" />
+  <string id="AF_MCM_Companion_Interval_Hint" text="每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。" />
+  <string id="AF_MCM_Companion_GlobalCooldown_Hint" text="生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。" />
+  <string id="AF_MCM_Companion_HeroCooldown" text="同 Hero 冷却(天)" />
+  <string id="AF_MCM_Companion_HeroCooldown_Hint" text="同一 Hero 主动请求交谈后，多少游戏日内不会再次发起。默认 48 天。" />
+  <string id="AF_MCM_Companion_Quiet" text="任意交流静默期(天)" />
+  <string id="AF_MCM_Companion_Quiet_Hint" text="任意渠道刚与该 Hero 交流后，至少等待多少游戏日再允许其主动聊天。默认 21 天。" />
+  <string id="AF_MCM_Companion_NoticeLifetime" text="通知有效期(天)" />
+  <string id="AF_MCM_Companion_NoticeLifetime_Hint" text="队内主动聊天通知可保留多少游戏日；过期视为婉拒。默认 3 天。" />
+  <string id="AF_MCM_Companion_Chance" text="触发概率倍率" />
+  <string id="AF_MCM_Companion_Chance_Hint" text="队内主动聊天每日概率的总体倍率。默认 1.00。" />
+  <string id="AF_MCM_Companion_Fatigue_Hint" text="同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。" />
+  <string id="AF_MCM_Companion_FatigueMultiplier_Hint" text="处于疲劳期的动机候选权重倍率。默认 0.25。" />
+  <string id="AF_MCM_Companion_RecentEvent" text="近期事件窗口(天)" />
+  <string id="AF_MCM_Companion_RecentEvent_Hint" text="Hero 或玩家近期真实事件可作为聊天动机的时间窗口。默认 10 天。" />
+  <string id="AF_MCM_Companion_Debug" text="写入队内主动聊天调试日志" />
+  <string id="AF_MCM_Companion_Debug_Hint" text="在 Mod_Logic.txt 中记录候选、概率、动机、冷却和通知状态。" />
+  <string id="AF_MCM_Notoriety_Interval" text="玩家履历总结间隔(天)" />
+  <string id="AF_MCM_Notoriety_Interval_Hint" text="每隔多少游戏日尝试把玩家公开履历素材滚动总结一次。默认 3 天。" />
+  <string id="AF_MCM_Notoriety_Chars" text="玩家履历字数" />
+  <string id="AF_MCM_Notoriety_Chars_Hint" text="玩家公开重大履历总结的目标字数和硬上限，也是NPC已知玩家重大履历时主链路注入的履历字数上限。AI 会整体重写旧摘要，而不是在末尾增量追加；未总结原始素材不会直接注入主链路。默认 300。" />
+  <string id="AF_MCM_Notoriety_Distance" text="信使近期行动距离倍率" />
+  <string id="AF_MCM_Notoriety_Distance_Hint" text="玩家发信瞬间，目标 NPC 与玩家距离小于玩家视野范围乘以该倍率时，信使链路可让 NPC 知道玩家近期行动。默认 3.0。" />
+  <string id="AF_MCM_Notoriety_Debug" text="写入知名度调试日志" />
+  <string id="AF_MCM_Notoriety_Debug_Hint" text="开启后在 Mod_Logic.txt 中写入玩家知名度记录、知晓判定、总结与注入相关日志。" />
+  </strings>
 </base>
 

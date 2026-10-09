@@ -1431,15 +1431,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryFinalInjectCount { get; set; } = 4;
 
-	[SettingPropertyInteger("前处理模式", 1, 2, "0", Order = 5, RequireRestart = false, HintText = "1=同体模式：规则 Code 与记忆编号放进同一个前处理 JSON 请求；2=并发模式：规则筛选与记忆筛选同时请求，全部成功解析后进入主链路。默认 1。")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_PreprocessMode}Preprocess mode", 1, 2, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Memory_PreprocessMode_Hint}1 = unified mode: rule codes and memory IDs share one preprocessing JSON request; 2 = parallel mode: rule and memory filtering run concurrently. Default: 1.")]
 	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryPreprocessMode { get; set; } = 1;
 
-	[SettingPropertyInteger("记忆大总结启动块数", 3, 10, "0", Order = 6, RequireRestart = false, HintText = "当某个 Hero NPC 的压缩记忆块达到该数量后，后台生成并滚动更新“过往记忆总览”。默认 5。")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_OverviewStart}Memory overview start block count", 3, 10, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Memory_OverviewStart_Hint}When a Hero NPC reaches this many compressed memory blocks, generate and update the long-term memory overview. Default: 5.")]
 	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryOverviewStartBlockCount { get; set; } = 5;
 
-	[SettingPropertyInteger("记忆大总结目标字数", 100, 1000, "0", Order = 7, RequireRestart = false, HintText = "控制“过往记忆总览”的目标中文字符数。默认 200；越短越省 token，越长越保留细节。")]
+	[SettingPropertyInteger("{=AF_MCM_Memory_OverviewTarget}Memory overview target characters", 100, 1000, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Memory_OverviewTarget_Hint}Target character count for the long-term memory overview. Default: 200; shorter saves tokens, longer retains more detail.")]
 	[SettingPropertyGroup("{=AF_MCM_Memory_Group}5. Compressed memory")]
 	public int MemoryOverviewTargetChars { get; set; } = 200;
 
@@ -1584,123 +1584,123 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public int ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays { get; set; } = 42;
 
 	[SettingPropertyBool("{=AF_MCM_Letter_Enable}Enable NPC-initiated letters", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Letter_Enable_Hint}Allows NPCs who know the player and have sufficient bond to send a real courier.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public bool EnableNpcInitiatedLetters { get; set; } = true;
 
 	[SettingPropertyBool("{=AF_MCM_Letter_Test}Letter test mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Letter_Test_Hint}Raises chance to 100% and removes letter cooldowns; NPC knowledge, valid location, and a real motive are still required.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public bool NpcInitiatedLetterTestMode { get; set; } = false;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_Bond}Minimum bond score", 0, 100, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Letter_Bond_Hint}Minimum candidate score after averaging private relations and letter trust. Default: 10.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterMinBondScore { get; set; } = 10;
 
 	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Letter_Interval_Hint}How often to scan unsolicited-letter candidates in game hours. Default: 24.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterScanIntervalHours { get; set; } = 24;
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_Chance}Letter chance multiplier", 0f, 2f, "0.00", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Letter_Chance_Hint}Per-scan chance equals bond score multiplied by this value. Default 0.25, or 25% at score 100.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public float NpcInitiatedLetterChanceMultiplier { get; set; } = 0.25f;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_GlobalCooldown}Global cooldown (days)", 0, 60, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Letter_GlobalCooldown_Hint}After any NPC sends a letter, prevents a new unsolicited letter for this many game days. Default: 5.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterGlobalCooldownDays { get; set; } = 5;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_LowCooldown}Low-score NPC cooldown (days)", 1, 120, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Letter_LowCooldown_Hint}Sender cooldown for NPCs with the minimum bond score. Default: 45 days.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterLowScoreCooldownDays { get; set; } = 45;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_HighCooldown}High-score NPC cooldown (days)", 1, 60, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Letter_HighCooldown_Hint}Sender cooldown for NPCs with a score of 100. Default: 14 days.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterHighScoreCooldownDays { get; set; } = 14;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_Quiet}Recent-contact quiet period (days)", 0, 30, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Letter_Quiet_Hint}After any channel talks with an NPC, wait at least this many game days before allowing an unsolicited letter. Default: 3.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterQuietDays { get; set; } = 3;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_TrustCap}Public-trust contribution cap", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Letter_TrustCap_Hint}Cap on positive or negative public-trust contribution to letter trust. Default: ±20.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterPublicTrustCap { get; set; } = 20;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_Fatigue}Motive fatigue (days)", 0, 120, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Letter_Fatigue_Hint}Duration of reduced weight when the same NPC repeats a letter motive. Default: 30 days.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterMotiveFatigueDays { get; set; } = 30;
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_FatigueMultiplier}Fatigued-motive weight multiplier", 0f, 1f, "0.00", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Letter_FatigueMultiplier_Hint}Weight multiplier for greeting, status, event, emotional, request, or diplomatic motives during fatigue. Default: 0.25.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public float NpcInitiatedLetterMotiveFatigueMultiplier { get; set; } = 0.25f;
 
 	[SettingPropertyInteger("{=AF_MCM_Letter_TargetChars}Letter target characters", 80, 1000, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Letter_TargetChars_Hint}Target body length for an unsolicited NPC letter. Default: 220 characters.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public int NpcInitiatedLetterTargetChars { get; set; } = 220;
 
 	[SettingPropertyBool("{=AF_MCM_Letter_Debug}Write unsolicited-letter debug log", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Letter_Debug_Hint}Logs candidate scores, chance, motives, cooldowns, and skip reasons to Mod_Logic.txt.")]
-	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	[SettingPropertyGroup("{=AF_MCM_Letter_Group}7. Proactive NPC contact/Unsolicited letters")]
 	public bool NpcInitiatedLetterDebugLog { get; set; } = false;
 
-	[SettingPropertyBool("启用队内 Hero 主动聊天", Order = 0, RequireRestart = false, HintText = "允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyBool("{=AF_MCM_Companion_Enable}Enable companion proactive chat", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Companion_Enable_Hint}Allows companions, family members, and other Heroes in the player party to request a conversation through a campaign-map notification.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public bool EnableCompanionProactiveChat { get; set; } = true;
 
-	[SettingPropertyBool("队内主动聊天测试模式", Order = 1, RequireRestart = false, HintText = "每游戏小时扫描、触发概率为 100% 且忽略冷却；仍要求 Hero 合法、玩家状态安全且存在有效动机。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyBool("{=AF_MCM_Companion_Test}Companion proactive-chat test mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Companion_Test_Hint}Scans every game hour, uses 100% trigger chance, and ignores cooldowns; valid Hero state, safe player state, and a valid motive are still required.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public bool CompanionProactiveChatTestMode { get; set; } = false;
 
-	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Companion_Interval_Hint}How often to scan Heroes in the player party, in game hours. Default: 24.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatScanIntervalHours { get; set; } = 24;
 
-	[SettingPropertyInteger("{=AF_MCM_Letter_GlobalCooldown}Global cooldown (days)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_GlobalCooldown}Global cooldown (days)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Companion_GlobalCooldown_Hint}After a companion proactive-chat notice is created, no new notice is created during this many game days. Default: 21.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatGlobalCooldownDays { get; set; } = 21;
 
-	[SettingPropertyInteger("同 Hero 冷却(天)", 0, 240, "0", Order = 4, RequireRestart = false, HintText = "同一 Hero 主动请求交谈后，多少游戏日内不会再次发起。默认 48 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Companion_HeroCooldown}Same-Hero cooldown (days)", 0, 240, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Companion_HeroCooldown_Hint}After the same Hero requests a conversation, wait this many game days before another request. Default: 48.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatHeroCooldownDays { get; set; } = 48;
 
-	[SettingPropertyInteger("任意交流静默期(天)", 0, 120, "0", Order = 5, RequireRestart = false, HintText = "任意渠道刚与该 Hero 交流后，至少等待多少游戏日再允许其主动聊天。默认 21 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Companion_Quiet}Cross-channel quiet period (days)", 0, 120, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Companion_Quiet_Hint}After any channel talks with the Hero, wait at least this many game days before allowing proactive chat. Default: 21.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatInteractionQuietDays { get; set; } = 21;
 
-	[SettingPropertyInteger("通知有效期(天)", 1, 30, "0", Order = 6, RequireRestart = false, HintText = "队内主动聊天通知可保留多少游戏日；过期视为婉拒。默认 3 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Companion_NoticeLifetime}Notice lifetime (days)", 1, 30, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Companion_NoticeLifetime_Hint}How many game days a companion proactive-chat notice remains valid; after expiry it counts as declined. Default: 3.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatNoticeLifetimeDays { get; set; } = 3;
 
-	[SettingPropertyFloatingInteger("触发概率倍率", 0f, 5f, "0.00", Order = 7, RequireRestart = false, HintText = "队内主动聊天每日概率的总体倍率。默认 1.00。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Companion_Chance}Trigger chance multiplier", 0f, 5f, "0.00", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Companion_Chance_Hint}Overall multiplier for the daily companion proactive-chat chance. Default: 1.00.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public float CompanionProactiveChatChanceMultiplier { get; set; } = 1f;
 
-	[SettingPropertyInteger("{=AF_MCM_Letter_Fatigue}Motive fatigue (days)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_Fatigue}Motive fatigue (days)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Companion_Fatigue_Hint}Duration for which a selected motive type receives reduced weight. Default: 30 days.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatMotiveFatigueDays { get; set; } = 30;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_FatigueMultiplier}Fatigued-motive weight multiplier", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "处于疲劳期的动机候选权重倍率。默认 0.25。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_FatigueMultiplier}Fatigued-motive weight multiplier", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Companion_FatigueMultiplier_Hint}Weight multiplier for motive candidates during fatigue. Default: 0.25.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public float CompanionProactiveChatMotiveFatigueMultiplier { get; set; } = 0.25f;
 
-	[SettingPropertyInteger("近期事件窗口(天)", 1, 30, "0", Order = 10, RequireRestart = false, HintText = "Hero 或玩家近期真实事件可作为聊天动机的时间窗口。默认 10 天。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyInteger("{=AF_MCM_Companion_RecentEvent}Recent-event window (days)", 1, 30, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Companion_RecentEvent_Hint}How many recent game days of real Hero or player events can be used as conversation motives. Default: 10.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public int CompanionProactiveChatRecentEventWindowDays { get; set; } = 10;
 
-	[SettingPropertyBool("写入队内主动聊天调试日志", Order = 11, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选、概率、动机、冷却和通知状态。")]
-	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	[SettingPropertyBool("{=AF_MCM_Companion_Debug}Write companion proactive-chat debug log", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Companion_Debug_Hint}Writes candidates, chance, motives, cooldowns, and notice state to Mod_Logic.txt.")]
+	[SettingPropertyGroup("{=AF_MCM_Companion_Group}7. Proactive NPC contact/Companion proactive chat")]
 	public bool CompanionProactiveChatDebugLog { get; set; } = false;
 
-	[SettingPropertyInteger("玩家履历总结间隔(天)", 1, 30, "0", Order = 0, RequireRestart = false, HintText = "每隔多少游戏日尝试把玩家公开履历素材滚动总结一次。默认 3 天。")]
-	[SettingPropertyGroup("8. 玩家知名度")]
+	[SettingPropertyInteger("{=AF_MCM_Notoriety_Interval}Player history summary interval (days)", 1, 30, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Notoriety_Interval_Hint}Every how many game days to roll up the player public-history material. Default: 3.")]
+	[SettingPropertyGroup("{=AF_MCM_Notoriety_Group}8. Player notoriety")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;
 
-	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结的目标字数和硬上限，也是NPC已知玩家重大履历时主链路注入的履历字数上限。AI 会整体重写旧摘要，而不是在末尾增量追加；未总结原始素材不会直接注入主链路。默认 300。")]
-	[SettingPropertyGroup("8. 玩家知名度")]
+	[SettingPropertyInteger("{=AF_MCM_Notoriety_Chars}Player history target characters", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Notoriety_Chars_Hint}Target length and hard cap for the player public major-history summary and its main-chain injection. Default: 300.")]
+	[SettingPropertyGroup("{=AF_MCM_Notoriety_Group}8. Player notoriety")]
 	public int PlayerNotorietyMajorPromptChars { get; set; } = 300;
 
-	[SettingPropertyFloatingInteger("信使近期行动距离倍率", 0.5f, 10f, "0.0", Order = 2, RequireRestart = false, HintText = "玩家发信瞬间，目标 NPC 与玩家距离小于玩家视野范围乘以该倍率时，信使链路可让 NPC 知道玩家近期行动。默认 3.0。")]
-	[SettingPropertyGroup("8. 玩家知名度")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Notoriety_Distance}Courier recent-action distance multiplier", 0.5f, 10f, "0.0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Notoriety_Distance_Hint}When the target NPC is within player sight range multiplied by this value at the moment a letter is sent, the courier chain can expose the player recent action. Default: 3.0.")]
+	[SettingPropertyGroup("{=AF_MCM_Notoriety_Group}8. Player notoriety")]
 	public float PlayerNotorietyCourierRecentDistanceMultiplier { get; set; } = 3f;
 
-	[SettingPropertyBool("写入知名度调试日志", Order = 3, RequireRestart = false, HintText = "开启后在 Mod_Logic.txt 中写入玩家知名度记录、知晓判定、总结与注入相关日志。")]
-	[SettingPropertyGroup("8. 玩家知名度")]
+	[SettingPropertyBool("{=AF_MCM_Notoriety_Debug}Write notoriety debug log", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Notoriety_Debug_Hint}Writes player notoriety records, knowledge checks, summaries, and injection details to Mod_Logic.txt.")]
+	[SettingPropertyGroup("{=AF_MCM_Notoriety_Group}8. Player notoriety")]
 	public bool PlayerNotorietyDebugLogs { get; set; } = false;
 
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
