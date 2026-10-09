@@ -96,12 +96,12 @@ internal static void ShowWeeklyFullOnDemandProgressPopup(EventRecordEntry entry,
 		{
 			text = defaultTitle(entry?.EventKind, entry?.ScopeKingdomId, entry?.WeekIndex ?? 0);
 		}
-		InformationManager.ShowInquiry(new InquiryData("正在生成完整周报", "正在使用该期保存的完整素材补写完整周报正文。\n\n周报：" + text + "\n\n请稍候，生成完成或失败前此窗口不会关闭。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_001","Generating full weekly report"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_002","Using the saved materials for this issue to write the full weekly report.\n\nReport: ") + text + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_003","\n\nPlease wait; this window stays open until generation succeeds or fails."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 	}
 internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 	{
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData("完整周报生成失败", string.IsNullOrWhiteSpace(message) ? "完整周报生成失败。" : message.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_004","Full weekly report generation failed"), string.IsNullOrWhiteSpace(message) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_005","Full weekly report generation failed.") : message.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), "", delegate
 		{
 		}, null), pauseGameActiveState: true);
 	}
@@ -126,7 +126,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
  internal WeeklyReportBatchRequest BatchSelection;
  internal int MaterialPage;
  internal WeeklyReportEditorController(WeeklyEditorPort port) { _port = port; }
- private string FormatNewsDate(int day) => _port.FormatNewsDate?.Invoke(day) ?? "日期未知";
+ private string FormatNewsDate(int day) => _port.FormatNewsDate?.Invoke(day) ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_007","Date unknown");
  internal void CancelForNewsModeChange()
  {
   bool ownsFailure = RetryContext != null && (UiStage == WeeklyReportUiStage.Failure || UiStage == WeeklyReportUiStage.RetryProgress);
@@ -159,31 +159,31 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 	{
 		if (material == null)
 		{
-			return "无效素材。";
+			return WeeklyReportUiText.Get("AF_UI_Weekly_Editor_008","Invalid material.");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		_port.AppendDevNpcActionField(stringBuilder, "素材类型", _port.TranslateEventMaterialTypeForDev(material.MaterialType));
-		_port.AppendDevNpcActionField(stringBuilder, "素材标签", (material.Label ?? "").Trim());
-		_port.AppendDevNpcActionField(stringBuilder, "人物", _port.ResolveHeroDisplay(material.HeroId));
-		_port.AppendDevNpcActionField(stringBuilder, "王国", _port.ResolveKingdomDisplay(material.KingdomId));
-		_port.AppendDevNpcActionField(stringBuilder, "定居点", _port.ResolveSettlementDisplay(material.SettlementId));
-		_port.AppendDevNpcActionField(stringBuilder, "行动类型", _port.GetDevNpcActionKindDisplay(material.ActionKind));
-		_port.AppendDevNpcActionField(stringBuilder, "相关人物", string.Join("、", _port.ResolveHeroNames(material.RelatedHeroIds)));
-		_port.AppendDevNpcActionField(stringBuilder, "相关家族", string.Join("、", _port.ResolveClanNames(material.RelatedClanIds)));
-		_port.AppendDevNpcActionField(stringBuilder, "相关王国", string.Join("、", _port.ResolveKingdomNames(material.RelatedKingdomIds)));
-		_port.AppendDevNpcActionField(stringBuilder, "原始素材数", Math.Max(0, material.SourceMaterialCount).ToString());
-		_port.AppendDevNpcActionField(stringBuilder, "来源StableKey", string.Join(" | ", (material.SourceStableKeys ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
-		_port.AppendDevNpcActionField(stringBuilder, "来源ActionKind", string.Join(" | ", (material.SourceActionKinds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_009","Material type"), _port.TranslateEventMaterialTypeForDev(material.MaterialType));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_010","Material label"), (material.Label ?? "").Trim());
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_011","Hero"), _port.ResolveHeroDisplay(material.HeroId));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_012","kingdom"), _port.ResolveKingdomDisplay(material.KingdomId));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_013","Settlement"), _port.ResolveSettlementDisplay(material.SettlementId));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_014","Action type"), _port.GetDevNpcActionKindDisplay(material.ActionKind));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_015","Related heroes"), string.Join(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_RelatedSeparator", ", "), _port.ResolveHeroNames(material.RelatedHeroIds)));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_016","Related clans"), string.Join(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_RelatedSeparator", ", "), _port.ResolveClanNames(material.RelatedClanIds)));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_017","Related kingdoms"), string.Join(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_RelatedSeparator", ", "), _port.ResolveKingdomNames(material.RelatedKingdomIds)));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_018","Source material count"), Math.Max(0, material.SourceMaterialCount).ToString());
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_019","Source StableKey"), string.Join(" | ", (material.SourceStableKeys ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_020","Source ActionKind"), string.Join(" | ", (material.SourceActionKinds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
 		switch ((material.MaterialType ?? "").Trim().ToLowerInvariant())
 		{
 		case "world_opening_summary":
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_021","Material body"));
 			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : ((_port.WorldOpeningSummary() ?? "").Trim()));
 			break;
 		case "kingdom_opening_summary":
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_021","Material body"));
 			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : _port.ResolveKingdomOpeningSummaryById(material.KingdomId));
 			break;
 		case "npc_recent_action":
@@ -197,21 +197,21 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			else
 			{
 				stringBuilder.AppendLine();
-				stringBuilder.AppendLine("【素材正文】");
+				stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_021","Material body"));
 				if (!string.IsNullOrWhiteSpace(material.SnapshotText))
 				{
 					stringBuilder.AppendLine(material.SnapshotText.Trim());
 				}
 				else
 				{
-					stringBuilder.AppendLine("未能在当前行动记录中定位到这条 NPC 行为，可能是旧记录被裁剪掉了。");
+					stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_022","This NPC action could not be located in the current action records; the old record may have been trimmed."));
 				}
 			}
 			break;
 		default:
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(material.SnapshotText) ? "这条素材当前没有额外快照文本。" : material.SnapshotText.Trim());
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_021","Material body"));
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(material.SnapshotText) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_023","This material has no additional snapshot text.") : material.SnapshotText.Trim());
 			break;
 		}
 		return stringBuilder.ToString().TrimEnd();
@@ -223,12 +223,12 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		if (!_port.IsCurrent(editorGeneration)) return;
 		List<WeeklyEventMaterialPreviewGroup> list = _port.BuildWeeklyEventMaterialPreviewGroups();
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
+		list2.Add(new InquiryElement("back", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), null));
 		foreach (WeeklyEventMaterialPreviewGroup item in list)
 		{
 			list2.Add(new InquiryElement(item, BuildWeeklyEventMaterialPreviewGroupLabel(item), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周事件素材预览", BuildWeeklyEventMaterialPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_024","This week's event material preview"), BuildWeeklyEventMaterialPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_025","View"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -262,15 +262,15 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
 		int num3 = (groups != null) ? groups.Sum((WeeklyEventMaterialPreviewGroup x) => (x?.PromptMaterials?.Count).GetValueOrDefault()) : 0;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示“如果现在生成本周事件”，系统会拿去喂给事件生成器的素材池。");
-		stringBuilder.AppendLine("当前按世界事件与各王国事件分组展示。");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_026","This shows the material pool that would be sent to the event generator if this week's events were generated now."));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_027","Groups are shown by world events and kingdom events."));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("当前日期：" + FormatNewsDate(currentGameDayIndexSafe));
-		stringBuilder.AppendLine("当前取材区间：" + FormatNewsDate(num) + " 至 " + FormatNewsDate(currentGameDayIndexSafe));
-		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
-		stringBuilder.AppendLine("素材总数：" + num3);
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_028","Current date:") + FormatNewsDate(currentGameDayIndexSafe));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_029","Current material range:") + FormatNewsDate(num) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_030"," to ") + FormatNewsDate(currentGameDayIndexSafe));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_031","Groups:") + ((groups != null) ? groups.Count : 0));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_032","Materials:") + num3);
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("当前已接入的素材：世界开局概要、王国开局概要、本周 NPC 行动。");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_033","Connected materials: world opening summary, kingdom opening summaries, and NPC actions this week."));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -287,7 +287,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		List<EventRecordEntry> list = WeeklyReportArchivePolicy.BuildArchiveSnapshot(_port.SanitizeEventRecordEntries(_port.EventRecords()), bulletinAssociations);
 		List<WeeklyReportBrowserCountryData> list2 = new List<WeeklyReportBrowserCountryData>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "全部档案", isWorld: true, list, bulletinAssociations);
+		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_034","All archives"), isWorld: true, list, bulletinAssociations);
 		list2.Add(item);
 		hashSet.Add("world:");
 		foreach (Kingdom item2 in _port.GetDevEditableKingdoms().OrderBy((Kingdom x) => _port.ResolveKingdomDisplay(x?.StringId), StringComparer.OrdinalIgnoreCase))
@@ -306,7 +306,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		{
 			if (hashSet.Add("kingdom:" + item3))
 			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, item3 == WeeklyReportArchivePolicy.OtherKingdomId ? "其他近况" : _port.ResolveKingdomDisplay(item3), isWorld: false, list, bulletinAssociations));
+				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, item3 == WeeklyReportArchivePolicy.OtherKingdomId ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_035","Other news") : _port.ResolveKingdomDisplay(item3), isWorld: false, list, bulletinAssociations));
 			}
 		}
 		return list2;
@@ -326,7 +326,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
             if (data != null && DevWeeklyReportPopup.ShowWorldBulletin(data)) return true;
         }
         return DevWeeklyReportPopup.Show(entry.Title, entry.CreatedDate, WeeklyReportArchivePolicy.BodyWithRegionalNews(entry),
-            closeText: "关闭", useChronicleColumns: !bulletin && !string.IsNullOrWhiteSpace(entry.Summary));
+            closeText: WeeklyReportUiText.Get("AF_UI_Weekly_Editor_036","Close"), useChronicleColumns: !bulletin && !string.IsNullOrWhiteSpace(entry.Summary));
     }
 
 	internal void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
@@ -352,21 +352,21 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		}
 		MaterialPage = page;
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回分组列表", null));
+		list2.Add(new InquiryElement("back", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_037","Back to group list"), null));
 		if (page > 0)
 		{
-			list2.Add(new InquiryElement("prev_page", "上一页", null));
+			list2.Add(new InquiryElement("prev_page", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_038","Previous page"), null));
 		}
 		if (page + 1 < num)
 		{
-			list2.Add(new InquiryElement("next_page", "下一页", null));
+			list2.Add(new InquiryElement("next_page", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_039","Next page"), null));
 		}
 		list2.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (EventMaterialReference item in list.Skip(page * pageSize).Take(pageSize))
 		{
 			list2.Add(new InquiryElement(item, BuildWeeklyPreviewMaterialLabel(item), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(group.Title ?? "素材预览", BuildWeeklyPreviewGroupDetailText(group, page, num), list2, isExitShown: true, 0, 1, "查看素材", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(group.Title ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_040","Material preview"), BuildWeeklyPreviewGroupDetailText(group, page, num), list2, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_041","View material"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -410,21 +410,21 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 	internal string BuildWeeklyPreviewGroupDetailText(WeeklyEventMaterialPreviewGroup group, int page, int totalPages)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		_port.AppendDevNpcActionField(stringBuilder, "分组标题", group.Title ?? "");
-		_port.AppendDevNpcActionField(stringBuilder, "分组类型", _port.TranslateEventKindForDev(group.GroupKind));
-		_port.AppendDevNpcActionField(stringBuilder, "关联王国", _port.ResolveKingdomDisplay(group.KingdomId));
-		_port.AppendDevNpcActionField(stringBuilder, "素材数量", ((group.Materials != null) ? group.Materials.Count : 0).ToString());
-		_port.AppendDevNpcActionField(stringBuilder, "页码", (page + 1) + "/" + Math.Max(1, totalPages));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_042","Group title"), group.Title ?? "");
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_043","Group type"), _port.TranslateEventKindForDev(group.GroupKind));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_044","Related kingdom"), _port.ResolveKingdomDisplay(group.KingdomId));
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_045","Material count"), ((group.Materials != null) ? group.Materials.Count : 0).ToString());
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_046","Page"), (page + 1) + "/" + Math.Max(1, totalPages));
 		if (!string.IsNullOrWhiteSpace(group.Summary))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【说明】");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_047","Notes"));
 			stringBuilder.AppendLine(group.Summary.Trim());
 		}
 		if (group.Materials == null || group.Materials.Count == 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("当前这个分组还没有可用素材。");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_048","This group has no available material."));
 		}
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -435,7 +435,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		if (!_port.IsCurrent(editorGeneration)) return;
 		MaterialSelection = group; MaterialDetail = material; MaterialPage = returnPage;
 		string text = BuildDevEventMaterialDetailText(material);
-		InformationManager.ShowInquiry(new InquiryData("本周素材详情", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回素材列表", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_049","This week's material details"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_050","Back to material list"), "", delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			OpenDevWeeklyEventMaterialPreviewGroupDetail(group, returnPage);
@@ -447,10 +447,10 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		long editorGeneration = _port.CaptureGeneration();
 		if (!_port.IsCurrent(editorGeneration)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("single", "查看单组 Prompt", null));
-		list.Add(new InquiryElement("batch", "查看 Batch Prompt/Response", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Prompt 预览", "选择要查看的调试视图。单组视图用于逐王国核对，Batch 视图用于查看实际批量请求和最近一次返回。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("back", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), null));
+		list.Add(new InquiryElement("single", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_051","View single-group prompt"), null));
+		list.Add(new InquiryElement("batch", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_052","View batch prompt/response"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_053","This week's weekly report prompt preview"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_054","Choose a debug view. The single-group view checks each kingdom; the batch view shows the actual batch request and most recent response."), list, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_055","Enter"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -490,12 +490,12 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		if (!_port.IsCurrent(editorGeneration)) return;
 		List<WeeklyEventMaterialPreviewGroup> list = _port.BuildWeeklyEventMaterialPreviewGroups();
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
+		list2.Add(new InquiryElement("back", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), null));
 		foreach (WeeklyEventMaterialPreviewGroup item in list)
 		{
 			list2.Add(new InquiryElement(item, BuildWeeklyEventMaterialPreviewGroupLabel(item), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Prompt 预览", BuildWeeklyReportPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看 Prompt", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_053","This week's weekly report prompt preview"), BuildWeeklyReportPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_056","View prompt"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -525,12 +525,12 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 	internal string BuildWeeklyReportPromptPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示当前这一周会发给大模型的周报请求 Prompt。");
-		stringBuilder.AppendLine("当前只在开发态使用，生成结果会写回事件编辑，不会自动发给 NPC。");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_057","This shows the weekly report prompt that will be sent to the model this week."));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_058","This is for development only; generated results are written to the event editor and are not sent to NPCs automatically."));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
-		stringBuilder.AppendLine("篇幅档位：" + _port.PromptProfileLabel());
-		stringBuilder.AppendLine("每分钟生成上限：" + _port.GetWeeklyReportRequestsPerMinute());
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_031","Groups:") + ((groups != null) ? groups.Count : 0));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_059","Length profile:") + _port.PromptProfileLabel());
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_060","Requests per minute:") + _port.GetWeeklyReportRequestsPerMinute());
 		stringBuilder.AppendLine("MaxTokens：" + _port.GetEventAndRebellionApiMaxTokens());
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -544,15 +544,15 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
 		List<WeeklyReportBatchRequest> list = _port.BuildWeeklyReportBatchRequests(_port.OrderWeeklyReportGenerationGroups(_port.BuildWeeklyEventMaterialPreviewGroups()), num2, num, currentGameDayIndexSafe);
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
+		list2.Add(new InquiryElement("back", WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), null));
 		foreach (WeeklyReportBatchRequest item in list)
 		{
 			DevWeeklyReportBatchPreviewEntry latestWeeklyReportBatchDevPreview = _port.FindLatestWeeklyReportBatchDevPreview(item);
-			string text = (latestWeeklyReportBatchDevPreview == null) ? "未执行" : (latestWeeklyReportBatchDevPreview.Success ? "有响应" : "失败响应");
+			string text = (latestWeeklyReportBatchDevPreview == null) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_061","Not run") : (latestWeeklyReportBatchDevPreview.Success ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_062","Response available") : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_063","Failed response"));
 			int count = (item?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Count;
-			list2.Add(new InquiryElement(item, _port.BuildWeeklyReportBatchDisplayLabel(item) + " [" + count + "块 | " + text + "]", null));
+			list2.Add(new InquiryElement(item, _port.BuildWeeklyReportBatchDisplayLabel(item) + " [" + count + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_064","blocks | ") + text + "]", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Batch Prompt/Response", BuildWeeklyBatchPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看详情", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_065","This week's batch prompt/response"), BuildWeeklyBatchPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_066","View details"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -584,15 +584,15 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int num = (batches ?? new List<WeeklyReportBatchRequest>()).Sum((WeeklyReportBatchRequest x) => (x?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Count);
 		int num2 = (batches ?? new List<WeeklyReportBatchRequest>()).Count((WeeklyReportBatchRequest x) => _port.FindLatestWeeklyReportBatchDevPreview(x) != null);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示当前这一周实际会发送的批量周报请求。");
-		stringBuilder.AppendLine("每个批次会显示完整 batch prompt，以及最近一次执行缓存下来的 response 原文。");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_067","This shows the batch weekly report requests that will actually be sent this week."));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_068","Each batch shows the complete batch prompt and the response text cached by its latest execution."));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("批次数量：" + ((batches != null) ? batches.Count : 0));
-		stringBuilder.AppendLine("覆盖周报目标：" + num);
-		stringBuilder.AppendLine("已有最近响应缓存：" + num2);
-		stringBuilder.AppendLine("批次上限：" + _port.GetWeeklyReportBatchSize());
-		stringBuilder.AppendLine("篇幅档位：" + _port.PromptProfileLabel());
-		stringBuilder.AppendLine("每分钟生成上限：" + _port.GetWeeklyReportRequestsPerMinute());
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_069","Batches:") + ((batches != null) ? batches.Count : 0));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_070","Weekly report targets:") + num);
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_071","Recent response cache:") + num2);
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_072","Batch limit:") + _port.GetWeeklyReportBatchSize());
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_059","Length profile:") + _port.PromptProfileLabel());
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_060","Requests per minute:") + _port.GetWeeklyReportRequestsPerMinute());
 		stringBuilder.AppendLine("MaxTokens：" + _port.GetEventAndRebellionApiMaxTokens());
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -607,7 +607,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
 		string text = _port.BuildWeeklyReportSystemPrompt(group);
 		string text2 = _port.BuildWeeklyReportUserPrompt(group, num2, num, currentGameDayIndexSafe);
-		InformationManager.ShowInquiry(new InquiryData("周报 Prompt 详情", BuildWeeklyReportPromptPreviewText(group, text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回 Prompt 列表", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_073","Weekly report prompt details"), BuildWeeklyReportPromptPreviewText(group, text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_074","Back to prompt list"), "", delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			OpenDevWeeklyReportPromptPreviewMenu();
@@ -626,23 +626,23 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(text3);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【最近一次 Response】");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_075","Latest response"));
 		if (latestWeeklyReportBatchDevPreview == null)
 		{
-			stringBuilder.AppendLine("当前没有缓存的 batch response。需要先实际生成一次本周周报。");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_076","No batch response is cached. Run this week's weekly report once first."));
 		}
 		else
 		{
-			stringBuilder.AppendLine("执行结果：" + (latestWeeklyReportBatchDevPreview.Success ? "成功" : "失败"));
-			stringBuilder.AppendLine("尝试次数：" + latestWeeklyReportBatchDevPreview.AttemptsUsed);
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_077","Execution result:") + (latestWeeklyReportBatchDevPreview.Success ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_078","Success") : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_079","Failed")));
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_080","Attempts:") + latestWeeklyReportBatchDevPreview.AttemptsUsed);
 			if (!string.IsNullOrWhiteSpace(latestWeeklyReportBatchDevPreview.FailureReason))
 			{
-				stringBuilder.AppendLine("失败原因：" + latestWeeklyReportBatchDevPreview.FailureReason);
+				stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_081","Failure reason:") + latestWeeklyReportBatchDevPreview.FailureReason);
 			}
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(latestWeeklyReportBatchDevPreview.ResponsePreview) ? "响应原文为空。" : latestWeeklyReportBatchDevPreview.ResponsePreview.Trim());
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(latestWeeklyReportBatchDevPreview.ResponsePreview) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_082","The response text is empty.") : latestWeeklyReportBatchDevPreview.ResponsePreview.Trim());
 		}
-		InformationManager.ShowInquiry(new InquiryData("Batch Prompt/Response 详情", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回 Batch 列表", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_083","Batch prompt/response details"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_084","Back to batch list"), "", delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			OpenDevWeeklyBatchPromptPreviewMenu();
@@ -661,9 +661,16 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int weekIndex = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
 		int batchCount = _port.BuildWeeklyReportBatchRequests(list, weekIndex, startDay, currentGameDayIndexSafe).Count;
 		List<string> list2 = _port.GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
-		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(id => _port.ResolveKingdomDisplay(id)).Where((string x) => !string.IsNullOrWhiteSpace(x))) : "无");
-		string message = "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + batchCount + "\n篇幅档位：" + _port.PromptProfileLabel() + "\n每分钟生成上限：" + _port.GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + _port.GetEventAndRebellionApiMaxTokens() + "\n\n是否开始？";
-		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
+		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(id => _port.ResolveKingdomDisplay(id)).Where((string x) => !string.IsNullOrWhiteSpace(x))) : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_085","None"));
+		string message = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_086","A development weekly report draft will be generated from this week's materials.
+
+- Targets: world report + reports for each kingdom
+- Result: write event records in the event editor
+- NPCs keep reading the three most recent short kingdom reports; matching rules may load the full report
+- Priority: nearest kingdoms > world events > other kingdoms by distance
+
+Estimated requests: ") + batchCount + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_087","\nLength profile: ") + _port.PromptProfileLabel() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_088","\nRequests per minute: ") + _port.GetWeeklyReportRequestsPerMinute() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_089","\nKingdoms ordered by distance: ") + text + "\nMaxTokens：" + _port.GetEventAndRebellionApiMaxTokens() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_090","\n\nStart now?");
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_091","Generate this week's report draft"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_092","Start generation"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_093","Cancel"), delegate
 		{
 			if (!_port.IsCurrent(editorGeneration) || answered || ticket != _confirmationTicket) return;
 			answered = true;
@@ -733,15 +740,15 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		UiStage = WeeklyReportUiStage.Failure;
 		UiResumeAfterUtcTicks = ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
 		WeeklyReportRetryContext weeklyReportRetryContext = RetryContext;
-        string text = FormatNewsDate(weeklyReportRetryContext.EndDay) + "自动周报";
+        string text = FormatNewsDate(weeklyReportRetryContext.EndDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_094","Automatic weekly report");
 		if (!weeklyReportRetryContext.IsAutoGeneration)
 		{
-			text = FormatNewsDate(weeklyReportRetryContext.EndDay) + "周报";
+			text = FormatNewsDate(weeklyReportRetryContext.EndDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_095","Weekly report");
 		}
 		if (weeklyReportRetryContext.RequiresFreshMaterials)
 		{
-			string changedMessage = text + "的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。";
-			InformationManager.ShowInquiry(new InquiryData("周报目标已变更", changedMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新采集并生成", "保存并退出", delegate
+			string changedMessage = text + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_096"," target records or saved materials changed; the old request and material retry were cancelled.\n\nA fresh collection will rebuild failed groups from the current game state and may replace unfinished manual edits in those groups. Completed groups will not be rerun.\n\nChoose whether to recollect and generate, or save and exit; edits are never overwritten automatically.");
+			InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_097","Weekly report target changed"), changedMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_098","Recollect and generate"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_099","Save and exit"), delegate
 			{
                 if (!Take()) return;
 				BeginFreshWeeklyReportRetry(weeklyReportRetryContext);
@@ -749,35 +756,35 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(text + "在生成过程中遇到了无法自动恢复的 API/模型错误。");
+		stringBuilder.AppendLine(text + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_100","An API/model error occurred during generation and could not be recovered automatically."));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("失败分组：" + (weeklyReportRetryContext.FailedGroupTitle ?? "未命名分组"));
-		stringBuilder.AppendLine("自动重试次数：" + Math.Max(weeklyReportRetryContext.AttemptsUsed, 0) + "/3");
-		stringBuilder.AppendLine("时间范围：" + FormatNewsDate(weeklyReportRetryContext.StartDay) + " 至 " + FormatNewsDate(weeklyReportRetryContext.EndDay));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_101","Failed group:") + (weeklyReportRetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_103","Automatic retries:") + Math.Max(weeklyReportRetryContext.AttemptsUsed, 0) + "/3");
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_104","Time range:") + FormatNewsDate(weeklyReportRetryContext.StartDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_030"," to ") + FormatNewsDate(weeklyReportRetryContext.EndDay));
 		if (weeklyReportRetryContext.IsRequestsPerMinuteLimit)
 		{
 			int weeklyReportRequestsPerMinute = _port.GetWeeklyReportRequestsPerMinute();
 			int num = Math.Max(1, weeklyReportRequestsPerMinute / 2);
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("系统判断这次更像是 RPM（每分钟请求数）超限。");
-			stringBuilder.AppendLine("当前 MCM 的【每分钟最多生成周报数】=" + weeklyReportRequestsPerMinute + "。");
-			stringBuilder.AppendLine("建议先下调到 " + num + " 左右，再继续补跑。");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_105","The system suspects an RPM (requests per minute) limit."));
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_106","Current MCM [maximum weekly reports per minute] = ") + weeklyReportRequestsPerMinute + "。");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_107","Lower it to about ") + num + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_108"," and retry."));
 			if (weeklyReportRetryContext.RetryAfterSeconds.HasValue)
 			{
-				stringBuilder.AppendLine("接口建议等待：" + weeklyReportRetryContext.RetryAfterSeconds.Value + " 秒。");
+				stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_109","Suggested API wait:") + weeklyReportRetryContext.RetryAfterSeconds.Value + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_110"," seconds."));
 			}
 		}
 		if (!string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedReason))
 		{
-			// 完整 API/模型响应直接进入左下角，动作窗口仅保留给重试和修复选择。
-			NonBlockingErrorReport.Show("周事件生成失败", weeklyReportRetryContext.FailedReason.Trim());
+			// Keep full API/model responses in the lower-left report; this action window only offers retry and repair choices.
+			NonBlockingErrorReport.Show(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_111","Weekly event generation failed"), weeklyReportRetryContext.FailedReason.Trim());
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("详细失败原因已显示在左下角消息并写入日志。");
+			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_112","The detailed failure reason is shown in the lower-left message and written to the log."));
 		}
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(weeklyReportRetryContext.IsRequestsPerMinuteLimit ? "游戏将暂停在这里。你可以先直接修改 RPM 限制并立即重试，或进入 API 配置流程继续排查。" : "游戏将暂停在这里。你可以手动重试本周周报生成，或者先进入 API 配置流程修正后再回来重试。");
-		string text2 = weeklyReportRetryContext.IsRequestsPerMinuteLimit ? "修改RPM并重试" : "手动重试";
-		InformationManager.ShowInquiry(new InquiryData("周事件生成失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, text2, "调整API信息", delegate
+		stringBuilder.AppendLine(weeklyReportRetryContext.IsRequestsPerMinuteLimit ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_113","The game will pause here. You can change the RPM limit and retry immediately, or open the API configuration flow to investigate.") : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_114","The game will pause here. You can retry this week's report manually, or open the API configuration flow and return after fixing it."));
+		string text2 = weeklyReportRetryContext.IsRequestsPerMinuteLimit ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_115","Change RPM and retry") : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_116","Manual retry");
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_111","Weekly event generation failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, text2, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_117","Adjust API settings"), delegate
 		{
             if (!Take()) return;
 			if (weeklyReportRetryContext.IsRequestsPerMinuteLimit)
@@ -808,19 +815,19 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			DuelSettings settings = _port.ReadSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能修改 RPM 限制。"));
+				InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_118","MCM settings could not be read; the RPM limit cannot be changed right now.")));
 				ShowWeeklyReportFailurePopup(ignoreDelay: true);
 				return;
 			}
 			int weeklyReportRequestsPerMinute = _port.GetWeeklyReportRequestsPerMinute();
 			int num = Math.Max(1, weeklyReportRequestsPerMinute / 2);
-			InformationManager.ShowTextInquiry(new TextInquiryData("修改周报RPM限制", "检测到本次失败疑似触发 RPM 限流。\n\n请输入新的【每分钟最多生成周报数】（范围 1-20）。\n当前值：" + weeklyReportRequestsPerMinute + "\n建议先改为：" + num + "\n\n保存后会立即按新速率继续补跑当前周报。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并重试", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_119","Change weekly report RPM limit"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_120","This failure appears to have hit the RPM limit.\n\nEnter a new [maximum weekly reports per minute] (1-20).\nCurrent value: ") + weeklyReportRequestsPerMinute + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_121","\nSuggested value: ") + num + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_122","\n\nThe current weekly report will retry immediately at the new rate."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_123","Save and retry"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(string input)
 			{
                 if (!Take()) return;
 				string text = (input ?? "").Trim();
 				if (!int.TryParse(text, out var result))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("请输入 1-20 之间的整数 RPM。"));
+					InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_124","Enter an integer RPM from 1 to 20.")));
 					OpenWeeklyReportRpmLimitInput();
 				}
 				else
@@ -828,7 +835,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 					result = Math.Max(1, Math.Min(20, result));
 					settings.WeeklyReportRequestsPerMinute = result;
 					_port.PersistSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage("已将周报 RPM 上限更新为 " + result + "，现在开始重试。"));
+					InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_125","Weekly report RPM limit updated to ") + result + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_126","; retrying now.")));
 					BeginRetryBlockedWeeklyReports();
 				}
 			}, delegate
@@ -839,7 +846,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 RPM 输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_127","Failed to open the RPM input:") + ex.Message));
 			ShowWeeklyReportFailurePopup(ignoreDelay: true);
 		}
 	}
@@ -858,8 +865,8 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		}
 		UiStage = WeeklyReportUiStage.RetryProgress;
 		UiResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-		string text = "正在重试生成" + (FormatNewsDate(RetryContext.EndDay) + "周报") + "中的这个事件，请稍候……\n\n- 当前失败分组：" + (RetryContext.FailedGroupTitle ?? "未命名分组") + "\n- 后台会再次按每条分组三次重试的规则执行\n- 如果你不想继续等待，可以直接退出当前存档\n- 也可以返回上一界面，稍后再决定是否继续重试";
-		InformationManager.ShowInquiry(new InquiryData("正在重试生成此事件", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并退出", "返回上一界面", () => { if (Take()) _port.ExitCurrentGameFromWeeklyReportGate(); }, () => { if (Take()) CancelWeeklyReportManualRetryAndReturn(); }), pauseGameActiveState: true);
+		string text = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_128","Retrying generation of ") + (FormatNewsDate(RetryContext.EndDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_095","Weekly report")) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_129"," for this event. Please wait...\n\n- Current failed group: ") + (RetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_130","\n- The background will retry each group up to three times\n- If you do not want to wait, you can exit the current save\n- You can also return to the previous screen and decide later whether to retry");
+		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_131","Retrying this event"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_099","Save and exit"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_132","Back to previous screen"), () => { if (Take()) _port.ExitCurrentGameFromWeeklyReportGate(); }, () => { if (Take()) CancelWeeklyReportManualRetryAndReturn(); }), pauseGameActiveState: true);
 	}
 
 
@@ -908,7 +915,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		ReopenAfterApiConfigUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(300.0).Ticks;
 		if (!_port.OpenApiRepairFlow())
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到 API 配置引导，请先检查 MCM 中的 Base URL、API Key 与模型名。"));
+			InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_133","API setup guidance was not found. Check the Base URL, API key, and model name in MCM.")));
 		}
 	}
 
@@ -991,7 +998,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			List<WeeklyEventMaterialPreviewGroup> freshGroups = SelectFreshWeeklyReportRetryGroups(_port.CollectFreshMaterials(staleContext.StartDay, staleContext.EndDay), staleContext.Groups);
 			if (freshGroups == null || freshGroups.Count == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("当前已无法找到全部失败的周报分组，未发送新请求；请保存退出后检查本周素材。"));
+				InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_134","The failed weekly report groups could not all be found; no new request was sent. Save and exit, then inspect this week's materials.")));
 				QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
 				return;
 			}
@@ -1003,7 +1010,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		catch (Exception ex)
 		{
 			Logger.Log("EventWeeklyReport", "[ERROR] refresh changed weekly report materials failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("重新采集周报素材失败，未发送新请求。"));
+			InformationManager.DisplayMessage(new InformationMessage(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_135","Recollecting weekly report materials failed; no new request was sent.")));
 			QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
 		}
 	}
@@ -1035,7 +1042,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			PendingManualRetrySucceeded = weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure;
 			if (PendingManualRetrySucceeded)
 			{
-				PendingManualRetryMessage = "周事件补跑成功，已解除暂停。";
+				PendingManualRetryMessage = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_136","Weekly event retry succeeded; the pause was lifted.");
 				PendingManualRetryContext = null;
 			}
 			else
@@ -1043,11 +1050,11 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 				if (weeklyReportGenerationResult?.BlockedByChangedRecord == true)
 				{
 					context.RequiresFreshMaterials = true;
-					context.FailedReason = "周报目标在失败后已变更，旧素材不能重试。";
+					context.FailedReason = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_137","The weekly report target changed after the failure; the old materials cannot be retried.");
 				}
 				PendingManualRetryMessage = weeklyReportGenerationResult?.BlockedByChangedRecord == true
-					? "周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。"
-					: "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
+					? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_138","The weekly report target was edited or completed by another request; the old materials cannot be retried. Collect the current materials and generate again.")
+					: WeeklyReportUiText.Get("AF_UI_Weekly_Editor_139","Weekly event retry still failed. Check the API/model settings and try again.");
 				PendingManualRetryContext = (weeklyReportGenerationResult?.RetryContext ?? context);
 			}
 		}
@@ -1059,7 +1066,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			}
 			Logger.Log("EventWeeklyReport", "[ERROR] RetryBlockedWeeklyReportsAsync failed: " + ex);
 			PendingManualRetrySucceeded = false;
-			PendingManualRetryMessage = "周事件补跑异常失败：" + ex.Message;
+			PendingManualRetryMessage = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_140","Weekly event retry failed unexpectedly:") + ex.Message;
 			PendingManualRetryContext = context;
 		}
 		finally
