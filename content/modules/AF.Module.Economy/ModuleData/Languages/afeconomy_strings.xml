@@ -18,6 +18,13 @@
     <string id="AF_ECO_UI_PromiseRecorded" text="[Promise or debt recorded] {NOTE}; promise value: {VALUE}" />
     <string id="AF_ECO_UI_DebtReleased" text="[Debt released] {STATUS}" />
     <string id="AF_ECO_UI_DebtReleaseFailed" text="[Debt release failed] {STATUS}" />
+    <string id="AF_ECO_UI_DebtStatusInvalidNpc" text="Invalid debt request: the NPC or debt ID is missing." />
+    <string id="AF_ECO_UI_DebtStatusNpcRecordMissing" text="No debt record was found for this NPC." />
+    <string id="AF_ECO_UI_DebtStatusNpcNoDebt" text="This NPC has no debt that can currently be repaid." />
+    <string id="AF_ECO_UI_DebtStatusInvalidMarket" text="Invalid market debt request: the market creditor or debt ID is missing." />
+    <string id="AF_ECO_UI_DebtStatusMarketRecordMissing" text="No debt record was found for this market." />
+    <string id="AF_ECO_UI_DebtStatusLineMissing" text="No unsettled debt line with that ID was found." />
+    <string id="AF_ECO_UI_DebtStatusReleased" text="Debt ID {ID} was released by agreement ({AMOUNT})." />
     <string id="AF_ECO_UI_AllDebtCleared" text="[Debt cleared] All of your debt to {GIVER} has been repaid!" />
     <string id="AF_ECO_UI_MarketDebtReleased" text="[Market debt released] {STATUS}" />
     <string id="AF_ECO_UI_MarketDebtReleaseFailed" text="[Market debt release failed] {STATUS}" />

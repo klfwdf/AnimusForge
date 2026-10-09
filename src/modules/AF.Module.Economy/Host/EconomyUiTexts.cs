@@ -49,6 +49,55 @@ internal static class EconomyUiTexts
 	public static string DebtRelease(string status, bool success)
 		=> Text(success ? "AF_ECO_UI_DebtReleased" : "AF_ECO_UI_DebtReleaseFailed", success ? "[Debt released] {STATUS}" : "[Debt release failed] {STATUS}", ("STATUS", status));
 
+	/// <summary>
+	/// Converts the fixed ledger status labels used by the reward executor into
+	/// player-facing text without changing the raw status returned to facts or
+	/// replay consumers. Unknown/dynamic status text is deliberately preserved.
+	/// </summary>
+	public static string DebtStatusForDisplay(string status)
+	{
+		string value = (status ?? string.Empty).Trim();
+		if (string.Equals(value, "参数无效：缺少NPC或债务ID。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusInvalidNpc", "Invalid debt request: the NPC or debt ID is missing.");
+		}
+		if (string.Equals(value, "未找到该NPC的债务记录。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusNpcRecordMissing", "No debt record was found for this NPC.");
+		}
+		if (string.Equals(value, "该NPC当前没有可还债务。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusNpcNoDebt", "This NPC has no debt that can currently be repaid.");
+		}
+		if (string.Equals(value, "参数无效：缺少市场债主或债务ID。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusInvalidMarket", "Invalid market debt request: the market creditor or debt ID is missing.");
+		}
+		if (string.Equals(value, "未找到该市场的债务记录。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusMarketRecordMissing", "No debt record was found for this market.");
+		}
+		if (string.Equals(value, "未找到可结算的债务ID，或该债务已清。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_DebtStatusLineMissing", "No unsettled debt line with that ID was found.");
+		}
+
+		const string marker = " 已按协商解除（";
+		const string prefix = "债务ID ";
+		if (value.StartsWith(prefix, StringComparison.Ordinal))
+		{
+			int markerIndex = value.IndexOf(marker, prefix.Length, StringComparison.Ordinal);
+			if (markerIndex > prefix.Length && value.EndsWith("）。", StringComparison.Ordinal))
+			{
+				string debtId = value.Substring(prefix.Length, markerIndex - prefix.Length);
+				string amount = value.Substring(markerIndex + marker.Length, value.Length - markerIndex - marker.Length - 2);
+				return Text("AF_ECO_UI_DebtStatusReleased", "Debt ID {ID} was released by agreement ({AMOUNT}).", ("ID", debtId), ("AMOUNT", amount));
+			}
+		}
+
+		return status ?? string.Empty;
+	}
+
 	public static string AllDebtCleared(string giver)
 		=> Text("AF_ECO_UI_AllDebtCleared", "[Debt cleared] All of your debt to {GIVER} has been repaid!", ("GIVER", giver));
 
