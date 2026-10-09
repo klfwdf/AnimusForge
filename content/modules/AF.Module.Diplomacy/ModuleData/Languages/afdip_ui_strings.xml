@@ -181,5 +181,77 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="Kingdom eliminated; automatic generation stopped" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="Awaiting generation (" />
     <string id="AF_DIP_UI_KingdomProfile_Empty" text="(empty)" />
+
+    <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="Suppress" />
+    <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="Negotiate" />
+    <string id="AF_DIP_UI_CivilWar_ActionConcede" text="Concede" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolve" text="Force dissolve" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveCrown" text="Leave the crown faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinFaction" text="Join selected faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionFound" text="Found a faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinCrown" text="Join the crown" />
+    <string id="AF_DIP_UI_CivilWar_ActionProposeRebellion" text="Propose rebellion" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveFaction" text="Leave faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptDissolve" text="Accept dissolution" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptCompensation" text="Accept compensation" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseDissolve" text="Refuse and rebel" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseCompensation" text="Refuse compensation" />
+    <string id="AF_DIP_UI_CivilWar_ActionImmediateRebellion" text="Rebel now" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolveOwn" text="Dissolve faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionChangeDemand" text="Change demand" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingSelected" text="Kingdom governance · {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingChoose" text="Kingdom governance · select a faction" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingEmpty" text="Kingdom governance · no faction to govern" />
+    <string id="AF_DIP_UI_CivilWar_TitleCrown" text="Crown vassal · clan grievance {GRIEVANCE} · relation with king {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleMember" text="{TAG} member · clan grievance {GRIEVANCE} · relation with leader {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleLeader" text="{TAG} leader" />
+    <string id="AF_DIP_UI_CivilWar_TitleMiddle" text="Uncommitted vassal · clan grievance {GRIEVANCE} · relation with king {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_PendingResponse" text="pending response: {RESPONSE}" />
+    <string id="AF_DIP_UI_CivilWar_DissolutionOrder" text="the king's dissolution order" />
+    <string id="AF_DIP_UI_CivilWar_NegotiationCompensation" text="the king's negotiated compensation" />
+    <string id="AF_DIP_UI_CivilWar_Grievance" text="clan grievance {GRIEVANCE}" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionFirst" text="Select a faction in the list first" />
+    <string id="AF_DIP_UI_CivilWar_NoOpposition" text="No opposition faction" />
+    <string id="AF_DIP_UI_CivilWar_NoDemand" text="No demand is available" />
+    <string id="AF_DIP_UI_CivilWar_SelectCompensationTier" text="Select a compensation tier" />
+    <string id="AF_DIP_UI_CivilWar_ConcedeDemand" text="Honor {DEMAND}" />
+    <string id="AF_DIP_UI_CivilWar_Demand" text="the demand" />
+    <string id="AF_DIP_UI_CivilWar_StandWithKing" text="Stand with the king" />
+    <string id="AF_DIP_UI_CivilWar_ReevaluateMembers" text="Other members reassess participation" />
+    <string id="AF_DIP_UI_CivilWar_DissolveRelationLoss" text="Relations with other members −10" />
+    <string id="AF_DIP_UI_CivilWar_JoinFactionSub" text="Join {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_SelectedFaction" text="the selected faction" />
+    <string id="AF_DIP_UI_CivilWar_LeadershipTransfer" text="Leadership passes to a successor" />
+    <string id="AF_DIP_UI_CivilWar_LeaveNeutral" text="{DAYS} days of neutrality · relations suffer" />
+    <string id="AF_DIP_UI_CivilWar_FoundSlots" text="Select a demand · slots {USED} / {MAX}" />
+    <string id="AF_DIP_UI_CivilWar_FoundingProcess" text="Enter the kingdom-founding process" />
+    <string id="AF_DIP_UI_CivilWar_LeaderDecision" text="Let the leader decide" />
+    <string id="AF_DIP_UI_CivilWar_FactionDissolved" text="Faction dissolved" />
+    <string id="AF_DIP_UI_CivilWar_AcceptOffer" text="Take {OFFER} · dissolve" />
+    <string id="AF_DIP_UI_CivilWar_RebellionProcess" text="Enter the rebellion process" />
+    <string id="AF_DIP_UI_CivilWar_FactionRetained" text="Faction retained · no cost" />
+    <string id="AF_DIP_UI_CivilWar_Compensation" text="compensation" />
+    <string id="AF_DIP_UI_CivilWar_Gold" text="{AMOUNT} gold" />
+    <string id="AF_DIP_UI_CivilWar_Influence" text="{AMOUNT} influence" />
+    <string id="AF_DIP_UI_CivilWar_NoFixedCost" text="No fixed cost" />
+    <string id="AF_DIP_UI_CivilWar_Cooldown" text="Cooldown until day {DAY}" />
+    <string id="AF_DIP_UI_CivilWar_Unavailable" text="Unavailable · click to view" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionNotice" text="Select the faction to govern in the list first." />
+    <string id="AF_DIP_UI_CivilWar_NoOppositionNotice" text="There is no opposition faction in the kingdom." />
+    <string id="AF_DIP_UI_CivilWar_AcceptDissolveBody" text="Accept the dissolution order: the faction will dissolve, but the grievance remains." />
+    <string id="AF_DIP_UI_CivilWar_RefuseDissolveBody" text="Refuse the order: reject dissolution and enter the rebellion process." />
+    <string id="AF_DIP_UI_CivilWar_AcceptCompensationBody" text="Accept compensation: take {OFFER}, withdraw the demand, and dissolve the faction." />
+    <string id="AF_DIP_UI_CivilWar_RefuseCompensationBody" text="Refuse compensation: the faction remains and no payment is taken." />
+    <string id="AF_DIP_UI_CivilWar_ActionFailed" text="Faction operation failed; see the log for details." />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandTitle" text="Change faction demand" />
+    <string id="AF_DIP_UI_CivilWar_FoundTitle" text="Found faction" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandDescription" text="The faction identity remains; other members immediately reassess participation. This does not start a rebellion automatically." />
+    <string id="AF_DIP_UI_CivilWar_FoundDescription" text="No grievance or relation threshold is required, but post-war cooldown still applies; founding costs −10 relation with the ruler, while refounding carries the old faction's relation loss." />
+    <string id="AF_DIP_UI_CivilWar_LedByClan" text="Led by this clan" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateTitle" text="Negotiated compensation" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateDescription" text="Compensation transfers only if the other side accepts; refusal still consumes the action cooldown." />
+    <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="There are no legal options right now." />
+    <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="Confirm faction operation" />
+    <string id="AF_DIP_UI_Common_Continue" text="Continue" />
   </strings>
 </base>

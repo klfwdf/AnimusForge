@@ -181,5 +181,77 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="国家已覆灭，自动生成已停止" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="等待生成（" />
     <string id="AF_DIP_UI_KingdomProfile_Empty" text="（空）" />
+
+    <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="压制" />
+    <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="谈判" />
+    <string id="AF_DIP_UI_CivilWar_ActionConcede" text="妥协" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolve" text="强制解散" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveCrown" text="退出王室阵营" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinFaction" text="加入所选派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionFound" text="建立派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinCrown" text="加入王室" />
+    <string id="AF_DIP_UI_CivilWar_ActionProposeRebellion" text="提议起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveFaction" text="退出派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptDissolve" text="服从解散" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptCompensation" text="接受补偿" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseDissolve" text="抗命起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseCompensation" text="拒绝补偿" />
+    <string id="AF_DIP_UI_CivilWar_ActionImmediateRebellion" text="立即起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolveOwn" text="解散派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionChangeDemand" text="更改诉求" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingSelected" text="国王治理 · {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingChoose" text="国王治理 · 请选择一个派系" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingEmpty" text="国王治理 · 尚无可治理派系" />
+    <string id="AF_DIP_UI_CivilWar_TitleCrown" text="王室附庸 · 你的家族不满 {GRIEVANCE} · 与国王 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleMember" text="{TAG}成员 · 你的家族不满 {GRIEVANCE} · 与领袖 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleLeader" text="{TAG}领袖" />
+    <string id="AF_DIP_UI_CivilWar_TitleMiddle" text="未表态封臣 · 你的家族不满 {GRIEVANCE} · 与国王 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_PendingResponse" text="待答复：{RESPONSE}" />
+    <string id="AF_DIP_UI_CivilWar_DissolutionOrder" text="国王的解散令" />
+    <string id="AF_DIP_UI_CivilWar_NegotiationCompensation" text="国王的谈判补偿" />
+    <string id="AF_DIP_UI_CivilWar_Grievance" text="你的家族不满 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionFirst" text="请先在目录中选择派系" />
+    <string id="AF_DIP_UI_CivilWar_NoOpposition" text="尚无反对派" />
+    <string id="AF_DIP_UI_CivilWar_NoDemand" text="没有可选诉求" />
+    <string id="AF_DIP_UI_CivilWar_SelectCompensationTier" text="选择补偿档位" />
+    <string id="AF_DIP_UI_CivilWar_ConcedeDemand" text="兑现{DEMAND}" />
+    <string id="AF_DIP_UI_CivilWar_Demand" text="诉求" />
+    <string id="AF_DIP_UI_CivilWar_StandWithKing" text="站在国王一边" />
+    <string id="AF_DIP_UI_CivilWar_ReevaluateMembers" text="其他成员重评是否参与" />
+    <string id="AF_DIP_UI_CivilWar_DissolveRelationLoss" text="与其他成员关系 −10" />
+    <string id="AF_DIP_UI_CivilWar_JoinFactionSub" text="加入{FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_SelectedFaction" text="所选派系" />
+    <string id="AF_DIP_UI_CivilWar_LeadershipTransfer" text="领导权移交继任者" />
+    <string id="AF_DIP_UI_CivilWar_LeaveNeutral" text="{DAYS} 天中立 · 关系受损" />
+    <string id="AF_DIP_UI_CivilWar_FoundSlots" text="选择诉求 · 名额 {USED} / {MAX}" />
+    <string id="AF_DIP_UI_CivilWar_FoundingProcess" text="进入建国流程" />
+    <string id="AF_DIP_UI_CivilWar_LeaderDecision" text="交由领袖判定" />
+    <string id="AF_DIP_UI_CivilWar_FactionDissolved" text="派系解散" />
+    <string id="AF_DIP_UI_CivilWar_AcceptOffer" text="收下 {OFFER} · 解散" />
+    <string id="AF_DIP_UI_CivilWar_RebellionProcess" text="进入起兵流程" />
+    <string id="AF_DIP_UI_CivilWar_FactionRetained" text="派系保留 · 不收费" />
+    <string id="AF_DIP_UI_CivilWar_Compensation" text="补偿" />
+    <string id="AF_DIP_UI_CivilWar_Gold" text="{AMOUNT} 金币" />
+    <string id="AF_DIP_UI_CivilWar_Influence" text="{AMOUNT} 影响力" />
+    <string id="AF_DIP_UI_CivilWar_NoFixedCost" text="无固定费用" />
+    <string id="AF_DIP_UI_CivilWar_Cooldown" text="冷却至第 {DAY} 天" />
+    <string id="AF_DIP_UI_CivilWar_Unavailable" text="暂不可用 · 点击查看" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionNotice" text="请先在目录中选择要治理的派系。" />
+    <string id="AF_DIP_UI_CivilWar_NoOppositionNotice" text="王国内尚无反对派。" />
+    <string id="AF_DIP_UI_CivilWar_AcceptDissolveBody" text="服从解散令：派系解散，不满仍然保留。" />
+    <string id="AF_DIP_UI_CivilWar_RefuseDissolveBody" text="抗命：拒绝解散并进入起兵流程。" />
+    <string id="AF_DIP_UI_CivilWar_AcceptCompensationBody" text="接受补偿：收下 {OFFER}，撤回诉求并解散派系。" />
+    <string id="AF_DIP_UI_CivilWar_RefuseCompensationBody" text="拒绝补偿：派系保留，不收补偿。" />
+    <string id="AF_DIP_UI_CivilWar_ActionFailed" text="派系操作失败，详见日志。" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandTitle" text="更改派系诉求" />
+    <string id="AF_DIP_UI_CivilWar_FoundTitle" text="建立派系" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandDescription" text="更改后保留派系身份，立即重评其他成员是否继续参与；不会自动起兵。" />
+    <string id="AF_DIP_UI_CivilWar_FoundDescription" text="无需达到不满或关系门槛，但仍受战后冷却；创建时与统治者关系−10，改建时承担旧阵营关系损失。" />
+    <string id="AF_DIP_UI_CivilWar_LedByClan" text="由本家族领导" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateTitle" text="谈判补偿" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateDescription" text="只有对方接受后才转移补偿；拒绝仍消耗行动冷却。" />
+    <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="当前没有合法选项。" />
+    <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="确认派系操作" />
+    <string id="AF_DIP_UI_Common_Continue" text="继续" />
   </strings>
 </base>
