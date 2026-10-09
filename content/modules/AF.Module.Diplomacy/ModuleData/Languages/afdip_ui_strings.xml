@@ -3,6 +3,7 @@
   <tags><tag language="English" /></tags>
   <strings>
     <string id="AF_DIP_UI_Common_Acknowledge" text="Got it" />
+    <string id="AF_DIP_UI_Common_Close" text="Close" />
     <string id="AF_DIP_UI_Common_UnknownDate" text="Unknown date" />
     <string id="AF_DIP_UI_Compose_Title" text="Write diplomatic declaration" />
     <string id="AF_DIP_UI_Compose_ReplyTitle" text="Reply to diplomatic declaration" />
@@ -52,5 +53,20 @@
     <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="Refuse protection" />
     <string id="AF_DIP_UI_Vassalage_SendProtection" text="Send protection" />
     <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="Refuse to send protection" />
+    <string id="AF_DIP_UI_Archive_NoticeDescription" text="Click to view the diplomatic declaration." />
+    <string id="AF_DIP_UI_Archive_NoticeTitle" text="New diplomatic declaration" />
+    <string id="AF_DIP_UI_Archive_Reanalyze" text="Re-analyze" />
+    <string id="AF_DIP_UI_Archive_Reply" text="Reply" />
+    <string id="AF_DIP_UI_Archive_CustomPolicy" text="Custom policy" />
+    <string id="AF_DIP_UI_Archive_PolicyRecord" text="Policy record" />
+    <string id="AF_DIP_UI_Archive_PolicyImpact" text="Policy effects" />
+    <string id="AF_DIP_UI_Archive_UnknownCountry" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Archive_NoDetails" text="(No details.)" />
+    <string id="AF_DIP_UI_Archive_AnnouncementDetails" text="Announcement details" />
+    <string id="AF_DIP_UI_Archive_NewMarker" text="New" />
+    <string id="AF_DIP_UI_Archive_ReviewPolicy" text="Review policy again" />
+    <string id="AF_DIP_UI_Archive_Title" text="Kingdom announcements" />
+    <string id="AF_DIP_UI_Archive_Empty" text="There are no kingdom announcements yet." />
+    <string id="AF_DIP_UI_Archive_Day" text="Day {DAY}" />
   </strings>
 </base>

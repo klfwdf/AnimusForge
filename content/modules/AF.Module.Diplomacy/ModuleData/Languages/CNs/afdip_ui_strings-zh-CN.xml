@@ -3,6 +3,7 @@
   <tags><tag language="简体中文" /></tags>
   <strings>
     <string id="AF_DIP_UI_Common_Acknowledge" text="知道了" />
+    <string id="AF_DIP_UI_Common_Close" text="关闭" />
     <string id="AF_DIP_UI_Common_UnknownDate" text="未知日期" />
     <string id="AF_DIP_UI_Compose_Title" text="撰写外交宣言" />
     <string id="AF_DIP_UI_Compose_ReplyTitle" text="回应外交宣言" />
@@ -52,5 +53,20 @@
     <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="拒绝庇护" />
     <string id="AF_DIP_UI_Vassalage_SendProtection" text="出兵保护" />
     <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="拒绝出兵" />
+    <string id="AF_DIP_UI_Archive_NoticeDescription" text="点击查看外交宣言。" />
+    <string id="AF_DIP_UI_Archive_NoticeTitle" text="新的外交宣言" />
+    <string id="AF_DIP_UI_Archive_Reanalyze" text="重新解析" />
+    <string id="AF_DIP_UI_Archive_Reply" text="回应" />
+    <string id="AF_DIP_UI_Archive_CustomPolicy" text="自定义政策" />
+    <string id="AF_DIP_UI_Archive_PolicyRecord" text="政策记录" />
+    <string id="AF_DIP_UI_Archive_PolicyImpact" text="政策影响效果" />
+    <string id="AF_DIP_UI_Archive_UnknownCountry" text="未知国家" />
+    <string id="AF_DIP_UI_Archive_NoDetails" text="（无详情）" />
+    <string id="AF_DIP_UI_Archive_AnnouncementDetails" text="公告详情" />
+    <string id="AF_DIP_UI_Archive_NewMarker" text="新" />
+    <string id="AF_DIP_UI_Archive_ReviewPolicy" text="重新评议政策" />
+    <string id="AF_DIP_UI_Archive_Title" text="王国公告" />
+    <string id="AF_DIP_UI_Archive_Empty" text="目前还没有王国公告。" />
+    <string id="AF_DIP_UI_Archive_Day" text="第{DAY}天" />
   </strings>
 </base>
