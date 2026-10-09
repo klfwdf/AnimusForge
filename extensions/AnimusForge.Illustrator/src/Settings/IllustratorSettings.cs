@@ -10,6 +10,7 @@ using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
+using TaleWorlds.Localization;
 using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,7 +24,7 @@ namespace AnimusForge.Illustrator
     public class IllustratorSettings : AttributeGlobalSettings<IllustratorSettings>
     {
         public override string Id => "AnimusForge_Illustrator_v1";
-        public override string DisplayName => "AnimusForge - AI 画卷生图系统 (Illustrator)";
+        public override string DisplayName => new TextObject("{=AF_ILL_DISPLAY}AnimusForge - AI Illustrator").ToString();
         public override string FolderName => IllustratorSettingsStorage.DirectoryKey;
         public override string FormatType => "json";
 
@@ -55,8 +56,8 @@ namespace AnimusForge.Illustrator
 
         private bool _enableImageGeneration = true;
 
-        [SettingPropertyBool("生图开启", HintText = "所有生图链路的总开关。关闭后百科、对话、快报、画廊等入口都不会发起生图请求。", Order = 0, RequireRestart = false)]
-        [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
+        [SettingPropertyBool("{=AF_ILL_ENABLED}Enable image generation", HintText = "{=AF_ILL_ENABLED_HINT}Master switch for all image-generation paths. When disabled, encyclopedia, conversation, bulletin, and gallery entries will not send image requests.", Order = 0, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
         public bool EnableImageGeneration
         {
             get => _enableImageGeneration;
@@ -73,34 +74,34 @@ namespace AnimusForge.Illustrator
 
         // Character portraits are always rendered offscreen (required references); this switch only covers
         // the scene panorama of Mission conversations. Field (map) conversations never use a panorama.
-        [SettingPropertyBool("启用场景离屏渲染 (环境全景)", HintText = "开启后，会话插画会在后台离屏渲染玩家附近 30 米的场景全景，作为环境参考还原建筑、陈设与材质；采集需要数秒并占用少量 GPU。关闭后不渲染全景，环境仅依据当前画面截图与文字事实。人物立绘始终离屏渲染，不受此开关影响。野外（大地图）会话本来就不使用全景。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
+        [SettingPropertyBool("{=AF_ILL_OFFSCREEN_ENV}Enable off-screen scene rendering (environment panorama)", HintText = "{=AF_ILL_OFFSCREEN_ENV_HINT}When enabled, conversation illustrations render a panorama within 30 meters of the player in the background for buildings, furnishings, and materials. Capture takes a few seconds and uses some GPU. When disabled, the environment uses the current screenshot and textual facts. Character portraits always render off-screen. World-map conversations do not use panoramas.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
         public bool EnableSceneOffscreenRendering { get; set; } = true;
 
-        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出文件，不清理其他请求或历史调试文件。关闭时保留纹章导出便于排查；已读取的立绘临时文件仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
+        [SettingPropertyBool("{=AF_ILL_CLEAN_TEMP}Clean temporary files after generation", HintText = "{=AF_ILL_CLEAN_TEMP_HINT}Each extraction task cleans only its own off-screen exports when it finishes. When disabled, heraldry exports are kept for troubleshooting; loaded portrait files still follow the normal release flow. Gallery caches and default illustrations are unaffected.", Order = 3, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = true;
 
-        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_BASE_URL}Image API endpoint (Base URL)", HintText = "{=AF_ILL_IMAGE_BASE_URL_HINT}For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://yjapi.shenlanqaq.com/v1";
 
-        [SettingPropertyBool("使用完整调用 URL (不自动拼接后缀)", HintText = "开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径；Google原生勾选后必须填写完整 :generateContent 地址，实际模型以URL为准。", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyBool("{=AF_ILL_FULL_URL}Use complete request URL (do not append suffix)", HintText = "{=AF_ILL_FULL_URL_HINT}Uses the entered endpoint directly without appending a suffix. Suitable for custom proxies. Google native mode requires a complete :generateContent URL; the URL determines the model.", Order = 2, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool UseExactEndpointUrl { get; set; } = false;
 
-        [SettingPropertyText("生图 API 密钥 (API Key)", HintText = "用于鉴权的 API Key。若端点无需鉴权或为本地反代可留空。", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_KEY}Image API key (API Key)", HintText = "{=AF_ILL_IMAGE_KEY_HINT}API key for authentication. Leave blank for endpoints that need no authentication or local proxies.", Order = 3, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ApiKey { get; set; } = "";
 
-        [SettingPropertyButton("拉取生图模型列表", Content = "点击拉取", Order = 4, RequireRestart = false, HintText = "向配置接口查询模型列表，Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyButton("{=AF_ILL_FETCH_IMAGE_MODELS}Fetch image model list", Content = "{=AF_ILL_FETCH}Fetch", Order = 4, RequireRestart = false, HintText = "{=AF_ILL_FETCH_IMAGE_MODELS_HINT}Queries the configured endpoint for models. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
         private string _modelName = "black-forest-labs/FLUX.1-schnell";
 
-        [SettingPropertyText("生图模型名称 (Model)", HintText = "生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。", Order = 5, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_MODEL}Image model name (Model)", HintText = "{=AF_ILL_IMAGE_MODEL_HINT}Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically.", Order = 5, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ModelName
         {
             get => _modelName;
@@ -113,8 +114,8 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyDropdown("选择生图模型 (下拉选单)", Order = 6, RequireRestart = false, HintText = "点击上方“拉取生图模型列表”后，可从本下拉菜单中直接快速点选可用模型。若选“*手动输入*”，则使用上方文本框中输入的模型名称。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyDropdown("{=AF_ILL_SELECT_IMAGE_MODEL}Select image model (dropdown)", Order = 6, RequireRestart = false, HintText = "{=AF_ILL_SELECT_IMAGE_MODEL_HINT}After fetching models above, select one here. Choosing “*manual input*” uses the model name entered above.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> ModelDropdown
         {
             get { EnsureModelDropdown(); return _modelDropdown; }
@@ -246,8 +247,8 @@ namespace AnimusForge.Illustrator
             return -1;
         }
 
-        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "快报与“全屏覆盖”场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科与“独立面板”场景插画使用所选尺寸。需生图服务支持对应尺寸。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyDropdown("{=AF_ILL_IMAGE_SIZE}Image resolution (Size)", Order = 7, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_SIZE_HINT}Bulletin and fullscreen scene illustrations convert presets to 16:9. Encyclopedia and standalone-panel illustrations use the selected size. The image service must support the size.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
             get
@@ -296,8 +297,8 @@ namespace AnimusForge.Illustrator
 
         private static readonly string[] _qualityTokens = { "", "standard", "hd", "low", "medium", "high", "auto" };
 
-        [SettingPropertyDropdown("生成画质预设 (Quality)", Order = 8, RequireRestart = false, HintText = "standard/hd 对应 DALL-E-3 系；low/medium/high/auto 对应 gpt-image-1 系及支持这些枚举的中转模型。选“默认”时不发送该参数，避免不支持的模型报错。Gemini 等对话生图通道自动换算为画质提示词注入。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyDropdown("{=AF_ILL_QUALITY}Image quality preset (Quality)", Order = 8, RequireRestart = false, HintText = "{=AF_ILL_QUALITY_HINT}standard/hd target DALL-E-3; low/medium/high/auto target gpt-image-1 and compatible proxies. Default omits the parameter to avoid unsupported-model errors. Conversation image channels convert this to a quality prompt.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> QualityDropdown
         {
             get
@@ -331,8 +332,8 @@ namespace AnimusForge.Illustrator
         };
         private Dropdown<string> _styleDropdown;
 
-        [SettingPropertyDropdown("生成风格画风 (Style)", Order = 9, RequireRestart = false, HintText = "vivid/natural 为 OpenAI 官方 style 枚举参数；其余预设不作为 style 参数发送（避免非法枚举报错），而是把画风指令与预设负面词注入提示词，对任何模型生效。选“提示词”时使用下方自定义文本。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyDropdown("{=AF_ILL_STYLE}Generation style (Style)", Order = 9, RequireRestart = false, HintText = "{=AF_ILL_STYLE_HINT}vivid/natural are official OpenAI style enums. Other presets inject style instructions and negative terms into the prompt instead of sending a style parameter. Choosing “prompt” uses the custom text below.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> StyleDropdown
         {
             get
@@ -363,37 +364,37 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyButton("自定义画风提示词 (Style=提示词 时生效)", Content = "打开编辑器", Order = 10, RequireRestart = false, HintText = "点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。默认填入古典油画预设内容供参考。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyButton("{=AF_ILL_CUSTOM_STYLE}Custom style prompt (active when Style=prompt)", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 10, RequireRestart = false, HintText = "{=AF_ILL_CUSTOM_STYLE_HINT}Open the long-text editor to edit style instructions. Active only when the style preset is “prompt”; injected into every image channel. A classical oil-painting preset is provided as a reference.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action EditCustomStylePrompt { get; set; }
 
         // 预填古典油画预设内容，供玩家查看/改写；仅在画风预设选“提示词”时生效
         public string CustomStylePrompt { get; set; } = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
 
-        [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘参考图将一并发送给生图模型（支持对话多模态及兼容的 ImagesEdits 通道）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyBool("{=AF_ILL_REFERENCE_IMAGE}Send reference image to image model", HintText = "{=AF_ILL_REFERENCE_IMAGE_HINT}Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director.", Order = 10, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
-        [SettingPropertyBool("按 AF 装备保真", Order = 11, RequireRestart = false, HintText = "默认开启，保留装备款式身份，但允许叙事中已发生的撕裂、污渍、湿透等状态变化。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyBool("{=AF_ILL_GEAR_FIDELITY}Preserve AF equipment", Order = 11, RequireRestart = false, HintText = "{=AF_ILL_GEAR_FIDELITY_HINT}Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool PreserveEquipmentFidelity { get; set; } = true;
 
 
-        [SettingPropertyButton("负面提示词 (Negative Prompt)", Content = "打开编辑器", Order = 11, RequireRestart = false, HintText = "点击打开大文本编辑器，填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。仅在画风预设选“提示词(自定义画风)”时生效，作为禁止指令追加在预设负面词之后。默认填入古典油画预设内容供参考。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyButton("{=AF_ILL_NEGATIVE_PROMPT}Negative prompt (Negative Prompt)", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 11, RequireRestart = false, HintText = "{=AF_ILL_NEGATIVE_PROMPT_HINT}Open the long-text editor and list elements to exclude from the image. Active only for the custom prompt style; appended after preset negative terms.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action EditNegativePrompt { get; set; }
 
         // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
         public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
 
-        [SettingPropertyInteger("随机", 0, 100, "0", Order = 12, RequireRestart = false, HintText = "0 沿用旧版，不追加随机提示词。数值越高，越鼓励取景、留白、景深与光影表现的变化；人物外貌、装备、纹章和已确认游戏事实仍须保持一致。这是提示词指导强度，不是模型采样参数。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyInteger("{=AF_ILL_RANDOMNESS}Randomness", 0, 100, "0", Order = 12, RequireRestart = false, HintText = "{=AF_ILL_RANDOMNESS_HINT}At 0, no random prompt is added. Higher values encourage variation in framing, negative space, depth of field, and lighting while preserving identity, equipment, heraldry, and established facts. This controls prompt guidance, not model sampling.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int Randomness { get; set; } = 50;
 
         private int _imageGenerationTimeoutSeconds = 240;
 
-        [SettingPropertyInteger("生图请求总超时", 60, 600, "0 秒", Order = 13, RequireRestart = false, HintText = "单次生图的总等待上限，默认240秒；包含 Edits 尝试、对话通道回退和结果图下载。高画质多参考图重绘或中转较慢时可调大。下一次生图生效；不影响视觉导演请求与离屏采集超时。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyInteger("{=AF_ILL_IMAGE_TIMEOUT}Image request timeout", 60, 600, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 13, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_TIMEOUT_HINT}Maximum wait for one image request, including edits, conversation fallback, and download. Applies to the next request and does not affect director or off-screen capture timeouts.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int ImageGenerationTimeoutSeconds
         {
             get => _imageGenerationTimeoutSeconds;
@@ -406,20 +407,20 @@ namespace AnimusForge.Illustrator
 
         private string _directorModelName = "";
 
-        [SettingPropertyText("导演 API 端点地址 (Base URL)", HintText = "视觉导演 API 端点地址。留空时自动复用主模块正文对话 API 端点；若需指定独立的 LLM 模型或第三方中转作为提示词扩写导演，请在此填写 Base URL（如 https://api.openai.com/v1）。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_BASE_URL}Director API endpoint (Base URL)", HintText = "{=AF_ILL_DIRECTOR_BASE_URL_HINT}Visual Director API endpoint. Leave blank to reuse the main conversation API; enter a Base URL for an independent model or proxy.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public string DirectorApiBaseUrl { get; set; } = "";
 
-        [SettingPropertyText("导演 API 密钥 (API Key)", HintText = "视觉导演 API 密钥 (Key)。留空时自动复用主模块正文对话 API Key。", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_KEY}Director API key (API Key)", HintText = "{=AF_ILL_DIRECTOR_KEY_HINT}Visual Director API key. Leave blank to reuse the main conversation API key.", Order = 2, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public string DirectorApiKey { get; set; } = "";
 
-        [SettingPropertyButton("拉取导演模型列表", Content = "点击拉取", Order = 3, RequireRestart = false, HintText = "向填写的导演 Base URL 发起查询拉取可用模型列表。若未填写导演 Base URL，则向主模块正文 API 发起拉取。")]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyButton("{=AF_ILL_FETCH_DIRECTOR_MODELS}Fetch director models", Content = "{=AF_ILL_FETCH}Fetch", Order = 3, RequireRestart = false, HintText = "{=AF_ILL_FETCH_DIRECTOR_MODELS_HINT}Fetches available models from the director Base URL, or from the main conversation API when blank.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public Action FetchDirectorModelList { get; set; }
 
-        [SettingPropertyText("导演模型名称 (Model)", HintText = "视觉导演模型名称（如 gpt-4o、qwen-plus、deepseek-chat 等）。留空时自动复用主模块正文对话模型。", Order = 4, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_MODEL}Director model name (Model)", HintText = "{=AF_ILL_DIRECTOR_MODEL_HINT}Visual Director model name. Leave blank to reuse the main conversation model.", Order = 4, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public string DirectorModelName
         {
             get => _directorModelName;
@@ -432,8 +433,8 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyDropdown("选择导演模型 (下拉选单)", Order = 5, RequireRestart = false, HintText = "点击上方“拉取导演模型列表”后可从下拉菜单点选。若选“*手动输入*”，则使用上方文本框输入的模型名；若选“*默认(复用正文API)*”，则留空复用主模块。")]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyDropdown("{=AF_ILL_SELECT_DIRECTOR_MODEL}Select director model (dropdown)", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_SELECT_DIRECTOR_MODEL_HINT}After fetching models above, select one here. Manual input uses the text box; the default reuses the main module.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public Dropdown<string> DirectorModelDropdown
         {
             get { EnsureDirectorModelDropdown(); return _directorModelDropdown; }
@@ -474,24 +475,24 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("导演最大输出 Tokens", 512, 64000, "0 Token", HintText = "实际发送给导演API的 max_tokens，默认25000；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。", Order = 6, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyInteger("{=AF_ILL_DIRECTOR_MAX_TOKENS}Director maximum output tokens", 512, 64000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_MAX_TOKENS_HINT}max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits.", Order = 6, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
 
-        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "软性篇幅参考，不是API输出上限。强制缩减开启时优先遵守字符预算；否则完整回复最多30000字符。保留完整四段，不为凑数扩写。", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
-        [SettingPropertyButton("自定义导演提示词", Content = "打开编辑器", Order = 10, RequireRestart = false,
-            HintText = "填写构图、动作、景别与叙事偏好，适用于百科、会晤和周报/快报。留空保持默认规则；只发给视觉导演，不直接追加到生图端。不能覆盖已知人物、装备、场景与事件事实或改变输出格式。导演关闭/未配置时不生效；修改后从下一次生成开始生效，正在生成的任务不变。")]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        [SettingPropertyButton("{=AF_ILL_CUSTOM_DIRECTOR}Custom director prompt", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 10, RequireRestart = false,
+            HintText = "{=AF_ILL_CUSTOM_DIRECTOR_HINT}Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public Action EditCustomDirectorPrompt { get; set; }
 
         // Hidden editor text is persisted by IllustratorPromptSettingsPersistence in the existing MCM JSON.
         public string CustomDirectorPrompt { get; set; } = "";
 
-        [SettingPropertyBool("自动生图", HintText = "仅在“生图开启”开启时生效。开启：快报生成时提前生成插画；关闭：快报右侧面板打开且缓存未命中时再自动生成。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        [SettingPropertyBool("{=AF_ILL_AUTO_GENERATE}Generate images automatically", HintText = "{=AF_ILL_AUTO_GENERATE_HINT}Active only when image generation is enabled. When on, illustrations are generated during bulletin creation; when off, they are generated when the panel opens and the cache misses.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
         private bool _enableEncyclopediaIllustration = true;
@@ -521,8 +522,8 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("NPC回复后自动重绘场景插画", HintText = "开启后，玩家先手动生成本次对话的第一张插画；之后每次 NPC 回复自动重绘一张。后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新当前会话最近两轮对话与动作。", Order = 4, RequireRestart = false)]
-        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        [SettingPropertyBool("{=AF_ILL_AUTO_REDRAW}Redraw scene illustration after NPC replies", HintText = "{=AF_ILL_AUTO_REDRAW_HINT}After the player generates the first illustration, each NPC reply redraws one automatically. Later requests reuse the initial panorama, references, and stable facts while updating the latest two dialogue turns and actions.", Order = 4, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
 
         private static readonly List<string> _conversationDisplayOptions = new List<string>
@@ -532,8 +533,8 @@ namespace AnimusForge.Illustrator
         };
         private Dropdown<string> _conversationDisplayDropdown;
 
-        [SettingPropertyDropdown("绘图显示效果", Order = 5, RequireRestart = false, HintText = "独立面板：使用右侧场景插画面板；全屏覆盖：插画铺满屏幕作为对话背景，按钮位于上方约四分之三区域，底部保留对话与输入区域；打开百科、菜单等界面时自动隐藏。自动重绘沿用此选择。")]
-        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        [SettingPropertyDropdown("{=AF_ILL_DISPLAY_MODE}Illustration display mode", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_DISPLAY_MODE_HINT}Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
         public Dropdown<string> ConversationDisplayDropdown
         {
             get
@@ -554,35 +555,35 @@ namespace AnimusForge.Illustrator
         private int _panoramaFaceExportTimeoutSeconds = 6;
         private int _panoramaCaptureTimeoutSeconds = 40;
 
-        [SettingPropertyInteger("人物立绘导出超时", 10, 60, "0 秒", Order = 2, RequireRestart = false,
-            HintText = "每个人物离屏立绘的等待上限，默认20秒。下一次提取生效；增大只帮助导出较慢的环境，不能修复原生保存未执行。不是AI接口超时。")]
-        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        [SettingPropertyInteger("{=AF_ILL_PORTRAIT_TIMEOUT}Character portrait export timeout", 10, 60, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 2, RequireRestart = false,
+            HintText = "{=AF_ILL_PORTRAIT_TIMEOUT_HINT}Maximum wait for each off-screen portrait, default 20 seconds. Applies to the next extraction and does not affect AI API timeouts.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
         public int PortraitExportTimeoutSeconds
         {
             get => _portraitExportTimeoutSeconds;
             set => _portraitExportTimeoutSeconds = Math.Max(10, Math.Min(60, value));
         }
 
-        [SettingPropertyInteger("全景单方向图片导出超时", 3, 15, "0 秒", Order = 3, RequireRestart = false,
-            HintText = "每个全景方向等待原生PNG的上限，默认6秒。六个方向顺序采集，同时受全景总超时限制。下一次采集生效；不能修复原生保存未执行。")]
-        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        [SettingPropertyInteger("{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT}Panorama direction export timeout", 3, 15, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 3, RequireRestart = false,
+            HintText = "{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT_HINT}Maximum wait for each panorama direction PNG, default 6 seconds. Six directions are captured sequentially and remain subject to the total timeout.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
         public int PanoramaFaceExportTimeoutSeconds
         {
             get => _panoramaFaceExportTimeoutSeconds;
             set => _panoramaFaceExportTimeoutSeconds = Math.Max(3, Math.Min(15, value));
         }
 
-        [SettingPropertyInteger("环境全景采集总超时", 30, 120, "0 秒", Order = 4, RequireRestart = false,
-            HintText = "包含等待提取舞台、环境副本构建和六方向采集的总预算，默认40秒。下一次采集生效；总预算先到仍会停止，失败不发送缺面或重复图片。")]
-        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        [SettingPropertyInteger("{=AF_ILL_PANORAMA_TOTAL_TIMEOUT}Environment panorama total timeout", 30, 120, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 4, RequireRestart = false,
+            HintText = "{=AF_ILL_PANORAMA_TOTAL_TIMEOUT_HINT}Total budget for stage extraction, environment copy construction, and six-direction capture, default 40 seconds. Stops when the budget is reached and does not send missing or duplicate images.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
         public int PanoramaCaptureTimeoutSeconds
         {
             get => _panoramaCaptureTimeoutSeconds;
             set => _panoramaCaptureTimeoutSeconds = Math.Max(30, Math.Min(120, value));
         }
 
-        [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        [SettingPropertyInteger("{=AF_ILL_CACHE_LIMIT}Maximum local cache images", 20, 1000, "{=AF_ILL_UNIT_IMAGES}0 images", HintText = "{=AF_ILL_CACHE_LIMIT_HINT}Maximum number of generated images kept in the persistent local cache to avoid duplicate requests.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
         public int MaxCacheCount { get; set; } = 200;
 
         // 提示词扩写：底层永久自动开启，无 MCM 开关
@@ -667,9 +668,9 @@ namespace AnimusForge.Illustrator
             return _cachedModelsFilePath;
         }
 
-        [SettingPropertyButton("测试生图 API（可能计费）", Content = "测试 / 取消", Order = 14, RequireRestart = false,
-            HintText = "使用当前填写的配置生成一张测试图，可能产生服务费用。只提交一次出图请求，不自动切换通道重试；会显示成功、失败及耗时。运行中再次点击取消。无需进入存档，不调用视觉导演或采集游戏画面；测试图保存在模组 Cache/Illustrator/ApiTest/last-result.png。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        [SettingPropertyButton("{=AF_ILL_TEST_API}Test image API (may incur charges)", Content = "{=AF_ILL_TEST_CANCEL}Test / Cancel", Order = 14, RequireRestart = false,
+            HintText = "{=AF_ILL_TEST_API_HINT}Generates one test image with the current configuration and may incur service charges. Sends one request without channel retries. Click again to cancel while running. No save or game capture is needed; the result is saved under Cache/Illustrator/ApiTest/last-result.png.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action TestImageApi { get; set; }
 
         private void TryLoadCachedModels()
@@ -1223,3 +1224,5 @@ namespace AnimusForge.Illustrator
         }
     }
 }
+
+

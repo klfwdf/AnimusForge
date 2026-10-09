@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_COUP_DEFENDER_INTERVAL" text="Defender Reinforcement Interval" />
+    <string id="AF_COUP_DEFENDER_INTERVAL_HINT" text="Default 30 seconds. The first wave appears when combat starts, then reinforcements arrive at this interval, subject to active-wave and remaining-force limits. Applies to the next coup." />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE" text="Defenders per Wave" />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE_HINT" text="Default 30. Maximum defenders spawned per wave in the street and hall; limited by remaining defenders and never created from nothing. Applies to the next coup." />
+    <string id="AF_COUP_DISPLAY" text="AnimusForge - Coup" />
+    <string id="AF_COUP_ENABLED" text="Enable Coup" />
+    <string id="AF_COUP_ENABLED_HINT" text="Launch an armed coup in the town where your kingdom's ruler resides. Disabling prevents new coups; ongoing battles finish safely. Troop and reinforcement settings apply to the next coup." />
+    <string id="AF_COUP_GATE_GUARD_LIMIT" text="Gate Guard Limit" />
+    <string id="AF_COUP_GATE_GUARD_LIMIT_HINT" text="Default 10. Assigned from healthy defenders; fewer are used when unavailable. The hall can be attacked after the gate guards are cleared. Applies to the next coup." />
+    <string id="AF_COUP_GROUP_ASSAULT" text="Assault Parties" />
+    <string id="AF_COUP_GROUP_GUARDS" text="Guards and Reinforcements" />
+    <string id="AF_COUP_GROUP_MAIN" text="Armed Coup" />
+    <string id="AF_COUP_GROUP_REQUIREMENTS" text="Entry Requirements" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT" text="Hall Guard Limit" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT_HINT" text="Default 20, excluding the ruler. Assigned first from healthy defenders; remaining troops are assigned to gate and street guards. Applies to the next coup." />
+    <string id="AF_COUP_HALL_LIMIT" text="Hall Assault Party Limit" />
+    <string id="AF_COUP_HALL_LIMIT_HINT" text="Default 20, excluding the player. Selected only from street survivors. Applies to the next coup; larger parties may crowd the hall." />
+    <string id="AF_COUP_MAX_WAVES" text="Maximum Active Defender Waves" />
+    <string id="AF_COUP_MAX_WAVES_HINT" text="Default 4 waves. A wave occupies a slot while any defender remains alive; reinforcements wait for an open slot. Applies to the next coup." />
+    <string id="AF_COUP_MIN_CLAN_TIER" text="Minimum Clan Tier" />
+    <string id="AF_COUP_MIN_CLAN_TIER_HINT" text="Default 4; 0 means unrestricted. Applies only to new coups and is checked again when troops are confirmed." />
+    <string id="AF_COUP_MIN_INFLUENCE" text="Minimum Influence" />
+    <string id="AF_COUP_MIN_INFLUENCE_HINT" text="Default 300; 0 means unrestricted. Checked but not spent. The threshold is fixed when the confirmation window opens and checked again when troops are confirmed." />
+    <string id="AF_COUP_MIN_TROOPS" text="Minimum Assault Party Size" />
+    <string id="AF_COUP_MIN_TROOPS_HINT" text="Default 60 healthy regular soldiers must be selected, with one additional person left as a reserve. The player, heroes, and wounded do not count. Cannot exceed the street limit; the hall requires at least one survivor regardless of this threshold." />
+    <string id="AF_COUP_STREET_LIMIT" text="Street Assault Party Limit" />
+    <string id="AF_COUP_STREET_LIMIT_HINT" text="Default 60, excluding the player. Healthy regular soldiers only, with at least one reserve. Applies to the next coup; larger parties increase scene load." />
+    <string id="AF_COUP_UNIT_SECONDS" text="0 sec" />
+    <string id="AF_COUP_UNIT_TIER" text="0 tier" />
+    <string id="AF_COUP_UNIT_TROOPS" text="0 troops" />
+    <string id="AF_COUP_UNIT_WAVES" text="0 waves" />
+  </strings>
+</base>
