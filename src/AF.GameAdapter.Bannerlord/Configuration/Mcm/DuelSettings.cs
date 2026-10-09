@@ -1521,67 +1521,67 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
 
-	[SettingPropertyInteger("联姻压力成人阈值", 1, 12, "0", Order = 18, RequireRestart = false, HintText = "NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold}Marriage-pressure adult threshold", 1, 12, "0", Order = 18, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold_Hint}Inheritance or marriage-pressure contact can trigger when the NPC clan has no more than this many adult core members and at least one adult unmarried member. Default: 3.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMarriageAdultClanThreshold { get; set; } = 3;
 
-	[SettingPropertyInteger("封地忠诚阈值", 0, 100, "0", Order = 19, RequireRestart = false, HintText = "NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold}Fief loyalty threshold", 0, 100, "0", Order = 19, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold_Hint}Governance-concern contact can trigger when NPC clan fief loyalty is at or below this value; 0 ignores loyalty. Default: 35.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefLoyaltyThreshold { get; set; } = 35;
 
-	[SettingPropertyInteger("封地治安阈值", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestFiefSecurityThreshold}Fief security threshold", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestFiefSecurityThreshold_Hint}Governance-concern contact can trigger when NPC clan fief security is at or below this value; 0 ignores security. Default: 35.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefSecurityThreshold { get; set; } = 35;
 
-	[SettingPropertyInteger("封地驻军阈值", 0, 1000, "0", Order = 21, RequireRestart = false, HintText = "NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold}Fief garrison threshold", 0, 1000, "0", Order = 21, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold_Hint}Governance-concern contact can trigger when an NPC clan fief garrison is at or below this value; 0 ignores garrisons. Default: 80.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFiefGarrisonThreshold { get; set; } = 80;
 
-	[SettingPropertyInteger("孤立影响力阈值", 0, 500, "0", Order = 22, RequireRestart = false, HintText = "NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold}Isolation influence threshold", 0, 500, "0", Order = 22, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold_Hint}At or below this NPC clan influence, the ally count may trigger contact about a lack of allies; 0 ignores influence. Default: 40.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestIsolationInfluenceThreshold { get; set; } = 40;
 
-	[SettingPropertyInteger("孤立友好家族上限", 0, 10, "0", Order = 23, RequireRestart = false, HintText = "同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans}Maximum friendly clans for isolation", 0, 10, "0", Order = 23, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans_Hint}When the NPC clan has no more than this many friendly clans in the same kingdom with relations above 20, low influence or hostile relations may trigger contact about a lack of allies. Default: 1.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestIsolationMaxFriendlyClans { get; set; } = 1;
 
-	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 24, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_ProactiveNpcKnownMajorMultiplier}Known-history need multiplier", 1f, 5f, "0.0", Order = 24, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcKnownMajorMultiplier_Hint}Multiplier for need-driven contact probability when the NPC already knows major events in the player history. Default: 2.0.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcKnownMajorMultiplier { get; set; } = 2f;
 
-	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 25, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_ProactiveNpcNotorietyChanceMultiplier}Notoriety trigger multiplier", 0f, 3f, "0.0", Order = 25, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcNotorietyChanceMultiplier_Hint}Multiplier converting effective player notoriety into additional proactive NPC contact probability. Default for normal play: 0.35.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcNotorietyChanceMultiplier { get; set; } = 0.35f;
 
-	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 26, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcMinNeedUrgency}Minimum need urgency", 0, 100, "0", Order = 26, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcMinNeedUrgency_Hint}Minimum need urgency required for proactive NPC contact. Test mode treats this as 0 at runtime. Default for normal play: 60.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 
-	[SettingPropertyInteger("请求类型疲劳(天)", 0, 60, "0", Order = 27, RequireRestart = false, HintText = "玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestTypeFatigueDays}Request-type fatigue (days)", 0, 60, "0", Order = 27, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestTypeFatigueDays_Hint}After the player receives a request of a given type, greatly reduces that type trigger chance for this many game days. 0 disables type fatigue. Default: 10 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTypeFatigueDays { get; set; } = 10;
 
-	[SettingPropertyFloatingInteger("疲劳类型概率倍率", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier}Fatigued-type probability multiplier", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier_Hint}Multiplies both need-driven and notoriety-driven probabilities for requests under type fatigue, and reduces that need priority among candidates. Default: 0.20.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestTypeFatigueMultiplier { get; set; } = 0.2f;
 
-	[SettingPropertyFloatingInteger("缺马请求权重", 0f, 1f, "0.00", Order = 29, RequireRestart = false, HintText = "缺马/买马请求在地图主动接触和主动来信中的候选权重与触发概率倍率。默认 0.35；0 表示保留需求判定但不主动发起。测试模式下地图追踪仍按 1.00 计算。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_ProactiveNpcRequestMountShortageWeight}Mount-shortage request weight", 0f, 1f, "0.00", Order = 29, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestMountShortageWeight_Hint}Candidate-weight and trigger-probability multiplier for mount-shortage or horse-purchase requests in map contact and unsolicited letters. Default: 0.35; 0 retains need detection but prevents proactive initiation. Map pursuit in test mode still uses 1.00.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestMountShortageWeight { get; set; } = 0.35f;
 
-	[SettingPropertyInteger("亲密互动全局冷却(天)", 1, 120, "0", Order = 30, RequireRestart = false, HintText = "异性且私人关系大于 30 的亲密互动，在地图追赶、主动来信和队内同伴聊天之间共享的硬冷却。默认 21 天。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays}Romantic interaction global cooldown (days)", 1, 120, "0", Order = 30, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Hint}Shared hard cooldown across map pursuit, unsolicited letters, and companion chat for romantic interactions with the opposite sex and private relations above 30. Default: 21 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestRomanticInteractionGlobalCooldownDays { get; set; } = 21;
 
-	[SettingPropertyInteger("主动问候全局冷却(天)", 1, 120, "0", Order = 31, RequireRestart = false, HintText = "私人关系大于 20 的 NPC 主动追上玩家或主动来信问候后，共享的硬冷却。默认 42 天。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays}Proactive greeting global cooldown (days)", 1, 120, "0", Order = 31, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays_Hint}Shared hard cooldown after an NPC with private relations above 20 pursues the player or sends an unsolicited greeting letter. Default: 42 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestGreetingGlobalCooldownDays { get; set; } = 42;
 
-	[SettingPropertyFloatingInteger("领地盘问范围倍率", 0.5f, 10f, "0.0", Order = 32, RequireRestart = false, HintText = "玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier}Territorial questioning range multiplier", 0.5f, 10f, "0.0", Order = 32, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint}When the player is within player sight range times this multiplier of a kingdom settlement, that kingdom lords of a different culture who do not know the player history may proactively question their origins and purpose. Default: 3.0.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public float ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier { get; set; } = 3f;
 
-	[SettingPropertyInteger("领地盘问全局冷却(天)", 1, 180, "0", Order = 33, RequireRestart = false, HintText = "领地盘问成功发起后共享的硬冷却。默认 42 天。")]
+	[SettingPropertyInteger("{=AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays}Territorial questioning global cooldown (days)", 1, 180, "0", Order = 33, RequireRestart = false, HintText = "{=AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint}Shared hard cooldown after territorial questioning is successfully initiated. Default: 42 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays { get; set; } = 42;
 

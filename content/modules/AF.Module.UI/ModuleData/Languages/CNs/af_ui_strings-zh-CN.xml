@@ -416,5 +416,37 @@
   <string id="AF_MCM_Proactive_ClanGold_Hint" text="NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。" />
   <string id="AF_MCM_Proactive_ClanDebt" text="家族债务阈值" />
   <string id="AF_MCM_Proactive_ClanDebt_Hint" text="NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。" />
+  <string id="AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold" text="联姻压力成人阈值" />
+  <string id="AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold_Hint" text="NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold" text="封地忠诚阈值" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold_Hint" text="NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefSecurityThreshold" text="封地治安阈值" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefSecurityThreshold_Hint" text="NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold" text="封地驻军阈值" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold" text="孤立影响力阈值" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold_Hint" text="NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans" text="孤立友好家族上限" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans_Hint" text="同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。" />
+  <string id="AF_MCM_ProactiveNpcKnownMajorMultiplier" text="已知履历需求倍率" />
+  <string id="AF_MCM_ProactiveNpcKnownMajorMultiplier_Hint" text="NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。" />
+  <string id="AF_MCM_ProactiveNpcNotorietyChanceMultiplier" text="知名度触发倍率" />
+  <string id="AF_MCM_ProactiveNpcNotorietyChanceMultiplier_Hint" text="玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。" />
+  <string id="AF_MCM_ProactiveNpcMinNeedUrgency" text="最低需求紧急度" />
+  <string id="AF_MCM_ProactiveNpcMinNeedUrgency_Hint" text="NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueDays" text="请求类型疲劳(天)" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueDays_Hint" text="玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier" text="疲劳类型概率倍率" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。" />
+  <string id="AF_MCM_ProactiveNpcRequestMountShortageWeight" text="缺马请求权重" />
+  <string id="AF_MCM_ProactiveNpcRequestMountShortageWeight_Hint" text="缺马/买马请求在地图主动接触和主动来信中的候选权重与触发概率倍率。默认 0.35；0 表示保留需求判定但不主动发起。测试模式下地图追踪仍按 1.00 计算。" />
+  <string id="AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays" text="亲密互动全局冷却(天)" />
+  <string id="AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Hint" text="异性且私人关系大于 30 的亲密互动，在地图追赶、主动来信和队内同伴聊天之间共享的硬冷却。默认 21 天。" />
+  <string id="AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays" text="主动问候全局冷却(天)" />
+  <string id="AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays_Hint" text="私人关系大于 20 的 NPC 主动追上玩家或主动来信问候后，共享的硬冷却。默认 42 天。" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier" text="领地盘问范围倍率" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays" text="领地盘问全局冷却(天)" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="领地盘问成功发起后共享的硬冷却。默认 42 天。" />
   </strings>
 </base>
