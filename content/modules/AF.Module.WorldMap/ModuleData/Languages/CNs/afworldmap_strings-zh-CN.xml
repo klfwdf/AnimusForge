@@ -13,6 +13,12 @@
     <string id="AF_WM_TrackParty" text="{ACTOR}开始追踪{PARTY}，准备攻击，时限{DAYS}天（{MODE}）。" />
     <string id="AF_WM_MergeForeign" text="{HERO}开始率部前往玩家主队，准备在保留原家族身份的情况下以客军形式整队并入。" />
     <string id="AF_WM_Merge" text="{HERO}开始返回玩家部队，准备会合并转入兵力。" />
+    <string id="AF_WM_FollowStart" text="{ACTOR}开始前往并跟随{TARGET}，持续{DAYS}天。" />
+    <string id="AF_WM_HideoutTravel" text="{ACTOR}开始前往{SETTLEMENT}，准备清剿藏身处。" />
+    <string id="AF_WM_HideoutEngage" text="{ACTOR}开始在{SETTLEMENT}清剿藏身处，胜败与伤亡由原版战斗结算。" />
+    <string id="AF_WM_ForeignGuestDepart" text="{HERO}所属势力已与玩家开战，该外族客军 Hero 已离开玩家主队。" />
+    <string id="AF_WM_ForeignGuestDetachmentReleased" text="{HERO}所属势力已与玩家开战，其外族客军分队已脱离玩家指挥。" />
+    <string id="AF_WM_PartyName" text="{HERO}的队伍" />
     <string id="AF_WM_Target" text="目标" />
     <string id="AF_WM_TrackRisk" text="{ACTOR}已经接近{TARGET}，但战力评估认为当前风险过高，正在等待更好的进攻窗口。" />
     <string id="AF_WM_TrackBlocked" text="{ACTOR}已经接近{TARGET}，但攻击硬条件暂不满足，正在继续跟踪目标。" />
@@ -42,5 +48,56 @@
     <string id="AF_WM_Admission_GovernorNoTask" text="大地图命令失败：驻城总督需要至少一道移动、巡逻、跟随或攻击任务才能组建远征队。" />
     <string id="AF_WM_Admission_GovernorOrder" text="大地图命令顺序错误：总督建队前的归队命令无法执行，已从首个有效任务命令开始处理。" />
     <string id="AF_WM_Admission_ProcessingFailed" text="大地图命令处理失败：{ERROR}" />
+    <string id="AF_WM_CommandMissingSource" text="大地图命令失败：缺少外部命令来源。" />
+    <string id="AF_WM_CommandInvalidHeroSettlement" text="大地图命令失败：找不到有效的英雄或定居点。" />
+    <string id="AF_WM_CommandExisting" text="{HERO}已有其它大地图命令，暂不能改派参加宴会。" />
+    <string id="AF_WM_StopMissingHeroSource" text="大地图命令停止失败：缺少英雄或命令来源。" />
+    <string id="AF_WM_StopWrongSource" text="{HERO}当前命令不属于该宴会来源，未停止。" />
+    <string id="AF_WM_CannotControlPlayerParty" text="大地图命令失败：不能这样指挥玩家本人的部队。" />
+    <string id="AF_WM_NoControllableParty" text="大地图命令失败：{HERO}当前没有独立可控制部队。" />
+    <string id="AF_WM_NoValidCommands" text="大地图命令失败：没有通过 ID 校验的命令。" />
+    <string id="AF_WM_WaitingBattleReplace" text="{ACTOR}正在等待当前战斗安全结算，暂不能替换大地图命令。" />
+    <string id="AF_WM_WaitingBattleAppend" text="{ACTOR}正在等待当前战斗安全结算，暂不能追加新的大地图命令。" />
+    <string id="AF_WM_IsolatedSource" text="{ACTOR}当前执行的是隔离来源命令，聊天命令未改动该清单。" />
+    <string id="AF_WM_QueueStarted" text="{ACTOR}{ACTION}{COUNT}道大地图命令。" />
+    <string id="AF_WM_QueueAppended" text="{ACTOR}{ACTION}{COUNT}道大地图命令。" />
+    <string id="AF_WM_QueueStartedAction" text="已开始执行" />
+    <string id="AF_WM_QueueAppendedAction" text="已追加" />
+    <string id="AF_WM_NonHeroNoParty" text="大地图命令失败：当前非英雄说话对象没有可接管的野外部队。" />
+    <string id="AF_WM_NonHeroQueueUnavailable" text="大地图命令失败：无法建立稳定的非英雄部队命令清单。" />
+    <string id="AF_WM_AcceptedQueue" text="{ACTOR}已接受大地图命令队列（{COUNT}道{CONVERSION}）。" />
+    <string id="AF_WM_NativeBattleReplaceBlocked" text="{ACTOR}正在参与原版战斗，结算前不能替换当前大地图命令。" />
+    <string id="AF_WM_GovernorInvalidState" text="该总督当前死亡、被俘、失能或不在可出征状态。" />
+    <string id="AF_WM_GovernorNotCurrent" text="该人物已不是城市或城堡的有效现任总督。" />
+    <string id="AF_WM_GovernorAway" text="该总督当前不在其管辖地内。" />
+    <string id="AF_WM_GovernorClanMismatch" text="管辖地归属与总督家族不一致。" />
+    <string id="AF_WM_GovernorAlreadyAttached" text="该总督已经属于其他独立部队或俘虏队伍。" />
+    <string id="AF_WM_GovernorCannotLead" text="该总督当前因任务或游戏规则不能带领部队。" />
+    <string id="AF_WM_GovernorSettlementBusy" text="{SETTLEMENT}正在被围攻或进行战斗，不能抽调驻军。" />
+    <string id="AF_WM_GovernorGarrisonUnavailable" text="{SETTLEMENT}当前没有可安全抽调的驻军部队。" />
+    <string id="AF_WM_GovernorValidationFailed" text="总督远征资格检查失败：{ERROR}" />
+    <string id="AF_WM_GovernorGarrisonUnavailableGeneric" text="驻军部队不可用。" />
+    <string id="AF_WM_GovernorTroopsInsufficient" text="可抽调健康驻军不足{MINIMUM}人；必须保留至少{RESERVE}名普通驻军并遵守总督队伍上限。" />
+    <string id="AF_WM_GovernorPlanIncomplete" text="驻军抽调计划未能形成完整兵员清单。" />
+    <string id="AF_WM_GovernorNoTask" text="没有可用于远征的有效任务命令。" />
+    <string id="AF_WM_GovernorRequestChanged" text="总督的管辖地或家族在请求等待期间已经变化。" />
+    <string id="AF_WM_GovernorIdentityChanged" text="总督身份或管辖地归属在建队前已经变化。" />
+    <string id="AF_WM_GovernorStarted" text="{HERO}已从{SETTLEMENT}驻军抽调{TROOPS}人并开始远征。" />
+    <string id="AF_WM_GovernorCreationFailed" text="组建总督远征队失败：{ERROR}" />
+    <string id="AF_WM_MergeNotPlayerMember" text="大地图命令失败：{ACTOR}不是玩家的家族成员、同伴或本模组登记的临时分队，不能执行回队合并。" />
+    <string id="AF_WM_MergeMissingForeignClan" text="大地图命令失败：{ACTOR}既不是玩家成员，也没有可保留的外族家族身份。" />
+    <string id="AF_WM_MergeInactiveOrCaptive" text="大地图命令失败：{ACTOR}当前死亡、失效或被俘，不能作为外族客军并入玩家队伍。" />
+    <string id="AF_WM_MergeNotOwnParty" text="大地图命令失败：{ACTOR}当前率领的不是自己家族的领主野外部队，不能整队并入。" />
+    <string id="AF_WM_MergeGovernor" text="大地图命令失败：{ACTOR}仍担任总督；为避免原版自动解除职位，不能作为外族客军并入。" />
+    <string id="AF_WM_MergeInArmy" text="大地图命令失败：{ACTOR}当前正在军团中，必须先退出军团才能整队并入玩家。" />
+    <string id="AF_WM_MergeAtWar" text="大地图命令失败：{ACTOR}所属势力正与玩家交战，不能以保留原家族身份的客军形式并入。" />
+    <string id="AF_WM_MergeNoIndependentParty" text="大地图命令失败：{ACTOR}当前没有可归并的独立野外队伍。" />
+    <string id="AF_WM_MergePartyMismatch" text="大地图命令失败：{ACTOR}已经不是该野外队伍的实际领队，已停止回队合并。" />
+    <string id="AF_WM_MergeHeroMissing" text="大地图命令失败：{ACTOR}不在该野外队伍名册中，已停止回队合并。" />
+    <string id="AF_WM_MergeMainPartyInvalid" text="大地图命令失败：玩家主队当前不可用，无法执行回队合并。" />
+    <string id="AF_WM_MergeEligibilityUnknown" text="大地图命令失败：{ACTOR}当前不满足回队合并条件（{REASON}）。" />
+    <string id="AF_WM_ConversionBoth" text="，敌对定居点按AI攻击、被围攻定居点改攻敌对围城部队" />
+    <string id="AF_WM_ConversionBesieged" text="，被围攻定居点改攻敌对围城部队" />
+    <string id="AF_WM_ConversionHostile" text="，敌对定居点按AI攻击" />
   </strings>
 </base>
