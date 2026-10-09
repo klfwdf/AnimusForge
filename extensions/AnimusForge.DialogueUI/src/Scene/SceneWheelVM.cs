@@ -33,6 +33,9 @@ public sealed class SceneWheelVM : ViewModel
     }
 
     [DataSourceProperty] public string TargetName { get; }
+    [DataSourceProperty] public string TalkText => DialogueUiLocalization.Text("AFD_UI_Wheel_Talk", "Talk");
+    [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Wheel_Leave", "Leave");
+    [DataSourceProperty] public string GiveText => DialogueUiLocalization.Text("AFD_UI_Wheel_Give", "Give");
     [DataSourceProperty] public string DrawerHeader { get; }
     [DataSourceProperty] public MBBindingList<SceneWheelItemVM> DrawerItems { get; } = new();
     [DataSourceProperty] public bool CanTalk => _talk?.IsEnabled == true;
