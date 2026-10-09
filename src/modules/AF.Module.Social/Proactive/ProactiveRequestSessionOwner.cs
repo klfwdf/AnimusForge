@@ -51,6 +51,13 @@ public sealed partial class ProactiveNpcRequestBehavior
 
 		internal bool IsChasing => Current != null && string.Equals(Current.Stage, "Chasing", StringComparison.OrdinalIgnoreCase);
 		internal bool IsExpired(float nowHours) => Current != null && nowHours > Current.ExpiresAtHours;
+		// A real request may reach native dialogue without the custom menu's mark call,
+		// or reload while its runtime pending payload has been cleared. Never take over a scene opening.
+		internal bool CanResumeNativeOpening => Current != null
+			&& (string.Equals(Current.Stage, "Chasing", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(Current.Stage, "OpeningMenu", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(Current.Stage, "Menu", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(Current.Stage, "NativeConversationPending", StringComparison.OrdinalIgnoreCase));
 		internal bool MatchesHeroId(string heroId) => Current != null
 			&& string.Equals(heroId, Current.HeroId, StringComparison.OrdinalIgnoreCase);
 		internal bool MatchesPartyId(string partyId) => Current != null && !string.IsNullOrWhiteSpace(partyId)

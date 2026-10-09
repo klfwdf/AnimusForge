@@ -308,6 +308,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			CompanionChatSession pending = _storage?.PendingSession;
+			bool awaitingOpening = pending != null && string.Equals(pending.State, StateOpening, StringComparison.OrdinalIgnoreCase);
 			HashSet<string> participantIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (CharacterObject character in characters ?? Enumerable.Empty<CharacterObject>())
 			{
@@ -322,12 +324,21 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					continue;
 				}
 				participantIds.Add(heroId);
-				RecordInteraction(hero);
+				if (!awaitingOpening || !HeroMatchesId(hero, pending.HeroId)) RecordInteraction(hero);
 			}
-			CompanionChatSession pending = _storage?.PendingSession;
 			if (pending != null && participantIds.Contains(pending.HeroId ?? ""))
 			{
-				ConsumePendingSession("conversation_ended");
+				if (awaitingOpening)
+				{
+					// Admission consumes this source before handing it to Native's retry owner.
+					// If the source still exists, no opening was accepted; closing/handoff is not success.
+					pending.State = StatePending;
+					pending.OpeningAttemptUtcTicks = 0L;
+					_publishedSessionIds.Remove(pending.Id ?? "");
+					_nextNoticeProbeUtcTicks = 0L;
+					Logger.Log("CompanionProactiveChat", "conversation ended before opening admission; invitation retained session=" + (pending.Id ?? "") + " hero=" + (pending.HeroId ?? ""));
+				}
+				else ConsumePendingSession("conversation_ended");
 			}
 		}
 		catch (Exception ex)

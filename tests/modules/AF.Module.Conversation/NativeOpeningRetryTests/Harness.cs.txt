@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Linq;
 using HarmonyLib;
 using AnimusForge;
 using TaleWorlds.CampaignSystem;
@@ -11,14 +12,15 @@ using TaleWorlds.MountAndBlade;
 using Admission = AnimusForge.ShoutBehavior.NativeConversationAdmission;
 
 namespace TaleWorlds.CampaignSystem {
- public sealed class Hero { public string StringId; public string Name=>StringId; }
- public sealed class CharacterObject { }
+ public sealed class Hero { public string StringId; public string Name=>StringId; public static Hero MainHero; }
+ public sealed class CharacterObject { public Hero HeroObject; }
  public sealed class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(){ IsConversationInProgress=true, ActiveToken=1 }; }
 }
 namespace TaleWorlds.CampaignSystem.Conversation { public sealed class ConversationManager { public bool IsConversationInProgress; public int ActiveToken; } }
 namespace TaleWorlds.MountAndBlade { public sealed class Mission { public static Mission Current = new(); } }
 namespace AnimusForge.Refactor.Modules { }
 namespace AnimusForge {
+ internal sealed class DuelSettings {internal bool EnableProactiveNpcRequests=true;private static readonly DuelSettings Value=new();internal static DuelSettings GetSettings()=>Value;}
  internal static class Logger {internal static readonly List<string> Entries=new();internal static void Log(string area,string message){Entries.Add(message);}}
  internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long generation)=>generation==Generation; }
  internal static class PlayerEncounterCompat { internal static bool IsInPostBattleResultFlow()=>false; }
@@ -27,41 +29,58 @@ namespace AnimusForge {
  public partial class ShoutBehavior { internal static Hero TargetHero; public static Hero GetNativeConversationTargetHeroForExternal()=>TargetHero;internal static bool ForceBusy;internal static bool IsNativeConversationBackendBusy()=>ForceBusy; internal static ShoutBehavior CurrentInstance;internal NativeAdmissionApplicationAdapter NativeAdmissions;@@ADMISSION@@ @@ERROR@@ @@PRODUCER@@ }
  public sealed partial class ProactiveNpcRequestBehavior {
   private sealed class PendingOpeningFact { internal string SessionId,HeroId,ExtraFact,PromptText; internal float CreatedAtHours; }
-  private sealed class Session { internal string Id,HeroId,Stage; }
-  private sealed class SessionLeaf {internal void MarkConversationOpening(bool native){}}
-  private readonly SessionLeaf _sessionOwner=new();
+  @@LORD_SESSION_DTO@@
+  private const string NeedFoodShortage="FoodShortage"; private const double ActiveEncounterProbeSeconds=0.35;
+  private static List<string> NormalizeSingleNeedType(List<string> needs,string fallback)=>new(){fallback};
+  private readonly ProactiveRequestSessionOwner _sessionOwner=new();
   private readonly ProactiveOpeningOwner _openingOwner = new();
-  private Session _activeSession;
+  private ProactiveNpcRequestSession _activeSession => _sessionOwner.Current;
   internal static ProactiveNpcRequestBehavior Instance = new();
   internal int Consumed;
   internal void Open(Hero hero) { Start(hero); MarkConversationOpeningInternal(hero,true); }
-  internal void Start(Hero hero) { _activeSession=new(){Id="lord-session",HeroId=hero.StringId}; }
+  internal void Decline(Hero hero)=>CompleteActiveForHeroInternal(hero,"leave_option");
+  internal void Start(Hero hero,string stage="Menu",float ttl=10) { _sessionOwner.Clear(); _sessionOwner.TryStart(new(){Id="lord-session",HeroId=hero.StringId,Stage=stage,NeedType=NeedFoodShortage,ExpiresAtHours=Hours+ttl}); }
+  internal void RestoreSessionRuntime() { var session=_sessionOwner.Current; _openingOwner.Clear(); _sessionOwner.Import(session); }
+  internal bool NativeStage=>_activeSession?.Stage=="NativeConversationPending";
   private bool IsActiveHero(Hero hero)=>hero!=null&&_activeSession?.HeroId==hero.StringId;
-  private string BuildTriggerSourceOpeningFact(Hero hero)=>"lord-fact";
+  internal int FactBuilds;private string BuildTriggerSourceOpeningFact(Hero hero){FactBuilds++;return "lord-fact";}
   private string BuildOpeningFact(Hero hero)=>"";
   private string BuildOpeningPrompt(object needs)=>"lord-prompt";
   private object GetActiveNeedTypes()=>null;
-  private static float NowHours()=>1;
+  internal static float Hours=1;private static float NowHours()=>Hours;
   @@LORD_MARK@@
   @@LORD_MENU@@
   @@LORD_LOG@@
   @@LORD_LOG_STATE@@
   private OpeningStateObservation _menuOpeningObservation,_markOpeningObservation,_consumeOpeningObservation;
   private static string GetHeroKey(Hero hero)=>(hero?.StringId??"").Trim();
-  private void CompleteActiveForHeroInternal(Hero hero,string reason) { Consumed++;_activeSession=null;_openingOwner.Clear(); }
+  private void CompleteActiveForHeroInternal(Hero hero,string reason) { Consumed++;_sessionOwner.Clear();_openingOwner.Clear(); }
   public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,true,out fact,out prompt);
   @@LORD_HAS@@
   @@LORD_CONSUME@@
  }
+ internal class InformationData {}
+ internal sealed class CompanionProactiveChatMapNotification : InformationData {internal string SessionId;}
  public sealed class CompanionProactiveChatBehavior {
-  private const string StateOpening="opening";
-  private sealed class CompanionChatSession { internal string State,HeroId,ExtraFact,PromptText; }
+  private const string StateOpening="opening",StatePending="pending";
+  private readonly HashSet<string> _publishedSessionIds=new(StringComparer.OrdinalIgnoreCase);
+  private long _nextNoticeProbeUtcTicks;
+  private sealed class CompanionChatSession { internal string Id,State,HeroId,ExtraFact,PromptText;internal long OpeningAttemptUtcTicks; }
   private sealed class Storage { internal CompanionChatSession PendingSession; }
   private Storage _storage = new();
   internal static CompanionProactiveChatBehavior Instance = new();
   internal int Consumed,Recorded;
-  internal void Open(Hero hero) { _storage.PendingSession=new(){State=StateOpening,HeroId=hero.StringId,ExtraFact="companion-fact",PromptText="companion-prompt"}; }
+  internal void Open(Hero hero) { _storage.PendingSession=new(){Id="companion-session",State=StateOpening,HeroId=hero.StringId,ExtraFact="companion-fact",PromptText="companion-prompt",OpeningAttemptUtcTicks=DateTime.UtcNow.Ticks}; }
   private static bool HeroMatchesId(Hero hero,string id)=>hero?.StringId==id;
+  private static string HeroId(Hero hero)=>hero?.StringId??"";
+  private void ClearPendingHeroCache(){}
+  internal bool PendingRetained=>_storage.PendingSession?.State==StatePending;
+  internal void ConversationEnded(Hero hero)=>OnConversationEnded(new[]{new CharacterObject{HeroObject=hero}});
+  internal void ReopenRetained() { _storage.PendingSession.State=StateOpening; _storage.PendingSession.OpeningAttemptUtcTicks=DateTime.UtcNow.Ticks; }
+  @@COMPANION_ENDED@@
+  @@COMPANION_NOTICE_REMOVED@@
+  internal void QueueNotice() { _storage.PendingSession.State=StatePending; }
+  internal void RemoveNotice()=>OnMapNoticeRemoved(new CompanionProactiveChatMapNotification{SessionId=_storage.PendingSession.Id});
   private void RecordInteraction(Hero hero)=>Recorded++;
   private void ConsumePendingSession(string reason) { Consumed++;_storage.PendingSession=null; }
   public static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt)=>Instance.TryConsumePendingOpening(hero,out fact,out prompt);
@@ -89,7 +108,7 @@ internal sealed class Fixture {
  internal TaskCompletionSource<bool> Hold=new(TaskCreationOptions.RunContinuationsAsynchronously);
  internal Fixture() {
   Campaign.Current=new();Mission.Current=new();SaveRuntimeGuard.Generation=1;ShoutBehavior.TargetHero=Hero;
-  ProactiveNpcRequestBehavior.Instance=new();CompanionProactiveChatBehavior.Instance=new();
+  DuelSettings.GetSettings().EnableProactiveNpcRequests=true;ProactiveNpcRequestBehavior.Instance=new();ProactiveNpcRequestBehavior.Hours=1;CompanionProactiveChatBehavior.Instance=new();
   Adapter=new(Owner,()=>true,()=>Current,()=>CanSubmit,action=>action(),100,
    Resolve,(hero,character)=>-1,Target,Run);
   ShoutBehavior.CurrentInstance=new(){NativeAdmissions=Adapter};
@@ -118,9 +137,11 @@ internal static class Program {
   Check(!ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out _,out _),"no active request cannot display wants-talk promise");
   int unchangedLogCount=Logger.Entries.Count;for(int i=0;i<20;i++)ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out _,out _);
   Check(Logger.Entries.Count==unchangedLogCount,"repeated unchanged menu initialization emits no log flood");
+  Campaign.Current.ConversationManager.IsConversationInProgress=false;
   ProactiveNpcRequestBehavior.Instance.Start(provenance.Hero);
   Check(ProactiveNpcRequestBehavior.TryBuildMenuText(provenance.Hero,out var title,out var body)&&body.Contains("有事想找你谈谈"),"actual menu producer promises talk only for matching active hero");
   Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"menu promise precedes explicitly marked native opening");
+  Campaign.Current.ConversationManager.IsConversationInProgress=true;
   ProactiveNpcRequestBehavior.Instance.Open(provenance.Hero);
   Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"actual mark -> opening owner -> pending gate remains visible");
   ShoutBehavior.TargetHero=new Hero{StringId="different"};Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"pending opening refuses mismatched target rather than creating wrong NPC dialogue");
@@ -131,6 +152,28 @@ internal static class Program {
   autoFixture.Open("lord");ShoutBehavior.ForceBusy=true;auto.Tick();Check(auto.Starts==0&&NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"actual auto gate busy retains marked obligation");
   ShoutBehavior.ForceBusy=false;auto.Tick();await auto.Pending;Check(auto.Starts==1&&auto.Shown==1&&autoFixture.Visible==1,"actual pending UI gate invokes real current admission and displays one ready reply");
   auto.Tick();Check(auto.Starts==1,"actual automatic-start flag prevents repeated submissions");
+  var endedInvite=new Fixture{Mode="ready"};endedInvite.Open("companion");CompanionProactiveChatBehavior.Instance.ConversationEnded(endedInvite.Hero);
+  Check(CompanionProactiveChatBehavior.Instance.PendingRetained&&endedInvite.Consumed==0&&CompanionProactiveChatBehavior.Instance.Recorded==0,"companion handoff ends before admission and must retain invitation without recording an interaction");
+  CompanionProactiveChatBehavior.Instance.ReopenRetained();Check(await endedInvite.Submit()=="body"&&endedInvite.Consumed==1,"retained companion invitation can reenter native and emit one body");
+  CompanionProactiveChatBehavior.Instance.ConversationEnded(endedInvite.Hero);Check(endedInvite.Consumed==1,"accepted companion opening remains consumed after actual end");
+  Check(await endedInvite.Submit()==""&&endedInvite.Runs==1&&endedInvite.Consumed==1,"another native opening consume cannot generate a second companion body");
+  var directInvite=new Fixture{Mode="ready"};ProactiveNpcRequestBehavior.Instance.Start(directInvite.Hero,"Menu");
+  Check(ProactiveNpcRequestBehavior.TryBuildMenuText(directInvite.Hero,out _,out _),"real request menu invitation exists before native mark");
+  var directAuto=new OpeningGateLeaf{Submit=()=>directInvite.Submit()};
+  Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"same valid invited NPC entering native without menu mark must recover opening");
+  int capturedFacts=ProactiveNpcRequestBehavior.Instance.FactBuilds;for(int tick=0;tick<25;tick++)Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"invitation remains pending before UI accepts "+tick);Check(capturedFacts==1&&ProactiveNpcRequestBehavior.Instance.FactBuilds==capturedFacts,"UI frame probes arm payload only once without rescanning invitation needs");
+  directAuto.Tick();await directAuto.Pending;Check(directInvite.Runs==1&&directInvite.Consumed==1&&directAuto.Shown==1,"recovered real request reaches current native producer and one visible body");
+  var restoredInvite=new Fixture{Mode="ready"};restoredInvite.Open("lord");ProactiveNpcRequestBehavior.Instance.RestoreSessionRuntime();
+  Check(ProactiveNpcRequestBehavior.Instance.NativeStage&&NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"saved native invitation stage survives runtime pending reset and re-arms source once");
+  var restoredAuto=new OpeningGateLeaf{Submit=()=>restoredInvite.Submit()};restoredAuto.Tick();await restoredAuto.Pending;Check(restoredInvite.Runs==1&&restoredInvite.Consumed==1,"restored invitation flows to native worker without another menu click");
+  var wrongScene=new Fixture();ProactiveNpcRequestBehavior.Instance.Start(wrongScene.Hero,"SceneConversationPending");Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"scene-owned invitation cannot be stolen by native fallback");
+  var disabledInvite=new Fixture();ProactiveNpcRequestBehavior.Instance.Start(disabledInvite.Hero,"Menu");DuelSettings.GetSettings().EnableProactiveNpcRequests=false;Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"disabled proactive option cannot re-arm an unmarked invitation");
+  var mismatchedInvite=new Fixture();ProactiveNpcRequestBehavior.Instance.Start(mismatchedInvite.Hero,"Menu");ShoutBehavior.TargetHero=new Hero{StringId="other-target"};Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"direct fallback requires the original exact invited target");ShoutBehavior.TargetHero=mismatchedInvite.Hero;Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"a mismatched conversation does not consume the original invitation");
+  var unrelatedClose=new Fixture();unrelatedClose.Open("companion");CompanionProactiveChatBehavior.Instance.ConversationEnded(new Hero{StringId="other-participant"});Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation()&&unrelatedClose.Consumed==0,"another participant's end cannot reset or consume a companion opening");
+  var expiredInvite=new Fixture();ProactiveNpcRequestBehavior.Instance.Start(expiredInvite.Hero,"Menu",ttl:1);ProactiveNpcRequestBehavior.Hours=3;Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"expired invitation cannot create new native opening");
+  var dismissed=new Fixture();dismissed.Open("companion");CompanionProactiveChatBehavior.Instance.QueueNotice();CompanionProactiveChatBehavior.Instance.RemoveNotice();CompanionProactiveChatBehavior.Instance.ConversationEnded(dismissed.Hero);Check(dismissed.Consumed==1&&!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"explicit notification decline is not revived by later conversation end");
+  var inspectedNotice=new Fixture();inspectedNotice.Open("companion");CompanionProactiveChatBehavior.Instance.RemoveNotice();Check(inspectedNotice.Consumed==0&&NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"notification removal caused by accepted click does not falsely cancel its opening");
+  var declinedLord=new Fixture();ProactiveNpcRequestBehavior.Instance.Start(declinedLord.Hero,"Menu");Check(NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"valid lord invitation armed before explicit decline");ProactiveNpcRequestBehavior.Instance.Decline(declinedLord.Hero);Check(declinedLord.Consumed==1&&!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation(),"explicit lord leave/attack clears request and cannot be re-armed");
   var realHarmony=new Harmony("AF.Native.CurrentProducer.Illustrator");ConversationIllustrationPatch.Install(realHarmony);
   var entry=new Fixture{Mode="ready"};int streams=0,posts=0,readyCalls=0;Hero seenHero=null;CharacterObject seenCharacter=null;
   Action<string> stream=t=>{Check(t=="chunk","facade keeps stream callback text");streams++;};Action<string> post=t=>posts++;Action<string,Hero,CharacterObject> ready=(text,hero,character)=>{readyCalls++;seenHero=hero;seenCharacter=character;};
