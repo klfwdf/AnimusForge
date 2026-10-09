@@ -144,5 +144,61 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="" />
     <string id="AF_KNOWLEDGE_SearchByKeywordId" text="Search (keyword/ID)" />
     <string id="AF_KNOWLEDGE_BulkDelete" text="Bulk delete knowledge" />
+    <string id="AF_KNOWLEDGE_NoValue" text="(none)" />
+    <string id="AF_KNOWLEDGE_PlayerNameConflictStatus" text="(could not be saved because it conflicts with another knowledge entry)" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupTitle" text="Player name settings" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="Welcome to AnimusForge! Use this screen to add extra names for your character. If you do not need them, continue to appearance and background settings.\n\nCharacter name: {NAME}{CONFLICT}\nExtra names: {OPTIONAL}" />
+    <string id="AF_KNOWLEDGE_AddOptionalName" text="Add extra name" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalName" text="Remove extra name" />
+    <string id="AF_KNOWLEDGE_OpenAppearanceBackground" text="Write appearance and background" />
+    <string id="AF_KNOWLEDGE_AddOptionalNameTitle" text="Add extra name" />
+    <string id="AF_KNOWLEDGE_AddOptionalNamePrompt" text="Enter an extra name. The player's real name is already kept by the system and does not need to be entered again." />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNameTitle" text="Remove extra name" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNamePrompt" text="The player's system-kept real name cannot be removed. Only extra names you added will be removed." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceOption" text="Appearance (always visible)" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundOption" text="Background (general)" />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundOption" text="Different views of your background" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDone" text="Finish and start the game" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail" text="Save the current settings and leave this screen." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle" text="Player appearance and background" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription" text="Player information is divided into appearance and background information." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="Player information is divided into appearance and background information.\n\nAppearance (always visible):\n{APPEARANCE}\n\nBackground (general):\n{BACKGROUND}\n\nConditional background details: {COUNT}" />
+    <string id="AF_KNOWLEDGE_PlayerOptionUnset" text="Not filled in. Select this option to enter the full text." />
+    <string id="AF_KNOWLEDGE_PlayerOptionFilled" text="{COUNT} characters entered. The full text is shown on the left; select this option to edit it." />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundCount" text="{COUNT} conditional background entries configured." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorTitle" text="Player appearance (always visible)" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorIntro" text="The current appearance information is loaded in the input box below." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorHint" text="Enter appearance traits that NPCs can observe directly. Leave empty to disable this information." />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorTitle" text="Player background (general)" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorIntro" text="The current general background information is loaded in the input box below." />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorHint" text="Enter background, origin, identity and similar information. Leave empty to disable this information." />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListTitle" text="Detailed player background" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListDescription" text="These entries contain conditional background information. Their stored structure is the same as other knowledge prompts." />
+    <string id="AF_KNOWLEDGE_AddDetailedBackground" text="Add a detailed entry" />
+    <string id="AF_KNOWLEDGE_EmptyPreview" text="(empty)" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorTitle" text="Edit detailed background" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="Current condition: {CONDITION}\n\nCurrent content preview:\n{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundContent" text="Edit entry content" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundCondition" text="Edit condition" />
+    <string id="AF_KNOWLEDGE_DeleteDetailedBackground" text="Delete this detailed entry" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentTitle" text="Edit background content" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentIntro" text="This conditional player background information is loaded in the input box below." />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentHint" text="Edit the complete text directly." />
+    <string id="AF_KNOWLEDGE_RetrievalSourceMcm" text="MCM (currently active)" />
+    <string id="AF_KNOWLEDGE_RetrievalSourceFile" text="RuleBehaviorPrompts.json (currently active)" />
+    <string id="AF_KNOWLEDGE_RetrievalMode" text="Per-term retrieval + local reranking" />
+    <string id="AF_KNOWLEDGE_RetrievalOn" text="enabled" />
+    <string id="AF_KNOWLEDGE_RetrievalOff" text="disabled" />
+    <string id="AF_KNOWLEDGE_RetrievalYes" text="yes" />
+    <string id="AF_KNOWLEDGE_RetrievalNoKeywordFirst" text="no (keyword first)" />
+    <string id="AF_KNOWLEDGE_RetrievalDescription" text="Configuration source: {SOURCE}\nCurrent mode: {MODE}\nSemantic retrieval: {ENABLED}\nSemantic first: {FIRST}\nKnowledge return limit: {TOPK}\nDetails: each mentioned term is retrieved independently in importance order, with one knowledge slot per term. If the highest-scoring knowledge is already used by an earlier term, the next unused knowledge is selected. Additional terms are only filled when the limit is greater than the number of terms." />
+    <string id="AF_KNOWLEDGE_RetrievalSwitchSource" text="Configuration source: switch to {SOURCE}" />
+    <string id="AF_KNOWLEDGE_RetrievalToggle" text="Semantic retrieval: {STATE}" />
+    <string id="AF_KNOWLEDGE_RetrievalTopK" text="Set knowledge return limit (current: {TOPK})" />
+    <string id="AF_KNOWLEDGE_RetrievalReset" text="Restore defaults (MCM)" />
+    <string id="AF_KNOWLEDGE_RetrievalSettingsTitle" text="Knowledge retrieval settings" />
+    <string id="AF_KNOWLEDGE_RetrievalSelect" text="Select" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKTitle" text="Set knowledge return limit" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKPrompt" text="Enter an integer from 1 to 12:" />
   </strings>
 </base>

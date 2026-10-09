@@ -144,5 +144,61 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="先选一个定居点，再决定想取它的什么信息。" />
     <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="先选一个家族，再决定想取它的什么信息。" />
     <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="先选一个英雄，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_NoValue" text="（无）" />
+    <string id="AF_KNOWLEDGE_PlayerNameConflictStatus" text="（当前未能写入，因为与其他知识条目冲突）" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupTitle" text="玩家称呼设置" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="欢迎游玩 AnimusForge！你可以在此界面为角色添加额外称呼；如果不需要，可以继续填写外貌与背景信息。\n\n角色姓名：{NAME}{CONFLICT}\n额外称呼：{OPTIONAL}" />
+    <string id="AF_KNOWLEDGE_AddOptionalName" text="添加额外称呼" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalName" text="删除额外称呼" />
+    <string id="AF_KNOWLEDGE_OpenAppearanceBackground" text="编写外貌与背景" />
+    <string id="AF_KNOWLEDGE_AddOptionalNameTitle" text="添加额外称呼" />
+    <string id="AF_KNOWLEDGE_AddOptionalNamePrompt" text="请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNameTitle" text="删除额外称呼" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNamePrompt" text="系统保留的玩家本名不能删除；这里只会删除你额外添加的称呼。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceOption" text="外貌信息（常驻）" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundOption" text="背景信息（通用）" />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundOption" text="不同的人对您的背景看法" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDone" text="完成并开始游戏" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail" text="保存当前设置并离开该界面。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle" text="玩家外貌与背景" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription" text="玩家信息分为外貌信息和背景信息。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="玩家信息分为外貌信息和背景信息。\n\n外貌信息（常驻）：\n{APPEARANCE}\n\n背景信息（通用）：\n{BACKGROUND}\n\n细化背景（有条件）：{COUNT} 条" />
+    <string id="AF_KNOWLEDGE_PlayerOptionUnset" text="当前未填写；点击后可输入完整内容。" />
+    <string id="AF_KNOWLEDGE_PlayerOptionFilled" text="已填写 {COUNT} 字；完整内容显示在左侧，可点击继续编辑。" />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundCount" text="已设置 {COUNT} 条带条件背景。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorTitle" text="玩家外貌信息（常驻）" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorIntro" text="当前外貌信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorHint" text="请输入玩家可被 NPC 直接观察到的外貌特征；留空表示不设置。" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorTitle" text="玩家背景信息（通用）" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorIntro" text="当前通用背景信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorHint" text="请输入背景、来历、身份等内容；留空表示不设置。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListTitle" text="细化的玩家背景信息" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListDescription" text="这里编辑的是带条件的背景信息；写入后的结构与其他知识提示词完全一致。" />
+    <string id="AF_KNOWLEDGE_AddDetailedBackground" text="新增一条细化介绍" />
+    <string id="AF_KNOWLEDGE_EmptyPreview" text="（空）" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorTitle" text="细化介绍编辑" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="当前条件：{CONDITION}\n\n当前内容预览：\n{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundContent" text="编辑介绍内容" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundCondition" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_DeleteDetailedBackground" text="删除此条细化介绍" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentTitle" text="编辑背景内容" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentIntro" text="当前这条带条件的玩家背景信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentHint" text="可直接编辑整段内容。" />
+    <string id="AF_KNOWLEDGE_RetrievalSourceMcm" text="MCM（当前生效）" />
+    <string id="AF_KNOWLEDGE_RetrievalSourceFile" text="RuleBehaviorPrompts.json（当前生效）" />
+    <string id="AF_KNOWLEDGE_RetrievalMode" text="逐名词召回 + 本地精排" />
+    <string id="AF_KNOWLEDGE_RetrievalOn" text="开启" />
+    <string id="AF_KNOWLEDGE_RetrievalOff" text="关闭" />
+    <string id="AF_KNOWLEDGE_RetrievalYes" text="是" />
+    <string id="AF_KNOWLEDGE_RetrievalNoKeywordFirst" text="否（关键词优先）" />
+    <string id="AF_KNOWLEDGE_RetrievalDescription" text="当前配置来源：{SOURCE}\n当前模式：{MODE}\n语义检索：{ENABLED}\n语义优先：{FIRST}\n知识返回上限：{TOPK}\n说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。" />
+    <string id="AF_KNOWLEDGE_RetrievalSwitchSource" text="配置来源：切到 {SOURCE}" />
+    <string id="AF_KNOWLEDGE_RetrievalToggle" text="语义检索：{STATE}" />
+    <string id="AF_KNOWLEDGE_RetrievalTopK" text="设置知识返回上限（当前 {TOPK}）" />
+    <string id="AF_KNOWLEDGE_RetrievalReset" text="恢复默认（MCM）" />
+    <string id="AF_KNOWLEDGE_RetrievalSettingsTitle" text="知识检索设置" />
+    <string id="AF_KNOWLEDGE_RetrievalSelect" text="选择" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKTitle" text="设置知识返回上限" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKPrompt" text="请输入 1~12 的整数：" />
   </strings>
 </base>

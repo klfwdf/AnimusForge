@@ -5999,15 +5999,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		bool flag = EnsurePlayerPersonaForcedKeyword(rule, showConflictMessage: false);
 		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
 		List<string> playerPersonaOptionalKeywords = GetPlayerPersonaOptionalKeywords(rule);
-		string text = "欢迎游玩Animusforge!你可以在此界面设置您的角色的额外称呼，如果您不需要，可以直接继续填写外貌与背景信息\n\n您的角色姓名：" + playerPersonaForcedKeyword + (flag ? "" : "（当前未能写入，因为与其他知识冲突）") + "\n额外称呼：" + ((playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : "（无）");
+		string text = KnowledgeUiTexts.PlayerKeywordSetupBody(playerPersonaForcedKeyword, flag ? "" : KnowledgeUiTexts.PlayerNameConflictStatus, (playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : KnowledgeUiTexts.NoValue);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("add", "添加额外称呼", null));
+		list.Add(new InquiryElement("add", KnowledgeUiTexts.AddOptionalName, null));
 		if (playerPersonaOptionalKeywords.Count > 0)
 		{
-			list.Add(new InquiryElement("remove", "删除额外称呼", null));
+			list.Add(new InquiryElement("remove", KnowledgeUiTexts.RemoveOptionalName, null));
 		}
-		list.Add(new InquiryElement("next", "编写外貌与背景", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家称呼设置", text, list, isExitShown: true, 0, 1, "选择", "继续", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("next", KnowledgeUiTexts.OpenAppearanceBackground, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.PlayerKeywordSetupTitle, text, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Continue, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6018,7 +6018,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "add":
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加额外称呼", "请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddOptionalNameTitle, KnowledgeUiTexts.AddOptionalNamePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
 						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
@@ -6102,7 +6102,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			list.Add(new InquiryElement(item, item, null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除额外称呼", "系统保留的玩家本名不能删除；这里只会删除你额外添加的称呼。", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveOptionalNameTitle, KnowledgeUiTexts.RemoveOptionalNamePrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6149,24 +6149,24 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = BuildPlayerPersonaIntroMenuBody(appearanceText, simpleText, playerPersonaDetailedVariantIndices.Count);
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new DevLargeSelectionPopup.Option("appearance", "外貌信息（常驻）", BuildPlayerPersonaOptionDetail(appearanceText), isPrimary: true),
-			new DevLargeSelectionPopup.Option("simple", "背景信息（照旧）", BuildPlayerPersonaOptionDetail(simpleText), isPrimary: true),
-			new DevLargeSelectionPopup.Option("detailed", "不同的人对您的背景看法", "已设置 " + playerPersonaDetailedVariantIndices.Count + " 条带条件背景。"),
-			new DevLargeSelectionPopup.Option("done", "完成并开始游戏", "保存当前设置并离开该界面。")
+			new DevLargeSelectionPopup.Option("appearance", KnowledgeUiTexts.PlayerAppearanceOption, BuildPlayerPersonaOptionDetail(appearanceText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("simple", KnowledgeUiTexts.PlayerBackgroundOption, BuildPlayerPersonaOptionDetail(simpleText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("detailed", KnowledgeUiTexts.PlayerDetailedBackgroundOption, KnowledgeUiTexts.PlayerDetailedBackgroundCount(playerPersonaDetailedVariantIndices.Count)),
+			new DevLargeSelectionPopup.Option("done", KnowledgeUiTexts.PlayerAppearanceBackgroundDone, KnowledgeUiTexts.PlayerAppearanceBackgroundDoneDetail)
 		};
-		if (DevLargeSelectionPopup.Show("玩家外貌与背景", "玩家信息分为外貌信息和背景信息。", text2, options, delegate(string selectedId)
+		if (DevLargeSelectionPopup.Show(KnowledgeUiTexts.PlayerAppearanceBackgroundTitle, KnowledgeUiTexts.PlayerAppearanceBackgroundDescription, text2, options, delegate(string selectedId)
 		{
 			HandlePlayerPersonaIntroSelection(rule, onDone, selectedId);
-		}, onDone, "跳过"))
+		}, onDone, KnowledgeUiTexts.Skip))
 		{
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("appearance", "外貌信息（常驻）", null));
-		list.Add(new InquiryElement("simple", "背景信息（照旧）", null));
-		list.Add(new InquiryElement("detailed", "不同的人对您的背景看法", null));
-		list.Add(new InquiryElement("done", "完成并开始游戏", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家外貌与背景", text2, list, isExitShown: true, 0, 1, "进入", "跳过", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("appearance", KnowledgeUiTexts.PlayerAppearanceOption, null));
+		list.Add(new InquiryElement("simple", KnowledgeUiTexts.PlayerBackgroundOption, null));
+		list.Add(new InquiryElement("detailed", KnowledgeUiTexts.PlayerDetailedBackgroundOption, null));
+		list.Add(new InquiryElement("done", KnowledgeUiTexts.PlayerAppearanceBackgroundDone, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.PlayerAppearanceBackgroundTitle, text2, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Skip, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6185,17 +6185,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string BuildPlayerPersonaIntroMenuBody(string appearanceText, string simpleText, int detailedCount)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("玩家信息分为外貌信息和背景信息。");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("外貌信息（常驻）：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(appearanceText) ? "（未填写）" : NormalizePlayerAppearanceForStorage(appearanceText));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("背景信息（照旧）：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(simpleText) ? "（未填写）" : (simpleText ?? "").Trim());
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("细化背景（有条件）：" + detailedCount + " 条");
-		return stringBuilder.ToString().TrimEnd();
+		return KnowledgeUiTexts.PlayerAppearanceBackgroundBody(string.IsNullOrWhiteSpace(appearanceText) ? KnowledgeUiTexts.NoValue : NormalizePlayerAppearanceForStorage(appearanceText), string.IsNullOrWhiteSpace(simpleText) ? KnowledgeUiTexts.NoValue : (simpleText ?? "").Trim(), detailedCount);
 	}
 
 	private static string BuildPlayerPersonaOptionDetail(string text)
@@ -6203,9 +6193,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int length = string.IsNullOrWhiteSpace(text) ? 0 : (text ?? "").Trim().Length;
 		if (length <= 0)
 		{
-			return "当前未填写；点击后可输入完整内容。";
+			return KnowledgeUiTexts.PlayerOptionUnset;
 		}
-		return "已填写 " + length + " 字；完整内容显示在左侧，可点击继续编辑。";
+		return KnowledgeUiTexts.PlayerOptionFilled(length);
 	}
 
 	private void HandlePlayerPersonaIntroSelection(LoreRule rule, Action onDone, string selectedId)
@@ -6252,7 +6242,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			_file = new KnowledgeFile();
 		}
 		string text = GetPlayerAppearanceForPrompt();
-		DevTextEditorHelper.ShowLongTextEditor("玩家外貌信息（常驻）", "当前外貌信息已载入下方输入框。", "请输入玩家可被NPC直接观察到的外貌特征；留空表示不设置。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.PlayerAppearanceEditorTitle, KnowledgeUiTexts.PlayerAppearanceEditorIntro, KnowledgeUiTexts.PlayerAppearanceEditorHint, text, delegate(string input)
 		{
 			string text2 = NormalizePlayerAppearanceForStorage(input);
 			if (!string.Equals(_file.PlayerAppearance ?? "", text2, StringComparison.Ordinal))
@@ -6264,7 +6254,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
-		}, "确定", "返回");
+		}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Back);
 	}
 
 	private int GetPlayerPersonaSimpleVariantIndex(LoreRule rule)
@@ -6321,7 +6311,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
 		string text = ((playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count) ? (rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "") : "");
-		DevTextEditorHelper.ShowLongTextEditor("玩家背景信息（照旧）", "当前通用背景信息已载入下方输入框。", "请输入背景、来历、身份等内容；留空表示不设置。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.PlayerBackgroundEditorTitle, KnowledgeUiTexts.PlayerBackgroundEditorIntro, KnowledgeUiTexts.PlayerBackgroundEditorHint, text, delegate(string input)
 		{
 			string text2 = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -6357,7 +6347,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
-		}, "确定", "返回");
+		}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Back);
 	}
 
 	private void OpenPlayerPersonaDetailedIntroMenu(LoreRule rule, Action onReturn)
@@ -6379,7 +6369,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("add", "新增一条细化介绍", null));
+		list.Add(new InquiryElement("add", KnowledgeUiTexts.AddDetailedBackground, null));
 		foreach (int item in playerPersonaDetailedVariantIndices)
 		{
 			LoreVariant loreVariant = rule.Variants[item];
@@ -6387,11 +6377,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = TrimPreview(loreVariant.Content ?? "", 24);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "（空）";
+				text = KnowledgeUiTexts.EmptyPreview;
 			}
 			list.Add(new InquiryElement(item, $"#{item + 1} {arg}  {text}", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化的玩家背景信息", "这里编辑的是带条件的背景信息。它们写入后的结构，和其他知识提示词完全一样。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.DetailedBackgroundListTitle, KnowledgeUiTexts.DetailedBackgroundListDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6516,14 +6506,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = TrimPreview(v.Content ?? "", 220);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "（空）";
+			text2 = KnowledgeUiTexts.EmptyPreview;
 		}
-		string text3 = "当前条件：" + text + "\n\n当前内容预览：\n" + text2;
+		string text3 = KnowledgeUiTexts.DetailedBackgroundEditorDescription(text, text2);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("content", "编辑介绍内容", null));
-		list.Add(new InquiryElement("when", "编辑条件", null));
-		list.Add(new InquiryElement("delete", "删除此条细化介绍", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化介绍编辑", text3, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("content", KnowledgeUiTexts.EditDetailedBackgroundContent, null));
+		list.Add(new InquiryElement("when", KnowledgeUiTexts.EditDetailedBackgroundCondition, null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteDetailedBackground, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.DetailedBackgroundEditorTitle, text3, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6534,7 +6524,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					DevTextEditorHelper.ShowLongTextEditor("编辑背景内容", "当前这条带条件的玩家背景信息已载入下方输入框。", "可直接编辑整段内容。", v.Content ?? "", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.DetailedBackgroundContentTitle, KnowledgeUiTexts.DetailedBackgroundContentIntro, KnowledgeUiTexts.DetailedBackgroundContentHint, v.Content ?? "", delegate(string input)
 					{
 						v.Content = input ?? "";
 						TouchRuleData();
@@ -6542,7 +6532,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, "确定", "取消");
+					}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel);
 					break;
 				case "when":
 				{
@@ -6655,15 +6645,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		catch
 		{
 		}
-		string text = (AIConfigHandler.KnowledgeRetrievalFromMcm ? "MCM（当前生效）" : "RuleBehaviorPrompts.json（当前生效）");
-		string text2 = "逐名词召回 + 本地精排";
-		string descriptionText = "当前配置来源：" + text + "\n当前模式：" + text2 + "\n语义检索：" + (AIConfigHandler.KnowledgeRetrievalEnabled ? "开启" : "关闭") + "\n语义优先：" + (AIConfigHandler.KnowledgeSemanticFirst ? "是" : "否（关键词优先）") + "\n知识返回上限：" + AIConfigHandler.KnowledgeSemanticTopK + "\n说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。";
+		string text = AIConfigHandler.KnowledgeRetrievalFromMcm ? KnowledgeUiTexts.RetrievalSourceMcm : KnowledgeUiTexts.RetrievalSourceFile;
+		string text2 = KnowledgeUiTexts.RetrievalMode;
+		string descriptionText = KnowledgeUiTexts.RetrievalDescription(text, text2, AIConfigHandler.KnowledgeRetrievalEnabled ? KnowledgeUiTexts.RetrievalOn : KnowledgeUiTexts.RetrievalOff, AIConfigHandler.KnowledgeSemanticFirst ? KnowledgeUiTexts.RetrievalYes : KnowledgeUiTexts.RetrievalNoKeywordFirst, AIConfigHandler.KnowledgeSemanticTopK);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("source", "配置来源：" + (settings.UseMcmKnowledgeRetrieval ? "切到 RuleBehaviorPrompts.json" : "切到 MCM"), null));
-		list.Add(new InquiryElement("enabled", "语义检索：" + (settings.KnowledgeRetrievalEnabled ? "关闭" : "开启"), null));
-		list.Add(new InquiryElement("topk", "设置知识返回上限（当前 " + topK + "）", null));
-		list.Add(new InquiryElement("reset", "恢复默认（MCM）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识检索设置", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("source", KnowledgeUiTexts.RetrievalSwitchSource(settings.UseMcmKnowledgeRetrieval ? KnowledgeUiTexts.RetrievalSourceFile : KnowledgeUiTexts.RetrievalSourceMcm), null));
+		list.Add(new InquiryElement("enabled", KnowledgeUiTexts.RetrievalToggle(settings.KnowledgeRetrievalEnabled ? KnowledgeUiTexts.RetrievalOff : KnowledgeUiTexts.RetrievalOn), null));
+		list.Add(new InquiryElement("topk", KnowledgeUiTexts.RetrievalTopK(topK), null));
+		list.Add(new InquiryElement("reset", KnowledgeUiTexts.RetrievalReset, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RetrievalSettingsTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.RetrievalSelect, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6694,7 +6684,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						OpenRetrievalSettingsMenu(onReturn);
 						break;
 					case "topk":
-						InformationManager.ShowTextInquiry(new TextInquiryData("设置知识返回上限", "请输入 1~12 的整数：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+						InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.RetrievalTopKTitle, KnowledgeUiTexts.RetrievalTopKPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 						{
 							string s = (input ?? "").Trim();
 							if (!int.TryParse(s, out var result))
