@@ -51,6 +51,10 @@
   <string id="AF_ENC_UI_Escort_ModeWorldMeeting" text="野外会面场景随行（1 名）" />
   <string id="AF_ENC_UI_Escort_ModeDefault" text="贵族俘虏随行" />
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API 快捷配置向导" />
+  <string id="AF_UI_Onboarding_DeepSeekFlashButton" text="DeepSeek Flash" />
+  <string id="AF_UI_Onboarding_DeepSeekProButton" text="DeepSeek Pro" />
+  <string id="AF_UI_Onboarding_BaseUrlLabel" text="Base URL：" />
+  <string id="AF_UI_Onboarding_ApiKeyLabel" text="API Key：" />
   <string id="AF_UI_Onboarding_CustomMode" text="完全自定义" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" />
   <string id="AF_UI_Onboarding_Status_Pending" text="待测试" />

@@ -614,6 +614,18 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	[DataSourceProperty]
 	public string AF_UI_Onboarding_Prefab_056Text => Localize("{=AF_UI_Onboarding_Prefab_056}Visit Afdian ↗");
 
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_DeepSeekFlashButtonText => Localize("{=AF_UI_Onboarding_DeepSeekFlashButton}DeepSeek Flash");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_DeepSeekProButtonText => Localize("{=AF_UI_Onboarding_DeepSeekProButton}DeepSeek Pro");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_BaseUrlLabelText => Localize("{=AF_UI_Onboarding_BaseUrlLabel}Base URL:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_ApiKeyLabelText => Localize("{=AF_UI_Onboarding_ApiKeyLabel}API Key:");
+
 
 	public AnimusForgeApiOnboardingVM(bool isApiOnlyFlow, Action onCompleted, Action onCancelled)
 	{

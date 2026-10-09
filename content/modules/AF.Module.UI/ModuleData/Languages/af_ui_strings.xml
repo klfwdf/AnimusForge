@@ -51,6 +51,10 @@
   <string id="AF_ENC_UI_Escort_ModeWorldMeeting" text="Wilderness meeting escort (1)" />
   <string id="AF_ENC_UI_Escort_ModeDefault" text="Noble prisoner escort" />
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API Setup Wizard" />
+  <string id="AF_UI_Onboarding_DeepSeekFlashButton" text="DeepSeek Flash" />
+  <string id="AF_UI_Onboarding_DeepSeekProButton" text="DeepSeek Pro" />
+  <string id="AF_UI_Onboarding_BaseUrlLabel" text="Base URL:" />
+  <string id="AF_UI_Onboarding_ApiKeyLabel" text="API Key:" />
   <string id="AF_UI_Onboarding_CustomMode" text="Fully custom" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="Configure the Base URL, key, and bound model for four API pipelines in one panel." />
   <string id="AF_UI_Onboarding_Status_Pending" text="Not tested" />
