@@ -155,7 +155,7 @@ internal sealed class OnboardingDatabaseImportController
             }
             Run(isCurrent, imports, () => kingdom.Import() && hasLoadedVoice(), () =>
             {
-                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Onboarding_Import_Kingdom_profiles_imported","Kingdom strategy/personality imported from the package: matched {MATCHED} entries; unmatched {UNMATCHED}.", "MATCHED", kingdom.Total.ToString(), "UNMATCHED", kingdom.Skipped.ToString())));
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Onboarding_Import_Kingdom_profiles_imported","Kingdom strategy/personality imported from the package: matched {MATCHED_COUNT} entries; unmatched {UNMATCHED_COUNT}.", "MATCHED_COUNT", kingdom.Total.ToString(), "UNMATCHED_COUNT", kingdom.Skipped.ToString())));
                 completed();
             }, result =>
             {

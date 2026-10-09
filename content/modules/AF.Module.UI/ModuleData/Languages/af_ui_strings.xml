@@ -2258,7 +2258,7 @@ Estimated requests: " />
   <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_behavior_is_" text="Import failed: kingdom strategy/personality data behavior is not initialized." />
   <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_is_invalid_R" text="Import failed: kingdom strategy/personality data is invalid. Reason: " />
   <string id="AF_UI_Onboarding_Import_Import_failed_required_data_was_not_fully_imported" text="Import failed: required data was not fully imported." />
-  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="Kingdom strategy/personality imported from the package: matched {MATCHED} entries; unmatched {UNMATCHED}." />
+  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="Kingdom strategy/personality imported from the package: matched {MATCHED_COUNT} entries; unmatched {UNMATCHED_COUNT}." />
   <string id="AF_UI_Onboarding_Import_Missing_event_data" text="Import failed: event_data\\WorldOpeningSummary.json or event_data\\KingdomOpeningSummaries.json is missing." />
   <string id="AF_UI_Onboarding_Import_Missing_kingdom_profiles" text="Import failed: kingdom_profiles\\KingdomProfiles.json is missing." />
   <string id="AF_UI_Onboarding_Import_Missing_knowledge" text="Import failed: knowledge\\rules\\*.json (or knowledge\\KnowledgeRules.json) is missing." />
