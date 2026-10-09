@@ -1,3 +1,31 @@
+<a id="volc-tts-v3-compat-20261010"></a>
+## 火山 TTS V3 兼容升级（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新授权：沿原 TTS 玩法升级，完成差异审查/测试后发布 `main`；不部署游戏、不调用付费 API。本条只覆盖 TTS，其他任务和既有发布记录保留。实际工作区 `G:/AFMOD/AF-FIX-PERSONA-20261009`，起点 `83ba3879`，检查点 `7502b99d`，产品 `1b2fd919`，清理后最终源码 `0fe97a1a`。本条中的发布是授权/待执行动作，是否成功以远端 main ref 与本地 publication 收据为准。
+- 原行为：只支持 V1 `/api/v1/tts`、AppID + Token；碰到 V3 URL 直接拒绝；完整音频生成后按原 winmm / 场景口型通道播放。
+- 新行为：URL 明确选择协议，新增 `/api/v3/tts/unidirectional` 的新控制台 `X-Api-Key` 鉴权。一次请求、不做 V3→V1 回退或自动重试。V3 分块 JSON 按完整 JSON 对象解析，不按网络块/单行截断；完整 HTTP 响应后才返回音频，错误/取消/截断均不发布部分音频。云端固定请求 PCM；WAV 设置只在本地封装一次 RIFF，仍由原 `ParseAudioData` 解码。
+- 保留：全部设置键和默认值、旧 Token/AppID、音色映射和用户文件、存档、语音开关、队列/线程、Scene/Native 消费者、暂停/取消、声音/口型通道与原固定嘴型生成。V1 原请求体/头与自定义代理重定向行为保留；不自动替换资源/音色。V3 使用独立禁重定向 HttpClient，避免 API Key 随跳转发送。新增逻辑只在每次后台合成时执行，无新 Tick/轮询/外部进程。
+- 有意区别：V3 AppID 可空，旧 Token 不能直接当新 API Key；语速 0.5–2.0 倍映射到 `speech_rate`，超界报错而非修改旧值；V1 仍 0.1–2.0。V3 支持文档规定采样率；界面保留原 8000–24000 区间。30 秒覆盖接收完整响应，AF 客户端额外限制文本 64 KiB / 传输 32 MiB / PCM 16 MiB；这些不是火山配额。日志只写错误码、安全 LogID、文本长度，不写凭据/台词。旧无效 V3 拒绝分支和 V1-only 文案已替换，未保留新加但无人调用的单客户端构造器。
+- 依据：[火山官方 HTTP 单向流式文档](https://docs.volcengine.com/docs/DoubaoVoice/unidirectional-streaming-text-to-speech-http?lang=zh)；[字节官方请求样例](https://github.com/bytedance/agentkit-samples/blob/main/skills/byted-text-to-speech/scripts/text_to_speech.py)。接收 `code=0` 与 `20000000`；不把 SSE 样例的 `data:` 包装带入 HTTP Chunked 解析，也不凭空要求 `[DONE]`。正常 HTTP EOF 可完成；服务端若以合法 HTTP 截短语义而不返回错误，客户端不能单凭音频证明台词完整。
+- 一基源码职责、直接消费者与未覆盖边界见[代码地图](architecture/af-framework-code-scope.md#volc-tts-v3-compat-20261010)。证据：`artifacts/tts-v3-20261010/receipt.json`、`verify-final.ps1`、`build-final.log`、`replay-final.log`、`lifetime-final.log`、`mutations.log`。
+
+验证与顺序审查：
+
+| 检查 | 结果 / 边界 |
+| --- | --- |
+| 实际 1.4 候选 DLL + loopback HTTP | 7 组旧 V1 契约、29 项 V3 全通过；包含 UTF-8/JSON 分片、元数据帧、PCM/WAV、真实生产 WAV 解析器、鉴权头、参数映射、错误后丢弃部分音频、截断 HTTP、取消、30 秒 body 超时、大小上限与生产客户端 302 禁跳转；无真实火山调用 |
+| 当前完整 TtsEngine + 实际路由 + 测试按钮 delegate | 51 PASS；原 43 项均保留，新增 6 项按钮开关/配置检查、2 项 V3 接通/失败后队列恢复。网络/游戏/UI 为 fixture；Scene/Native 的 12 个消费方法/类型直接取当前 owner，方法体未改写 |
+| 定向负控 | 8/8 mutation 被行为断言拒绝，非编译失败充数；覆盖网络 token、发布时序、锁、取消、重复 terminal 与 Scene epoch |
+| 原统一构建脚本 | 最终 `0fe97a1a` Debug 双实现 1.3/1.4 + Bootstrap 成功，双 Coup seam gate 通过。存在既有编译警告，不声称全仓无警告 |
+| 工程师自审 | 对照 `83ba3879` 审查最终 diff/直接调用链；排除 UI 条件链落空与新旧客户端混用，保留旧 V1 正常/代理语义；无 VoiceMapper、Scene 消费者、存档、LLM/玩法代码变更；聚焦旧符号/冲突标记检查与 diff --check 通过 |
+| 玩家视角 | 实际按钮源码回放：关总开关、关专用模式、空 URL、错误 V3 协议、V1 缺 AppID 均不入队；V3 不填 AppID 能入队。语速/格式/资源失败经原请求失败事件回退，后台继续下一条。不是实机点击/音质/嘴型验收 |
+
+限制与后续：旧 `test_wiring.py` 仍依赖历史全仓 projection（绑定 WarStats 与本任务无关修改）；本轮未改历史 oracle 或弱化断言，也未把它计入通过。生命周期 runner 改为当前 TTS owner 的直接抽取并记录 hash。未执行真实凭据/额度/音色许可、.NET Framework 网络实机、真实声音/嘴型、存读档、全仓/Release 回归；未覆盖游戏。
+
+人工验收：先不改旧设置播放 V1；再填 V3 完整 URL + 新控制台 API Key + 已授权且匹配的 Resource ID/音色，AppID 可留空，语速先用 1.0/采样率 24000，保存后点测试；进入 Native 对话和场景喊话，分别验证两条发声路径、打断/切场景不会播出旧语音。切回 V1 时重新填其 Token/AppID，设置不会自动缓存两套凭据。测试有计费可能，须玩家自行确认。
+
+回滚仅对 `0fe97a1a`、`1b2fd919` 作逆向提交（按逆序），保留其他作者提交；不使用 hard reset。产物完整 SHA256 见本地 receipt，禁止拿源码通过冒充已安装版本。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ## MCM 模型预设与快报战事修复接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
