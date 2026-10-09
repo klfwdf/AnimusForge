@@ -1,10 +1,15 @@
 <a id="diplomacy-reply-shortcut-20261010"></a>
-## 外交回应按钮与公告提交统一（2026-10-10，ACTIVE）
+## 外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户授权：送给玩家王国的外交公文保留回应入口，唯一玩家资格是本国统治者，封臣无权回应；按钮只是携带原公文上下文的撰写快捷入口，与王国公告使用同一发布/分析流程，不因按钮预先绑定原交涉或另开自动回应链。无推送、部署、打包授权。
 - 工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main，main，基线 bdf51ff4848050a1ff964b6e5cafaaea0373e76a，开始时工作树干净。保持右侧相关公文/左下角第三方消息筛选，外交动作和原案有效性由既有分析执行校验。
-- 修改范围：Diplomacy presentation/player application、原公文分析上下文与相关回放。风险：君主到封臣身份变化、旧/缺失回合、原文身份失效、按钮提交误选目标或双发；完成条件是资格矩阵、两入口提交/真实分析路由回放和官方双API/Bootstrap构建通过，实机另记。
+- 检查点 `d5c35331c`，产品 `d612425e9`。`Detail.CanReply` 只检查 `player.IsRuler`，不再依赖强制待回应标记、回合状态/参与者或国家独立性。打开快捷入口保留 owner/generation 与原公文存在检查，提交重新检查君主资格；这些是失效界面/输入防护，不增加交涉资格限制。
+- 删除独立 `SubmitPlayerReply` 分支，两入口共用 `SubmitPlayerDocument` 的立即公开、一次分析及公告原有暂存回合；按钮只增加 `SourceDocumentId`。不预设原作者为动作目标、不增加自动回应深度、不提前清除原回应义务、不直接加入原交涉。分析 prompt 携带来源ID/原文及“仅作背景、以玩家正文为准”，实际归属/原案有效性继续由既有分析、语义绑定和动作执行决定；既有旧字段/存档键/程序集身份保持。
 - 性能：仅在打开公文/提交/构造分析请求时运行，不新增 Tick 扫描、轮询、反射或队列；保留既有缓存和分析调度。
+- 验证：真实生产 owner/application 回放 **4,170 PASS**，含君主/封臣、独立/臣属、进行中/结束/缺失旧回合、过期UI回合ID、两入口单篇公开/单次分析、原状态不被按钮结算、背景与正文语义边界；相关旧过期提案执行拒绝回放保持通过。最终 Debug **1.3.15.110062 / 1.4.6.115628 + Bootstrap**、双 Coup seam gate 全通过，各实现348既有警告/0错误。5处源码坐标记录提交/working-tree双模式通过。[代码范围与消费者](architecture/af-framework-code-scope.md#diplomacy-reply-shortcut-20261010)。
+- 保留失败：`WorldDiplomacyIntentBoundary.SmokeTests` 在当前候选和基线原测试/原受影响源均于同一 MODE=ANALYZE 枚举提取断言失败（actual=cancel_trade），标 PREEXISTING_FAIL，不调整枚举/oracle制造通过。首次默认构建误选 ignored artifacts 内1.5/.NET8快照的 System.*；本次用进程级 `DirectoryBuildTargetsPath` 临时指定现有net472引用并移除 CandidateAssemblyFiles 搜索，原统一脚本成功。只在本地证据目录保存验证targets，未改一键脚本、默认构建或全局环境。
+- 证据：`artifacts/diplomacy-reply-shortcut-20261010/receipt.json`（源码与三DLL SHA）、`lifecycle-final.log`、`build-final.log`、`intent-boundary.log`/`intent-baseline.log`、`code-map.json`；原失败日志保持。未实机点击、未真实AI调用、未验玩家存档/全仓、未Stage/部署/打包/推送。人工验收为君主打开截图对应提案有回应、封臣无回应，撰写新条件/接受/无关话题与公告同样只发布一篇；过期原案不能被点击恢复。回滚仅 focused inverse 产品 `d612425e9`。
+
 <a id="tts-test-feedback-20261010"></a>
 ## 测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 

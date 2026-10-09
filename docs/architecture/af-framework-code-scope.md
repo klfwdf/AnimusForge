@@ -1,3 +1,18 @@
+<a id="diplomacy-reply-shortcut-20261010"></a>
+### 外交回应撰写快捷入口
+
+源码 `d612425e9`（基线 `bdf51ff48`）；状态、失败与实机限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-reply-shortcut-20261010)。局部5处机器坐标及SHA保存在 `artifacts/diplomacy-reply-shortcut-20261010/code-map.json`，记录提交/working-tree已校验；不更新或宣称全仓历史坐标全绿。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs:82–91`，Detail | 公文弹窗 CanReply 只检查当前玩家为本国统治者，封臣拒绝；通知目标筛选未改 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:86–90`，CanOpenReply | UI快捷入口重验 owner/generation/原公文及君主身份，不依赖旧回合是否存在或改变 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs:43–97`，Execute / SubmitPlayerDocument | 公告与回应按钮统一立即公开和一次分析；原文ID只作上下文，后续实际owner决定归属，不预置回应目标/深度或修改原待回应状态 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs:479–492`，BuildAnalysisPrompt 来源上下文 | 原文/来源ID作为分析背景，玩家正文决定对象/动作，不能由按钮恢复旧案 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/ReplyShortcutReplay.cs:10–86`；AuthorityReplay / Dpl090PresentationReplay / LifecycleRepairReplay | 实际生产提交/调度、资格矩阵、prompt和生命周期回放；世界/游戏为已有fixture，实机UI/真实provider不覆盖 |
+
+未改外交通知路由、动作执行/原案校验、三渠道记忆、存档协议、外部API、Bootstrap或构建脚本。旧文本枚举测试同基线失败另记，双API编译与专项回放不能替代实机。
+
 <a id="tts-test-feedback-20261010"></a>
 ### 测试语音失败回执修补
 

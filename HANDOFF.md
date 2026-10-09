@@ -1,3 +1,9 @@
+# 当前交接：外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 基线 `bdf51ff48`，检查点 `d5c35331c`，产品 `d612425e9`，当前工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main/main。回应入口只按本国统治者资格显示，封臣无权；两入口共用公告发布/分析，按钮只带原文上下文，不预先绑定交涉或改原待回应状态。
+- 4,170项生产回放、Debug双API/Bootstrap和双Coup gate通过；旧枚举文本检查同基线失败保留，实机UI/真实AI/玩家存档未验。构建以本次进程临时引用配置排除ignored快照污染，未改一键脚本。未部署、打包、推送。
+- [唯一主台账：规则、失败、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-reply-shortcut-20261010)；[源码消费者范围](docs/architecture/af-framework-code-scope.md#diplomacy-reply-shortcut-20261010)。本地证据 `artifacts/diplomacy-reply-shortcut-20261010/`，回滚仅定向inverse产品提交。
+
 # 当前交接：测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品 `77ca7886`，基线 `34276f57`：只补测试语音失败主线程回执及未入队提示；取消/迟到不误报，未改 V1/V3、正常对话、播放、音色或存档。61 项回归、8 个 mutation、Debug 双实现 + Bootstrap 与双 Coup 门禁通过；未付费测试、未部署、未实机验声音/UI。
