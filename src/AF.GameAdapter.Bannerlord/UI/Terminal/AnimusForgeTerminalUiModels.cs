@@ -226,7 +226,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	private string _titleText = new TextObject("{=AF_UI_Terminal_Title}AnimusForge Terminal").ToString();
 	private string _subtitleText = new TextObject("{=AF_UI_Terminal_Subtitle}Choose a tool or adjust a mechanism setting. Search, paginate, then press ESC or Close to exit.").ToString();
-	private string _breadcrumbText = "终端 / 全部";
+	private string _breadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString();
 	private string _selectedTab = "全部";
 	private bool _hasUnsavedChanges;
 	private bool _canGoBack;
@@ -668,8 +668,10 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			{
 				string groupKey = _selectedTab + "/" + group.Key;
 				bool collapsed = query.Length == 0 && _collapsedGroups.Contains(groupKey);
+				var countText = new TextObject("{=AF_UI_Terminal_ItemsCount}{COUNT} items");
+				countText.SetTextVariable("COUNT", group.Count());
 				rootItems.Add(AnimusForgeTerminalItemVM.CreateCollapsibleHeader(
-					(collapsed ? "▶  " : "▼  ") + group.Key, group.Count() + " 项", groupKey, collapsed, ToggleGroupCollapse));
+					(collapsed ? "▶  " : "▼  ") + group.Key, countText.ToString(), groupKey, collapsed, ToggleGroupCollapse));
 				if (!collapsed)
 					foreach (var def in group) rootItems.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
 			}
@@ -736,11 +738,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 		if (_path.Count > 0)
 		{
-			BreadcrumbText = "终端 / " + _selectedTab + " / " + string.Join(" / ", _path.Reverse().Select(x => x.Title));
+			BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString()
+				+ " / " + LocalizeTab(_selectedTab) + " / " + string.Join(" / ", _path.Reverse().Select(x => x.Title));
 		}
 		else
 		{
-			BreadcrumbText = "终端 / " + _selectedTab;
+			BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString()
+				+ " / " + LocalizeTab(_selectedTab);
 		}
 	}
 
@@ -799,7 +803,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		WeeklyReportVm?.OnFinalize();
 		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack,
 			link => AnimusForgeTerminalPopup.ActivePopup?.OpenArchiveEncyclopediaLink(link));
-		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_WeeklyBreadcrumb}Current kingdom reports").ToString();
+		BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString()
+			+ " / " + LocalizeTab(_selectedTab) + " / " + new TextObject("{=AF_UI_Terminal_WeeklyBreadcrumb}Current kingdom reports").ToString();
 		SetViewMode(TerminalViewMode.WeeklyReports);
 	}
 
@@ -808,7 +813,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		_returnToView = ReturnToMenu;
 		VassalageVm?.OnFinalize();
 		VassalageVm = new TerminalVassalageTributeHistoryPopupVM(data ?? new TerminalTributaryPaymentHistoryData(), ExecuteBack);
-		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_VassalBreadcrumb}Vassal tribute settlement history").ToString();
+		BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString()
+			+ " / " + LocalizeTab(_selectedTab) + " / " + new TextObject("{=AF_UI_Terminal_VassalBreadcrumb}Vassal tribute settlement history").ToString();
 		SetViewMode(TerminalViewMode.Vassalage);
 	}
 
@@ -870,7 +876,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_returnToView = ReturnToMenu;
 		DetailText = text;
-		BreadcrumbText = "终端 / " + _selectedTab + " / " + title;
+		BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString()
+			+ " / " + LocalizeTab(_selectedTab) + " / " + title;
 		SetViewMode(TerminalViewMode.Details);
 	}
 
@@ -1432,15 +1439,15 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		}
 		if (propId.IndexOf("Seconds", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Second", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			unit = " 秒";
+			unit = new TextObject("{=AF_UI_Terminal_UnitSeconds} sec").ToString();
 		}
 		else if (propId.IndexOf("Days", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Day", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			unit = " 天";
+			unit = new TextObject("{=AF_UI_Terminal_UnitDays} days").ToString();
 		}
 		else if (propId.IndexOf("Hours", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Hour", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			unit = " 小时";
+			unit = new TextObject("{=AF_UI_Terminal_UnitHours} hours").ToString();
 		}
 		else if (propId.IndexOf("Multiplier", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
@@ -1456,7 +1463,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		}
 		else if (propId.IndexOf("Cost", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return $"{(int)f} 第纳尔";
+			return $"{(int)f}{new TextObject("{=AF_UI_Terminal_UnitDenars} denars").ToString()}";
 		}
 
 		if (fmt == "0.00" || fmt == "0.0")
@@ -1510,7 +1517,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		bool next = !BoolValue;
 		SettingDef.Setter(settings, next);
 		BoolValue = next;
-		BoolStatusText = next ? "✔ 开启" : "✕ 关闭";
+		BoolStatusText = next ? new TextObject("{=AF_UI_Terminal_Enabled}✔ Enabled").ToString() : new TextObject("{=AF_UI_Terminal_Disabled}✕ Disabled").ToString();
 		OnPropertyChanged(nameof(BoolValue));
 		OnPropertyChanged(nameof(BoolStatusText));
 		OnPropertyChanged(nameof(IsBoolTrue));
@@ -1576,13 +1583,19 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		if (settings == null) return;
 
 		object cur = SettingDef.Getter(settings);
+		var titleText = new TextObject("{=AF_UI_Terminal_NumericTitle}Set {TITLE}");
+		titleText.SetTextVariable("TITLE", Title ?? "");
+		var promptText = new TextObject("{=AF_UI_Terminal_NumericPrompt}Enter a value (valid range: {MIN} ~ {MAX}):\n{HINT}");
+		promptText.SetTextVariable("MIN", SettingDef.MinValue);
+		promptText.SetTextVariable("MAX", SettingDef.MaxValue);
+		promptText.SetTextVariable("HINT", HintText ?? "");
 		InformationManager.ShowTextInquiry(new TextInquiryData(
-			$"设置 {Title}",
-			$"请输入数值（有效范围: {SettingDef.MinValue} ~ {SettingDef.MaxValue}）：\n{HintText}",
+			titleText.ToString(),
+			promptText.ToString(),
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"确定",
-			"取消",
+			new TextObject("{=AF_UI_Terminal_Confirm}Confirm").ToString(),
+			new TextObject("{=AF_UI_Terminal_Cancel}Cancel").ToString(),
 			input =>
 			{
 				if (float.TryParse(input, out float parsed))
@@ -1658,15 +1671,19 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 			elements.Add(new InquiryElement(i.ToString(), opt, null, isEnabled: true, ""));
 		}
 
+		var titleText = new TextObject("{=AF_UI_Terminal_DropdownTitle}Select {TITLE}");
+		titleText.SetTextVariable("TITLE", Title ?? "");
+		var promptText = new TextObject("{=AF_UI_Terminal_DropdownPrompt}Choose from the available options:\n{HINT}");
+		promptText.SetTextVariable("HINT", HintText ?? "");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			$"选择 {Title}",
-			$"请从以下可用选项中选择：\n{HintText}",
+			titleText.ToString(),
+			promptText.ToString(),
 			elements,
 			isExitShown: true,
 			1,
 			1,
-			"确定",
-			"返回",
+			new TextObject("{=AF_UI_Terminal_Confirm}Confirm").ToString(),
+			new TextObject("{=AF_UI_Terminal_Back}Back").ToString(),
 			selected =>
 			{
 				if (selected != null && selected.Count > 0 && int.TryParse(selected[0].Identifier as string, out int idx))
@@ -1692,18 +1709,20 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		if (settings == null) return;
 
 		string cur = SettingDef.Getter(settings)?.ToString() ?? "";
+		var titleText = new TextObject("{=AF_UI_Terminal_TextTitle}Edit {TITLE}");
+		titleText.SetTextVariable("TITLE", Title ?? "");
 		InformationManager.ShowTextInquiry(new TextInquiryData(
-			$"编辑 {Title}",
+			titleText.ToString(),
 			$"{HintText}",
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"确定",
-			"取消",
+			new TextObject("{=AF_UI_Terminal_Confirm}Confirm").ToString(),
+			new TextObject("{=AF_UI_Terminal_Cancel}Cancel").ToString(),
 			input =>
 			{
 				SettingDef.Setter(settings, input ?? "");
 				string raw = input ?? "";
-				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+				DisplayValue = string.IsNullOrWhiteSpace(raw) ? new TextObject("{=AF_UI_Terminal_EditValue}Click to enter ✎").ToString() : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
 				OnPropertyChanged(nameof(DisplayValue));
 				OnPropertyChanged(nameof(TextValue));
 				_onModified?.Invoke();
@@ -1748,7 +1767,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 			{
 				case TerminalItemKind.BoolSetting:
 					BoolValue = Convert.ToBoolean(SettingDef.Getter(settings));
-					BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
+					BoolStatusText = BoolValue ? new TextObject("{=AF_UI_Terminal_Enabled}✔ Enabled").ToString() : new TextObject("{=AF_UI_Terminal_Disabled}✕ Disabled").ToString();
 					OnPropertyChanged(nameof(BoolValue));
 					OnPropertyChanged(nameof(BoolStatusText));
 					OnPropertyChanged(nameof(IsBoolTrue));
@@ -1800,13 +1819,13 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 					if (!_isListeningKey)
 					{
 						string rawKey = SettingDef.Getter(settings)?.ToString() ?? "";
-						DisplayValue = string.IsNullOrWhiteSpace(rawKey) ? "未设置" : rawKey.ToUpperInvariant();
+						DisplayValue = string.IsNullOrWhiteSpace(rawKey) ? new TextObject("{=AF_UI_Terminal_Unset}Not set").ToString() : rawKey.ToUpperInvariant();
 						OnPropertyChanged(nameof(DisplayValue));
 					}
 					break;
 				case TerminalItemKind.TextSetting:
 					string raw = SettingDef.Getter(settings)?.ToString() ?? "";
-					DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+					DisplayValue = string.IsNullOrWhiteSpace(raw) ? new TextObject("{=AF_UI_Terminal_EditValue}Click to enter ✎").ToString() : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
 					OnPropertyChanged(nameof(DisplayValue));
 					OnPropertyChanged(nameof(TextValue));
 					break;

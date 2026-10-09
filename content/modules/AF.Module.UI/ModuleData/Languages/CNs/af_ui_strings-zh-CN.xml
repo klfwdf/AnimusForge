@@ -388,6 +388,24 @@
   <string id="AF_UI_Terminal_DescriptionLabel" text="说明：" />
   <string id="AF_UI_Terminal_SourcesLabel" text="来源：" />
   <string id="AF_UI_Terminal_EditValue" text="点击填写 ✎" />
+  <string id="AF_UI_Terminal_BreadcrumbRoot" text="终端" />
+  <string id="AF_UI_Terminal_ItemsCount" text="{COUNT} 项" />
+  <string id="AF_UI_Terminal_UnitSeconds" text=" 秒" />
+  <string id="AF_UI_Terminal_UnitDays" text=" 天" />
+  <string id="AF_UI_Terminal_UnitHours" text=" 小时" />
+  <string id="AF_UI_Terminal_UnitDenars" text=" 第纳尔" />
+  <string id="AF_UI_Terminal_NumericTitle" text="设置 {TITLE}" />
+  <string id="AF_UI_Terminal_NumericPrompt" text="请输入数值（有效范围：{MIN} ~ {MAX}）：
+{HINT}" />
+  <string id="AF_UI_Terminal_DropdownTitle" text="选择 {TITLE}" />
+  <string id="AF_UI_Terminal_DropdownPrompt" text="请从以下可用选项中选择：
+{HINT}" />
+  <string id="AF_UI_Terminal_TextTitle" text="编辑 {TITLE}" />
+  <string id="AF_UI_Terminal_Confirm" text="确定" />
+  <string id="AF_UI_Terminal_Cancel" text="取消" />
+  <string id="AF_UI_Terminal_Back" text="返回" />
+  <string id="AF_UI_Terminal_SettingTriggered" text="已触发：{TITLE}" />
+  <string id="AF_UI_Terminal_SettingTriggerFailed" text="触发失败：{ERROR}" />
   <string id="AF_MCM_Duel_RenownTransfer_Hint" text="正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。" />
   <string id="AF_MCM_Duel_RenownMinimum_Hint" text="败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。" />
   <string id="AF_MCM_Duel_RenownPercent_Hint" text="按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。" />
