@@ -8,6 +8,7 @@
   <LanguageFile xml_path="afwarstats_strings.xml" />
   <LanguageFile xml_path="vengeance_strings-en.xml" />
   <LanguageFile xml_path="af_ui_strings.xml" />
+  <LanguageFile xml_path="afevent_ui_strings.xml" />
   <LanguageFile xml_path="afd_ui_strings.xml" />
   <LanguageFile xml_path="afpol_ui_strings.xml" />
   <LanguageFile xml_path="coup_strings.xml" />
