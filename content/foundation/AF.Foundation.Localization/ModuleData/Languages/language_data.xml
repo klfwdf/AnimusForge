@@ -18,6 +18,7 @@
   <LanguageFile xml_path="afworldmap_strings.xml" />
   <LanguageFile xml_path="afdip_ui_strings.xml" />
   <LanguageFile xml_path="afconv_ui_strings.xml" />
+  <LanguageFile xml_path="afconv_ambient_strings.xml" />
   <LanguageFile xml_path="afsocial_ui_strings.xml" />
   <LanguageFile xml_path="afwev_ui_strings.xml" />
   <LanguageFile xml_path="afonboarding_ui_strings.xml" />

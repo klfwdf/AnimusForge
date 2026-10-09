@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -1131,6 +1132,11 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		string timePeriod = TownAmbientTime.GetDisplayName(hour);
 		playerContext ??= TownAmbientPlayerContext.Empty;
 		string spokenText = ExtractSpokenText(text);
+		// Resolve stable TextObject tokens before dynamic ambient placeholders. The
+		// JSON keeps an English fallback while the native language resources supply
+		// the zh-CN line, so no custom language probing or per-tick reflection is
+		// needed. Legacy/plain strings still pass through unchanged.
+		spokenText = new TextObject(spokenText).ToString();
 		string playerAddress = playerContext.IsFormalTitleHolder ? playerContext.Title : playerContext.Name;
 		return spokenText.Replace("{speaker}", npc.Name ?? "路人")
 			.Replace("{town}", town)
