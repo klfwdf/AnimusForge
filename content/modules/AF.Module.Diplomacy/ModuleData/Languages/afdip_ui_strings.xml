@@ -305,5 +305,49 @@
     <string id="AF_DIP_UI_Reward_VassalageTitle" text="Vassalage treaty" />
     <string id="AF_DIP_UI_Reward_AnnexationTitle" text="Kingdom annexation" />
     <string id="AF_DIP_UI_Reward_FailureSuffix" text=" failed" />
+    <string id="AF_DIP_UI_Faction_CatalogCount" text="{COUNT} factions  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_CatalogEmpty" text="No factions  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_AboveFormationThreshold" text="Above formation threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_BelowFormationThreshold" text="Below formation threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_PowerUnit" text="Crown {CROWN}%  ·  {FORTIFICATIONS} fiefs" />
+    <string id="AF_DIP_UI_Faction_NoRecentChronicle" text="No recent chronicle" />
+    <string id="AF_DIP_UI_Faction_GrievanceThreshold" text="Clan grievance  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_Grievance" text="Clan grievance" />
+    <string id="AF_DIP_UI_Faction_FormationTickLegend" text="Red tick marks the formation threshold" />
+    <string id="AF_DIP_UI_Faction_DataUnavailable" text="Faction data unavailable" />
+    <string id="AF_DIP_UI_Faction_DataReadFailed" text="Failed to read faction data" />
+    <string id="AF_DIP_UI_Faction_Crown" text="Crown faction" />
+    <string id="AF_DIP_UI_Faction_Undecided" text="Undecided" />
+    <string id="AF_DIP_UI_Faction_PlayerLeads" text="You lead · " />
+    <string id="AF_DIP_UI_Faction_PlayerFaction" text="Your faction · " />
+    <string id="AF_DIP_UI_Faction_TabMeta" text="{COUNT} clans · grievance {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_GrievanceLedger" text="Noble grievance ledger" />
+    <string id="AF_DIP_UI_Faction_LedgerMeta" text="{COUNT} clans · highest {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_PowerMeta" text="{COUNT} clans · power {POWER}%{PLAYER}" />
+    <string id="AF_DIP_UI_Faction_IncludesYou" text=" · includes you" />
+    <string id="AF_DIP_UI_Faction_Ultimatum" text="Ultimatum" />
+    <string id="AF_DIP_UI_Faction_SupportingClans" text="Supporting clans" />
+    <string id="AF_DIP_UI_Faction_LatestPrefix" text="Latest  ·  " />
+    <string id="AF_DIP_UI_Faction_NoFaction" text="No faction formed" />
+    <string id="AF_DIP_UI_Faction_StabilityMeta" text="Stability {TIER}  ·  grievance and stability are calculated separately" />
+    <string id="AF_DIP_UI_Faction_NoOppositionFormed" text="No opposition faction has formed in the kingdom" />
+    <string id="AF_DIP_UI_Faction_NoEligibleVassal" text="No formal vassal clan can form a faction." />
+    <string id="AF_DIP_UI_Faction_FormationPending" text="Highest clan grievance is {GRIEVANCE}; formation threshold is {THRESHOLD}. A probability check runs at most once every seven days." />
+    <string id="AF_DIP_UI_Faction_FormationReady" text="Highest clan grievance is {GRIEVANCE}; formation threshold {THRESHOLD} reached. A probability check runs every seven days." />
+    <string id="AF_DIP_UI_Faction_FormationGap" text="To formation threshold" />
+    <string id="AF_DIP_UI_Faction_FormationThreshold" text="Formation threshold" />
+    <string id="AF_DIP_UI_Faction_Reached" text="Reached" />
+    <string id="AF_DIP_UI_Faction_Points" text="points" />
+    <string id="AF_DIP_UI_Faction_NobleClans" text="Noble clans" />
+    <string id="AF_DIP_UI_Faction_SortGrievance" text="Sorted by clan grievance, highest first" />
+    <string id="AF_DIP_UI_Faction_MilitaryMeta" text="{COUNT} clans  ·  military power {POWER}%" />
+    <string id="AF_DIP_UI_Faction_CrownRespond" text="Crown faction · stand with the king against factions" />
+    <string id="AF_DIP_UI_Faction_UndecidedClans" text="Undecided clans" />
+    <string id="AF_DIP_UI_Faction_CrownNote" text="If a faction rebels, crown clans fight with the king; a clan withdraws support when grievance reaches {THRESHOLD}." />
+    <string id="AF_DIP_UI_Faction_UndecidedNote" text="Not yet in a faction; may join the crown or any pre-war faction." />
+    <string id="AF_DIP_UI_Faction_CrownClans" text="Crown faction clans" />
+    <string id="AF_DIP_UI_Faction_KingFirst" text="King first, " />
+    <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="your clan first, " />
+    <string id="AF_DIP_UI_Faction_OthersByGrievance" text="others by grievance, highest first" />
 </strings>
 </base>

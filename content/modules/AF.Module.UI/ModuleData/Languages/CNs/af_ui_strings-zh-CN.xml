@@ -2580,6 +2580,57 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Editor_RulerPolicy_Saved" text="[政策系统] NPC统治者政策提示词已保存。" />
   <string id="AF_MCM_Editor_RulerPolicy_SessionOnly" text="[政策系统] NPC统治者政策提示词已用于本局，但写入本地文件失败，请查看日志。" />
   <string id="AF_MCM_Editor_RulerPolicy_SaveFailed" text="[政策系统] 保存NPC统治者政策提示词失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_UI_Developer_ReloadPlanInvalid" text="重载计划无效。" />
+  <string id="AF_UI_Developer_ReloadSnapshotUnavailable" text="知识库、王国资料行为未初始化或无法创建重载回滚快照。" />
+  <string id="AF_UI_Developer_ReloadKnowledgeValidationFailed" text="知识规则校验失败。" />
+  <string id="AF_UI_Developer_ReloadVoiceMappingImportFailed" text="声音映射导入失败。" />
+  <string id="AF_UI_Developer_ReloadKingdomProfileImportFailed" text="王国性格与战略导入失败：" />
+  <string id="AF_UI_Developer_ReloadCompletedDetail" text="知识删除 {REMOVED} 条、导入 {IMPORTED} 条{DISAMBIGUATION}{DEDUPLICATION}；NPC 声音 ID 清除 {CLEARED} 条、导入 {VOICE_IMPORTED} 条；{KINGDOM}" />
+  <string id="AF_UI_Developer_ReloadStableRenames" text="（同 ID 稳定重命名 {COUNT} 条）" />
+  <string id="AF_UI_Developer_ReloadKeywordDeduplication" text="（重复触发词去重 {COUNT} 个）" />
+  <string id="AF_UI_Developer_ReloadServicesUnavailable" text="知识库或王国资料行为未初始化。" />
+  <string id="AF_UI_Developer_ReloadKnowledgeSnapshotExportFailed" text="无法导出当前知识库快照。" />
+  <string id="AF_UI_Developer_ReloadKingdomSnapshotExportFailed" text="无法导出当前王国资料快照：" />
+  <string id="AF_UI_Developer_ReloadSnapshotCreateFailed" text="创建回滚快照失败：" />
+  <string id="AF_UI_Developer_ReloadFailed" text="重载失败" />
+  <string id="AF_UI_Developer_ReloadNoSnapshot" text="；缺少回滚快照。" />
+  <string id="AF_UI_Developer_ReloadKnowledgeLibrary" text="知识库" />
+  <string id="AF_UI_Developer_ReloadVoiceMapping" text="声音映射" />
+  <string id="AF_UI_Developer_ReloadNpcVoiceIds" text="NPC 声音 ID" />
+  <string id="AF_UI_Developer_ReloadOpeningEvents" text="开局知识和事件记录" />
+  <string id="AF_UI_Developer_ReloadKingdomProfiles" text="王国性格与战略" />
+  <string id="AF_UI_Developer_ReloadRollbackSucceeded" text="；已自动回滚本次重载。" />
+  <string id="AF_UI_Developer_ReloadRollbackIncomplete" text="；自动回滚不完整：" />
+  <string id="AF_UI_Developer_ReloadPackageFolderMissing" text="找不到资料包文件夹。" />
+  <string id="AF_UI_Developer_ReloadNoKnowledgeRules" text="资料包中未找到可重载的非主角知识规则。" />
+  <string id="AF_UI_Developer_ReloadVoiceMappingMissing" text="资料包中缺少 voice_mapping\VoiceMapping.json。" />
+  <string id="AF_UI_Developer_ReloadVoiceMappingInvalid" text="VoiceMapping.json 无法用于重载：" />
+  <string id="AF_UI_Developer_ReloadKingdomServiceUnavailable" text="王国性格与战略数据行为尚未初始化。" />
+  <string id="AF_UI_Developer_ReloadVoiceFileMatchFailed" text="无法安全匹配声音文件“" />
+  <string id="AF_UI_Developer_ReloadVoiceFileReadFailed" text="无法读取声音文件“" />
+  <string id="AF_UI_Developer_ReloadDuplicateNpcVoice" text="资料包中有多个声音文件映射到同一 NPC：" />
+  <string id="AF_UI_Developer_ReloadFileMissing" text="文件不存在。" />
+  <string id="AF_UI_Developer_ReloadInvalidUtf8" text="文件不是有效的 UTF-8 编码。" />
+  <string id="AF_UI_Developer_ReloadJsonEmpty" text="JSON 文件为空。" />
+  <string id="AF_UI_Developer_ReloadJsonInvalid" text="JSON 内容为空或结构无效。" />
+  <string id="AF_UI_Developer_ReloadJsonParseFailed" text="JSON 解析失败：" />
+  <string id="AF_UI_Developer_ReloadFileEmpty" text="文件为空。" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupMissing" text="缺少声音分组：" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupNotArray" text="声音分组“" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupNonString" text="声音分组“" />
+  <string id="AF_UI_Developer_ReloadVoiceGroupDuplicate" text="声音分组“" />
+  <string id="AF_UI_Developer_ReloadVoiceFallbackInvalid" text="fallback 必须存在且为字符串。" />
+  <string id="AF_UI_Developer_ReloadKnowledgePackageMissing" text="知识资料包目录不存在。" />
+  <string id="AF_UI_Developer_ReloadKnowledgeFileReadFailed" text="知识文件“" />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateReadFailed" text="知识汇总文件无法读取：" />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateRulesMissing" text="知识汇总文件缺少 Rules 列表。" />
+  <string id="AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule" text="知识汇总文件包含空知识条目。" />
+  <string id="AF_UI_Developer_ReloadKnowledgePackageRulesMissing" text="资料包中未找到 knowledge\rules 下的知识文件或 knowledge\KnowledgeRules.json。" />
+  <string id="AF_UI_Developer_ReloadOpeningFilesMissing" text="资料包必须同时包含 event_data\WorldOpeningSummary.json 与 event_data\KingdomOpeningSummaries.json。" />
+  <string id="AF_UI_Developer_ReloadWorldOpeningReadFailed" text="世界开局知识无法读取：" />
+  <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="王国开局知识无法读取：" />
+  <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="王国开局知识包含空王国 ID。" />
+  <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="王国开局知识包含重复王国 ID：" />
 </strings>
 </base>
 
