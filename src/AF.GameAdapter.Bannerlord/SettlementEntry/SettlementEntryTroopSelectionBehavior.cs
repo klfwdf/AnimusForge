@@ -7652,7 +7652,7 @@ agent.Controller = AgentControllerType.None;
 			if (exitBlocked)
 			{
 				canPlayerLeave = false;
-				return new InquiryData("{=AF_SETS_ConflictTitle}Internal unrest", SiegeAftermathUiText.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_SETS_Confirm}Confirm").ToString(), "", null, null);
+				return new InquiryData(new TextObject("{=AF_SETS_ConflictTitle}Internal unrest").ToString(), SiegeAftermathUiText.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_SETS_Confirm}Confirm").ToString(), "", null, null);
 			}
 			canPlayerLeave = true;
 			return null;
@@ -8104,3 +8104,4 @@ agent.Controller = AgentControllerType.None;
 		return character?.StringId ?? "null";
 	}
 }
+
