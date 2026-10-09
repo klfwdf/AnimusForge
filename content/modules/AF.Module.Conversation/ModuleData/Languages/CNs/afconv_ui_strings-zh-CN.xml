@@ -14,5 +14,70 @@
     <string id="AF_CONV_UI_Shout_Execute" text="执行" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="战斗现场" />
     <string id="AF_CONV_UI_Native_Illustration" text="场景插画" />
+    <string id="AF_CONV_UI_Courier_NotReady" text="信使系统尚未初始化，暂时不能回信。" />
+    <string id="AF_CONV_UI_Courier_Character" text="该角色" />
+    <string id="AF_CONV_UI_Courier_NoRecipient" text="找不到可通信的收件人。" />
+    <string id="AF_CONV_UI_Courier_InPlayerParty" text="该角色正在你的队伍中，不能通过信使写信。" />
+    <string id="AF_CONV_UI_Courier_RecipientDead" text="该角色已经死亡，不能通过信使写信。" />
+    <string id="AF_CONV_UI_Courier_RecipientUnknown" text="你尚未掌握此人的信息，不能寄信。" />
+    <string id="AF_CONV_UI_Courier_AlreadyActive" text="已经有一支信使队正在处理发往此人的信件。" />
+    <string id="AF_CONV_UI_Courier_NoPlayerParty" text="当前找不到玩家部队。" />
+    <string id="AF_CONV_UI_Courier_NoCrew" text="你当前没有可派出的信使成员。" />
+    <string id="AF_CONV_UI_Courier_MinCrew" text="信使部队必须至少 1 人。" />
+    <string id="AF_CONV_UI_Courier_Recipient" text="收件人" />
+    <string id="AF_CONV_UI_Courier_TroopRecipientIneligible" text="只有领主才能谈部队转移。" />
+    <string id="AF_CONV_UI_Courier_PrisonerRecipientIneligible" text="只有领主才能谈俘虏转移。" />
+    <string id="AF_CONV_UI_Courier_AssetRecipientIneligible" text="当前收件人没有可接收或可谈的固定资产。" />
+    <string id="AF_CONV_UI_Courier_InvalidAmount" text="请输入合法的数量。" />
+    <string id="AF_CONV_UI_Courier_DraftExpired" text="信使草稿已失效，请重新选择成员和附件。" />
+    <string id="AF_CONV_UI_Courier_OpenFailed" text="信使与邮递打开失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_ReplyTargetMissing" text="找不到{NAME}，暂时不能回信。" />
+    <string id="AF_CONV_UI_Courier_OpenReplyFailed" text="回信打开失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_CrewSelectionFailed" text="信使部队选择失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_ModeTitle" text="信使与邮递 - {TARGET}" />
+    <string id="AF_CONV_UI_Courier_ModeDescription" text="当前收件人：{TARGET}&#10;请选择寄送方式：" />
+    <string id="AF_CONV_UI_Courier_DispatchFailed" text="信使出发失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_Dispatched" text="信使队已出发，正在前往 {TARGET}。" />
+    <string id="AF_CONV_UI_Courier_SelectableCrew" text="可选信使成员" />
+    <string id="AF_CONV_UI_Courier_CrewParty" text="信使部队" />
+    <string id="AF_CONV_UI_Courier_PartyBaseName" text="AnimusForge 信使队" />
+    <string id="AF_CONV_UI_Courier_NpcPartyBaseName" text="AnimusForge NPC Courier" />
+    <string id="AF_CONV_UI_Courier_ModeNormal" text="单纯写信" />
+    <string id="AF_CONV_UI_Courier_ModeGive" text="发送物品并写信" />
+    <string id="AF_CONV_UI_Courier_ModeShow" text="展示物品并写信" />
+    <string id="AF_CONV_UI_Courier_ModeTroops" text="转移部队并写信" />
+    <string id="AF_CONV_UI_Courier_ModePrisoners" text="转移俘虏并写信" />
+    <string id="AF_CONV_UI_Courier_ModeAssets" text="转移固定资产并写信" />
+    <string id="AF_CONV_UI_Courier_Confirm" text="确定" />
+    <string id="AF_CONV_UI_Courier_Back" text="返回" />
+    <string id="AF_CONV_UI_Courier_ShowAmount" text="展示数量" />
+    <string id="AF_CONV_UI_Courier_SendAmount" text="发送数量" />
+    <string id="AF_CONV_UI_Courier_TransferAmount" text="转移数量" />
+    <string id="AF_CONV_UI_Courier_PartyName" text="信使队 - {NAME}" />
+    <string id="AF_CONV_UI_Courier_AvailableAmount" text="可用数量: {AMOUNT}" />
+    <string id="AF_CONV_UI_Courier_TroopHint" text="可用数量: {AMOUNT} | 日薪: {WAGE}第纳尔/天 | 雇佣价: {PRICE}第纳尔/人" />
+    <string id="AF_CONV_UI_Courier_PrisonerHint" text="可用数量: {AMOUNT} | 购买价: {PRICE}第纳尔/人" />
+    <string id="AF_CONV_UI_Courier_SourceHint" text=" | 来源: {SOURCE}" />
+    <string id="AF_CONV_UI_Courier_AssetHint" text="类型: {TYPE} | 每日收益: {INCOME} 第纳尔 | 一次结清指导价: {PRICE} 第纳尔" />
+    <string id="AF_CONV_UI_Courier_FixedAssets" text="固定资产" />
+    <string id="AF_CONV_UI_Courier_SourceSuffix" text="（来源：{SOURCE}）" />
+    <string id="AF_CONV_UI_Courier_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM} 最多可填 {MAX}。&#10;请输入 1 到 {MAX} 的整数：" />
+    <string id="AF_CONV_UI_Courier_NoTransferTroops" text="你当前没有可转移给对方的部队。" />
+    <string id="AF_CONV_UI_Courier_NoTransferPrisoners" text="你当前没有可转移给对方的俘虏。" />
+    <string id="AF_CONV_UI_Courier_NoTransferAssets" text="你当前没有可转移给对方的固定资产。" />
+    <string id="AF_CONV_UI_Courier_NoTransferItems" text="你没有可用的物品或第纳尔。" />
+    <string id="AF_CONV_UI_Courier_SelectTroops" text="当前收件人：{TARGET}&#10;选择要随信转入对方麾下的部队（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectPrisoners" text="当前收件人：{TARGET}&#10;选择要随信交给对方的俘虏（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectAssets" text="当前收件人：{TARGET}&#10;选择要随信转给对方的固定资产（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectShowItems" text="当前收件人：{TARGET}&#10;选择要展示的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectSendItems" text="当前收件人：{TARGET}&#10;选择要发送的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Companion_DefaultDescription" text="一名队内 Hero 想与你交谈。" />
+    <string id="AF_CONV_UI_Companion_DefaultTitle" text="队内 Hero 想与你交谈" />
+    <string id="AF_CONV_UI_Companion_ChatDelayed" text="当前不便交谈；通知会暂时保留。" />
+    <string id="AF_CONV_UI_Companion_OpenFailed" text="打开交谈失败，通知会保留。" />
+    <string id="AF_CONV_UI_Companion_Hero" text="这名队内成员" />
+    <string id="AF_CONV_UI_Companion_Title" text="{HERO}想与你交谈" />
+    <string id="AF_CONV_UI_Companion_Description" text="{HERO}就在你的队伍中，想在你方便时与你谈谈。" />
+    <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
   </strings>
 </base>

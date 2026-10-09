@@ -1268,22 +1268,22 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		if (mode == CourierPayloadMode.GiveTroops)
 		{
-			return "你当前没有可转移给对方的部队。";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoTransferTroops", "You have no troops available to transfer to the recipient.");
 		}
 		if (mode == CourierPayloadMode.GivePrisoners)
 		{
-			return "你当前没有可转移给对方的俘虏。";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoTransferPrisoners", "You have no prisoners available to transfer to the recipient.");
 		}
 		if (mode == CourierPayloadMode.GiveSettlements)
 		{
-			return "你当前没有可转移给对方的固定资产。";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoTransferAssets", "You have no fixed assets available to transfer to the recipient.");
 		}
-		return "你没有可用的物品或第纳尔。";
+		return ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoTransferItems", "You have no available items or denars.");
 	}
 
 	private static string BuildPayloadTitle(CourierPayloadMode mode, string targetName)
 	{
-		string prefix = mode == CourierPayloadMode.Give ? "发送物品并写信" : mode == CourierPayloadMode.Show ? "展示物品并写信" : mode == CourierPayloadMode.GiveTroops ? "转移部队并写信" : mode == CourierPayloadMode.GivePrisoners ? "转移俘虏并写信" : "转移固定资产并写信";
+		string prefix = mode == CourierPayloadMode.Give ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeGive", "Send items and write a letter") : mode == CourierPayloadMode.Show ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeShow", "Show items and write a letter") : mode == CourierPayloadMode.GiveTroops ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeTroops", "Transfer troops and write a letter") : mode == CourierPayloadMode.GivePrisoners ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModePrisoners", "Transfer prisoners and write a letter") : ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeAssets", "Transfer fixed assets and write a letter");
 		return prefix + " - " + targetName;
 	}
 
@@ -1291,17 +1291,17 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		if (mode == CourierPayloadMode.GiveTroops)
 		{
-			return "当前收件人：" + targetName + "\n选择要随信转入对方麾下的部队（可多选）：";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_SelectTroops", "Current recipient: {TARGET}\nSelect troops to transfer to the recipient with the letter (multiple selection):", ("TARGET", targetName));
 		}
 		if (mode == CourierPayloadMode.GivePrisoners)
 		{
-			return "当前收件人：" + targetName + "\n选择要随信交给对方的俘虏（可多选）：";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_SelectPrisoners", "Current recipient: {TARGET}\nSelect prisoners to transfer with the letter (multiple selection):", ("TARGET", targetName));
 		}
 		if (mode == CourierPayloadMode.GiveSettlements)
 		{
-			return "当前收件人：" + targetName + "\n选择要随信转给对方的固定资产（可多选）：";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Courier_SelectAssets", "Current recipient: {TARGET}\nSelect fixed assets to transfer with the letter (multiple selection):", ("TARGET", targetName));
 		}
-		return "当前收件人：" + targetName + "\n选择要" + (mode == CourierPayloadMode.Show ? "展示" : "发送") + "的物品或第纳尔（可多选）：";
+		return mode == CourierPayloadMode.Show ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_SelectShowItems", "Current recipient: {TARGET}\nSelect items or denars to show (multiple selection):", ("TARGET", targetName)) : ConversationUiLocalization.Text("AF_CONV_UI_Courier_SelectSendItems", "Current recipient: {TARGET}\nSelect items or denars to send (multiple selection):", ("TARGET", targetName));
 	}
 
 	private static TroopRoster BuildSelectionRosterFromUi(TroopRoster source)

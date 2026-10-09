@@ -14,5 +14,70 @@
     <string id="AF_CONV_UI_Shout_Execute" text="Run" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="Battle scene" />
     <string id="AF_CONV_UI_Native_Illustration" text="Scene illustration" />
+    <string id="AF_CONV_UI_Courier_NotReady" text="The courier system is not initialized; replies are unavailable." />
+    <string id="AF_CONV_UI_Courier_Character" text="this character" />
+    <string id="AF_CONV_UI_Courier_NoRecipient" text="No available recipient could be found." />
+    <string id="AF_CONV_UI_Courier_InPlayerParty" text="This character is in your party and cannot receive a courier letter." />
+    <string id="AF_CONV_UI_Courier_RecipientDead" text="This character has died and cannot receive a courier letter." />
+    <string id="AF_CONV_UI_Courier_RecipientUnknown" text="You do not yet have information about this person and cannot send a letter." />
+    <string id="AF_CONV_UI_Courier_AlreadyActive" text="A courier party is already handling a letter to this person." />
+    <string id="AF_CONV_UI_Courier_NoPlayerParty" text="The player party could not be found." />
+    <string id="AF_CONV_UI_Courier_NoCrew" text="You currently have no members available to dispatch as couriers." />
+    <string id="AF_CONV_UI_Courier_MinCrew" text="The courier party must contain at least 1 member." />
+    <string id="AF_CONV_UI_Courier_Recipient" text="recipient" />
+    <string id="AF_CONV_UI_Courier_TroopRecipientIneligible" text="Only lords can discuss troop transfers." />
+    <string id="AF_CONV_UI_Courier_PrisonerRecipientIneligible" text="Only lords can discuss prisoner transfers." />
+    <string id="AF_CONV_UI_Courier_AssetRecipientIneligible" text="This recipient has no fixed assets available to receive or discuss." />
+    <string id="AF_CONV_UI_Courier_InvalidAmount" text="Enter a valid amount." />
+    <string id="AF_CONV_UI_Courier_DraftExpired" text="The courier draft has expired. Select the members and attachments again." />
+    <string id="AF_CONV_UI_Courier_OpenFailed" text="Could not open courier mail: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_ReplyTargetMissing" text="Could not find {NAME}; replies are unavailable." />
+    <string id="AF_CONV_UI_Courier_OpenReplyFailed" text="Could not open the reply: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_CrewSelectionFailed" text="Courier party selection failed: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_ModeTitle" text="Courier mail - {TARGET}" />
+    <string id="AF_CONV_UI_Courier_ModeDescription" text="Current recipient: {TARGET}&#10;Choose a delivery method:" />
+    <string id="AF_CONV_UI_Courier_DispatchFailed" text="Courier dispatch failed: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_Dispatched" text="The courier party has departed for {TARGET}." />
+    <string id="AF_CONV_UI_Courier_SelectableCrew" text="Available courier members" />
+    <string id="AF_CONV_UI_Courier_CrewParty" text="Courier party" />
+    <string id="AF_CONV_UI_Courier_PartyBaseName" text="AnimusForge Courier Party" />
+    <string id="AF_CONV_UI_Courier_NpcPartyBaseName" text="AnimusForge NPC Courier" />
+    <string id="AF_CONV_UI_Courier_ModeNormal" text="Write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeGive" text="Send items and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeShow" text="Show items and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeTroops" text="Transfer troops and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModePrisoners" text="Transfer prisoners and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeAssets" text="Transfer fixed assets and write a letter" />
+    <string id="AF_CONV_UI_Courier_Confirm" text="Confirm" />
+    <string id="AF_CONV_UI_Courier_Back" text="Back" />
+    <string id="AF_CONV_UI_Courier_ShowAmount" text="Amount to show" />
+    <string id="AF_CONV_UI_Courier_SendAmount" text="Amount to send" />
+    <string id="AF_CONV_UI_Courier_TransferAmount" text="Amount to transfer" />
+    <string id="AF_CONV_UI_Courier_PartyName" text="Courier party - {NAME}" />
+    <string id="AF_CONV_UI_Courier_AvailableAmount" text="Available: {AMOUNT}" />
+    <string id="AF_CONV_UI_Courier_TroopHint" text="Available: {AMOUNT} | Wage: {WAGE} denars/day | Hire price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Courier_PrisonerHint" text="Available: {AMOUNT} | Purchase price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Courier_SourceHint" text=" | Source: {SOURCE}" />
+    <string id="AF_CONV_UI_Courier_AssetHint" text="Type: {TYPE} | Daily income: {INCOME} denars | Suggested full payment: {PRICE} denars" />
+    <string id="AF_CONV_UI_Courier_FixedAssets" text="Fixed assets" />
+    <string id="AF_CONV_UI_Courier_SourceSuffix" text=" (Source: {SOURCE})" />
+    <string id="AF_CONV_UI_Courier_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.&#10;Enter an integer from 1 to {MAX}:" />
+    <string id="AF_CONV_UI_Courier_NoTransferTroops" text="You have no troops available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferPrisoners" text="You have no prisoners available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferAssets" text="You have no fixed assets available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferItems" text="You have no available items or denars." />
+    <string id="AF_CONV_UI_Courier_SelectTroops" text="Current recipient: {TARGET}&#10;Select troops to transfer to the recipient with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectPrisoners" text="Current recipient: {TARGET}&#10;Select prisoners to transfer with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectAssets" text="Current recipient: {TARGET}&#10;Select fixed assets to transfer with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectShowItems" text="Current recipient: {TARGET}&#10;Select items or denars to show (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectSendItems" text="Current recipient: {TARGET}&#10;Select items or denars to send (multiple selection):" />
+    <string id="AF_CONV_UI_Companion_DefaultDescription" text="A hero in your party would like to talk to you." />
+    <string id="AF_CONV_UI_Companion_DefaultTitle" text="A party hero would like to talk to you" />
+    <string id="AF_CONV_UI_Companion_ChatDelayed" text="You cannot talk right now; the notification will remain available." />
+    <string id="AF_CONV_UI_Companion_OpenFailed" text="Could not open the conversation; the notification will remain available." />
+    <string id="AF_CONV_UI_Companion_Hero" text="this party member" />
+    <string id="AF_CONV_UI_Companion_Title" text="{HERO} would like to talk to you" />
+    <string id="AF_CONV_UI_Companion_Description" text="{HERO} is in your party and would like to talk when you have time." />
+    <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
   </strings>
 </base>
