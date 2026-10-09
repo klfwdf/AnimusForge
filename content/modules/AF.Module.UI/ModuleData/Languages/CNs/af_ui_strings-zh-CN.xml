@@ -1997,5 +1997,29 @@
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="已返回玩家外貌与背景设置。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="打开玩家外貌与背景编辑器失败。" />
+  <string id="AF_UI_Duel_LocalReady" text="双方就位！5 秒后开始决斗！（准备期间无敌。）" />
+  <string id="AF_UI_Duel_Started" text="决斗开始！" />
+  <string id="AF_UI_Duel_LeavingArena" text="正在退出竞技场……" />
+  <string id="AF_UI_Duel_ResultWin" text="【决斗结果】你赢了！" />
+  <string id="AF_UI_Duel_ResultLoss" text="【决斗结果】你输了！" />
+  <string id="AF_UI_Duel_ReturnToMap" text="10 秒后返回大地图……" />
+  <string id="AF_UI_Duel_ExitArena" text="10 秒后退出竞技场……" />
+  <string id="AF_UI_Duel_QueueWilderness" text="双方怒目而视，约定 10 秒后前往野外一决胜负！" />
+  <string id="AF_UI_Duel_AfterConversation" text="AnimusForge：当前对话结束后将开始野外决斗。" />
+  <string id="AF_UI_Duel_WildernessOpenFailed" text="无法打开野外决斗场景，本次决斗已取消。" />
+  <string id="AF_UI_Duel_QueueArena" text="双方怒目而视，约定 10 秒后前往竞技场一决胜负！" />
+  <string id="AF_UI_Duel_PrepareCountdown" text="双方约定 {DELAY} 秒后开始决斗！" />
+  <string id="AF_UI_Duel_EncounterCloseFailed" text="无法安全结束当前遭遇，野外决斗已取消。" />
+  <string id="AF_UI_Duel_Accepted" text="已接受决斗。请手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期间双方无法互相伤害）。" />
+  <string id="AF_UI_Duel_RiskWarning" text="【警告！决斗风险很高，你可能会在决斗中死亡】" />
+  <string id="AF_UI_Duel_ClanTierBlocked" text="【决斗】你的家族等级不足（当前：{CURRENT}；最低要求：{MINIMUM}），无法开始决斗。" />
+  <string id="AF_UI_Duel_PreFight" text="双方就位！10 秒后正式开战（准备期间双方无法互相伤害）。" />
+  <string id="AF_UI_Duel_ArenaStarted" text="【竞技场决斗已开始】当前场景：{SCENE}。规则：任一方生命值低于 {THRESHOLD} 即判定为战败。" />
+  <string id="AF_UI_Duel_StartedInScene" text="【决斗开始】当前场景：{SCENE}。规则：任一方生命值低于 {THRESHOLD} 即判定为战败。" />
+  <string id="AF_UI_Duel_Finished" text="决斗已结束。" />
+  <string id="AF_UI_Duel_TargetMissing" text="决斗失败：目标 NPC 不存在。" />
+  <string id="AF_UI_Duel_TargetUnavailable" text="决斗失败：目标 NPC 当前没有可用实体。" />
+  <string id="AF_UI_Duel_TargetIsPlayer" text="决斗失败：不能把玩家自己作为决斗目标。" />
+  <string id="AF_UI_Duel_TargetInvalid" text="决斗失败：目标 NPC 无效。" />
 </strings>
 </base>
