@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_COUP_DEFENDER_INTERVAL" text="守军增援间隔" />
+    <string id="AF_COUP_DEFENDER_INTERVAL_HINT" text="默认30秒。首波随战斗开始生成，之后按间隔增援；仍受存活波数和剩余兵源限制。仅影响下一次政变。" />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE" text="守军每波人数" />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE_HINT" text="默认30人。街道和大厅每波最多生成的人数，实际受剩余守军限制，不凭空补兵。仅影响下一次政变。" />
+    <string id="AF_COUP_DISPLAY" text="AnimusForge - 宣权篡位" />
+    <string id="AF_COUP_ENABLED" text="启用宣权篡位" />
+    <string id="AF_COUP_ENABLED_HINT" text="在本国国王所在城镇发动武装政变。关闭只禁止新发起，已有战斗安全收尾。人数与增援设置仅在下一次发动时生效。" />
+    <string id="AF_COUP_GATE_GUARD_LIMIT" text="门口守卫人数上限" />
+    <string id="AF_COUP_GATE_GUARD_LIMIT_HINT" text="默认10人。从真实健康守军中分配，不足时按实际人数；清除门卫后才能攻入大厅。仅影响下一次政变。" />
+    <string id="AF_COUP_GROUP_ASSAULT" text="突击队" />
+    <string id="AF_COUP_GROUP_GUARDS" text="守卫与增援" />
+    <string id="AF_COUP_GROUP_MAIN" text="武装政变" />
+    <string id="AF_COUP_GROUP_REQUIREMENTS" text="发动条件" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT" text="大厅护卫人数上限" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT_HINT" text="默认20人，不含国王。优先从真实健康守军中分配，剩余兵员再分配门卫和街道守军。仅影响下一次政变。" />
+    <string id="AF_COUP_HALL_LIMIT" text="大厅突击队人数上限" />
+    <string id="AF_COUP_HALL_LIMIT_HINT" text="默认20人，不含玩家。只能从街道幸存者中选择。仅影响下一次政变；人数较多可能导致大厅拥堵。" />
+    <string id="AF_COUP_MAX_WAVES" text="同时存活的守军波数上限" />
+    <string id="AF_COUP_MAX_WAVES_HINT" text="默认4波。一波仍有存活守军就占用一个名额，达到上限时等待空位再增援。仅影响下一次政变。" />
+    <string id="AF_COUP_MIN_CLAN_TIER" text="最低家族等级" />
+    <string id="AF_COUP_MIN_CLAN_TIER_HINT" text="默认4级，0表示不限制。仅限制新政变，确认选兵时复核；正式发动后不再追检。" />
+    <string id="AF_COUP_MIN_INFLUENCE" text="最低影响力" />
+    <string id="AF_COUP_MIN_INFLUENCE_HINT" text="默认300，0表示不限制。只检查、不扣除。打开确认窗时固定门槛，确认选兵时复核；正式发动后不再追检。" />
+    <string id="AF_COUP_MIN_TROOPS" text="最低突击队人数" />
+    <string id="AF_COUP_MIN_TROOPS_HINT" text="默认60名健康普通士兵，必须实际选中，并另留1人接应；玩家、英雄及伤兵不计入。不得超过街道上限。大厅从幸存者中至少选1人，不受本门槛限制。" />
+    <string id="AF_COUP_STREET_LIMIT" text="街道突击队人数上限" />
+    <string id="AF_COUP_STREET_LIMIT_HINT" text="默认60人，不含玩家。仅限实际健康普通士兵，至少留一人接应。仅影响下一次政变；人数较多会增加场景负担。" />
+    <string id="AF_COUP_UNIT_SECONDS" text="0 秒" />
+    <string id="AF_COUP_UNIT_TIER" text="0 级" />
+    <string id="AF_COUP_UNIT_TROOPS" text="0 人" />
+    <string id="AF_COUP_UNIT_WAVES" text="0 波" />
+  </strings>
+</base>
