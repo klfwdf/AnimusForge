@@ -83,5 +83,19 @@
     <string id="AF_ILL_TEST_CANCEL" text="测试 / 取消" />
     <string id="AF_ILL_UNIT_IMAGES" text="0 张" />
     <string id="AF_ILL_UNIT_SECONDS" text="0 秒" />
+    <string id="AF_ILL_UI_GALLERY_TITLE" text="卡拉迪亚纪事画廊" />
+    <string id="AF_ILL_UI_ALL" text="全部" />
+    <string id="AF_ILL_UI_FAVORITES" text="收藏" />
+    <string id="AF_ILL_UI_REDRAW" text="重绘" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT" text="重绘（带提示词）" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE" text="重绘（基于本图）" />
+    <string id="AF_ILL_UI_COPY" text="复制" />
+    <string id="AF_ILL_UI_GALLERY" text="纪事画廊" />
+    <string id="AF_ILL_UI_CLOSE" text="关闭" />
+    <string id="AF_ILL_UI_SCENE_PROBE" text="独立场景试采" />
+    <string id="AF_ILL_UI_CONVERT_RP" text="转为 RP 物品" />
+    <string id="AF_ILL_UI_SET_DEFAULT" text="设为默认" />
+    <string id="AF_ILL_UI_DELETE" text="删除" />
+    <string id="AF_ILL_UI_OPEN_FOLDER" text="打开本地图片目录" />
   </strings>
 </base>

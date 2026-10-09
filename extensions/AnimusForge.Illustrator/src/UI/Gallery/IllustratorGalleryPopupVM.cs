@@ -6,6 +6,7 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Gallery
 {
@@ -75,6 +76,15 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly Func<bool> _isCurrent;
         private bool _rpConversionOpen;
         private bool _redrawing, _settingDefault;
+        private readonly string _galleryTitleText;
+        private readonly string _allText;
+        private readonly string _favoritesText;
+        private readonly string _redrawBasedOnImageText;
+        private readonly string _convertToRpItemText;
+        private readonly string _setDefaultText;
+        private readonly string _deleteText;
+        private readonly string _openFolderText;
+        private readonly string _closeText;
         internal Action<CachedIllustrationItem> RedrawSelected;
         private string _pendingSelectionKey;
         internal CachedIllustrationItem SelectedImage => _selectedItem?.Item;
@@ -98,10 +108,29 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _onClose = onClose;
             _campaignKey = campaignKey;
             _isCurrent = isCurrent;
+            _galleryTitleText = IllustratorUiText.GalleryTitle;
+            _allText = IllustratorUiText.All;
+            _favoritesText = IllustratorUiText.Favorites;
+            _redrawBasedOnImageText = IllustratorUiText.RedrawBasedOnImage;
+            _convertToRpItemText = IllustratorUiText.ConvertToRpItem;
+            _setDefaultText = IllustratorUiText.SetDefault;
+            _deleteText = IllustratorUiText.Delete;
+            _openFolderText = IllustratorUiText.OpenFolder;
+            _closeText = IllustratorUiText.Close;
             _previewLoader = new GalleryPreviewLoader(() => !_disposed && isCurrent(),
                 IllustratorRuntime.PostCritical, GauntletTextureLoader.ReadPreparedImageForUi);
             RefreshItems(false);
         }
+
+        [DataSourceProperty] public string GalleryTitleText => _galleryTitleText;
+        [DataSourceProperty] public string AllText => _allText;
+        [DataSourceProperty] public string FavoritesText => _favoritesText;
+        [DataSourceProperty] public string RedrawBasedOnImageText => _redrawBasedOnImageText;
+        [DataSourceProperty] public string ConvertToRpItemText => _convertToRpItemText;
+        [DataSourceProperty] public string SetDefaultText => _setDefaultText;
+        [DataSourceProperty] public string DeleteText => _deleteText;
+        [DataSourceProperty] public string OpenFolderText => _openFolderText;
+        [DataSourceProperty] public string CloseText => _closeText;
 
         [DataSourceProperty]
         public MBBindingList<IllustrationItemVM> Items
