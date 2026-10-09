@@ -668,6 +668,22 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
         "sha256": "F04F7C39ED59933C911DAF5320444DAE72FC7F7B589D2641560060AC33F868A5", "revision": "c77cf9d3b",
     },
+    "ModuleData/Languages/afworldmap_strings.xml": {
+        "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/afworldmap_strings.xml",
+        "sha256": "0F0F19F34DE03B7CD650C56604676765FD04EDD3C017A4A2DE6ED27C1361CB8A", "revision": "6bacfc432",
+    },
+    "ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml": {
+        "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml",
+        "sha256": "6936722E7194D532564ABD59D1423D3C8540D8F20428E7D083C9C5CB55FD313B", "revision": "6bacfc432",
+    },
+    "ModuleData/Languages/afdip_ui_strings.xml": {
+        "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
+        "sha256": "97989609496EFC3CB80B47CA98232550A4621669E63189F459F0D8E9775E810C", "revision": "cfd0ff8f9",
+    },
+    "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
+        "sha256": "64954A89B2E753E3FA518161DCF7E0A3349B39D6BD1EDDB6BBC4DD73A23B522E", "revision": "cfd0ff8f9",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
