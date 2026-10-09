@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
@@ -68,5 +67,119 @@
     <string id="AF_DIP_UI_Archive_Title" text="王国公告" />
     <string id="AF_DIP_UI_Archive_Empty" text="目前还没有王国公告。" />
     <string id="AF_DIP_UI_Archive_Day" text="第{DAY}天" />
+  <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="编辑当前国家…" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="全量导出（国家战略与性格）" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="全量导入（国家战略与性格）" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="恢复全部国家的默认卡" />
+    <string id="AF_DIP_UI_Common_Back" text="返回" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescription" text="独立国家角色卡数据；当前不会注入 AI 外交请求。&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCount" text="国家卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCountSuffix" text=" 条；玩家覆盖：" />
+    <string id="AF_DIP_UI_KingdomProfile_CountSuffix" text=" 条。&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescriptionTail" text="新建国家的 LLM 建国卡会作为固定默认值保存，玩家编辑优先。" />
+    <string id="AF_DIP_UI_KingdomProfile_Title" text="国家战略与性格" />
+    <string id="AF_DIP_UI_Common_Enter" text="进入" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllFolderTitle" text="全量导出（国家战略与性格）- 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAllFolderTitle" text="全量导入（国家战略与性格）- 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_NoEditableKingdoms" text="当前没有可编辑的国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectTitle" text="编辑国家战略与性格" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectDescription" text="请选择国家。列表仅显示国家名称；已覆灭国家仍会保留档案。" />
+    <string id="AF_DIP_UI_Common_Edit" text="编辑" />
+    <string id="AF_DIP_UI_KingdomProfile_NotFound" text="找不到对应国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_InitFailed" text="国家卡初始化失败。" />
+    <string id="AF_DIP_UI_KingdomProfile_EditPersonality" text="编辑国家性格" />
+    <string id="AF_DIP_UI_KingdomProfile_EditStrategy" text="编辑长期战略目标" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetOne" text="恢复该国默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOne" text="导出该国" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOne" text="导入该国" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingRunning" text="LLM 建国卡正在生成…" />
+    <string id="AF_DIP_UI_KingdomProfile_Regenerate" text="重新生成该国的 LLM 建国默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_BackToList" text="返回国家列表" />
+    <string id="AF_DIP_UI_KingdomProfile_DetailTitlePrefix" text="国家卡 - " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneFolderTitle" text="导出单个国家卡 - 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOneFolderTitle" text="导入单个国家卡 - 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityTitlePrefix" text="编辑国家性格 - " />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityDescription" text="描述国家的决策风格、价值观、对风险和羞辱的反应以及不可退让的底线。保存后成为玩家覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityPrompt" text="请输入国家性格；允许留空。" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityUpdated" text="国家性格已更新。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyTitlePrefix" text="编辑长期战略目标 - " />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyDescription" text="描述国家长期、固定且可持续追求的方向。保存后成为玩家覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyPrompt" text="请输入长期战略目标；允许留空。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyUpdated" text="长期战略目标已更新。" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetTitle" text="恢复国家默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionPrefix" text="将清除“" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionSuffix" text="”的玩家覆盖。国家会回到当前默认基线（可能来自内置预设、首次资料包或已固化的 LLM 建国卡）。是否继续？" />
+    <string id="AF_DIP_UI_Common_RestoreDefault" text="恢复默认" />
+    <string id="AF_DIP_UI_Common_Cancel" text="取消" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDonePrefix" text="已恢复“" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDoneSuffix" text="”的默认国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllTitle" text="恢复全部国家默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDescription" text="这会清除全部国家的玩家覆盖，但不会删除内置/首次资料包默认或新建国家已经由 LLM 固化的建国默认。建议先导出备份。是否继续？" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllButton" text="恢复全部默认" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDone" text="已恢复全部国家的默认卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateEliminated" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateUnavailable" text="该国家不是可重新生成的动态建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateRunning" text="该国家的 LLM 建国卡正在生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateQueued" text="已安排重新生成；完成后会固化为该国新的默认卡。玩家覆盖不会被覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFailed" text="导出失败：" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllExists" text="该文件夹中已有国家卡全量导出。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDone" text="导出完成：" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneExists" text="该文件夹中已有这个国家的单国导出。" />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteExport" text="覆盖导出" />
+    <string id="AF_DIP_UI_KingdomProfile_UseNewFolder" text="改用新文件夹（自动）" />
+    <string id="AF_DIP_UI_KingdomProfile_ExistingExportTitle" text="检测到已有导出" />
+    <string id="AF_DIP_UI_Common_Select" text="选择" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFailed" text="导入失败：" />
+    <string id="AF_DIP_UI_KingdomProfile_NoSafeMatchesPrefix" text="没有可安全匹配的国家卡；无效或无法匹配 " />
+    <string id="AF_DIP_UI_KingdomProfile_ItemsSuffix" text=" 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDone" text="导入完成：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllTitle" text="检测到重复 - 国家战略与性格" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionPrefix" text="可匹配国家卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionMiddle" text="；已有玩家覆盖、资料包默认或 LLM 建国默认：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSkipped" text="；无效或无法匹配：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSuffix" text="。选择“跳过”会整张国家卡跳过。" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneTitlePrefix" text="检测到重复 - " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneDescription" text="该国家已有玩家覆盖、资料包默认或 LLM 建国默认。选择“跳过”会整张国家卡跳过。" />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteImport" text="覆盖导入" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNonDuplicates" text="只导入非重复信息" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerExportsUnavailable" text="PlayerExports 路径不可用：" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualExportFolder" text="手动输入文件夹名…" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualImportPath" text="手动输入文件夹名/路径…" />
+    <string id="AF_DIP_UI_KingdomProfile_UseLatestExport" text="使用最新玩家导出（自动）" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectExportFolder" text="选择目标文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectImportFolder" text="选择来源文件夹；也可以手动输入只读的绝对目录或 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterExportFolder" text="输入导出文件夹名" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterImportPath" text="输入导入文件夹名/路径" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFolderHint" text="留空=自动时间戳；导出始终限制在 PlayerExports 内。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathHint" text="留空=最新玩家导出；名称优先查找模组目录，也可输入只读绝对目录或 .json 文件。" />
+    <string id="AF_DIP_UI_Common_Confirm" text="确定" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidExportFolder" text="导出文件夹名无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOutsideRoot" text="导出目标必须位于 PlayerExports 内。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPath" text="绝对路径不存在，或不是 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFolders" text="玩家导出目录下没有可导入文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFolderNotFound" text="找不到模组目录或玩家导出中的文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_IdLabel" text="ID：" />
+    <string id="AF_DIP_UI_KingdomProfile_CultureLabel" text="文化：" />
+    <string id="AF_DIP_UI_KingdomProfile_Unknown" text="未知" />
+    <string id="AF_DIP_UI_KingdomProfile_StatusLabel" text="状态：" />
+    <string id="AF_DIP_UI_KingdomProfile_Eliminated" text="已覆灭（档案保留）" />
+    <string id="AF_DIP_UI_KingdomProfile_Active" text="存续" />
+    <string id="AF_DIP_UI_KingdomProfile_CurrentSourceLabel" text="当前来源：" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerOverride" text="玩家覆盖" />
+    <string id="AF_DIP_UI_KingdomProfile_DefaultSourceLabel" text="默认来源：" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingLabel" text="LLM 建国卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_LastErrorLabel" text="最近错误：" />
+    <string id="AF_DIP_UI_KingdomProfile_AuthoredDefault" text="内置国家默认" />
+    <string id="AF_DIP_UI_KingdomProfile_GenericDefault" text="文化/通用默认" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingFallback" text="新国家临时默认（等待 LLM）" />
+    <string id="AF_DIP_UI_KingdomProfile_LlmFoundingDefault" text="LLM 建国默认（已固化）" />
+    <string id="AF_DIP_UI_KingdomProfile_BundleDefault" text="首次资料包默认" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationRunning" text="生成中" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationFailedPrefix" text="生成失败；将按冷却重试或可手动重试（" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix" text="）" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationComplete" text="已完成并固化" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="国家已覆灭，自动生成已停止" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="等待生成（" />
+    <string id="AF_DIP_UI_KingdomProfile_Empty" text="（空）" />
   </strings>
 </base>

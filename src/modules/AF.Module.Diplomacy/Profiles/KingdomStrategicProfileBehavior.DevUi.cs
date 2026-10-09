@@ -18,25 +18,26 @@ public sealed partial class KingdomStrategicProfileBehavior
 		EnsureCurrentKingdomProfiles(runtimeFounded: false);
 		List<InquiryElement> options = new List<InquiryElement>
 		{
-			new InquiryElement("edit", "编辑当前国家…", null),
-			new InquiryElement("export_all", "全量导出（国家战略与性格）", null),
-			new InquiryElement("import_all", "全量导入（国家战略与性格）", null),
-			new InquiryElement("reset_all", "恢复全部国家的默认卡", null),
-			new InquiryElement("back", "返回", null)
+			new InquiryElement("edit", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EditCurrent", "Edit current kingdom…"), null),
+			new InquiryElement("export_all", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportAll", "Export all kingdom strategy and personality"), null),
+			new InquiryElement("import_all", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportAll", "Import all kingdom strategy and personality"), null),
+			new InquiryElement("reset_all", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetAll", "Restore all kingdom default profiles"), null),
+			new InquiryElement("back", DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"), null)
 		};
-		string description = "独立国家角色卡数据；当前不会注入 AI 外交请求。\n"
-			+ "国家卡：" + GetProfileCountForDev().ToString(CultureInfo.InvariantCulture)
-			+ " 条；玩家覆盖：" + GetPlayerOverrideCountForDev().ToString(CultureInfo.InvariantCulture) + " 条。\n"
-			+ "新建国家的 LLM 建国卡会作为固定默认值保存，玩家编辑优先。";
+		string description = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MenuDescription", "Independent kingdom profile data; it is not injected into AI diplomacy requests.\n")
+			+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ProfileCount", "Profiles: ") + GetProfileCountForDev().ToString(CultureInfo.InvariantCulture)
+			+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ProfileCountSuffix", " entries; player overrides: ") + GetPlayerOverrideCountForDev().ToString(CultureInfo.InvariantCulture)
+			+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_CountSuffix", " entries.\n")
+			+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MenuDescriptionTail", "A new kingdom’s LLM founding profile is saved as a fixed default; player edits take priority.");
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"国家战略与性格",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Title", "Kingdom strategy and personality"),
 			description,
 			options,
 			isExitShown: true,
 			0,
 			1,
-			"进入",
-			"返回",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Enter", "Enter"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"),
 			OnDevMenuSelected,
 			delegate
 			{
@@ -53,10 +54,10 @@ public sealed partial class KingdomStrategicProfileBehavior
 			OpenKingdomSelection();
 			break;
 		case "export_all":
-			OpenFolderPicker("全量导出（国家战略与性格）- 选择文件夹", isExport: true, RunFullExport, OpenDevMenu);
+			OpenFolderPicker(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportAllFolderTitle", "Export all kingdom strategy and personality - Select folder"), isExport: true, RunFullExport, OpenDevMenu);
 			break;
 		case "import_all":
-			OpenFolderPicker("全量导入（国家战略与性格）- 选择文件夹", isExport: false, RunFullImport, OpenDevMenu);
+			OpenFolderPicker(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportAllFolderTitle", "Import all kingdom strategy and personality - Select folder"), isExport: false, RunFullImport, OpenDevMenu);
 			break;
 		case "reset_all":
 			ConfirmResetAllProfiles();
@@ -72,13 +73,13 @@ public sealed partial class KingdomStrategicProfileBehavior
 		List<Kingdom> kingdoms = GetEditableKingdoms();
 		if (kingdoms.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的国家。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoEditableKingdoms", "There are no editable kingdoms.")));
 			OpenDevMenu();
 			return;
 		}
 		List<InquiryElement> elements = new List<InquiryElement>
 		{
-			new InquiryElement("back", "返回", null)
+			new InquiryElement("back", DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"), null)
 		};
 		foreach (Kingdom kingdom in kingdoms)
 		{
@@ -86,14 +87,14 @@ public sealed partial class KingdomStrategicProfileBehavior
 			elements.Add(new InquiryElement(kingdom.StringId ?? "", GetKingdomName(kingdom), null));
 		}
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"编辑国家战略与性格",
-			"请选择国家。列表仅显示国家名称；已覆灭国家仍会保留档案。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SelectTitle", "Edit kingdom strategy and personality"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SelectDescription", "Select a kingdom. Only kingdom names are shown; profiles for eliminated kingdoms are retained."),
 			elements,
 			isExitShown: true,
 			0,
 			1,
-			"编辑",
-			"返回",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Edit", "Edit"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"),
 			delegate(List<InquiryElement> selected)
 			{
 				string id = selected?.FirstOrDefault()?.Identifier as string;
@@ -105,7 +106,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 				Kingdom kingdom = FindKingdomById(id);
 				if (kingdom == null)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("找不到对应国家。"));
+					InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NotFound", "The selected kingdom could not be found.")));
 					OpenKingdomSelection();
 					return;
 				}
@@ -127,35 +128,35 @@ public sealed partial class KingdomStrategicProfileBehavior
 		KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
 		if (profile == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("国家卡初始化失败。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InitFailed", "The kingdom profile could not be initialized.")));
 			OpenKingdomSelection();
 			return;
 		}
 		List<InquiryElement> options = new List<InquiryElement>
 		{
-			new InquiryElement("personality", "编辑国家性格", null),
-			new InquiryElement("strategy", "编辑长期战略目标", null),
-			new InquiryElement("reset", "恢复该国默认卡", null),
-			new InquiryElement("export", "导出该国", null),
-			new InquiryElement("import", "导入该国", null)
+			new InquiryElement("personality", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EditPersonality", "Edit kingdom personality"), null),
+			new InquiryElement("strategy", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EditStrategy", "Edit long-term strategy"), null),
+			new InquiryElement("reset", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetOne", "Restore this kingdom default profile"), null),
+			new InquiryElement("export", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportOne", "Export this kingdom"), null),
+			new InquiryElement("import", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportOne", "Import this kingdom"), null)
 		};
 		if (CanRegenerateFoundingProfile(kingdom, profile))
 		{
 			string generationLabel = string.Equals(profile.GenerationState, "running", StringComparison.OrdinalIgnoreCase)
-				? "LLM 建国卡正在生成…"
-				: "重新生成该国的 LLM 建国默认卡";
+				? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FoundingRunning", "LLM founding profile is being generated…")
+				: DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Regenerate", "Regenerate this kingdom’s LLM founding default profile");
 			options.Add(new InquiryElement("regenerate", generationLabel, null));
 		}
-		options.Add(new InquiryElement("back", "返回国家列表", null));
+		options.Add(new InquiryElement("back", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_BackToList", "Back to kingdom list"), null));
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"国家卡 - " + GetKingdomName(kingdom),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DetailTitlePrefix", "Kingdom profile - ") + GetKingdomName(kingdom),
 			BuildProfileDetailText(kingdom, profile),
 			options,
 			isExitShown: true,
 			0,
 			1,
-			"进入",
-			"返回",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Enter", "Enter"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"),
 			delegate(List<InquiryElement> selected)
 			{
 				OnKingdomDetailSelected(kingdom, selected?.FirstOrDefault()?.Identifier as string);
@@ -180,10 +181,10 @@ public sealed partial class KingdomStrategicProfileBehavior
 			ConfirmResetProfile(kingdom);
 			break;
 		case "export":
-			OpenFolderPicker("导出单个国家卡 - 选择文件夹", isExport: true, x => RunSingleExport(x, kingdom), () => OpenKingdomDetail(kingdom));
+			OpenFolderPicker(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportOneFolderTitle", "Export single kingdom profile - Select folder"), isExport: true, x => RunSingleExport(x, kingdom), () => OpenKingdomDetail(kingdom));
 			break;
 		case "import":
-			OpenFolderPicker("导入单个国家卡 - 选择文件夹", isExport: false, x => RunSingleImport(x, kingdom), () => OpenKingdomDetail(kingdom));
+			OpenFolderPicker(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportOneFolderTitle", "Import single kingdom profile - Select folder"), isExport: false, x => RunSingleImport(x, kingdom), () => OpenKingdomDetail(kingdom));
 			break;
 		case "regenerate":
 			RegenerateFoundingProfile(kingdom);
@@ -198,9 +199,9 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑国家性格 - " + GetKingdomName(kingdom),
-			"描述国家的决策风格、价值观、对风险和羞辱的反应以及不可退让的底线。保存后成为玩家覆盖。",
-			"请输入国家性格；允许留空。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PersonalityTitlePrefix", "Edit kingdom personality - ") + GetKingdomName(kingdom),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PersonalityDescription", "Describe the kingdom’s decision style, values, responses to risk and humiliation, and non-negotiable boundaries. Saving creates a player override."),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PersonalityPrompt", "Enter the kingdom personality; leaving it empty is allowed."),
 			profile?.NationalPersonality ?? "",
 			delegate(string input)
 			{
@@ -211,7 +212,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					profile.IsPlayerOverride = true;
 					profile.UpdatedDay = GetCurrentCampaignDay();
 				}
-				InformationManager.DisplayMessage(new InformationMessage("国家性格已更新。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PersonalityUpdated", "Kingdom personality updated.")));
 				OpenKingdomDetail(kingdom);
 			},
 			() => OpenKingdomDetail(kingdom));
@@ -221,9 +222,9 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
 		DevTextEditorHelper.ShowLongTextEditor(
-			"编辑长期战略目标 - " + GetKingdomName(kingdom),
-			"描述国家长期、固定且可持续追求的方向。保存后成为玩家覆盖。",
-			"请输入长期战略目标；允许留空。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StrategyTitlePrefix", "Edit long-term strategy - ") + GetKingdomName(kingdom),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StrategyDescription", "Describe the kingdom’s long-term, stable, and sustainable direction. Saving creates a player override."),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StrategyPrompt", "Enter the long-term strategy; leaving it empty is allowed."),
 			profile?.LongTermStrategy ?? "",
 			delegate(string input)
 			{
@@ -234,7 +235,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					profile.IsPlayerOverride = true;
 					profile.UpdatedDay = GetCurrentCampaignDay();
 				}
-				InformationManager.DisplayMessage(new InformationMessage("长期战略目标已更新。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StrategyUpdated", "Long-term strategy updated.")));
 				OpenKingdomDetail(kingdom);
 			},
 			() => OpenKingdomDetail(kingdom));
@@ -243,16 +244,16 @@ public sealed partial class KingdomStrategicProfileBehavior
 	private void ConfirmResetProfile(Kingdom kingdom)
 	{
 		InformationManager.ShowInquiry(new InquiryData(
-			"恢复国家默认卡",
-			"将清除“" + GetKingdomName(kingdom) + "”的玩家覆盖。国家会回到当前默认基线（可能来自内置预设、首次资料包或已固化的 LLM 建国卡）。是否继续？",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetTitle", "Restore kingdom default profile"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetDescriptionPrefix", "This clears the player override for “") + GetKingdomName(kingdom) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetDescriptionSuffix", "”. The kingdom returns to its current default baseline (which may come from an authored preset, the initial bundle, or a locked-in LLM founding profile). Continue?"),
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"恢复默认",
-			"取消",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_RestoreDefault", "Restore default"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"),
 			delegate
 			{
 				ResetProfileToDefault(kingdom);
-				InformationManager.DisplayMessage(new InformationMessage("已恢复“" + GetKingdomName(kingdom) + "”的默认国家卡。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetDonePrefix", "Restored “") + GetKingdomName(kingdom) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetDoneSuffix", "” to its default kingdom profile.")));
 				OpenKingdomDetail(kingdom);
 			},
 			() => OpenKingdomDetail(kingdom)));
@@ -261,16 +262,16 @@ public sealed partial class KingdomStrategicProfileBehavior
 	private void ConfirmResetAllProfiles()
 	{
 		InformationManager.ShowInquiry(new InquiryData(
-			"恢复全部国家默认卡",
-			"这会清除全部国家的玩家覆盖，但不会删除内置/首次资料包默认或新建国家已经由 LLM 固化的建国默认。建议先导出备份。是否继续？",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetAllTitle", "Restore all kingdom default profiles"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetAllDescription", "This clears player overrides for every kingdom, but does not delete authored or initial-bundle defaults, or a founding default already locked in by LLM for a new kingdom. Export a backup first. Continue?"),
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"恢复全部默认",
-			"取消",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetAllButton", "Restore all defaults"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"),
 			delegate
 			{
 				ResetAllProfilesToDefaults();
-				InformationManager.DisplayMessage(new InformationMessage("已恢复全部国家的默认卡。"));
+				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ResetAllDone", "All kingdom default profiles restored.")));
 				OpenDevMenu();
 			},
 			OpenDevMenu));
@@ -296,25 +297,25 @@ public sealed partial class KingdomStrategicProfileBehavior
 		KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
 		if (kingdom?.IsEliminated == true)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateEliminated", "The eliminated kingdom keeps its current profile; no LLM regeneration will be requested.")));
 			OpenKingdomDetail(kingdom);
 			return;
 		}
 		if (profile == null || !CanRegenerateFoundingProfile(kingdom, profile))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该国家不是可重新生成的动态建国卡。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateUnavailable", "This kingdom does not have a regenerable dynamic founding profile.")));
 			OpenKingdomDetail(kingdom);
 			return;
 		}
 		if (string.Equals(profile.GenerationState, "running", StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该国家的 LLM 建国卡正在生成。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateRunning", "This kingdom’s LLM founding profile is already being generated.")));
 			OpenKingdomDetail(kingdom);
 			return;
 		}
 		if (QueueFoundingGeneration(kingdom, force: true, showConfigError: true))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已安排重新生成；完成后会固化为该国新的默认卡。玩家覆盖不会被覆盖。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateQueued", "Regeneration has been queued; when it finishes it will become this kingdom’s new default profile. Player overrides will not be replaced.")));
 		}
 		OpenKingdomDetail(kingdom);
 	}
@@ -330,14 +331,14 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		if (!TryResolveExportRoot(folderInput, out string exportRoot, out string error))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ") + error));
 			OpenDevMenu();
 			return;
 		}
 		string outputFile = Path.Combine(exportRoot, ExportDirectoryName, FullExportFileName);
 		RunExportWithCollisionCheck(
 			outputFile,
-			"该文件夹中已有国家卡全量导出。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportAllExists", "This folder already contains a full kingdom profile export."),
 			delegate(string resolvedRoot)
 			{
 				bool ok = false;
@@ -353,7 +354,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					ok = false;
 					detail = ex.Message;
 				}
-				InformationManager.DisplayMessage(new InformationMessage((ok ? "导出完成：" : "导出失败：") + detail));
+				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + detail));
 				OpenDevMenu();
 			},
 			exportRoot,
@@ -364,7 +365,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		if (!TryResolveExportRoot(folderInput, out string exportRoot, out string error))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ") + error));
 			OpenKingdomDetail(kingdom);
 			return;
 		}
@@ -372,7 +373,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		string outputFile = Path.Combine(exportRoot, ExportDirectoryName, "kingdoms", BuildSingleExportFileName(profile));
 		RunExportWithCollisionCheck(
 			outputFile,
-			"该文件夹中已有这个国家的单国导出。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportOneExists", "This folder already contains a single-kingdom export."),
 			delegate(string resolvedRoot)
 			{
 				bool ok = false;
@@ -388,7 +389,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					ok = false;
 					detail = ex.Message;
 				}
-				InformationManager.DisplayMessage(new InformationMessage((ok ? "导出完成：" : "导出失败：") + detail));
+				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + detail));
 				OpenKingdomDetail(kingdom);
 			},
 			exportRoot,
@@ -404,19 +405,19 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		List<InquiryElement> choices = new List<InquiryElement>
 		{
-			new InquiryElement("overwrite", "覆盖导出", null),
-			new InquiryElement("new", "改用新文件夹（自动）", null),
-			new InquiryElement("cancel", "取消", null)
+			new InquiryElement("overwrite", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_OverwriteExport", "Overwrite export"), null),
+			new InquiryElement("new", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_UseNewFolder", "Use a new folder (automatic)"), null),
+			new InquiryElement("cancel", DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"), null)
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"检测到已有导出",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExistingExportTitle", "Existing export detected"),
 			message,
 			choices,
 			isExitShown: true,
 			0,
 			1,
-			"选择",
-			"取消",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Select", "Select"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"),
 			delegate(List<InquiryElement> selected)
 			{
 				string choice = selected?.FirstOrDefault()?.Identifier as string;
@@ -432,7 +433,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
+						InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ") + error));
 						onCancel?.Invoke();
 					}
 				}
@@ -451,26 +452,26 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		if (!TryResolveImportRoot(folderInput, out string importRoot, out string error))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + error));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFailed", "Import failed: ") + error));
 			OpenDevMenu();
 			return;
 		}
 		if (!InspectImportDirectory(importRoot, out int total, out int duplicates, out int skipped, out string inspectError))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + inspectError));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFailed", "Import failed: ") + inspectError));
 			OpenDevMenu();
 			return;
 		}
 		if (total <= 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("没有可安全匹配的国家卡；无效或无法匹配 " + skipped.ToString(CultureInfo.InvariantCulture) + " 条。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoSafeMatchesPrefix", "No safely matching kingdom profiles; invalid or unmatched ") + skipped.ToString(CultureInfo.InvariantCulture) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ItemsSuffix", " entries.")));
 			OpenDevMenu();
 			return;
 		}
 		Action<bool> apply = overwrite =>
 		{
 			bool ok = ImportAllFromDirectory(importRoot, overwrite, out string detail);
-			InformationManager.DisplayMessage(new InformationMessage((ok ? "导入完成：" : "导入失败：") + detail));
+			InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportDone", "Import complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFailed", "Import failed: ")) + detail));
 			OpenDevMenu();
 		};
 		if (duplicates <= 0)
@@ -479,11 +480,11 @@ public sealed partial class KingdomStrategicProfileBehavior
 			return;
 		}
 		ShowDuplicateImportInquiry(
-			"检测到重复 - 国家战略与性格",
-			"可匹配国家卡：" + total.ToString(CultureInfo.InvariantCulture)
-				+ "；已有玩家覆盖、资料包默认或 LLM 建国默认：" + duplicates.ToString(CultureInfo.InvariantCulture)
-				+ "；无效或无法匹配：" + skipped.ToString(CultureInfo.InvariantCulture)
-				+ "。选择“跳过”会整张国家卡跳过。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateAllTitle", "Duplicates detected - kingdom strategy and personality"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionPrefix", "Matching profiles: ") + total.ToString(CultureInfo.InvariantCulture)
+				+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionMiddle", "; existing player overrides, bundle defaults, or LLM founding defaults: ") + duplicates.ToString(CultureInfo.InvariantCulture)
+				+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSkipped", "; invalid or unmatched: ") + skipped.ToString(CultureInfo.InvariantCulture)
+				+ DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSuffix", ". Choosing “Skip” skips the entire kingdom profile."),
 			() => apply(true),
 			() => apply(false),
 			OpenDevMenu);
@@ -493,7 +494,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		if (!TryResolveImportRoot(folderInput, out string importRoot, out string error))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + error));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFailed", "Import failed: ") + error));
 			OpenKingdomDetail(kingdom);
 			return;
 		}
@@ -501,7 +502,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		Action<bool> apply = overwrite =>
 		{
 			bool ok = ImportSingleFromDirectory(importRoot, kingdom, overwrite, out string detail);
-			InformationManager.DisplayMessage(new InformationMessage((ok ? "导入完成：" : "导入失败：") + detail));
+			InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportDone", "Import complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFailed", "Import failed: ")) + detail));
 			OpenKingdomDetail(kingdom);
 		};
 		if (!HasImportCollision(profile))
@@ -510,8 +511,8 @@ public sealed partial class KingdomStrategicProfileBehavior
 			return;
 		}
 		ShowDuplicateImportInquiry(
-			"检测到重复 - " + GetKingdomName(kingdom),
-			"该国家已有玩家覆盖、资料包默认或 LLM 建国默认。选择“跳过”会整张国家卡跳过。",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateOneTitlePrefix", "Duplicates detected - ") + GetKingdomName(kingdom),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DuplicateOneDescription", "This kingdom already has a player override, bundle default, or LLM founding default. Choosing “Skip” skips the entire kingdom profile."),
 			() => apply(true),
 			() => apply(false),
 			() => OpenKingdomDetail(kingdom));
@@ -521,9 +522,9 @@ public sealed partial class KingdomStrategicProfileBehavior
 	{
 		List<InquiryElement> choices = new List<InquiryElement>
 		{
-			new InquiryElement("overwrite", "覆盖导入", null),
-			new InquiryElement("skip", "只导入非重复信息", null),
-			new InquiryElement("cancel", "取消", null)
+			new InquiryElement("overwrite", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_OverwriteImport", "Overwrite import"), null),
+			new InquiryElement("skip", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportNonDuplicates", "Import non-duplicate information only"), null),
+			new InquiryElement("cancel", DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"), null)
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			title,
@@ -532,8 +533,8 @@ public sealed partial class KingdomStrategicProfileBehavior
 			isExitShown: true,
 			0,
 			1,
-			"选择",
-			"取消",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Select", "Select"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"),
 			delegate(List<InquiryElement> selected)
 			{
 				string choice = selected?.FirstOrDefault()?.Identifier as string;
@@ -566,16 +567,16 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PlayerExportsUnavailable", "PlayerExports path is unavailable: ") + ex.Message));
 			if (isExport) { onReturn?.Invoke(); return; }
 		}
 		List<InquiryElement> elements = new List<InquiryElement>
 		{
-			new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null)
+			new InquiryElement("__input__", isExport ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ManualExportFolder", "Enter a folder name manually…") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ManualImportPath", "Enter a folder name/path manually…"), null)
 		};
 		if (!isExport && root != null)
 		{
-			elements.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			elements.Add(new InquiryElement("__latest__", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_UseLatestExport", "Use latest player export (automatic)"), null));
 		}
 		if (!isExport)
 		{
@@ -593,13 +594,13 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			title,
-			isExport ? "选择目标文件夹。" : "选择来源文件夹；也可以手动输入只读的绝对目录或 JSON 文件。",
+			isExport ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SelectExportFolder", "Select a destination folder.") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SelectImportFolder", "Select a source folder; you may also enter a read-only absolute directory or JSON file."),
 			elements,
 			isExitShown: true,
 			0,
 			1,
-			"选择",
-			"返回",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Select", "Select"),
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Back", "Back"),
 			delegate(List<InquiryElement> selected)
 			{
 				string choice = selected?.FirstOrDefault()?.Identifier as string;
@@ -610,12 +611,12 @@ public sealed partial class KingdomStrategicProfileBehavior
 				else if (choice == "__input__")
 				{
 					InformationManager.ShowTextInquiry(new TextInquiryData(
-						isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径",
-						isExport ? "留空=自动时间戳；导出始终限制在 PlayerExports 内。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入只读绝对目录或 .json 文件。",
+						isExport ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EnterExportFolder", "Enter export folder name") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EnterImportPath", "Enter import folder name/path"),
+						isExport ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFolderHint", "Leave empty for an automatic timestamp; exports are always restricted to PlayerExports.") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportPathHint", "Leave empty for the latest player export; names search the mod directory first, and you may also enter a read-only absolute directory or .json file."),
 						isAffirmativeOptionShown: true,
 						isNegativeOptionShown: true,
-						"确定",
-						"取消",
+						DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Confirm", "Confirm"),
+						DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Cancel", "Cancel"),
 						input => onSelected?.Invoke(input),
 						onReturn));
 				}
@@ -648,13 +649,13 @@ public sealed partial class KingdomStrategicProfileBehavior
 			}
 			if (name == "." || name == ".." || Path.IsPathRooted(name))
 			{
-				errorMessage = "导出文件夹名无效。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InvalidExportFolder", "The export folder name is invalid.");
 				return false;
 			}
 			string candidate = Path.GetFullPath(Path.Combine(root, name));
 			if (!IsPathInsideRoot(candidate, root))
 			{
-				errorMessage = "导出目标必须位于 PlayerExports 内。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportOutsideRoot", "The export destination must be inside PlayerExports.");
 				return false;
 			}
 			exportRoot = candidate;
@@ -682,13 +683,13 @@ public sealed partial class KingdomStrategicProfileBehavior
 					importRoot = absolute;
 					return true;
 				}
-				errorMessage = "绝对路径不存在，或不是 JSON 文件。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InvalidImportPath", "The absolute path does not exist or is not a JSON file.");
 				return false;
 			}
 			string candidate = PlayerExportsStore.ResolveImportFolderPath(input);
 			if (string.IsNullOrWhiteSpace(candidate) || !Directory.Exists(candidate))
 			{
-				errorMessage = string.IsNullOrEmpty(input) ? "玩家导出目录下没有可导入文件夹。" : "找不到模组目录或玩家导出中的文件夹。";
+				errorMessage = string.IsNullOrEmpty(input) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoImportFolders", "There are no import folders under PlayerExports.") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportFolderNotFound", "The folder was not found in the mod directory or PlayerExports.");
 				return false;
 			}
 			importRoot = candidate;
@@ -726,17 +727,17 @@ public sealed partial class KingdomStrategicProfileBehavior
 	private static string BuildProfileDetailText(Kingdom kingdom, KingdomStrategicProfileRecord profile)
 	{
 		StringBuilder text = new StringBuilder();
-		text.AppendLine("ID：" + (profile?.KingdomId ?? kingdom?.StringId ?? ""));
-		text.AppendLine("文化：" + (kingdom?.Culture?.Name?.ToString() ?? profile?.CultureId ?? "未知"));
-		text.AppendLine("状态：" + (kingdom?.IsEliminated == true ? "已覆灭（档案保留）" : "存续"));
-		text.AppendLine("当前来源：" + (profile?.IsPlayerOverride == true ? "玩家覆盖" : GetSourceLabel(profile?.DefaultSource)));
-		text.AppendLine("默认来源：" + GetSourceLabel(profile?.DefaultSource));
+		text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_IdLabel", "ID: ") + (profile?.KingdomId ?? kingdom?.StringId ?? ""));
+		text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_CultureLabel", "Culture: ") + (kingdom?.Culture?.Name?.ToString() ?? profile?.CultureId ?? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Unknown", "Unknown")));
+		text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StatusLabel", "Status: ") + (kingdom?.IsEliminated == true ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Eliminated", "Eliminated (profile retained)") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Active", "Active")));
+		text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_CurrentSourceLabel", "Current source: ") + (profile?.IsPlayerOverride == true ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_PlayerOverride", "Player override") : GetSourceLabel(profile?.DefaultSource)));
+		text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DefaultSourceLabel", "Default source: ") + GetSourceLabel(profile?.DefaultSource));
 		if (profile?.RequiresFoundingGeneration == true || string.Equals(profile?.GenerationState, "running", StringComparison.OrdinalIgnoreCase))
 		{
-			text.AppendLine("LLM 建国卡：" + GetGenerationStateLabel(profile));
+			text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FoundingLabel", "LLM founding profile: ") + GetGenerationStateLabel(profile));
 			if (!string.IsNullOrWhiteSpace(profile?.LastGenerationError))
 			{
-				text.AppendLine("最近错误：" + Preview(profile.LastGenerationError, 180));
+				text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_LastErrorLabel", "Latest error: ") + Preview(profile.LastGenerationError, 180));
 			}
 		}
 		return text.ToString().TrimEnd();
@@ -747,17 +748,17 @@ public sealed partial class KingdomStrategicProfileBehavior
 		switch ((source ?? "").Trim().ToLowerInvariant())
 		{
 		case "authored_default":
-			return "内置国家默认";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_AuthoredDefault", "Authored kingdom default");
 		case "generic_default":
-			return "文化/通用默认";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenericDefault", "Culture/generic default");
 		case "founding_fallback":
-			return "新国家临时默认（等待 LLM）";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FoundingFallback", "New kingdom temporary default (awaiting LLM)");
 		case "llm_founding":
-			return "LLM 建国默认（已固化）";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_LlmFoundingDefault", "LLM founding default (locked in)");
 		case "bundle_default":
-			return "首次资料包默认";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_BundleDefault", "Initial bundle default");
 		default:
-			return string.IsNullOrWhiteSpace(source) ? "未知" : source;
+			return string.IsNullOrWhiteSpace(source) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Unknown", "Unknown") : source;
 		}
 	}
 
@@ -766,15 +767,15 @@ public sealed partial class KingdomStrategicProfileBehavior
 		switch ((profile?.GenerationState ?? "").Trim().ToLowerInvariant())
 		{
 		case "running":
-			return "生成中";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationRunning", "Generating");
 		case "failed":
-			return "生成失败；将按冷却重试或可手动重试（" + (profile?.GenerationAttemptCount ?? 0).ToString(CultureInfo.InvariantCulture) + "/" + FoundingGenerationMaxAttempts.ToString(CultureInfo.InvariantCulture) + "）";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationFailedPrefix", "Generation failed; it will retry after cooldown or can be retried manually (") + (profile?.GenerationAttemptCount ?? 0).ToString(CultureInfo.InvariantCulture) + "/" + FoundingGenerationMaxAttempts.ToString(CultureInfo.InvariantCulture) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix", " )");
 		case "complete":
-			return "已完成并固化";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationComplete", "Completed and locked in");
 		case "paused_eliminated":
-			return "国家已覆灭，自动生成已停止";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationPausedEliminated", "Kingdom eliminated; automatic generation stopped");
 		default:
-			return "等待生成（" + (profile?.GenerationAttemptCount ?? 0).ToString(CultureInfo.InvariantCulture) + "/" + FoundingGenerationMaxAttempts.ToString(CultureInfo.InvariantCulture) + "）";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix", "Awaiting generation (") + (profile?.GenerationAttemptCount ?? 0).ToString(CultureInfo.InvariantCulture) + "/" + FoundingGenerationMaxAttempts.ToString(CultureInfo.InvariantCulture) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix", " )");
 		}
 	}
 
@@ -783,7 +784,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		string text = (value ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "（空）";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_Empty", "(empty)");
 		}
 		return text.Length <= maxChars ? text : text.Substring(0, Math.Max(1, maxChars)) + "…";
 	}
