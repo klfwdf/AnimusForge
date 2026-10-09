@@ -175,5 +175,12 @@
     <string id="AFD_UI_Shout_Encyclopedia" text="图鉴" />
     <string id="AFD_UI_Shout_Close" text="关闭" />
     <string id="AFD_UI_Shout_Send" text="发送" />
+    <string id="AFD_UI_Trade_Category_Currency" text="货币" />
+    <string id="AFD_UI_Trade_Category_Item" text="物品" />
+    <string id="AFD_UI_Trade_Category_Troops" text="部队" />
+    <string id="AFD_UI_Trade_Category_Prisoners" text="俘虏" />
+    <string id="AFD_UI_Trade_GiveListExpired" text="给予列表已失效，请重新打开。" />
+    <string id="AFD_UI_Trade_ResourcesUpdated" text="资源列表已更新，请重新打开。" />
+    <string id="AFD_UI_Trade_SelectionExpired" text="资源或数量已失效，请重新选择。" />
   </strings>
 </base>

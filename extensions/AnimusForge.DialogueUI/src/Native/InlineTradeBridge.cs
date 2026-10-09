@@ -124,7 +124,7 @@ internal sealed class InlineTradeBridge : IDisposable
                     : party != null ? Math.Max(0, mode == "give_troops" ? party.HirePriceDenarsPerUnit : party.BuyPriceDenarsPerUnit)
                     : Math.Max(1, (int)UnitValueField.GetValue(option));
                 Options.Add(new TradeOption(element, option, (string)NameField.GetValue(option),
-                    (int)AmountField.GetValue(option), value, gold ? "货币" : asset?.TypeLabel ?? (party == null ? "物品" : mode == "give_troops" ? "部队" : "俘虏")));
+                    (int)AmountField.GetValue(option), value, gold ? DialogueUiLocalization.Text("AFD_UI_Trade_Category_Currency", "Currency") : asset?.TypeLabel ?? (party == null ? DialogueUiLocalization.Text("AFD_UI_Trade_Category_Item", "Item") : mode == "give_troops" ? DialogueUiLocalization.Text("AFD_UI_Trade_Category_Troops", "Troops") : DialogueUiLocalization.Text("AFD_UI_Trade_Category_Prisoners", "Prisoners"))));
             }
             loaded = Options.Count > 0;
             return loaded;
@@ -141,9 +141,9 @@ internal sealed class InlineTradeBridge : IDisposable
     {
         if (_disposed || _inCommit || !OwnsFlow() || _resources == null || choices == null || choices.Count == 0
             || choices.Count > _resources.MaxSelectableOptionCount)
-            throw new InvalidOperationException("给予列表已失效，请重新打开。");
+            throw new InvalidOperationException(DialogueUiLocalization.Text("AFD_UI_Trade_GiveListExpired", "The give list is no longer valid. Reopen it."));
         var liveOptions = OptionsField.GetValue(_owner) as IList;
-        if (!ReferenceEquals(liveOptions, _hostOptions)) throw new InvalidOperationException("资源列表已更新，请重新打开。");
+        if (!ReferenceEquals(liveOptions, _hostOptions)) throw new InvalidOperationException(DialogueUiLocalization.Text("AFD_UI_Trade_ResourcesUpdated", "The resource list has been updated. Reopen it."));
         var selected = new List<InquiryElement>();
         _commitAmounts.Clear();
         _commitOptions.Clear();
@@ -154,7 +154,7 @@ internal sealed class InlineTradeBridge : IDisposable
             if (option?.Element?.Identifier is not int index || index < 0 || !option.Element.IsEnabled
                 || !unique.Add(index) || !Options.Contains(option) || liveOptions == null || index >= liveOptions.Count
                 || !ReferenceEquals(liveOptions[index], option.HostOption) || choice.Amount < 1 || choice.Amount > option.Available)
-                throw new InvalidOperationException("资源或数量已失效，请重新选择。");
+                throw new InvalidOperationException(DialogueUiLocalization.Text("AFD_UI_Trade_SelectionExpired", "The resource or amount is no longer valid. Select again."));
             selected.Add(option.Element);
             _commitAmounts.Add(choice.Amount);
             _commitOptions.Add(option);

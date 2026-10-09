@@ -175,5 +175,12 @@
     <string id="AFD_UI_Shout_Encyclopedia" text="Encyclopedia" />
     <string id="AFD_UI_Shout_Close" text="Close" />
     <string id="AFD_UI_Shout_Send" text="Send" />
+    <string id="AFD_UI_Trade_Category_Currency" text="Currency" />
+    <string id="AFD_UI_Trade_Category_Item" text="Item" />
+    <string id="AFD_UI_Trade_Category_Troops" text="Troops" />
+    <string id="AFD_UI_Trade_Category_Prisoners" text="Prisoners" />
+    <string id="AFD_UI_Trade_GiveListExpired" text="The give list is no longer valid. Reopen it." />
+    <string id="AFD_UI_Trade_ResourcesUpdated" text="The resource list has been updated. Reopen it." />
+    <string id="AFD_UI_Trade_SelectionExpired" text="The resource or amount is no longer valid. Select again." />
   </strings>
 </base>
