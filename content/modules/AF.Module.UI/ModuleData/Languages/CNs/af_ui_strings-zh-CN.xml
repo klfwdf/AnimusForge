@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string id="AF_UI_Onboarding_Title" text="AnimusForge - API 快捷配置向导" />
+  <string id="AF_UI_Onboarding_CustomMode" text="完全自定义" />
+  <string id="AF_UI_Onboarding_ApiPanelNotice" text="在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" />
+  <string id="AF_UI_Onboarding_Status_Pending" text="待测试" />
+  <string id="AF_UI_Onboarding_Status_Testing" text="测试中..." />
+  <string id="AF_UI_Onboarding_Status_Success" text="连接成功" />
+  <string id="AF_UI_Onboarding_Status_Failed" text="连接失败" />
+  <string id="AF_UI_Onboarding_KeyPrompt_Title" text="填写 API Key" />
+  <string id="AF_UI_Onboarding_KeyPrompt_Hint" text="请输入 API Key：" />
+  <string id="AF_UI_Onboarding_Testing" text="正在向 4 条 API 管线发送握手测试请求..." />
+  <string id="AF_UI_Onboarding_Yj_Unbound" text="未绑定" />
+  <string id="AF_UI_Onboarding_CustomTitle" text="完全自定义 API · 多管线集中设置" />
+  <string id="AF_UI_Onboarding_YjTitle" text="YJ API 多分组模式 · 专线集中配置" />
+  <string id="AF_UI_Onboarding_YjNotice" text="Base URL 已预设为 YJ 专线，支持 4 条管线分别配置 Key 与模型" />
+  <string id="AF_UI_Onboarding_HandshakeSuccess" text="✔ 握手成功" />
+  <string id="AF_UI_Onboarding_EditHint" text="请输入或粘贴内容（Ctrl+V），确定保存，取消保留原值。" />
+  <string id="AF_UI_Onboarding_UpdateFailed" text="界面更新失败，请重试当前操作" />
+  <string id="AF_UI_Onboarding_YjMenuTitle" text="YJ API 中转站 · 配置向导" />
+  <string id="AF_UI_Onboarding_YjMenuSubtitle" text="免魔法国内直连，请选择单分组或多分组接入方式" />
+  <string id="AF_UI_Onboarding_YjModelsTitle" text="YJ API 中转专线 · 模型选择" />
+  <string id="AF_UI_Onboarding_YjModelsSubtitle" text="已绑定单分组 Key，请为以下 4 处场景挑选模型" />
+  <string id="AF_UI_Onboarding_TestTitle" text="API 连通性握手测试" />
+  <string id="AF_UI_Onboarding_TestSubtitle" text="正在并行测试 4 路 API 的响应速度与连通状态..." />
+  <string id="AF_UI_Onboarding_SuccessTitle" text="🎉 全部 API 连通性测试通过！" />
+  <string id="AF_UI_Onboarding_SuccessSubtitle" text="配置已就绪，点击下方按钮保存设置并进入卡拉迪亚" />
+  <string id="AF_UI_Onboarding_YjPreset" text="YJ 官方专线预设" />
+  <string id="AF_UI_Onboarding_YjPresetNotice" text="已自动填充 YJ Base URL，支持 4 条管线分别填入不同分组 Key" />
+  <string id="AF_UI_Onboarding_TestPreparing" text="正在准备 API 连通性测试..." />
+  <string id="AF_UI_Onboarding_TestingMany" text="正在并行测试 {COUNT} 条 API..." />
+  <string id="AF_UI_Onboarding_HandshakeManySuccess" text="✔ {COUNT} 条 API 握手成功！即将进入确认界面..." />
+  <string id="AF_UI_Onboarding_TestCancelled" text="测试已由用户取消。" />
+  <string id="AF_UI_Onboarding_TestException" text="测试发生异常，请检查网络和 API 配置。" />
+  <string id="AF_UI_Onboarding_TestPartialFailure" text="❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。" />
+</strings>
