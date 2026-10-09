@@ -20,6 +20,11 @@ namespace AnimusForge;
 
 public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 {
+	private static string UiText(string id, string englishFallback)
+	{
+		return new TextObject("{=" + id + "}" + englishFallback).ToString();
+	}
+
 	private const string StorageKey = "_af_player_notoriety_state_v1";
 	private const int RecentActionWindowDays = 10;
 	private const int MaxRecentActions = 96;
@@ -443,7 +448,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家知名度失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(UiText("AF_UI_Notoriety_OpenFailed", "Unable to open player notoriety: ") + ex.Message));
 		}
 	}
 
@@ -2270,9 +2275,9 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			CenturyText = "",
 			WorldFillPercent = effectiveWorld,
 			ShowEditButton = canEdit,
-			EditText = "编辑履历",
+			EditText = UiText("AF_UI_Notoriety_Edit", "Edit history"),
 			IsLowProfileModeEnabled = IsLowProfileModeEnabled(),
-			LowProfileToggleText = IsLowProfileModeEnabled() ? "关闭低调模式" : "开启低调模式",
+			LowProfileToggleText = IsLowProfileModeEnabled() ? UiText("AF_UI_Notoriety_DisableLowProfile", "Disable low-profile mode") : UiText("AF_UI_Notoriety_EnableLowProfile", "Enable low-profile mode"),
 			CultureRows = BuildPlayerNotorietyCultureRows()
 		};
 	}
@@ -2283,7 +2288,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		StringBuilder sb = new StringBuilder();
 		if (IsLowProfileModeEnabled())
 		{
-			sb.AppendLine("【低调模式】已开启。除当前主队伍内的士兵和同伴外，其他人暂时不会认出玩家；低调期间的新行为仍会进入重大履历、近期行动和周报素材。");
+			sb.AppendLine(UiText("AF_UI_Notoriety_LowProfileActive", "[Low-profile mode] Active. People outside the player's current party will not recognize the player for now; new actions during low-profile mode still enter major history, recent actions, and weekly report material."));
 			sb.AppendLine();
 		}
 		string playerName = "玩家";
@@ -2305,14 +2310,14 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				sb.AppendLine();
 			}
-			sb.AppendLine("【近期行动】");
+			sb.AppendLine(UiText("AF_UI_Notoriety_RecentActions", "[Recent actions]"));
 			foreach (PlayerActionEntry entry in recentActions)
 			{
 				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
 			}
 		}
 		string text = sb.ToString().Trim();
-		return string.IsNullOrWhiteSpace(text) ? "尚无可展示的公开履历。" : text;
+		return string.IsNullOrWhiteSpace(text) ? UiText("AF_UI_Notoriety_NoHistory", "No public history is available.") : text;
 	}
 
 	private PlayerNotorietyCultureRowData[] BuildPlayerNotorietyCultureRows()
@@ -2506,17 +2511,17 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		string text = BuildPlayerNotorietyHistoryText(includeRawMaterials: canEdit);
 		if (canEdit)
 		{
-			InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, true, "编辑履历", "关闭", OpenPlayerMajorHistoryEditor, null));
+			InformationManager.ShowInquiry(new InquiryData(UiText("AF_UI_Notoriety_Title", "Player notoriety and history"), text, true, true, UiText("AF_UI_Notoriety_Edit", "Edit history"), UiText("AF_UI_Notoriety_Close", "Close"), OpenPlayerMajorHistoryEditor, null));
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, false, "关闭", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(UiText("AF_UI_Notoriety_Title", "Player notoriety and history"), text, true, false, UiText("AF_UI_Notoriety_Close", "Close"), "", null, null));
 	}
 
 	private PlayerNotorietyPopupData ToggleLowProfileModeFromPopup()
 	{
 		bool enabled = !IsLowProfileModeEnabled();
 		SetLowProfileModeEnabled(enabled);
-		InformationManager.DisplayMessage(new InformationMessage(enabled ? "已开启低调模式。" : "已关闭低调模式。"));
+		InformationManager.DisplayMessage(new InformationMessage(enabled ? UiText("AF_UI_Notoriety_LowProfileEnabled", "Low-profile mode enabled.") : UiText("AF_UI_Notoriety_LowProfileDisabled", "Low-profile mode disabled.")));
 		return BuildPlayerNotorietyPopupData(MyBehavior.IsDevDataManagementEnabledForExternal());
 	}
 
@@ -2526,27 +2531,27 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			if (!MyBehavior.IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				InformationManager.DisplayMessage(new InformationMessage(UiText("AF_UI_Notoriety_DevDataDisabled", "Developer data management is disabled. Enable it in MCM.")));
 				OpenPlayerNotorietyView();
 				return;
 			}
 			_state = NormalizeState(_state);
 			string initialText = (_state.MajorSummary ?? "").Trim();
-			string subtitle = "这里编辑的是已总结玩家重大履历摘要；未总结素材、近期行动和知名度数值不会被修改。";
-			string hint = "请输入新的玩家履历摘要；留空=清空已总结履历。未总结素材仍会保留，并可在后续总结中重新融合。";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家履历", subtitle, hint, initialText, delegate(string input)
+			string subtitle = UiText("AF_UI_Notoriety_EditorSubtitle", "This edits the summarized major player history. Unsummarized material, recent actions, and notoriety values are unchanged.");
+			string hint = UiText("AF_UI_Notoriety_EditorHint", "Enter a new major history summary; leave blank to clear the summary. Unsummarized material remains available for later compression.");
+			DevTextEditorHelper.ShowLongTextEditor(UiText("AF_UI_Notoriety_EditorTitle", "Edit player history"), subtitle, hint, initialText, delegate(string input)
 			{
 				ApplyPlayerMajorHistoryEditorInput(input);
 				OpenPlayerNotorietyView();
 			}, delegate
 			{
 				OpenPlayerNotorietyView();
-			}, "保存", "返回");
+			}, UiText("AF_UI_Notoriety_Save", "Save"), UiText("AF_UI_Notoriety_Back", "Back"));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("PlayerNotoriety", "open player major history editor failed: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家履历编辑器失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(UiText("AF_UI_Notoriety_EditorOpenFailed", "Unable to open the player history editor: ") + ex.Message));
 		}
 	}
 
@@ -2560,13 +2565,13 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			_state.SummaryRetryCount = 0;
 			_state.LastSummaryError = "";
 			_state.UpdatedUtcTicks = DateTime.UtcNow.Ticks;
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "已清空玩家履历。" : "玩家履历已更新。"));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_state.MajorSummary) ? UiText("AF_UI_Notoriety_HistoryCleared", "Player history cleared.") : UiText("AF_UI_Notoriety_HistoryUpdated", "Player history updated.")));
 			LogDebug("manual major summary edit chars=" + (_state.MajorSummary?.Length ?? 0));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("PlayerNotoriety", "apply player major history editor input failed: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("保存玩家履历失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(UiText("AF_UI_Notoriety_HistorySaveFailed", "Unable to save player history: ") + ex.Message));
 		}
 	}
 
