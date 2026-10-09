@@ -453,5 +453,93 @@
     <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="LLM 返回内容中没有 JSON 对象。" />
     <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="LLM JSON 缺少 national_personality 或 long_term_strategy。" />
     <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON 解析失败：{ERROR}" />
-</strings>
+
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="你尚未拥有王国。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="你的当前王国：{KINGDOM}\n\n你不是该王国的国王，不能查阅宗主国臣属名册。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="宗主国：{KINGDOM}\n选择有贡赋义务的臣属国，查看贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSubjects" text="你的王国尚无臣属国。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_BuildFailed" text="臣属名册生成失败，请稍后再试。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Roster" text="臣属国名册：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Treaty" text="   条约：{TYPE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Signed" text="   立约日：{DATE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Duration" text="   履约时长：{DAYS}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Independence" text="   独立度：{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeRecords" text="   贡赋记录：请在臣属国管理列表中选择“查看贡赋记录”（当前 {COUNT} 条）。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTribute" text="   贡赋记录：该臣属类型不交贡。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords" text="尚无贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRulerShort" text="你不是当前王国的国王。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CannotViewLedger" text="不能查阅宗主国臣属贡赋簿册。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_AgreementNotFound" text="未找到该臣属国条约。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryTitle" text="{SUBJECT} · 贡赋记录" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistorySubtitle" text="{TYPE} · 立约日：{DATE} · 履约：{DAYS}天" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTribute" text="该臣属类型不产生贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_LedgerBuildFailed" text="贡赋簿册生成失败。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceShort" text="独立{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeCount" text="贡赋{COUNT}条" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTributeShort" text="不交贡" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_SubjectHint" text="条约：{TYPE}\n立约日：{DATE}\n履约时长：{DAYS}{INDEPENDENCE}{TRIBUTE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine" text="- 贡赋记录已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGain" text="本次贡赋未能分配到宗主国领地。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeValue" text="贡赋价值：{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_GainsSummary" text="本次贡赋已入库，宗主国各领地所得如下：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecord" text="贡赋记录已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedTitle" text="臣属条约改订" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenTitle" text="臣属条约终止" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachTitle" text="朝贡国背约" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarTitle" text="朝贡国互相开战" />
+    <string id="AF_DIP_UI_Vote_MeetingButton" text="召开投票会议" />
+    <string id="AF_DIP_UI_Vote_ActiveCount" text="{COUNT} 项活跃" />
+    <string id="AF_DIP_UI_Vote_None" text="无" />
+    <string id="AF_DIP_UI_Vote_RulerDecision" text="国王裁决" />
+    <string id="AF_DIP_UI_Vote_CouncilMember" text="议会成员" />
+    <string id="AF_DIP_UI_Vote_Spectate" text="旁观" />
+    <string id="AF_DIP_UI_Vote_OtherKingdom" text="他国" />
+    <string id="AF_DIP_UI_Vote_DecideNow" text="立即裁决" />
+    <string id="AF_DIP_UI_Vote_AgendaTab" text="内政" />
+    <string id="AF_DIP_UI_Vote_SupporterCount" text="{COUNT} 家" />
+    <string id="AF_DIP_UI_Vote_MoreSupporters" text="另有 {COUNT} 家支持" />
+    <string id="AF_DIP_UI_Vote_AgendaQuotedTitle" text="议程《{TITLE}》" />
+    <string id="AF_DIP_UI_Vote_RulerHint" text="逆多数意见强推宣战、议和或政策会加深全体封臣不满；封地表决的落选申领家族不满也会上升。" />
+    <string id="AF_DIP_UI_Vote_CouncilHint" text="投票会议开始后表态支持；也可在对话中与其他家族商议拉票。" />
+    <string id="AF_DIP_UI_Vote_SpectateHint" text="他国议程仅供查看，无法参与投票。" />
+    <string id="AF_DIP_UI_Vote_CurrentKingdomAgenda" text="{KINGDOM} 议程" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdom" text="未知王国" />
+    <string id="AF_DIP_UI_Vote_NoKingdom" text="无王国" />
+    <string id="AF_DIP_UI_Vote_Unknown" text="未知" />
+    <string id="AF_DIP_UI_Vote_ProposerUnknown" text="提案人: 未知" />
+    <string id="AF_DIP_UI_Vote_ProposerDaysRemaining" text="提案人: {PROPOSER} · 剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_ProposerCanVote" text="提案人: {PROPOSER} · 可以投票" />
+    <string id="AF_DIP_UI_Vote_Info" text="{TYPE} · 提案人 {PROPOSER}" />
+    <string id="AF_DIP_UI_Vote_BadgeDecide" text="可裁决" />
+    <string id="AF_DIP_UI_Vote_BadgeVoting" text="可以投票" />
+    <string id="AF_DIP_UI_Vote_BadgeDays" text="剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_Meta" text="提案人  {PROPOSER}   ·   {STATUS}{OPTIONS}" />
+    <string id="AF_DIP_UI_Vote_OnlyClanCanDecide" text="仅你的家族有表决权" />
+    <string id="AF_DIP_UI_Vote_VotingOpen" text="可以投票" />
+    <string id="AF_DIP_UI_Vote_DaysRemaining" text="剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_OptionCount" text="{COUNT} 个选项" />
+    <string id="AF_DIP_UI_Vote_SingleClanKingdom" text="单家族王国" />
+    <string id="AF_DIP_UI_Vote_Anytime" text="随时" />
+    <string id="AF_DIP_UI_Vote_DecideImmediatelyHint" text="无需等待，可立即裁决" />
+    <string id="AF_DIP_UI_Vote_SingleClanFooter" text="本国仅你的家族有表决权，点击「立即裁决」决定是否通过" />
+    <string id="AF_DIP_UI_Vote_Voting" text="投票" />
+    <string id="AF_DIP_UI_Vote_UntilVoting" text="距离开始投票" />
+    <string id="AF_DIP_UI_Vote_Started" text="已开始" />
+    <string id="AF_DIP_UI_Vote_DaysUnit" text="天" />
+    <string id="AF_DIP_UI_Vote_OpenMeetingHint" text="可召开投票会议" />
+    <string id="AF_DIP_UI_Vote_UrgentHint" text="不足 1 天 · 紧急" />
+    <string id="AF_DIP_UI_Vote_AfterDeadlineHint" text="到期后进入表决" />
+    <string id="AF_DIP_UI_Vote_FooterOpen" text="提案「{TITLE}」已可投票" />
+    <string id="AF_DIP_UI_Vote_FooterFuture" text="提案「{TITLE}」将在 {DAYS} 天后开始投票" />
+    <string id="AF_DIP_UI_Vote_Deals" text="已谈妥拉票 {COUNT} 家" />
+    <string id="AF_DIP_UI_Vote_SlightlyFavor" text="略微支持" />
+    <string id="AF_DIP_UI_Vote_StronglyFavor" text="强力支持" />
+    <string id="AF_DIP_UI_Vote_FullyPush" text="全力推动" />
+    <string id="AF_DIP_UI_Vote_Neutral" text="中立" />
+    <string id="AF_DIP_UI_Vote_NoSponsor" text="无人牵头" />
+    <string id="AF_DIP_UI_Vote_You" text="你" />
+    <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="仅你的家族有表决权 · 由你裁决" />
+    <string id="AF_DIP_UI_Vote_NoOtherVoters" text="无其他家族参与表决" />
+    <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="议会尚无倾向（不含你）" />
+  </strings>
 </base>

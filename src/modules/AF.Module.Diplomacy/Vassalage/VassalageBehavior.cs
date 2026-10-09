@@ -1653,13 +1653,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			Kingdom playerKingdom = GetPlayerKingdom();
 			if (!IsValidKingdom(playerKingdom))
 			{
-				data.DescriptionText = "你尚未拥有王国。";
+				data.DescriptionText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoKingdom", "You do not have a kingdom yet.");
 				return data;
 			}
 			string playerKingdomName = GetKingdomDisplayName(playerKingdom, "玩家王国");
 			if (!IsPlayerRuler(playerKingdom))
 			{
-				data.DescriptionText = "你的当前王国：" + playerKingdomName + "\n\n你不是该王国的国王，不能查阅宗主国臣属名册。";
+				data.DescriptionText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_NotRuler", "Current kingdom: {KINGDOM}\n\nYou are not this kingdom's ruler and cannot view the suzerain's subject roster.", ("KINGDOM", playerKingdomName));
 				return data;
 			}
 			int today = GetCurrentCampaignDay();
@@ -1672,11 +1672,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				.Where(x => x.Agreement != null && IsValidKingdom(x.Vassal))
 				.OrderBy(x => GetKingdomDisplayName(x.Vassal, "臣属国"), StringComparer.OrdinalIgnoreCase)
 				.ToList();
-			data.DescriptionText = "宗主国：" + playerKingdomName
-				+ "\n选择有贡赋义务的臣属国，查看贡赋入库记录。";
+			data.DescriptionText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Description", "Suzerain: {KINGDOM}\nSelect a subject with a tribute obligation to view recorded deposits.", ("KINGDOM", playerKingdomName));
 			if (agreements.Count <= 0)
 			{
-				data.DescriptionText += "\n\n你的王国尚无臣属国。";
+				data.DescriptionText += "\n\n" + DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoSubjects", "Your kingdom has no subjects yet.");
 				return data;
 			}
 			foreach (var item in agreements)
@@ -1688,7 +1687,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Vassalage", "[WARN] build terminal vassalage management data failed: " + ex.Message);
-			data.DescriptionText = "臣属名册生成失败，请稍后再试。";
+			data.DescriptionText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_BuildFailed", "The subject roster could not be generated. Try again later.");
 			data.Subjects.Clear();
 			return data;
 		}
@@ -1705,22 +1704,22 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			data.DescriptionText ?? "",
 			"",
-			"臣属国名册："
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_Roster", "Subject roster:")
 		};
 		for (int i = 0; i < data.Subjects.Count; i++)
 		{
 			TerminalVassalageSubjectData subject = data.Subjects[i];
 			lines.Add((i + 1).ToString(CultureInfo.InvariantCulture) + ". " + subject.VassalName);
-			lines.Add("   条约：" + subject.TypeName);
-			lines.Add("   立约日：" + subject.CreatedDateText);
-			lines.Add("   履约时长：" + subject.ElapsedDaysText);
+			lines.Add(DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Treaty", "   Treaty: {TYPE}", ("TYPE", subject.TypeName)));
+			lines.Add(DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Signed", "   Signed: {DATE}", ("DATE", subject.CreatedDateText)));
+			lines.Add(DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Duration", "   Duration: {DAYS}", ("DAYS", subject.ElapsedDaysText)));
 			if (!string.IsNullOrWhiteSpace(subject.ObedienceText))
 			{
-				lines.Add("   独立度：" + subject.ObedienceText);
+				lines.Add(DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Independence", "   Independence: {VALUE}", ("VALUE", subject.ObedienceText)));
 			}
 			lines.Add(subject.IsTributePaying
-				? "   贡赋记录：请在臣属国管理列表中选择“查看贡赋记录”（当前 " + subject.TributeRecordCount.ToString(CultureInfo.InvariantCulture) + " 条）。"
-				: "   贡赋记录：该臣属类型不交贡。");
+				? DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_TributeRecords", "   Tribute records: select “View tribute records” in subject management ({COUNT} entries).", ("COUNT", subject.TributeRecordCount.ToString(CultureInfo.InvariantCulture)))
+				: DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoTribute", "   Tribute records: this subject type does not pay tribute."));
 		}
 		return string.Join("\n", lines).TrimEnd();
 	}
@@ -1733,14 +1732,14 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			Kingdom playerKingdom = GetPlayerKingdom();
 			if (!IsValidKingdom(playerKingdom))
 			{
-				data.SubtitleText = "你尚未拥有王国。";
-				data.EmptyStateText = "尚无贡赋入库记录。";
+				data.SubtitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoKingdom", "You do not have a kingdom yet.");
+				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords", "No tribute deposits have been recorded.");
 				return data;
 			}
 			if (!IsPlayerRuler(playerKingdom))
 			{
-				data.SubtitleText = "你不是当前王国的国王。";
-				data.EmptyStateText = "不能查阅宗主国臣属贡赋簿册。";
+				data.SubtitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NotRulerShort", "You are not the current kingdom's ruler.");
+				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_CannotViewLedger", "The suzerain's subject tribute ledger cannot be viewed.");
 				return data;
 			}
 			VassalageAgreement agreement = FindAgreementById(agreementId);
@@ -1754,8 +1753,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			}
 			if (agreement == null || !agreement.IsValid() || !string.Equals(agreement.SuzerainKingdomId, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase))
 			{
-				data.SubtitleText = "未找到该臣属国条约。";
-				data.EmptyStateText = "尚无贡赋入库记录。";
+				data.SubtitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_AgreementNotFound", "The subject treaty could not be found.");
+				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords", "No tribute deposits have been recorded.");
 				return data;
 			}
 			Kingdom vassal = agreement.ResolveVassal();
@@ -1763,13 +1762,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			string vassalName = GetKingdomDisplayName(vassal, "臣属国");
 			int createdDay = Math.Max(0, agreement.CreatedDay);
 			int elapsedDays = Math.Max(0, GetCurrentCampaignDay() - createdDay);
-			data.TitleText = vassalName + " · 贡赋记录";
-			data.SubtitleText = GetVassalageTypeDisplayName(normalizedType)
-				+ " · 立约日：" + FormatCampaignDate(createdDay)
-				+ " · 履约：" + elapsedDays.ToString(CultureInfo.InvariantCulture) + "天";
+			data.TitleText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistoryTitle", "{SUBJECT} · Tribute records", ("SUBJECT", vassalName));
+			data.SubtitleText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistorySubtitle", "{TYPE} · Signed: {DATE} · Duration: {DAYS} days", ("TYPE", GetVassalageTypeDisplayName(normalizedType)), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedDays.ToString(CultureInfo.InvariantCulture)));
 			if (!IsTributePayingSubjectType(normalizedType))
 			{
-				data.EmptyStateText = "该臣属类型不产生贡赋记录。";
+				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_TypeNoTribute", "This subject type does not generate tribute records.");
 				return data;
 			}
 			foreach (TributaryPaymentNoticeRecord record in GetTributaryPaymentHistoryForAgreement(agreement))
@@ -1778,15 +1775,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			}
 			if (data.Records.Count <= 0)
 			{
-				data.EmptyStateText = "尚无贡赋入库记录。";
+				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords", "No tribute deposits have been recorded.");
 			}
 			return data;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Vassalage", "[WARN] build terminal tributary payment history failed: " + ex.Message);
-			data.SubtitleText = "贡赋簿册生成失败。";
-			data.EmptyStateText = "尚无贡赋入库记录。";
+			data.SubtitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_LedgerBuildFailed", "The tribute ledger could not be generated.");
+			data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords", "No tribute deposits have been recorded.");
 			data.Records.Clear();
 			return data;
 		}
@@ -1813,11 +1810,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string title = vassalName + " · " + typeName + " · " + elapsedText;
 		if (!string.IsNullOrWhiteSpace(obedienceShortText))
 		{
-			title += " · 独立" + obedienceShortText;
+			title += " · " + DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_IndependenceShort", "Independence {VALUE}", ("VALUE", obedienceShortText));
 		}
 		title += isTributePaying
-			? " · 贡赋" + recordCount.ToString(CultureInfo.InvariantCulture) + "条"
-			: " · 不交贡";
+			? " · " + DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_TributeCount", "{COUNT} tribute records", ("COUNT", recordCount.ToString(CultureInfo.InvariantCulture)))
+			: " · " + DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoTributeShort", "No tribute");
 		return new TerminalVassalageSubjectData
 		{
 			AgreementId = agreement.AgreementId ?? "",
@@ -1830,11 +1827,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			IsTributePaying = isTributePaying,
 			TributeRecordCount = recordCount,
 			EntryTitleText = title,
-			EntryHintText = "条约：" + typeName
-				+ "\n立约日：" + FormatCampaignDate(createdDay)
-				+ "\n履约时长：" + elapsedText
-				+ (string.IsNullOrWhiteSpace(obedienceText) ? "" : "\n独立度：" + obedienceText)
-				+ (isTributePaying ? "\n点击查看详细贡赋记录。" : "\n该臣属类型不产生贡赋记录。")
+			EntryHintText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_SubjectHint", "Treaty: {TYPE}\nSigned: {DATE}\nDuration: {DAYS}{INDEPENDENCE}{TRIBUTE}", ("TYPE", typeName), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedText), ("INDEPENDENCE", string.IsNullOrWhiteSpace(obedienceText) ? "" : "\nIndependence: " + obedienceText), ("TRIBUTE", isTributePaying ? "\nClick to view detailed tribute records." : "\nThis subject type does not generate tribute records."))
 		};
 	}
 
@@ -1862,7 +1855,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		if (record == null)
 		{
-			return "- 贡赋记录已经失效。";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine", "- This tribute record is no longer valid.");
 		}
 		return "- " + FormatCampaignDate(record.SettlementDay)
 			+ "，臣属国力：" + FormatTributaryPaymentNumber(record.TributaryStrength)
@@ -1880,17 +1873,17 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			return new TerminalTributaryPaymentRecordData
 			{
-				DateText = "未知日期",
-				TributeValueText = "贡赋记录已经失效。",
+				DateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Common_UnknownDate", "Unknown date"),
+				TributeValueText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_InvalidRecord", "This tribute record is no longer valid."),
 				PlayerGainSummaryText = "",
-				PlayerSettlementGainText = "本条贡赋记录已经失效。",
+				PlayerSettlementGainText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_InvalidRecord", "This tribute record is no longer valid."),
 				TributaryCostText = ""
 			};
 		}
 		string playerGainText = (BuildTributaryPaymentSettlementGainText(record) ?? "").TrimEnd();
 		if (string.IsNullOrWhiteSpace(playerGainText))
 		{
-			playerGainText = "本次贡赋未能分配到宗主国领地。";
+			playerGainText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoSettlementGain", "This tribute could not be distributed to the suzerain's fiefs.");
 		}
 		string tributaryCostText = BuildTributaryPaymentClassifiedTributaryCostText(record);
 		if (string.IsNullOrWhiteSpace(tributaryCostText))
@@ -1905,8 +1898,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		return new TerminalTributaryPaymentRecordData
 		{
 			DateText = FormatCampaignDate(record.SettlementDay),
-			TributeValueText = "贡赋价值：" + FormatTributaryPaymentNumber(record.TributaryStrength),
-			PlayerGainSummaryText = "本次贡赋已入库，宗主国各领地所得如下：",
+			TributeValueText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_TributeValue", "Tribute value: {VALUE}", ("VALUE", FormatTributaryPaymentNumber(record.TributaryStrength))),
+			PlayerGainSummaryText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_GainsSummary", "This tribute was deposited; suzerain fief gains are listed below:"),
 			PlayerSettlementGainText = playerGainText,
 			TributaryCostText = tributaryCostText.TrimEnd()
 		};
@@ -4176,7 +4169,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			+ "原立约日：" + FormatCampaignDate(oldCreatedDay) + "\n"
 			+ "新立约日：" + FormatCampaignDate(newCreatedDay) + "\n\n"
 			+ "旧约随之作废：立约日重置，旧约相关贡赋记录、忠诚度与保护安排均已归档。";
-		QueueInfoNotice("agreement_revised", targetKingdom, playerKingdom, "臣属条约改订", summary, detail);
+		QueueInfoNotice("agreement_revised", targetKingdom, playerKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_AgreementRevisedTitle", "Vassalage treaty revised"), summary, detail);
 		Logger.Log("Vassalage", "Agreement revised suzerain=" + existing.SuzerainKingdomId + " vassal=" + existing.VassalKingdomId + " oldType=" + oldType + " newType=" + newType);
 		VassalageDiagnosticLog.Event("agreement.revise.success", new Dictionary<string, object>
 		{
@@ -4234,7 +4227,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			NoticeId = noticeId,
 			Category = (category ?? "").Trim(),
-			Title = string.IsNullOrWhiteSpace(title) ? "臣属事务急报" : title.Trim(),
+			Title = string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_InfoNoticeTitle", "Vassalage report") : title.Trim(),
 			Summary = string.IsNullOrWhiteSpace(summary) ? (detail ?? "") : summary.Trim(),
 			Detail = string.IsNullOrWhiteSpace(detail) ? (summary ?? "") : detail.Trim(),
 			CreatedDay = GetCurrentCampaignDay()
@@ -5770,7 +5763,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
 			["canPublishNow"] = CanPublishMapNotification()
 		});
-		QueueInfoNotice("agreement_broken", vassal, suzerain, "臣属条约终止", summary, detail);
+		QueueInfoNotice("agreement_broken", vassal, suzerain, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_AgreementBrokenTitle", "Vassalage treaty ended"), summary, detail);
 	}
 
 	private static string GetAgreementBreakReasonDisplayText(string reason)
@@ -5825,7 +5818,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				+ "被宣战方：" + targetSubjectText + "\n\n"
 				+ declaringName + "主动攻击受宗主控制的臣属国，朝贡条约已经终止。\n"
 				+ GetKingdomDisplayName(playerKingdom, "玩家王国") + "已经自动保护" + targetName + "，并号令所有卫戍国与附庸国共同对原朝贡国开战。";
-			QueueInfoNotice("tributary_controlled_subject_war", declaringKingdom, targetKingdom, "朝贡国背约", summary, detailText);
+			QueueInfoNotice("tributary_controlled_subject_war", declaringKingdom, targetKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryBreachTitle", "Tributary treaty breached"), summary, detailText);
 			VassalageDiagnosticLog.Event("war_declared.tributary_controlled_subject", new Dictionary<string, object>
 			{
 				["reason"] = "tributary_declared_war_on_controlled_subject",
@@ -5849,7 +5842,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				+ "宣战方：" + declaringSubjectText + "\n"
 				+ "被宣战方：" + targetSubjectText + "\n\n"
 				+ "两个朝贡国均保留军事自主权。此战被视为朝贡国之间的自主战争，宗主国不会自动保护、不会自动参战，也不会解除任何朝贡条约。";
-			QueueInfoNotice("tributary_tributary_war", declaringKingdom, targetKingdom, "朝贡国互相开战", summary, detailText);
+			QueueInfoNotice("tributary_tributary_war", declaringKingdom, targetKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributariesAtWarTitle", "Tributaries at war"), summary, detailText);
 			VassalageDiagnosticLog.Event("war_declared.tributary_tributary_notice", new Dictionary<string, object>
 			{
 				["reason"] = "tributary_declared_war_on_tributary_notice_only",

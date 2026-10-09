@@ -453,5 +453,93 @@
     <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="The LLM response did not contain a JSON object." />
     <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="The LLM JSON is missing national_personality or long_term_strategy." />
     <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON parsing failed: {ERROR}" />
-</strings>
+
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="You do not have a kingdom yet." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="Current kingdom: {KINGDOM}\n\nYou are not this kingdom’s ruler and cannot view the suzerain’s subject roster." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="Suzerain: {KINGDOM}\nSelect a subject with a tribute obligation to view recorded deposits." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSubjects" text="Your kingdom has no subjects yet." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_BuildFailed" text="The subject roster could not be generated. Try again later." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Roster" text="Subject roster:" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Treaty" text="   Treaty: {TYPE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Signed" text="   Signed: {DATE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Duration" text="   Duration: {DAYS}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Independence" text="   Independence: {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeRecords" text="   Tribute records: select “View tribute records” in subject management ({COUNT} entries)." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTribute" text="   Tribute records: this subject type does not pay tribute." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords" text="No tribute deposits have been recorded." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRulerShort" text="You are not the current kingdom’s ruler." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CannotViewLedger" text="The suzerain’s subject tribute ledger cannot be viewed." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_AgreementNotFound" text="The subject treaty could not be found." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryTitle" text="{SUBJECT} · Tribute records" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistorySubtitle" text="{TYPE} · Signed: {DATE} · Duration: {DAYS} days" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTribute" text="This subject type does not generate tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_LedgerBuildFailed" text="The tribute ledger could not be generated." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceShort" text="Independence {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeCount" text="{COUNT} tribute records" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTributeShort" text="No tribute" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_SubjectHint" text="Treaty: {TYPE}\nSigned: {DATE}\nDuration: {DAYS}{INDEPENDENCE}{TRIBUTE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine" text="- This tribute record is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGain" text="This tribute could not be distributed to the suzerain’s fiefs." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeValue" text="Tribute value: {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_GainsSummary" text="This tribute was deposited; suzerain fief gains are listed below:" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecord" text="This tribute record is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedTitle" text="Vassalage treaty revised" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenTitle" text="Vassalage treaty ended" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachTitle" text="Tributary treaty breached" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarTitle" text="Tributaries at war" />
+    <string id="AF_DIP_UI_Vote_MeetingButton" text="Open vote meeting" />
+    <string id="AF_DIP_UI_Vote_ActiveCount" text="{COUNT} active" />
+    <string id="AF_DIP_UI_Vote_None" text="None" />
+    <string id="AF_DIP_UI_Vote_RulerDecision" text="Ruler decision" />
+    <string id="AF_DIP_UI_Vote_CouncilMember" text="Council member" />
+    <string id="AF_DIP_UI_Vote_Spectate" text="Spectate" />
+    <string id="AF_DIP_UI_Vote_OtherKingdom" text="another kingdom" />
+    <string id="AF_DIP_UI_Vote_DecideNow" text="Decide now" />
+    <string id="AF_DIP_UI_Vote_AgendaTab" text="Kingdom agenda" />
+    <string id="AF_DIP_UI_Vote_SupporterCount" text="{COUNT} clans" />
+    <string id="AF_DIP_UI_Vote_MoreSupporters" text="{COUNT} more clans support this" />
+    <string id="AF_DIP_UI_Vote_AgendaQuotedTitle" text="Agenda “{TITLE}”" />
+    <string id="AF_DIP_UI_Vote_RulerHint" text="Forcing a war, peace, or policy against the majority can deepen discontent among all vassals; losing fief claimants also grow dissatisfied." />
+    <string id="AF_DIP_UI_Vote_CouncilHint" text="State your support after the vote meeting begins; you can also negotiate support with other clans in conversation." />
+    <string id="AF_DIP_UI_Vote_SpectateHint" text="Agendas in other kingdoms are view-only; you cannot vote." />
+    <string id="AF_DIP_UI_Vote_CurrentKingdomAgenda" text="{KINGDOM} agenda" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdom" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Vote_NoKingdom" text="No kingdom" />
+    <string id="AF_DIP_UI_Vote_Unknown" text="Unknown" />
+    <string id="AF_DIP_UI_Vote_ProposerUnknown" text="Proposer: unknown" />
+    <string id="AF_DIP_UI_Vote_ProposerDaysRemaining" text="Proposer: {PROPOSER} · {DAYS} days remaining" />
+    <string id="AF_DIP_UI_Vote_ProposerCanVote" text="Proposer: {PROPOSER} · Voting open" />
+    <string id="AF_DIP_UI_Vote_Info" text="{TYPE} · Proposer {PROPOSER}" />
+    <string id="AF_DIP_UI_Vote_BadgeDecide" text="Decision" />
+    <string id="AF_DIP_UI_Vote_BadgeVoting" text="Voting" />
+    <string id="AF_DIP_UI_Vote_BadgeDays" text="{DAYS} days" />
+    <string id="AF_DIP_UI_Vote_Meta" text="Proposer  {PROPOSER}   ·   {STATUS}{OPTIONS}" />
+    <string id="AF_DIP_UI_Vote_OnlyClanCanDecide" text="Only your clan can decide" />
+    <string id="AF_DIP_UI_Vote_VotingOpen" text="Voting open" />
+    <string id="AF_DIP_UI_Vote_DaysRemaining" text="{DAYS} days remaining" />
+    <string id="AF_DIP_UI_Vote_OptionCount" text="{COUNT} options" />
+    <string id="AF_DIP_UI_Vote_SingleClanKingdom" text="Single-clan kingdom" />
+    <string id="AF_DIP_UI_Vote_Anytime" text="Anytime" />
+    <string id="AF_DIP_UI_Vote_DecideImmediatelyHint" text="No waiting required; decide immediately." />
+    <string id="AF_DIP_UI_Vote_SingleClanFooter" text="Only your clan can decide in this kingdom. Click “Decide now” to approve or reject." />
+    <string id="AF_DIP_UI_Vote_Voting" text="Voting" />
+    <string id="AF_DIP_UI_Vote_UntilVoting" text="Until voting starts" />
+    <string id="AF_DIP_UI_Vote_Started" text="Started" />
+    <string id="AF_DIP_UI_Vote_DaysUnit" text="days" />
+    <string id="AF_DIP_UI_Vote_OpenMeetingHint" text="A vote meeting can be opened." />
+    <string id="AF_DIP_UI_Vote_UrgentHint" text="Less than 1 day · urgent" />
+    <string id="AF_DIP_UI_Vote_AfterDeadlineHint" text="Voting begins after the deadline." />
+    <string id="AF_DIP_UI_Vote_FooterOpen" text="Agenda “{TITLE}” is open for voting" />
+    <string id="AF_DIP_UI_Vote_FooterFuture" text="Agenda “{TITLE}” opens for voting in {DAYS} days" />
+    <string id="AF_DIP_UI_Vote_Deals" text="Vote deals agreed with {COUNT} clans" />
+    <string id="AF_DIP_UI_Vote_SlightlyFavor" text="Slightly favor" />
+    <string id="AF_DIP_UI_Vote_StronglyFavor" text="Strongly favor" />
+    <string id="AF_DIP_UI_Vote_FullyPush" text="Push fully" />
+    <string id="AF_DIP_UI_Vote_Neutral" text="Neutral" />
+    <string id="AF_DIP_UI_Vote_NoSponsor" text="No sponsor" />
+    <string id="AF_DIP_UI_Vote_You" text="you" />
+    <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="Only your clan can decide · You decide" />
+    <string id="AF_DIP_UI_Vote_NoOtherVoters" text="No other clans are voting" />
+    <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="The council has no trend yet (excluding you)" />
+  </strings>
 </base>
