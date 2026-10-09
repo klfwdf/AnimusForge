@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "DA024BB5C8085A9BAAEC8973642953229CAA88633C89FA3193FAC9E9670529D4",
-        "revision": "e0fe65674",
+        "sha256": "0FCD39B4ACEF1260360D35D1D76D403FF8725C29688BDF047487492EBABD3614",
+        "revision": "1167b181c",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "150CE03277BCB6DEFA877DD32DDE7461C33A20E52BDDB14064152AF3FCC93C04",
-        "revision": "e0fe65674",
+        "sha256": "54F714BC1D87D9CCAA47C742FBAB736E8C7937CB5B560BBCEAF99EA210FD40D7",
+        "revision": "1167b181c",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
@@ -702,11 +702,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "190393A5DE019829C590485CB2D0620D3901B6750C6F3BE89964C53176BA4E1B", "revision": "34e38ff80",
+        "sha256": "B8F20C9246E739F98A6056B9F73E3B35A2AAC4555AD35657DA090F28CC669B69", "revision": "db595c1d3",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "CF3A2A96685CE20C0F12A0F8656940D9E6BA06C4C3B776C7836C9C43CE64AF53", "revision": "34e38ff80",
+        "sha256": "45A6FBF927EB3A22CD58CDB0541941BAFCCD0E2428F376FDB225509DC50FE209", "revision": "db595c1d3",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
@@ -734,11 +734,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afonboarding_ui_strings.xml": {
         "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/afonboarding_ui_strings.xml",
-        "sha256": "C5DC3D46C9A1A8B1D1F2FE35A8E562C605274E9A59B505FECB7AE979C8285E5F", "revision": "e40ef03ad",
+        "sha256": "BA1ABD58167ED8536395DA0EBE5448E40019F43D10419C40EA1C33C152DAE5D7", "revision": "316d917af",
     },
     "ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
-        "sha256": "5541FCB56DC0F633F01A1F56E301DD1A02E16BD12DDDEFFA18FD4D2E428DF7A7", "revision": "e40ef03ad",
+        "sha256": "9C2920A86E518162481B81EC86A53D2826F42695955B2C864A1705FBA2CF4516", "revision": "316d917af",
     },
 }
 
