@@ -1,2 +1,349 @@
 <?xml version='1.0' encoding='utf-8'?>
-<base type="string"><tags><tag language="English" /></tags><strings><string id="AFPOL_UI_BalanceDescription" text="Each day, native and policy net changes are applied: positive changes are capped at the total limit; negative changes still apply, and existing stock above a new cap is not reduced." /><string id="AFPOL_UI_BalanceFoodRule" text="Applies to players and NPCs. By default only city/castle food capacity 1000 is enabled; the other six limits are disabled. Prosperity food consumption remains controlled by its separate MCM switch. Garrison food, sieges, supply, and policy food changes are preserved." /><string id="AFPOL_UI_BalanceInitialStatus" text="Disabled prefilled values have no effect. Changes apply after saving; Cancel or Esc discards edits, and restored defaults must be saved." /><string id="AFPOL_UI_BalanceIntegerRange" text="Enter an integer between {MIN} and {MAX}." /><string id="AFPOL_UI_BalanceOpenFailed" text="Unable to open settlement balance limits: {ERROR}" /><string id="AFPOL_UI_BalanceSaved" text="Settlement balance limits saved; existing stock is not reduced." /><string id="AFPOL_UI_BalanceTitle" text="Settlement Balance Limits" /><string id="AFPOL_UI_Cancel" text="Cancel" /><string id="AFPOL_UI_CastleMilitia" text="Castle Militia" /><string id="AFPOL_UI_CastleProsperity" text="Castle Prosperity" /><string id="AFPOL_UI_CityMilitia" text="City Militia" /><string id="AFPOL_UI_CityProsperity" text="City Prosperity" /><string id="AFPOL_UI_Disabled" text="Disabled" /><string id="AFPOL_UI_Enabled" text="Enabled" /><string id="AFPOL_UI_FoodCapacity" text="City/Castle Food Capacity" /><string id="AFPOL_UI_FoodUnit" text="Food (final capacity)" /><string id="AFPOL_UI_HearthUnit" text="Hearth" /><string id="AFPOL_UI_LocalPolicy" text="Local Policy" /><string id="AFPOL_UI_Module" text="Module" /><string id="AFPOL_UI_ModuleManagerDescription" text="Choose which effects each of the four new policy contexts can retrieve. Changes take effect after saving and do not alter existing, pending, or generating policies." /><string id="AFPOL_UI_ModuleManagerInitialStatus" text="Changes are kept in this window until saved; Cancel or Esc discards them." /><string id="AFPOL_UI_ModuleManagerOpenFailed" text="Unable to open the policy effect module manager." /><string id="AFPOL_UI_ModuleManagerSaveFailed" text="Failed to save policy effect module settings: {ERROR}" /><string id="AFPOL_UI_ModuleManagerSaved" text="Policy effect module settings saved. They affect newly started policies only." /><string id="AFPOL_UI_ModuleManagerTitle" text="Policy Effect Module Manager" /><string id="AFPOL_UI_NoSettingsScreen" text="No settings screen is available." /><string id="AFPOL_UI_PersonUnit" text="people" /><string id="AFPOL_UI_PlayerPolicy" text="Player Policy" /><string id="AFPOL_UI_ProsperityUnit" text="Prosperity" /><string id="AFPOL_UI_RestoreDefaults" text="Restore Defaults" /><string id="AFPOL_UI_RestoredDefaultsStatus" text="The working copy now enables every compatible context; click Save and Close to write the changes." /><string id="AFPOL_UI_RulerPolicy" text="Ruler Policy" /><string id="AFPOL_UI_SaveAndClose" text="Save and Close" /><string id="AFPOL_UI_SaveFailed" text="Save failed: {ERROR}" /><string id="AFPOL_UI_SaveFailedShort" text="Save failed." /><string id="AFPOL_UI_Unavailable" text="Unavailable" /><string id="AFPOL_UI_UnsavedStatus" text="There are unsaved changes. Only newly started policies use the saved retrieval scope." /><string id="AFPOL_UI_VassalPolicy" text="Vassal Policy" /><string id="AFPOL_UI_VillageHearth" text="Village Hearth" /><string id="AFPOL_UI_VillageMilitia" text="Village Militia" /><string id="AFPOL_UI_CapExplanation" text="Player-set total cap" /><string id="AFPOL_UI_DailyPatchFailed" text="Settlement caps disabled: daily patch installation failed; see the policy log." /><string id="AFPOL_UI_ProsperityFoodPatchFailed" text="Unable to disable prosperity food consumption: the native patch layout did not match; no estimated compensation was applied." /><string id="AFPOL_UI_CustomFoodModelUnsupported" text="The custom food model does not use the native calculation; prosperity food removal could not be confirmed." /><string id="AFPOL_UI_WorldPolicyTitle" text="World Policies" /><string id="AFPOL_UI_WorldPolicySubtitle" text="Read-only view of player and non-player ruler policies and policy-derived events published by each kingdom." /><string id="AFPOL_UI_WorldPolicyEmpty" text="No world events yet. Ruler policies and policy-derived events appear here." /><string id="AFPOL_UI_Close" text="Close" /><string id="AFPOL_UI_UnknownKingdom" text="Unknown Kingdom" /><string id="AFPOL_UI_WorldEvent" text="World Event" /><string id="AFPOL_UI_Day" text="Day {DAY}" /><string id="AFPOL_UI_UnknownDate" text="Unknown Date" /><string id="AFPOL_UI_NoDetails" text="(No details)" /><string id="AFPOL_UI_EventDetails" text="Event Details" /><string id="AFPOL_UI_New" text="New" /><string id="AFPOL_UI_RelatedHero" text="Related character: {NAME}" /><string id="AFPOL_UI_Back" text="Back" /><string id="AFPOL_UI_Edit" text="Edit" /><string id="AFPOL_UI_Open" text="Open" /><string id="AFPOL_UI_Save" text="Save" /><string id="AFPOL_UI_PromptAutoDraftTitle" text="Player AI drafting" /><string id="AFPOL_UI_PromptAutoDraftHint" text="Uses the single player-editable prompt to expand the current input; it is not submitted or published automatically." /><string id="AFPOL_UI_PromptPlayerEvaluationTitle" text="Player policy evaluation" /><string id="AFPOL_UI_PromptPlayerEvaluationHint" text="Adjusts social response, costs, duration, and overall strength preferences for kingdom, local, and vassal policies." /><string id="AFPOL_UI_PromptNpcPolicyTitle" text="NPC ruler policy" /><string id="AFPOL_UI_PromptNpcPolicyHint" text="Adjusts themes, writing style, real-world grounding, and governance direction used by rulers when creating policies." /><string id="AFPOL_UI_PromptEffectRequirementsTitle" text="Policy effect requirements" /><string id="AFPOL_UI_PromptEffectRequirementsHint" text="Adjusts policy understanding and concrete strength judgments by effect category; shared by player and ruler policies." /><string id="AFPOL_UI_PromptCommonEffectTitle" text="Shared requirements for all effects" /><string id="AFPOL_UI_PromptCommonEffectHint" text="Adjusts only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects." /><string id="AFPOL_UI_PromptRootTitle" text="Policy prompt management" /><string id="AFPOL_UI_PromptRootDescription" text="Choose a requirement to edit. Output format, legal targets, effect boundaries, and execution safety remain fixed by the module." /><string id="AFPOL_UI_PromptRootOpenFailed" text="Unable to open policy prompt management: {ERROR}" /><string id="AFPOL_UI_PromptAutoDraftEditorTitle" text="Edit player AI drafting prompt" /><string id="AFPOL_UI_PromptAutoDraftEditorDescription" text="Edit only expansion style, writing style, and content preferences here; the player's original text and filled title are supplied separately." /><string id="AFPOL_UI_PromptAutoDraftEditorHint" text="Output format and fields are built in and should not be written here. Saving an empty value restores the default." /><string id="AFPOL_UI_PromptAutoDraftSaveFailed" text="Failed to save the player AI drafting prompt: {ERROR}" /><string id="AFPOL_UI_PromptAutoDraftSaved" text="Player AI drafting prompt saved." /><string id="AFPOL_UI_PromptPlayerEvaluationEditorTitle" text="Edit player policy evaluation requirements" /><string id="AFPOL_UI_PromptPlayerEvaluationEditorDescription" text="Kingdom, local, and vassal policies share these overall evaluation requirements." /><string id="AFPOL_UI_PromptPlayerEvaluationEditorHint" text="Use this to adjust execution costs, social response, duration, writing style, and overall strength preferences. Saving an empty value restores the default." /><string id="AFPOL_UI_PromptNpcPolicyEditorTitle" text="Edit NPC ruler policy requirements" /><string id="AFPOL_UI_PromptNpcPolicyEditorDescription" text="This text guides rulers as they create policies based on identity, personality, and the current situation." /><string id="AFPOL_UI_PromptNpcPolicyEditorHint" text="Adjust themes, writing style, real-world grounding, and governance direction. Saving an empty value restores the default." /><string id="AFPOL_UI_PromptEffectEntryHint" text="Edit occurrence conditions and numeric judgment requirements separately." /><string id="AFPOL_UI_PromptEffectListTitle" text="Policy effect requirements" /><string id="AFPOL_UI_PromptEffectListDescription" text="Choose a currently available effect category. Newly registered and enabled categories appear here automatically." /><string id="AFPOL_UI_PromptEffectListOpenFailed" text="Unable to open the policy effect requirements list: {ERROR}" /><string id="AFPOL_UI_PromptCommonEffectEditorTitle" text="Edit shared requirements for all effects" /><string id="AFPOL_UI_PromptCommonEffectEditorDescription" text="This text defines only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects." /><string id="AFPOL_UI_PromptCommonEffectEditorHint" text="Edit occurrence conditions and numeric scales for individual effects in their respective categories. Saving an empty value restores the default." /><string id="AFPOL_UI_PromptCommonEffectSaveFailed" text="Failed to save shared effect requirements: {ERROR}" /><string id="AFPOL_UI_PromptCommonEffectSaved" text="Shared effect requirements saved." /><string id="AFPOL_UI_PromptUnderstandingTitle" text="Policy understanding requirements" /><string id="AFPOL_UI_PromptUnderstandingHint" text="Guides the main evaluation on when this category should be treated as an actual policy consequence." /><string id="AFPOL_UI_PromptEvaluationTitle" text="Effect judgment requirements" /><string id="AFPOL_UI_PromptEvaluationHint" text="Guides effect evaluation on direction, settlement frequency, units, and numeric scale." /><string id="AFPOL_UI_PromptModuleDescription" text="Choose a requirement to edit. Saving an empty value restores only this item's default content." /><string id="AFPOL_UI_PromptEffectUnavailable" text="The selected effect category is no longer available." /><string id="AFPOL_UI_PromptModuleEditorTitle" text="{NAME} - {REQUIREMENT}" /><string id="AFPOL_UI_PromptUnderstandingEditorDescription" text="Explain what kinds of policy measures directly affect this effect category." /><string id="AFPOL_UI_PromptEvaluationEditorDescription" text="Explain how to judge direction, settlement frequency, units, and numeric scale." /><string id="AFPOL_UI_PromptModuleEditorHint" text="Use natural language. Saving an empty value restores this item's default content; it does not change available categories or legal scopes." /><string id="AFPOL_UI_PromptModuleSaveFailed" text="Failed to save policy effect requirements: {ERROR}" /><string id="AFPOL_UI_PromptModuleSaved" text="{NAME}'s {REQUIREMENT} saved." /><string id="AFPOL_UI_AiDraftUnavailable" text="AI drafting is unavailable." /><string id="AFPOL_UI_AiDraftUiError" text="AI drafting encountered a UI error; see the log." /><string id="AFPOL_UI_KingdomPublishTitle" text="Publish Kingdom Policy" /><string id="AFPOL_UI_LocalPublishTitle" text="Publish Local Policy" /><string id="AFPOL_UI_PolicyNameLabel" text="Policy Name" /><string id="AFPOL_UI_PolicyContentLabel" text="Policy Content" /><string id="AFPOL_UI_LocalPolicyContentLabel" text="Policy Content / AI Draft Input" /><string id="AFPOL_UI_DurationLabel" text="Effect duration in days (leave blank for permanent)" /><string id="AFPOL_UI_AiDraft" text="AI Draft" /><string id="AFPOL_UI_PlayerKingdom" text="Player Kingdom" /><string id="AFPOL_UI_PolicyReady" text="Fill in a policy name and content to publish." /><string id="AFPOL_UI_CannotPublishPolicy" text="The policy cannot be published right now." /><string id="AFPOL_UI_CannotPublishLocalPolicy" text="The local policy cannot be published right now." /><string id="AFPOL_UI_FillTitleOrContent" text="Enter a policy title or content first." /><string id="AFPOL_UI_AiDrafting" text="AI drafting…" /><string id="AFPOL_UI_AiDraftStatus" text="AI is expanding the current input using the player-editable prompt; it does not read the general policy prompt, world context, or policy history, and it will not publish automatically." /><string id="AFPOL_UI_AiDraftFormChanged" text="The form changed while AI drafting was running; the stale result was discarded." /><string id="AFPOL_UI_AiDraftFailed" text="AI drafting failed; the original input was kept." /><string id="AFPOL_UI_AiDraftCompleted" text="AI draft filled the form; review and edit it before publishing." /><string id="AFPOL_UI_VassalPublishTitle" text="Publish Vassal Policy" /><string id="AFPOL_UI_FillForAiDraft" text="Enter a policy title or content before using AI Draft." /><string id="AFPOL_UI_AiCompleteTitle" text="Click AI Draft to complete the policy title and content." /><string id="AFPOL_UI_AiCompleteContent" text="Click AI Draft to complete the content from the policy title." /><string id="AFPOL_UI_InvalidPolicyTarget" text="The original target is no longer valid; choose an available target again." /><string id="AFPOL_UI_DurationRequired" text="The old record has no confirmed duration; enter a positive integer number of days." /><string id="AFPOL_UI_DurationPositive" text="Duration must be blank or a positive integer number of days." /><string id="AFPOL_UI_PublishAwaitingReview" text="After publishing, the policy waits for intelligent review; configured costs are deducted when it takes effect." /><string id="AFPOL_UI_PolicyRecordsTitle" text="Policy Records" /><string id="AFPOL_UI_PolicyHistoryEmpty" text="No successfully enacted policy records yet." /><string id="AFPOL_UI_BackToPolicyManagement" text="Back to Policy Management" /><string id="AFPOL_UI_ReReview" text="Re-review" /><string id="AFPOL_UI_PolicyPublished" text="Policy Published" /><string id="AFPOL_UI_Acknowledge" text="Got it" /><string id="AFPOL_UI_RetryManually" text="Retry Manually" /><string id="AFPOL_UI_DeleteRecord" text="Delete Record" /><string id="AFPOL_UI_UnnamedPolicy" text="Unnamed Policy" /><string id="AFPOL_UI_PolicyContentSection" text="[Policy Content]" /><string id="AFPOL_UI_PolicyFeedbackSection" text="[Public Feedback]" /><string id="AFPOL_UI_PolicyDailyImpactSection" text="[Daily Impact]" /><string id="AFPOL_UI_LocalScopeTitle" text="Select fiefs in scope" /><string id="AFPOL_UI_SelectAll" text="Select All" /><string id="AFPOL_UI_ClearSelection" text="Clear" /><string id="AFPOL_UI_SelectOwnedFief" text="Select at least one town or castle owned by the player clan." /><string id="AFPOL_UI_SelectedFiefs" text="{COUNT} fiefs selected; scope is determined automatically by the selected fiefs." /><string id="AFPOL_UI_UnknownFief" text="Unknown Fief" /><string id="AFPOL_UI_Fief" text="Fief" /><string id="AFPOL_UI_LocalHistorySubtitle" text="Local and vassal policies are managed separately; active records are retained and only the latest 100 ended records are kept." /><string id="AFPOL_UI_RenewEffect" text="Extend Effect" /><string id="AFPOL_UI_AbolishPolicy" text="Stop Policy" /><string id="AFPOL_UI_BackToPolicyMenu" text="Back to Policy Menu" /><string id="AFPOL_UI_EmptyVassalRecords" text="No vassal policy records." /><string id="AFPOL_UI_EmptyLocalRecords" text="No local policy records." /><string id="AF_POL_EFFECT_MaintenanceCost" text="Custom policy maintenance" /><string id="AF_POL_EFFECT_PolicyIncome" text="{POLICY} policy income" /><string id="AF_POL_EFFECT_PolicyLabel" text="{POLICY}" /><string id="AF_POL_EFFECT_PolicyTax" text="{POLICY} tax {VALUE}%" /><string id="AF_POL_EFFECT_PolicyConstruction" text="{POLICY} construction {VALUE}" /><string id="AF_POL_EFFECT_PartySizeLimit" text="[{POLICY}]" /><string id="AF_POL_EFFECT_PartySizeMinimum" text="Minimum custom policy party size" /><string id="AF_POL_EFFECT_PartySizeMaximum" text="Maximum custom policy party size" /></strings></base>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AFPOL_UI_BalanceDescription" text="Each day, native and policy net changes are applied: positive changes are capped at the total limit; negative changes still apply, and existing stock above a new cap is not reduced." />
+    <string id="AFPOL_UI_BalanceFoodRule" text="Applies to players and NPCs. By default only city/castle food capacity 1000 is enabled; the other six limits are disabled. Prosperity food consumption remains controlled by its separate MCM switch. Garrison food, sieges, supply, and policy food changes are preserved." />
+    <string id="AFPOL_UI_BalanceInitialStatus" text="Disabled prefilled values have no effect. Changes apply after saving; Cancel or Esc discards edits, and restored defaults must be saved." />
+    <string id="AFPOL_UI_BalanceIntegerRange" text="Enter an integer between {MIN} and {MAX}." />
+    <string id="AFPOL_UI_BalanceOpenFailed" text="Unable to open settlement balance limits: {ERROR}" />
+    <string id="AFPOL_UI_BalanceSaved" text="Settlement balance limits saved; existing stock is not reduced." />
+    <string id="AFPOL_UI_BalanceTitle" text="Settlement Balance Limits" />
+    <string id="AFPOL_UI_Cancel" text="Cancel" />
+    <string id="AFPOL_UI_CastleMilitia" text="Castle Militia" />
+    <string id="AFPOL_UI_CastleProsperity" text="Castle Prosperity" />
+    <string id="AFPOL_UI_CityMilitia" text="City Militia" />
+    <string id="AFPOL_UI_CityProsperity" text="City Prosperity" />
+    <string id="AFPOL_UI_Disabled" text="Disabled" />
+    <string id="AFPOL_UI_Enabled" text="Enabled" />
+    <string id="AFPOL_UI_FoodCapacity" text="City/Castle Food Capacity" />
+    <string id="AFPOL_UI_FoodUnit" text="Food (final capacity)" />
+    <string id="AFPOL_UI_HearthUnit" text="Hearth" />
+    <string id="AFPOL_UI_LocalPolicy" text="Local Policy" />
+    <string id="AFPOL_UI_Module" text="Module" />
+    <string id="AFPOL_UI_ModuleManagerDescription" text="Choose which effects each of the four new policy contexts can retrieve. Changes take effect after saving and do not alter existing, pending, or generating policies." />
+    <string id="AFPOL_UI_ModuleManagerInitialStatus" text="Changes are kept in this window until saved; Cancel or Esc discards them." />
+    <string id="AFPOL_UI_ModuleManagerOpenFailed" text="Unable to open the policy effect module manager." />
+    <string id="AFPOL_UI_ModuleManagerSaveFailed" text="Failed to save policy effect module settings: {ERROR}" />
+    <string id="AFPOL_UI_ModuleManagerSaved" text="Policy effect module settings saved. They affect newly started policies only." />
+    <string id="AFPOL_UI_ModuleManagerTitle" text="Policy Effect Module Manager" />
+    <string id="AFPOL_UI_NoSettingsScreen" text="No settings screen is available." />
+    <string id="AFPOL_UI_PersonUnit" text="people" />
+    <string id="AFPOL_UI_PlayerPolicy" text="Player Policy" />
+    <string id="AFPOL_UI_ProsperityUnit" text="Prosperity" />
+    <string id="AFPOL_UI_RestoreDefaults" text="Restore Defaults" />
+    <string id="AFPOL_UI_RestoredDefaultsStatus" text="The working copy now enables every compatible context; click Save and Close to write the changes." />
+    <string id="AFPOL_UI_RulerPolicy" text="Ruler Policy" />
+    <string id="AFPOL_UI_SaveAndClose" text="Save and Close" />
+    <string id="AFPOL_UI_SaveFailed" text="Save failed: {ERROR}" />
+    <string id="AFPOL_UI_SaveFailedShort" text="Save failed." />
+    <string id="AFPOL_UI_Unavailable" text="Unavailable" />
+    <string id="AFPOL_UI_UnsavedStatus" text="There are unsaved changes. Only newly started policies use the saved retrieval scope." />
+    <string id="AFPOL_UI_VassalPolicy" text="Vassal Policy" />
+    <string id="AFPOL_UI_VillageHearth" text="Village Hearth" />
+    <string id="AFPOL_UI_VillageMilitia" text="Village Militia" />
+    <string id="AFPOL_UI_CapExplanation" text="Player-set total cap" />
+    <string id="AFPOL_UI_DailyPatchFailed" text="Settlement caps disabled: daily patch installation failed; see the policy log." />
+    <string id="AFPOL_UI_ProsperityFoodPatchFailed" text="Unable to disable prosperity food consumption: the native patch layout did not match; no estimated compensation was applied." />
+    <string id="AFPOL_UI_CustomFoodModelUnsupported" text="The custom food model does not use the native calculation; prosperity food removal could not be confirmed." />
+    <string id="AFPOL_UI_WorldPolicyTitle" text="World Policies" />
+    <string id="AFPOL_UI_WorldPolicySubtitle" text="Read-only view of player and non-player ruler policies and policy-derived events published by each kingdom." />
+    <string id="AFPOL_UI_WorldPolicyEmpty" text="No world events yet. Ruler policies and policy-derived events appear here." />
+    <string id="AFPOL_UI_Close" text="Close" />
+    <string id="AFPOL_UI_UnknownKingdom" text="Unknown Kingdom" />
+    <string id="AFPOL_UI_WorldEvent" text="World Event" />
+    <string id="AFPOL_UI_Day" text="Day {DAY}" />
+    <string id="AFPOL_UI_UnknownDate" text="Unknown Date" />
+    <string id="AFPOL_UI_NoDetails" text="(No details)" />
+    <string id="AFPOL_UI_EventDetails" text="Event Details" />
+    <string id="AFPOL_UI_New" text="New" />
+    <string id="AFPOL_UI_RelatedHero" text="Related character: {NAME}" />
+    <string id="AFPOL_UI_Back" text="Back" />
+    <string id="AFPOL_UI_Edit" text="Edit" />
+    <string id="AFPOL_UI_Open" text="Open" />
+    <string id="AFPOL_UI_Save" text="Save" />
+    <string id="AFPOL_UI_PromptAutoDraftTitle" text="Player AI drafting" />
+    <string id="AFPOL_UI_PromptAutoDraftHint" text="Uses the single player-editable prompt to expand the current input; it is not submitted or published automatically." />
+    <string id="AFPOL_UI_PromptPlayerEvaluationTitle" text="Player policy evaluation" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationHint" text="Adjusts social response, costs, duration, and overall strength preferences for kingdom, local, and vassal policies." />
+    <string id="AFPOL_UI_PromptNpcPolicyTitle" text="NPC ruler policy" />
+    <string id="AFPOL_UI_PromptNpcPolicyHint" text="Adjusts themes, writing style, real-world grounding, and governance direction used by rulers when creating policies." />
+    <string id="AFPOL_UI_PromptEffectRequirementsTitle" text="Policy effect requirements" />
+    <string id="AFPOL_UI_PromptEffectRequirementsHint" text="Adjusts policy understanding and concrete strength judgments by effect category; shared by player and ruler policies." />
+    <string id="AFPOL_UI_PromptCommonEffectTitle" text="Shared requirements for all effects" />
+    <string id="AFPOL_UI_PromptCommonEffectHint" text="Adjusts only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects." />
+    <string id="AFPOL_UI_PromptRootTitle" text="Policy prompt management" />
+    <string id="AFPOL_UI_PromptRootDescription" text="Choose a requirement to edit. Output format, legal targets, effect boundaries, and execution safety remain fixed by the module." />
+    <string id="AFPOL_UI_PromptRootOpenFailed" text="Unable to open policy prompt management: {ERROR}" />
+    <string id="AFPOL_UI_PromptAutoDraftEditorTitle" text="Edit player AI drafting prompt" />
+    <string id="AFPOL_UI_PromptAutoDraftEditorDescription" text="Edit only expansion style, writing style, and content preferences here; the player's original text and filled title are supplied separately." />
+    <string id="AFPOL_UI_PromptAutoDraftEditorHint" text="Output format and fields are built in and should not be written here. Saving an empty value restores the default." />
+    <string id="AFPOL_UI_PromptAutoDraftSaveFailed" text="Failed to save the player AI drafting prompt: {ERROR}" />
+    <string id="AFPOL_UI_PromptAutoDraftSaved" text="Player AI drafting prompt saved." />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorTitle" text="Edit player policy evaluation requirements" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorDescription" text="Kingdom, local, and vassal policies share these overall evaluation requirements." />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorHint" text="Use this to adjust execution costs, social response, duration, writing style, and overall strength preferences. Saving an empty value restores the default." />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorTitle" text="Edit NPC ruler policy requirements" />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorDescription" text="This text guides rulers as they create policies based on identity, personality, and the current situation." />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorHint" text="Adjust themes, writing style, real-world grounding, and governance direction. Saving an empty value restores the default." />
+    <string id="AFPOL_UI_PromptEffectEntryHint" text="Edit occurrence conditions and numeric judgment requirements separately." />
+    <string id="AFPOL_UI_PromptEffectListTitle" text="Policy effect requirements" />
+    <string id="AFPOL_UI_PromptEffectListDescription" text="Choose a currently available effect category. Newly registered and enabled categories appear here automatically." />
+    <string id="AFPOL_UI_PromptEffectListOpenFailed" text="Unable to open the policy effect requirements list: {ERROR}" />
+    <string id="AFPOL_UI_PromptCommonEffectEditorTitle" text="Edit shared requirements for all effects" />
+    <string id="AFPOL_UI_PromptCommonEffectEditorDescription" text="This text defines only the duration, direct causality, multiple-effect, and investment calibration principles shared by all effects." />
+    <string id="AFPOL_UI_PromptCommonEffectEditorHint" text="Edit occurrence conditions and numeric scales for individual effects in their respective categories. Saving an empty value restores the default." />
+    <string id="AFPOL_UI_PromptCommonEffectSaveFailed" text="Failed to save shared effect requirements: {ERROR}" />
+    <string id="AFPOL_UI_PromptCommonEffectSaved" text="Shared effect requirements saved." />
+    <string id="AFPOL_UI_PromptUnderstandingTitle" text="Policy understanding requirements" />
+    <string id="AFPOL_UI_PromptUnderstandingHint" text="Guides the main evaluation on when this category should be treated as an actual policy consequence." />
+    <string id="AFPOL_UI_PromptEvaluationTitle" text="Effect judgment requirements" />
+    <string id="AFPOL_UI_PromptEvaluationHint" text="Guides effect evaluation on direction, settlement frequency, units, and numeric scale." />
+    <string id="AFPOL_UI_PromptModuleDescription" text="Choose a requirement to edit. Saving an empty value restores only this item's default content." />
+    <string id="AFPOL_UI_PromptEffectUnavailable" text="The selected effect category is no longer available." />
+    <string id="AFPOL_UI_PromptModuleEditorTitle" text="{NAME} - {REQUIREMENT}" />
+    <string id="AFPOL_UI_PromptUnderstandingEditorDescription" text="Explain what kinds of policy measures directly affect this effect category." />
+    <string id="AFPOL_UI_PromptEvaluationEditorDescription" text="Explain how to judge direction, settlement frequency, units, and numeric scale." />
+    <string id="AFPOL_UI_PromptModuleEditorHint" text="Use natural language. Saving an empty value restores this item's default content; it does not change available categories or legal scopes." />
+    <string id="AFPOL_UI_PromptModuleSaveFailed" text="Failed to save policy effect requirements: {ERROR}" />
+    <string id="AFPOL_UI_PromptModuleSaved" text="{NAME}'s {REQUIREMENT} saved." />
+    <string id="AFPOL_UI_AiDraftUnavailable" text="AI drafting is unavailable." />
+    <string id="AFPOL_UI_AiDraftUiError" text="AI drafting encountered a UI error; see the log." />
+    <string id="AFPOL_UI_KingdomPublishTitle" text="Publish Kingdom Policy" />
+    <string id="AFPOL_UI_LocalPublishTitle" text="Publish Local Policy" />
+    <string id="AFPOL_UI_PolicyNameLabel" text="Policy Name" />
+    <string id="AFPOL_UI_PolicyContentLabel" text="Policy Content" />
+    <string id="AFPOL_UI_LocalPolicyContentLabel" text="Policy Content / AI Draft Input" />
+    <string id="AFPOL_UI_DurationLabel" text="Effect duration in days (leave blank for permanent)" />
+    <string id="AFPOL_UI_AiDraft" text="AI Draft" />
+    <string id="AFPOL_UI_PlayerKingdom" text="Player Kingdom" />
+    <string id="AFPOL_UI_PolicyReady" text="Fill in a policy name and content to publish." />
+    <string id="AFPOL_UI_CannotPublishPolicy" text="The policy cannot be published right now." />
+    <string id="AFPOL_UI_CannotPublishLocalPolicy" text="The local policy cannot be published right now." />
+    <string id="AFPOL_UI_FillTitleOrContent" text="Enter a policy title or content first." />
+    <string id="AFPOL_UI_AiDrafting" text="AI drafting…" />
+    <string id="AFPOL_UI_AiDraftStatus" text="AI is expanding the current input using the player-editable prompt; it does not read the general policy prompt, world context, or policy history, and it will not publish automatically." />
+    <string id="AFPOL_UI_AiDraftFormChanged" text="The form changed while AI drafting was running; the stale result was discarded." />
+    <string id="AFPOL_UI_AiDraftFailed" text="AI drafting failed; the original input was kept." />
+    <string id="AFPOL_UI_AiDraftCompleted" text="AI draft filled the form; review and edit it before publishing." />
+    <string id="AFPOL_UI_VassalPublishTitle" text="Publish Vassal Policy" />
+    <string id="AFPOL_UI_FillForAiDraft" text="Enter a policy title or content before using AI Draft." />
+    <string id="AFPOL_UI_AiCompleteTitle" text="Click AI Draft to complete the policy title and content." />
+    <string id="AFPOL_UI_AiCompleteContent" text="Click AI Draft to complete the content from the policy title." />
+    <string id="AFPOL_UI_InvalidPolicyTarget" text="The original target is no longer valid; choose an available target again." />
+    <string id="AFPOL_UI_DurationRequired" text="The old record has no confirmed duration; enter a positive integer number of days." />
+    <string id="AFPOL_UI_DurationPositive" text="Duration must be blank or a positive integer number of days." />
+    <string id="AFPOL_UI_PublishAwaitingReview" text="After publishing, the policy waits for intelligent review; configured costs are deducted when it takes effect." />
+    <string id="AFPOL_UI_PolicyRecordsTitle" text="Policy Records" />
+    <string id="AFPOL_UI_PolicyHistoryEmpty" text="No successfully enacted policy records yet." />
+    <string id="AFPOL_UI_BackToPolicyManagement" text="Back to Policy Management" />
+    <string id="AFPOL_UI_ReReview" text="Re-review" />
+    <string id="AFPOL_UI_PolicyPublished" text="Policy Published" />
+    <string id="AFPOL_UI_Acknowledge" text="Got it" />
+    <string id="AFPOL_UI_RetryManually" text="Retry Manually" />
+    <string id="AFPOL_UI_DeleteRecord" text="Delete Record" />
+    <string id="AFPOL_UI_UnnamedPolicy" text="Unnamed Policy" />
+    <string id="AFPOL_UI_PolicyContentSection" text="[Policy Content]" />
+    <string id="AFPOL_UI_PolicyFeedbackSection" text="[Public Feedback]" />
+    <string id="AFPOL_UI_PolicyDailyImpactSection" text="[Daily Impact]" />
+    <string id="AFPOL_UI_LocalScopeTitle" text="Select fiefs in scope" />
+    <string id="AFPOL_UI_SelectAll" text="Select All" />
+    <string id="AFPOL_UI_ClearSelection" text="Clear" />
+    <string id="AFPOL_UI_SelectOwnedFief" text="Select at least one town or castle owned by the player clan." />
+    <string id="AFPOL_UI_SelectedFiefs" text="{COUNT} fiefs selected; scope is determined automatically by the selected fiefs." />
+    <string id="AFPOL_UI_UnknownFief" text="Unknown Fief" />
+    <string id="AFPOL_UI_Fief" text="Fief" />
+    <string id="AFPOL_UI_LocalHistorySubtitle" text="Local and vassal policies are managed separately; active records are retained and only the latest 100 ended records are kept." />
+    <string id="AFPOL_UI_RenewEffect" text="Extend Effect" />
+    <string id="AFPOL_UI_AbolishPolicy" text="Stop Policy" />
+    <string id="AFPOL_UI_BackToPolicyMenu" text="Back to Policy Menu" />
+    <string id="AFPOL_UI_EmptyVassalRecords" text="No vassal policy records." />
+    <string id="AFPOL_UI_EmptyLocalRecords" text="No local policy records." />
+    <string id="AF_POL_EFFECT_MaintenanceCost" text="Custom policy maintenance" />
+    <string id="AF_POL_EFFECT_PolicyIncome" text="{POLICY} policy income" />
+    <string id="AF_POL_EFFECT_PolicyLabel" text="{POLICY}" />
+    <string id="AF_POL_EFFECT_PolicyTax" text="{POLICY} tax {VALUE}%" />
+    <string id="AF_POL_EFFECT_PolicyConstruction" text="{POLICY} construction {VALUE}" />
+    <string id="AF_POL_EFFECT_PartySizeLimit" text="[{POLICY}]" />
+    <string id="AF_POL_EFFECT_PartySizeMinimum" text="Minimum custom policy party size" />
+    <string id="AF_POL_EFFECT_PartySizeMaximum" text="Maximum custom policy party size" />
+    <string id="AFPOL_UI_NotInitialized" text="Custom policy feature is not initialized." />
+    <string id="AFPOL_UI_LocalPolicyNotInitialized" text="Local policy feature is not initialized." />
+    <string id="AFPOL_UI_ReReviewPolicyTitle" text="Re-review Policy" />
+    <string id="AFPOL_UI_SelectFiefHint" text="Select towns or castles owned by the player clan as target fiefs." />
+    <string id="AFPOL_UI_NoOwnedFiefsWarning" text="The player clan currently owns no towns or castles; cannot publish." />
+    <string id="AFPOL_UI_LocalRecordsTitle" text="Local Policy Records" />
+    <string id="AFPOL_UI_LocalRecordsHint" text="View policy status, targets, remaining effect days, costs, and renewal history, and extend effects or abolish policies." />
+    <string id="AFPOL_UI_LocalPolicyDescription" text="Local policies are evaluated independently by the intelligence service, settled immediately upon success, and take effect within the selected fiefs." />
+    <string id="AFPOL_UI_Confirm" text="Confirm" />
+    <string id="AFPOL_UI_PreviousPolicyPending" text="The previous policy is still awaiting evaluation; please wait." />
+    <string id="AFPOL_UI_SelectFiefAndFillPolicy" text="Please select target fiefs and fill in policy details." />
+    <string id="AFPOL_UI_ReReviewLocalPolicyTitle" text="Re-review Local Policy" />
+    <string id="AFPOL_UI_SubmitReReview" text="Submit Re-review" />
+    <string id="AFPOL_UI_OpenLocalPublishFailed" text="Failed to open local policy publishing interface." />
+    <string id="AFPOL_UI_FillNameContentAndFief" text="Please enter a policy name, content, and select at least one fief." />
+    <string id="AFPOL_UI_ReReviewVassalPolicyTitle" text="Re-review Vassal Policy" />
+    <string id="AFPOL_UI_ReReviewKingdomPolicyTitle" text="Re-review Kingdom Policy" />
+    <string id="AFPOL_UI_OpenComposeFailed" text="Failed to open custom policy drafting interface." />
+    <string id="AFPOL_UI_TargetOwnKingdom" text="Own kingdom: {NAME}" />
+    <string id="AFPOL_UI_TargetOwnKingdomHint" text="Uses kingdom agenda, policy costs, and voting process." />
+    <string id="AFPOL_UI_TargetVassalKingdom" text="Vassal: {NAME}" />
+    <string id="AFPOL_UI_TargetVassalKingdomHint" text="Current independence: {CURRENT}/100; Breakaway threshold: {THRESHOLD} ({RULER} relation: {RELATION}); Takes effect immediately upon publication and increases independence by 5-10." />
+    <string id="AFPOL_UI_NameCannotBeEmpty" text="Policy name cannot be empty." />
+    <string id="AFPOL_UI_ContentCannotBeEmpty" text="Policy content cannot be empty." />
+    <string id="AFPOL_UI_VassalInvalidOrNotRuler" text="The selected vassal kingdom is no longer valid, or you are no longer the ruler of the suzerain kingdom." />
+    <string id="AFPOL_UI_PolicySubmittedEvaluating" text="Policy &quot;{NAME}&quot; has been submitted for court and public evaluation.&#10;&#10;Game time is paused. Once the intelligence service completes evaluation, results will be published automatically along with public feedback and effects." />
+    <string id="AFPOL_UI_PolicyEvaluatingPaused" text="Policy is being evaluated; game time is paused." />
+    <string id="AFPOL_UI_DateLabel" text="Date: {DATE}" />
+    <string id="AFPOL_UI_FeedbackUnclear" text="The public has not formed clear feedback yet." />
+    <string id="AFPOL_UI_NoApplicableModuleEffects" text="No applicable module effects were produced." />
+    <string id="AFPOL_UI_PartialEffectsFailedNotice" text="Some effects failed to take effect; details have been written to the log." />
+    <string id="AFPOL_UI_PolicySettledNotice" text="Policy effects have been settled per module rules and numeric effects will remain active during validity. You may continue publishing new policies." />
+    <string id="AFPOL_UI_NoCostDeducted" text="No costs were deducted this time." />
+    <string id="AFPOL_UI_VassalAnnouncementFormat" text="[Vassal Policy] {PUBLISHER} enacted &quot;{NAME}&quot;, taking effect on {TARGET}: {CONTENT}" />
+    <string id="AFPOL_UI_SuzerainPlayer" text="Suzerain Player" />
+    <string id="AFPOL_UI_SuzerainPlayerWithName" text="Suzerain Player ({NAME})" />
+    <string id="AFPOL_UI_TargetVassalDefault" text="Target Vassal" />
+    <string id="AFPOL_UI_TargetVassalWithName" text="Vassal {NAME}" />
+    <string id="AFPOL_UI_KingdomAnnouncementFormat" text="[Kingdom Policy] {ISSUER} enacted &quot;{NAME}&quot;: {CONTENT}" />
+    <string id="AFPOL_UI_KingdomDefault" text="Kingdom" />
+    <string id="AFPOL_UI_PublicFeedbackFormat" text="[Public Feedback] {SUBJECT} &quot;{NAME}&quot;: {FEEDBACK}" />
+    <string id="AFPOL_UI_PolicyHistorySubtitle" text="Showing latest {COUNT} published policies; legacy policies have ceased effects but history is preserved." />
+    <string id="AFPOL_UI_NoSuccessfulPoliciesYet" text="No successfully published and enacted policies yet." />
+    <string id="AFPOL_UI_NoContentSummary" text="(No policy content summary recorded)" />
+    <string id="AFPOL_UI_FeedbackNotRecorded" text="Public feedback not recorded." />
+    <string id="AFPOL_UI_PolicyImpactSectionTitle" text="[Policy Effects]" />
+    <string id="AFPOL_UI_PolicyFullTextSectionTitle" text="[Policy Full Text]" />
+    <string id="AFPOL_UI_LegacyPolicyStatusSectionTitle" text="[Legacy Policy Status]" />
+    <string id="AFPOL_UI_LegacySaveDateNotRecorded" text="Legacy save date not recorded" />
+    <string id="AFPOL_UI_LegacySaveCostNotice" text="Legacy cost info was not fully preserved; re-evaluation will recalculate using current settings." />
+    <string id="AFPOL_UI_LegacySaveNoFeedback" text="Legacy save did not preserve public feedback." />
+    <string id="AFPOL_UI_LegacyPolicyUpgradedStopped" text="Legacy policy system upgrade has stopped continuous effects." />
+    <string id="AFPOL_UI_StatusEndPending" text="End processing incomplete; system will retry reverting applied effects." />
+    <string id="AFPOL_UI_StatusReverting" text="Effects reverting; related modules paused until compensation finishes." />
+    <string id="AFPOL_UI_StatusMaintenancePaused" text="Insufficient maintenance funds; numeric effects paused, will resume when funds allow." />
+    <string id="AFPOL_UI_StatusActive" text="Active" />
+    <string id="AFPOL_UI_NoRecordedImpact" text="No impact effects recorded." />
+    <string id="AFPOL_UI_RuntimeStatusSection" text="&#10;[Runtime Status] {STATUS}" />
+    <string id="AFPOL_UI_PermanentActive" text="Permanently active" />
+    <string id="AFPOL_UI_Ended" text="Ended" />
+    <string id="AFPOL_UI_RemainingDaysFormat" text="Remaining {REMAINING}/{TOTAL} days" />
+    <string id="AFPOL_UI_InEffect" text="In effect" />
+    <string id="AFPOL_UI_UnknownSuzerain" text="Unknown Suzerain" />
+    <string id="AFPOL_UI_VassalTargetSummary" text="Suzerain: {ISSUER}; Target vassal: {TARGET}" />
+    <string id="AFPOL_UI_VassalIndependenceStatus" text="; Current independence {CURRENT}/100; Breakaway threshold {THRESHOLD} ({RULER} relation {RELATION})" />
+    <string id="AFPOL_UI_VassalStatusEnded" text="; Vassalage relationship terminated" />
+    <string id="AFPOL_UI_VassalIndependenceSettlement" text="Initial independence settlement: {BEFORE} + random cost {COST} + policy modifier {DELTA} (net change {NET}); Cumulative random cost {TOTAL}" />
+    <string id="AFPOL_UI_VassalIndependenceReason" text="; Modifier reason: {REASON}" />
+    <string id="AFPOL_UI_VassalRenewalHistoryNone" text="Renewal history: None" />
+    <string id="AFPOL_UI_VassalRenewalHistoryTitle" text="Renewal history:&#10;" />
+    <string id="AFPOL_UI_VassalRenewalHistoryEntry" text="- {DATE}: Independence {BEFORE} + {COST} = {AFTER}/100, added {DAYS} days" />
+    <string id="AFPOL_UI_UnnamedVassalPolicy" text="Unnamed Vassal Policy" />
+    <string id="AFPOL_UI_NoFeedbackRecorded" text="No policy feedback recorded." />
+    <string id="AFPOL_UI_VassalStatusAndRenewals" text="Status: {STATUS}; Renewals {COUNT}" />
+    <string id="AFPOL_UI_ContinuousEffectsEnded" text="Continuous effects ended" />
+    <string id="AFPOL_UI_NoContinuousNumericEffects" text="No continuous numeric effects" />
+    <string id="AFPOL_UI_NumericEffectsPermanent" text="Numeric effects: Permanent" />
+    <string id="AFPOL_UI_EffectRemainingAndOriginalDays" text="Effects remaining {REMAINING} days; original period {ORIGINAL} days" />
+    <string id="AFPOL_UI_StatusValid" text="Valid" />
+    <string id="AFPOL_UI_StatusExpired" text="Expired" />
+    <string id="AFPOL_UI_StatusTargetsLost" text="All fiefs lost" />
+    <string id="AFPOL_UI_StatusAbolished" text="Abolished by player" />
+    <string id="AFPOL_UI_StatusVassalageEnded" text="Vassalage ended" />
+    <string id="AFPOL_UI_StatusTerminated" text="Ended" />
+    <string id="AFPOL_UI_CannotReReviewTitle" text="Cannot Re-review" />
+    <string id="AFPOL_UI_ReReviewRecordIdEmpty" text="Policy record ID is empty." />
+    <string id="AFPOL_UI_ReReviewNoFullContent" text="The record does not have full policy content saved; cannot re-review." />
+    <string id="AFPOL_UI_ReReviewPendingConfirmation" text="This policy lineage already has a pending evaluation awaiting confirmation; please wait for it to complete." />
+    <string id="AFPOL_UI_ReReviewOnlySummary" text="The record only saved a summary; no reusable full policy content." />
+    <string id="AFPOL_UI_ReReviewPendingVote" text="This policy lineage already has a pending evaluation awaiting a vote; please wait for the agenda to conclude." />
+    <string id="AFPOL_UI_OpenLocalRecordsFailed" text="Failed to open local policy records interface." />
+    <string id="AFPOL_UI_LocalRecordNotExist" text="Local policy record does not exist." />
+    <string id="AFPOL_UI_PermanentEffectNoExtension" text="Permanent effects do not need extension." />
+    <string id="AFPOL_UI_CannotExtendEffectTitle" text="Cannot Extend Effect" />
+    <string id="AFPOL_UI_NoOwnedOriginalFiefsForExtension" text="None of the original target fiefs are currently owned by the player; cannot renew. Try again after retaking them." />
+    <string id="AFPOL_UI_ExtendLocalPolicyTitle" text="Extend Local Policy Effect" />
+    <string id="AFPOL_UI_ExtendLocalPolicyPrompt" text="Extend &quot;{NAME}&quot; by one full effect cycle ({DAYS} days)?&#10;&#10;Estimated cost: {COST} denars. If funds are below the estimate, effects this cycle will scale proportionally. Intelligence service will not be re-invoked, and one-shot modules will not replay." />
+    <string id="AFPOL_UI_EffectExtendedTitle" text="Effect Extended" />
+    <string id="AFPOL_UI_EffectExtendedMessage" text="Numeric effects for &quot;{NAME}&quot; have been extended by {DAYS} days; paid {COST} denars (effective scale: {SCALE})." />
+    <string id="AFPOL_UI_LocalPolicyExtendedRefreshFailed" text="Local policy effects were extended, but UI or notification refresh failed." />
+    <string id="AFPOL_UI_ExtendEffectFailedTitle" text="Failed to Extend Effect" />
+    <string id="AFPOL_UI_ExtendEffectFailedMessage" text="An exception occurred while extending effects; technical details have been written to the log." />
+    <string id="AFPOL_UI_OnlyActivePolicyCanBeAbolished" text="Only currently active local policies can be abolished." />
+    <string id="AFPOL_UI_StopVassalPolicyTitle" text="Stop Vassal Policy" />
+    <string id="AFPOL_UI_StopVassalPolicyPrompt" text="Are you sure you want to stop &quot;{NAME}&quot; immediately?&#10;&#10;Continuous effects across all kingdoms will cease immediately; independence remains unchanged, and applied effects will not roll back." />
+    <string id="AFPOL_UI_AbolishLocalPolicyTitle" text="Abolish Local Policy" />
+    <string id="AFPOL_UI_AbolishLocalPolicyPrompt" text="Are you sure you want to abolish &quot;{NAME}&quot; immediately?&#10;&#10;Effects will stop immediately, and paid fees are non-refundable." />
+    <string id="AFPOL_UI_StopPolicyFailedTitle" text="Failed to Stop Policy" />
+    <string id="AFPOL_UI_StopPolicyFailedMessage" text="An exception occurred while stopping policy; technical details have been written to the log." />
+    <string id="AFPOL_UI_VassalPolicyStoppedTitle" text="Vassal Policy Stopped" />
+    <string id="AFPOL_UI_LocalPolicyAbolishedTitle" text="Local Policy Abolished" />
+    <string id="AFPOL_UI_VassalPolicyStoppedMessage" text="Continuous effects of &quot;{NAME}&quot; across all kingdoms have ceased; independence remains unchanged." />
+    <string id="AFPOL_UI_LocalPolicyAbolishedMessage" text="Effects of &quot;{NAME}&quot; have ceased; fees are non-refundable." />
+    <string id="AFPOL_UI_CannotRenewTitle" text="Cannot Renew" />
+    <string id="AFPOL_UI_NoRulerPermissionToRenew" text="You do not have ruler authority of the issuing kingdom; policy unchanged." />
+    <string id="AFPOL_UI_TargetNotVassalTerminated" text="Target kingdom is no longer a direct vassal of the player kingdom; policy terminated." />
+    <string id="AFPOL_UI_RenewVassalPolicyTitle" text="Renew Vassal Policy" />
+    <string id="AFPOL_UI_RenewVassalPolicyPrompt" text="Extend &quot;{NAME}&quot; by one full cycle ({DAYS} days)?&#10;&#10;This will re-add the initial random cost of {COST} independence; current independence is {CURRENT}/100, breakaway threshold is {THRESHOLD} ({RULER} relation: {RELATION}). Intelligence service will not be recalled, good/bad modifiers will not repeat, one-shot modules will not replay, and no new world policy events will be created." />
+    <string id="AFPOL_UI_ConfirmRenewal" text="Confirm Renewal" />
+    <string id="AFPOL_UI_RenewalSuccessTitle" text="Renewal Succeeded" />
+    <string id="AFPOL_UI_VassalRenewalSuccessMessage" text="&quot;{NAME}&quot; extended by {DAYS} days; independence {BEFORE} + {COST} = {AFTER}/100; breakaway threshold {THRESHOLD} ({RULER} relation: {RELATION})." />
+    <string id="AFPOL_UI_VassalBreakawayNotice" text="&#10;&#10;Independence reached breakaway threshold; vassalage has ended and all continuous effects have ceased immediately." />
+    <string id="AFPOL_UI_VassalRenewedRefreshFailed" text="Vassal policy renewed, but post-renewal UI or notification refresh failed." />
+    <string id="AFPOL_UI_RenewalFailedTitle" text="Renewal Failed" />
+    <string id="AFPOL_UI_RenewalFailedMessage" text="An exception occurred during renewal; technical details have been written to the log." />
+    <string id="AFPOL_UI_PolicyRenewedTitle" text="Policy Extended" />
+    <string id="AFPOL_UI_PolicyRenewedMessage" text="&quot;{NAME}&quot; extended by {DAYS} days&#10;Renewal cost: {COST} denars.&#10;Effects active at {SCALE} this cycle." />
+    <string id="AFPOL_UI_PolicyAdoptionFailedTitle" text="Policy Enactment Failed" />
+    <string id="AFPOL_UI_PolicyAdoptionFailedMessage" text="Agenda vote passed, but atomic commit of policy effects, ledger, or costs failed. AnimusForge has reverted this adoption; the policy did not take effect and will not show as active. Detailed reasons written to PolicySystem.txt." />
+    <string id="AFPOL_UI_LocalPolicyCancelledTitle" text="Local Policy Cancelled" />
+    <string id="AFPOL_UI_LocalPolicyLostFiefsCancelled" text="All target fiefs were lost during evaluation; no fees deducted, not enacted, and no record created." />
+    <string id="AFPOL_UI_LocalPolicyCannotPublishTitle" text="Local Policy Cannot Be Published" />
+    <string id="AFPOL_UI_LocalPolicyEvalFailedTitle" text="Local Policy Evaluation Failed" />
+    <string id="AFPOL_UI_LocalPolicyPublishFailedTitle" text="Local Policy Publication Failed" />
+    <string id="AFPOL_UI_NoLocalNumericEffects" text="No actionable local numeric effects generated; no fees deducted, not enacted." />
+    <string id="AFPOL_UI_PostprocessNoNumericEffects" text="Post-processing generated no actionable numeric effects; no fees deducted, no record created." />
+    <string id="AFPOL_UI_PolicyCommitFailed" text="Error occurred while submitting policy; effects reverted and no record kept. Technical details written to log." />
+    <string id="AFPOL_UI_PartialRollbackIncomplete" text="&#10;Some rollback steps incomplete; please check the log." />
+    <string id="AFPOL_UI_VassalPolicyCancelledTitle" text="Vassal Policy Cancelled" />
+    <string id="AFPOL_UI_VassalRelationshipChangedCancelled" text="Suzerainty relationship or ruler status changed during evaluation; policy not enacted, independence unchanged, no record created." />
+    <string id="AFPOL_UI_VassalPolicyPublishFailedTitle" text="Vassal Policy Publication Failed" />
+    <string id="AFPOL_UI_VassalNoValidEffects" text="No valid continuous effects targeting the vassal kingdom generated; policy not enacted, independence unchanged." />
+    <string id="AFPOL_UI_PolicySubmissionFailed" text="Policy submission failed." />
+    <string id="AFPOL_UI_VassalPublishResultSummary" text="&#10;&#10;Independence: {BEFORE} + publication cost {COST} + policy modifier {DELTA} = {AFTER}/100&#10;Current breakaway threshold: {THRESHOLD} ({RULER} relation {RELATION})" />
+    <string id="AFPOL_UI_VassalBreakawayTerminated" text="&#10;Target vassal kingdom has reached breakaway threshold; breakaway is irreversible, vassalage and all continuous effects terminated." />
+    <string id="AFPOL_UI_MaintenancePaidResume" text="&quot;{NAME}&quot; maintenance paid; numeric effects resumed." />
+    <string id="AFPOL_UI_MaintenanceSettlementError" text="&quot;{NAME}&quot; maintenance settlement error; numeric effects paused today, will retry tomorrow." />
+    <string id="AFPOL_UI_MaintenanceInsufficientFunds" text="&quot;{NAME}&quot; maintenance funds insufficient; numeric effects paused today, will retry tomorrow." />
+    <string id="AFPOL_UI_PolicyFeedbackTitleFormat" text="&quot;{NAME}&quot; Public Echoes" />
+    <string id="AFPOL_UI_SuzerainEnacted" text="Suzerain Enacted" />
+    <string id="AFPOL_UI_AssociatedPolicy" text="Associated policy: &quot;{POLICY}&quot;" />
+    <string id="AFPOL_UI_EventCourse" text="Event Course" />
+    <string id="AFPOL_UI_PolicyFeedbackAftermath" text="&quot;{NAME}&quot; Aftermath" />
+    <string id="AFPOL_UI_NewPolicy" text="New Policy" />
+    <string id="AFPOL_UI_LocalPolicySubmittedEvaluating" text="Local policy &quot;{NAME}&quot; is being evaluated by the intelligence service.&#10;&#10;Game time is paused. Upon success, it will settle immediately and take effect only on selected fiefs and bound villages without entering kingdom agenda." />
+    <string id="AFPOL_UI_VassalPolicySubmittedEvaluating" text="Vassal policy &quot;{NAME}&quot; is being evaluated by the intelligence service.&#10;&#10;Game time is paused. Upon success, it takes effect directly, is written to vassal and world policy records, and settles independence." />
+    <string id="AFPOL_UI_WaitingLocalPolicyEval" text="Awaiting Local Policy Evaluation" />
+    <string id="AFPOL_UI_WaitingVassalPolicyEval" text="Awaiting Vassal Policy Evaluation" />
+    <string id="AFPOL_UI_WaitingPolicyEval" text="Awaiting Policy Evaluation" />
+    <string id="AFPOL_UI_UnknownVassalKingdom" text="Unknown Vassal Kingdom" />
+    <string id="AFPOL_UI_StatusPrefix" text="Status: {STATUS}" />
+    <string id="AFPOL_UI_ConfirmExtend" text="Confirm Extension" />
+    <string id="AFPOL_UI_ExtendLocalPolicyNoStartupFeePrompt" text="Extend &quot;{NAME}&quot; by one full effect cycle ({DAYS} days)?&#10;&#10;Extension does not recharge startup fees, does not recall intelligence service, and will not replay one-shot effects or republish feedback." />
+    <string id="AFPOL_UI_ConfirmStop" text="Confirm Stop" />
+    <string id="AFPOL_UI_ConfirmAbolish" text="Confirm Abolish" />
+    <string id="AFPOL_UI_StopVassalPolicyDetailedPrompt" text="Are you sure you want to stop &quot;{NAME}&quot; immediately?&#10;&#10;Continuous effects across all kingdoms will cease immediately; independence will not change, fees are non-refundable, cooldown is not refreshed, and it cannot be renewed in the future." />
+    <string id="AFPOL_UI_AbolishLocalPolicyDetailedPrompt" text="Are you sure you want to abolish &quot;{NAME}&quot; immediately?&#10;&#10;Effects will cease immediately, paid fees are non-refundable, and this policy cannot be extended in the future." />
+    <string id="AFPOL_UI_PolicyRenewedDetailedBody" text="&quot;{NAME}&quot; extended {DAYS} days.&#10;Renewal cost: {COST} denars.&#10;Effects active at {SCALE} this cycle." />
+    <string id="AFPOL_UI_PolicyRenewedDetailedNoScale" text="&quot;{NAME}&quot; extended {DAYS} days.&#10;Renewal cost: {COST} denars." />
+    <string id="AFPOL_UI_EffectExtendedRemaining" text="Numeric effects for &quot;{NAME}&quot; have been extended by {DAYS} days; currently {REMAINING} days remaining." />
+    <string id="AFPOL_UI_LocalPolicyCannotPublishSuffix" text="&#10;&#10;Evaluation is complete, but no fees were deducted, the policy did not take effect, and no record was created." />
+    <string id="AFPOL_UI_NoFeesNotEnactedSuffix" text="&#10;&#10;No fees deducted, not enacted." />
+    <string id="AFPOL_UI_NoFeesNoRecordSuffix" text="&#10;&#10;No fees deducted, no record created." />
+    <string id="AFPOL_UI_SuzerainTargetPrefix" text="Suzerain: {SUZERAIN}&#10;Target: {TARGET}&#10;&#10;" />
+    <string id="AFPOL_UI_PolicyImpactEffects" text="Policy Impact Effects" />
+    <string id="AFPOL_UI_PolicyDerivedEvent" text="Policy-Derived Event" />
+  </strings>
+</base>
