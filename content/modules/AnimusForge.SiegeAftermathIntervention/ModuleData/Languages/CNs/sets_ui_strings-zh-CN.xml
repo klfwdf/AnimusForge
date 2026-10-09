@@ -103,5 +103,41 @@
     <string id="AF_SETS_Duel_PlayerWon" text="【城堡决斗】你击败了俘虏领主；对方已认输并恢复俘虏姿态。" />
     <string id="AF_SETS_Duel_PlayerLost" text="【城堡决斗】俘虏领主击败了你并放下武器；双方仍留在处置现场。" />
     <string id="AF_SETS_Duel_CombatStarted" text="【城堡决斗】双方就位，决斗开始。" />
+    <string id="AF_SETS_Entry_ConfigUnavailable" text="只能在战役地图上配置进城随行。" />
+    <string id="AF_SETS_Entry_ProfileOwnOption" text="自有定居点随行（{LIMIT}人）" />
+    <string id="AF_SETS_Entry_ProfileOtherOption" text="他方定居点随行（{LIMIT}人）" />
+    <string id="AF_SETS_Entry_ConfigTitle" text="【SETS】进城随行配置" />
+    <string id="AF_SETS_Entry_ConfigDescription" text="选择城镇、城堡或村庄进城时使用的随行名单：" />
+    <string id="AF_SETS_Entry_Configure" text="配置" />
+    <string id="AF_SETS_Entry_Close" text="关闭" />
+    <string id="AF_SETS_Entry_ConfigOpenFailed" text="【SETS】打开进城随行配置失败。" />
+    <string id="AF_SETS_Entry_PlayerPartyUnavailable" text="玩家部队不可用，无法配置随行。" />
+    <string id="AF_SETS_Entry_PartyRightName" text="{TITLE}（上限 {LIMIT} 人）" />
+    <string id="AF_SETS_Entry_PartyLeftName" text="可选健康普通士兵" />
+    <string id="AF_SETS_Entry_PartyHeader" text="配置 {TITLE}" />
+    <string id="AF_SETS_Entry_SelectionScopeOther" text="；只列出健康普通士兵；冲突开始后，现场主队同伴与家族成员会原地加入玩家编队。" />
+    <string id="AF_SETS_Entry_SelectionScopeOwn" text="；只列出健康普通士兵。" />
+    <string id="AF_SETS_Entry_Configuring" text="正在配置 {TITLE}{SCOPE}" />
+    <string id="AF_SETS_Entry_OpenFailed" text="【SETS】打开随行配置界面失败。" />
+    <string id="AF_SETS_Entry_LimitExceeded" text="随行配置不能超过 {LIMIT} 人。当前：{COUNT}" />
+    <string id="AF_SETS_Entry_Cancelled" text="【SETS】已取消进城随行配置。" />
+    <string id="AF_SETS_Entry_SavedWithCapacity" text="{TITLE}已保存 {COUNT}/{LIMIT}。仍可带入 {FREE} 人，可按 U 重新配置城镇、城堡或村庄随行。" />
+    <string id="AF_SETS_Entry_Saved" text="{TITLE}已保存 {COUNT}/{LIMIT}。" />
+    <string id="AF_SETS_Entry_SaveFailed" text="【SETS】保存进城随行配置失败。" />
+    <string id="AF_SETS_Entry_ProfileTitleOwn" text="自有定居点随行" />
+    <string id="AF_SETS_Entry_ProfileTitleOther" text="他方定居点随行" />
+    <string id="AF_SETS_Entry_RelationOwn" text="玩家直属领地；玩家为统治者时，同国附属领主领地也走这套。" />
+    <string id="AF_SETS_Entry_RelationOther" text="非自有领地；玩家不是统治者时，同国领主城镇也走这套。" />
+    <string id="AF_SETS_Entry_ProfileHint" text="已配置 {CONFIGURED}/{LIMIT}，当前健康可带入 {LIVE}/{LIMIT}。{RELATION}" />
+    <string id="AF_SETS_Entry_ProfileUnavailable" text=" 有 {COUNT} 个配置名额因受伤或离队不可用。" />
+    <string id="AF_SETS_Entry_ProfileFallbackOther" text="配置进入他方城镇、城堡或村庄时带入的健康普通士兵（人数上限可在 MCM 调整）；现场主队英雄会在冲突开始后加入玩家编队。" />
+    <string id="AF_SETS_Entry_ProfileFallbackOwn" text="配置进入自有城镇、城堡或村庄时自动带入的普通士兵。" />
+    <string id="AF_SETS_Entry_SettlementFallback" text="定居点" />
+    <string id="AF_SETS_Entry_ReminderUnconfigured" text="{TITLE}尚未配置，本次进入{SETTLEMENT}不会带随行。可按 U 为城镇、城堡或村庄配置随行人员。" />
+    <string id="AF_SETS_Entry_ReminderConfigured" text="本次进入{SETTLEMENT}随行 {SELECTED}/{LIMIT}，仍可带入 {FREE} 人。" />
+    <string id="AF_SETS_Entry_ReminderUnavailable" text=" 有 {COUNT} 个配置名额因受伤或离队空缺。" />
+    <string id="AF_SETS_Entry_ReminderReconfigure" text=" 可按 U 重新配置城镇、城堡或村庄随行。" />
+    <string id="AF_SETS_Entry_Spawned" text="【SETS】随行人员已进入场景，可按原版指挥调整。" />
+    <string id="AF_SETS_Entry_SpawnedConflict" text="冲突爆发时他们会协助你。" />
   </strings>
 </base>
