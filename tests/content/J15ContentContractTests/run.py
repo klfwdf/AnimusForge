@@ -702,11 +702,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "FF5D19E48A49E15615BCF3B1C382A01C6F159802155B135046BB50547AC7DE1E", "revision": "89760e94c",
+        "sha256": "981F0695F5BFAFFBC6455D936743425D10090431BE10D9ECF73274431E8A5313", "revision": "a7cc13efe",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "1ED635AA8E4AEA807316FF64F6B0E3CABE43CB2C9F4F8972F9DCA2AFCD552011", "revision": "89760e94c",
+        "sha256": "E34B6AB883898DD89F7A16453FA153890C2DAC99CD5080A71571288890CFE2E4", "revision": "a7cc13efe",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
