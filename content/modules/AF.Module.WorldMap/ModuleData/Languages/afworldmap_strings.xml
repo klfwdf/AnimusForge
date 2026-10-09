@@ -99,5 +99,50 @@
     <string id="AF_WM_ConversionBoth" text=", hostile settlements were handled as AI attacks and besieged settlements were changed to attacks on the besieging force." />
     <string id="AF_WM_ConversionBesieged" text=", besieged settlements were changed to attacks on the besieging force." />
     <string id="AF_WM_ConversionHostile" text=", hostile settlements were handled as AI attacks." />
+    <string id="AF_WM_GovernorRequestQueued" text="Recorded {HERO}'s governor expedition request; {REASON}. The garrison will be drafted and the expedition formed after the blocking screen or conversation closes." />
+    <string id="AF_WM_GovernorBlockedCampaign" text="the campaign system is not ready" />
+    <string id="AF_WM_GovernorBlockedScene" text="the player is still in a mission" />
+    <string id="AF_WM_GovernorBlockedConversation" text="a conversation is still in progress" />
+    <string id="AF_WM_GovernorBlockedPartyScreen" text="a party screen is already open" />
+    <string id="AF_WM_GovernorRequestMissingIdentity" text="The governor expedition request is missing required identity information." />
+    <string id="AF_WM_GovernorRequestTicketExpired" text="An existing governor expedition request has an expired runtime ticket." />
+    <string id="AF_WM_GovernorRequestStateChanged" text="A pending governor expedition request already exists, but its settlement or clan has changed." />
+    <string id="AF_WM_GovernorRequestTicketFailed" text="The governor expedition request ticket could not be created." />
+    <string id="AF_WM_CompanionHeroMissing" text="Only a non-player Hero present in the player's main-party roster can implicitly create a task party." />
+    <string id="AF_WM_CompanionRequestQueued" text="Recorded {HERO}'s companion-party request; {REASON}. The native party screen will open after returning to the world map." />
+    <string id="AF_WM_CompanionScreenOpenFailed" text="Opening the native companion-party screen failed: {ERROR}" />
+    <string id="AF_WM_CompanionBlockedMission" text="the player is still in a mission or review" />
+    <string id="AF_WM_CompanionBlockedConversation" text="a conversation is still in progress" />
+    <string id="AF_WM_CompanionBlockedPartyScreen" text="a party screen is already open" />
+    <string id="AF_WM_CompanionBlockedGameState" text="the game UI state is not ready" />
+    <string id="AF_WM_CompanionBlockedMainParty" text="the player's main party is unavailable" />
+    <string id="AF_WM_CompanionScreenPending" text="A companion-party creation screen is already waiting to complete." />
+    <string id="AF_WM_CompanionScreenOpened" text="Opened the party-splitting screen for {HERO}." />
+    <string id="AF_WM_StatusGoToSettlement" text="{ACTOR} is heading to {SETTLEMENT}; if native AI interrupts, the move command will be issued again." />
+    <string id="AF_WM_StatusPatrolSettlement" text="{ACTOR} is patrolling near {SETTLEMENT}; if native AI interrupts, the patrol command will be issued again." />
+    <string id="AF_WM_StatusFollowSiegeWaitExit" text="{ACTOR} is finishing the current battle; after it resolves, the party will leave the siege and resume following." />
+    <string id="AF_WM_StatusFollowing" text="{ACTOR} is following {TARGET}; if native AI interrupts, the follow command will be issued again." />
+    <string id="AF_WM_StatusFollowSiegeTravel" text="{ACTOR} is following {TARGET} to join the player's siege of {SETTLEMENT}." />
+    <string id="AF_WM_StatusFollowSiegeActive" text="{ACTOR} has joined the siege of {SETTLEMENT}." />
+    <string id="AF_WM_StatusRaidInterrupted" text="{ACTOR}'s village raid was interrupted by a native event; maintaining the raid command against {SETTLEMENT} again." />
+    <string id="AF_WM_StatusReengageParty" text="{ACTOR} caught up with {TARGET} again and is continuing the attack command." />
+    <string id="AF_WM_StatusReengageHero" text="{ACTOR} caught up with {TARGET}'s party again and is continuing the attack command." />
+    <string id="AF_WM_StatusMergeForeign" text="{HERO} is leading the guest force toward the player's main party; if native AI interrupts, the guest-force merge command will be issued again." />
+    <string id="AF_WM_StatusMerge" text="{HERO} is returning to the player's party; if native AI interrupts, the merge command will be issued again." />
+    <string id="AF_WM_StatusMergeDestroyStopped" text="{HERO}'s temporary party could not be safely destroyed; automatic merging stopped to avoid transferring assets twice." />
+    <string id="AF_WM_StatusMergeTransferStopped" text="Transferring troops from {HERO} failed repeatedly; automatic merging stopped to avoid damaging assets through repeated rollback." />
+    <string id="AF_WM_StatusMergeTransferRetry" text="{HERO} reached the player's party, but the troop transfer failed; assets were rolled back and will be retried in six in-game hours." />
+    <string id="AF_WM_StatusGoToBesiegedConverted" text="{ACTOR}'s destination {SETTLEMENT} is under siege by hostile {BESIEGER}; the move command was changed to attack the besieging force." />
+    <string id="AF_WM_StatusGoToHostileConverted" text="{ACTOR}'s destination {SETTLEMENT} is hostile; the move command will use the native attack behavior." />
+    <string id="AF_WM_StatusPreemptMapEvent" text="{ACTOR} is participating in {REASON}; the new world-map command will run after the native battle resolves." />
+    <string id="AF_WM_StatusPreemptSiege" text="{ACTOR} is participating in the current siege event; after it resolves, the party will leave the siege and run the new world-map command." />
+    <string id="AF_WM_StatusPreemptChanged" text="{ACTOR} abandoned {REASON} and switched to the new world-map command." />
+    <string id="AF_WM_PreemptNativeEvent" text="the current native event" />
+    <string id="AF_WM_PreemptRaid" text="the current raid" />
+    <string id="AF_WM_PreemptSupplies" text="the current supply requisition" />
+    <string id="AF_WM_PreemptVolunteers" text="the current volunteer requisition" />
+    <string id="AF_WM_PreemptSiege" text="the current siege" />
+    <string id="AF_WM_PreemptStrategicAction" text="the current strategic action" />
+    <string id="AF_WM_PreemptNativeAction" text="the current native action" />
   </strings>
 </base>

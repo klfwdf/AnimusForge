@@ -199,6 +199,12 @@ internal static class WorldMapUiText
 			: Text("AF_WM_ConversionHostile", ", hostile settlements were handled as AI attacks.", ("COUNT", hostile));
 	}
 
+	public static string GovernorRequestQueued(string hero, string reason)
+		=> Text("AF_WM_GovernorRequestQueued", "Recorded {HERO}'s governor expedition request; {REASON}. The garrison will be drafted and the expedition formed after the blocking screen or conversation closes.", ("HERO", hero), ("REASON", reason));
+
+	public static string CompanionRequestQueued(string hero, string reason)
+		=> Text("AF_WM_CompanionRequestQueued", "Recorded {HERO}'s companion-party request; {REASON}. The native party screen will open after returning to the world map.", ("HERO", hero), ("REASON", reason));
+
 	public static string Result(string id, string fallback, params (string Name, object Value)[] variables)
 		=> Text(id, fallback, variables);
 }

@@ -99,5 +99,50 @@
     <string id="AF_WM_ConversionBoth" text="，敌对定居点按AI攻击、被围攻定居点改攻敌对围城部队" />
     <string id="AF_WM_ConversionBesieged" text="，被围攻定居点改攻敌对围城部队" />
     <string id="AF_WM_ConversionHostile" text="，敌对定居点按AI攻击" />
+    <string id="AF_WM_GovernorRequestQueued" text="已记录{HERO}的总督远征请求；{REASON}。退出阻塞界面或对话后将抽调驻军并组建远征队。" />
+    <string id="AF_WM_GovernorBlockedCampaign" text="战役系统尚未就绪" />
+    <string id="AF_WM_GovernorBlockedScene" text="玩家仍在场景中" />
+    <string id="AF_WM_GovernorBlockedConversation" text="当前对话尚未退出" />
+    <string id="AF_WM_GovernorBlockedPartyScreen" text="当前已有部队界面打开" />
+    <string id="AF_WM_GovernorRequestMissingIdentity" text="总督远征请求缺少必要身份信息。" />
+    <string id="AF_WM_GovernorRequestTicketExpired" text="已有总督远征请求的运行时票据已经失效。" />
+    <string id="AF_WM_GovernorRequestStateChanged" text="已有待处理的总督远征请求，但管辖地或家族已经变化。" />
+    <string id="AF_WM_GovernorRequestTicketFailed" text="无法建立总督远征请求票据。" />
+    <string id="AF_WM_CompanionHeroMissing" text="只有玩家主队成员名册中确实存在的非玩家 Hero 才能隐式创建任务队伍。" />
+    <string id="AF_WM_CompanionRequestQueued" text="已记录{HERO}的创建同伴部队请求；{REASON}。返回大地图后将自动打开原版分兵界面。" />
+    <string id="AF_WM_CompanionScreenOpenFailed" text="打开原版创建同伴部队界面失败：{ERROR}" />
+    <string id="AF_WM_CompanionBlockedMission" text="当前仍在场景或阅兵中" />
+    <string id="AF_WM_CompanionBlockedConversation" text="当前对话尚未退出" />
+    <string id="AF_WM_CompanionBlockedPartyScreen" text="当前已有部队界面打开" />
+    <string id="AF_WM_CompanionBlockedGameState" text="当前游戏界面状态尚未就绪" />
+    <string id="AF_WM_CompanionBlockedMainParty" text="玩家主队当前不可用" />
+    <string id="AF_WM_CompanionScreenPending" text="当前已有同伴部队创建界面等待完成。" />
+    <string id="AF_WM_CompanionScreenOpened" text="已打开{HERO}的分兵界面。" />
+    <string id="AF_WM_StatusGoToSettlement" text="{ACTOR}正在前往{SETTLEMENT}；若原版 AI 打断，将重新下达前往命令。" />
+    <string id="AF_WM_StatusPatrolSettlement" text="{ACTOR}正在{SETTLEMENT}附近巡逻；若原版 AI 打断，将重新下达巡逻命令。" />
+    <string id="AF_WM_StatusFollowSiegeWaitExit" text="{ACTOR}正在完成当前战斗；结算后将退出攻城并恢复跟随。" />
+    <string id="AF_WM_StatusFollowing" text="{ACTOR}正在跟随{TARGET}；若原版 AI 打断，将重新下达跟随命令。" />
+    <string id="AF_WM_StatusFollowSiegeTravel" text="{ACTOR}正在跟随{TARGET}加入玩家对{SETTLEMENT}的围攻。" />
+    <string id="AF_WM_StatusFollowSiegeActive" text="{ACTOR}已经加入对{SETTLEMENT}的围攻。" />
+    <string id="AF_WM_StatusRaidInterrupted" text="{ACTOR}的烧村行动被原版事件提前中断，正在重新保持对{SETTLEMENT}的烧掠命令。" />
+    <string id="AF_WM_StatusReengageParty" text="{ACTOR}重新追上{TARGET}，继续执行攻击命令。" />
+    <string id="AF_WM_StatusReengageHero" text="{ACTOR}重新追上{TARGET}的部队，继续执行攻击命令。" />
+    <string id="AF_WM_StatusMergeForeign" text="{HERO}正率客军前往玩家主队；若原版 AI 打断，将重新下达客军并队命令。" />
+    <string id="AF_WM_StatusMerge" text="{HERO}正在返回玩家部队；若原版 AI 打断，将重新下达回队命令。" />
+    <string id="AF_WM_StatusMergeDestroyStopped" text="{HERO}的临时部队无法安全销毁，自动合并已停止，以免重复转移资产。" />
+    <string id="AF_WM_StatusMergeTransferStopped" text="{HERO}的兵员转入连续失败，自动合并已停止，以免重复回滚损坏资产。" />
+    <string id="AF_WM_StatusMergeTransferRetry" text="{HERO}已经抵达玩家部队，但兵员转入失败；资产已回滚，将在 6 个游戏小时后重试。" />
+    <string id="AF_WM_StatusGoToBesiegedConverted" text="{ACTOR}原本要前往的{SETTLEMENT}正在被敌对的{BESIEGER}围攻，已改为攻击围城部队。" />
+    <string id="AF_WM_StatusGoToHostileConverted" text="{ACTOR}原本要前往的{SETTLEMENT}已是敌对定居点，改按原版攻击行为执行。" />
+    <string id="AF_WM_StatusPreemptMapEvent" text="{ACTOR}正在参与{REASON}，将在原版战斗结算后执行新的大地图命令。" />
+    <string id="AF_WM_StatusPreemptSiege" text="{ACTOR}正在参与当前攻城事件，结算后将退出围城并执行新的大地图命令。" />
+    <string id="AF_WM_StatusPreemptChanged" text="{ACTOR}放弃{REASON}，改为执行新的大地图命令。" />
+    <string id="AF_WM_PreemptNativeEvent" text="当前原版事件" />
+    <string id="AF_WM_PreemptRaid" text="当前烧掠" />
+    <string id="AF_WM_PreemptSupplies" text="当前强征补给" />
+    <string id="AF_WM_PreemptVolunteers" text="当前强征兵员" />
+    <string id="AF_WM_PreemptSiege" text="当前攻城" />
+    <string id="AF_WM_PreemptStrategicAction" text="当前战略行动" />
+    <string id="AF_WM_PreemptNativeAction" text="当前原版行动" />
   </strings>
 </base>
