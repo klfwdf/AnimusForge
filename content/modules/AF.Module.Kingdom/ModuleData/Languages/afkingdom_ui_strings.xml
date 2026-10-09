@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_KINGDOM_CW_Target" text="the target" />
+    <string id="AF_KINGDOM_CW_Role_King" text="King" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="Crown faction" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="Uncommitted" />
+    <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="some kingdom" />
+</strings>
+</base>

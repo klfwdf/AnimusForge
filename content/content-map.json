@@ -17049,6 +17049,16 @@
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/afkingdom_ui_strings.xml",
+      "target": "ModuleData/Languages/afkingdom_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml"
     }
   ]
 }
