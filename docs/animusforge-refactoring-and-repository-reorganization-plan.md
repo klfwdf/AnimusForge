@@ -1,5 +1,5 @@
 <a id="mcm-model-preset-continuation-20261009"></a>
-## MCM 模型预设与快报战事修复接续（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
+## MCM 模型预设与快报战事修复接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 来源：用户接续会话 `01a11773-3ca3-7081-8721-040732168dca`；实际 `F:/AnimusForge-main`、`main@d3fde95d4`。检查点 `fc69fcc66`；产品 MCM `854e8559d`、快报 `2ee1708aa`。接手的五个快报 dirty 文件已验收并与发布回归一起单独提交；原两 NuGet 目录保留。
 - MCM 修复：真实 SetSelectedIndexAction 原地改索引，保存前文本模型名因此曾停在默认值；DropdownJsonConverter 复用 getter 对象，与旧假设相反。现在五模型同步真实名字，加载按名字恢复、索引0维持手动；预设 UI 复制按名字映射到当前列表，末尾补项避免破坏撤销；终端消费者同步。临时预设读取不写共享缓存，缓存只用于列表，默认预设不继承其他实例的已选值。普通 getter 复用 Dropdown，缓存每实例读取一次；显式设名/拉列表/预设动作边界才整理列表，无新增 Tick/网络任务。
@@ -16,6 +16,8 @@
 | 模式切换既有实现 | NewsCollectionTests 27 PASS：切换清除/旧队列取消/七游戏日/冻结追加与显式编辑失效；没有现场日志，不能宣布玩家弹窗原因已复现 |
 | 原统一双构建 | `build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot <已核实游戏目录> -Configuration Debug`，无 Stage/Deploy；最终exit0。引用1.3.15.110062/1.4.6.115628，各348警告0错误；Bootstrap/探针0警告0错误；双Coup门禁PASS |
 | 保留失败 | 旧 `WorldBulletinPolicy.SmokeTests/run_host_regression.py` 未抽取后来新增的 SynchronizeNewsCollectionMode，CS0103。未用空桩掩盖；本轮发布门由更完整 F4GenerationOwnerTests 覆盖，旧存储入口失败仍需单独维护，未标全仓绿 |
+
+本轮后续交付（用户明确授权“提交推送部署”，替代下方早期未部署状态）：以 `ec8cdd1ce` 重跑原统一双构建与双Coup门禁，1.3/1.4各348警告0错误、Bootstrap与probe通过。首次 -Deploy 被旧Stage快报JSON与新源码不一致拦截，未触及安装；完整保留旧Stage至 `artifacts/mcm-preset-continuation-20261009/previous-stage-before-deploy`，未改脚本/门禁，用本次新编译产物重跑原 `deploy_module.ps1` exit0。安装更新12文件（9程序产物、快报提示词、原当前源码 RuleBehaviorPrompts、SubModule.xml），3381 Stage/安装SHA一致，2475清单外文件大小/mtime未变（未宣称它们逐字节哈希验收），12旧备份SHA通过。Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-dd151913940a4d33bd7f02b2cf91dee6` complete；安装回滚按其 manifest/files 逐项恢复，源码仍用上述产品 focused inverse。详情 `deployment-receipt.json`、`deploy-build.log`、`deploy-retry.log`。不启动游戏、不打包；实机/玩家配置/真实模型限制保持。提交交付记录后普通推送，真实远端ref以本地 `publication-receipt.json` 核验，禁止以本地提交代替推送成功。
 
 原会话其余五项排查的当前结论（只读，未顺带实施）：
 
