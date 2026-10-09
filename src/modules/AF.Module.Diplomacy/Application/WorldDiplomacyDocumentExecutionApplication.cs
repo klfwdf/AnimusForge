@@ -421,7 +421,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
                     command.IsPlayerAuthored, playerDiplomacy, input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
-					document.MechanicalResult = "外交动作未执行：" + executionBlockReason;
+					document.MechanicalResult = "外交动作未执行："
+                        + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(executionBlockReason);
 					port.Log("multi-target diplomatic action became invalid during batch execution document="
 						+ command.DocumentId + " action=" + input.ActionId + " reason=" + executionBlockReason);
 				}

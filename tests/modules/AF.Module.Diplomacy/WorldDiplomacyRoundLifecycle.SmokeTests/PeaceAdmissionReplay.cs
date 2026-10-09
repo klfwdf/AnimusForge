@@ -7,13 +7,15 @@ internal static class PeaceAdmissionReplay
         internal bool War = true, Ruler = true;
         internal int Reads, Count = 3, Cap = 100;
         internal string Owner = "a";
+        internal Action BeforeOwnerRead;
         internal float Score = 95;
         internal readonly List<WorldDiplomacyCessionCandidate> Lost = new();
         internal readonly List<WorldDiplomacyCessionCandidate> Owned = new();
-        public string KingdomId(string id) { Reads++; return id is "a" or "b" ? id : null; }
+        internal string[] KingdomIds = new[] { "a", "b" };
+        public string KingdomId(string id) { Reads++; return KingdomIds.Contains(id) ? id : null; }
         public bool AtWar(string first, string second) => War;
         public string SettlementId(string id) => id is "castle" or "town" ? id : null;
-        public string SettlementOwner(string id) => Owner;
+        public string SettlementOwner(string id) { BeforeOwnerRead?.Invoke(); return Owner; }
         public bool HasRuler(string id) => Ruler;
         public float CessionScore(string first, string second, string from) => Score;
         public IEnumerable<WorldDiplomacyCessionCandidate> LostSettlements(string original, string current) { Reads++; return Lost; }
@@ -70,5 +72,17 @@ internal static class PeaceAdmissionReplay
         Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "changed land ownership invalidates the offered cession");
         p.Owner = "a"; p.Ruler = false;
         Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "cession requires a current receiving ruler");
+
+        // A newly proposed action has no source offer/action identity. It must
+        // validate its own terms without borrowing the response-only lookup.
+        p.Ruler = true; terms.CessionFromKingdomId = ""; terms.CessionToKingdomId = ""; terms.CessionSettlementId = "";
+        Test.True(WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(p, terms, "a", "b", out string newProposalReason)
+            && string.IsNullOrEmpty(newProposalReason), "new peace proposal validates its own terms without a source action");
+        terms.DailyTribute = 150; terms.DurationDays = 7;
+        Test.True(WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(p, terms, "a", "b", out _),
+            "new peace proposal preserves explicit tribute terms through admission");
+        terms.TributePayerKingdomId = "outside";
+        Test.True(!WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(p, terms, "a", "b", out string invalidProposalReason)
+            && invalidProposalReason.Contains("支付国"), "new peace proposal still rejects invalid explicit parties");
     }
 }

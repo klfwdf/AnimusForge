@@ -1199,15 +1199,6 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             EnsurePlayerDocumentRound(document);
             BindPlayerDeclarationToSharedEvent(document);
         }
-        if (document?.IsPlayerAuthored == true && intent == "propose_peace"
-            && !WorldDiplomacyPeaceAdmissionApplication.TryValidateOfferedPeaceTerms(_host.PeaceAdmission(), new WorldDiplomacyRoundOffer {
-                ProposerKingdomId = document.AuthorKingdomId, TargetKingdomId = document.TargetKingdomId },
-                document, document.AuthorKingdomId, document.TargetKingdomId, out string peaceReason))
-        {
-            document.MechanicalResult = "和平提案未执行：" + peaceReason;
-            SuppressInvalidDocumentBeforePropagation(document, "peace_terms_not_executable_without_changes");
-            return;
-        }
         if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent)
             && !ValidateFormalTreatyDeclaration(document, intent, document.TreatyTerms,
                 document.AuthorKingdomId, document.TargetKingdomId, document.RespondingToOfferDocumentId,
@@ -2431,7 +2422,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         bool partiesEligible = document != null && authorId != null && targetId != null
             && !_host.PartiesShareIdentity(authorId, targetId)
             && !_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId);
-        return WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
+        if (WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
             document, intent, commitment, authorId, targetId, partiesEligible,
             normalizedIntent =>
             {
@@ -2446,7 +2437,17 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                     claimedThreatDocumentId, out string threatReason);
                 return (violation, threatReason);
             },
-            ResolveRound, ResolveDocument, out reason);
+            ResolveRound, ResolveDocument, out reason)) return true;
+        // The executor projects each action's own terms before preflight and again
+        // before its effect. New proposals have no existing source offer to resolve.
+        if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "propose_peace"
+            && !WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(
+                _host.PeaceAdmission(), document.PeaceTerms, authorId, targetId, out string peaceReason))
+        {
+            reason = "peace_terms_not_executable_without_changes:" + peaceReason;
+            return true;
+        }
+        return false;
     }
 
     public WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(
