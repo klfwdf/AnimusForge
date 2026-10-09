@@ -1,3 +1,10 @@
+# 当前交接：新档玩家背景/外貌确认阻塞风险（2026-10-09，OFFLINE_VERIFIED）
+
+- 产品 `7089cd05`：人设/场景冲突选择完成前保留开局UI阶段；ONNX门禁采用后台单任务初始化、主线程结果发布、60秒超时、旧档/owner结果隔离。删除旧同步门禁与两个死转发，人物文本/存档键/模型不变。
+- 专项39 + 完整引擎异步18项断言通过；原统一双API/Bootstrap/两DLL接缝构建通过。邻接旧卷轴UI测试在候选和原版XML基线均于相同断言失败，保留PREEXISTING_FAIL。游戏内、玩家原故障、真实native ONNX/旧档未验；未部署/打包。
+- 在隔离分支 `codex/player-persona-freeze-20261009` 从 `4ed61998` 实施，不包含原工作区的NPC藏身处WIP。用户授权修复与推送；实际远端落点以最后推送核验为准，不继承其他历史部署授权。
+- [唯一主台账：调用链、源码坐标、检查与人工验收](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-persona-startup-freeze-20261009)。本地证据 `artifacts/persona-freeze-20261009/receipt.json`；回退仅focused revert本包产品提交。
+
 # 当前交接：1.5.7 本地包与累计公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
 
 - 以正式1.5.6产品 `fe40e43f9` 为基线，累计到远端产品 `46ce63e96`；官方流程生成v1.5.7，FileVersion1.5.7.0、AssemblyVersion1.5.4.0。原命令exit0，双API/Bootstrap/双Coup gate/Stage/ZIP通过；3,381项CRC与SHA、9程序产物及3139份具名内置世界书白名单通过。两个实现各348警告、0错误。
