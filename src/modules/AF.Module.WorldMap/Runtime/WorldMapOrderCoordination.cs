@@ -54,7 +54,8 @@ internal enum WorldMapCommandRoute
 	FollowParty = 4,
 	AttackHero = 5,
 	AttackParty = 6,
-	MergeToPlayer = 7
+	MergeToPlayer = 7,
+	ClearHideout = 8
 }
 
 /// <summary>
@@ -131,6 +132,7 @@ internal static class WorldMapOrderCoordinator
 			case "ATTACKHERO": return WorldMapCommandRoute.AttackHero;
 			case "ATTACKPARTY": return WorldMapCommandRoute.AttackParty;
 			case "MERGETOPLAYER": return WorldMapCommandRoute.MergeToPlayer;
+			case "CLEARHIDEOUT": return WorldMapCommandRoute.ClearHideout;
 			default: return WorldMapCommandRoute.Unknown;
 		}
 	}

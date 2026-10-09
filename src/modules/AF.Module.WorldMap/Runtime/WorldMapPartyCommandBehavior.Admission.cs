@@ -63,6 +63,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					Log("ignored non-leading STOP tag");
 					continue;
 				}
+				if (IsKind(command, CommandKind.ClearHideout) && !CanOfferHideoutClearTarget(ResolveSettlementById(command.TargetId)))
+				{
+					notifications.Add("清剿命令未接取：藏身处未发现、已清空、被任务占用、正在战斗，或安全接口未就绪。");
+					continue;
+				}
 				if (command != null)
 				{
 					commands.Add(command);
