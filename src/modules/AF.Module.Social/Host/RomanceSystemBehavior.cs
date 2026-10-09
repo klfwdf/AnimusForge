@@ -778,11 +778,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			string text2 = (num2 > 0 ? "+" : "") + num2;
 			Color color = ((num2 > 0) ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u));
-			InformationManager.DisplayMessage(new InformationMessage("[私人关系] " + hero.Name + " " + text2 + "（当前" + num + "）", color));
+			InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_PrivateRelationshipDelta", "[Private relationship] {NAME} {DELTA} (current {CURRENT}).", ("NAME", hero.Name), ("DELTA", text2), ("CURRENT", num)), color));
 			if (num3 > 0)
 			{
 				int npcTrust = RewardSystemBehavior.Instance?.GetNpcTrust(hero) ?? num3;
-				InformationManager.DisplayMessage(new InformationMessage("【信任变化】" + hero.Name + " 对你的个人信任 +" + num3 + "（因私人关系提升，当前" + npcTrust + "）", Color.FromUint(4278242559u)));
+				InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_TrustDelta", "[Trust change] {NAME}'s personal trust in you +{DELTA} (private relationship increase; current {CURRENT}).", ("NAME", hero.Name), ("DELTA", num3), ("CURRENT", npcTrust)), Color.FromUint(4278242559u)));
 			}
 		}
 		catch
@@ -1858,7 +1858,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Campaign.Current?.CampaignInformationManager?.NewMapNoticeAdded(new TaleWorlds.CampaignSystem.MapNotificationTypes.MarriageMapNotification(left, right, characterMarriedLogEntry.GetEncyclopediaText(), CampaignTime.Now));
 			}
-			string information = flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : (flag2 ? "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。" : "[婚姻系统] 检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。");
+			string information = flag ? SocialUiLocalization.Text("AF_SOCIAL_UI_MarriageFallbackMission", "[Marriage system] The marriage has taken effect; the meeting or mission scene is active, so the marriage record and notice were restored.") : (flag2 ? SocialUiLocalization.Text("AF_SOCIAL_UI_MarriageFallbackNotice", "[Marriage system] The marriage has taken effect; the wedding notice was restored.") : SocialUiLocalization.Text("AF_SOCIAL_UI_MarriageFallbackQueued", "[Marriage system] The marriage has taken effect; the wedding notice has been queued by the marriage event."));
 			InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4283878655u)));
 		}
 		catch (Exception ex)
@@ -3585,7 +3585,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			responseText = text.Trim();
 			if (!string.IsNullOrWhiteSpace(value))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[婚姻系统] " + value, Color.FromUint(4283878655u)));
+				InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_MarriageStatus", "[Marriage system] {STATUS}", ("STATUS", value)), Color.FromUint(4283878655u)));
 				Logger.Log("Romance", value);
 			}
 		}

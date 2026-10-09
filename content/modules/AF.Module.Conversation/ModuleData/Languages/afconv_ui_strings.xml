@@ -12,6 +12,23 @@
     <string id="AF_CONV_UI_Shout_InputHint" text="Tell them something:" />
     <string id="AF_CONV_UI_Shout_TagInputHint" text="Enter the text and tags:" />
     <string id="AF_CONV_UI_Shout_Execute" text="Run" />
+    <string id="AF_CONV_UI_TagTest_Title" text="Tag input - {NAME}" />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="Current target: {NAME}\nEnter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current NPC." />
+    <string id="AF_CONV_UI_TagTest_NotExecuted" text="Tag test was not run." />
+    <string id="AF_CONV_UI_TagTest_DataDisabled" text="Data management is disabled, or there is no conversation target to test." />
+    <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="There is no conversation target available." />
+    <string id="AF_CONV_UI_TagTest_EmptyInput" text="Input is empty." />
+    <string id="AF_CONV_UI_TagTest_Executed" text="Tag test executed. Target: {NAME}; tags: {COUNT}{SCENE}{VISIBLE}" />
+    <string id="AF_CONV_UI_TagTest_SceneMove" text="; SCENE_MOVE will run after the dialog closes" />
+    <string id="AF_CONV_UI_TagTest_NoVisible" text="; no visible text" />
+    <string id="AF_CONV_UI_TagTest_Visible" text="; visible text shown" />
+    <string id="AF_CONV_UI_TagTest_Failed" text="Tag test failed: {ERROR}" />
+    <string id="AF_CONV_UI_TagTest_Prefix" text="[Tag test] " />
+    <string id="AF_CONV_UI_TagTest_EnableData" text="[Tag test] Enable data management in MCM first." />
+    <string id="AF_CONV_UI_TagTest_NoSceneTarget" text="[Tag test] No current scene target was found." />
+    <string id="AF_CONV_UI_TagTest_NoNpc" text="[Tag test] No NPC with executable tags was found." />
+    <string id="AF_CONV_UI_TagTest_Submitted" text="[Tag test] Submitted to {NAME}; tags: {COUNT}" />
+    <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[Tag test] Execution failed: {ERROR}" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="Battle scene" />
     <string id="AF_CONV_UI_Native_Illustration" text="Scene illustration" />
     <string id="AF_CONV_UI_Courier_NotReady" text="The courier system is not initialized; replies are unavailable." />

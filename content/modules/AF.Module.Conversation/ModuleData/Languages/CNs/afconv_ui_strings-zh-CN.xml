@@ -12,6 +12,23 @@
     <string id="AF_CONV_UI_Shout_InputHint" text="请输入你想说的话：" />
     <string id="AF_CONV_UI_Shout_TagInputHint" text="输入正文和标签：" />
     <string id="AF_CONV_UI_Shout_Execute" text="执行" />
+    <string id="AF_CONV_UI_TagTest_Title" text="标签输入 - {NAME}" />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="当前目标：{NAME}\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。" />
+    <string id="AF_CONV_UI_TagTest_NotExecuted" text="标签测试未执行。" />
+    <string id="AF_CONV_UI_TagTest_DataDisabled" text="数据管理未开启，或当前没有可测试的对话目标。" />
+    <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="当前没有可接入的对话对象。" />
+    <string id="AF_CONV_UI_TagTest_EmptyInput" text="输入为空。" />
+    <string id="AF_CONV_UI_TagTest_Executed" text="标签测试已执行。目标：{NAME}；标签数：{COUNT}{SCENE}{VISIBLE}" />
+    <string id="AF_CONV_UI_TagTest_SceneMove" text="；SCENE_MOVE 将在退出对话框后执行" />
+    <string id="AF_CONV_UI_TagTest_NoVisible" text="；无可见正文" />
+    <string id="AF_CONV_UI_TagTest_Visible" text="；已显示正文" />
+    <string id="AF_CONV_UI_TagTest_Failed" text="标签测试失败：{ERROR}" />
+    <string id="AF_CONV_UI_TagTest_Prefix" text="[标签测试] " />
+    <string id="AF_CONV_UI_TagTest_EnableData" text="[标签测试] 请先在 MCM 开启数据管理。" />
+    <string id="AF_CONV_UI_TagTest_NoSceneTarget" text="[标签测试] 没有找到当前场景目标。" />
+    <string id="AF_CONV_UI_TagTest_NoNpc" text="[标签测试] 没有找到可执行标签的 NPC。" />
+    <string id="AF_CONV_UI_TagTest_Submitted" text="[标签测试] 已提交给 {NAME}，标签数：{COUNT}" />
+    <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[标签测试] 执行失败：{ERROR}" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="战斗现场" />
     <string id="AF_CONV_UI_Native_Illustration" text="场景插画" />
     <string id="AF_CONV_UI_Courier_NotReady" text="信使系统尚未初始化，暂时不能回信。" />

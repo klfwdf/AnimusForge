@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_SOCIAL_UI_IntimacyCompleted" text="You and {NAME} shared an intimate encounter." />
+    <string id="AF_SOCIAL_UI_PrivateRelationshipDelta" text="[Private relationship] {NAME} {DELTA} (current {CURRENT})." />
+    <string id="AF_SOCIAL_UI_TrustDelta" text="[Trust change] {NAME}'s personal trust in you +{DELTA} (private relationship increase; current {CURRENT})." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackMission" text="[Marriage system] The marriage has taken effect; the meeting or mission scene is active, so the marriage record and notice were restored." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackNotice" text="[Marriage system] The marriage has taken effect; the wedding notice was restored." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="[Marriage system] The marriage has taken effect; the wedding notice has been queued by the marriage event." />
+    <string id="AF_SOCIAL_UI_MarriageStatus" text="[Marriage system] {STATUS}" />
+    <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} loyalty +{AMOUNT}" />
+  </strings>
+</base>

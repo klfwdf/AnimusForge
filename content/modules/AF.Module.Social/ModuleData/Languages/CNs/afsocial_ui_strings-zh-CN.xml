@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_SOCIAL_UI_IntimacyCompleted" text="你与 {NAME} 发生了亲密行为。" />
+    <string id="AF_SOCIAL_UI_PrivateRelationshipDelta" text="【私人关系】{NAME} {DELTA}（当前 {CURRENT}）。" />
+    <string id="AF_SOCIAL_UI_TrustDelta" text="【信任变化】{NAME} 对你的个人信任 +{DELTA}（因私人关系提升，当前 {CURRENT}）。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackMission" text="【婚姻系统】检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackNotice" text="【婚姻系统】检测到婚姻已生效，已补发婚礼通知。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="【婚姻系统】检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。" />
+    <string id="AF_SOCIAL_UI_MarriageStatus" text="【婚姻系统】{STATUS}" />
+    <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} 忠诚度 +{AMOUNT}" />
+  </strings>
+</base>

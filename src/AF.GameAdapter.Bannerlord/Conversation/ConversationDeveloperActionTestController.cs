@@ -107,7 +107,7 @@ internal bool OpenNativeConversationTagTestForExternal(Action onFinished = null)
 					}
 					else
 					{
-						ShowTagTestStatus(string.IsNullOrWhiteSpace(statusText) ? "标签测试未执行。" : statusText, success: false);
+						ShowTagTestStatus(string.IsNullOrWhiteSpace(statusText) ? ConversationUiLocalization.Text("AF_CONV_UI_TagTest_NotExecuted", "Tag test was not run.") : statusText, success: false);
 					}
 				}
 				finally
@@ -115,8 +115,8 @@ internal bool OpenNativeConversationTagTestForExternal(Action onFinished = null)
 					finish();
 				}
 			};
-			string title = "标签输入 - " + displayName;
-			string subtitle = "当前目标：" + displayName + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。";
+			string title = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Title", "Tag input - {NAME}", "NAME", displayName);
+			string subtitle = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Subtitle", "Current target: {NAME}\nEnter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current NPC.", "NAME", displayName);
 			string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagInputHint", "Enter the text and tags:");
 			if (ShoutTextInputPopup.Show(title, subtitle, inputHint, "", submit, finish))
 			{
@@ -138,19 +138,19 @@ internal bool TrySubmitNativeConversationTagTestForExternal(string rawText, out 
 		{
 			if (!CanOpenNativeConversationTagTestForExternal())
 			{
-				statusText = "数据管理未开启，或当前没有可测试的对话目标。";
+				statusText = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_DataDisabled", "Data management is disabled, or there is no conversation target to test.");
 				return false;
 			}
 			ConversationDeveloperActionTestController instance = _isCurrentOwner() ? this : null;
 			if (instance == null || !TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var npcName))
 			{
-				statusText = "当前没有可接入的对话对象。";
+				statusText = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_NoConversationTarget", "There is no conversation target available.");
 				return false;
 			}
 			string content = (rawText ?? "").Replace("\r", "").Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				statusText = "输入为空。";
+				statusText = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_EmptyInput", "Input is empty.");
 				return false;
 			}
 			targetHero ??= targetCharacter?.HeroObject;
@@ -208,13 +208,13 @@ internal bool TrySubmitNativeConversationTagTestForExternal(string rawText, out 
 				}
 				instance.CommitNativeConversationTagTestVisibleLine(targetHero, targetCharacter, npcName, visible, targetAgentIndex);
 			}
-			statusText = "标签测试已执行。目标：" + displayName + "，标签数：" + tagCount + (sceneMechanismHandled ? "，SCENE_MOVE将在退出对话框后执行。" : "") + (string.IsNullOrWhiteSpace(visible) ? "，无可见正文。" : "，已显示正文。");
+			statusText = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Executed", "Tag test executed. Target: {NAME}; tags: {COUNT}{SCENE}{VISIBLE}", ("NAME", displayName), ("COUNT", tagCount), ("SCENE", sceneMechanismHandled ? ConversationUiLocalization.Text("AF_CONV_UI_TagTest_SceneMove", "; SCENE_MOVE will run after the dialog closes") : ""), ("VISIBLE", string.IsNullOrWhiteSpace(visible) ? ConversationUiLocalization.Text("AF_CONV_UI_TagTest_NoVisible", "; no visible text") : ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Visible", "; visible text shown")));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NativeConversationTagTest", "[ERROR] submit failed: " + ex);
-			statusText = "标签测试失败：" + ex.Message;
+			statusText = ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Failed", "Tag test failed: {ERROR}", "ERROR", ex.Message);
 			return false;
 		}
 	}
@@ -294,7 +294,7 @@ internal void OnShoutTagTestConfirmed(string input, int? forcedPrimaryAgentIndex
 		{
 			if (!MyBehavior.IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 请先在 MCM 开启数据管理。", new Color(1f, 0.45f, 0.25f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_EnableData", "[Tag test] Enable data management in MCM first."), new Color(1f, 0.45f, 0.25f)));
 				return;
 			}
 			ShoutTargetingContext targetingContext = _getTargeting();
@@ -310,7 +310,7 @@ internal void OnShoutTagTestConfirmed(string input, int? forcedPrimaryAgentIndex
 			nearbyAgents = nearbyAgents.Where((Agent a) => a != null && a.IsActive()).ToList();
 			if (nearbyAgents.Count == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 没有找到当前场景目标。", new Color(1f, 0.45f, 0.25f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_NoSceneTarget", "[Tag test] No current scene target was found."), new Color(1f, 0.45f, 0.25f)));
 				return;
 			}
 			List<NpcDataPacket> allNpcData = nearbyAgents.Select((Agent a) => ShoutUtils.ExtractNpcData(a)).Where((NpcDataPacket d) => d != null).ToList();
@@ -324,7 +324,7 @@ internal void OnShoutTagTestConfirmed(string input, int? forcedPrimaryAgentIndex
 			NpcDataPacket primaryNpc = (primaryTarget != null) ? allNpcData.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index) : allNpcData.FirstOrDefault();
 			if (primaryNpc == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 没有找到可执行标签的 NPC。", new Color(1f, 0.45f, 0.25f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_NoNpc", "[Tag test] No NPC with executable tags was found."), new Color(1f, 0.45f, 0.25f)));
 				return;
 			}
 			Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
@@ -340,12 +340,12 @@ internal void OnShoutTagTestConfirmed(string input, int? forcedPrimaryAgentIndex
 			List<SceneGuidePromptTarget> sceneGuideTargets = _sceneMovement.BuildSceneGuidePromptTargets(primaryTarget, sceneGuideFirstPromptId);
 			Logger.Log("SceneTagTest", "submit target=" + (primaryNpc?.Name ?? "") + " agentIndex=" + primaryNpc.AgentIndex + " tagCount=" + CountDeveloperTagTestTags(content) + " raw=" + content.Replace("\n", "\\n"));
 			_speech(primaryNpc,content,allNpcData,sceneSummonTargets,sceneGuideTargets);
-			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 已提交给 " + (primaryNpc.Name ?? "NPC") + "，标签数：" + CountDeveloperTagTestTags(content), new Color(0.4f, 1f, 0.4f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_Submitted", "[Tag test] Submitted to {NAME}; tags: {COUNT}", ("NAME", primaryNpc.Name ?? "NPC"), ("COUNT", CountDeveloperTagTestTags(content))), new Color(0.4f, 1f, 0.4f)));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTagTest", "[ERROR] submit failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 执行失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_ExecutionFailed", "[Tag test] Execution failed: {ERROR}", "ERROR", ex.Message), new Color(1f, 0.35f, 0.25f)));
 		}
 		finally
 		{
