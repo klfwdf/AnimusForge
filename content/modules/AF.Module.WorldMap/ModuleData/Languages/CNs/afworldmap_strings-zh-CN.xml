@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_WM_GoToSettlementUntil" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留至指定期限。" />
+    <string id="AF_WM_GoToSettlement" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留{DAYS}天。" />
+    <string id="AF_WM_Patrol" text="{ACTOR}开始前往{SETTLEMENT}附近，抵达后巡逻{DAYS}天。" />
+    <string id="AF_WM_SettlementAttack" text="{ACTOR}开始向{SETTLEMENT}机动，准备{ACTION}，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_WaitForHero" text="{ACTOR}开始前往{SETTLEMENT}外侧，等待{HERO}离开定居点以执行攻击命令。" />
+    <string id="AF_WM_TrackHero" text="{ACTOR}开始追踪{HERO}的部队，准备攻击，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_TrackParty" text="{ACTOR}开始追踪{PARTY}，准备攻击，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_MergeForeign" text="{HERO}开始率部前往玩家主队，准备在保留原家族身份的情况下以客军形式整队并入。" />
+    <string id="AF_WM_Merge" text="{HERO}开始返回玩家部队，准备会合并转入兵力。" />
+    <string id="AF_WM_Target" text="目标" />
+    <string id="AF_WM_TrackRisk" text="{ACTOR}已经接近{TARGET}，但战力评估认为当前风险过高，正在等待更好的进攻窗口。" />
+    <string id="AF_WM_TrackBlocked" text="{ACTOR}已经接近{TARGET}，但攻击硬条件暂不满足，正在继续跟踪目标。" />
+    <string id="AF_WM_TrackLost" text="{ACTOR}与{TARGET}的接战条件暂时丢失，正在重新追击。" />
+    <string id="AF_WM_Tracking" text="{ACTOR}正在追踪{TARGET}，准备执行攻击命令。" />
+    <string id="AF_WM_ResultActorPartyDestroyed" text="执行者部队已被消灭。" />
+    <string id="AF_WM_ResultTargetDefeated" text="目标部队已被击溃。" />
+    <string id="AF_WM_ResultTargetDestroyed" text="目标部队已经被消灭或解散。" />
+    <string id="AF_WM_ResultNoWinner" text="战斗已经结束，但原版事件没有明确胜负。" />
+    <string id="AF_WM_ResultActorCaptured" text="执行者已经被俘，攻击命令失败。" />
+    <string id="AF_WM_ResultTargetCaptured" text="{TARGET}已被俘，目标部队被击败。" />
+    <string id="AF_WM_ResultActorKilled" text="执行者已经死亡，攻击命令失败。" />
+    <string id="AF_WM_ResultSettlementCaptured" text="{SETTLEMENT}已经被攻下。" />
+    <string id="AF_WM_ResultSiegeFailed" text="攻城方未能攻下目标。" />
+    <string id="AF_WM_ResultSettlementOwnerChanged" text="{SETTLEMENT}已经被攻下并易主。" />
+    <string id="AF_WM_ResultVillageRaided" text="村庄已被洗劫。" />
+    <string id="AF_WM_ResultRaidRepelled" text="守军击退了袭掠，村庄没有被洗劫。" />
+    <string id="AF_WM_ResultVillageLooted" text="村庄已进入被洗劫状态。" />
+    <string id="AF_WM_Admission_StopOrder" text="大地图命令顺序错误：STOP 只能位于本轮首个有效世界地图标签，已忽略该 STOP。" />
+    <string id="AF_WM_Admission_HideoutUnavailable" text="清剿命令未接取：藏身处未发现、已清空、被任务占用、正在战斗，或安全接口未就绪。" />
+    <string id="AF_WM_Admission_NotReady" text="大地图命令系统未初始化。" />
+    <string id="AF_WM_Admission_NoParty" text="大地图命令失败：当前非英雄说话对象没有可接管的野外部队。" />
+    <string id="AF_WM_Admission_QueueCleared" text="{ACTOR}已清空旧的大地图命令清单。" />
+    <string id="AF_WM_Admission_NonHeroLimit" text="大地图命令失败：当前非英雄部队只能执行移动、巡逻、跟随、攻击等队伍级命令。" />
+    <string id="AF_WM_Admission_NoTarget" text="大地图命令失败：没有可执行的有效目标 ID。" />
+    <string id="AF_WM_Admission_CompanionOrder" text="大地图命令顺序错误：建队前的归队命令无法执行，已从首个有效任务命令开始处理。" />
+    <string id="AF_WM_Admission_GovernorNoTask" text="大地图命令失败：驻城总督需要至少一道移动、巡逻、跟随或攻击任务才能组建远征队。" />
+    <string id="AF_WM_Admission_GovernorOrder" text="大地图命令顺序错误：总督建队前的归队命令无法执行，已从首个有效任务命令开始处理。" />
+    <string id="AF_WM_Admission_ProcessingFailed" text="大地图命令处理失败：{ERROR}" />
+  </strings>
+</base>

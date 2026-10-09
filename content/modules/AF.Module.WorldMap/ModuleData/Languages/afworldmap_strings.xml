@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_WM_GoToSettlementUntil" text="{ACTOR} is heading to {SETTLEMENT}; it will stay there until the specified deadline." />
+    <string id="AF_WM_GoToSettlement" text="{ACTOR} is heading to {SETTLEMENT} and will stay there for {DAYS} days." />
+    <string id="AF_WM_Patrol" text="{ACTOR} is heading near {SETTLEMENT} and will patrol for {DAYS} days." />
+    <string id="AF_WM_SettlementAttack" text="{ACTOR} is moving toward {SETTLEMENT} to {ACTION}; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_WaitForHero" text="{ACTOR} is heading outside {SETTLEMENT} and waiting for {HERO} to leave before attacking." />
+    <string id="AF_WM_TrackHero" text="{ACTOR} is tracking {HERO}'s party to attack; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_TrackParty" text="{ACTOR} is tracking {PARTY} to attack; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_MergeForeign" text="{HERO} is returning to the player's party and will merge as a guest force while keeping the original clan identity." />
+    <string id="AF_WM_Merge" text="{HERO} is returning to the player's party to regroup and transfer troops." />
+    <string id="AF_WM_Target" text="target" />
+    <string id="AF_WM_TrackRisk" text="{ACTOR} is near {TARGET}, but the strength assessment considers the risk too high; waiting for a better attack window." />
+    <string id="AF_WM_TrackBlocked" text="{ACTOR} is near {TARGET}, but the attack requirements are not met; continuing to track the target." />
+    <string id="AF_WM_TrackLost" text="The engagement conditions between {ACTOR} and {TARGET} were temporarily lost; pursuing again." />
+    <string id="AF_WM_Tracking" text="{ACTOR} is tracking {TARGET} and preparing to execute the attack command." />
+    <string id="AF_WM_ResultActorPartyDestroyed" text="The executing party was destroyed." />
+    <string id="AF_WM_ResultTargetDefeated" text="The target party was defeated." />
+    <string id="AF_WM_ResultTargetDestroyed" text="The target party was destroyed or disbanded." />
+    <string id="AF_WM_ResultNoWinner" text="The battle ended, but the native event did not declare a winner." />
+    <string id="AF_WM_ResultActorCaptured" text="The executor was captured; the attack command failed." />
+    <string id="AF_WM_ResultTargetCaptured" text="{TARGET} was captured; the target party was defeated." />
+    <string id="AF_WM_ResultActorKilled" text="The executor died; the attack command failed." />
+    <string id="AF_WM_ResultSettlementCaptured" text="{SETTLEMENT} was captured." />
+    <string id="AF_WM_ResultSiegeFailed" text="The besieging force failed to capture the target." />
+    <string id="AF_WM_ResultSettlementOwnerChanged" text="{SETTLEMENT} was captured and changed hands." />
+    <string id="AF_WM_ResultVillageRaided" text="The village was raided." />
+    <string id="AF_WM_ResultRaidRepelled" text="The defenders repelled the raid; the village was not looted." />
+    <string id="AF_WM_ResultVillageLooted" text="The village is now in a looted state." />
+    <string id="AF_WM_Admission_StopOrder" text="Invalid world-map command order: STOP is only valid as the first effective world-map tag in this round; the STOP was ignored." />
+    <string id="AF_WM_Admission_HideoutUnavailable" text="The hideout-clear command was not accepted: the hideout was not found, already empty, occupied by a quest, in battle, or the safe interface was not ready." />
+    <string id="AF_WM_Admission_NotReady" text="The world-map command system is not initialized." />
+    <string id="AF_WM_Admission_NoParty" text="World-map command failed: the current non-hero speaker has no field party that can be taken over." />
+    <string id="AF_WM_Admission_QueueCleared" text="{ACTOR} cleared the previous world-map command queue." />
+    <string id="AF_WM_Admission_NonHeroLimit" text="World-map command failed: a non-hero party can only execute party-level move, patrol, follow, and attack commands." />
+    <string id="AF_WM_Admission_NoTarget" text="World-map command failed: there is no valid executable target ID." />
+    <string id="AF_WM_Admission_CompanionOrder" text="Invalid world-map command order: a merge command before party creation cannot run; processing starts at the first effective task command." />
+    <string id="AF_WM_Admission_GovernorNoTask" text="World-map command failed: a governor in a settlement needs at least one move, patrol, follow, or attack task to form an expedition." />
+    <string id="AF_WM_Admission_GovernorOrder" text="Invalid world-map command order: a merge command before governor party creation cannot run; processing starts at the first effective task command." />
+    <string id="AF_WM_Admission_ProcessingFailed" text="World-map command processing failed: {ERROR}" />
+  </strings>
+</base>
