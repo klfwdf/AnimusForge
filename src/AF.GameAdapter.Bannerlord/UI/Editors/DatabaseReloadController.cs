@@ -365,7 +365,7 @@ internal sealed class DatabaseReloadPreflight
 		}
 	}
 
-	internal static bool TryReadDatabaseReloadJson<T>(string filePath, out T value, out string error) where T : class
+	internal static bool TryReadDatabaseReloadJson<TValue>(string filePath, out TValue value, out string error) where TValue : class
 	{
 		value = null;
 		error = "";
@@ -380,7 +380,7 @@ internal sealed class DatabaseReloadPreflight
 		}
 		try
 		{
-			value = JsonConvert.DeserializeObject<T>(text);
+			value = JsonConvert.DeserializeObject<TValue>(text);
 			if (value == null)
 			{
 				error = T("AF_UI_Developer_ReloadJsonInvalid", "The JSON content is empty or has an invalid structure.");

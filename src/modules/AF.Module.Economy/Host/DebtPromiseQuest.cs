@@ -56,7 +56,7 @@ public sealed class DebtPromiseQuest : QuestBase
 		get
 		{
 			// Keep the counterparty as a compact list identity without exposing ledger terminology.
-			TextObject text = new TextObject(_isExpired ? "{=AF_DEBT_PROMISE_EXPIRED_TITLE}承诺已过期：{DEBTOR}" : "{=AF_DEBT_PROMISE_TITLE}承诺：{DEBTOR}");
+			TextObject text = new TextObject(_isExpired ? "{=AF_DEBT_PROMISE_EXPIRED_TITLE}Expired promise: {DEBTOR}" : "{=AF_DEBT_PROMISE_TITLE}Promise: {DEBTOR}");
 			text.SetTextVariable("DEBTOR", GetDisplayText(_debtorName, "对方"));
 			return text;
 		}
@@ -209,13 +209,13 @@ public sealed class DebtPromiseQuest : QuestBase
 	private TextObject BuildCompletionLog()
 	{
 		// Completed tasks retain a neutral outcome line and never reintroduce the removed debt label.
-		return new TextObject("{=AF_DEBT_PROMISE_COMPLETE}此承诺已完成或解除。");
+		return new TextObject("{=AF_DEBT_PROMISE_COMPLETE}This promise has been completed or released.");
 	}
 
 	private TextObject BuildExpiredLog()
 	{
 		// Expiry is a visible next stage rather than a task failure, so the agreement may still be fulfilled later.
-		return new TextObject("{=AF_DEBT_PROMISE_EXPIRED}承诺已过期，但仍可在之后解除或完成。");
+		return new TextObject("{=AF_DEBT_PROMISE_EXPIRED}This promise has expired, but it can still be released or completed later.");
 	}
 
 	private void UpgradeJournalPresentationIfNeeded()
