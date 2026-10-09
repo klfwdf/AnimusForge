@@ -668,6 +668,10 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
         "sha256": "F04F7C39ED59933C911DAF5320444DAE72FC7F7B589D2641560060AC33F868A5", "revision": "c77cf9d3b",
     },
+    "ModuleData/Languages/gccz_town_manual_strings.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/gccz_town_manual_strings.xml",
+        "sha256": "05B702BED059385E37CF744E485CD4B8EC04467A140C3721F64946F0E8415090", "revision": "39713bafb",
+    },
     "ModuleData/Languages/afworldmap_strings.xml": {
         "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/afworldmap_strings.xml",
         "sha256": "0F0F19F34DE03B7CD650C56604676765FD04EDD3C017A4A2DE6ED27C1361CB8A", "revision": "6bacfc432",
