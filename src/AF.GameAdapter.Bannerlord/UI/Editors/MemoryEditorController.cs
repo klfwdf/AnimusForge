@@ -303,7 +303,7 @@ internal sealed class MemoryEditorController
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_port.SelectedHero, npc)) return;
 			OpenDevCompressedMemoryMenu(npc);
-		});
+		}, MemoryEditorUiText.T("AF_MEMORY_UI_Back", "Back"));
 	}
 
 	internal void OpenDevDailyMemoryDraftList(Hero npc, int page, string query)
@@ -407,7 +407,7 @@ internal sealed class MemoryEditorController
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_port.SelectedHero, npc)) return;
 			OpenDevCompressedMemoryMenu(npc);
-		});
+		}, MemoryEditorUiText.T("AF_MEMORY_UI_Enter", "Enter"), MemoryEditorUiText.T("AF_MEMORY_UI_Back", "Back"));
 	}
 
 	internal void OpenDevDailyMemoryDraftEditor(Hero npc, int dayIndex, int returnPage, string returnQuery)
@@ -473,7 +473,7 @@ internal sealed class MemoryEditorController
 				|| !ReferenceEquals(draft, _port.FindDevDailyMemoryDraft(_port.LoadDailyMemoryDrafts(npc), dayIndex))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
-		});
+		}, MemoryEditorUiText.T("AF_MEMORY_UI_Enter", "Enter"), MemoryEditorUiText.T("AF_MEMORY_UI_Back", "Back"));
 	}
 
 	internal void OpenDevDailyMemoryLineList(Hero npc, int dayIndex, int returnPage, string returnQuery)
@@ -610,7 +610,7 @@ internal sealed class MemoryEditorController
 				|| !ReferenceEquals(line, _port.FindDevDailyMemoryLine(_port.LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
-		});
+		}, MemoryEditorUiText.T("AF_MEMORY_UI_Enter", "Enter"), MemoryEditorUiText.T("AF_MEMORY_UI_Back", "Back"));
 	}
 
 	internal void OpenDevDailyMemoryLineTextEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
