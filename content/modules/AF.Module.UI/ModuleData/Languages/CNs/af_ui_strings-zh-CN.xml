@@ -252,5 +252,29 @@
   <string id="AF_UI_Terminal_Duel" text="决斗与部队" />
   <string id="AF_UI_Terminal_Scene" text="场景互动" />
   <string id="AF_UI_Terminal_Characters" text="角色与同伴" />
+  <string id="AF_UI_Terminal_SaveFailed" text="终端设置未能保存，请检查 MCM 或日志后重试。" />
+  <string id="AF_UI_Terminal_DiagnosticsOnline" text="捕获哨兵状态: 正常在线" />
+  <string id="AF_UI_Terminal_DiagnosticsEmpty" text="暂无待分析的最近异常。" />
+  <string id="AF_UI_Terminal_IndexStatus" text="索引：{COUNT} 项 · {TIME} 更新；可搜索参数/来源" />
+  <string id="AF_UI_Terminal_Page" text="{PAGE} 页 · {COUNT} 项" />
+  <string id="AF_UI_Terminal_AnyKey" text="请按任意键 (ESC取消)..." />
+  <string id="AF_UI_Terminal_Unset" text="未设置" />
+  <string id="AF_UI_Terminal_Saved" text="AnimusForge 终端设置已成功保存！" />
+  <string id="AF_UI_Terminal_SaveError" text="保存设置失败，请查看日志。" />
+  <string id="AF_UI_Terminal_NoHint" text="无附加说明。" />
+  <string id="AF_UI_Terminal_Branch" text="子面板" />
+  <string id="AF_UI_Terminal_Action" text="动作" />
+  <string id="AF_UI_Terminal_Enter" text="进入 ➔" />
+  <string id="AF_UI_Terminal_View" text="查看" />
+  <string id="AF_UI_Terminal_Execute" text="执行 ⚡" />
+  <string id="AF_UI_Terminal_SettingHint" text="按需调节该机制项的运行参数或开关。" />
+  <string id="AF_UI_Terminal_Toggle" text="开关" />
+  <string id="AF_UI_Terminal_Parameter" text="参数" />
+  <string id="AF_UI_Terminal_Dropdown" text="下拉" />
+  <string id="AF_UI_Terminal_Hotkey" text="按键" />
+  <string id="AF_UI_Terminal_Text" text="文本" />
+  <string id="AF_UI_Terminal_ExecuteBadge" text="执行" />
+  <string id="AF_UI_Terminal_Enabled" text="✔ 开启" />
+  <string id="AF_UI_Terminal_Disabled" text="✕ 关闭" />
   </strings>
 </base>

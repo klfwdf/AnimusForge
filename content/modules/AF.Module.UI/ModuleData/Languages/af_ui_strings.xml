@@ -252,5 +252,29 @@
   <string id="AF_UI_Terminal_Duel" text="Duels and parties" />
   <string id="AF_UI_Terminal_Scene" text="Scene interaction" />
   <string id="AF_UI_Terminal_Characters" text="Characters and companions" />
+  <string id="AF_UI_Terminal_SaveFailed" text="Terminal settings could not be saved. Check MCM or the log and retry." />
+  <string id="AF_UI_Terminal_DiagnosticsOnline" text="Sentinel status: online" />
+  <string id="AF_UI_Terminal_DiagnosticsEmpty" text="No recent exception is waiting for analysis." />
+  <string id="AF_UI_Terminal_IndexStatus" text="Index: {COUNT} entries · updated {TIME}; parameters and sources are searchable" />
+  <string id="AF_UI_Terminal_Page" text="Page {PAGE} · {COUNT} items" />
+  <string id="AF_UI_Terminal_AnyKey" text="Press any key (ESC cancels)..." />
+  <string id="AF_UI_Terminal_Unset" text="Not set" />
+  <string id="AF_UI_Terminal_Saved" text="AnimusForge terminal settings saved." />
+  <string id="AF_UI_Terminal_SaveError" text="Settings could not be saved. Check the log." />
+  <string id="AF_UI_Terminal_NoHint" text="No additional description." />
+  <string id="AF_UI_Terminal_Branch" text="Panel" />
+  <string id="AF_UI_Terminal_Action" text="Action" />
+  <string id="AF_UI_Terminal_Enter" text="Enter ➔" />
+  <string id="AF_UI_Terminal_View" text="View" />
+  <string id="AF_UI_Terminal_Execute" text="Execute ⚡" />
+  <string id="AF_UI_Terminal_SettingHint" text="Adjust this mechanism setting or switch as needed." />
+  <string id="AF_UI_Terminal_Toggle" text="Toggle" />
+  <string id="AF_UI_Terminal_Parameter" text="Parameter" />
+  <string id="AF_UI_Terminal_Dropdown" text="Dropdown" />
+  <string id="AF_UI_Terminal_Hotkey" text="Key" />
+  <string id="AF_UI_Terminal_Text" text="Text" />
+  <string id="AF_UI_Terminal_ExecuteBadge" text="Execute" />
+  <string id="AF_UI_Terminal_Enabled" text="✔ Enabled" />
+  <string id="AF_UI_Terminal_Disabled" text="✕ Disabled" />
   </strings>
 </base>
