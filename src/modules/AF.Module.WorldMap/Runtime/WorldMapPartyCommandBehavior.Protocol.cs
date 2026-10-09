@@ -39,6 +39,26 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			stop = true;
 			return true;
 		}
+		if (kind == "CLEAR_HIDEOUT")
+		{
+			if (parts.Length != 4 || !string.Equals(parts[1], "settlement", StringComparison.OrdinalIgnoreCase)
+				|| !WorldMapOrderCoordinator.IsSafeIdentifier(parts[2]))
+			{
+				return false;
+			}
+			if (validateTargets && ResolveSettlementById(parts[2])?.IsHideout != true)
+			{
+				return false;
+			}
+			command = new PartyCommandEntry
+			{
+				Kind = CommandKind.ClearHideout.ToString(),
+				TargetType = "settlement",
+				TargetId = parts[2],
+				Days = ParseDays(parts[3], NpcHideoutClearPolicy.DefaultDays)
+			};
+			return true;
+		}
 		if (kind == "MERGE_TO_PLAYER")
 		{
 			command = new PartyCommandEntry
@@ -276,6 +296,10 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (command == null)
 		{
 			return "";
+		}
+		if (IsKind(command, CommandKind.ClearHideout))
+		{
+			return "[ACTION:WORLDMAP_ORDER:CLEAR_HIDEOUT:settlement:" + command.TargetId + ":" + Math.Max(1, command.Days) + "]";
 		}
 		if (IsKind(command, CommandKind.GoToSettlement))
 		{

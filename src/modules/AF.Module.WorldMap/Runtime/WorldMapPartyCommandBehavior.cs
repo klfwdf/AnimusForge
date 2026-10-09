@@ -260,7 +260,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		FollowParty,
 		AttackHero,
 		AttackParty,
-		MergeToPlayer
+		MergeToPlayer,
+		ClearHideout
 	}
 
 	private enum CommandStage
@@ -432,6 +433,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		CampaignEvents.HourlyTickPartyEvent.AddNonSerializedListener(this, OnHourlyTickParty);
 		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, RestoreNpcHideoutClearBattleOwnership);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilled);
 		CampaignEvents.SiegeCompletedEvent.AddNonSerializedListener(this, OnSiegeCompleted);
@@ -496,6 +498,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		_npcHideoutClearBattles = new System.Runtime.CompilerServices.ConditionalWeakTable<MapEvent, NpcHideoutClearBattle>();
 		storage = CampaignSaveChunkHelper.RestoreStringDictionary(storage, "WorldMapPartyCommand");
 		lock (_queueLock)
 		{
@@ -659,6 +662,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	public static string BuildCurrentNpcCommandTasksPromptForExternal(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
 	{
+		string tasks = BuildCurrentNpcCommandTasksPromptCore(targetHero, targetCharacter, targetAgentIndex);
+		return tasks + BuildKnownHideoutClearTargetsPrompt(targetHero, targetCharacter, targetAgentIndex);
+	}
+
+	private static string BuildCurrentNpcCommandTasksPromptCore(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
 		const string header = "【当前NPC命令任务】";
 		try
 		{
@@ -726,6 +735,10 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return "前往" + targetName + days + "天";
 		}
+		if (IsKind(command, CommandKind.ClearHideout))
+		{
+			return "清剿" + targetName + "（时限" + days + "天）";
+		}
 		if (IsKind(command, CommandKind.PatrolSettlement))
 		{
 			return "巡逻" + targetName + days + "天";
@@ -776,6 +789,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		foreach (PostprocessRuleEntry rule in rules)
 		{
 			if (rule == null)
+			{
+				continue;
+			}
+			if ((rule.Tag ?? "").IndexOf("WORLDMAP_ORDER:CLEAR_HIDEOUT:", StringComparison.OrdinalIgnoreCase) >= 0
+				&& !WorldMapNpcHideoutCompletionPatch.IsReady)
 			{
 				continue;
 			}
@@ -1265,6 +1283,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Volatile.Write(ref _hasPendingGovernorExpeditionRequests, _pendingGovernorExpeditionRequests.Count > 0 ? 1 : 0);
 		}
 		MobileParty party = ResolvePartyForSafeExit(state, hero);
+		if (TryDeferNpcHideoutStop(party, state, reason, out fact)) return;
 		bool alreadyPendingStop = IsStopPending(state);
 		if (state != null && HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "stop:" + reason))
 		{
@@ -1332,6 +1351,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (state != null)
 		{
+			if (TryDeferNpcHideoutStop(party, state, reason, out fact)) return;
 			bool alreadyPendingStop = IsStopPending(state);
 			if (HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "stop:" + reason))
 			{
@@ -1675,6 +1695,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (MustWaitForNpcHideoutBattle(party, state)) return true;
 		string action = state.PendingSafeExitAction;
 		string reason = state.PendingSafeExitReason;
 		bool detachPreexisting = string.Equals(action, PendingSafeExitResumeFollow, StringComparison.OrdinalIgnoreCase);
@@ -3122,7 +3143,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static bool IsCurrentAttackCommand(PartyCommandQueueState state)
 	{
 		PartyCommandEntry command = GetCurrentCommand(state);
-		return command != null && (IsKind(command, CommandKind.AttackHero) || IsKind(command, CommandKind.AttackParty));
+		return command != null && (IsKind(command, CommandKind.AttackHero) || IsKind(command, CommandKind.AttackParty) || IsKind(command, CommandKind.ClearHideout));
 	}
 
 	private static void BeginResultTracking(PartyCommandQueueState state, string resultKind, string targetType, string targetId, string targetName, IFaction actorFaction, IFaction targetFaction)
@@ -3206,6 +3227,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string actorName = GetStoredActorName(state, hero);
 		string targetName = GetStoredTargetName(state, command);
 		string safeDetail = NormalizeResultDetail(detail, outcome);
+		if (IsKind(command, CommandKind.ClearHideout))
+		{
+			string result = outcome == CommandResultOutcome.Success ? "成功" : outcome == CommandResultOutcome.Failure ? "失败" : "未完成";
+			return actorName + "清剿" + targetName + result + "：" + safeDetail;
+		}
 		if (IsSettlementTarget(command))
 		{
 			bool isRaid = string.Equals((state?.ResultKind ?? "").Trim(), "raid", StringComparison.OrdinalIgnoreCase) || ResolveSettlementById(command?.TargetId)?.IsVillage == true;
@@ -3338,6 +3364,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (IsKind(command, CommandKind.ClearHideout) && party?.MapEvent != null)
+			{
+				state.TimeoutDay = now + 1.0;
+				return true;
+			}
 			if (state.ArrivalDay >= 0.0 && (IsKind(command, CommandKind.GoToSettlement) || IsKind(command, CommandKind.PatrolSettlement) || IsKind(command, CommandKind.FollowHero) || IsKind(command, CommandKind.FollowParty)))
 			{
 				state.TimeoutDay = -1.0;
@@ -3695,6 +3726,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (IsKind(command, CommandKind.MergeToPlayer))
 		{
 			return true;
+		}
+		if (IsKind(command, CommandKind.ClearHideout))
+		{
+			// Retain an accepted/saved task after its target is cleared; the tick records
+			// an honest terminal result instead of dropping it during normalization.
+			return string.Equals(command.TargetType, "settlement", StringComparison.OrdinalIgnoreCase)
+				&& ResolveSettlementById(command.TargetId)?.IsHideout == true;
 		}
 		if (IsKind(command, CommandKind.GoToSettlement) || IsKind(command, CommandKind.PatrolSettlement))
 		{
@@ -4265,7 +4303,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				|| IsKind(command, CommandKind.FollowHero)
 				|| IsKind(command, CommandKind.FollowParty)
 				|| IsKind(command, CommandKind.AttackHero)
-				|| IsKind(command, CommandKind.AttackParty));
+				|| IsKind(command, CommandKind.AttackParty)
+				|| IsKind(command, CommandKind.ClearHideout));
 	}
 
 	private static bool TryValidateDetachedPartyRecord(PlayerDetachedPartyRecord record, out Hero hero, out MobileParty party)
@@ -5497,7 +5536,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			PartyCommandEntry command = state.Commands[state.CurrentIndex];
-			if (!IsKind(command, CommandKind.AttackHero) && !IsKind(command, CommandKind.AttackParty))
+			if (!IsKind(command, CommandKind.AttackHero) && !IsKind(command, CommandKind.AttackParty) && !IsKind(command, CommandKind.ClearHideout))
 			{
 				return;
 			}

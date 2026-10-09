@@ -661,9 +661,13 @@
                             "TopicLabel":  "Move and attack",
                             "Code":  "Commands and Requests",
                             "PreprocessExcludedInstruction":  "若玩家要求你离开当前定居点，必须先加入玩家队伍，否则应拒绝。（Commands and Requests）",
-                            "NonHeroInstruction":  "只有当你正代表野外当前非英雄MobileParty交涉时，才可作为兜底接受该当前部队的移动、巡逻、跟随或攻击命令；不能创建同伴部队，不能并入玩家队伍，不能指挥无关远方部队或使用英雄/领主专属权力。",
-                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要问其他废话，只管执行或不执行，以及跟随玩家与加入玩家部队有本质不同，请向玩家询问清楚,。",
+                            "NonHeroInstruction":  "只有当你正代表野外当前非英雄MobileParty交涉时，才可作为兜底接受该当前部队的移动、巡逻、跟随、攻击或清剿普通土匪藏身处的命令；不能创建同伴部队，不能并入玩家队伍，不能指挥无关远方部队或使用英雄/领主专属权力。",
+                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要问其他废话，清剿土匪藏身处只限系统提供的已发现、非任务占用候选；这是你率部执行的大地图任务，不是给玩家发布原版任务。接受命令不代表清剿已经完成，胜败和伤亡以实际结算为准。只管执行或不执行，以及跟随玩家与加入玩家部队有本质不同，请向玩家询问清楚,。",
                             "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ACTION:WORLDMAP_ORDER:CLEAR_HIDEOUT:settlement:{id}:{days}]",
+                                                         "Description":  "仅当玩家明确委托当前NPC率部清剿土匪藏身处，且NPC明确无条件同意时输出。{id}只能来自【可清剿藏身处候选】的原始ID；不存在、未发现、剧情或任务占用、正在战斗的藏身处不得输出，不能猜测ID。{days}是抵达并发动清剿的任务时限，未指定填5。当前主队中的NPC由首个有效命令隐式分兵，无需建队标签；是否获胜、伤亡和藏身处清除由原版后台战斗实际结算。不得同时把同一藏身处当作ATTACK聚落、巡逻或原版Issue任务；执行后的归队继续沿用MERGE_TO_PLAYER规则。"
+                                                     },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
                                                          "Description":  "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC无条件明确同意时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。玩家说在这里、此地、本城、当前地点多待几天，id使用当前定居点ID；这不是FOLLOW。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵，无需额外建队标签。"
@@ -690,6 +694,9 @@
                                                      }
                                                  ],
                             "TriggerKeywords":  [
+                                                    "带兵清剿那个土匪藏身处。",
+                                                    "派你去清理附近已发现的土匪巢穴。",
+                                                    "Clear that bandit hideout with your troops.",
                                                     "Leave the kingdom with our fiefs and attack them.",
                                                     "Rebel against our kingdom and then attack that lord.",
                                                     "Take our castles with us, break away, and besiege that town.",
