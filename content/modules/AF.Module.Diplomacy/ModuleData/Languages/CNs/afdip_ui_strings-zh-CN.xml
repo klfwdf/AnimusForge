@@ -411,5 +411,47 @@
   <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
   <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="已选：{NAMES} 等 {COUNT} 人。" />
   <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="已选：{NAMES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="导出目录为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="已导出国家卡 {COUNT} 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="找不到要导出的国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportProfileNotFound" text="国家卡不存在。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedPrefix" text="已导出：{KINGDOM}" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidProfileCount" text="资料包中存在 {COUNT} 条无效或重复的王国资料。" />
+    <string id="AF_DIP_UI_KingdomProfile_CannotMatchWorld" text="资料包中的王国无法安全匹配当前世界：{REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_UnknownReason" text="未知原因" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateTarget" text="资料包中存在重复或无效的王国目标：{TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_NoReloadableProfiles" text="资料包中没有可重载的王国性格与战略。" />
+    <string id="AF_DIP_UI_KingdomProfile_SerializationEmpty" text="序列化结果为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotEmpty" text="回滚快照为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotInvalid" text="回滚快照无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadPlanEmpty" text="王国重载计划为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="无法创建王国资料重载副本。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="当前世界已变化，找不到王国目标：{TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="已重载 {IMPORTED} 个王国；其余 {RESET} 个当前王国恢复默认资料。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="导入文件中没有与“{KINGDOM}”安全匹配的国家卡。动态建国 ID 只有在名称一致时才会匹配。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="已导入 {IMPORTED} 条；跳过重复 {DUPLICATES} 条；无效或无法匹配 {UNMATCHED} 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="单国导入目标或路径为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix" text="导入路径无效：" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDirectoryNotFound" text="导入目录不存在。" />
+    <string id="AF_DIP_UI_KingdomProfile_MultipleSingleImports" text="发现多份可匹配该国家的单国文件，请删除旧副本或直接选择目标 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportNoSafeMatch" text="导入目录中没有与“{KINGDOM}”安全匹配的国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathEmpty" text="导入路径为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_OnlyJson" text="只允许导入 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFiles" text="未找到 {FULL} 或单国 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileLimit" text="单次导入文件数量超过 {COUNT} 个安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileError" text="{FILE}：{ERROR}" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileLimit" text="国家卡数量超过 {COUNT} 条安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_FileEmpty" text="文件不存在或为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_FileTooLarge" text="文件超过 32 MB 安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_RootObjectRequired" text="根节点必须是 JSON 对象。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleCardInvalid" text="单国国家卡缺少有效 ID，或没有正文、默认正文及明确覆盖标记。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFormatRequired" text="JSON 结构不是国家卡导出格式。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidUtf8" text="文件不是有效的 UTF-8 编码。" />
+    <string id="AF_DIP_UI_KingdomProfile_EmptyCard" text="空国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_DynamicNameMismatch" text="动态国家 ID 相同但名称不同。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoUniqueMatch" text="当前世界中没有唯一匹配国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="LLM 返回内容中没有 JSON 对象。" />
+    <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="LLM JSON 缺少 national_personality 或 long_term_strategy。" />
+    <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON 解析失败：{ERROR}" />
 </strings>
 </base>

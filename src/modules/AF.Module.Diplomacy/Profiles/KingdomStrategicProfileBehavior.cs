@@ -168,7 +168,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (string.IsNullOrWhiteSpace(exportRoot))
 			{
-				detailMessage = "导出目录为空。";
+				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty", "The export directory is empty.");
 				return false;
 			}
 			EnsureCurrentKingdomProfiles(runtimeFounded: false);
@@ -176,7 +176,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			Directory.CreateDirectory(directory);
 			KingdomStrategicProfileExportPackage package = BuildExportPackage(_storage.Profiles.Values);
 			WriteJsonAtomic(Path.Combine(directory, FullExportFileName), package);
-			detailMessage = "已导出国家卡 " + package.Profiles.Count.ToString(CultureInfo.InvariantCulture) + " 条。";
+			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ExportedCount", "Exported {COUNT} kingdom profile(s).", ("COUNT", package.Profiles.Count.ToString(CultureInfo.InvariantCulture)));
 			return true;
 		}
 		catch (Exception ex)
@@ -194,20 +194,20 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (kingdom == null || string.IsNullOrWhiteSpace(kingdom.StringId))
 			{
-				detailMessage = "找不到要导出的国家。";
+				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportTargetNotFound", "The kingdom to export could not be found.");
 				return false;
 			}
 			KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
 			if (profile == null)
 			{
-				detailMessage = "国家卡不存在。";
+				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportProfileNotFound", "The kingdom profile does not exist.");
 				return false;
 			}
 			string directory = Path.Combine(Path.GetFullPath(exportRoot), ExportDirectoryName, "kingdoms");
 			Directory.CreateDirectory(directory);
 			string fileName = BuildSingleExportFileName(profile);
 			WriteJsonAtomic(Path.Combine(directory, fileName), CloneForExport(profile));
-			detailMessage = "已导出：" + (profile.KingdomName ?? profile.KingdomId);
+			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ExportedPrefix", "Exported: {KINGDOM}", ("KINGDOM", profile.KingdomName ?? profile.KingdomId));
 			return true;
 		}
 		catch (Exception ex)
@@ -277,7 +277,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			}
 			if (invalidCount > 0)
 			{
-				errorMessage = "资料包中存在 " + invalidCount.ToString(CultureInfo.InvariantCulture) + " 条无效或重复的王国资料。";
+				errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_InvalidProfileCount", "The package contains {COUNT} invalid or duplicate kingdom profile(s).", ("COUNT", invalidCount.ToString(CultureInfo.InvariantCulture)));
 				return false;
 			}
 			KingdomImportTargetIndex kingdomImportTargetIndex = BuildImportTargetIndex();
@@ -286,20 +286,20 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			{
 				if (!TryResolveImportTarget(entry, kingdomImportTargetIndex, out Kingdom kingdom, out string warning) || kingdom == null)
 				{
-					errorMessage = "资料包中的王国无法安全匹配当前世界：" + (warning ?? "未知原因");
+					errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_CannotMatchWorld", "A kingdom in the package could not be safely matched to the current world: {REASON}", ("REASON", string.IsNullOrWhiteSpace(warning) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_UnknownReason", "unknown reason") : warning));
 					return false;
 				}
 				string text = NormalizeId(kingdom.StringId);
 				if (string.IsNullOrWhiteSpace(text) || dictionary.ContainsKey(text))
 				{
-					errorMessage = "资料包中存在重复或无效的王国目标：" + (kingdom.Name?.ToString() ?? text);
+					errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_DuplicateTarget", "The package contains a duplicate or invalid kingdom target: {TARGET}", ("TARGET", kingdom.Name?.ToString() ?? text));
 					return false;
 				}
 				dictionary[text] = CloneForExport(entry);
 			}
 			if (dictionary.Count <= 0)
 			{
-				errorMessage = "资料包中没有可重载的王国性格与战略。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoReloadableProfiles", "The package contains no kingdom profiles that can be reloaded.");
 				return false;
 			}
 			// Preflight must not initialize missing profiles in the current save.  Count only live campaign kingdoms for the confirmation text.
@@ -329,7 +329,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			snapshotJson = JsonConvert.SerializeObject(_storage ?? new KingdomStrategicProfileStorage(), Formatting.None);
 			if (string.IsNullOrWhiteSpace(snapshotJson))
 			{
-				errorMessage = "序列化结果为空。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SerializationEmpty", "The serialized rollback snapshot is empty.");
 				return false;
 			}
 			return true;
@@ -350,13 +350,13 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (string.IsNullOrWhiteSpace(snapshotJson))
 			{
-				errorMessage = "回滚快照为空。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RollbackSnapshotEmpty", "The rollback snapshot is empty.");
 				return false;
 			}
 			KingdomStrategicProfileStorage restoredStorage = JsonConvert.DeserializeObject<KingdomStrategicProfileStorage>(snapshotJson);
 			if (restoredStorage == null)
 			{
-				errorMessage = "回滚快照无效。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RollbackSnapshotInvalid", "The rollback snapshot is invalid.");
 				return false;
 			}
 			restoredStorage.Profiles ??= new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
@@ -379,14 +379,14 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (plan?.SourceProfilesByTargetId == null || plan.SourceProfilesByTargetId.Count <= 0)
 			{
-				detailMessage = "王国重载计划为空。";
+				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ReloadPlanEmpty", "The kingdom reload plan is empty.");
 				return false;
 			}
 			// Never call EnsureCurrentKingdomProfiles here: it writes directly to the live save.  Build and normalize a complete candidate instead.
 			KingdomStrategicProfileStorage kingdomStrategicProfileStorage = BuildDatabaseReloadCandidateStorage();
 			if (kingdomStrategicProfileStorage?.Profiles == null)
 			{
-				detailMessage = "无法创建王国资料重载副本。";
+				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ReloadCloneFailed", "The kingdom profile reload copy could not be created.");
 				return false;
 			}
 			int currentCampaignDay = GetCurrentCampaignDay();
@@ -398,13 +398,13 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			{
 				if (!kingdomStrategicProfileStorage.Profiles.TryGetValue(NormalizeId(sourceProfileByTargetId.Key), out KingdomStrategicProfileRecord value2) || value2 == null)
 				{
-					detailMessage = "当前世界已变化，找不到王国目标：" + sourceProfileByTargetId.Key;
+					detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadTargetMissing", "The world changed and the kingdom target could not be found: {TARGET}", ("TARGET", sourceProfileByTargetId.Key));
 					return false;
 				}
 				ApplyDatabaseSourceProfile(value2, sourceProfileByTargetId.Value, currentCampaignDay);
 			}
 			_storage = kingdomStrategicProfileStorage;
-			detailMessage = "已重载 " + plan.SourceProfilesByTargetId.Count.ToString(CultureInfo.InvariantCulture) + " 个王国；其余 " + plan.CurrentProfilesResetToDefaultCount.ToString(CultureInfo.InvariantCulture) + " 个当前王国恢复默认资料。";
+			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadComplete", "Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults.", ("IMPORTED", plan.SourceProfilesByTargetId.Count.ToString(CultureInfo.InvariantCulture)), ("RESET", plan.CurrentProfilesResetToDefaultCount.ToString(CultureInfo.InvariantCulture)));
 			return true;
 		}
 		catch (Exception ex)
@@ -1027,12 +1027,10 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			}
 			if (selectedKingdom != null && imported == 0 && duplicatesSkipped == 0)
 			{
-				detailMessage = "导入文件中没有与“" + GetKingdomName(selectedKingdom) + "”安全匹配的国家卡。动态建国 ID 只有在名称一致时才会匹配。";
+				detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ImportNoSafeMatch", "The import contains no safely matching profile for “{KINGDOM}”. Dynamic kingdom IDs match only when the names agree.", ("KINGDOM", GetKingdomName(selectedKingdom)));
 				return false;
 			}
-			detailMessage = "已导入 " + imported.ToString(CultureInfo.InvariantCulture)
-				+ " 条；跳过重复 " + duplicatesSkipped.ToString(CultureInfo.InvariantCulture)
-				+ " 条；无效或无法匹配 " + unmatched.ToString(CultureInfo.InvariantCulture) + " 条。";
+			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ImportComplete", "Imported {IMPORTED}; skipped duplicates {DUPLICATES}; invalid or unmatched {UNMATCHED}.", ("IMPORTED", imported.ToString(CultureInfo.InvariantCulture)), ("DUPLICATES", duplicatesSkipped.ToString(CultureInfo.InvariantCulture)), ("UNMATCHED", unmatched.ToString(CultureInfo.InvariantCulture)));
 			return true;
 		}
 		catch (Exception ex)
@@ -1049,7 +1047,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		errorMessage = "";
 		if (targetKingdom == null || string.IsNullOrWhiteSpace(sourcePath))
 		{
-			errorMessage = "单国导入目标或路径为空。";
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty", "The single-kingdom import target or path is empty.");
 			return false;
 		}
 		string fullPath;
@@ -1059,7 +1057,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 		catch (Exception ex)
 		{
-			errorMessage = "导入路径无效：" + ex.Message;
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix", "The import path is invalid: ") + ex.Message;
 			return false;
 		}
 		if (File.Exists(fullPath))
@@ -1069,7 +1067,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 		if (!Directory.Exists(fullPath))
 		{
-			errorMessage = "导入目录不存在。";
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportDirectoryNotFound", "The import directory does not exist.");
 			return false;
 		}
 		KingdomStrategicProfileRecord targetProfile = EnsureProfile(targetKingdom, runtimeFounded: false);
@@ -1128,10 +1126,10 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 		if (matchingFiles.Count > 1)
 		{
-			errorMessage = "发现多份可匹配该国家的单国文件，请删除旧副本或直接选择目标 JSON 文件。";
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MultipleSingleImports", "Multiple single-kingdom files match this kingdom. Delete old copies or select the target JSON file directly.");
 			return false;
 		}
-		errorMessage = "导入目录中没有与“" + GetKingdomName(targetKingdom) + "”安全匹配的国家卡。";
+		errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_SingleImportNoSafeMatch", "The import directory contains no safely matching profile for “{KINGDOM}”.", ("KINGDOM", GetKingdomName(targetKingdom)));
 		return false;
 	}
 
@@ -1231,7 +1229,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		errorMessage = "";
 		if (string.IsNullOrWhiteSpace(sourcePath))
 		{
-			errorMessage = allowMissing ? "" : "导入路径为空。";
+			errorMessage = allowMissing ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportPathEmpty", "The import path is empty.");
 			return allowMissing;
 		}
 		string fullPath;
@@ -1241,7 +1239,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 		catch (Exception ex)
 		{
-			errorMessage = "导入路径无效：" + ex.Message;
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix", "The import path is invalid: ") + ex.Message;
 			return false;
 		}
 		List<string> files = new List<string>();
@@ -1249,7 +1247,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (!string.Equals(Path.GetExtension(fullPath), ".json", StringComparison.OrdinalIgnoreCase))
 			{
-				errorMessage = "只允许导入 JSON 文件。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_OnlyJson", "Only JSON files can be imported.");
 				return false;
 			}
 			files.Add(fullPath);
@@ -1281,12 +1279,12 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 		if (files.Count == 0)
 		{
-			errorMessage = allowMissing ? "" : ("未找到 " + ExportDirectoryName + "/" + FullExportFileName + " 或单国 JSON 文件。");
+			errorMessage = allowMissing ? "" : DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_NoImportFiles", "Could not find {FULL} or single-kingdom JSON files.", ("FULL", ExportDirectoryName + "/" + FullExportFileName));
 			return allowMissing;
 		}
 		if (files.Count > MaxImportProfileCount)
 		{
-			errorMessage = "单次导入文件数量超过 " + MaxImportProfileCount.ToString(CultureInfo.InvariantCulture) + " 个安全上限。";
+			errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ImportFileLimit", "The import contains more than the safe limit of {COUNT} files.", ("COUNT", MaxImportProfileCount.ToString(CultureInfo.InvariantCulture)));
 			return false;
 		}
 		HashSet<string> seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1294,7 +1292,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		{
 			if (!TryReadImportFile(file, out List<KingdomStrategicProfileRecord> fileEntries, out int fileInvalid, out string fileError))
 			{
-				errorMessage = Path.GetFileName(file) + "：" + fileError;
+				errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ImportFileError", "{FILE}: {ERROR}", ("FILE", Path.GetFileName(file)), ("ERROR", fileError));
 				return false;
 			}
 			invalidCount += fileInvalid;
@@ -1302,7 +1300,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			{
 				if (entries.Count >= MaxImportProfileCount)
 				{
-					errorMessage = "国家卡数量超过 " + MaxImportProfileCount.ToString(CultureInfo.InvariantCulture) + " 条安全上限。";
+					errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ProfileLimit", "The package contains more than the safe limit of {COUNT} kingdom profiles.", ("COUNT", MaxImportProfileCount.ToString(CultureInfo.InvariantCulture)));
 					return false;
 				}
 				string id = NormalizeId(entry?.KingdomId);
@@ -1328,19 +1326,19 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			FileInfo info = new FileInfo(filePath);
 			if (!info.Exists || info.Length <= 0L)
 			{
-				errorMessage = "文件不存在或为空。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FileEmpty", "The file does not exist or is empty.");
 				return false;
 			}
 			if (info.Length > MaxImportFileBytes)
 			{
-				errorMessage = "文件超过 32 MB 安全上限。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FileTooLarge", "The file exceeds the 32 MB safety limit.");
 				return false;
 			}
 			string json = File.ReadAllText(filePath, StrictUtf8);
 			JToken token = JToken.Parse(json);
 			if (token is not JObject root)
 			{
-				errorMessage = "根节点必须是 JSON 对象。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RootObjectRequired", "The root element must be a JSON object.");
 				return false;
 			}
 			JToken profilesToken = GetPropertyIgnoreCase(root, "Profiles");
@@ -1380,15 +1378,15 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 					entries.Add(entry);
 					return true;
 				}
-				errorMessage = "单国国家卡缺少有效 ID，或没有正文、默认正文及明确覆盖标记。";
+				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_SingleCardInvalid", "The single-kingdom profile has no valid ID, profile text, default text, or explicit override marker.");
 				return false;
 			}
-			errorMessage = "JSON 结构不是国家卡导出格式。";
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFormatRequired", "The JSON structure is not a kingdom profile export.");
 			return false;
 		}
 		catch (DecoderFallbackException)
 		{
-			errorMessage = "文件不是有效的 UTF-8 编码。";
+			errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_InvalidUtf8", "The file is not valid UTF-8.");
 			return false;
 		}
 		catch (Exception ex)
@@ -1450,7 +1448,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		warning = "";
 		if (entry == null || index == null)
 		{
-			warning = "空国家卡。";
+			warning = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_EmptyCard", "The kingdom profile is empty.");
 			return false;
 		}
 		string id = NormalizeId(entry.KingdomId);
@@ -1463,14 +1461,14 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				kingdom = exact;
 				return true;
 			}
-			warning = "动态国家 ID 相同但名称不同。";
+			warning = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_DynamicNameMismatch", "The dynamic kingdom ID matches, but the names differ.");
 		}
 		if (!string.IsNullOrEmpty(importedName) && index.ByName.TryGetValue(importedName, out List<Kingdom> matches) && matches.Count == 1)
 		{
 			kingdom = matches[0];
 			return true;
 		}
-		warning = string.IsNullOrEmpty(warning) ? "当前世界中没有唯一匹配国家。" : warning;
+		warning = string.IsNullOrEmpty(warning) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoUniqueMatch", "The current world has no unique matching kingdom.") : warning;
 		return false;
 	}
 

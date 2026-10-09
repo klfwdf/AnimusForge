@@ -737,7 +737,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 			text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FoundingLabel", "LLM founding profile: ") + GetGenerationStateLabel(profile));
 			if (!string.IsNullOrWhiteSpace(profile?.LastGenerationError))
 			{
-				text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_LastErrorLabel", "Latest error: ") + Preview(profile.LastGenerationError, 180));
+				text.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_LastErrorLabel", "Latest error: ") + Preview(LocalizeStoredProfileError(profile.LastGenerationError), 180));
 			}
 		}
 		return text.ToString().TrimEnd();
@@ -777,6 +777,29 @@ public sealed partial class KingdomStrategicProfileBehavior
 		default:
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix", "Awaiting generation (") + (profile?.GenerationAttemptCount ?? 0).ToString(CultureInfo.InvariantCulture) + "/" + FoundingGenerationMaxAttempts.ToString(CultureInfo.InvariantCulture) + DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix", " )");
 		}
+	}
+
+	private static string LocalizeStoredProfileError(string value)
+	{
+		string text = value ?? "";
+		if (string.Equals(text, "事件与叛乱 API 尚未配置。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationConfigError", "Kingdom founding profile generation failed: event/rebellion API is not configured.");
+		}
+		if (string.Equals(text, "LLM 返回内容中没有 JSON 对象。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoJsonObject", "The LLM response did not contain a JSON object.");
+		}
+		if (string.Equals(text, "LLM JSON 缺少 national_personality 或 long_term_strategy。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MissingFields", "The LLM JSON is missing national_personality or long_term_strategy.");
+		}
+		const string parsePrefix = "LLM JSON 解析失败：";
+		if (text.StartsWith(parsePrefix, StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_JsonParseFailed", "LLM JSON parsing failed: {ERROR}", ("ERROR", text.Substring(parsePrefix.Length)));
+		}
+		return value;
 	}
 
 	private static string Preview(string value, int maxChars)
