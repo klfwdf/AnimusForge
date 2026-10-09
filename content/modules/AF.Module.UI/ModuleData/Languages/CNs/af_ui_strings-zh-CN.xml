@@ -2871,6 +2871,81 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_WEEKLY_AutoWeeklyReportLabel" text="{DATE}自动周报" />
   <string id="AF_WEEKLY_TargetChangedDuringRequest" text="周报目标或同周源素材在请求期间已变更，旧回包未覆盖：{ID}" />
   <string id="AF_WEEKLY_TargetChangedDuringCommit" text="周报目标或同周源素材在提交期间已变更，旧回包未覆盖：{ID}" />
+
+  <string id="AF_MCM_AuxApi_Group" text="1. AI 核心配置/2. 前处理 API（规则检索与简易对话链路）" />
+  <string id="AF_MCM_AuxApi_Url" text="辅助 API 地址（支持填写 Base URL）" />
+  <string id="AF_MCM_AuxApi_Url_Hint" text="用于规则检索、规则路由与简易场景对话链路的低成本接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。" />
+  <string id="AF_MCM_AuxApi_Key" text="辅助 API 密钥" />
+  <string id="AF_MCM_AuxApi_Key_Hint" text="填入辅助 API 密钥。" />
+  <string id="AF_MCM_AuxApi_Model" text="辅助模型名称" />
+  <string id="AF_MCM_AuxApi_Model_Hint" text="用于规则检索、规则路由与简易场景对话链路的低成本模型名称。" />
+  <string id="AF_MCM_AuxApi_Dropdown" text="辅助模型名称（下拉）" />
+  <string id="AF_MCM_AuxApi_Test" text="测试辅助 API 连接" />
+  <string id="AF_MCM_AuxApi_Temperature_Hint" text="控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认：0.00。" />
+  <string id="AF_MCM_AuxApi_MaxTokens_Hint" text="前处理 API 规则检索、规则路由与简易对话链路调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
+  <string id="AF_MCM_PostprocessApi_Group" text="1. AI 核心配置/3. 后处理 API（动作标签与情绪标签判定）" />
+  <string id="AF_MCM_PostprocessApi_Url" text="后处理 API 地址（支持填写 Base URL）" />
+  <string id="AF_MCM_PostprocessApi_Url_Hint" text="用于标签后处理的独立接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。留空时回退使用主 API。" />
+  <string id="AF_MCM_PostprocessApi_Key" text="后处理 API 密钥" />
+  <string id="AF_MCM_PostprocessApi_Key_Hint" text="填入后处理 API 密钥。留空时回退使用主 API。" />
+  <string id="AF_MCM_PostprocessApi_Model" text="后处理模型名称" />
+  <string id="AF_MCM_PostprocessApi_Model_Hint" text="用于标签后处理的模型名称。留空时回退使用主 API。建议优先使用具备思考/推理能力或更高级的模型，以提高标签判定稳定性。" />
+  <string id="AF_MCM_PostprocessApi_Dropdown" text="后处理模型名称（下拉）" />
+  <string id="AF_MCM_PostprocessApi_Test" text="测试后处理 API 连接" />
+  <string id="AF_MCM_PostprocessApi_Temperature_Hint" text="控制动作标签与情绪标签判定的随机性。建议保持较低。默认：0.00。" />
+  <string id="AF_MCM_PostprocessApi_MaxTokens_Hint" text="后处理 API 动作标签与情绪标签判定调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
+  <string id="AF_MCM_PostprocessApi_HistoryLimit" text="后处理历史条数上限" />
+  <string id="AF_MCM_PostprocessApi_HistoryLimit_Hint" text="控制动作后处理 &lt;history&gt; 最多携带的历史条数。本轮 &lt;latest_reply&gt; 独立保留，不占此额度。默认：100；最低 1，最高 100。数值越高，单次请求 token 与等待时间通常越高。" />
+  <string id="AF_MCM_EventRebellionApi_Group" text="1. AI 核心配置/4. 事件与王国叛乱 API（周报生成与叛乱命名）" />
+  <string id="AF_MCM_EventRebellionApi_Url" text="事件/叛乱 API 地址（支持填写 Base URL）" />
+  <string id="AF_MCM_EventRebellionApi_Url_Hint" text="用于事件系统周报与王国叛乱命名的独立接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。留空时回退使用主 API。" />
+  <string id="AF_MCM_EventRebellionApi_Key" text="事件/叛乱 API 密钥" />
+  <string id="AF_MCM_EventRebellionApi_Key_Hint" text="填入事件/叛乱专用 API 密钥。留空时回退使用主 API。" />
+  <string id="AF_MCM_EventRebellionApi_Model" text="事件/叛乱模型名称" />
+  <string id="AF_MCM_EventRebellionApi_Model_Hint" text="用于事件周报与王国叛乱命名的模型名称。留空时回退使用主 API。" />
+  <string id="AF_MCM_EventRebellionApi_Dropdown" text="事件/叛乱模型名称（下拉）" />
+  <string id="AF_MCM_EventRebellionApi_Test" text="测试事件/叛乱 API 连接" />
+  <string id="AF_MCM_EventRebellionApi_Thinking_Hint" text="默认关闭。事件周报与王国叛乱命名是严格格式任务，确认接口会将最终答案稳定写入 content 后再开启。开启后，OpenAI 兼容思考接口写入 thinking.type=enabled 与 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
+  <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认：0.80。" />
+  <string id="AF_MCM_EventRebellionApi_MaxTokens_Hint" text="事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
+  <string id="AF_MCM_Tts_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_MCM_Tts_EnableSpeech_Hint" text="总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。" />
+  <string id="AF_MCM_Tts_VolcEnabled" text="启用火山专用模式" />
+  <string id="AF_MCM_Tts_VolcEnabled_Hint" text="开启后，TTS 请求将走火山 V1 HTTP 非流式原生协议（Authorization: Bearer;token + app/user/audio/request 结构）。" />
+  <string id="AF_MCM_Tts_Url" text="火山专用 API 地址" />
+  <string id="AF_MCM_Tts_Url_Hint" text="V1 非流式地址：https://openspeech.bytedance.com/api/v1/tts" />
+  <string id="AF_MCM_Tts_Token" text="火山专用 Token（Authorization Bearer）" />
+  <string id="AF_MCM_Tts_Token_Hint" text="请求头将按文档写入：Authorization: Bearer;{token}。" />
+  <string id="AF_MCM_Tts_AppId" text="火山专用 AppID" />
+  <string id="AF_MCM_Tts_AppId_Hint" text="即 V1 请求体 app.appid。" />
+  <string id="AF_MCM_Tts_ResourceId" text="火山专用 Resource ID" />
+  <string id="AF_MCM_Tts_ResourceId_Hint" text="写入请求头 X-Api-Resource-Id。\n可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0。" />
+  <string id="AF_MCM_Tts_VoiceType" text="火山专用 voice_type" />
+  <string id="AF_MCM_Tts_VoiceType_Hint" text="示例：zh_male_M392_conversation_wvae_bigtts" />
+  <string id="AF_MCM_Tts_ExtraParam" text="火山专用 extra_param（JSON 对象）" />
+  <string id="AF_MCM_Tts_ExtraParam_Hint" text="将原样写入 request.extra_param（字符串）。示例：{&quot;disable_markdown_filter&quot;:true}" />
+  <string id="AF_MCM_Tts_AudioFormat" text="火山专用音频格式" />
+  <string id="AF_MCM_Tts_AudioFormat_Hint" text="V1 encoding，当前播放器仅支持 wav 或 pcm。" />
+  <string id="AF_MCM_Tts_SampleRate" text="火山专用采样率" />
+  <string id="AF_MCM_Tts_SampleRate_Hint" text="V1 rate 建议填写 8000 / 16000 / 24000。" />
+  <string id="AF_MCM_Tts_MainVolume" text="主语音音量（winmm）" />
+  <string id="AF_MCM_Tts_MainVolume_Hint" text="仅用于普通对话/测试语音（agentIndex&lt;0）的主播放链路。场景喊话请调整口型链路音量。" />
+  <string id="AF_MCM_Tts_SceneWinmm" text="场景发声走 winmm（防回声）" />
+  <string id="AF_MCM_Tts_SceneWinmm_Hint" text="开启：场景 NPC 由 winmm 发声，口型链路仅驱动嘴型并静音。关闭：场景 NPC 改由口型链路发声，可调整口型链路音量。" />
+  <string id="AF_MCM_Tts_Speed" text="火山专用语速" />
+  <string id="AF_MCM_Tts_Speed_Hint" text="V1 speed_ratio，范围 [0.1, 2.0]。" />
+  <string id="AF_MCM_Tts_LipSyncVolume" text="口型链路音量" />
+  <string id="AF_MCM_Tts_LipSyncVolume_Hint" text="用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当场景发声走 winmm 关闭时作为场景可听音量。" />
+  <string id="AF_MCM_Tts_Test" text="测试语音" />
+  <string id="AF_MCM_Tts_TestContent" text="播放测试" />
+  <string id="AF_MCM_Tts_Test_Hint" text="使用火山 V1 原生参数测试固定示例语句。" />
+  <string id="AF_MCM_Marriage_Group" text="8. 婚姻规则" />
+  <string id="AF_MCM_Marriage_MaxAge" text="可婚配最大年龄" />
+  <string id="AF_MCM_Marriage_MaxAge_Hint" text="用于家族可婚配名单过滤。默认：55。" />
+  <string id="AF_MCM_Marriage_MaxAgeGap" text="与玩家最大年龄差" />
+  <string id="AF_MCM_Marriage_MaxAgeGap_Hint" text="用于家族可婚配名单过滤。默认：25。" />
+  <string id="AF_MCM_Marriage_OppositeGender" text="婚配名单仅限异性（旧兼容）" />
+  <string id="AF_MCM_Marriage_OppositeGender_Hint" text="旧配置项保留用于兼容；当前婚姻机制允许同性婚配。默认关闭。" />
   </strings>
 </base>
 

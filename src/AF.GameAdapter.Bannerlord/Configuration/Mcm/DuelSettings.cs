@@ -1705,16 +1705,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
 
-	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索、规则路由与简易场景对话链路的低成本接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyText("{=AF_MCM_AuxApi_Url}Auxiliary API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Url_Hint}Low-cost endpoint for rule retrieval, rule routing, and lightweight scene conversations; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public string AuxiliaryApiUrl { get; set; } = "https://api.openai.com/v1";
 
-	[SettingPropertyText("辅助API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入辅助API的密钥。")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyText("{=AF_MCM_AuxApi_Key}Auxiliary API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Key_Hint}Enter the auxiliary API key.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public string AuxiliaryApiKey { get; set; } = "";
 
-	[SettingPropertyText("辅助模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于规则检索、规则路由与简易场景对话链路的低成本模型名称。")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyText("{=AF_MCM_AuxApi_Model}Auxiliary model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Model_Hint}Low-cost model for rule retrieval, rule routing, and lightweight scene conversations.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public string AuxiliaryModelName
 	{
 		get => ReadModelNameForPreset(ref _auxiliaryApiModelName, _auxiliaryApiModelDropdown);
@@ -1722,11 +1722,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public Action FetchAuxiliaryModelList { get; set; }
 
-	[SettingPropertyDropdown("辅助模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyDropdown("{=AF_MCM_AuxApi_Dropdown}Auxiliary model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryModelDropdown
 	{
 		get
@@ -1749,18 +1749,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyButton("{=AF_MCM_AuxApi_Test}Test auxiliary API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public Action TestAuxiliaryConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
 		get
@@ -1776,24 +1776,24 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认 0.00。")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Temperature_Hint}Controls randomness for preprocessing, rule routing, and lightweight conversations. 0 is more stable and 2 is more varied. Default: 0.00.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
-	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_MaxTokens_Hint}The max_tokens value for preprocessing rule retrieval, rule routing, and lightweight conversation calls. Default: 12000; endpoints that do not support a high limit may reject the request.")]
+	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)"), GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyText("后处理API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于标签后处理的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyText("{=AF_MCM_PostprocessApi_Url}Action postprocess API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Url_Hint}Dedicated endpoint for action and emotion tag postprocessing; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public string ActionPostprocessApiUrl { get; set; } = "";
 
-	[SettingPropertyText("后处理API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入后处理API的密钥。留空时将继续回退使用主API。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyText("{=AF_MCM_PostprocessApi_Key}Action postprocess API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Key_Hint}Enter the action postprocess API key. Leave blank to fall back to the main API.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public string ActionPostprocessApiKey { get; set; } = "";
 
-	[SettingPropertyText("后处理模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于标签后处理的模型名称。留空时将继续回退使用主API。后处理建议优先使用带思考/推理能力的模型（例如 OpenAI 的推理模型）或更高级模型，以提升标签判定稳定性。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyText("{=AF_MCM_PostprocessApi_Model}Action postprocess model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Model_Hint}Model used for tag postprocessing. Leave blank to fall back to the main API. A reasoning-capable or more advanced model is recommended for stable tag decisions.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public string ActionPostprocessModelName
 	{
 		get => ReadModelNameForPreset(ref _actionPostprocessApiModelName, _actionPostprocessApiModelDropdown);
@@ -1801,11 +1801,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public Action FetchActionPostprocessModelList { get; set; }
 
-	[SettingPropertyDropdown("后处理模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyDropdown("{=AF_MCM_PostprocessApi_Dropdown}Action postprocess model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessModelDropdown
 	{
 		get
@@ -1828,18 +1828,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试后处理API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyButton("{=AF_MCM_PostprocessApi_Test}Test action postprocess API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public Action TestActionPostprocessConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
 	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
 		get
@@ -1855,28 +1855,28 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制动作标签与情绪标签判定的随机性。建议保持较低。默认 0.00。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Temperature_Hint}Controls randomness for action and emotion tag decisions. Keeping this low is recommended. Default: 0.00.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_MaxTokens_Hint}The max_tokens value for action and emotion tag decisions. Default: 12000; endpoints that do not support a high limit may reject the request.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyInteger("后处理历史条数上限", ActionPostprocessHistoryEntryLimitMin, ActionPostprocessHistoryEntryLimitMax, "0", Order = 10, RequireRestart = false, HintText = "控制动作后处理 <history> 最多携带多少条历史。本轮 <latest_reply> 独立保留，不占此额度。默认 100，最低 1，最高 100；数值越高，单次请求 token 与等待时间通常越高。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyInteger("{=AF_MCM_PostprocessApi_HistoryLimit}Postprocess history entry limit", ActionPostprocessHistoryEntryLimitMin, ActionPostprocessHistoryEntryLimitMax, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_HistoryLimit_Hint}Maximum history entries carried in action postprocessing <history>. The current <latest_reply> is retained separately and does not count against this limit. Default: 100; minimum 1, maximum 100. Higher values usually increase request tokens and wait time.")]
+	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)"), GroupOrder = -280)]
 	public int ActionPostprocessHistoryEntryLimit { get; set; } = DefaultActionPostprocessHistoryEntryLimit;
 
-	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Url}Event and rebellion API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Url_Hint}Dedicated endpoint for event-system weekly reports and kingdom-rebellion naming; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public string EventAndRebellionApiUrl { get; set; } = "";
 
-	[SettingPropertyText("事件/叛乱API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入事件/叛乱专用API的密钥。留空时将继续回退使用主API。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Key}Event and rebellion API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Key_Hint}Enter the event and rebellion API key. Leave blank to fall back to the main API.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public string EventAndRebellionApiKey { get; set; } = "";
 
-	[SettingPropertyText("事件/叛乱模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于事件周报与王国叛乱命名的模型名称。留空时将继续回退使用主API。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Model}Event and rebellion model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Model_Hint}Model used for event weekly reports and kingdom-rebellion naming. Leave blank to fall back to the main API.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public string EventAndRebellionModelName
 	{
 		get => ReadModelNameForPreset(ref _eventAndRebellionApiModelName, _eventAndRebellionApiModelDropdown);
@@ -1884,11 +1884,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public Action FetchEventAndRebellionModelList { get; set; }
 
-	[SettingPropertyDropdown("事件/叛乱模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyDropdown("{=AF_MCM_EventRebellionApi_Dropdown}Event and rebellion model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionModelDropdown
 	{
 		get
@@ -1911,18 +1911,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试事件/叛乱API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyButton("{=AF_MCM_EventRebellionApi_Test}Test event and rebellion API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public Action TestEventAndRebellionConnection { get; set; }
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Thinking_Hint}Off by default. Weekly reports and kingdom-rebellion naming require strict formats; enable this only after confirming that the endpoint reliably writes the final answer to content. OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public bool EventAndRebellionApiThinkingEnabled { get; set; } = false;
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
 		get
@@ -1938,84 +1938,84 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认 0.80。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Temperature_Hint}Controls randomness for event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
-	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_MaxTokens_Hint}The max_tokens value for event weekly reports, kingdom-rebellion naming, and ruler policy generation. Default: 12000; endpoints that do not support a high limit may reject the request.")]
+	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)"), GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 
-	[SettingPropertyBool("启用TTS语音", Order = 0, RequireRestart = false, HintText = "总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyBool("{=AF_MCM_Tts_EnableSpeech}Enable TTS speech", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Tts_EnableSpeech_Hint}Master switch. When disabled, NPCs stop playing TTS audio and fall back to text bubbles.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public bool EnableTtsSpeech { get; set; } = true;
 
-	[SettingPropertyBool("启用火山专用模式", Order = 1, RequireRestart = false, HintText = "开启后，TTS 请求将走火山 V1 HTTP 非流式原生协议（Authorization: Bearer;token + app/user/audio/request 结构）。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyBool("{=AF_MCM_Tts_VolcEnabled}Enable Volcengine dedicated mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Tts_VolcEnabled_Hint}Routes TTS requests through the Volcengine V1 native non-streaming HTTP protocol (Authorization: Bearer;token plus app/user/audio/request structure).")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public bool TtsVolcDedicatedEnabled { get; set; } = false;
 
-	[SettingPropertyText("火山专用 API 地址", -1, true, "", Order = 2, RequireRestart = false, HintText = "V1 非流式地址: https://openspeech.bytedance.com/api/v1/tts")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_Url}Volcengine dedicated API address", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Url_Hint}V1 non-streaming endpoint: https://openspeech.bytedance.com/api/v1/tts")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedApiUrl { get; set; } = "https://openspeech.bytedance.com/api/v1/tts";
 
-	[SettingPropertyText("火山专用 Token (Authorization Bearer)", -1, true, "", Order = 3, RequireRestart = false, HintText = "请求头将按文档写入：Authorization: Bearer;{token}")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_Token}Volcengine dedicated token (Authorization Bearer)", -1, true, "", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Tts_Token_Hint}The request header is written as documented: Authorization: Bearer;{token}.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
-	[SettingPropertyText("火山专用 AppID", -1, true, "", Order = 4, RequireRestart = false, HintText = "即 V1 请求体 app.appid。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_AppId}Volcengine dedicated App ID", -1, true, "", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Tts_AppId_Hint}The app.appid field in the V1 request body.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedAppKey { get; set; } = "";
 
-	[SettingPropertyText("火山专用 Resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "写入请求头 X-Api-Resource-Id。\n可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_ResourceId}Volcengine dedicated resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Tts_ResourceId_Hint}Written to the X-Api-Resource-Id request header.\nAccepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedResourceId { get; set; } = "";
 
-	[SettingPropertyText("火山专用 voice_type", -1, true, "", Order = 6, RequireRestart = false, HintText = "示例: zh_male_M392_conversation_wvae_bigtts")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_VoiceType}Volcengine dedicated voice_type", -1, true, "", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Tts_VoiceType_Hint}Example: zh_male_M392_conversation_wvae_bigtts")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
-	[SettingPropertyText("火山专用 extra_param(JSON对象)", -1, true, "", Order = 7, RequireRestart = false, HintText = "将原样写入 request.extra_param（字符串）。示例：{\"disable_markdown_filter\":true}")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra_param (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written verbatim to request.extra_param as a string. Example: {\"disable_markdown_filter\":true}")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
-	[SettingPropertyText("火山专用音频格式", -1, true, "", Order = 8, RequireRestart = false, HintText = "V1 encoding，当前播放器仅支持 wav 或 pcm。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyText("{=AF_MCM_Tts_AudioFormat}Volcengine dedicated audio format", -1, true, "", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Tts_AudioFormat_Hint}V1 encoding; the current player supports wav or pcm only.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public string TtsVolcDedicatedAudioFormat { get; set; } = "wav";
 
-	[SettingPropertyInteger("火山专用采样率", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "V1 rate 建议填 8000 / 16000 / 24000。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyInteger("{=AF_MCM_Tts_SampleRate}Volcengine dedicated sample rate", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Tts_SampleRate_Hint}Recommended V1 rate values: 8000 / 16000 / 24000.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
-	[SettingPropertyFloatingInteger("主语音音量(winmm)", 0f, 1f, "0.00", Order = 10, RequireRestart = false, HintText = "仅用于普通对话/测试语音（agentIndex<0）的主播放链路。场景喊话口型链路请调“口型链路音量”。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_MainVolume}Main voice volume (winmm)", 0f, 1f, "0.00", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Tts_MainVolume_Hint}Used only by the main playback path for normal conversation/test speech (agentIndex<0). Adjust Lip-sync channel volume for scene shouts.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public float TtsVolcDedicatedVolume { get; set; } = 1f;
 
-	[SettingPropertyBool("场景发声走winmm(防回声)", Order = 11, RequireRestart = false, HintText = "开启：场景NPC由winmm发声，口型链路仅驱动嘴型并静音。关闭：场景NPC改由口型链路发声，可调“口型链路音量”。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyBool("{=AF_MCM_Tts_SceneWinmm}Use winmm for scene speech (echo prevention)", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Tts_SceneWinmm_Hint}On: scene NPCs speak through winmm while the lip-sync channel only drives mouth movement and stays muted. Off: scene NPCs speak through the lip-sync channel; adjust Lip-sync channel volume.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public bool TtsSceneUseWinmmAudible { get; set; } = true;
 
-	[SettingPropertyFloatingInteger("火山专用语速", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "V1 speed_ratio，范围 [0.1, 2.0]。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_Speed}Volcengine dedicated speech speed", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Tts_Speed_Hint}V1 speed_ratio, range [0.1, 2.0].")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public float TtsVolcDedicatedSpeed { get; set; } = 1f;
 
-	[SettingPropertyFloatingInteger("口型链路音量", 0f, 1f, "0.00", Order = 13, RequireRestart = false, HintText = "用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当“场景发声走winmm(防回声)”关闭时作为场景可听音量。")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_LipSyncVolume}Lip-sync channel volume", 0f, 1f, "0.00", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Tts_LipSyncVolume_Hint}SoundEvent volume for Rhubarb lip-sync. Used as the audible scene volume only when Use winmm for scene speech is off.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
-	[SettingPropertyButton("测试语音", -1, true, "", Content = "播放测试", Order = 14, RequireRestart = false, HintText = "使用火山 V1 原生参数测试固定文本「为您服务，旅行者！」")]
-	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Test the Volcengine V1 native parameters with a fixed sample phrase.")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)"))]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
-	[SettingPropertyInteger("可婚配最大年龄", 18, 80, "0", Order = 0, RequireRestart = false, HintText = "用于家族可婚配名单过滤。默认 55。")]
-	[SettingPropertyGroup("8. 婚姻规则")]
+	[SettingPropertyInteger("{=AF_MCM_Marriage_MaxAge}Maximum marriage candidate age", 18, 80, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Marriage_MaxAge_Hint}Filters the family marriage candidate list. Default: 55.")]
+	[SettingPropertyGroup("{=AF_MCM_Marriage_Group}8. Marriage rules"))]
 	public int MarriageCandidateMaxAge { get; set; } = 55;
 
-	[SettingPropertyInteger("与玩家最大年龄差", 0, 60, "0", Order = 1, RequireRestart = false, HintText = "用于家族可婚配名单过滤。默认 25。")]
-	[SettingPropertyGroup("8. 婚姻规则")]
+	[SettingPropertyInteger("{=AF_MCM_Marriage_MaxAgeGap}Maximum age gap from player", 0, 60, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Marriage_MaxAgeGap_Hint}Filters the family marriage candidate list. Default: 25.")]
+	[SettingPropertyGroup("{=AF_MCM_Marriage_Group}8. Marriage rules"))]
 	public int MarriageCandidateMaxAgeGap { get; set; } = 25;
 
-	[SettingPropertyBool("婚配名单仅限异性（旧兼容）", Order = 2, RequireRestart = false, HintText = "旧配置项保留用于兼容；当前婚姻机制允许同性婚配。默认关闭。")]
-	[SettingPropertyGroup("8. 婚姻规则")]
+	[SettingPropertyBool("{=AF_MCM_Marriage_OppositeGender}Opposite-gender-only marriage list (legacy compatibility)", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Marriage_OppositeGender_Hint}Kept for legacy configuration compatibility; the current marriage system allows same-gender marriage. Default: off.")]
+	[SettingPropertyGroup("{=AF_MCM_Marriage_Group}8. Marriage rules"))]
 	public bool MarriageRequireOppositeGender { get; set; } = false;
 
 	private string _playerCustomPromptRule = LoadPlayerCustomPromptRuleFromDiskOrDefault();
