@@ -13,7 +13,7 @@ static class Program {
   foreach(var spec in new[]{("EncyclopediaBar",310),("AnimusForgeTerminalPopup",309),("MCM",4000),("WeeklyReport",4000),("History",1200)}){
    var h=Host(spec.Item1,spec.Item2);int saves=0,cancels=0;string saved=null;DevTextEditorHelper.ShowLongTextEditor("title","subtitle","hint","draft",s=>{saves++;saved=s;C(h.Parent.IsActive,"restore before save callback");},()=>cancels++);
    var child=Editor(h.Screen);C(!h.Parent.IsActive&&h.Parent.InputUsageMask==InputUsageMask.Invalid,"parent releases dispatch: "+spec.Item1);C(child.InputRestrictions.Order>h.Parent.InputRestrictions.Order,"child above parent");var dispatch=ScreenManager.Dispatch();C(dispatch.Mouse==child&&dispatch.Keyboard==child,"mouse and keyboard reach editor");
-   Vm(child).EditedText="输入汉字";Vm(child).ExecuteSave();Vm(child).ExecuteSave();C(saves==1&&saved=="输入汉字"&&cancels==0,"save exactly once");C(h.Parent.IsActive&&h.Parent.InputUsageMask==InputUsageMask.All&&ScreenManager.FocusedLayer==h.Parent,"mask and focus restored");C(!DevHistoryEditPopup.IsOpen&&ScreenManager.PushSubscribers==0,"closed editor releases event subscriptions");
+   Vm(child).EditedText="杈撳叆姹夊瓧";Vm(child).ExecuteSave();Vm(child).ExecuteSave();C(saves==1&&saved=="杈撳叆姹夊瓧"&&cancels==0,"save exactly once");C(h.Parent.IsActive&&h.Parent.InputUsageMask==InputUsageMask.All&&ScreenManager.FocusedLayer==h.Parent,"mask and focus restored");C(!DevHistoryEditPopup.IsOpen&&ScreenManager.PushSubscribers==0,"closed editor releases event subscriptions");
    DevTextEditorHelper.ShowLongTextEditor("title","","hint","",_=>saves++,()=>cancels++);child=Editor(h.Screen);Vm(child).ExecuteCancel();Vm(child).ExecuteCancel();C(cancels==1&&saves==1&&h.Parent.IsActive,"cancel exactly once and restore");
   }
   {
@@ -38,6 +38,16 @@ static class Program {
   }
   {
    var h=Host("external suspension",4000);using(var lease=new DevPopupInputLease(h.Screen,h.Parent,()=>true)){ScreenManager.SetSuspendLayer(h.Parent,true);}C(!h.Parent.IsActive&&!h.Parent.LastActiveState,"external suspension remains across later screen activation");
+  }
+  // Native MultiSelection/TextQuery invoke the business callback before CloseQuery.
+  // QueryManager is a global layer (19501), then releases focus to the highest screen layer.
+  foreach(int baseOrder in new[]{310,4000}){
+   var h=Host("native menu host",baseOrder);var global=new ScreenLayer("QueryManager",19501){IsActive=true,IsFocusLayer=true};global.InputRestrictions.SetInputRestrictions();ScreenManager.FocusedLayer=ScreenManager.FirstHitLayer=global;
+   int saves=0;DevTextEditorHelper.ShowLongTextEditor("menu edit","","hint","draft",_=>saves++,()=>{});var child=Editor(h.Screen);
+   C(global.IsActive&&global.InputUsageMask==InputUsageMask.All&&ScreenManager.FocusedLayer==global,"ordinary editor does not take over global inquiry during native callback");
+   global.InputRestrictions.ResetInputRestrictions();ScreenManager.SetSuspendLayer(global,true);global.IsFocusLayer=false;ScreenManager.TryLoseFocus(global);
+   var dispatch=ScreenManager.Dispatch();C(dispatch.Mouse==child&&dispatch.Keyboard==child,"native CloseQuery delivers dispatch to new editor, including MCM tie order");
+   Vm(child).ExecuteSave();C(saves==1&&ScreenManager.FocusedLayer==h.Parent,"native menu editor save returns to original screen focus");
   }
   Console.WriteLine("PASS TextEditorInputHandoff assertions="+checks+" production helper/popup/VM/lease; native dispatch modeled; live=NOT_RUN");
  }
