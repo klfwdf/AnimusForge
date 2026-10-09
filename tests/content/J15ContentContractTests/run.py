@@ -662,11 +662,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afknowledge_strings.xml": {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
-        "sha256": "409E58CB79057A7480DBDF3D968A991D2F950ED056756384148830FA81DFF551", "revision": "knowledge-persona-retrieval-ui",
+        "sha256": "56C5109180E6F03BCC9EFA7043444721873FA4157A7C23DA6825555A26DF861F", "revision": "c753ee587",
     },
     "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml": {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
-        "sha256": "2EAD319258D6E9B28D0455FDB8C4B78F9845FEB4CBEBE0134C67A03968186091", "revision": "knowledge-persona-retrieval-ui",
+        "sha256": "C363EC882EEB678737C6C69BC8CD5B728E889EDED77C524BF47CF83E0BFDA3ED", "revision": "c753ee587",
     },
     "ModuleData/Languages/sets_ui_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
