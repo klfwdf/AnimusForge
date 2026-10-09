@@ -68,7 +68,7 @@ internal static class NobleGatheringUiText
 	internal static string ConfirmBody(string settlement, int cost, int days, int guests) => Format4("AF_DIP_UI_Gathering_ConfirmBody", "Venue: {SETTLEMENT}\nCost: {COST} denars\nDuration: {DAYS} days\nGuests: {GUESTS}\n\nConfirming will deduct the cost and send gathering invitations to the guests.", "SETTLEMENT", settlement, "COST", cost, "DAYS", days, "GUESTS", guests);
 	internal static string PayAndInvite => Resolve("AF_DIP_UI_Gathering_PayAndInvite", "Pay and send invitations");
 	internal static string NotSelected => Resolve("AF_DIP_UI_Gathering_NotSelected", "No guests selected yet.");
-	internal static string SelectedGuests(string names, int count, bool more) => Format2("AF_DIP_UI_Gathering_SelectedGuests", more ? "Selected: {NAMES} and {COUNT} more." : "Selected: {NAMES}", "NAMES", names, "COUNT", count);
+	internal static string SelectedGuests(string names, int count, bool more) => Format2(more ? "AF_DIP_UI_Gathering_SelectedGuestsMore" : "AF_DIP_UI_Gathering_SelectedGuestsExact", more ? "Selected: {NAMES} and {COUNT} more." : "Selected: {NAMES}", "NAMES", names, "COUNT", count);
 	internal static string IdentityUnknown => Resolve("AF_DIP_UI_Gathering_IdentityUnknown", "Unknown identity");
 	internal static string Governor => Resolve("AF_DIP_UI_Gathering_Governor", "Governor");
 	internal static string Ruler => Resolve("AF_DIP_UI_Gathering_Ruler", "Ruler");

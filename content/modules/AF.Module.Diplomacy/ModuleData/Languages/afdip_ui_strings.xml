@@ -409,5 +409,7 @@
   <string id="AF_DIP_UI_Gathering_CrisisSiege" text="{SETTLEMENT} in the kingdom is under siege; the host decided to cancel the gathering." />
   <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST} will host a gathering at {SETTLEMENT}." />
   <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
+  <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="Selected: {NAMES} and {COUNT} more." />
+  <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="Selected: {NAMES}" />
 </strings>
 </base>
