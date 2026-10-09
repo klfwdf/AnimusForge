@@ -654,11 +654,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afeconomy_strings.xml": {
         "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
-        "sha256": "4E733B2868F2BD67E7EC9D6B643E7D0C834B84DCC1AEF1300744F423FC0BB70E", "revision": "6a00653b1",
+        "sha256": "1A6E7B170C627D3F3DD4574EFAAAFDE9F5A0C200509FB95F32FA6D56827E006B", "revision": "economy-reward-notifications",
     },
     "ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml": {
         "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml",
-        "sha256": "C37A72E24A43DC1F1F04C1949A23CA48ADCA3736AC57D1525276F75010BE062A", "revision": "6a00653b1",
+        "sha256": "581E968D1F2794A98F42B32CB170E9851D037562243C9C682FAD3D4720AE88B0", "revision": "economy-reward-notifications",
     },
     "ModuleData/Languages/afknowledge_strings.xml": {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",

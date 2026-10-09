@@ -8,5 +8,48 @@
     <string id="AF_DEBT_PROMISE_COMPLETE" text="此承诺已完成或解除。" />
     <string id="AF_DEBT_PROMISE_EXPIRED" text="承诺已过期，但仍可在之后解除或完成。" />
     <string id="AF_ECO_DebtPromise_Instruction" text="与对方聊天即可完成或解除该承诺。" />
+    <string id="AF_ECO_UI_CompanionReturnedClan" text="【同伴离队】{HERO} 已回到 {CLAN}。" />
+    <string id="AF_ECO_UI_CompanionReturnedSettlement" text="【同伴离队】{HERO} 已回到 {SETTLEMENT}。" />
+    <string id="AF_ECO_UI_CompanionWanderer" text="【同伴离队】{REASON}{HERO} 已成为流浪者。" />
+    <string id="AF_ECO_UI_CompanionWandererClanReason" text="{CLAN} 已灭亡，" />
+    <string id="AF_ECO_UI_CompanionWandererUnknownReason" text="原归属不可用，" />
+    <string id="AF_ECO_UI_SpecialRpItemMarketBlocked" text="该特殊 RP 物品不能进入市场交易。" />
+    <string id="AF_ECO_UI_ItemGiven" text="{SOURCE} 给了你 {ITEM}。" />
+    <string id="AF_ECO_UI_PromiseRecorded" text="【承诺或欠款记录】{NOTE}；承诺等价：{VALUE}" />
+    <string id="AF_ECO_UI_DebtReleased" text="【债务解除】{STATUS}" />
+    <string id="AF_ECO_UI_DebtReleaseFailed" text="【债务解除失败】{STATUS}" />
+    <string id="AF_ECO_UI_AllDebtCleared" text="【欠款已清】你对 {GIVER} 的全部欠款已还清！" />
+    <string id="AF_ECO_UI_MarketDebtReleased" text="【市场债务解除】{STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtReleaseFailed" text="【市场债务解除失败】{STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtCleared" text="【市场欠款】当前市场债务已全部结清。" />
+    <string id="AF_ECO_UI_DenarsReceived" text="{GIVER} 给了你 {AMOUNT} 第纳尔。" />
+    <string id="AF_ECO_UI_DenarsGiven" text="你给了 {RECEIVER} {AMOUNT} 第纳尔。" />
+    <string id="AF_ECO_UI_ItemsReceived" text="{GIVER} 给了你 {ITEMS}。" />
+    <string id="AF_ECO_UI_ItemsGiven" text="你给了 {RECEIVER} {ITEMS}。" />
+    <string id="AF_ECO_UI_PartyItemsReceived" text="{GIVER} 给了你 {ITEMS}。" />
+    <string id="AF_ECO_UI_PartyItemsGiven" text="你给了对方部队 {ITEMS}。" />
+    <string id="AF_ECO_UI_CivilWarFaction" text="【内战派系】{STATUS}" />
+    <string id="AF_ECO_UI_JoinFailed" text="【加入队伍失败】{STATUS}" />
+    <string id="AF_ECO_UI_JoinParty" text="【加入队伍】{STATUS}" />
+    <string id="AF_ECO_UI_BecomeCompanion" text="【成为同伴】{STATUS}" />
+    <string id="AF_ECO_UI_JoinClan" text="【加入家族】{STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransfer" text="【王位转移】{STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransferFailed" text="【王位转移失败】{STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentity" text="【势力身份】{STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentityFailed" text="【势力身份失败】{STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransfer" text="【固定资产转移】{STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransferFailed" text="【固定资产转移失败】{STATUS}" />
+    <string id="AF_ECO_UI_UnknownPerson" text="某人" />
+    <string id="AF_ECO_UI_OtherParty" text="对方部队" />
+    <string id="AF_ECO_UI_OriginalSettlement" text="原定居点" />
+    <string id="AF_ECO_UI_MerchantAt" text="这座{MARKET}的商人" />
+    <string id="AF_ECO_UI_TrustChanged" text="【信任变化】{GIVER} 使你的个人信任 +{PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_PublicTrustGain" text="，公共信任 +{VALUE}" />
+    <string id="AF_ECO_UI_MarketTrustChanged" text="【市场信任变化】{MARKET} 使你的市场信任 +{PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_QuestTrustChanged" text="【信任变化】完成{GIVER}交付的任务，个人信任 +{PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_SettlementTrustBattleLost" text="【定居点信任结算】本次战斗未获胜，未获得定居点信任。" />
+    <string id="AF_ECO_UI_SettlementTrustNoNearby" text="【定居点信任结算】本次战斗附近没有可受影响的定居点。" />
+    <string id="AF_ECO_UI_SettlementTrustDetails" text="【定居点信任结算】&#10;{DETAILS}" />
+    <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="【定居点信任结算】本次战斗未击败附近定居点的敌对部队，因此没有获得定居点信任。" />
   </strings>
 </base>

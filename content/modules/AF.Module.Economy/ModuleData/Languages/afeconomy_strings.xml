@@ -8,5 +8,48 @@
     <string id="AF_DEBT_PROMISE_COMPLETE" text="This promise has been completed or released." />
     <string id="AF_DEBT_PROMISE_EXPIRED" text="This promise has expired, but it can still be released or completed later." />
     <string id="AF_ECO_DebtPromise_Instruction" text="Talk with the counterparty to complete or release this promise." />
+    <string id="AF_ECO_UI_CompanionReturnedClan" text="[Companion departed] {HERO} returned to {CLAN}." />
+    <string id="AF_ECO_UI_CompanionReturnedSettlement" text="[Companion departed] {HERO} returned to {SETTLEMENT}." />
+    <string id="AF_ECO_UI_CompanionWanderer" text="[Companion departed] {REASON}{HERO} became a wanderer." />
+    <string id="AF_ECO_UI_CompanionWandererClanReason" text="{CLAN} has fallen; " />
+    <string id="AF_ECO_UI_CompanionWandererUnknownReason" text="The original affiliation is unavailable; " />
+    <string id="AF_ECO_UI_SpecialRpItemMarketBlocked" text="This special RP item cannot be traded on the market." />
+    <string id="AF_ECO_UI_ItemGiven" text="{SOURCE} gave you {ITEM}." />
+    <string id="AF_ECO_UI_PromiseRecorded" text="[Promise or debt recorded] {NOTE}; promise value: {VALUE}" />
+    <string id="AF_ECO_UI_DebtReleased" text="[Debt released] {STATUS}" />
+    <string id="AF_ECO_UI_DebtReleaseFailed" text="[Debt release failed] {STATUS}" />
+    <string id="AF_ECO_UI_AllDebtCleared" text="[Debt cleared] All of your debt to {GIVER} has been repaid!" />
+    <string id="AF_ECO_UI_MarketDebtReleased" text="[Market debt released] {STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtReleaseFailed" text="[Market debt release failed] {STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtCleared" text="[Market debt] All current market debt has been cleared." />
+    <string id="AF_ECO_UI_DenarsReceived" text="{GIVER} gave you {AMOUNT} denars." />
+    <string id="AF_ECO_UI_DenarsGiven" text="You gave {RECEIVER} {AMOUNT} denars." />
+    <string id="AF_ECO_UI_ItemsReceived" text="{GIVER} gave you {ITEMS}." />
+    <string id="AF_ECO_UI_ItemsGiven" text="You gave {RECEIVER} {ITEMS}." />
+    <string id="AF_ECO_UI_PartyItemsReceived" text="{GIVER} gave you {ITEMS}." />
+    <string id="AF_ECO_UI_PartyItemsGiven" text="You gave the other party {ITEMS}." />
+    <string id="AF_ECO_UI_CivilWarFaction" text="[Civil war faction] {STATUS}" />
+    <string id="AF_ECO_UI_JoinFailed" text="[Join failed] {STATUS}" />
+    <string id="AF_ECO_UI_JoinParty" text="[Join party] {STATUS}" />
+    <string id="AF_ECO_UI_BecomeCompanion" text="[Become companion] {STATUS}" />
+    <string id="AF_ECO_UI_JoinClan" text="[Join clan] {STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransfer" text="[Kingdom transfer] {STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransferFailed" text="[Kingdom transfer failed] {STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentity" text="[Faction identity] {STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentityFailed" text="[Faction identity failed] {STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransfer" text="[Fixed asset transfer] {STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransferFailed" text="[Fixed asset transfer failed] {STATUS}" />
+    <string id="AF_ECO_UI_UnknownPerson" text="someone" />
+    <string id="AF_ECO_UI_OtherParty" text="the other party" />
+    <string id="AF_ECO_UI_OriginalSettlement" text="the original settlement" />
+    <string id="AF_ECO_UI_MerchantAt" text="the {MARKET} merchant" />
+    <string id="AF_ECO_UI_TrustChanged" text="[Trust change] {GIVER} increased your personal trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_PublicTrustGain" text=", public trust +{VALUE}" />
+    <string id="AF_ECO_UI_MarketTrustChanged" text="[Market trust change] {MARKET} increased your market trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_QuestTrustChanged" text="[Trust change] Completing {GIVER}'s quest increased personal trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_SettlementTrustBattleLost" text="[Settlement trust settlement] The battle was not won; no settlement trust was gained." />
+    <string id="AF_ECO_UI_SettlementTrustNoNearby" text="[Settlement trust settlement] No affected settlement was found near this battle." />
+    <string id="AF_ECO_UI_SettlementTrustDetails" text="[Settlement trust settlement]\n{DETAILS}" />
+    <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="[Settlement trust settlement] No hostile force near a settlement was defeated, so no settlement trust was gained." />
   </strings>
 </base>
