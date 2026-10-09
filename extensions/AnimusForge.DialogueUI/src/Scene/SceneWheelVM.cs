@@ -20,7 +20,7 @@ public sealed class SceneWheelVM : ViewModel
     {
         _choose = choose;
         _cancel = cancel;
-        TargetName = string.IsNullOrWhiteSpace(data?.TitleText) ? "附近的人" : data.TitleText.Trim();
+        TargetName = string.IsNullOrWhiteSpace(data?.TitleText) ? DialogueUiLocalization.Text("AFD_UI_Wheel_Nearby", "Nearby person") : data.TitleText.Trim();
         foreach (var element in data?.InquiryElements ?? new System.Collections.Generic.List<InquiryElement>())
         {
             string id = element?.Identifier as string;
@@ -29,7 +29,7 @@ public sealed class SceneWheelVM : ViewModel
             if (id == "give") _give = element;
             DrawerItems.Add(new SceneWheelItemVM(element, LabelFor(id, element.Title), Choose));
         }
-        DrawerHeader = "动作分支 · " + DrawerItems.Count + " 项";
+        DrawerHeader = DialogueUiLocalization.Text("AFD_UI_Wheel_DrawerHeader", "Action branches · {COUNT} items", "COUNT", DrawerItems.Count.ToString());
     }
 
     [DataSourceProperty] public string TargetName { get; }
@@ -39,7 +39,7 @@ public sealed class SceneWheelVM : ViewModel
     [DataSourceProperty] public bool CanGive => _give?.IsEnabled == true;
     [DataSourceProperty] public bool HasActions => DrawerItems.Count > 0;
     [DataSourceProperty] public bool IsDrawerOpen => _isDrawerOpen;
-    [DataSourceProperty] public string ActionsText => _isDrawerOpen ? "收起动作" : "动 作";
+    [DataSourceProperty] public string ActionsText => _isDrawerOpen ? DialogueUiLocalization.Text("AFD_UI_Wheel_CloseActions", "Close actions") : DialogueUiLocalization.Text("AFD_UI_Wheel_Actions", "ACTIONS");
 
     // Sector under the cursor, set by the layer from geometry; only enabled sectors highlight.
     private string _hovered;
@@ -95,14 +95,14 @@ public sealed class SceneWheelVM : ViewModel
     {
         switch (id)
         {
-            case "give": return "给予物品";
-            case "show": return "展示物品";
-            case "give_troops": return "给予部队";
-            case "give_prisoners": return "给予俘虏";
-            case "give_settlements": return "转移资产";
-            case "battle_speech_player": return "当众演讲";
-            case "battle_speech_npc": return "他人演讲";
-            case "tag_test": return "开发测试 · 标签";
+            case "give": return DialogueUiLocalization.Text("AFD_UI_Wheel_GiveItems", "Give items");
+            case "show": return DialogueUiLocalization.Text("AFD_UI_Wheel_ShowItems", "Show items");
+            case "give_troops": return DialogueUiLocalization.Text("AFD_UI_Wheel_GiveTroops", "Give troops");
+            case "give_prisoners": return DialogueUiLocalization.Text("AFD_UI_Wheel_GivePrisoners", "Give prisoners");
+            case "give_settlements": return DialogueUiLocalization.Text("AFD_UI_Wheel_TransferAssets", "Transfer assets");
+            case "battle_speech_player": return DialogueUiLocalization.Text("AFD_UI_Wheel_PlayerSpeech", "Public speech");
+            case "battle_speech_npc": return DialogueUiLocalization.Text("AFD_UI_Wheel_NpcSpeech", "Other speech");
+            case "tag_test": return DialogueUiLocalization.Text("AFD_UI_Wheel_TagTest", "Developer test · tags");
             default: return string.IsNullOrWhiteSpace(hostTitle) ? id : hostTitle;
         }
     }

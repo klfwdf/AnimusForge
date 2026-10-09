@@ -35,15 +35,15 @@ public sealed class SceneTradeVM : ViewModel
     [DataSourceProperty] public bool IsPrisoners => _mode == "give_prisoners";
     [DataSourceProperty] public bool IsAssets => _mode == "give_settlements";
     [DataSourceProperty] public bool CanShow => IsItems;
-    [DataSourceProperty] public string Title => IsShow ? "展示物品" : "给予 / 展示";
-    [DataSourceProperty] public string SelectionTitle => IsShow ? "本次展示" : "本次给予";
-    [DataSourceProperty] public string ConfirmText => (IsShow ? "准备展示" : "准备给予") + " · " + SelectedItems.Count + " 项";
+    [DataSourceProperty] public string Title => IsShow ? DialogueUiLocalization.Text("AFD_UI_Trade_Title_Show", "Show items") : DialogueUiLocalization.Text("AFD_UI_Trade_Title", "Give / show");
+    [DataSourceProperty] public string SelectionTitle => IsShow ? DialogueUiLocalization.Text("AFD_UI_Trade_Selection_Show", "Current show") : DialogueUiLocalization.Text("AFD_UI_Trade_Selection_Give", "Current gift");
+    [DataSourceProperty] public string ConfirmText => DialogueUiLocalization.Text(IsShow ? "AFD_UI_Trade_Prepare_Show" : "AFD_UI_Trade_Prepare_Give", IsShow ? "Prepare show · {COUNT} items" : "Prepare gift · {COUNT} items", "COUNT", SelectedItems.Count.ToString());
     [DataSourceProperty] public bool CanSubmit => _open && SelectedItems.Count > 0 && SelectedItems.All(x => x.IsAmountValid);
-    [DataSourceProperty] public string TotalValue => SelectedItems.Sum(x => (decimal)x.Amount * x.Option.UnitValue).ToString("N0") + " 第纳尔";
-    [DataSourceProperty] public string TradeNote => "确认后回到对话；给予随你下一句话一起交付，关闭不执行。";
+    [DataSourceProperty] public string TotalValue => DialogueUiLocalization.Text("AFD_UI_Trade_TotalValue", "{VALUE} denars", "VALUE", SelectedItems.Sum(x => (decimal)x.Amount * x.Option.UnitValue).ToString("N0"));
+    [DataSourceProperty] public string TradeNote => DialogueUiLocalization.Text("AFD_UI_Trade_Note", "After confirmation, return to the conversation; gifts are delivered with your next line. Closing cancels.");
     [DataSourceProperty] public string StatusText => _message;
-    [DataSourceProperty] public string ResourceCountText => "可用资源  " + _filtered.Count;
-    [DataSourceProperty] public string ResourcePageText => (_filtered.Count == 0 ? 0 : _page + 1) + " / " + Math.Max(1, (_filtered.Count + PageSize - 1) / PageSize) + " 页 · " + _filtered.Count + " 项";
+    [DataSourceProperty] public string ResourceCountText => DialogueUiLocalization.Text("AFD_UI_Trade_ResourceCount", "Available resources  {COUNT}", "COUNT", _filtered.Count.ToString());
+    [DataSourceProperty] public string ResourcePageText => DialogueUiLocalization.Text("AFD_UI_Trade_Page", "{PAGE} / {TOTAL} · {COUNT} items", "PAGE", (_filtered.Count == 0 ? 0 : _page + 1).ToString(), "TOTAL", Math.Max(1, (_filtered.Count + PageSize - 1) / PageSize).ToString(), "COUNT", _filtered.Count.ToString());
     [DataSourceProperty] public bool CanResourcePrevious => _page > 0;
     [DataSourceProperty] public bool CanResourceNext => (_page + 1) * PageSize < _filtered.Count;
     [DataSourceProperty] public bool IsResourceEmpty => ResourceItems.Count == 0;
@@ -105,7 +105,7 @@ public sealed class SceneTradeVM : ViewModel
         var amounts = SelectedItems.Select(x => x.Amount).ToList();
         if (ShoutBehavior.StageScenePresentationTradeForExternal(_flowRevision, indices, amounts, out string status))
         {
-            _status("已准备好：发送下一句话时一起交付。");
+            _status(DialogueUiLocalization.Text("AFD_UI_Trade_Staged", "Ready: delivered with your next line."));
             Hide();
         }
         else SetMessage(status);

@@ -40,7 +40,7 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     [DataSourceProperty] public bool IsVisible => _open && !_suspended;
     [DataSourceProperty] public bool IsHistory => _historyMode;
     [DataSourceProperty] public bool IsTrade => !_historyMode;
-    [DataSourceProperty] public string Title => _historyMode ? "对话历史" : "给予 / 展示";
+    [DataSourceProperty] public string Title => _historyMode ? DialogueUiLocalization.Text("AFD_UI_Aux_Title_History", "Conversation history") : DialogueUiLocalization.Text("AFD_UI_Aux_Title_Trade", "Give / show");
     [DataSourceProperty] public string TargetName => _targetName;
     [DataSourceProperty] public string Status => _status;
     [DataSourceProperty] public bool CanInteract => IsVisible && !_busy && !_disposed;
@@ -55,13 +55,13 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     [DataSourceProperty] public bool IsAllFilter => _filter == "all";
     [DataSourceProperty] public bool IsDialogueFilter => _filter == "dialogue";
     [DataSourceProperty] public bool IsActionFilter => _filter == "action";
-    [DataSourceProperty] public string SelectionTitle => IsShow ? "本次展示" : "本次给予";
-    [DataSourceProperty] public string ConfirmText => (IsShow ? "确认展示" : "确认给予") + " · " + SelectedItems.Count + " 项";
-    [DataSourceProperty] public string SelectionCount => SelectedItems.Count + " 项";
-    [DataSourceProperty] public string TotalValue => SelectedItems.Sum(x => (decimal)x.Amount * x.Option.UnitValue).ToString("N0") + " 第纳尔";
-    [DataSourceProperty] public string TradeNote => IsShow ? "仅展示，不转移资源；动作记入历史。" : "确认即移交；收起不提交，动作记入历史。";
-    [DataSourceProperty] public string ResourcePageText => (_filteredResources.Count == 0 ? 0 : _resourcePage + 1) + " / " + Math.Max(1, (_filteredResources.Count + ResourcePageSize - 1) / ResourcePageSize) + " 页 · " + _filteredResources.Count + " 项";
-    [DataSourceProperty] public string ResourceCountText => "可用资源  " + _filteredResources.Count;
+    [DataSourceProperty] public string SelectionTitle => IsShow ? DialogueUiLocalization.Text("AFD_UI_Trade_Selection_Show", "Current show") : DialogueUiLocalization.Text("AFD_UI_Trade_Selection_Give", "Current gift");
+    [DataSourceProperty] public string ConfirmText => DialogueUiLocalization.Text(IsShow ? "AFD_UI_Trade_Confirm_Show" : "AFD_UI_Trade_Confirm_Give", IsShow ? "Confirm show · {COUNT} items" : "Confirm gift · {COUNT} items", "COUNT", SelectedItems.Count.ToString());
+    [DataSourceProperty] public string SelectionCount => DialogueUiLocalization.Text("AFD_UI_Trade_SelectionCount", "{COUNT} items", "COUNT", SelectedItems.Count.ToString());
+    [DataSourceProperty] public string TotalValue => DialogueUiLocalization.Text("AFD_UI_Trade_TotalValue", "{VALUE} denars", "VALUE", SelectedItems.Sum(x => (decimal)x.Amount * x.Option.UnitValue).ToString("N0"));
+    [DataSourceProperty] public string TradeNote => IsShow ? DialogueUiLocalization.Text("AFD_UI_Trade_Note_Show", "Show only; no resources are transferred. The action is recorded.") : DialogueUiLocalization.Text("AFD_UI_Trade_Note_Give", "Confirm to transfer; closing cancels it. The action is recorded.");
+    [DataSourceProperty] public string ResourcePageText => DialogueUiLocalization.Text("AFD_UI_Trade_Page", "{PAGE} / {TOTAL} · {COUNT} items", "PAGE", (_filteredResources.Count == 0 ? 0 : _resourcePage + 1).ToString(), "TOTAL", Math.Max(1, (_filteredResources.Count + ResourcePageSize - 1) / ResourcePageSize).ToString(), "COUNT", _filteredResources.Count.ToString());
+    [DataSourceProperty] public string ResourceCountText => DialogueUiLocalization.Text("AFD_UI_Trade_ResourceCount", "Available resources  {COUNT}", "COUNT", _filteredResources.Count.ToString());
     [DataSourceProperty] public bool IsSearchEmpty => string.IsNullOrEmpty(_search);
     [DataSourceProperty] public bool CanResourcePrevious => _resourcePage > 0;
     [DataSourceProperty] public bool CanResourceNext => (_resourcePage + 1) * ResourcePageSize < _filteredResources.Count;
@@ -117,14 +117,14 @@ public sealed class DialogueAuxiliaryVM : ViewModel
         _trade.Cancel(); ReleaseResources();
         _historyMode = true; _search = ""; _searchPending = false; _filter = "all"; _day = null; _status = "";
         try { LoadHistory(); }
-        catch (Exception ex) { ReleaseHistory(); _status = "历史暂时无法读取，请收起后重试。"; DialogueUiRuntime.Log("Inline history: " + ex); }
+        catch (Exception ex) { ReleaseHistory(); _status = DialogueUiLocalization.Text("AFD_UI_Aux_HistoryLoadFailed", "History is temporarily unavailable. Close and try again."); DialogueUiRuntime.Log("Inline history: " + ex); }
         RefreshState(); _owner.AuxiliaryStateChanged();
     }
     public void ShowTrade()
     {
         if (!_open || !CanInteract) return;
         if (!IsCurrentTarget()) { Close(); return; }
-        if (!_owner.Original.IsInputEnabled) { _status = "请等待当前对话处理完成后再操作资源。"; RefreshState(); return; }
+        if (!_owner.Original.IsInputEnabled) { _status = DialogueUiLocalization.Text("AFD_UI_Aux_WaitForConversation", "Wait for the current conversation to finish before managing resources."); RefreshState(); return; }
         _historyMode = false; ReleaseHistory(); _entries.Clear(); HistoryDays.Clear();
         _mode = "give"; _search = ""; _searchPending = false;
         LoadResources(); RefreshState(); _owner.AuxiliaryStateChanged();
@@ -142,7 +142,7 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     {
         _entries.Clear(); HistoryDays.Clear();
         ShoutBehavior.TryGetNativeConversationPersistentHistoryTargetForExternal(out var hero, out var name, out var memoryId);
-        _hero = hero ?? _hero; _targetName = name ?? "当前对话对象";
+        _hero = hero ?? _hero; _targetName = name ?? DialogueUiLocalization.Text("AFD_UI_Aux_CurrentTarget", "Current conversation target");
         var entries = _hero != null ? MyBehavior.GetDialogueHistoryEntriesForExternal(_hero, 260)
             : !string.IsNullOrWhiteSpace(memoryId) ? MyBehavior.GetDialogueHistoryEntriesByIdForExternal(memoryId, 260) : new List<AnimusForgeDialogueHistoryEntry>();
         if (entries.Count == 0) entries = ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal(260);
@@ -153,9 +153,9 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     private void RefreshDayLabels()
     {
         HistoryDays.Clear();
-        HistoryDays.Add(new HistoryDayVM("全部日期", null, SelectDay, !_day.HasValue));
+        HistoryDays.Add(new HistoryDayVM(DialogueUiLocalization.Text("AFD_UI_Aux_AllDates", "All dates"), null, SelectDay, !_day.HasValue));
         foreach (var group in _entries.GroupBy(x => x.GameDayIndex).OrderByDescending(x => x.Key))
-            HistoryDays.Add(new HistoryDayVM((group.First().GameDate ?? "第 " + group.Key + " 日") + " · " + group.Count() + " 条", group.Key, SelectDay, _day == group.Key));
+            HistoryDays.Add(new HistoryDayVM(DialogueUiLocalization.Text("AFD_UI_Aux_HistoryDay", "{DATE} · {COUNT} entries", "DATE", group.First().GameDate ?? DialogueUiLocalization.Text("AFD_UI_Aux_Day", "Day {DAY}", "DAY", group.Key.ToString()), "COUNT", group.Count().ToString()), group.Key, SelectDay, _day == group.Key));
         LayoutVersion++;
     }
     // Click-driven only. The history VM removes the row in place and keeps its page; here the master list
@@ -243,11 +243,11 @@ public sealed class DialogueAuxiliaryVM : ViewModel
         try
         {
             bool loaded = _trade.Load(_mode);
-            _status = loaded ? "" : !InlineTradeBridge.Available ? "当前宿主版本不支持内联交易，未执行操作。" : "当前类别没有可用资源，或此目标不符合接收条件。";
+            _status = loaded ? "" : !InlineTradeBridge.Available ? DialogueUiLocalization.Text("AFD_UI_Aux_TradeUnsupported", "This host does not support inline trading.") : DialogueUiLocalization.Text("AFD_UI_Aux_NoResources", "No resources are available for this category or target.");
             foreach (var option in _trade.Options) _resources.Add(new ResourceRowVM(option, SelectionChanged, StartTyping, StopTyping));
             FilterResources();
         }
-        catch (Exception ex) { _trade.Cancel(); _status = "无法读取资源，请收起后重试。"; DialogueUiRuntime.Log("Inline trade load: " + ex); }
+        catch (Exception ex) { _trade.Cancel(); _status = DialogueUiLocalization.Text("AFD_UI_Aux_ResourceLoadFailed", "Resources could not be loaded. Close and try again."); DialogueUiRuntime.Log("Inline trade load: " + ex); }
         RefreshState();
     }
     private void FilterResources()
@@ -282,9 +282,9 @@ public sealed class DialogueAuxiliaryVM : ViewModel
         try
         {
             _trade.Commit(SelectedItems.Select(x => new TradeChoice(x.Option, x.Amount)).ToList());
-            _status = "操作已交由游戏处理；实际结果以游戏提示和对话历史为准。";
+            _status = DialogueUiLocalization.Text("AFD_UI_Aux_OperationQueued", "The game is handling this operation; check the game notice and conversation history for the result.");
         }
-        catch (Exception ex) { _status = "操作未完成，请重新选择。"; DialogueUiRuntime.Log("Inline trade commit: " + ex); }
+        catch (Exception ex) { _status = DialogueUiLocalization.Text("AFD_UI_Aux_OperationFailed", "The operation did not complete. Select the resources again."); DialogueUiRuntime.Log("Inline trade commit: " + ex); }
         finally { _busy = false; ReleaseResources(); RefreshState(); }
         if (_disposed || !_open || !IsCurrentTarget()) { Close(); return; }
         string result = _status; LoadResources(); _status = result; RefreshState();
@@ -341,11 +341,11 @@ public sealed class ResourceRowVM : ViewModel
     [DataSourceProperty] public bool HasImage => _image != null;
     [DataSourceProperty] public bool IsGold => _gold;
     [DataSourceProperty] public string AvailableText => Option.Available.ToString("N0");
-    [DataSourceProperty] public string AvailableHint => "可用 " + AvailableText;
+    [DataSourceProperty] public string AvailableHint => DialogueUiLocalization.Text("AFD_UI_Trade_Available", "Available {COUNT}", "COUNT", AvailableText);
     [DataSourceProperty] public string ValueText => Option.UnitValue.ToString("N0");
     [DataSourceProperty] public bool IsSelected => _selected;
     [DataSourceProperty] public bool CanSelect => !_disposed && Option.Available > 0 && Option.Element.IsEnabled;
-    [DataSourceProperty] public string SelectText => _selected ? "已选" : "选择";
+    [DataSourceProperty] public string SelectText => _selected ? DialogueUiLocalization.Text("AFD_UI_Trade_Selected", "Selected") : DialogueUiLocalization.Text("AFD_UI_Trade_Select", "Select");
     [DataSourceProperty] public bool IsAmountValid => int.TryParse(_quantity, NumberStyles.None, CultureInfo.InvariantCulture, out int value) && value > 0 && value <= Option.Available;
     // Pen quantity field: dark #25190F fill, so valid text is the light #EBD5A7.
     [DataSourceProperty] public string QuantityColor => IsAmountValid ? "#EBD5A7FF" : "#E0826EFF";

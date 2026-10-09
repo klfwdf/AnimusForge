@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AFD_UI_Aux_AllDates" text="All dates" />
+    <string id="AFD_UI_Aux_CurrentTarget" text="Current conversation target" />
+    <string id="AFD_UI_Aux_Day" text="Day {DAY}" />
+    <string id="AFD_UI_Aux_HistoryDay" text="{DATE} · {COUNT} entries" />
+    <string id="AFD_UI_Aux_HistoryLoadFailed" text="History is temporarily unavailable. Close and try again." />
+    <string id="AFD_UI_Aux_NoResources" text="No resources are available for this category or target." />
+    <string id="AFD_UI_Aux_OperationFailed" text="The operation did not complete. Select the resources again." />
+    <string id="AFD_UI_Aux_OperationQueued" text="The game is handling this operation; check the game notice and conversation history for the result." />
+    <string id="AFD_UI_Aux_ResourceLoadFailed" text="Resources could not be loaded. Close and try again." />
+    <string id="AFD_UI_Aux_Title_History" text="Conversation history" />
+    <string id="AFD_UI_Aux_Title_Trade" text="Give / show" />
+    <string id="AFD_UI_Aux_TradeUnsupported" text="This host does not support inline trading." />
+    <string id="AFD_UI_Aux_WaitForConversation" text="Wait for the current conversation to finish before managing resources." />
+    <string id="AFD_UI_Trade_Available" text="Available {COUNT}" />
+    <string id="AFD_UI_Trade_Confirm_Give" text="Confirm gift · {COUNT} items" />
+    <string id="AFD_UI_Trade_Confirm_Show" text="Confirm show · {COUNT} items" />
+    <string id="AFD_UI_Trade_Note_Give" text="Confirm to transfer; closing cancels it. The action is recorded." />
+    <string id="AFD_UI_Trade_Note_Show" text="Show only; no resources are transferred. The action is recorded." />
+    <string id="AFD_UI_Trade_Page" text="{PAGE} / {TOTAL} · {COUNT} items" />
+    <string id="AFD_UI_Trade_ResourceCount" text="Available resources  {COUNT}" />
+    <string id="AFD_UI_Trade_Select" text="Select" />
+    <string id="AFD_UI_Trade_Selected" text="Selected" />
+    <string id="AFD_UI_Trade_Selection_Give" text="Current gift" />
+    <string id="AFD_UI_Trade_Selection_Show" text="Current show" />
+    <string id="AFD_UI_Trade_SelectionCount" text="{COUNT} items" />
+    <string id="AFD_UI_Trade_TotalValue" text="{VALUE} denars" />
+    <string id="AFD_UI_Illustration_Busy" text="Capturing…" />
+    <string id="AFD_UI_Illustration_Button" text="Illustrate" />
+    <string id="AFD_UI_Scene_Address" text="To {NAME}:" />
+    <string id="AFD_UI_Scene_AudienceStats" text="{PARTICIPATING} participating · {EXCLUDED} hidden" />
+    <string id="AFD_UI_Scene_AudienceTitle" text="Scene audience docket · {COUNT} people" />
+    <string id="AFD_UI_Scene_Collapsed" text="Expand scene conversation (T)" />
+    <string id="AFD_UI_Scene_CollapsedTarget" text=" · {NAME}{MORE}" />
+    <string id="AFD_UI_Scene_CurrentTarget" text="Current target" />
+    <string id="AFD_UI_Scene_Docket" text="Expand audience docket · {COUNT} people" />
+    <string id="AFD_UI_Scene_Interrupted" text="Interrupted. You can send the next line." />
+    <string id="AFD_UI_Scene_LeftArea" text="Out of range" />
+    <string id="AFD_UI_Scene_MorePeople" text=" and {COUNT} others" />
+    <string id="AFD_UI_Scene_NoEncyclopedia" text="The current conversation target has no encyclopedia entry." />
+    <string id="AFD_UI_Scene_Send" text="Send (Enter)" />
+    <string id="AFD_UI_Scene_StagedTrade" text="Staged · {TRADE} (delivered with the next line)" />
+    <string id="AFD_UI_Scene_StateHidden" text="Hidden" />
+    <string id="AFD_UI_Scene_StateLocked" text="Locked" />
+    <string id="AFD_UI_Scene_StateParticipating" text="Participating" />
+    <string id="AFD_UI_Scene_TargetOutOfRange" text="This person has left the area and cannot be addressed." />
+    <string id="AFD_UI_Scene_TradeCancelled" text="The staged gift was cancelled." />
+    <string id="AFD_UI_Scene_TradeNeedsText" text="The gift will be delivered with your line. Write something to say first." />
+    <string id="AFD_UI_Scene_Waiting" text="Waiting for response…" />
+    <string id="AFD_UI_Trade_Note" text="After confirmation, return to the conversation; gifts are delivered with your next line. Closing cancels." />
+    <string id="AFD_UI_Trade_Prepare_Give" text="Prepare gift · {COUNT} items" />
+    <string id="AFD_UI_Trade_Prepare_Show" text="Prepare show · {COUNT} items" />
+    <string id="AFD_UI_Trade_Staged" text="Ready: delivered with your next line." />
+    <string id="AFD_UI_Trade_Title" text="Give / show" />
+    <string id="AFD_UI_Trade_Title_Show" text="Show items" />
+    <string id="AFD_UI_Wheel_Actions" text="ACTIONS" />
+    <string id="AFD_UI_Wheel_CloseActions" text="Close actions" />
+    <string id="AFD_UI_Wheel_DrawerHeader" text="Action branches · {COUNT} items" />
+    <string id="AFD_UI_Wheel_GiveItems" text="Give items" />
+    <string id="AFD_UI_Wheel_GivePrisoners" text="Give prisoners" />
+    <string id="AFD_UI_Wheel_GiveTroops" text="Give troops" />
+    <string id="AFD_UI_Wheel_Nearby" text="Nearby person" />
+    <string id="AFD_UI_Wheel_NpcSpeech" text="Other speech" />
+    <string id="AFD_UI_Wheel_PlayerSpeech" text="Public speech" />
+    <string id="AFD_UI_Wheel_ShowItems" text="Show items" />
+    <string id="AFD_UI_Wheel_TagTest" text="Developer test · tags" />
+    <string id="AFD_UI_Wheel_TransferAssets" text="Transfer assets" />
+    <string id="AFD_UI_Shout_HideHistory" text="Hide history" />
+    <string id="AFD_UI_Shout_Hint" text="Enter send · Shift+Enter new line · Esc close" />
+    <string id="AFD_UI_Shout_History" text="History" />
+    <string id="AFD_UI_Shout_HistoryUnavailable" text="History is temporarily unavailable." />
+    <string id="AFD_UI_Shout_NoHistory" text="No visible conversation history in this scene." />
+    <string id="AFD_UI_Shout_TargetInvalid" text="The current target is no longer available. Close and select again." />
+    <string id="AFD_UI_Shout_TargetInvalidHistory" text="The current target is no longer available; history cannot be read." />
+  </strings>
+</base>

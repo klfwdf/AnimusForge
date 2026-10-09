@@ -6,4 +6,5 @@
   <LanguageFile xml_path="CNs/afwarstats_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/vengeance_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/af_ui_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afd_ui_strings-zh-CN.xml" />
 </LanguageData>
