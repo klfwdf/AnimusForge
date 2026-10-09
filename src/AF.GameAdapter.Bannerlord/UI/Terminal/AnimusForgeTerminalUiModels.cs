@@ -628,7 +628,10 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 						_activeListeningItem.OnPropertyChanged(nameof(_activeListeningItem.DisplayValue));
 						_activeListeningItem.IsListeningKey = false;
 						MarkModified();
-						InformationManager.DisplayMessage(new InformationMessage($"快捷键【{_activeListeningItem.Title}】已设置为 [{keyName}]", Colors.Green));
+						var hotkeyMessage = new TextObject("{=AF_UI_Terminal_HotkeySet}Hotkey {TITLE} set to [{KEY}]");
+						hotkeyMessage.SetTextVariable("TITLE", _activeListeningItem.Title ?? "");
+						hotkeyMessage.SetTextVariable("KEY", keyName);
+						InformationManager.DisplayMessage(new InformationMessage(hotkeyMessage.ToString(), Colors.Green));
 					}
 					_activeListeningItem = null;
 				}
@@ -1722,12 +1725,16 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		try
 		{
 			SettingDef.Invoker?.Invoke(settings);
-			InformationManager.DisplayMessage(new InformationMessage($"已触发：{Title}", Colors.Green));
+			var triggeredMessage = new TextObject("{=AF_UI_Terminal_SettingTriggered}Triggered: {TITLE}");
+			triggeredMessage.SetTextVariable("TITLE", Title ?? "");
+			InformationManager.DisplayMessage(new InformationMessage(triggeredMessage.ToString(), Colors.Green));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Terminal", $"[ERROR] Failed to invoke setting action {SettingDef.Id}: {ex}");
-			InformationManager.DisplayMessage(new InformationMessage($"触发失败：{ex.Message}", Colors.Red));
+			var triggerFailedMessage = new TextObject("{=AF_UI_Terminal_SettingTriggerFailed}Trigger failed: {ERROR}");
+			triggerFailedMessage.SetTextVariable("ERROR", ex.Message ?? "Unknown error.");
+			InformationManager.DisplayMessage(new InformationMessage(triggerFailedMessage.ToString(), Colors.Red));
 		}
 	}
 
