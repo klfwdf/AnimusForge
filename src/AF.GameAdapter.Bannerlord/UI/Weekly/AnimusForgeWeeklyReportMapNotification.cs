@@ -27,10 +27,12 @@ internal sealed class AnimusForgeWeeklyReportMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeWeeklyReportMapNotification(string eventId, string titleText, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "点击查看当前周报。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText)
+			? "{=AF_UI_Weekly_ViewCurrent}Click to view the current weekly report."
+			: descriptionText))
 	{
 		EventId = (eventId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "周报已生成" : titleText);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "{=AF_UI_Weekly_Generated}Weekly report generated" : titleText);
 	}
 
 	public override bool IsValid()
@@ -445,12 +447,12 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	}
 
 	public AnimusForgeCourierReplyMapNotification(string senderHeroId, string senderName, string replyText)
-		: base(new TextObject("点击查看" + NormalizeSenderName(senderName) + "的回信。"))
+		: base(BuildReplyNoticeText(senderName))
 	{
 		SenderHeroId = (senderHeroId ?? "").Trim();
 		SenderName = NormalizeSenderName(senderName);
 		ReplyText = CourierVisibleLetterSanitizer.Clean(replyText);
-		_titleText = new TextObject("信使带回了回信");
+		_titleText = new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply");
 	}
 
 	public override bool IsValid()
@@ -461,11 +463,16 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	internal bool OpenReply()
 	{
 		string cleanedReply = CourierVisibleLetterSanitizer.Clean(ReplyText);
-		string body = string.IsNullOrWhiteSpace(cleanedReply) ? "（无回信正文）" : cleanedReply;
+		string body = string.IsNullOrWhiteSpace(cleanedReply)
+			? new TextObject("{=AF_UI_Courier_EmptyReply}(No reply body)").ToString()
+			: cleanedReply;
 		Action replyAction = string.IsNullOrWhiteSpace(SenderHeroId) ? null : (() => CourierDeliveryBehavior.OpenCourierReplyFlowForExternal(SenderHeroId, SenderName));
 		try
 		{
-			if (CourierLetterReplyPopup.ShowWithReply("信使带回了回信", SenderName + "写道：", body, replyAction, "回信", null, "关闭"))
+			var wrote = new TextObject("{=AF_UI_Courier_Wrote}{NAME} wrote:");
+			wrote.SetTextVariable("NAME", SenderName);
+			if (CourierLetterReplyPopup.ShowWithReply(new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply").ToString(), wrote.ToString(), body, replyAction,
+				new TextObject("{=AF_UI_Courier_Reply}Reply").ToString(), null, new TextObject("{=AF_UI_Courier_Close}Close").ToString()))
 			{
 				return true;
 			}
@@ -475,12 +482,17 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 		}
 		try
 		{
-			InformationManager.ShowInquiry(new InquiryData("信使带回了回信", SenderName + "写道：\n\n" + body, true, false, "ESC关闭", "", null, null), true);
+			var wrote = new TextObject("{=AF_UI_Courier_Wrote}{NAME} wrote:");
+			wrote.SetTextVariable("NAME", SenderName);
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply").ToString(), wrote.ToString() + "\n\n" + body, true, false,
+				new TextObject("{=AF_UI_Courier_EscapeClose}ESC: close").ToString(), "", null, null), true);
 			return true;
 		}
 		catch
 		{
-			InformationManager.DisplayMessage(new InformationMessage("信使带回了回信：" + body));
+			var notice = new TextObject("{=AF_UI_Courier_Notice}The courier returned with a reply: {BODY}");
+			notice.SetTextVariable("BODY", body);
+			InformationManager.DisplayMessage(new InformationMessage(notice.ToString()));
 			return true;
 		}
 	}
@@ -488,7 +500,14 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	private static string NormalizeSenderName(string senderName)
 	{
 		string value = (senderName ?? "").Trim();
-		return string.IsNullOrWhiteSpace(value) ? "NPC" : value;
+		return string.IsNullOrWhiteSpace(value) ? new TextObject("{=AF_UI_Courier_EmptySender}NPC").ToString() : value;
+	}
+
+	private static TextObject BuildReplyNoticeText(string senderName)
+	{
+		var text = new TextObject("{=AF_UI_Courier_ViewReply}Click to view {NAME}'s reply.");
+		text.SetTextVariable("NAME", NormalizeSenderName(senderName));
+		return text;
 	}
 }
 
