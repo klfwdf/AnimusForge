@@ -136,7 +136,9 @@ helper默认协议、公有API与同DLL internal端口责任不扩展；正式�
 
 产品 `32a7de4e8` 的IllustratorPromptSettingsPersistence补充既有MCM JSON与复制边界，IllustratorSettings保留大文本编辑器并立即保存。真实接线/源码坐标、两DLL各38检查、双API构建及实机未验范围见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-persistence-20261008)。不新增框架/public API职责。
 <a id="reviewed-refactor-source-delivery-20261008"></a>
-## 当前导航：主体重构与远端功能协调源码（2026-10-08）
+## 历史交付导航：主体重构与远端功能协调源码（2026-10-08，a7d84214）
+
+2026-10-09复核明确：下表固定绑定公开历史提交 `a7d8421425cf96a52208c5019ecdbeb311ad8e48`，不绑定后来main；不刷新旧行号/SHA冒充当前验收。12条机器可读定位及证据边界见[精选历史证据](../audits/2026-10-09-refactor-delivery-evidence.json)，整理/验证与原非PASS状态见[主台账补充归档](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-evidence-curation-20261009)。
 
 本表坐标绑定本次交付树的一基行号与LF规范字节SHA；符号是定位入口，不表示整类已经完整验收。详细状态/真实有限回归及未验层只读[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#reviewed-refactor-source-delivery-20261008)。以下历史表对后来迁移的符号须按本表与当前实现重定位，不能按旧行数推定新源码完成度。
 

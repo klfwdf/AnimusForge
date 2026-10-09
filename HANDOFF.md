@@ -5,6 +5,10 @@
 - 在隔离分支 `codex/player-persona-freeze-20261009` 从 `4ed61998` 实施，不包含原工作区的NPC藏身处WIP。用户授权修复与推送；实际远端落点以最后推送核验为准，不继承其他历史部署授权。
 - [唯一主台账：调用链、源码坐标、检查与人工验收](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-persona-startup-freeze-20261009)。本地证据 `artifacts/persona-freeze-20261009/receipt.json`；回退仅focused revert本包产品提交。
 
+## 补充档案：2026-10-08重构交付历史证据精选（2026-10-09，HISTORICAL_ONLY）
+
+按本轮授权将10份记录精选为约21 KB公开JSON，核对6原始收据SHA、12历史坐标、5组同blob基线及408项原结果；394 PASS/14非PASS与exit1保留。仅归档 `532328aa`/`7896db16`/公开 `a7d84214` 三阶段证据，不验收当前main、不覆盖上方人设修复或1.5.7记录；本轮未改产品、重跑游戏构建、部署或清理。详情见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#refactor-evidence-curation-20261009)和[历史源码范围图](docs/architecture/af-framework-code-scope.md#reviewed-refactor-source-delivery-20261008)。
+
 # 当前交接：1.5.7 本地包与累计公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
 
 - 以正式1.5.6产品 `fe40e43f9` 为基线，累计到远端产品 `46ce63e96`；官方流程生成v1.5.7，FileVersion1.5.7.0、AssemblyVersion1.5.4.0。原命令exit0，双API/Bootstrap/双Coup gate/Stage/ZIP通过；3,381项CRC与SHA、9程序产物及3139份具名内置世界书白名单通过。两个实现各348警告、0错误。
@@ -160,7 +164,7 @@
 - 产品 `32a7de4e8`，检查点 `45aeed8`。画风、负面词、导演大文本保存到原MCM JSON，编辑立即落盘，MCM复制/确认/默认同步文本并重绑按钮。旧版丢失文本需重新保存。
 - 两实际候选DLL各38真实MCM/Harmony往返专项PASS；原双API/Bootstrap/双接缝构建PASS。真实游戏MCM/玩家配置未验，未部署/打包/推送。
 - [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-persistence-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#illustrator-prompt-persistence-20261008)。证据 `artifacts/illustrator-prompt-persistence-20261008/receipt.json`；回滚 `git revert 32a7de4e8`。
-# 当前交接：主体重构与远端功能协调源码（2026-10-08）
+## 历史交接：主体重构与远端功能协调源码（2026-10-08，a7d84214）
 
 - **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。本次只同步获准源码到main，保留最新远端功能与本地主体owner；不部署、不打包。
 - 生产输入与六构建/具名定向回归的候选逐LF规范字节相同；保存每API103及三渠道、公报、managed Coup接缝等检查通过。5项内容基线改指完全同blob的公开祖先，原哈希和断言不变。
