@@ -1,10 +1,13 @@
 <a id="peace-proposal-admission-20261010"></a>
-## 玩家和平提案误拒绝修复（2026-10-10，ACTIVE）
+## 玩家和平提案误拒绝修复（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户授权修复 Logs (10).zip 中已解析却未执行的和平提案，并防止同类接线错误再现；不包含推送、部署、打包或修改玩家存档。工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main/main，基线 `75317d47cbb6b4830e64670805107455174d98d0`，开始时工作树干净。
 - 故障证据：03:41:07 解析返回 actions[0]=propose_peace、empire_s、零贡金/零期限/无割地；和平校验入口未传 SourceActionId，却使用已有提案身份检查，导致在条款检查之前误拒绝。保留已有声明传播、来源身份校验、按顺序执行和重复完成防护。
 - 范围/退出门：分离新提案条款校验与已有提案身份校验，接通逐动作预检和执行重验；明确显示具体条款拒绝原因；原日志、旧平面格式、多动作先后/不同条款、非法条件、重复完成回放通过；原统一双API/Bootstrap/Coup门禁通过。仅在分析完成和动作执行时运行，不加Tick扫描/反射/轮询，不改变存档键或动作身份。
-- 完成证据、代码坐标和未验证项将在本条更新；真实Campaign/模型/旧玩家存档验收独立于源码回放。
+- 产品提交 `b28bb5d40`，检查点 `1a7afc5cb`；代码 owner 为 `WorldDiplomacyPeaceAdmissionApplication`、`WorldDiplomacyOrchestration.TryGetPlayerWorldStateIntentViolation` 和统一 `WorldDiplomacyDocumentExecutionApplication`，测试消费者为 `PeaceProposalReplay`。
+- 修复：新增提案直接校验当前动作的 `PeaceTerms`；只有接受已有提案才解析 `SourceDocumentId + SourceActionId`。逐动作执行前和实际效果前都重验条款；多动作按各自 ActionId/条款登记；拒绝消息带具体原因。未绕过战争、领地、统治者或贡金期限规则。
+- 验证：`WorldDiplomacyRoundLifecycle.SmokeTests` **4,209 assertions PASS**；同一故障回放在基线代码于 `artifacts/peace-proposal-admission-20261010/lifecycle-baseline.log` 复现失败，候选在 `lifecycle-final.log` 通过；官方 `build_single_module.ps1` 双实现 + Bootstrap + 双 Coup seam gate PASS（`build.log`）。保留既有编译警告。
+- 性能：只在分析完成/动作登记/动作执行边界运行，按当前有界动作列表处理；不新增 Tick 扫描、反射、轮询或后台游戏对象访问。未验证真实 Campaign、真实 LLM、实机 UI、旧存档和部署；未 Stage/部署/打包/推送。
 
 <a id="diplomacy-reply-shortcut-20261010"></a>
 ## 外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）

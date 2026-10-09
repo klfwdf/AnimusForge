@@ -4,6 +4,12 @@
 - 4,170项生产回放、Debug双API/Bootstrap和双Coup gate通过；旧枚举文本检查同基线失败保留，实机UI/真实AI/玩家存档未验。构建以本次进程临时引用配置排除ignored快照污染，未改一键脚本。未部署、打包；用户后续明确授权本修复推送 `origin/main`，结果以实际远端ref和本地publication收据核验。
 - [唯一主台账：规则、失败、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-reply-shortcut-20261010)；[源码消费者范围](docs/architecture/af-framework-code-scope.md#diplomacy-reply-shortcut-20261010)。本地证据 `artifacts/diplomacy-reply-shortcut-20261010/`，回滚仅定向inverse产品提交。
 
+# 当前交接：玩家和平提案误拒绝修复（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品 `b28bb5d40`，检查点 `1a7afc5cb`，工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`。修复新 `propose_peace` 动作误走已有提案来源查找的问题；新提案校验自身条款，接受旧提案仍精确绑定来源动作；统一逐动作预检/执行重验与具体拒绝文案。
+- 4,209 项外交生命周期回放通过；同一日志故障在基线复现、候选通过；官方双 API + Bootstrap + 双 Coup gate 通过。证据 `artifacts/peace-proposal-admission-20261010/`。未实机、未真实模型、未旧档、未部署/打包/推送。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#peace-proposal-admission-20261010)；回滚为本包产品提交的 focused inverse。
+
 # 当前交接：测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品 `77ca7886`，基线 `34276f57`：只补测试语音失败主线程回执及未入队提示；取消/迟到不误报，未改 V1/V3、正常对话、播放、音色或存档。61 项回归、8 个 mutation、Debug 双实现 + Bootstrap 与双 Coup 门禁通过；未付费测试、未部署、未实机验声音/UI。
