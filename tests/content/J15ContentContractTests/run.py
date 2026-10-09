@@ -704,6 +704,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml",
         "sha256": "071DAAF095E2E95E1065258F14734E8EAEA4ED17B806C518482D32076CCEF856", "revision": "exercise-ui-localization",
     },
+    "ModuleData/Languages/afwev_ui_strings.xml": {
+        "owner": "AF.Module.WorldEvents", "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/afwev_ui_strings.xml",
+        "sha256": "A77BA1A977F5096109B9D8B608FA28BE6D423E59024C537B94EBBD0C038C6FAA", "revision": "56716b473",
+    },
+    "ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.WorldEvents", "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml",
+        "sha256": "B15D88A071C25DEE59CE5429A9CAD0C07B56D7AD048FD0ABF95B4D165380EAD9", "revision": "56716b473",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
