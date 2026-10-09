@@ -1,4 +1,21 @@
-﻿<a id="native-memory-continuity-fix-20261009"></a>
+<a id="text-editor-relay-invitation-fix-20261009"></a>
+## 共享文本弹窗、群体接力与主动邀请接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+本条收敛重绘/百科文本输入与按钮无响应、全部文本弹窗链路检查、场景群体称呼接力及主动邀请接续任务。工作区 `F:/AnimusForge-main` / `main`；最终编译源码 `33e136a392b431346525bb5a06baf4715a67bca6`。产品切片 Illustrator `cab974619`、共享输入 `65397fb08`、群体接力 `25c40cf22`、邀请 `33e136a39`，原生Inquiry回放 `f505c6bf0`、来源诊断 `c739cb8ab` 同在该候选。此前Native raw/elapsed/外交产品保留；本条更新安装候选，不扩大历史验证边界。
+
+- **共享输入**：隐藏Gauntlet root不能释放ScreenLayer输入。DevPopupInputLease在开/关边界保存限制/鼠标/focus/lifecycle，挂起具名父层，子编辑器位于父层之上；公共签名不变，普通入口只比较当前有效FirstHitLayer/FocusedLayer两候选并校验Screen归属，不全局禁层、不Tick扫描。先关闭子层恢复父输入，再调用原保存/取消；切屏不重开普通业务菜单，外部挂起的新LastActiveState保留。prefab显式可接事件/自动focus，按钮文字不抢点击；记忆默认提示和两种重绘生成语义保留。
+- **真实调用链**：38普通调用、1 Illustrator owned路由、2直接Show路由（helper自身/GCCZ），共41节点；Persona个性/背景、Memory、Event、MCM/Illustrator设置、Knowledge、履历、外交卡和GCCZ逐项含上游、完整回调/source SHA。安装的1.4.6原版全局QueryManager为19501，先业务回调再CloseQuery，关闭后reset/suspend/lose focus；共享代码不接管该全局层。百科310与MCM4000同order按ID时序已回放。
+- **接力/邀请**：25c40cf22明示接力是未来对话安排，群体问候/提问不把一人回复当作全员回复，补current/primary标量事实；保留self-id结束、候选/预算/解析和玩家规则，不强制轮换。33e136a39从合法stage恢复仍有效且目标匹配的Native invitation opening，拒绝scene-owned/失效/异人、匹配pending不重建；Companion在admission前手交接结束保留pending，已消耗/拒绝不复活。诊断仅去重来源。新增工作运行于既有请求/编辑器开关/ConversationEnded边界，无新增Tick扫描、反射或后台游戏对象读取。
+- **有限验证**：共享真实helper/popup/VM/lease59断言、XML focus/按钮契约、缺省handoff反例拒绝，Illustrator lease8/Gallery21通过；41源回调matrix和12符号坐标通过。relay受控33/stop15及旧源码负控、邀请受控153及两类修前负控引用各组receipt。独立input-popup-chain-review库存62原生TextInquiryData构造点并只读检查其他输入页，生产修改0/新确认输入阻断缺陷0；不是全UI实机绿。
+- **构建/Stage分段**：原统一脚本1.3 v1.3.15.110062、1.4 v1.4.6.115628、Bootstrap及双Coup seam通过；两最终DLL确认含shared capture/lease。首次缺Library using错误已修。最终统一命令旧Stage预检查exit1：旧XML/relay JSON不等于当前动态源SHA，未形成新Stage；没有需改写的静态XML锁。核对旧Stage3381文件无未知/缺失后完整隔离到`.tmp/text-editor-input-audit-20261009/previous-stage-33e136a39`；32,198跟踪输入编译后哈希未变，原deploy_module.ps1 StageOnly重组exit0，未改脚本/源SHA凑通过或跳验。
+- **部署**：已有授权且无游戏进程/11差异文件独占写锁时执行原deploy_module.ps1，exit0更新11受管文件（9程序产物+编辑器XML+relay JSON）。全部3381 Stage/安装SHA一致，9程序产物/marker一致，Bootstrap唯一入口；Recovery事务`deploy-8ca68dd81b504f13bb2c6d0ccb083cba` complete，11份旧文件备份hash逐项核对。两既有NuGet未跟踪目录保留；脚本仅写Stage受管清单，本事务清单外安装文件未做独立before/after SHA快照。不push/package/启动游戏。
+- **未验**：07:06–07:07 lord_3_17原现场缺足够active request/NativeRequest证据，不能称已证明根因；邀请153和修前负控仅受控路径。新群体规则下真实provider选择、实机Gauntlet/MCM/百科键鼠、玩家档/模组组合和全仓测试未验，未调用付费API。
+
+详细证据：`artifacts/text-editor-input-audit-20261009/deployment-receipt.json`及同目录冻结/对比清单、entrypoint-mapping.json/.md、entrypoint-source-evidence/、ui-code-map.json、compiled-1.3/1.4-*.cs.txt、unified-build-stage.log（exit1原Stage预检）、stage-reassembly.log（exit0）、deploy.log（exit0）、stage-sha256.json、installed-stage-sha256.json、recovery-manifest.json、verified-old-backups.json。relay receipt在`artifacts/scene-relay-repair-20261009/`；邀请receipt在`artifacts/native-proactive-opening-audit-20261009/`；独立补审在`artifacts/input-popup-chain-review-20261009/{review.md,receipt.json}`。责任坐标统一见[代码导航](architecture/af-framework-code-scope.md#text-editor-relay-invitation-fix-20261009)。
+
+回滚：具名产品切片focused inverse/revert，不reset他人历史；安装恢复用`%LOCALAPPDATA%/AnimusForge/Recovery/deploy/deploy-8ca68dd81b504f13bb2c6d0ccb083cba/manifest.json`和files/的11文件备份，逐项核验old/new SHA，不mirror/delete清单外目录。重组前旧Stage完整保留在上述.tmp路径。
+
+<a id="native-memory-continuity-fix-20261009"></a>
 ## Native 未压缩记忆连续性、游戏时间边界与远端语义合并（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 
 本条收敛用户“重进/跨天遗忘”“做”及拉取合并/功能去重请求。工作区 `F:/AnimusForge-main` / `main`，raw冻结 `c77d448e5577fc83d5a74489bedb60202fc22a2d`、elapsed `d4beb7b762b3c141ee7c55babc5af0772103201e`。WIP保护点 `5c13cc419` 与远端 `8f7e38e6f` 已由 `cce41183743c19df6e10909fb3ea77e76721a523` 合并；本条替代HANDOFF“Native WIP、统一构建待验”的当前状态，保留各历史receipt当时边界，不复用历史部署/推送授权。
