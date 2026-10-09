@@ -443,7 +443,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (restored > 0)
 			{
 				Log("restore courier letter inventory reason=" + (reason ?? "") + " restored=" + restored);
-				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_RestoredLetters", "Restored {COUNT} letter item(s) to the inventory.", "COUNT", restored), Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_RestoredLetters", "Restored {COUNT} letter item(s) to the inventory.", "COUNT", restored.ToString()), Colors.Green));
 			}
 		}
 		catch (Exception ex)
