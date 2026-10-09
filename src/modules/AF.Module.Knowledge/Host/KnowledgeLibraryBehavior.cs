@@ -10443,7 +10443,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text5 = (item2.IsVillage ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeVillage", "Village") : (item2.IsCastle ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeCastle", "Castle") : (item2.IsTown ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeTown", "Town") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeSettlement", "Settlement"))));
 			list4.Add(new InquiryElement(item2.StringId.ToLowerInvariant(), text4 + " (" + text5 + ", " + item2.StringId + ")", null));
 		}
-		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list2.Count, page + 1, num, TrimPreview(text, 60), "Select one to add it to the list.");
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list2.Count, page + 1, num, TrimPreview(text, 60), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSelectOneSuffix", " Select one to add it to the list."));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTitle", "Select settlement"), text6, list4, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
