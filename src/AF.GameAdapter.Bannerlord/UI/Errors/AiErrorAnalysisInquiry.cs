@@ -12,6 +12,7 @@ using AnimusForge.Refactor.Contracts;
 using HarmonyLib;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -126,7 +127,7 @@ public static class AiErrorAnalysisInquiry
 		}
 		if (string.IsNullOrWhiteSpace(detail))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AnimusForge] 当前没有可分析的最近错误。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_ErrorAnalysis_NoRecentError", "[AnimusForge] There is no recent error available for analysis."), Colors.Yellow));
 			return;
 		}
 		// 终端入口也遵守统一确认规则，避免任何入口绕过“是否分析”的玩家选择。
@@ -176,12 +177,12 @@ public static class AiErrorAnalysisInquiry
 		{
 			_suppressEnhancement = true;
 			InformationManager.ShowInquiry(new InquiryData(
-				"是否分析报错？",
-				"刚才的“" + NormalizeText(title, "AnimusForge 报错") + "”完整详情已显示在左下角消息。\n\n是否使用前处理 API 分析原因和处理建议？当前操作窗口会在此确认后自动恢复。",
+				Ui("AF_UI_ErrorAnalysis_Title", "Analyze the error?"),
+				UiFormat("AF_UI_ErrorAnalysis_ConfirmBody", "The full details of “{TITLE}” were shown in the lower-left message feed.\n\nUse the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice.", ("TITLE", NormalizeText(title, "AnimusForge error"))),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"分析",
-				"暂不分析",
+				Ui("AF_UI_ErrorAnalysis_Analyze", "Analyze"),
+				Ui("AF_UI_ErrorAnalysis_Skip", "Skip for now"),
 				delegate
 				{
 					// 先解除确认框占用，避免分析期间的新错误被旧确认框永久阻塞。
@@ -274,11 +275,11 @@ public static class AiErrorAnalysisInquiry
 		}
 		if (Interlocked.CompareExchange(ref _analysisInProgress, 1, 0) != 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AnimusForge] 已有一个报错正在分析，请稍候。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_ErrorAnalysis_AlreadyRunning", "[AnimusForge] Another error is already being analyzed. Please wait."), Colors.Yellow));
 			SafeInvoke(originalCloseAction);
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("[AnimusForge] 正在调用前处理 API 分析报错……", Colors.Yellow));
+		InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_ErrorAnalysis_Starting", "[AnimusForge] Calling the preprocessing API to analyze the error..."), Colors.Yellow));
 		_ = Task.Run(delegate
 		{
 			bool success = TryAnalyzeWithPreprocessApi(title, boundedDetail, out var analysis, out var error);
@@ -500,6 +501,24 @@ public static class AiErrorAnalysisInquiry
 			AnalysisCache[key] = analysis;
 			AnalysisCacheOrder.Enqueue(key);
 		}
+	}
+
+	private static string Ui(string id, string fallback)
+	{
+		return new TextObject("{=" + id + "}" + fallback).ToString();
+	}
+
+	private static string UiFormat(string id, string fallback, params (string Key, object Value)[] variables)
+	{
+		TextObject textObject = new TextObject("{=" + id + "}" + fallback);
+		if (variables != null)
+		{
+			foreach ((string key, object value) in variables)
+			{
+				textObject.SetTextVariable(key, value?.ToString() ?? "");
+			}
+		}
+		return textObject.ToString();
 	}
 
 	private static void SafeInvoke(Action action)

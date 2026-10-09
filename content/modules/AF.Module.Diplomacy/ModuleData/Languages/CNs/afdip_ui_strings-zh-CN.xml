@@ -253,5 +253,41 @@
     <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="当前没有合法选项。" />
     <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="确认派系操作" />
     <string id="AF_DIP_UI_Common_Continue" text="继续" />
-  </strings>
+    <string id="AF_DIP_CivilWar_LoyaltyText" text="内战反对派领地" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationTitle" text="王室交涉" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationAccept" text="接受／服从" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationRefuse" text="拒绝／抗命" />
+    <string id="AF_DIP_CivilWar_FollowRebelsTitle" text="追随叛军" />
+    <string id="AF_DIP_CivilWar_FollowRebelsAccept" text="追随叛军" />
+    <string id="AF_DIP_CivilWar_FollowRebelsRefuse" text="留在王国" />
+    <string id="AF_DIP_CivilWar_UltimatumTitle" text="反对派最后通牒" />
+    <string id="AF_DIP_CivilWar_UltimatumAccept" text="接受诉求" />
+    <string id="AF_DIP_CivilWar_UltimatumRefuse" text="拒绝" />
+      <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="王国议会不能在臣属条约有效时向{TARGET}宣战。若要解除条约，请先通过正式谈判处理。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="此战因保护{SUBJECT}而起；敌国不能绕过受保护方直接向宗主国单独求和。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="此战因保护{SUBJECT}而起；宗主国和平将同步受保护朝贡国停战。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN}履行了对{SUBJECT}的保护义务，已对{ENEMY}{ACTION}。" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX}{DECLARED} 个附庸国/卫戍国已参战，{QUEUED} 个将在局势安全时参战，{ALREADY} 个原本已在战。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}；当前脱离阈值为 {THRESHOLD}（统治者关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="因宗主国履行保护义务，{SUBJECT}的独立度由 {BEFORE} 降至 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER}已经向{SUBJECT}宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。朝贡国以贡赋换取宗主庇护，但不承担出兵义务。\n\n是否履行庇护，向进攻者宣战？若拒绝，朝贡条约将立即终止。" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。\n\n是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。" />    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="臣属国" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT}已立誓为朝贡国，按期进献贡赋，接受你的庇护。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT}已立誓为卫戍国，接受宗主号令，承担边境守卫与随军作战义务。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT}已立誓为附庸国，接受宗主统辖，承担贡赋与出兵义务。" />
+    <string id="AF_DIP_UI_Vassalage_NpcTributaryDescription" text="{VASSAL}已承认{SUZERAIN}的宗主权，成为朝贡国。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedDetail" text="使节呈上盖有王印的臣服誓书：\n\n【臣属条约】\n宗主国：{SUZERAIN}\n臣属国：{VASSAL}\n条约类型：{TYPE}\n立约日：{DATE}\n\n【基本条款】\n一、{TYPE}承认{SUZERAIN}的宗主权，并以本条约身份继续存在。\n二、{TYPE}保留王号、宫廷、家族与内部治理；本条约不视为吞并。\n{CLAUSES}" />
+    <string id="AF_DIP_UI_Vassalage_TributaryClauses" text="三、朝贡国应定期输送贡赋，以换取{SUZERAIN}的庇护。\n四、朝贡国保留军事自主权，不随宗主国出征；朝贡国主动挑起的战争，宗主国无义务介入。\n五、朝贡国受外敌进攻时，可请求宗主国履行庇护；宗主国拒绝庇护，则朝贡条约终止。\n六、立约时朝贡国已经承受的外敌战事，由宗主国按庇护义务接手处置。" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonClauses" text="三、卫戍国进入{SUZERAIN}的军事体系，承担随宗主作战与边境屏障义务，但不缴纳贡赋。\n四、卫戍国不得自行宣战，也不得绕开宗主国单独处理战争事务。\n五、宗主国拒绝防卫、攻击卫戍国或长期不能维护其安全，将削弱忠诚；忠诚崩溃时，卫戍国可宣布脱离宗主控制。" />
+    <string id="AF_DIP_UI_Vassalage_VassalClauses" text="三、附庸国接受{SUZERAIN}控制，承担贡赋与出兵义务。\n四、附庸国不得独立宣战或单独媾和，默认跟随宗主国战争；遭宣战时宗主国自动保护。\n五、附庸国王权受宗主国约束；除宗主国主动放弃或另行议定外，不按卫戍国规则自动脱离。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionTributary" text="{SUBJECT}遭到{ATTACKER}宣战，急使请求履行庇护。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionGarrison" text="{SUBJECT}遭到{ATTACKER}宣战，宫廷需裁定是否出兵保护。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionVassal" text="{SUBJECT}遭到{ATTACKER}宣战；宗主国已按条约自动保护。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="朝贡车队抵达宫廷，贡赋已经入库。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY}按期送来贡赋，宗主国各领地已完成入账。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="贡赋簿册已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="朝贡车队已抵达宫廷，贡赋入库簿册如下：\n\n臣属国：{TRIBUTARY}\n入库日期：{DATE}\n贡赋价值：{VALUE}\n\n【宗主国各领地所得】\n{GAINS}\n【臣属国贡赋消耗】\n{COST}" /></strings>
 </base>
+
+
