@@ -147,13 +147,13 @@ public class DevHistoryEditPopupVM : ViewModel
 	{
 		_onSave = onSave;
 		_onCancel = onCancel;
-		TitleText = titleText ?? "编辑对话行";
+		TitleText = titleText ?? "{=AF_UI_Editor_EditDialogueLine}Edit dialogue line";
 		DateText = dateText ?? "";
-		OriginalContentText = string.IsNullOrWhiteSpace(originalContentText) ? "（空）" : originalContentText;
-		InputHintText = (string.IsNullOrWhiteSpace(inputHintText) ? "下方输入框可直接修改整条内容，留空则删除该行。" : inputHintText);
+		OriginalContentText = string.IsNullOrWhiteSpace(originalContentText) ? "{=AF_UI_Editor_Empty}(Empty)" : originalContentText;
+		InputHintText = (string.IsNullOrWhiteSpace(inputHintText) ? "{=AF_UI_Editor_EditHint}Edit the entire line in the field below; leave it empty to delete the line." : inputHintText);
 		EditedText = editedText ?? "";
-		CancelText = (string.IsNullOrWhiteSpace(cancelText) ? "取消" : cancelText);
-		SaveText = (string.IsNullOrWhiteSpace(saveText) ? "保存" : saveText);
+		CancelText = (string.IsNullOrWhiteSpace(cancelText) ? "{=AF_UI_Common_Cancel}Cancel" : cancelText);
+		SaveText = (string.IsNullOrWhiteSpace(saveText) ? "{=AF_UI_Common_Save}Save" : saveText);
 	}
 
 	public void ExecuteSave()
