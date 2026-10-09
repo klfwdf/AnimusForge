@@ -41,12 +41,12 @@
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="DeepSeek Flash" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_DeepSeekFlashButtonText" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="DeepSeek Pro" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_DeepSeekProButtonText" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
@@ -212,7 +212,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -227,7 +227,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -270,7 +270,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -285,7 +285,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -328,7 +328,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -343,7 +343,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -386,7 +386,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -401,7 +401,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
