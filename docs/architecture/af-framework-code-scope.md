@@ -1,3 +1,21 @@
+<a id="scene-relay-natural-flow-20261009"></a>
+### 当前职责导航：场景接力续聊事实与真实消费者
+
+产品/构建源码 `3022b12717878d246ce5b3068a78b2db235c45e1`，修前 `fb0c4e46f`。范围为五生产文件和既有两测试；本轮不重构三渠道公共owner或改变动作资格。交付、失败记录、未覆盖与回滚统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-natural-flow-20261009)。26一基锚点/source SHA记录在本地 `artifacts/scene-relay-natural-flow-20261009/code-map.json`，recorded/working-tree均通过；下面是有限职责索引，不称整文件或全仓已验。
+
+| 当前源码（一基范围）/符号 | owner、真实消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:402–421`；`BuildSceneRelayTurnContextForPrompt` | 请求边界生成原始话题/primary/current/previous/轮次/spoken的脱离游戏对象事实；主链路781及后处理1033共同消费 |
+| 同文件 `423–428`；`BuildSceneGroupTurnUserSectionForPrompt`，`781–806`正文组装/诊断调用点 | 后续轮调用唯一Scene续聊composer；实际strict messages历史后suffix，prepared prompt进入现有gateway。日志只在两现有开关同开时记录 |
+| 同文件 `959`、`1033–1034`、`1109–1112`；`HandleGroupResponsePerHeroIndependent`内部调用点 | 首轮direct资格、专用后处理context、合法下一位前保存前驱正文；既有八轮、budget、取消及self stop保留 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs:40`、`284`；`QueueDeferredScenePostprocessActions` | 可选string在入队调用处冻结，队列保留generation/session/epoch验证；工作项准备沿原调度回所属线程，不后台读取新游戏对象 |
+| `src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs:38–41`；`PrepareSceneUnifiedActionPostprocess` | 薄宿主只传递专用context到同一权威owner，不重建第二后处理链 |
+| `src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs:370`、`814–826`；`PrepareSceneUnifiedActionPostprocess` | relayRuleInjected时注入runtime及原资格名单；latest_reply玩家仍为空于后续轮。entity资格、权威动作/AFEF提交仍由原owner负责 |
+| `src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs:821–839`；`BuildAutoGroupChatReplyInstruction` | 续聊说明允许回应/质疑/追问，禁止代说和重复同一道回答；消费者已真实接线，人物名仍用现有identity投影 |
+| `tests/modules/AF.Module.Conversation/SceneRelayContinuationTests/Harness.cs.txt:112–122,214–221`及`run.py:39,104,126` | 真实调用点与完整生产history/role/assembly拼装，49断言；修前实际调用点负控在二轮末段失败。回复/provider/资格叶受控，不证明自然多轮 |
+
+最终双DLL各12处调用/边界检查、双API/Bootstrap/Stage与安装SHA通过；实际provider、多轮可见输出、玩家档与全仓未验。现有默认全仓代码图的ModuleFrameworkRuntime过期失败单独保留；本轮定位只使用绑定修订的26锚点。下方旧输入/邀请导航保持其修订和范围，接力当前状态由本条接续。
+
 <a id="text-editor-relay-invitation-fix-20261009"></a>
 ### 当前职责导航：共享文本输入交接与同候选接力/邀请修复
 

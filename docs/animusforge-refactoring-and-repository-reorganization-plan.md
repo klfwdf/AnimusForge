@@ -1,3 +1,34 @@
+<a id="scene-relay-natural-flow-20261009"></a>
+## 场景接力续聊上下文修复与交付（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+本轮需求是修复“无人接力/通常两轮就结束”并按用户授权编译、部署、提交和普通推送。实际工作区 `F:/AnimusForge-main`、分支 `main`；修前 `fb0c4e46f`，检查点 `81a1f2ea3`，产品及冻结源码 `3022b12717878d246ce5b3068a78b2db235c45e1`。执行代理未启动本轮构建；用户明确“由你去做”后，本次由主代理执行交付，astra-sol会话开关不因此永久关闭。本条接续[上一批输入/接力规则/邀请交付](#text-editor-relay-invitation-fix-20261009)，不重写其历史结果。
+
+### 已确认缺口与有意变化
+
+安装目录真实日志08:42/08:43/08:46显示两轮都完成后处理，08:46为12→11→选择自身11结束；第二轮仍剩6次，候选列表有23位其他对象。源码上限八轮，未发现固定两轮上限。原始问题仍存在历史，但正文没有消费已有续聊任务，后处理缺少独立的本轮话题、上一位发言及已发言事实。该未接线状态在早期抽取/目录迁移前也存在，不能证明近期迁移是唯一起因。
+
+现将同一份脱离游戏对象的接力事实用于两处：主回复在真实历史之后追加当前轮任务；后续轮消费 `BuildAutoGroupChatReplyInstruction` 接续上一位，允许认同、补充、质疑或追问。后处理通过专用 `relayConversationContext` 参数贯通队列、薄宿主和权威owner，再加入relay runtime。第二跳 `latest_reply` 玩家仍为“无”，`replyIsDirectPlayerResponse`仍只在首轮成立，原始话题不当作新增玩家命令或成交事实。候选资格、GCCZ新人物预算、最多八轮、自选停止/END、取消/失效及战斗抑制保持；未增加最低轮数、全员轮询、随机或强制接话。
+
+仅修改五个生产文件和两份既有专项测试，真实路径、一基范围、符号与消费者集中在[代码导航](architecture/af-framework-code-scope.md#scene-relay-natural-flow-20261009)。规则JSON、玩家覆盖、持久化和公开API身份未变。本轮事实构造仅在请求边界运行，名单受现有八轮限制；未新增Tick扫描、反射、循环重试或全世界遍历。预请求全文日志仅在原详细Mod_Logic与Token日志同时开启时记录，默认关闭时不调用recorder；没有把默认全量日志当作修复。
+
+### 验证与安装证据
+
+| 层次 | 已执行结果及边界 |
+| --- | --- |
+| 同源接力与真实消息组装 | 冻结源码的49断言PASS；完整生产history/role/assembly owner与真实调用点，网络、人物资格和名字叶受控。三轮请求正确切换上一位和末段续聊；受控回复选择不代表真实provider会自然接三轮 |
+| 修前负控/停止 | `fb0c4e46f`真实调用点可编译运行，先过37断言，再在第二轮末段续聊语义断言按预期失败；15停止标签案例两次归一化PASS |
+| 官方双版本 | 原 `build_single_module.ps1 -Configuration Debug -Stage` exit0；1.3引用v1.3.15.110062、1.4引用v1.4.6.115628、Bootstrap、两最终DLL的Coup/registration gate及Stage通过。两个实现各348警告、0错误，未将警告隐藏为零 |
+| 输入与最终DLL | 构建前后32,198跟踪文件SHA无变化，9程序产物与Stage一致；两最终DLL各12处续聊消费者/后处理runtime/动作资格检查PASS。反编译首轮检查因变量改名、命名参数内联和可选null省略而误失配，原结果保留；检查实际编译调用后通过，没有改产品或弱化业务断言 |
+| 源码定位 | 本轮26锚点 recorded/working-tree双模式PASS；现有全仓默认代码图仍FAIL于既有 `ModuleFrameworkRuntime.cs` 源内容过期，本轮未修该记录或声称全仓通过 |
+| 正式部署 | 游戏/Launcher/Watchdog进程0，9变化文件独占写锁检查通过；原 `deploy_module.ps1` exit0，仅更新9程序产物。3381 Stage/安装SHA逐项一致，单模块Id/Name与唯一Bootstrap入口通过；2465清单外安装文件before/after SHA完全一致 |
+| Recovery | `deploy-8fb4572d8cee4a0f8929730b34032325` complete；manifest与9计划变化逐项一致，9份旧备份及已安装new SHA通过 |
+
+完整本地证据在 `artifacts/scene-relay-natural-flow-20261009/`：`receipt.json`为源码/专项证据，`deployment-receipt.json`为本轮编译/安装收据；另有freeze/comparison、official-build.log/result、compiled-checks与first-attempt、code-map及双模式日志、Stage/安装/清单外前后SHA、deploy.log/result、Recovery manifest及verified-old-backups。未提交这些运行/玩家日志、DLL或个人数据。推送前已fetch确认远端基线 `fb0c4e46f`、仅本地两提交领先，无远端新增；最终普通推送及真实ref以本地 `push-receipt.json` 核验，交付记录提交不改变产品构建输入。
+
+**尚未验证**：真实Bannerlord/provider是否自然选择第三位及更多轮、两版本Gauntlet可见性、玩家 `.sav`/模组组合和全仓回归。没有启动游戏、读玩家存档、调用付费API或打ZIP；安装一致不等于实机正常，也不承诺一定接满八轮。
+
+回滚产品仅定向 `git revert 3022b12717878d246ce5b3068a78b2db235c45e1`，不reset其他作者历史。安装恢复位置 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy/deploy-8fb4572d8cee4a0f8929730b34032325/`；按manifest核验old/new SHA后只恢复files中的9项。两处既有NuGet未跟踪目录及其他作者更改保留，未改构建/覆盖脚本或官方DLL。
+
 <a id="text-editor-relay-invitation-fix-20261009"></a>
 ## 共享文本弹窗、群体接力与主动邀请接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 
