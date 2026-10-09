@@ -27,7 +27,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void ExecuteRegenerateBasedOnImage()
         {
             if (!CanRegenerateBasedOnImage) return;
-            try { OnRegenerateBasedOnImage(); } catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
+            try { OnRegenerateBasedOnImage(); } catch (Exception ex) { SetReady(IllustratorUiText.CardRedrawFailed(ex.Message)); }
         }
         private string _titleText = string.Empty;
         private string _statusText = string.Empty;
@@ -210,14 +210,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (!CanRegenerate) return;
             try { _onRegenerate?.Invoke(); }
-            catch (Exception ex) { SetReady("生成准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardPrepareFailed(ex.Message)); }
         }
 
         public void ExecuteSceneProbe()
         {
             if (!CanExecuteSceneProbe) return;
             try { _onSceneProbe?.Invoke(); }
-            catch (Exception ex) { SetReady("试采准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardProbeFailed(ex.Message)); }
         }
 
         public void ExecuteTogglePrompt()
@@ -229,7 +229,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (!CanRegenerateWithPrompt) return;
             try { _onRegenerateWithPrompt.Invoke(); }
-            catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardRedrawFailed(ex.Message)); }
         }
 
         public void ExecuteCopyPrompt()
@@ -238,11 +238,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
             try
             {
                 Input.SetClipboardText(PromptText);
-                StatusText = "提示词已复制到剪贴板";
+                StatusText = IllustratorUiText.CardCopySuccess;
             }
             catch (Exception ex)
             {
-                StatusText = "复制失败: " + ex.Message;
+                StatusText = IllustratorUiText.CardCopyFailed(ex.Message);
             }
         }
 

@@ -97,5 +97,88 @@
     <string id="AF_ILL_UI_SET_DEFAULT" text="Set as default" />
     <string id="AF_ILL_UI_DELETE" text="Delete" />
     <string id="AF_ILL_UI_OPEN_FOLDER" text="Open image folder" />
+    <string id="AF_ILL_UI_GALLERY_WELCOME" text="Browse the Calradia visual chronicle gallery." />
+    <string id="AF_ILL_UI_GALLERY_READING" text="Reading the gallery…" />
+    <string id="AF_ILL_UI_GALLERY_BUSY" text="Gallery is busy in the background. Try refreshing later." />
+    <string id="AF_ILL_UI_GALLERY_LOADING" text="Loading image…" />
+    <string id="AF_ILL_UI_GALLERY_TEXTURE_FAILED" text="Image texture could not be loaded. Refresh the gallery." />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_ALL" text="No images have been archived yet. A new illustration will be created when a bulletin is generated." />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_FAVORITES" text="No favorites yet. Select an image in All and click Favorites." />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE" text="Favorite" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE" text="Unfavorite" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_FAILED" text="Could not update favorite" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE_FAILED" text="Could not remove favorite" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_ADDED" text="Favorited: " />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_REMOVED" text="Unfavorited: " />
+    <string id="AF_ILL_UI_GALLERY_COUNT_ALL" text="{COUNT} archived images" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_FAVORITES" text="{COUNT} favorite images" />
+    <string id="AF_ILL_UI_GALLERY_ERROR" text="Gallery operation failed: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_LOAD_ERROR" text="Image loading failed: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITED" text="Favorited: {TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITED" text="Unfavorited: {TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_TITLE" text="Convert to RP item" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_HINT" text="Review the image description before adding it to your inventory. NPCs will read this description when you show them the item." />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_CANCELLED" text="Conversion cancelled; no item was added." />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_UNAVAILABLE" text="Could not open the image description editor." />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_LOADING" text="Reading the local image and setting it as default…" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_FAILED" text="Could not set the default image." />
+    <string id="AF_ILL_UI_GALLERY_DELETE_FAILED" text="Delete failed" />
+    <string id="AF_ILL_UI_GALLERY_FOLDER_FAILED" text="Could not open the image folder: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_READY" text="Ready" />
+    <string id="AF_ILL_UI_CARD_COPY_SUCCESS" text="Prompt copied to clipboard" />
+    <string id="AF_ILL_UI_CARD_COPY_FAILED" text="Copy failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_PREPARE_FAILED" text="Generation preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_PROBE_FAILED" text="Scene probe failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_REDRAW_FAILED" text="Redraw preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE_HINT" text="Describe the changes to make to the current image. Leave blank to cancel." />
+    <string id="AF_ILL_UI_REDRAW_PROMPT_HINT" text="Describe the image you want to redraw. Leave blank to cancel." />
+    <string id="AF_ILL_UI_REDRAW_REQUIRED" text="Enter a redraw prompt; generation was not started." />
+    <string id="AF_ILL_UI_SAVE" text="Save" />
+    <string id="AF_ILL_UI_CANCEL" text="Cancel" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="Imperial Chronicle Illustration" />
+    <string id="AF_ILL_UI_WEEKLY_THINKING" text="Preparing this week's chronicle illustration…" />
+    <string id="AF_ILL_UI_WEEKLY_DRAWING" text="Drawing a new illustration for this bulletin…" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="This illustration has not been archived and cannot be deleted." />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="Delete failed. Manage this image in the gallery." />
+    <string id="AF_ILL_UI_WEEKLY_DELETED" text="Illustration moved to the recycle area. Click Redraw to create another." />
+    <string id="AF_ILL_UI_WEEKLY_LOAD_FAILED" text="The bulletin illustration could not be loaded. Click Redraw to try again." />
+    <string id="AF_ILL_UI_WEEKLY_READ_BUSY" text="Image loading is busy. Reopen this bulletin later." />
+    <string id="AF_ILL_UI_WEEKLY_PREPARE_FAILED" text="Generation preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_LOADING" text="Redrawing from this image…" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_SUCCESS" text="Redraw complete; saved as a new version." />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_FAILED" text="Redraw failed: {ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_BACKGROUND" text="The illustration is generating in the background. You will be notified and the gallery will update when it is ready." />
+    <string id="AF_ILL_UI_WEEKLY_COMPLETE" text="This week's chronicle illustration is complete." />
+    <string id="AF_ILL_UI_WEEKLY_NOT_SAVED" text="The illustration could not be saved." />
+    <string id="AF_ILL_UI_ENCYCLOPEDIA_BUTTON" text="Chronicle illustration" />
+    <string id="AF_ILL_UI_HERO_UNAVAILABLE" text="The current hero is unavailable." />
+    <string id="AF_ILL_UI_API_TEST_PREFIX" text="Image API test" />
+    <string id="AF_ILL_UI_API_TEST_CANCELING" text="Cancelling test…" />
+    <string id="AF_ILL_UI_API_TEST_ENABLE" text="Enable image generation first." />
+    <string id="AF_ILL_UI_API_TEST_ENDPOINT" text="Enter a valid HTTP/HTTPS image API address first." />
+    <string id="AF_ILL_UI_API_TEST_CANCELLED" text="Test cancelled." />
+    <string id="AF_ILL_UI_API_TEST_BUSY" text="Image generation is busy. Try again later." />
+    <string id="AF_ILL_UI_API_TEST_STARTED" text="Test started with the current configuration. Click again to cancel." />
+    <string id="AF_ILL_UI_API_TEST_MODEL" text="Enter an image model name first." />
+    <string id="AF_ILL_UI_API_TEST_CANVAS" text="Blank canvas for API testing; draw an apple on the canvas." />
+    <string id="AF_ILL_UI_API_TEST_SUCCESS" text="Test succeeded ({SECONDS}s). Image saved to the module Cache/Illustrator/ApiTest/last-result.png." />
+    <string id="AF_ILL_UI_API_TEST_FAILURE" text="{CHANNEL} test failed ({SECONDS}s): {ERROR}" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_EDIT" text="Player2 /image/edit" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_GENERATE" text="Player2 /image/generate" />
+    <string id="AF_ILL_UI_API_TEST_MODE_IMAGE" text="Image API" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_CHANGED" text="The new default illustration is now displayed." />
+    <string id="AF_ILL_UI_CARD_AUTOSAVE_HINT" text="You may close this panel; the completed image is saved to the gallery automatically." />
+    <string id="AF_ILL_UI_SCENE_TITLE" text="Scene illustration" />
+    <string id="AF_ILL_UI_SCENE_PROBE_TITLE" text="Independent scene panorama probe" />
+    <string id="AF_ILL_UI_SCENE_PROBE_COMPLETE" text="Panorama probe complete; preview only, no model was called." />
+    <string id="AF_ILL_UI_PORTRAIT_PREPARING" text="Preparing character references…" />
+    <string id="AF_ILL_UI_PORTRAIT_COMPLETE" text="Chronicle portrait complete." />
+    <string id="AF_ILL_UI_CONVERSATION_COMPLETE" text="Conversation illustration complete." />
+    <string id="AF_ILL_UI_PORTRAIT_TITLE" text="Chronicle portrait · {HERO}" />
+    <string id="AF_ILL_UI_CONVERSATION_TITLE" text="Conversation illustration · with {HERO}" />
+    <string id="AF_ILL_UI_GALLERY_TITLE_MARKER" text="{TITLE}{DEFAULT}{FAVORITE}" />
+    <string id="AF_ILL_UI_GALLERY_DELETED" text="Deleted: {TITLE} (moved to recycle area)" />
+    <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text=" [Default]" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text=" [Favorite]" />
   </strings>
 </base>
