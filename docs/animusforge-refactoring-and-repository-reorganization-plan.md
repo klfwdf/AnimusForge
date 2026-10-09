@@ -451,9 +451,9 @@ snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态
 - NOT-RUN：游戏内MCM编辑/关闭重开/退出游戏再启动、玩家旧配置与真实生图。未部署、打包、推送；本条不延用1.5.6历史发布授权。回滚仅 `git revert 32a7de4e8`，保留其他作者。
 <a id="reviewed-refactor-source-delivery-20261008"></a>
 <a id="j17-host-responsibility-completion-20261004"></a>
-## 当前源码交付：主体重构与远端功能协调（2026-10-08）
+## 历史源码交付：主体重构与远端功能协调（2026-10-08，a7d84214）
 
-状态 **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。用户已确认目标main并接受验证边界，授权源码推送；推送完成以实际远端ref为准。此段是公开的当前说明，不携带本地详细交接/原始工件。下方既有部署和计划记录保留为各自历史，不代表本次重新部署或允许其他操作。
+状态 **SOURCE_DELIVERY / OFFLINE_VERIFIED_WITH_LIMITS / LIVE_NOT_RUN**。用户已确认目标main并接受验证边界，授权源码推送；推送完成以实际远端ref为准。此段是2026-10-08的公开交付说明，后续main产品状态以上方最新任务为准；不携带本地详细交接/原始工件。下方既有部署和计划记录保留为各自历史，不代表本次重新部署或允许其他操作。
 
 - 本次是获准向 `origin/main` 交付的主体重构与远端功能协调源码；不是新的部署、打包或实机验收。保留最新远端功能、既有同DLL owner、三渠道及单模块 Bootstrap 双实现。
 - 生产输入与已验证隔离候选逐 LF 规范字节相同（2349项）。此前 Debug/Release × API1.3/API1.4/Bootstrap 六构建成功；当前 DLL 保存每 API 103、公报183、三渠道及 managed Coup 接缝定向检查通过。游戏/VM/provider 叶有替身，不能据此声称所有功能实机通过。
@@ -468,9 +468,22 @@ snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态
 
 当前源码坐标、文件规范SHA及未覆盖范围见[代码范围图](architecture/af-framework-code-scope.md#reviewed-refactor-source-delivery-20261008)；目录入口见[源码目录指南](architecture/af-source-directory-guide.md#reviewed-refactor-source-delivery-20261008)。这只说明具名受影响职责，不宣称整个AF、全部宿主或全仓验收完成。历史计划 `docs/plans/j17-host-responsibility-completion-20261004.md` 是编制时快照，不重放其中的实施授权。
 
-证据分层：六构建与原具名定向回归来自生产同源候选；本次发布检查另验证生产输入相同、5项公开基线同blob/正负控、出站树/祖先与文件保护。原始本地收据不上传；完整复验仍需要显式对应版本引用与独立输出路径。公开源码以本条所在main修订为准，不把本地审核注记修订当作远端可获取历史。
+证据分层：六构建与原具名定向回归来自生产同源候选；本次发布检查另验证生产输入相同、5项公开基线同blob/正负控、出站树/祖先与文件保护。原始本地收据不上传；完整复验仍需要显式对应版本引用与独立输出路径。本次公开源码固定为 `a7d8421425cf96a52208c5019ecdbeb311ad8e48`，不把本地审核注记修订当作远端可获取历史，也不将本条旧结果用于验收后来main。
 
 回滚只对本次公开交付提交作获准的定向inverse/revert，不reset、force或改写他人历史。本次未部署、未Stage、未真实打包、未运行玩家旧档。
+
+<a id="refactor-evidence-curation-20261009"></a>
+### 2026-10-09 补充归档：精选历史证据公开整理（HISTORICAL_CONTENT_RECHECK_PASS）
+
+用户本轮授权核验、整理并上传确有价值的资料；这项新授权只公开精选历史字段，不复活此前本地专用交接正文/历史的发布权限，也不授权清理或产品重构。核对远端基线 `819726f573b2d4dd70acf4edc7d293a53fcf3760` 后，在干净隔离分支从该main准备；保留开局人设确认阻塞修复、1.5.7包及其他作者全部新记录，不以旧工作区四份文档覆盖远端。
+
+- 精选10份小型原始记录合并为[公开历史证据包](audits/2026-10-09-refactor-delivery-evidence.json)，约21 KB；记录原始字节SHA、构建/定向回归结果、14项非PASS原始状态及12个公开源码坐标。它不是完整日志备份、游戏配置、测试输入或当前版本验收。
+- **三个源码阶段分开**：`532328aa`是更早的冻结工作树门禁；`7896db16`是原六构建/真实DLL定向回归源码；公开交付是 `a7d84214`。后两者的实际Git树差异只含四份工程文档和J15基线引用文件，生产树无差异；原2349输入相同结论保留。不声称公开提交被重新构建，两个本地修订只作历史来源标识，不成为公开checkout依赖。
+- **本轮实际复核**：6份被引用的大原始收据SHA全部匹配；408项原结果重新统计为394 PASS、5 FAIL、5 NEEDS_INPUT、3 SUPERSEDED_BY_RUNNER、1 ENV_STATE；14项非PASS的id/status/expect/exit逐项与原结果一致。5组原/公开基线blob逐字节相同；12坐标的历史文件LF SHA、符号和一基行范围均匹配 `a7d84214`。这些是证据完整性复核，不是重新执行游戏测试。
+- 公开JSON直接复用既有code-map schema：仓库根运行 `python -B .agents/skills/af-core-framework/scripts/verify_code_map.py --map docs/audits/2026-10-09-refactor-delivery-evidence.json` 可复核12个公开历史坐标；不对后来main使用 `--working-tree` 要求旧哈希。本轮JSON/字段/链接/文档差异检查通过，篡改PASS计数、把非PASS改成PASS、冒称当前main验收、注入绝对路径或凭据形字段的5项负控均被拒绝；原工作区HEAD、信使raw与1641未跟踪逐size/SHA保持。
+- **失败不洗绿**：历史full runner exit1，完整登记门仍非全绿；“当时必要离线门未解决项为0”的分类只属于原批准门图，不能把FAIL/NEEDS_INPUT改为PASS，也不能据此验收当前main。原六构建及每API103存档断言、每API20 managed memory断言/registration、公报183仅作为具名历史有限结果，替身/未验边界随包保留。
+- 公开字段白名单去掉机器绝对路径、执行命令/日志尾、本地分支和私有交接正文；不附DLL/SDK、玩家导出或恢复备份。有限凭据模式筛查不是全目录隐私/许可保证。原件不删除；原SHA只是来源标识，不让未上传原件自动成为可恢复备份。清理前仍须另行保存必要原日志及私有恢复资料。
+- 只修改本段、HANDOFF补充链接、代码图历史绑定说明与一个JSON；无运行时接线、Tick/后台扫描或产品行为变化。验证限于JSON/字段一致性、链接、历史坐标、公开边界和精确文档差异；本轮双版本构建、全仓回归、实机/旧档/provider/GPU/帧性能均未重跑。发布结果以实际公开Git提交/独立远端回读为准；回退仅定向inverse本资料提交，不reset/force。
 
 <a id="release-v156-20261008"></a>
 # 1.5.6 编译、部署、打包与累计玩家公告（2026-10-08，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）

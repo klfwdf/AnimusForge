@@ -1,0 +1,540 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "a7d8421425cf96a52208c5019ecdbeb311ad8e48",
+  "anchors": [
+    {
+      "id": "public-0",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "start": 1712,
+      "end": 1712,
+      "match": "contains",
+      "symbol": "public override void RegisterEvents()",
+      "fileSha256": "b76f4d3307c661706ee0dd74b61533e7e01125051329d3baeb35e178a4cb693b"
+    },
+    {
+      "id": "public-1",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "start": 2542,
+      "end": 2542,
+      "match": "contains",
+      "symbol": "public override void RegisterEvents()",
+      "fileSha256": "12d2d3cd6d7520961b263386e04e1a6c4c6c9b255c48c2b425918246d9f82f10"
+    },
+    {
+      "id": "public-2",
+      "path": "src/AF.GameAdapter.Bannerlord/ImportExport/MemoryHistoryImportExportAdapter.cs",
+      "start": 11,
+      "end": 11,
+      "match": "contains",
+      "symbol": "class MemoryHistoryImportExportAdapter",
+      "fileSha256": "f16df77621252f388e36c80683137ac2da30aa32601c76a39b0e8236411224a1"
+    },
+    {
+      "id": "public-3",
+      "path": "src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs",
+      "start": 19,
+      "end": 19,
+      "match": "contains",
+      "symbol": "class MemoryHistoryCommitBannerlordAdapter",
+      "fileSha256": "66a2d4d80a603cb76f156bf93f13572d9253345ef7b64ee5bbde43d7ced7899b"
+    },
+    {
+      "id": "public-4",
+      "path": "src/AF.GameAdapter.Bannerlord/Weekly/WeekZeroOpeningSummaryGenerationController.cs",
+      "start": 498,
+      "end": 498,
+      "match": "contains",
+      "symbol": "internal void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)",
+      "fileSha256": "42f6c72b8857bbda0271bf3f1d4fa6efca5552e2ca856dc4b8b0158cc86af76b"
+    },
+    {
+      "id": "public-5",
+      "path": "src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs",
+      "start": 241,
+      "end": 241,
+      "match": "contains",
+      "symbol": "internal void OnWorldBulletinWarDeclared(",
+      "fileSha256": "de880b674eaab23059702200e5902802ef366702c61579303074948a1e1da879"
+    },
+    {
+      "id": "public-6",
+      "path": "src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs",
+      "start": 94,
+      "end": 94,
+      "match": "contains",
+      "symbol": "private bool IsNativeTradeTargetValidForCommit()",
+      "fileSha256": "6727375faddb9d82c08f7d10ce4007eeab61ee45282204a426a0057aaee0b576"
+    },
+    {
+      "id": "public-7",
+      "path": "src/AF.GameAdapter.Bannerlord/Kingdom/KingdomRebellionRuntimeController.cs",
+      "start": 10,
+      "end": 10,
+      "match": "contains",
+      "symbol": "class KingdomRebellionRuntimeController",
+      "fileSha256": "9c0c61b58c32e0f3f762bc52b2fd86f6631ecdfdb05a4ad75018a47e65770e74"
+    },
+    {
+      "id": "public-8",
+      "path": "src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs",
+      "start": 50,
+      "end": 50,
+      "match": "contains",
+      "symbol": "class ConversationActionExecutorComposition",
+      "fileSha256": "e732765954311f572cd5e9ca7483b9cdd55d7bc51ab60c14dfdc2711e388f79a"
+    },
+    {
+      "id": "public-9",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 389,
+      "end": 389,
+      "match": "contains",
+      "symbol": "public override void SyncData(IDataStore dataStore)",
+      "fileSha256": "258b15bc30151284a7c0679b9675307e27a8af17eeb5dc5f99eec921f386237c"
+    },
+    {
+      "id": "public-10",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 276,
+      "end": 276,
+      "match": "contains",
+      "symbol": "internal void PrepareSaveData(AfWarStatsBehavior host)",
+      "fileSha256": "8b927744218a2ceaffc5151246a74c39b9b00a595c83bd181c24a63428a90314"
+    },
+    {
+      "id": "public-11",
+      "path": "src/AF.GameAdapter.Bannerlord/Persistence/CampaignCivilWarPersistenceAdapter.cs",
+      "start": 18,
+      "end": 18,
+      "match": "contains",
+      "symbol": "internal void Load(IDataStore dataStore)",
+      "fileSha256": "5af82722861e8b41c4e07d50186a28d0d1668b51679359bb899f8040a0af7527"
+    }
+  ],
+  "kind": "curated-historical-refactor-delivery-evidence",
+  "historicalDate": "2026-10-08",
+  "curatedDate": "2026-10-09",
+  "reviewedAgainstMain": "819726f573b2d4dd70acf4edc7d293a53fcf3760",
+  "claimBoundary": {
+    "currentMainAcceptance": false,
+    "historicalTestsRerunDuringCuration": false,
+    "curatedEvidenceRechecked": true,
+    "rawReceiptsIncluded": false,
+    "rawReceiptsMustBeBackedUpBeforeCleanup": true,
+    "note": "A portable historical summary, not a full backup, executable test fixture, current release acceptance, or authorization to delete original artifacts."
+  },
+  "publishedDelivery": {
+    "sourceRevision": "a7d8421425cf96a52208c5019ecdbeb311ad8e48",
+    "publicParent": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+    "historicalPush": {
+      "exit": 0,
+      "force": false,
+      "remoteAfter": "a7d8421425cf96a52208c5019ecdbeb311ad8e48",
+      "confirmedAtUtc": "2026-10-08T09:11:54.593946+00:00"
+    },
+    "sourcePathsDelivered": 406,
+    "historicallyReportedProductionInputCount": 2349,
+    "productionInputsNormalizedEqualReported": true,
+    "curationTreeComparison": {
+      "builtRevision": "7896db16c2b5b4fba048be031512bca6ff77819b",
+      "publishedRevision": "a7d8421425cf96a52208c5019ecdbeb311ad8e48",
+      "differentTrackedPaths": [
+        "HANDOFF.md",
+        "docs/animusforge-refactoring-and-repository-reorganization-plan.md",
+        "docs/architecture/af-framework-code-scope.md",
+        "docs/architecture/af-source-directory-guide.md",
+        "tests/content/J15ContentContractTests/run.py"
+      ],
+      "productionDifferences": 0,
+      "note": "All tracked tree differences are these four documentation paths and the five-field portable test baseline update; no production source was changed by this projection."
+    },
+    "finiteHistoricalCredentialAudit": {
+      "changedFilesScanned": 402,
+      "changedBytesScanned": 18597401,
+      "findings": [],
+      "scope": "Finite pattern scan of changed production/test blobs, not a general privacy or redistribution proof."
+    },
+    "portableContentBaseline": {
+      "changedRevisionFields": 5,
+      "sameOriginalBlobs": 5,
+      "historicalNegativeControlsPassed": 2,
+      "historicalDigestsChanged": false,
+      "entries": [
+        {
+          "target": "GUI/Prefabs/SettlementBalancePopup.xml",
+          "source": "content/modules/PolicySystem/GUI/Prefabs/SettlementBalancePopup.xml",
+          "publicRevision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+          "rawEqual": true,
+          "normalizedEqual": true,
+          "expectedSha256": "02227E26CA025F8E678F4645E11CF48F9900C749573D17DE2F608E0F738E90B4",
+          "variable": "COMMITTED_CONTENT_ADDITIONS"
+        },
+        {
+          "target": "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml",
+          "source": "content/modules/AF.Module.WorldEvents/GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml",
+          "publicRevision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+          "rawEqual": true,
+          "normalizedEqual": true,
+          "expectedSha256": "331FAF6597B78EA430271927A82B2C9CE3D8432B519E95AD7ED88228AD96EC8F",
+          "variable": "APPROVED_CURRENT_CONTENT"
+        },
+        {
+          "target": "GUI/Prefabs/CustomPolicyHistoryPopup.xml",
+          "source": "content/modules/PolicySystem/GUI/Prefabs/CustomPolicyHistoryPopup.xml",
+          "publicRevision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+          "rawEqual": true,
+          "normalizedEqual": true,
+          "expectedSha256": "7D8455B382D031344CCB4251C48B26643DD22004DE34F6FD5FC8ABDA706EC5EB",
+          "variable": "APPROVED_CURRENT_CONTENT"
+        },
+        {
+          "target": "GUI/Prefabs/LocalPolicyHistoryPopup.xml",
+          "source": "content/modules/PolicySystem/GUI/Prefabs/LocalPolicyHistoryPopup.xml",
+          "publicRevision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+          "rawEqual": true,
+          "normalizedEqual": true,
+          "expectedSha256": "8528C406CD857D4525145FEB0EE5B9E478B66E747393507F8062344473BFA2D5",
+          "variable": "APPROVED_CURRENT_CONTENT"
+        },
+        {
+          "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
+          "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
+          "publicRevision": "c629e866cd1e99d6c0d31c7ba97a8f8d64a628ce",
+          "rawEqual": true,
+          "normalizedEqual": true,
+          "expectedSha256": "3847C49D3B8B339DBB6FBB0AEA13C9FCB0BEAF3B56D9DACA66ACC6BC4E2980AE",
+          "variable": "APPROVED_CURRENT_CONTENT"
+        }
+      ],
+      "wholeJ15": "NOT_RERUN_NOT_GREEN_PRESERVED"
+    }
+  },
+  "historicalMergedCandidateAcceptance": {
+    "builtSourceRevision": "7896db16c2b5b4fba048be031512bca6ff77819b",
+    "revisionIsPublicAncestor": false,
+    "relationshipToPublishedRevision": "Production tree equivalent; do not claim the public revision was rebuilt. Original private revision is provenance only, not a public checkout dependency.",
+    "builds": [
+      {
+        "role": "Debug-1.3",
+        "exit": 0
+      },
+      {
+        "role": "Debug-1.4",
+        "exit": 0
+      },
+      {
+        "role": "Debug-Bootstrap",
+        "exit": 0
+      },
+      {
+        "role": "Release-1.3",
+        "exit": 0
+      },
+      {
+        "role": "Release-1.4",
+        "exit": 0
+      },
+      {
+        "role": "Release-Bootstrap",
+        "exit": 0
+      }
+    ],
+    "persistenceReplay": [
+      {
+        "api": "1.3",
+        "exit": 0,
+        "assertions": 103,
+        "candidateDllSha256": "52e584ffef1ee82d714109a27513c3b05307abaef8b0212dd024413b837614bc",
+        "scope": "Actual candidate DLL plus synthetic IDataStore; live save deserialization NOT_RUN."
+      },
+      {
+        "api": "1.4",
+        "exit": 0,
+        "assertions": 103,
+        "candidateDllSha256": "118e642359253e1fae636cb67cd6fc92a6a66bc29fae60972a2567d8082a9a90",
+        "scope": "Actual candidate DLL plus synthetic IDataStore; live save deserialization NOT_RUN."
+      }
+    ],
+    "managedSeams": [
+      {
+        "api": "1.3",
+        "exit": 0,
+        "memoryPortAssertions": 20,
+        "registrationSmoke": "PASS",
+        "scope": "Managed registration and memory port admission only; no game/campaign/native action/provider started."
+      },
+      {
+        "api": "1.4",
+        "exit": 0,
+        "memoryPortAssertions": 20,
+        "registrationSmoke": "PASS",
+        "scope": "Managed registration and memory port admission only; no game/campaign/native action/provider started."
+      }
+    ],
+    "bulletinReplay": {
+      "exit": 0,
+      "assertions": 183,
+      "scope": "Archive/save/UI/navigation/publication/diplomacy/prompt/knowledge checks; game, regional aggregation, rendering and artwork lifecycle stubbed."
+    },
+    "referenceVersions": {
+      "1.3": "v1.3.15.110062 (incomplete fixed reference set; existing shared/game references supplemented)",
+      "1.4": "v1.4.7.117484"
+    },
+    "liveGame": "NOT_RUN",
+    "liveOldSaves": "NOT_RUN",
+    "wholeSuite": "NOT_RERUN_NOT_GREEN_PRESERVED"
+  },
+  "historicalPreIntegrationGate": {
+    "sourceRevision": "532328aa9d6a67b51f8819ef04ee0659d88c5364",
+    "revisionIsPublicAncestor": false,
+    "physicalSourceBoundary": "Actual frozen working-tree inputs including original protected a393; not a claim of clean checkout or committed protected edit",
+    "relationshipToPublishedRevision": "Earlier pre-integration candidate; these results do not certify the later merged/public source or current main.",
+    "J_SOURCE": "J_SOURCE_OFFLINE_COMPLETE",
+    "J_USE": "J_USE_NOT_RUN",
+    "discovered": 408,
+    "counts": {
+      "PASS": 394,
+      "ENV_STATE": 1,
+      "SUPERSEDED_BY_RUNNER": 3,
+      "FAIL": 5,
+      "NEEDS_INPUT": 5
+    },
+    "nonPassCount": 14,
+    "runAllAndDriverExit": 1,
+    "allRegisteredGatesPass": false,
+    "necessaryOfflineUnresolvedEntries": [],
+    "necessityClassificationBoundary": "Only the historical approved gate map for this frozen run; does not reclassify failures as PASS or claim current default-gate readiness.",
+    "nonPassEntries": [
+      {
+        "id": "tests/AF.GameAdapter.Bannerlord/LiveHostReadinessAudit/live_host_readiness_audit.py",
+        "status": "ENV_STATE",
+        "expect": "ENV_STATE",
+        "exit": 1,
+        "classification": "J_USE_INSTALLED_ENVIRONMENT_NOT_J_SOURCE_OFFLINE",
+        "actualStatusAndExpectUnchanged": true,
+        "historicalScope": "J_USE8.4 installation/read-only environment preflight, not J_SOURCE offline correctness gate"
+      },
+      {
+        "id": "tests/AF.Persistence/OwnerJsonStorageCodec/OwnerJsonStorageCodecTests.csproj",
+        "status": "SUPERSEDED_BY_RUNNER",
+        "expect": "SUPERSEDED_BY_RUNNER",
+        "exit": 1,
+        "classification": "ORIGINAL_SUPERSEDED_TEMPLATE_WITH_CURRENT_RUNNER_PASS",
+        "actualStatusAndExpectUnchanged": true,
+        "historicalReplacementRunner": {
+          "id": "tests/AF.Persistence/OwnerJsonStorageCodec/run.py",
+          "status": "PASS",
+          "expect": "PASS",
+          "exit": 0
+        }
+      },
+      {
+        "id": "tests/AF.Persistence/PlayerExports/PlayerExportsTests.csproj",
+        "status": "SUPERSEDED_BY_RUNNER",
+        "expect": "SUPERSEDED_BY_RUNNER",
+        "exit": 1,
+        "classification": "ORIGINAL_SUPERSEDED_TEMPLATE_WITH_CURRENT_RUNNER_PASS",
+        "actualStatusAndExpectUnchanged": true,
+        "historicalReplacementRunner": {
+          "id": "tests/AF.Persistence/PlayerExports/run.py",
+          "status": "PASS",
+          "expect": "PASS",
+          "exit": 0
+        }
+      },
+      {
+        "id": "tests/content/BulletinCourierLayoutTests/repair_parchment.py",
+        "status": "FAIL",
+        "expect": "PASS",
+        "exit": 1,
+        "classification": "MANUAL_INPUT_UTILITY_NOT_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tests/modules/AF.Module.Knowledge/Index/KnowledgeIndexTests.csproj",
+        "status": "SUPERSEDED_BY_RUNNER",
+        "expect": "SUPERSEDED_BY_RUNNER",
+        "exit": 1,
+        "classification": "SUPERSEDED_BY_RUNNER_ORIGINAL",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tests/modules/AF.Module.Knowledge/RerankerDeviceTests/run_integration.py",
+        "status": "FAIL",
+        "expect": "PASS",
+        "exit": 2,
+        "classification": "NOT_RUN_REAL_GPU_PACK_INTEGRATION",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/PhaseEightReadiness/readiness.py",
+        "status": "NEEDS_INPUT",
+        "expect": "NEEDS_INPUT",
+        "exit": 2,
+        "classification": "ORIGINAL_EXPLICIT_INPUT_TOOL_NOT_AUTHORIZED_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/RerankerCpuCudaBenchmark/benchmark.py",
+        "status": "FAIL",
+        "expect": "PASS",
+        "exit": 2,
+        "classification": "NOT_RUN_PERFORMANCE_GPU",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/RerankerCpuCudaBenchmark/prepare_dependencies.py",
+        "status": "FAIL",
+        "expect": "PASS",
+        "exit": 1,
+        "classification": "NOT_RUN_NETWORK_TOOL",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/RerankerCudaWorker/build_optional_pack.py",
+        "status": "FAIL",
+        "expect": "PASS",
+        "exit": 2,
+        "classification": "NOT_RUN_OPTIONAL_PACK",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/af2_migrate.py",
+        "status": "NEEDS_INPUT",
+        "expect": "NEEDS_INPUT",
+        "exit": null,
+        "classification": "ORIGINAL_EXPLICIT_INPUT_TOOL_NOT_AUTHORIZED_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/export_vanilla_text_index.py",
+        "status": "NEEDS_INPUT",
+        "expect": "NEEDS_INPUT",
+        "exit": null,
+        "classification": "ORIGINAL_EXPLICIT_INPUT_TOOL_NOT_AUTHORIZED_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/generate_bannerlord_history_culture_study.py",
+        "status": "NEEDS_INPUT",
+        "expect": "NEEDS_INPUT",
+        "exit": null,
+        "classification": "ORIGINAL_EXPLICIT_INPUT_TOOL_NOT_AUTHORIZED_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      },
+      {
+        "id": "tools/generate_bannerlord_research_grade_study.py",
+        "status": "NEEDS_INPUT",
+        "expect": "NEEDS_INPUT",
+        "exit": null,
+        "classification": "ORIGINAL_EXPLICIT_INPUT_TOOL_NOT_AUTHORIZED_DEFAULT_GATE",
+        "actualStatusAndExpectUnchanged": true
+      }
+    ],
+    "unverified": [
+      "live game",
+      "old saves",
+      "real provider",
+      "frame performance",
+      "all Bannerlord patch versions"
+    ],
+    "linkedReceiptHashesRechecked": [
+      {
+        "role": "six",
+        "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/r3-final-532328aa-six/receipt.json",
+        "rawSha256": "6e0001cb0b4943066faac90e5349ef26fdbcc96a10b559ba5db5ff3b4679287e",
+        "bytes": 9793387
+      },
+      {
+        "role": "whole",
+        "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/r3-final-532328aa-whole/receipt.json",
+        "rawSha256": "d3e23839f3986d8041c936a83b558a3922b5d70e5f67bd3de44ff24e2be05b8f",
+        "bytes": 217228
+      },
+      {
+        "role": "full",
+        "sourceReceipt": "artifacts/j17-r3-full/receipt.json",
+        "rawSha256": "69b57dcd662e573d4682eb0af963d2201df59f974af351b3723a02e8d0a81b6c",
+        "bytes": 3232956
+      },
+      {
+        "role": "actualFullResults",
+        "sourceReceipt": "artifacts/j17-r3-full/all-discovered/results.json",
+        "rawSha256": "60cec941f303ca9e8c07ab97fcfe420f02d5a574e7e48530b2eacad8f37d76ec",
+        "bytes": 280020
+      },
+      {
+        "role": "nonPassExactIndex",
+        "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/r3-final-532328aa-full-nonpass-index.json",
+        "rawSha256": "558dc8e9d084a4530973be87136a5e5924c5cde0c2bc7d3760594a498ad41d75",
+        "bytes": 26941
+      },
+      {
+        "role": "twoColdPowerShellFixtures",
+        "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/r3-final-532328aa-version/receipt.json",
+        "rawSha256": "5f20e219f0779c54429d322f27fe00d22414add4671573b80554e55b7c31c88a",
+        "bytes": 44734
+      }
+    ]
+  },
+  "originalReceiptProvenance": [
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/FINAL_DELIVERY_VERIFIED.json",
+      "rawSha256": "a3b04bf5546a32f53d7e93ba89d6b0d39ee9e5f702feb673ecfd2d857cdeda7c",
+      "bytes": 794
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/source-audit.json",
+      "rawSha256": "2241a0a6a2312db5a1d1a1ac99c93bcbfdedc52227947b5ebd38b255871ea138",
+      "bytes": 562
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/push-confirmed.json",
+      "rawSha256": "70855aff663cea36344e5fe4071214627b9d2f95030110875226ca3abeb642db",
+      "bytes": 744
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/portable-content-baseline-verified.json",
+      "rawSha256": "ccc549517ce6172fd37e013bbea7784778d260136e373668618fc1899e90a9d5",
+      "bytes": 314
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/portable-content-baseline-review.json",
+      "rawSha256": "cd247010f0f89c3d25c17170a804d940bacfbcb099f790d9da58894c80e3357a",
+      "bytes": 3412
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-push-20261008/verified-public-code-map.json",
+      "rawSha256": "89eaf6b960fae9cda51ca0d7ea06b9a54b0c2298bb5f66ec96c75d1dbb1c7575",
+      "bytes": 4299
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-merge-20261008/committed-acceptance.json",
+      "rawSha256": "47f0929377b971e2985431ed907789a62af84382aef2016f09fdaa52b95b91c2",
+      "bytes": 7028
+    },
+    {
+      "sourceReceipt": "artifacts/remote-main-merge-20261008/build-committed/receipt.json",
+      "rawSha256": "7560331bcc93d9361593cb02de0ff78c43f2fdcc81b0acf4ef371d347d31f861",
+      "bytes": 12309
+    },
+    {
+      "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/R3_FINAL_SOURCE_OFFLINE_COMPLETE_20261008.json",
+      "rawSha256": "66493a4dd305d2e738977c1c9b8dffd79bd482eec6e8f080e0ff26e046983126",
+      "bytes": 12700
+    },
+    {
+      "sourceReceipt": "artifacts/j17-host-implementation-20261004/h0/r3-final-532328aa-full-nonpass-index.json",
+      "rawSha256": "558dc8e9d084a4530973be87136a5e5924c5cde0c2bc7d3760594a498ad41d75",
+      "bytes": 26941
+    }
+  ],
+  "privacyAndRetention": {
+    "absoluteMachinePathsIncluded": false,
+    "rawCommandsOrLogTailsIncluded": false,
+    "playerExportsIncluded": false,
+    "binariesOrSdkIncluded": false,
+    "localOnlyDocumentationBodiesOrHistoryIncluded": false,
+    "screeningBoundary": "Selected fields checked for common credential patterns; not a full corpus privacy audit. Original logs, private/player data and recovery backups remain local and need separate private backup."
+  }
+}
