@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -177,8 +178,8 @@ public sealed class DevLargeSelectionPopupVM : ViewModel
 		TitleText = string.IsNullOrWhiteSpace(titleText) ? "AnimusForge" : titleText.Trim();
 		SubtitleText = subtitleText ?? "";
 		BodyText = string.IsNullOrWhiteSpace(bodyText) ? "" : bodyText.Trim();
-		CancelText = string.IsNullOrWhiteSpace(cancelText) ? "{=AF_UI_Common_Back}Back" : cancelText.Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(BodyText) ? "{=AF_UI_Common_NoContent}No content to display." : BodyText;
+		CancelText = string.IsNullOrWhiteSpace(cancelText) ? new TextObject("{=AF_UI_Common_Back}Back").ToString() : cancelText.Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(BodyText) ? new TextObject("{=AF_UI_Common_NoContent}No content to display.").ToString() : BodyText;
 		BodyFontSize = ResolveBodyFontSize(BodyText);
 		Items = new MBBindingList<DevLargeSelectionItemVM>();
 		foreach (DevLargeSelectionPopup.Option option in options ?? Array.Empty<DevLargeSelectionPopup.Option>())

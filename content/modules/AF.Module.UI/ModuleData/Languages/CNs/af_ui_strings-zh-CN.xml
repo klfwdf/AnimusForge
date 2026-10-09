@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<strings>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API 快捷配置向导" />
   <string id="AF_UI_Onboarding_CustomMode" text="完全自定义" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" />
@@ -250,4 +252,5 @@
   <string id="AF_UI_Terminal_Duel" text="决斗与部队" />
   <string id="AF_UI_Terminal_Scene" text="场景互动" />
   <string id="AF_UI_Terminal_Characters" text="角色与同伴" />
-</strings>
+  </strings>
+</base>

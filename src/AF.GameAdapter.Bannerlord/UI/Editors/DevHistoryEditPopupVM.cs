@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -147,13 +148,13 @@ public class DevHistoryEditPopupVM : ViewModel
 	{
 		_onSave = onSave;
 		_onCancel = onCancel;
-		TitleText = titleText ?? "{=AF_UI_Editor_EditDialogueLine}Edit dialogue line";
+		TitleText = titleText ?? new TextObject("{=AF_UI_Editor_EditDialogueLine}Edit dialogue line").ToString();
 		DateText = dateText ?? "";
-		OriginalContentText = string.IsNullOrWhiteSpace(originalContentText) ? "{=AF_UI_Editor_Empty}(Empty)" : originalContentText;
-		InputHintText = (string.IsNullOrWhiteSpace(inputHintText) ? "{=AF_UI_Editor_EditHint}Edit the entire line in the field below; leave it empty to delete the line." : inputHintText);
+		OriginalContentText = string.IsNullOrWhiteSpace(originalContentText) ? new TextObject("{=AF_UI_Editor_Empty}(Empty)").ToString() : originalContentText;
+		InputHintText = (string.IsNullOrWhiteSpace(inputHintText) ? new TextObject("{=AF_UI_Editor_EditHint}Edit the entire line in the field below; leave it empty to delete the line.").ToString() : inputHintText);
 		EditedText = editedText ?? "";
-		CancelText = (string.IsNullOrWhiteSpace(cancelText) ? "{=AF_UI_Common_Cancel}Cancel" : cancelText);
-		SaveText = (string.IsNullOrWhiteSpace(saveText) ? "{=AF_UI_Common_Save}Save" : saveText);
+		CancelText = (string.IsNullOrWhiteSpace(cancelText) ? new TextObject("{=AF_UI_Common_Cancel}Cancel").ToString() : cancelText);
+		SaveText = (string.IsNullOrWhiteSpace(saveText) ? new TextObject("{=AF_UI_Common_Save}Save").ToString() : saveText);
 	}
 
 	public void ExecuteSave()

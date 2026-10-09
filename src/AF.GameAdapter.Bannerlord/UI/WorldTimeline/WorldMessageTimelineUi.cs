@@ -103,10 +103,10 @@ public static class WorldMessageTimelineUi
 		subtitle.SetTextVariable("COUNT", MaxTimelineEntries.ToString(CultureInfo.InvariantCulture));
 		WorldMessageTimelinePopupData data = new WorldMessageTimelinePopupData
 		{
-			TitleText = "{=AF_UI_Timeline_Rumors}Rumors",
+			TitleText = new TextObject("{=AF_UI_Timeline_Rumors}Rumors").ToString(),
 			SubtitleText = subtitle.ToString(),
-			EmptyStateText = "{=AF_UI_Timeline_Empty}No diplomacy, policy, or weekly-report messages are available.",
-			CloseText = "{=AF_UI_Common_Close}Close",
+			EmptyStateText = new TextObject("{=AF_UI_Timeline_Empty}No diplomacy, policy, or weekly-report messages are available.").ToString(),
+			CloseText = new TextObject("{=AF_UI_Common_Close}Close").ToString(),
 			Entries = ordered,
 			Countries = BuildKnownCountries(ordered)
 		};
@@ -138,13 +138,13 @@ public static class WorldMessageTimelineUi
 				{
 					EntryId = "policy:" + policy.HistoryKey,
 					CategoryId = PolicyCategoryId,
-					CategoryLabel = "{=AF_UI_Timeline_PolicyRecord}Policy record",
+					CategoryLabel = new TextObject("{=AF_UI_Timeline_PolicyRecord}Policy record").ToString(),
 					TitleText = policy.TitleText,
 					DateText = policy.DateText,
 					MetaText = policy.DateText + "  ·  " + policy.StatusText + "  ·  " + PolicyScopeLabel(policy.ScopeKind) + "  ·  " + policy.KingdomName,
-					BodySectionTitleText = "{=AF_UI_Timeline_PolicyRecord}Policy record",
+					BodySectionTitleText = new TextObject("{=AF_UI_Timeline_PolicyRecord}Policy record").ToString(),
 					BodyText = policy.BodyText,
-					ImpactSectionTitleText = "{=AF_UI_Timeline_PolicyImpact}Policy effects",
+					ImpactSectionTitleText = new TextObject("{=AF_UI_Timeline_PolicyImpact}Policy effects").ToString(),
 					ImpactText = policy.ImpactText,
 					Day = Math.Max(0, policy.Day),
 					CreatedUtcTicks = policy.CreatedUtcTicks,
@@ -182,7 +182,7 @@ public static class WorldMessageTimelineUi
 				}
 				bool isWorld = country.IsWorld;
 				string countryId = isWorld ? WorldWeeklyCountryId : FirstNonEmpty(country.CountryId, UnknownCountryId);
-				string countryName = isWorld ? "{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive" : FirstNonEmpty(country.DisplayName, country.CountryId, "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom");
+				string countryName = isWorld ? new TextObject("{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive").ToString() : FirstNonEmpty(country.DisplayName, country.CountryId, new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString());
 				foreach (MyBehavior.WeeklyReportBrowserEntryData report in country.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>())
 				{
 					if (report == null)
@@ -214,8 +214,8 @@ public static class WorldMessageTimelineUi
 						DateText = FirstNonEmpty(report.CreatedDate, FormatDay(day)),
 						MetaText = FirstNonEmpty(report.CreatedDate, FormatDay(day)) + "  ·  " + WeeklyReportArchivePolicy.PeriodLabel(report.EventId, report.WeekIndex) + "  ·  " + countryName,
 						BodySectionTitleText = FormatBodyTitle(kindLabel),
-						BodyText = LimitMultiline(report.BodyText, DetailCharacterLimit, DetailLineLimit, "{=AF_UI_Timeline_WeeklyEmpty}(This weekly report has no body text.)"),
-						ImpactSectionTitleText = string.IsNullOrWhiteSpace(tagText) ? "" : "{=AF_UI_Timeline_WeeklyTags}Weekly-report tags",
+						BodyText = LimitMultiline(report.BodyText, DetailCharacterLimit, DetailLineLimit, new TextObject("{=AF_UI_Timeline_WeeklyEmpty}(This weekly report has no body text.)").ToString()),
+						ImpactSectionTitleText = string.IsNullOrWhiteSpace(tagText) ? "" : new TextObject("{=AF_UI_Timeline_WeeklyTags}Weekly-report tags").ToString(),
 						ImpactText = tagText,
 						Day = day,
 						CreatedUtcTicks = 0L,
@@ -254,7 +254,7 @@ public static class WorldMessageTimelineUi
 				DiplomacyPresentationBridge.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries);
 			foreach (WorldDiplomacyTimelineDocument document in documents)
 			{
-				string authorName = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom");
+				string authorName = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString());
 				string targetName = BuildDiplomacyTargetText(document);
 				string label = BuildDiplomacyLabel(document);
 				WorldMessageTimelineEntryData entry = new WorldMessageTimelineEntryData
@@ -265,9 +265,9 @@ public static class WorldMessageTimelineUi
 					TitleText = FirstNonEmpty(document.Title, label),
 					DateText = FirstNonEmpty(document.GameDate, FormatDay(document.Day)),
 					MetaText = BuildDiplomacyMetaText(document, label, authorName, targetName),
-					BodySectionTitleText = "{=AF_UI_Timeline_DiplomaticDocument}Diplomatic document",
-					BodyText = LimitMultiline(document.Body, DetailCharacterLimit, DetailLineLimit, "{=AF_UI_Timeline_DiplomaticArchived}(This diplomatic message has been filed in the diplomatic chronicle.)"),
-					ImpactSectionTitleText = "{=AF_UI_Timeline_DiplomaticImpact}Diplomatic result and impact",
+					BodySectionTitleText = new TextObject("{=AF_UI_Timeline_DiplomaticDocument}Diplomatic document").ToString(),
+					BodyText = LimitMultiline(document.Body, DetailCharacterLimit, DetailLineLimit, new TextObject("{=AF_UI_Timeline_DiplomaticArchived}(This diplomatic message has been filed in the diplomatic chronicle.)").ToString()),
+					ImpactSectionTitleText = new TextObject("{=AF_UI_Timeline_DiplomaticImpact}Diplomatic result and impact").ToString(),
 					ImpactText = document.ImpactText,
 					Day = Math.Max(0, document.Day),
 					CreatedUtcTicks = document.CreatedUtcTicks,
@@ -299,7 +299,7 @@ public static class WorldMessageTimelineUi
 			[WorldWeeklyCountryId] = new WorldMessageTimelineCountryData
 			{
 				CountryId = WorldWeeklyCountryId,
-				CountryName = "{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive",
+				CountryName = new TextObject("{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive").ToString(),
 				IsWorldWeekly = true
 			}
 		};
@@ -312,7 +312,7 @@ public static class WorldMessageTimelineUi
 					continue;
 				}
 				string id = FirstNonEmpty(country.CountryId, UnknownCountryId);
-				string name = FirstNonEmpty(country.CountryName, id == WorldWeeklyCountryId ? "{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive" : "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom");
+				string name = FirstNonEmpty(country.CountryName, id == WorldWeeklyCountryId ? new TextObject("{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive").ToString() : new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString());
 				if (!byId.TryGetValue(id, out WorldMessageTimelineCountryData known))
 				{
 					byId[id] = new WorldMessageTimelineCountryData
@@ -341,7 +341,7 @@ public static class WorldMessageTimelineUi
 			return;
 		}
 		string id = isWorldWeekly ? WorldWeeklyCountryId : FirstNonEmpty(countryId, UnknownCountryId);
-		string name = isWorldWeekly ? "{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive" : FirstNonEmpty(countryName, countryId, "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom");
+		string name = isWorldWeekly ? new TextObject("{=AF_UI_Timeline_WeeklyArchive}Bulletin and weekly-report archive").ToString() : FirstNonEmpty(countryName, countryId, new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString());
 		if (entry.Countries.Any(x => x != null && string.Equals(x.CountryId, id, StringComparison.OrdinalIgnoreCase)))
 		{
 			return;
@@ -372,18 +372,18 @@ public static class WorldMessageTimelineUi
 
 	private static string PolicyScopeLabel(string scopeKind)
 	{
-		if (string.Equals(scopeKind, "kingdom", StringComparison.OrdinalIgnoreCase)) return "{=AF_UI_Timeline_KingdomPolicy}Kingdom policy";
-		if (string.Equals(scopeKind, "local", StringComparison.OrdinalIgnoreCase)) return "{=AF_UI_Timeline_LocalPolicy}Local policy";
-		if (string.Equals(scopeKind, "vassal", StringComparison.OrdinalIgnoreCase)) return "{=AF_UI_Timeline_VassalPolicy}Vassal policy";
-		return "{=AF_UI_Timeline_Policy}Policy";
+		if (string.Equals(scopeKind, "kingdom", StringComparison.OrdinalIgnoreCase)) return new TextObject("{=AF_UI_Timeline_KingdomPolicy}Kingdom policy").ToString();
+		if (string.Equals(scopeKind, "local", StringComparison.OrdinalIgnoreCase)) return new TextObject("{=AF_UI_Timeline_LocalPolicy}Local policy").ToString();
+		if (string.Equals(scopeKind, "vassal", StringComparison.OrdinalIgnoreCase)) return new TextObject("{=AF_UI_Timeline_VassalPolicy}Vassal policy").ToString();
+		return new TextObject("{=AF_UI_Timeline_Policy}Policy").ToString();
 	}
 
 	private static string BuildDiplomacyLabel(WorldDiplomacyTimelineDocument document)
 	{
-		if (document?.IsResponse == true) return "{=AF_UI_Timeline_DiplomaticResponse}Diplomatic response";
-		if (document?.RequiresResponse == true) return "{=AF_UI_Timeline_DiplomaticNote}Diplomatic note";
-		if (document?.ChangedDiplomaticState == true) return "{=AF_UI_Timeline_DiplomaticResult}Diplomatic result";
-		return "{=AF_UI_Timeline_DiplomaticMessage}Diplomatic message";
+		if (document?.IsResponse == true) return new TextObject("{=AF_UI_Timeline_DiplomaticResponse}Diplomatic response").ToString();
+		if (document?.RequiresResponse == true) return new TextObject("{=AF_UI_Timeline_DiplomaticNote}Diplomatic note").ToString();
+		if (document?.ChangedDiplomaticState == true) return new TextObject("{=AF_UI_Timeline_DiplomaticResult}Diplomatic result").ToString();
+		return new TextObject("{=AF_UI_Timeline_DiplomaticMessage}Diplomatic message").ToString();
 	}
 
 	private static string BuildDiplomacyTargetText(WorldDiplomacyTimelineDocument document)
@@ -409,7 +409,7 @@ public static class WorldMessageTimelineUi
 	private static string BuildDiplomacyMetaText(WorldDiplomacyTimelineDocument document, string label, string authorName, string targetName)
 	{
 		string date = FirstNonEmpty(document?.GameDate, FormatDay(document?.Day ?? 0));
-		return date + "  ·  " + label + "  ·  " + FirstNonEmpty(authorName, "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom")
+		return date + "  ·  " + label + "  ·  " + FirstNonEmpty(authorName, new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString())
 			+ (string.IsNullOrWhiteSpace(targetName) ? "" : " → " + targetName);
 	}
 
@@ -949,13 +949,13 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		// This catalog is built once when the rumor timeline opens; records are linked lazily only after selection.
 		_linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		WorldMessageTimelinePopupData source = data ?? new WorldMessageTimelinePopupData();
-		TitleText = FirstNonEmpty(source.TitleText, "{=AF_UI_Timeline_Rumors}Rumors");
+		TitleText = FirstNonEmpty(source.TitleText, new TextObject("{=AF_UI_Timeline_Rumors}Rumors").ToString());
 		SubtitleText = FirstNonEmpty(source.SubtitleText, new TextObject("{=AF_UI_Timeline_DefaultSubtitle}Diplomacy, policies, and weekly reports are ordered from oldest to newest; latest entries are at the bottom.").ToString());
-		EmptyStateText = FirstNonEmpty(source.EmptyStateText, "{=AF_UI_Timeline_NoRumors}No rumors.");
-		CloseText = FirstNonEmpty(source.CloseText, "{=AF_UI_Common_Close}Close");
-		GenerateFullWeeklyReportText = "{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report";
+		EmptyStateText = FirstNonEmpty(source.EmptyStateText, new TextObject("{=AF_UI_Timeline_NoRumors}No rumors.").ToString());
+		CloseText = FirstNonEmpty(source.CloseText, new TextObject("{=AF_UI_Common_Close}Close").ToString());
+		GenerateFullWeeklyReportText = new TextObject("{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report").ToString();
 		// The initial label is replaced immediately with the campaign's real time-control state below.
-		PauseGameText = "{=AF_UI_Timeline_Pause}Pause game";
+		PauseGameText = new TextObject("{=AF_UI_Timeline_Pause}Pause game").ToString();
 		ReplaceSourceData(source);
 		CountryItems = new MBBindingList<WorldMessageTimelineCountryItemVM>();
 		RecordItems = new MBBindingList<WorldMessageTimelineRecordItemVM>();
@@ -1022,13 +1022,13 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	[DataSourceProperty]
 	public bool IsWeeklyCategorySelected { get => _isWeeklyCategorySelected; set { if (value != _isWeeklyCategorySelected) { _isWeeklyCategorySelected = value; OnPropertyChangedWithValue(value, nameof(IsWeeklyCategorySelected)); } } }
 	[DataSourceProperty]
-	public string AllFilterText => BuildCategoryFilterText("{=AF_UI_Timeline_All}All", WorldMessageTimelineUi.AllCategoryId);
+	public string AllFilterText => BuildCategoryFilterText(new TextObject("{=AF_UI_Timeline_All}All").ToString(), WorldMessageTimelineUi.AllCategoryId);
 	[DataSourceProperty]
-	public string DiplomacyFilterText => BuildCategoryFilterText("{=AF_UI_Timeline_Diplomacy}Diplomacy", WorldMessageTimelineUi.DiplomacyCategoryId);
+	public string DiplomacyFilterText => BuildCategoryFilterText(new TextObject("{=AF_UI_Timeline_Diplomacy}Diplomacy").ToString(), WorldMessageTimelineUi.DiplomacyCategoryId);
 	[DataSourceProperty]
-	public string PolicyFilterText => BuildCategoryFilterText("{=AF_UI_Timeline_Policy}Policy", WorldMessageTimelineUi.PolicyCategoryId);
+	public string PolicyFilterText => BuildCategoryFilterText(new TextObject("{=AF_UI_Timeline_Policy}Policy").ToString(), WorldMessageTimelineUi.PolicyCategoryId);
 	[DataSourceProperty]
-	public string WeeklyFilterText => BuildCategoryFilterText("{=AF_UI_Timeline_Weekly}Bulletin / weekly report", WorldMessageTimelineUi.WeeklyCategoryId);
+	public string WeeklyFilterText => BuildCategoryFilterText(new TextObject("{=AF_UI_Timeline_Weekly}Bulletin / weekly report").ToString(), WorldMessageTimelineUi.WeeklyCategoryId);
 	[DataSourceProperty]
 	public MBBindingList<WorldMessageTimelineCountryItemVM> CountryItems { get => _countryItems; set { if (value != _countryItems) { _countryItems = value; OnPropertyChangedWithValue(value, nameof(CountryItems)); } } }
 	[DataSourceProperty]
@@ -1075,8 +1075,8 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		// The 10x button appears only alongside the 3x continuation choice while the timeline is paused.
 		ShowDeveloperFastForwardButton = state.CanToggle && state.IsPaused && state.IsDeveloperFastForwardAvailable;
 		PauseGameText = state.CanToggle
-			? (state.IsPaused ? "{=AF_UI_Timeline_ResumeTriple}Resume game (3x)" : "{=AF_UI_Timeline_Pause}Pause game")
-			: "{=AF_UI_Timeline_TimeLocked}Time is locked and cannot be changed";
+			? (state.IsPaused ? new TextObject("{=AF_UI_Timeline_ResumeTriple}Resume game (3x)").ToString() : new TextObject("{=AF_UI_Timeline_Pause}Pause game").ToString())
+			: new TextObject("{=AF_UI_Timeline_TimeLocked}Time is locked and cannot be changed").ToString();
 	}
 
 	public void ReloadFromExternalSourceChange()
@@ -1294,7 +1294,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		MBBindingList<WorldMessageTimelineCountryItemVM> rebuiltCountryItems = new MBBindingList<WorldMessageTimelineCountryItemVM>();
 		rebuiltCountryItems.Add(new WorldMessageTimelineCountryItemVM(
 			WorldMessageTimelineUi.AllCountriesId,
-			"{=AF_UI_Timeline_AllCountries}All kingdoms",
+			new TextObject("{=AF_UI_Timeline_AllCountries}All kingdoms").ToString(),
 			categoryEntries.Count,
 			SelectCountry));
 
@@ -1306,7 +1306,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 			int count = categoryEntries.Count(entry => EntryMatchesCountry(entry, country.CountryId));
 			rebuiltCountryItems.Add(new WorldMessageTimelineCountryItemVM(
 				country.CountryId,
-				FirstNonEmpty(country.CountryName, "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom"),
+				FirstNonEmpty(country.CountryName, new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString()),
 				count,
 				SelectCountry));
 		}
@@ -1441,7 +1441,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		_selectedWeeklyReportEventId = "";
 		ShowGenerateFullWeeklyReport = false;
 		CanGenerateFullWeeklyReport = false;
-		GenerateFullWeeklyReportText = "{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report";
+		GenerateFullWeeklyReportText = new TextObject("{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report").ToString();
 	}
 
 	private void ReplaceSourceData(WorldMessageTimelinePopupData source)
@@ -1476,8 +1476,8 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		ShowGenerateFullWeeklyReport = canGenerate;
 		CanGenerateFullWeeklyReport = canGenerate && !_isGeneratingFullWeeklyReport;
 		GenerateFullWeeklyReportText = canGenerate && _isGeneratingFullWeeklyReport
-			? "{=AF_UI_Timeline_GeneratingWeekly}Generating full weekly report..."
-			: "{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report";
+			? new TextObject("{=AF_UI_Timeline_GeneratingWeekly}Generating full weekly report...").ToString()
+			: new TextObject("{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report").ToString();
 	}
 
 	private IEnumerable<WorldMessageTimelineEntryData> GetCategoryEntries()
@@ -1526,20 +1526,20 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	{
 		if (HasAllCategoriesSelected())
 		{
-			return "{=AF_UI_Timeline_AllMessages}All messages";
+			return new TextObject("{=AF_UI_Timeline_AllMessages}All messages").ToString();
 		}
 		List<string> labels = new List<string>(3);
-		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.DiplomacyCategoryId)) labels.Add("{=AF_UI_Timeline_Diplomacy}Diplomacy");
-		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.PolicyCategoryId)) labels.Add("{=AF_UI_Timeline_Policy}Policy");
-		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.WeeklyCategoryId)) labels.Add("{=AF_UI_Timeline_Weekly}Bulletin / weekly report");
-		return labels.Count == 0 ? "{=AF_UI_Timeline_AllMessages}All messages" : string.Join("、", labels);
+		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.DiplomacyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Diplomacy}Diplomacy").ToString());
+		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.PolicyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Policy}Policy").ToString());
+		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.WeeklyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Weekly}Bulletin / weekly report").ToString());
+		return labels.Count == 0 ? new TextObject("{=AF_UI_Timeline_AllMessages}All messages").ToString() : string.Join("、", labels);
 	}
 
 	private string BuildCountrySelectionText()
 	{
 		if (IsAllCountriesSelected())
 		{
-			return "{=AF_UI_Timeline_AllCountries}All kingdoms";
+			return new TextObject("{=AF_UI_Timeline_AllCountries}All kingdoms").ToString();
 		}
 		List<string> names = CountryItems
 			.Where(x => x != null
@@ -1649,7 +1649,7 @@ public sealed class WorldMessageTimelineCountryItemVM : ViewModel
 	public WorldMessageTimelineCountryItemVM(string countryId, string countryName, int recordCount, Action<string> select)
 	{
 		CountryId = countryId ?? "";
-		CountryName = countryName ?? "{=AF_UI_Timeline_UnknownCountry}Unknown kingdom";
+		CountryName = countryName ?? new TextObject("{=AF_UI_Timeline_UnknownCountry}Unknown kingdom").ToString();
 		RecordCount = Math.Max(0, recordCount);
 		_select = select;
 	}
@@ -1694,11 +1694,11 @@ public sealed class WorldMessageTimelineRecordItemVM : ViewModel
 		Index = index;
 		_select = select;
 		EntryId = data.EntryId ?? "";
-		CategoryLabel = data.CategoryLabel ?? "{=AF_UI_Timeline_Rumors}Rumors";
-		TitleText = data.TitleText ?? "{=AF_UI_Timeline_Rumors}Rumors";
+		CategoryLabel = data.CategoryLabel ?? new TextObject("{=AF_UI_Timeline_Rumors}Rumors").ToString();
+		TitleText = data.TitleText ?? new TextObject("{=AF_UI_Timeline_Rumors}Rumors").ToString();
 		DateText = data.DateText ?? "";
 		MetaText = data.MetaText ?? "";
-		BodySectionTitleText = data.BodySectionTitleText ?? "{=AF_UI_Timeline_Details}Details";
+		BodySectionTitleText = data.BodySectionTitleText ?? new TextObject("{=AF_UI_Timeline_Details}Details").ToString();
 		BodyText = data.BodyText ?? "";
 		ImpactSectionTitleText = data.ImpactSectionTitleText ?? "";
 		ImpactText = data.ImpactText ?? "";
@@ -1708,7 +1708,7 @@ public sealed class WorldMessageTimelineRecordItemVM : ViewModel
 		CanGenerateFullWeeklyReport = data.CanGenerateFullWeeklyReport && !string.IsNullOrWhiteSpace(data.WeeklyReportEventId);
 		WeeklyReportEventId = data.WeeklyReportEventId ?? "";
 		_isUnread = data.IsUnread;
-		_unreadMarkerText = data.IsUnread ? "{=AF_UI_Timeline_New}New" : "";
+		_unreadMarkerText = data.IsUnread ? new TextObject("{=AF_UI_Timeline_New}New").ToString() : "";
 	}
 
 	public int Index { get; }
@@ -1790,10 +1790,10 @@ public sealed class WorldMessageTimelineRecordItemVM : ViewModel
 
 public sealed class WorldMessageTimelinePopupData
 {
-	public string TitleText = "{=AF_UI_Timeline_Rumors}Rumors";
+	public string TitleText = new TextObject("{=AF_UI_Timeline_Rumors}Rumors").ToString();
 	public string SubtitleText = new TextObject("{=AF_UI_Timeline_DefaultSubtitle}Diplomacy, policies, and weekly reports are ordered from oldest to newest; latest entries are at the bottom.").ToString();
-	public string EmptyStateText = "{=AF_UI_Timeline_NoRumors}No rumors.";
-	public string CloseText = "{=AF_UI_Common_Close}Close";
+	public string EmptyStateText = new TextObject("{=AF_UI_Timeline_NoRumors}No rumors.").ToString();
+	public string CloseText = new TextObject("{=AF_UI_Common_Close}Close").ToString();
 	public List<WorldMessageTimelineEntryData> Entries = new List<WorldMessageTimelineEntryData>();
 	public List<WorldMessageTimelineCountryData> Countries = new List<WorldMessageTimelineCountryData>();
 }

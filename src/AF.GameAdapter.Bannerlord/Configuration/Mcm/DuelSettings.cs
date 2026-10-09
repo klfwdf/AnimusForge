@@ -886,7 +886,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public override string Id => "AnimusForge_global_settings";
 
-	public override string DisplayName => "{=AF_MCM_Main_DisplayName}AnimusForge Settings";
+	public override string DisplayName => new TaleWorlds.Localization.TextObject("{=AF_MCM_Main_DisplayName}AnimusForge Settings").ToString();
 
 	public override string FolderName => "AnimusForge";
 

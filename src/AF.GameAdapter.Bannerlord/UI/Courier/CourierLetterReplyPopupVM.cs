@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -153,14 +154,14 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		_onReply = onReply;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		Theme = new CourierLetterThemeVM(CourierLetterThemes.Current);
-		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? "{=AF_UI_Courier_ReplyTitle}The courier returned with a reply" : titleText);
+		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply").ToString() : titleText);
 		SubtitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(subtitleText ?? "");
 		// Letters stay plain in storage; this one popup-only copy gets safe native entity markup.
 		EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
-		BodyText = linkDisplaySession.Format(string.IsNullOrWhiteSpace(bodyText) ? "{=AF_UI_Courier_EmptyReply}(No reply body)" : bodyText);
+		BodyText = linkDisplaySession.Format(string.IsNullOrWhiteSpace(bodyText) ? new TextObject("{=AF_UI_Courier_EmptyReply}(No reply body)").ToString() : bodyText);
 		BodyFontSize = Math.Max(14, Math.Min(34, bodyFontSize));
-		CloseText = string.IsNullOrWhiteSpace(closeText) ? "{=AF_UI_Courier_Close}Close" : closeText;
-		ReplyText = string.IsNullOrWhiteSpace(replyText) ? "{=AF_UI_Courier_Reply}Reply" : replyText;
+		CloseText = string.IsNullOrWhiteSpace(closeText) ? new TextObject("{=AF_UI_Courier_Close}Close").ToString() : closeText;
+		ReplyText = string.IsNullOrWhiteSpace(replyText) ? new TextObject("{=AF_UI_Courier_Reply}Reply").ToString() : replyText;
 		CanReply = onReply != null;
 		ImpactText = linkDisplaySession.Format((impactText ?? "").Trim());
 		HasImpact = !string.IsNullOrWhiteSpace(ImpactText);
