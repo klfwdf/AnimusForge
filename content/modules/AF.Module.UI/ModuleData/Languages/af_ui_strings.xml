@@ -307,5 +307,25 @@
   <string id="AF_UI_Terminal_DescriptionLabel" text="Description:" />
   <string id="AF_UI_Terminal_SourcesLabel" text="Sources:" />
   <string id="AF_UI_Terminal_EditValue" text="Click to enter ✎" />
+  <string id="AF_MCM_Duel_RenownTransfer_Hint" text="After a formal duel, the winner gains the renown lost by the loser clan. No transfer occurs when both sides belong to the same clan or either side has no clan. Loser renown never falls below 0 and clan tier is not forcibly reduced." />
+  <string id="AF_MCM_Duel_RenownMinimum_Hint" text="Minimum renown lost by the loser clan each time. Default 20; if the clan has less, loss is capped at 0." />
+  <string id="AF_MCM_Duel_RenownPercent_Hint" text="Calculates a percentage from the loser clan renown before settlement and uses the larger value with the minimum loss. Default: 3%." />
+  <string id="AF_MCM_Duel_RenownMaximum_Hint" text="Maximum clan renown lost in one duel. Default 150; 0 means no cap." />
+  <string id="AF_MCM_Items_Restore_Hint" text="When enabled, equipment NPCs lose through gifts, trade, or post-battle loot is restored to its original slot after 3 days; existing replacement equipment is not overwritten. Disabling stops new and existing restoration jobs; re-enabling resumes registered jobs. Enabled by default." />
+  <string id="AF_MCM_Shout_Key_Hint" text="Hold this key in a scene to preview and expand shout range; release it to open the speech input. Default: T." />
+  <string id="AF_MCM_Shout_SpecialKey_Hint" text="Hold this key in a scene to preview and expand shout range; release it to open the complex interaction menu. Default: Y." />
+  <string id="AF_MCM_Shout_TerminalKey_Hint" text="Press this key on the campaign map to open the AnimusForge terminal. Default: U." />
+  <string id="AF_MCM_Shout_GoldKey_Hint" text="During a scene taunt conflict, approach dropped coins after an NPC falls and press this key to collect them. Default: F." />
+  <string id="AF_MCM_Shout_InitialRange_Hint" text="Base shout range used when T/Y is pressed. Default: 4 m." />
+  <string id="AF_MCM_Shout_MaxRange_Hint" text="Maximum shout range while holding T/Y, capped at 150 m. Larger ranges show more preview markers." />
+  <string id="AF_MCM_Shout_MinLength_Hint" text="Minimum length of a scene-shout reply. Default: 40." />
+  <string id="AF_MCM_Shout_MaxLength_Hint" text="Maximum length of a scene-shout reply. Default: 200; values below the minimum are corrected at runtime." />
+  <string id="AF_MCM_Shout_ThoughtLength_Hint" text="Minimum length of the parenthesized inner-thought section in scene-shout replies. Minimum 40; default 200." />
+  <string id="AF_MCM_Shout_DisableThought_Hint" text="When enabled, scene-shout requests no longer require inner-thought output and keep only the action and spoken-line format." />
+  <string id="AF_MCM_Shout_BubbleFont_Hint" text="Sets the font size of text in scene-shout bubbles." />
+  <string id="AF_MCM_Shout_Timeout_Hint" text="Extends the idle dismissal time for scene conversations based on visible player and NPC words in the current exchange. Default: 1 second per character." />
+  <string id="AF_MCM_Shout_StareSeconds_Hint" text="How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds." />
+  <string id="AF_MCM_Shout_DirectAttack_Hint" text="When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict." />
+  <string id="AF_MCM_Shout_InputBackground_Hint" text="Affects only the shout input box. Default is transparent black; transparent white or pink are also available." />
   </strings>
 </base>

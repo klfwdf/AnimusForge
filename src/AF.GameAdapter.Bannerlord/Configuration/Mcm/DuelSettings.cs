@@ -1002,83 +1002,83 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
-	[SettingPropertyBool("{=AF_MCM_Duel_RenownTransfer}Enable duel clan renown transfer", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyBool("{=AF_MCM_Duel_RenownTransfer}Enable duel clan renown transfer", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Duel_RenownTransfer_Hint}After a formal duel, the winner gains the renown lost by the loser clan. No transfer occurs when both sides belong to the same clan or either side has no clan. Loser renown never falls below 0 and clan tier is not forcibly reduced.")]
 	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
 
-	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMinimum}Minimum renown loss", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMinimum}Minimum renown loss", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Duel_RenownMinimum_Hint}Minimum renown lost by the loser clan each time. Default 20; if the clan has less, loss is capped at 0.")]
 	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyMinimum { get; set; } = DefaultDuelLoserClanRenownPenaltyMinimum;
 
-	[SettingPropertyInteger("{=AF_MCM_Duel_RenownPercent}Renown loss by current percentage (%)", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownPercent}Renown loss by current percentage (%)", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Duel_RenownPercent_Hint}Calculates a percentage from the loser clan renown before settlement and uses the larger value with the minimum loss. Default: 3%.")]
 	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyPercent { get; set; } = DefaultDuelLoserClanRenownPenaltyPercent;
 
-	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMaximum}Maximum renown loss", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "单场决斗最多扣减的家族声望。默认 150；设为 0 表示不设上限。")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMaximum}Maximum renown loss", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Duel_RenownMaximum_Hint}Maximum clan renown lost in one duel. Default 150; 0 means no cap.")]
 	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyMaximum { get; set; } = DefaultDuelLoserClanRenownPenaltyMaximum;
 
-	[SettingPropertyBool("{=AF_MCM_Items_Restore}Restore NPC equipment after it is given away", Order = 0, RequireRestart = false, HintText = "开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。")]
+	[SettingPropertyBool("{=AF_MCM_Items_Restore}Restore NPC equipment after it is given away", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Items_Restore_Hint}When enabled, equipment NPCs lose through gifts, trade, or post-battle loot is restored to its original slot after 3 days; existing replacement equipment is not overwritten. Disabling stops new and existing restoration jobs; re-enabling resumes registered jobs. Enabled by default.")]
 	[SettingPropertyGroup("{=AF_MCM_Items_Group}10. Items and trade", GroupOrder = 100)]
 	public bool EnableNpcBattleEquipmentRestore { get; set; } = true;
 
-	[SettingPropertyText("{=AF_MCM_Shout_Key}Scene shout key (one uppercase letter)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
+	[SettingPropertyText("{=AF_MCM_Shout_Key}Scene shout key (one uppercase letter)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Shout_Key_Hint}Hold this key in a scene to preview and expand shout range; release it to open the speech input. Default: T.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string ShoutKey { get; set; } = "T";
 
-	[SettingPropertyText("{=AF_MCM_Shout_SpecialKey}Complex interaction key (one uppercase letter)", -1, true, "", Order = 1, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。")]
+	[SettingPropertyText("{=AF_MCM_Shout_SpecialKey}Complex interaction key (one uppercase letter)", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Shout_SpecialKey_Hint}Hold this key in a scene to preview and expand shout range; release it to open the complex interaction menu. Default: Y.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string ShoutSpecialMenuKey { get; set; } = "Y";
 
-	[SettingPropertyText("{=AF_MCM_Shout_TerminalKey}Terminal key (one uppercase letter)", -1, true, "", Order = 2, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
+	[SettingPropertyText("{=AF_MCM_Shout_TerminalKey}Terminal key (one uppercase letter)", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Shout_TerminalKey_Hint}Press this key on the campaign map to open the AnimusForge terminal. Default: U.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string TerminalKey { get; set; } = "U";
 
-	[SettingPropertyText("{=AF_MCM_Shout_GoldKey}Downed-gold pickup key (one uppercase letter)", -1, true, "", Order = 3, RequireRestart = false, HintText = "场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。")]
+	[SettingPropertyText("{=AF_MCM_Shout_GoldKey}Downed-gold pickup key (one uppercase letter)", -1, true, "", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Shout_GoldKey_Hint}During a scene taunt conflict, approach dropped coins after an NPC falls and press this key to collect them. Default: F.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string SceneTauntGoldPickupKey { get; set; } = "F";
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_InitialRange}Initial shout range (m)", 1f, 150f, "0.0", Order = 4, RequireRestart = false, HintText = "按下 T/Y 时使用的基础喊话范围。默认 4 米。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_InitialRange}Initial shout range (m)", 1f, 150f, "0.0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Shout_InitialRange_Hint}Base shout range used when T/Y is pressed. Default: 4 m.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float ShoutInitialRangeMeters { get; set; } = 4f;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_MaxRange}Maximum shout range (m)", 1f, 150f, "0.0", Order = 5, RequireRestart = false, HintText = "按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_MaxRange}Maximum shout range (m)", 1f, 150f, "0.0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Shout_MaxRange_Hint}Maximum shout range while holding T/Y, capped at 150 m. Larger ranges show more preview markers.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float ShoutMaxRangeMeters { get; set; } = 150f;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_MinLength}Minimum shout reply length", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。默认 40。")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_MinLength}Minimum shout reply length", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Shout_MinLength_Hint}Minimum length of a scene-shout reply. Default: 40.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutMinTokens { get; set; } = DefaultShoutMinTokens;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_MaxLength}Maximum shout reply length", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。默认 200；若小于最小字数，运行时会按最小字数处理。")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_MaxLength}Maximum shout reply length", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Shout_MaxLength_Hint}Maximum length of a scene-shout reply. Default: 200; values below the minimum are corrected at runtime.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutMaxTokens { get; set; } = DefaultShoutMaxTokens;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_ThoughtLength}Minimum inner-thought length", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_ThoughtLength}Minimum inner-thought length", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Shout_ThoughtLength_Hint}Minimum length of the parenthesized inner-thought section in scene-shout replies. Minimum 40; default 200.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutThoughtMinTokens { get; set; } = 200;
 
-	[SettingPropertyBool("{=AF_MCM_Shout_DisableThought}Disable inner thought", Order = 9, RequireRestart = false, HintText = "开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。")]
+	[SettingPropertyBool("{=AF_MCM_Shout_DisableThought}Disable inner thought", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Shout_DisableThought_Hint}When enabled, scene-shout requests no longer require inner-thought output and keep only the action and spoken-line format.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public bool DisableShoutInnerThoughtPrompt { get; set; } = true;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_BubbleFont}Bubble font size", 10, 40, "0", Order = 10, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_BubbleFont}Bubble font size", 10, 40, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Shout_BubbleFont_Hint}Sets the font size of text in scene-shout bubbles.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_Timeout}Conversation timeout seconds per visible character", 0.5f, 3f, "0.0", Order = 11, RequireRestart = false, HintText = "场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_Timeout}Conversation timeout seconds per visible character", 0.5f, 3f, "0.0", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Shout_Timeout_Hint}Extends the idle dismissal time for scene conversations based on visible player and NPC words in the current exchange. Default: 1 second per character.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float SceneConversationTimeoutSecondsPerVisibleCharacter { get; set; } = 1f;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_StareSeconds}Stare trigger time (seconds)", 1, 120, "0", Order = 12, RequireRestart = false, HintText = "玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_StareSeconds}Stare trigger time (seconds)", 1, 120, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Shout_StareSeconds_Hint}How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int PassiveStareTriggerSeconds { get; set; } = 15;
 
-	[SettingPropertyBool("{=AF_MCM_Shout_DirectAttack}Allow direct player attacks to trigger scene conflict", Order = 13, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyBool("{=AF_MCM_Shout_DirectAttack}Allow direct player attacks to trigger scene conflict", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Shout_DirectAttack_Hint}When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 
-	[SettingPropertyDropdown("{=AF_MCM_Shout_InputBackground}Shout input background", Order = 14, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
+	[SettingPropertyDropdown("{=AF_MCM_Shout_InputBackground}Shout input background", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Shout_InputBackground_Hint}Affects only the shout input box. Default is transparent black; transparent white or pink are also available.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public Dropdown<string> ShoutInputUiBackgroundDropdown
 	{
