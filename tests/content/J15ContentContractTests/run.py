@@ -612,6 +612,38 @@ COMMITTED_CONTENT_ADDITIONS = {
         "sha256": "DA324DECAFEB2CA5147C39119FCEBDC9F9A900733ED99B2AAA111E3C606B4350",
         "revision": "0218ca82491c0a0fb5b85236b805e1863c82d02d",
     },
+    "ModuleData/Languages/illustrator_strings.xml": {
+        "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/illustrator_strings.xml",
+        "sha256": "3F66C7D475116DB89525A5F7E1D2BB6309F3069FE4CF268C2E242354AFE8AAD0", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml": {
+        "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
+        "sha256": "4A61B9E1714CCB0A6A0708374B4E7BDED93783224E2690693ACAF5263DA12893", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/coup_strings.xml": {
+        "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
+        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/CNs/coup_strings-zh-CN.xml": {
+        "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml",
+        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/afd_ui_strings.xml": {
+        "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
+        "sha256": "BF8EDEB943D037493549DE4EBA7BC2B32A54B748DA08332835BF74A406D60FC2", "revision": "f1f2a726f",
+    },
+    "ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml": {
+        "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml",
+        "sha256": "476B9ED0E03A26EEDB1DA783952EAAF954657E63D5B5F454A1D5848EA5E9D203", "revision": "f1f2a726f",
+    },
+    "ModuleData/Languages/afpol_ui_strings.xml": {
+        "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_ui_strings.xml",
+        "sha256": "1CDBAE32262CC9371AD11E21E29584C3FD43541871171FA4E6518ECD114AE9D6", "revision": "be7c7681d",
+    },
+    "ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml": {
+        "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
+        "sha256": "9C3EAF88B2493A47697D5F415F72E17F6A51B9E3C7702809690387E6EE2607D5", "revision": "be7c7681d",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
