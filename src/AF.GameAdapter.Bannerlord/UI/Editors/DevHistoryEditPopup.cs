@@ -38,16 +38,36 @@ public sealed class DevHistoryEditPopup : IDisposable
         _isInputOwnerAlive = isInputOwnerAlive;
         _onDismissed = onDismissed;
 		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested, inputHintText, saveText, cancelText);
-		// Owned nested editors sit just above their parent; ordinary history editors retain their original order.
+		// Resolve only the named/captured parent at open time; never scan layers per tick.
         int order = inputOwner == null ? 4000 : Math.Max(4000, inputOwner.InputRestrictions.Order + 1);
         _layer = new GauntletLayer("DevHistoryEditPopup", order, false);
 	}
 
 	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText = null, string saveText = null, string cancelText = null)
 	{
+        // Replacement must release the previous editor before capturing its restored parent.
+        _activePopup?.Close(silent: true);
+        ScreenBase screen = ScreenManager.TopScreen;
+        ScreenLayer parent = CaptureInputOwner(screen);
         return TryShowOwned(titleText, dateText, originalContentText, editedText, onSave, onCancel,
-            inputHintText, saveText, cancelText, null, null, null, out _);
+            inputHintText, saveText, cancelText, parent, null, null, out _);
     }
+
+    internal static ScreenLayer CaptureInputOwner(ScreenBase screen)
+    {
+        // Mouse commands name their hit layer; keyboard/MCM commands name their focused layer.
+        // Global inquiry layers are not owned by this screen and must keep their own lifecycle.
+        ScreenLayer hit = ScreenManager.FirstHitLayer;
+        ScreenLayer focused = ScreenManager.FocusedLayer;
+        bool hitValid = IsUsableInputOwner(screen, hit);
+        bool focusValid = IsUsableInputOwner(screen, focused);
+        if (hitValid && (!focusValid || hit.InputRestrictions.Order >= focused.InputRestrictions.Order)) return hit;
+        return focusValid ? focused : null;
+    }
+
+    private static bool IsUsableInputOwner(ScreenBase screen, ScreenLayer layer) =>
+        screen != null && !screen.IsFinalized && layer != null && !layer.IsFinalized && layer.IsActive
+        && screen.HasLayer(layer);
 
     internal static bool TryShowOwned(string titleText, string dateText, string originalContentText, string editedText,
         Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText,
@@ -80,12 +100,9 @@ public sealed class DevHistoryEditPopup : IDisposable
 	private void Open()
 	{
         _parentInput = new DevPopupInputLease(_screen, _inputOwner, _isInputOwnerAlive);
-        if (_onDismissed != null)
-        {
-            ScreenManager.OnPushScreen += OnScreenChanged;
-            ScreenManager.OnPopScreen += OnScreenChanged;
-            _screenEventsRegistered = true;
-        }
+        ScreenManager.OnPushScreen += OnScreenChanged;
+        ScreenManager.OnPopScreen += OnScreenChanged;
+        _screenEventsRegistered = true;
         _layer.LoadMovie("DevHistoryEditPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
@@ -118,7 +135,8 @@ public sealed class DevHistoryEditPopup : IDisposable
 
     private void OnScreenChanged(ScreenBase screen)
     {
-        if (ReferenceEquals(screen, _screen) || !ReferenceEquals(ScreenManager.TopScreen, _screen)) Dispose();
+        if (ReferenceEquals(screen, _screen) || !ReferenceEquals(ScreenManager.TopScreen, _screen))
+            Close(silent: true); // A screen change must not reopen a business menu on another screen.
     }
 
 	private void Close(bool silent, bool notifyDismissed = true)
