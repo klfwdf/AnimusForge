@@ -1900,6 +1900,9 @@ internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDa
 				return "";
 			}
 			StringBuilder sb = new StringBuilder();
+            // Scalar request facts: the current/primary speaker can be absent from the next-candidate rows.
+            if (currentSpeakerAgentIndex >= 0)
+                sb.AppendLine("【当前接力状态】本段回复的当前发言者编号: " + currentSpeakerAgentIndex + "; 主对话对象编号: " + primaryTargetAgentIndex + "; 当前发言者已完成本段回复。");
 			sb.AppendLine("【站在你旁边的人】");
 			foreach (NpcDataPacket npc in relayNpcs)
 			{

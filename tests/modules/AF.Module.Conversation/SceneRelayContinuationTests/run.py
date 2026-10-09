@@ -64,6 +64,17 @@ def main():
     }
     output = new_run_root(ROOT, "scene-relay-continuation", args.run_root)
     harness = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
+    config_path = "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
+    def relay_rows(value):
+        if isinstance(value, dict):
+            if value.get("Tag") == "[RELAY:接力编号]": yield value
+            for child in value.values(): yield from relay_rows(child)
+        elif isinstance(value, list):
+            for child in value: yield from relay_rows(child)
+    configured = list(relay_rows(json.loads(source(config_path, args.source_ref))))
+    assert len(configured) == 1, "canonical relay rule must have one configured tag"
+    harness = harness.replace("@@CONFIG_GROUP@@", json.dumps(configured[0]["Description"], ensure_ascii=True))
+    harness = harness.replace("@@CONFIG_SINGLE@@", json.dumps(configured[0]["SingleFramedNpcDescription"], ensure_ascii=True))
     for key, value in snippets.items(): harness = harness.replace("@@" + key + "@@", value)
     if "@@" in harness: raise ValueError("Unexpanded harness placeholder")
     (output / "Program.cs").write_text(harness, encoding="utf-8")
@@ -73,6 +84,7 @@ def main():
     (output / "Relay.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>' + linked + '</ItemGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
     fingerprints = {key: hashlib.sha256(value.encode()).hexdigest() for key, value in snippets.items()}
+    fingerprints[config_path] = hashlib.sha256(source(config_path, args.source_ref).encode()).hexdigest()
     fingerprints.update(source_ref=args.source_ref or "working-tree", boundary_scope="production snippets; synthetic network/agent context; real GCCZ budget")
     (output / "source-fingerprints.json").write_text(json.dumps(fingerprints, indent=2), encoding="utf-8")
     dotnet = resolve_dotnet(ROOT, args.dotnet)
