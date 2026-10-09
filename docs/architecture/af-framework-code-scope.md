@@ -1,3 +1,20 @@
+<a id="volc-tts-v3-compat-20261010"></a>
+### 火山 TTS V3 兼容升级
+
+最终源码 `0fe97a1a`（产品 `1b2fd919`），状态/测试/限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#volc-tts-v3-compat-20261010)。以下一基行号只定位本次责任，不是全文件验收。
+
+| 范围 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs:10–58`，GetVersion / SynthesizeAsync / DescribeError | URL 路由、单次协议选择与安全错误提示；TtsEngine 和测试按钮使用；未知 V3 拒绝，不自动降级 |
+| `src/modules/AF.Module.Llm/Tts/VolcV3TtsGateway.cs:15–149`，SynthesizeAsync / WrapWav / BoundedReadStream | HTTP API Key 协议、参数、总超时、取消、有界 JSON/PCM 收集和一次 WAV 封装；不持有游戏对象、不播放声音 |
+| `src/modules/AF.Module.Llm/Tts/LegacyVolcTtsGateway.cs:24–29` | 仅将 V1 AppID 必填检查放在 V1 请求入口；实际 V1 请求体/请求头/返回码保持 |
+| `src/AF.Contracts/Internal/TtsContracts.cs:12–62` | 请求 AppID 允许空供 V3 使用，V1 仍守卫；结果增加安全 LogId，保留原构造签名和 ITtsGateway 方法 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:104–113, 647–782, 1003–1044` | 原 worker 的协议预检/路由/失败反馈，V1/V3 客户端隔离；PCM/WAV 后续生产解析与 playback、请求归属/队列/口型流程不变 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1955–2008, 6683–6740`；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:177–193` | 原键/默认值保留，更新协议帮助/测试按钮 AppID 条件及错误 URL 拦截；真实 UI 渲染未验证 |
+| `tests/replay/TtsGatewayReplayTests/Program.cs` / `V3Cases.cs`；`tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 实际候选 DLL HTTP 与生产方法/按钮行为回放；后者网络、游戏状态、音频设备为 fixture，不能代替实机 |
+
+未修改的直接消费者：VoiceMapper、SceneAudioLipSyncController、NativeConversationPlaybackWaitAdapter，以及 Scene/Native 调用入口。无新增存档字段、外部 Api.V1 或 GPT-SoVITS/伴侣功能。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ### MCM 模型预设与快报战事修复接续
 

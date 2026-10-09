@@ -1,3 +1,9 @@
+# 当前交接：火山 TTS V3 兼容升级（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 按本轮授权新增 V3 HTTP + 新控制台 API Key，保留 V1 配置、音色映射、队列、播放/口型和场景消费方式；不自动迁移或失败重试。最终源码 `0fe97a1a`（产品 `1b2fd919`），基线 `83ba3879`。
+- 最终 Debug 1.3/1.4 + Bootstrap、双 Coup 门禁通过；实际 DLL 7 组 V1 + 29 项 V3 回放、当前引擎/按钮 51 项、8 个 mutation 均通过。编译有既有警告；真实火山合成、游戏内声音/嘴型/存档未验，未覆盖游戏。
+- [唯一主台账：配置用法、差异、证据、回滚与人工验收](docs/animusforge-refactoring-and-repository-reorganization-plan.md#volc-tts-v3-compat-20261010)；[源码地图](docs/architecture/af-framework-code-scope.md#volc-tts-v3-compat-20261010)。本地收据 `artifacts/tts-v3-20261010/`；发布是否完成以 main 远端 ref/发布收据为准，本文不替代真实推送结果。其余任务历史保持有效。
+
 # 当前交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 接续指定会话，MCM产品 `854e8559d` 修新增预设模型回默认/跨列表索引错配，覆盖五模型与终端；快报产品 `2ee1708aa` 验收原dirty切片并增加真实发布回归，数字战报拒收后回退事实模板。
