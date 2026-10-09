@@ -2724,6 +2724,83 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_Restore" text="Restore default diplomacy and drafting preferences" />
   <string id="AF_MCM_Diplomacy_Restore_Hint" text="Restores the mod default preference text. Only preference text is restored; event limits, propagation, length, and protection settings on this page are unchanged." />
   <string id="AF_MCM_Diplomacy_Restore_Content" text="Restore default" />
+  
+  <string id="AF_MCM_Gathering_Enable" text="Enable noble gatherings" />
+  <string id="AF_MCM_Gathering_Enable_Hint" text="Master switch for the gathering system. Disabling stops new gatherings; active gatherings are cancelled at the next safe campaign hour and hosts and guests are sent home. No restart required." />
+  <string id="AF_MCM_Gathering_AutoNpc" text="Enable automatic NPC gatherings" />
+  <string id="AF_MCM_Gathering_AutoNpc_Hint" text="When enabled, eligible NPCs schedule gatherings by kingdom. Disabling stops new NPC gatherings, while players can still host gatherings manually." />
+  <string id="AF_MCM_Gathering_PlayerInvite" text="Allow NPC invitations to the player" />
+  <string id="AF_MCM_Gathering_PlayerInvite_Hint" text="When enabled, NPC gatherings may invite the player and send a courier. Disabling prevents new invitations only; invitations already sent remain valid." />
+  <string id="AF_MCM_Gathering_ArrivalNotice" text="Show guest-arrival notices" />
+  <string id="AF_MCM_Gathering_ArrivalNotice_Hint" text="Controls the lower-left colored message when guests arrive at a player gathering. Hiding it does not affect arrival checks, gathering state, or rewards." />
+  <string id="AF_MCM_Gathering_NpcInterval" text="NPC gathering interval (days)" />
+  <string id="AF_MCM_Gathering_NpcInterval_Hint" text="Game days between automatic gathering schedules in the same kingdom. Default: 21; calculated per kingdom and used for the next schedule after editing." />
+  <string id="AF_MCM_Gathering_GovernorInvite" text="Allow NPC invitations to governors" />
+  <string id="AF_MCM_Gathering_GovernorInvite_Hint" text="Affects only automatically generated NPC guest lists. When disabled, NPCs do not invite governors governing settlements; players may still invite governors manually." />
+  <string id="AF_MCM_Gathering_Duration" text="Gathering duration (days)" />
+  <string id="AF_MCM_Gathering_Duration_Hint" text="Shared by player and NPC gatherings. Default: 5 days. Editing affects newly created gatherings only; active gatherings keep their original end date." />
+  <string id="AF_MCM_Gathering_Cost" text="Gathering cost" />
+  <string id="AF_MCM_Gathering_Cost_Hint" text="Shared by player and NPC hosts; deducted from the actual host. Default: 50000 denars; 0 means free." />
+  <string id="AF_MCM_Gathering_RelationReward" text="Relation reward per invited clan" />
+  <string id="AF_MCM_Gathering_RelationReward_Hint" text="Shared by player and NPC gatherings; the host and each invited clan leader are settled once per gathering. Default: 5; 0 gives no relation. Affects newly created gatherings only." />
+  <string id="AF_MCM_News_WeeklyLength" text="Weekly report length preset" />
+  <string id="AF_MCM_News_WeeklyLength_Hint" text="1 = 200–400 characters; 2 = 200–800; 3 = 200–1200; 4 = 200–1500. Shared by world and kingdom weekly reports. Default: 2." />
+  <string id="AF_MCM_News_WeeklyRpm" text="Maximum weekly reports per minute" />
+  <string id="AF_MCM_News_WeeklyRpm_Hint" text="Limits request rate for development-mode weekly reports. Default: 5; maximum 20. Helps with API RPM or concurrency limits." />
+  <string id="AF_MCM_News_AutoWeekly" text="Generate weekly reports automatically" />
+  <string id="AF_MCM_News_AutoWeekly_Hint" text="At the start of each new week, settle the previous week and generate the world and kingdom weekly reports. Day 0 writes the opening summary as week 0." />
+  <string id="AF_MCM_News_PopupFont" text="Report popup body font size" />
+  <string id="AF_MCM_News_PopupFont_Hint" text="Affects only the large popup body for the latest kingdom weekly report. Default: 18." />
+  <string id="AF_MCM_News_MapNotice" text="Weekly/bulletin map notice" />
+  <string id="AF_MCM_News_MapNotice_Hint" text="When enabled, a clickable notice appears at the lower right of the campaign map after a report is generated. Disabled reports do not queue notices." />
+  <string id="AF_MCM_News_ReadingXp" text="Enable report-reading experience" />
+  <string id="AF_MCM_News_ReadingXp_Hint" text="Opening a report from a map notice and staying for 10 seconds accumulates experience by the three-column character count; every 20 reports grant Charm, Leadership, and Steward experience." />
+  <string id="AF_MCM_News_XpPerHundred" text="Experience per hundred report characters" />
+  <string id="AF_MCM_News_XpPerHundred_Hint" text="Character multiplier for report-reading rewards. Default: 20; each 100 valid characters/words in a column gives 20 points of the corresponding skill experience." />
+  <string id="AF_MCM_News_XpCap" text="Per-skill report experience cap" />
+  <string id="AF_MCM_News_XpCap_Hint" text="Maximum experience each skill gains from one report. Default: 100; 0 disables report-reading experience." />
+  <string id="AF_MCM_News_StabilityRebellion" text="Enable kingdom stability and rebellion" />
+  <string id="AF_MCM_News_StabilityRebellion_Hint" text="When disabled, this mod no longer triggers kingdom rebellions; kingdom stability no longer affects ruler fief loyalty or applies stability relation modifiers." />
+  <string id="AF_MCM_News_PlayerImmunity" text="Player-as-ruler stability rebellion immunity" />
+  <string id="AF_MCM_News_PlayerImmunity_Hint" text="When enabled, if the player clan rules a kingdom or the player is its leader, this mod stops applying stability relation, ruler-fief loyalty, and kingdom-rebellion checks to that kingdom. Native low-loyalty settlement rebellions still follow native rules." />
+  <string id="AF_MCM_Gccz_EnableLog" text="Write GCCZ log" />
+  <string id="AF_MCM_Gccz_EnableLog_Hint" text="Writes the separate GCCZ_Debug.log. Disabling stops new log entries but still allows exporting or clearing the existing log." />
+  <string id="AF_MCM_Gccz_VerboseLog" text="GCCZ verbose log" />
+  <string id="AF_MCM_Gccz_VerboseLog_Hint" text="Records high-frequency diagnostics such as NPC response limits. Enable while troubleshooting; phase changes, outcomes, and exceptions remain logged when disabled." />
+  <string id="AF_MCM_Gccz_LogLimit" text="GCCZ log size limit (MB)" />
+  <string id="AF_MCM_Gccz_LogLimit_Hint" text="When GCCZ_Debug.log reaches the limit it rotates automatically and keeps GCCZ_Debug.previous.log. Default: 16 MB." />
+  <string id="AF_MCM_Gccz_Export" text="Export GCCZ_Debug.log" />
+  <string id="AF_MCM_Gccz_Export_Hint" text="Copies GCCZ_Debug.log from the module Logs folder to the desktop with a timestamped file name." />
+  <string id="AF_MCM_Gccz_Export_Content" text="Export to desktop" />
+  <string id="AF_MCM_Gccz_Clear" text="Clear GCCZ_Debug.log" />
+  <string id="AF_MCM_Gccz_Clear_Hint" text="Clears only the current GCCZ_Debug.log and does not delete the previous rotated log." />
+  <string id="AF_MCM_Gccz_Clear_Content" text="Clear now" />
+  <string id="AF_MCM_Sets_EnableLog" text="Write SETS log" />
+  <string id="AF_MCM_Sets_EnableLog_Hint" text="Writes the separate SETS.log for settlement-entry escort and internal riot diagnostics. Disabling stops new entries but still allows exporting or clearing the existing log." />
+  <string id="AF_MCM_Sets_VerboseLog" text="SETS verbose log" />
+  <string id="AF_MCM_Sets_VerboseLog_Hint" text="Records high-frequency diagnostics such as per-frame guards, command refreshes, and spawn progress. Enable while troubleshooting; conflict start, waves, victory, and exceptions remain logged when disabled." />
+  <string id="AF_MCM_Sets_LogLimit" text="SETS log size limit (MB)" />
+  <string id="AF_MCM_Sets_LogLimit_Hint" text="When SETS.log reaches the limit it rotates automatically and keeps SETS.previous.log. Default: 16 MB." />
+  <string id="AF_MCM_Sets_Export" text="Export SETS.log" />
+  <string id="AF_MCM_Sets_Export_Hint" text="Copies SETS.log from the module Logs folder to the desktop with a timestamped file name." />
+  <string id="AF_MCM_Sets_Export_Content" text="Export to desktop" />
+  <string id="AF_MCM_Sets_Clear" text="Clear SETS.log" />
+  <string id="AF_MCM_Sets_Clear_Hint" text="Clears only the current SETS.log and does not delete the previous rotated log." />
+  <string id="AF_MCM_Sets_Clear_Content" text="Clear now" />
+  <string id="AF_MCM_Escort_Export" text="Export noble-prisoner escort log" />
+  <string id="AF_MCM_Escort_Export_Hint" text="Copies NoblePrisonerEscort.log to the desktop for troubleshooting prisoner spawning, scene executions, and wilderness-meeting retreats." />
+  <string id="AF_MCM_Escort_Export_Content" text="Export to desktop" />
+  <string id="AF_MCM_Escort_Clear" text="Clear noble-prisoner escort log" />
+  <string id="AF_MCM_Escort_Clear_Hint" text="Clears only the current NoblePrisonerEscort.log and does not delete the previous rotated log." />
+  <string id="AF_MCM_Escort_Clear_Content" text="Clear now" />
+  <string id="AF_MCM_Sets_OtherFollowerLimit" text="Other-settlement escort limit" />
+  <string id="AF_MCM_Sets_OtherFollowerLimit_Hint" text="Maximum ordinary soldiers configured and brought when entering a town, castle, or village not owned by the player. Default: 10; lowering it trims excess saved configuration." />
+  
+  <string id="AF_MCM_Gathering_Group" text="18. Noble gatherings" />
+  
+  <string id="AF_MCM_Intimacy_PregnancyChance" text="Pregnancy chance (%)" />
+  <string id="AF_MCM_Intimacy_PregnancyChance_Hint" text="After the intimacy action tag confirms intercourse and ejaculation occurred this round, the female partner pregnancy chance is applied. 0 means never; 100 means certain. Default: 50%." />
+  <string id="AF_MCM_Intimacy_Group" text="15. Intimacy and pregnancy" />
   </strings>
 </base>
 
