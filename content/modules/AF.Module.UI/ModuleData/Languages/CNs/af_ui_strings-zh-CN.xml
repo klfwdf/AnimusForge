@@ -2289,7 +2289,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_behavior_is_" text="导入 失败: 国家战略/性格 数据 behavior 是不 initialized." />
   <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_is_invalid_R" text="导入 失败: 国家战略/性格 数据 是invalid. 原因： " />
   <string id="AF_UI_Onboarding_Import_Import_failed_required_data_was_not_fully_imported" text="导入 失败: required 数据 was 不 fully imported." />
-  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="国家战略与性格已从资料包导入：匹配 {MATCHED} 条；无法匹配 {UNMATCHED} 条。" />
+  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="国家战略与性格已从资料包导入：匹配 {MATCHED_COUNT} 条；无法匹配 {UNMATCHED_COUNT} 条。" />
   <string id="AF_UI_Onboarding_Import_Missing_event_data" text="导入 失败: event_数据\\WorldOpeningSummary.json or event_数据\\KingdomOpeningSummaries.json 是missing." />
   <string id="AF_UI_Onboarding_Import_Missing_kingdom_profiles" text="导入 失败: kingdom_profiles\\KingdomProfiles.json 是missing." />
   <string id="AF_UI_Onboarding_Import_Missing_knowledge" text="导入 失败: knowledge\\rules\\*.json (or knowledge\\KnowledgeRules.json) 是missing." />
