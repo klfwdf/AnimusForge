@@ -169,4 +169,11 @@
   <string id="AF_UI_Courier_EmptyReply" text="（无回信正文）" />
   <string id="AF_UI_Courier_Close" text="关闭" />
   <string id="AF_UI_Courier_Reply" text="回信" />
+  <string id="AF_UI_Weekly_BulletinMasthead" text="列 国 邸 报" />
+  <string id="AF_UI_Weekly_BulletinCaption" text="图：{TITLE}" />
+  <string id="AF_UI_Weekly_Bulletin_NoPrompt" text="还没有可查看的提示词。" />
+  <string id="AF_UI_Weekly_Bulletin_PromptCopied" text="提示词已复制到剪贴板。" />
+  <string id="AF_UI_Weekly_Bulletin_FooterHint" text="点击人名与地名，查阅百科" />
+  <string id="AF_UI_Weekly_Bulletin_Close" text="封 存 快 报" />
+  <string id="AF_UI_Weekly_Bulletin_EmptyBody" text="本期快报正文为空。" />
 </strings>
