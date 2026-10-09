@@ -33,6 +33,9 @@ namespace TaleWorlds.CampaignSystem
 namespace AnimusForge.DialogueUI
 {
     internal static class DialogueUiRuntime { internal static void Log(string text) => Console.WriteLine(text); }
+    // Mirrors the real TextObject lookup: the harness has no Bannerlord localization store,
+    // so localized ids resolve to their English fallback. Message text is not asserted.
+    internal static class DialogueUiLocalization { internal static string Text(string id, string fallback) => fallback; }
 }
 namespace AnimusForge
 {
