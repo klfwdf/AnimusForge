@@ -13,6 +13,12 @@ public sealed class CourierLetterInputPopupVM : ViewModel
 	private string _inputText;
 
 	[DataSourceProperty]
+	public string CancelText { get; } = ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel");
+
+	[DataSourceProperty]
+	public string SubmitText { get; } = ConversationUiLocalization.Text("AF_CONV_UI_Courier_Send", "Send");
+
+	[DataSourceProperty]
 	public CourierLetterThemeVM Theme { get; } = new CourierLetterThemeVM(CourierLetterThemes.Current);
 
 	[DataSourceProperty]

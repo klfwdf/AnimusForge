@@ -44,6 +44,7 @@ def main() -> int:
     if 'xml_path="afd_ui_strings.xml"' not in language_en or 'xml_path="CNs/afd_ui_strings-zh-CN.xml"' not in language_zh:
         raise AssertionError("DialogueUI localization resources are not registered in LanguageData")
     required_resources = [
+        ("ModuleData/Languages/afconv_ui_strings.xml", "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml", "afconv_ui_strings.xml", "CNs/afconv_ui_strings-zh-CN.xml"),
         ("ModuleData/Languages/afeconomy_strings.xml", "ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml", "afeconomy_strings.xml", "CNs/afeconomy_strings-zh-CN.xml"),
         ("ModuleData/Languages/afknowledge_strings.xml", "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml", "afknowledge_strings.xml", "CNs/afknowledge_strings-zh-CN.xml"),
         ("ModuleData/Languages/coup_strings.xml", "ModuleData/Languages/CNs/coup_strings-zh-CN.xml", "coup_strings.xml", "CNs/coup_strings-zh-CN.xml"),
@@ -56,6 +57,8 @@ def main() -> int:
         if f'xml_path="{en_path}"' not in language_en or f'xml_path="{zh_path}"' not in language_zh:
             raise AssertionError(f"localization resources are not registered: {en_path}")
     pairs = [
+        (root / "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
+         root / "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml"),
         (root / "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
          root / "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml"),
         (root / "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
