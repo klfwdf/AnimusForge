@@ -97,13 +97,13 @@ internal sealed class CoupMissionBehavior : MissionLogic
             if (passage.IsMissionExit) { ExitDefeat("从场景出口撤出了政变战斗。"); return; }
             if (_hall || _session.Phase != CoupPhase.Street || passage.ToLocation?.StringId != "lordshall")
             {
-                InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】战斗期间不能通过此门转往其他场景；撤退请使用退出战斗。"));
+                InformationManager.DisplayMessage(new InformationMessage(CoupUiText.PassageBlocked));
                 return;
             }
             // Recheck on use, so neither a stale prompt nor a still-unspawned guard can bypass the objective.
             if (!_session.IsGateCleared || SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") != 0)
             {
-                InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅门口守卫尚未清除，暂时无法突入大厅。"));
+                InformationManager.DisplayMessage(new InformationMessage(CoupUiText.GateNotCleared));
                 return;
             }
             SaveHealth();
@@ -153,9 +153,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
             _king.Health = ClampHealth(_session.KingHealth, _king.HealthLimit);
         }
         _initialized = true;
-        InformationManager.DisplayMessage(new InformationMessage(_hall
-            ? "【宣权篡位】制服国王并击败全部大厅护卫。倒地或撤退即为失败。"
-            : "【宣权篡位】击溃大厅门口守卫，抵达门口后按 F 攻入大厅。倒地或撤退即为失败。"));
+        InformationManager.DisplayMessage(new InformationMessage(_hall ? CoupUiText.HallObjective : CoupUiText.StreetObjective));
     }
 
     private bool TryGetDoor(List<UsableMachine> passages)
@@ -202,12 +200,12 @@ internal sealed class CoupMissionBehavior : MissionLogic
         {
             SettlementEntryTroopSelectionBehavior.StopStreetReinforcements(Mission);
             _streetReinforcementsStopped = true;
-            InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅入口已突破，后续街道增援已停止；已在场敌兵仍会战斗。抵达门口按 F 攻入大厅。"));
+            InformationManager.DisplayMessage(new InformationMessage(CoupUiText.HallBreakthrough));
         }
         if (_doorReady && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f && Mission.CurrentTime >= _nextDoorPrompt)
         {
             _nextDoorPrompt = Mission.CurrentTime + 5f;
-            InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅入口已突破，按 F 选择突入大厅的士兵。"));
+            InformationManager.DisplayMessage(new InformationMessage(CoupUiText.HallSelectionPrompt));
         }
     }
 
@@ -266,7 +264,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
         CoupCampaignBehavior.NotifyVictory(Mission);
         if (_session.Phase != CoupPhase.AwaitingResolution) return false;
         _victoryAwaitingChoice = true;
-        InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】国王已被制服，大厅已控制。请确认旧王处置，之后离场结算。"));
+        InformationManager.DisplayMessage(new InformationMessage(CoupUiText.KingSubdued));
         RequestVictoryDisposition();
         return true;
     }
