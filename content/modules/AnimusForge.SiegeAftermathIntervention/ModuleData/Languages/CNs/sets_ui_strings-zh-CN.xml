@@ -42,5 +42,66 @@
     <string id="AF_SETS_Action_Pillage" text="劫掠" />
     <string id="AF_SETS_Action_Devastate" text="摧毁" />
     <string id="AF_SETS_Action_Mercy" text="宽恕" />
+    <string id="AF_SETS_Village_Activated" text="【GCCZ村庄】你可以在本村执行贵族处置；普通 AF 与原版对话功能保持可用。" />
+    <string id="AF_SETS_Village_CultureAfterDialogue" text="【GCCZ村庄】对话结束后将打开文化改造确认界面。" />
+    <string id="AF_SETS_Village_InsufficientGold" text="【GCCZ村庄】第纳尔不足，无法执行{ACTION}。" />
+    <string id="AF_SETS_Village_ActionApplied" text="【GCCZ村庄】已执行{ACTION}：炉户 {OLD} → {NEW}{EXTRA}。" />
+    <string id="AF_SETS_Village_Action_GatherElders" text="召集长老" />
+    <string id="AF_SETS_Village_Action_RestrainTroops" text="约束军纪" />
+    <string id="AF_SETS_Village_Action_Pacify" text="平息村情" />
+    <string id="AF_SETS_Village_Action_Relief" text="赈济" />
+    <string id="AF_SETS_Village_Action_Fine" text="罚赎村庄" />
+    <string id="AF_SETS_Village_Action_RequisitionFood" text="征收粮食" />
+    <string id="AF_SETS_Village_Action_RequisitionProduce" text="征收物产" />
+    <string id="AF_SETS_Village_Action_RequisitionLivestock" text="征收牲畜" />
+    <string id="AF_SETS_Village_Action_LevyRecruits" text="征募民兵" />
+    <string id="AF_SETS_Village_Action_PunishRingleader" text="惩办首恶" />
+    <string id="AF_SETS_Village_Action_ConfiscateProperty" text="查抄村产" />
+    <string id="AF_SETS_Village_Action_DestroyLivelihood" text="毁坏生计" />
+    <string id="AF_SETS_Village_Action_Massacre" text="屠村" />
+    <string id="AF_SETS_Village_Action_CulturalReform" text="改造文化" />
+    <string id="AF_SETS_Village_CultureMode_Gradual" text="教化改俗" />
+    <string id="AF_SETS_Village_CultureMode_Migration" text="迁民改俗" />
+    <string id="AF_SETS_Village_CultureMode_Purge" text="屠村迁殖" />
+    <string id="AF_SETS_Village_CultureMode_GradualHint" text="180 天后改为目标文化；不立即损失炉户。" />
+    <string id="AF_SETS_Village_CultureMode_MigrationHint" text="立即改为目标文化；炉户损失 25%，清空旧募兵槽。" />
+    <string id="AF_SETS_Village_CultureMode_PurgeHint" text="立即改为目标文化；炉户损失 60%，清除旧农村要人并重建募兵来源。" />
+    <string id="AF_SETS_Village_CultureInquiryTitle" text="GCCZ村庄：文化改造" />
+    <string id="AF_SETS_Village_CultureInquiryDescription" text="先选择改造方式。该标签不会替你自动决定。" />
+    <string id="AF_SETS_Next" text="下一步" />
+    <string id="AF_SETS_Cancel" text="取消" />
+    <string id="AF_SETS_Back" text="返回" />
+    <string id="AF_SETS_Village_NoTargetCulture" text="【GCCZ村庄】没有可用的目标文化。" />
+    <string id="AF_SETS_Village_CultureTargetTitle" text="GCCZ村庄：选择目标文化" />
+    <string id="AF_SETS_Village_CultureTargetDescription" text="改造方式：{MODE}" />
+    <string id="AF_SETS_Village_CultureGradualStarted" text="【GCCZ村庄】已开始教化改俗：约 180 天后转为{CULTURE}。" />
+    <string id="AF_SETS_Village_CultureChanged" text="【GCCZ村庄】{MODE}完成：文化改为{CULTURE}，炉户 {OLD} → {NEW}。" />
+    <string id="AF_SETS_Village_CultureFailureLocked" text="【GCCZ村庄】文化改造执行异常，已锁定本次处置以避免重复扣除；请导出 GCCZ 日志。" />
+    <string id="AF_SETS_Village_CultureFailure" text="【GCCZ村庄】文化改造执行失败，本次未生效；请导出 GCCZ 日志。" />
+    <string id="AF_SETS_Village_CultureGradualCompleted" text="【GCCZ村庄】{VILLAGE}的教化改俗完成，文化已转为{CULTURE}。" />
+    <string id="AF_SETS_Village_EntryUnavailable" text="【GCCZ村庄】当前无法进入村庄处置场景。" />
+    <string id="AF_SETS_Village_StatePrepareFailed" text="【GCCZ村庄】村庄处置状态准备失败。" />
+    <string id="AF_SETS_Village_SceneNotReady" text="【GCCZ村庄】村庄处置场景尚未就绪，请重试。" />
+    <string id="AF_SETS_Village_SceneOpenFailed" text="【GCCZ村庄】进入村庄处置场景失败。" />
+    <string id="AF_SETS_NativeVictoryMenu" text="【SETS内部暴乱】{NOUN}守军已被击溃，已进入原版围城战胜利处置菜单；可选择原版处置或 GCCZ 攻城处置。" />
+    <string id="AF_SETS_SettlementCaptured" text="【SETS内部暴乱】{SETTLEMENT} 已由你的家族接管。" />
+    <string id="AF_SETS_IncidentEntryTooltip" text="亲自进入{NOUN}，继续决定剩余居民的命运。" />
+    <string id="AF_SETS_IncidentEntryUnavailableTooltip" text="当前没有可进入的 SETS 自有/附属定居点事件场景。" />
+    <string id="AF_SETS_SettlementFallback" text="这座{NOUN}" />
+    <string id="AF_SETS_CastleInspectionPrepareFailed" text="城堡处置准备失败，队伍状态已恢复。" />
+    <string id="AF_SETS_Execution_Approach" text="{ACTOR}走向{PRISONER}，准备行刑。" />
+    <string id="AF_SETS_Execution_Completed" text="{ACTOR}处决了{PRISONER}。" />
+    <string id="AF_SETS_Execution_HeadGiven" text="{ACTOR}将{ITEM}交给了玩家。" />
+    <string id="AF_SETS_Execution_HeadFailed" text="【贵族俘虏随行】处决完成，但首级 RP 道具生成失败。" />
+    <string id="AF_SETS_Execution_Cancelled" text="【贵族俘虏随行】已取消处决。" />
+    <string id="AF_SETS_Execution_Aborted" text="【贵族俘虏随行】处决行动中止，未写入处决结果。" />
+    <string id="AF_SETS_Duel_SlaughterStopped" text="【城堡决斗】已停止尚未完成的屠戮命令；未死亡战俘恢复为未分配状态。" />
+    <string id="AF_SETS_Duel_Started" text="【城堡决斗】标签已生效：俘虏领主已在你正前方约20米处拿起{LOADOUT}；双方短暂就位后开打，生命降至最后一点即判负，不会死亡。" />
+    <string id="AF_SETS_Duel_LoadoutWithShield" text="{WEAPON}（{WEAPON_TIER}级）和{SHIELD}（{SHIELD_TIER}级）" />
+    <string id="AF_SETS_Duel_LoadoutWeapon" text="{WEAPON}（{WEAPON_TIER}级）" />
+    <string id="AF_SETS_Duel_Interrupted" text="【城堡决斗】决斗未能继续，双方已恢复为战后处置状态。" />
+    <string id="AF_SETS_Duel_PlayerWon" text="【城堡决斗】你击败了俘虏领主；对方已认输并恢复俘虏姿态。" />
+    <string id="AF_SETS_Duel_PlayerLost" text="【城堡决斗】俘虏领主击败了你并放下武器；双方仍留在处置现场。" />
+    <string id="AF_SETS_Duel_CombatStarted" text="【城堡决斗】双方就位，决斗开始。" />
   </strings>
 </base>

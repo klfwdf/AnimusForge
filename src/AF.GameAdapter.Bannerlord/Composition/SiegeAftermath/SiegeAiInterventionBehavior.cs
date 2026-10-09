@@ -788,7 +788,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			args.IsEnabled = enabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			string noun = SetsSettlementEntryProfile.GetSettlementNoun(sceneKind);
-			args.Tooltip = new TextObject(enabled ? "{=!}亲自进入" + noun + "，继续决定剩余居民的命运。" : "{=!}当前没有可进入的 SETS 自有/附属定居点事件场景。");
+			args.Tooltip = new TextObject(SiegeAftermathUiText.IncidentEntryTooltip(enabled, noun));
 			return true;
 		}
 		catch
@@ -815,12 +815,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Location location = ResolveOwnedSettlementIncidentLocation(settlement);
 			if (settlement?.IsVillage != true || PlayerEncounter.LocationEncounter == null || location == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】当前无法进入村庄处置场景。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageEntryUnavailable, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 				return;
 			}
 			if (!VillageAftermathBehavior.QueueIncidentDispositionMission(settlement, "sets_owned_village_incident_menu"))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】村庄处置状态准备失败。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageStatePrepareFailed, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 				return;
 			}
 			IMission openedMission = PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
@@ -828,7 +828,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				VillageAftermathBehavior.CancelQueuedIncidentDisposition("open_mission_returned_null");
 				SettlementEntryTroopSelectionBehavior.CancelPendingVillageAftermathMissionEntryForExternal(settlement.StringId, "open_mission_returned_null");
-				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】村庄处置场景尚未就绪，请重试。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageSceneNotReady, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 				Logger.Log("VillageAftermath", "GCCZ village disposition mission returned null; incident menu kept for retry. Settlement=" + (settlement.StringId ?? "N/A"));
 				return;
 			}
@@ -842,7 +842,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			VillageAftermathBehavior.CancelQueuedIncidentDisposition("open_mission_exception");
 			SettlementEntryTroopSelectionBehavior.CancelPendingVillageAftermathMissionEntryForExternal(settlement?.StringId, "open_mission_exception");
 			Logger.Log("VillageAftermath", "Open GCCZ village disposition mission failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】进入村庄处置场景失败。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageSceneOpenFailed, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 		}
 	}
 
@@ -1091,7 +1091,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
 			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + SetsSettlementEntryProfile.GetSettlementNoun(sceneKind) + "守军已被击溃，已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.NativeVictoryMenu(SetsSettlementEntryProfile.GetSettlementNoun(sceneKind)), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", transferOwnership=" + transferOwnership);
 			return true;
 		}
@@ -1233,7 +1233,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			ConfirmSettlementOwnershipAssignment(settlement);
 			Logger.Log("SiegeAiIntervention", "Applied SETS settlement-entry capture ownership. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (ownerBefore?.StringId ?? "null") + ", NewOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + (settlement.Name?.ToString() ?? ("该" + SetsSettlementEntryProfile.GetSettlementNoun(ResolveSetsSettlementSceneKind(settlement)))) + " 已由你的家族接管。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.SettlementCaptured(settlement.Name?.ToString() ?? SiegeAftermathUiText.SettlementFallback(SetsSettlementEntryProfile.GetSettlementNoun(ResolveSetsSettlementSceneKind(settlement)))), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 		}
 		catch (Exception ex)
 		{
@@ -1488,7 +1488,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("castle_inspection_runtime_prepare_failed");
 						Logger.Log("CastleAftermath", "Prepare troop-inspection castle runtime failed: " + prepareError);
 						InformationManager.DisplayMessage(new InformationMessage(
-							"城堡处置准备失败，队伍状态已恢复。",
+							SiegeAftermathUiText.CastleInspectionPrepareFailed,
 							Colors.Red));
 						ResetAftermathRuntimeGuards("castle_inspection_runtime_prepare_failed");
 						return;

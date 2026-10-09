@@ -147,7 +147,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				+ " authority=" + _activeAuthorityKind
 				+ " source=" + (source ?? "N/A"));
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【攻城处置&内部暴乱·村庄】你可以在本村执行贵族处置；普通 AF 与原版对话功能保持可用。",
+				SiegeAftermathUiText.VillageActivated,
 				Color.FromUint(SuccessColor)));
 			return true;
 		}
@@ -188,7 +188,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("VillageAftermath", "Open culture inquiry failed: " + ex);
-			TryDisplayFailureMessage("【GCCZ村庄】文化改造界面打开失败，本次未执行。");
+			TryDisplayFailureMessage(SiegeAftermathUiText.VillageCultureFailure(false));
 		}
 	}
 
@@ -306,7 +306,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				{
 					_cultureInquiryPending = true;
 					actionHandled = true;
-					InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】对话结束后将打开文化改造确认界面。", Color.FromUint(WarningColor)));
+					InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageCultureAfterDialogue, Color.FromUint(WarningColor)));
 				}
 				continue;
 			}
@@ -350,7 +350,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			if (effect.GoldDelta < 0 && Hero.MainHero.Gold < -effect.GoldDelta)
 			{
 				AppliedActions.Remove(action);
-				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】第纳尔不足，无法执行" + effect.DisplayName + "。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageInsufficientGold(SiegeAftermathUiText.VillageActionName(action)), Color.FromUint(WarningColor)));
 				return true;
 			}
 			if (effect.GoldDelta < 0)
@@ -396,7 +396,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			string extra = gained > 0 ? "；获得/征集 " + gained + " 单位" : string.Empty;
 			uint color = effect.IsDestructive ? DestructiveColor : SuccessColor;
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【GCCZ村庄】已执行" + effect.DisplayName + "：炉户 " + oldHearth.ToString("0") + " → " + village.Village.Hearth.ToString("0") + extra + "。",
+				SiegeAftermathUiText.VillageActionApplied(SiegeAftermathUiText.VillageActionName(action), oldHearth.ToString("0"), village.Village.Hearth.ToString("0"), extra),
 				Color.FromUint(color)));
 			GcczDiagnosticLog.Log("VillageAction", "applied village=" + (village.StringId ?? "N/A")
 				+ " action=" + action
@@ -484,19 +484,19 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		}
 		List<InquiryElement> choices = new List<InquiryElement>
 		{
-			new InquiryElement(VillageCultureChangeMode.GradualEducation, "教化改俗", null, true, "180 天后改为目标文化；不立即损失炉户。"),
-			new InquiryElement(VillageCultureChangeMode.MigrantResettlement, "迁民改俗", null, true, "立即改为目标文化；炉户损失 25%，清空旧募兵槽。"),
-			new InquiryElement(VillageCultureChangeMode.PurgeColonization, "屠村迁殖", null, true, "立即改为目标文化；炉户损失 60%，清除旧农村要人并重建募兵来源。"),
+			new InquiryElement(VillageCultureChangeMode.GradualEducation, SiegeAftermathUiText.VillageCultureModeGradual, null, true, SiegeAftermathUiText.VillageCultureModeGradualHint),
+			new InquiryElement(VillageCultureChangeMode.MigrantResettlement, SiegeAftermathUiText.VillageCultureModeMigration, null, true, SiegeAftermathUiText.VillageCultureModeMigrationHint),
+			new InquiryElement(VillageCultureChangeMode.PurgeColonization, SiegeAftermathUiText.VillageCultureModePurge, null, true, SiegeAftermathUiText.VillageCultureModePurgeHint),
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"GCCZ村庄：文化改造",
-			"先选择改造方式。该标签不会替你自动决定。",
+			SiegeAftermathUiText.VillageCultureInquiryTitle,
+			SiegeAftermathUiText.VillageCultureInquiryDescription,
 			choices,
 			isExitShown: true,
 			1,
 			1,
-			"下一步",
-			"取消",
+			SiegeAftermathUiText.NextButton,
+			SiegeAftermathUiText.CancelButton,
 			selected =>
 			{
 				if (selected?.FirstOrDefault()?.Identifier is VillageCultureChangeMode mode)
@@ -522,18 +522,18 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			.ToList();
 		if (choices.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】没有可用的目标文化。", Color.FromUint(WarningColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageNoTargetCulture, Color.FromUint(WarningColor)));
 			return;
 		}
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"GCCZ村庄：选择目标文化",
-			"改造方式：" + VillageCultureChangeProfile.GetDisplayName(mode),
+			SiegeAftermathUiText.VillageCultureTargetTitle,
+			SiegeAftermathUiText.VillageCultureTargetDescription(SiegeAftermathUiText.VillageCultureModeName(mode)),
 			choices,
 			isExitShown: true,
 			1,
 			1,
-			"确认",
-			"返回",
+			SiegeAftermathUiText.ConfirmButton,
+			SiegeAftermathUiText.BackButton,
 			selected =>
 			{
 				string cultureId = selected?.FirstOrDefault()?.Identifier as string;
@@ -575,7 +575,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				behavior._gradualCultureFinishDayByVillageId[village.StringId] = finishDay;
 				AppliedActions.Add(VillageAftermathActionKind.CulturalReform);
 				InformationManager.DisplayMessage(new InformationMessage(
-					"【GCCZ村庄】已开始教化改俗：约 180 天后转为" + (targetCulture.Name?.ToString() ?? targetCulture.StringId) + "。",
+					SiegeAftermathUiText.VillageCultureGradualStarted(targetCulture.Name?.ToString() ?? targetCulture.StringId),
 					Color.FromUint(SuccessColor)));
 				return;
 			}
@@ -602,9 +602,11 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				: VillageCultureChangeProfile.MigrantResettlementOwnerRelationDelta);
 			AppliedActions.Add(VillageAftermathActionKind.CulturalReform);
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【GCCZ村庄】" + VillageCultureChangeProfile.GetDisplayName(mode) + "完成：文化改为"
-				+ (targetCulture.Name?.ToString() ?? targetCulture.StringId)
-				+ "，炉户 " + oldHearth.ToString("0") + " → " + village.Village.Hearth.ToString("0") + "。",
+				SiegeAftermathUiText.VillageCultureChanged(
+					SiegeAftermathUiText.VillageCultureModeName(mode),
+					 targetCulture.Name?.ToString() ?? targetCulture.StringId,
+					oldHearth.ToString("0"),
+					village.Village.Hearth.ToString("0")),
 				Color.FromUint(mode == VillageCultureChangeMode.PurgeColonization ? DestructiveColor : WarningColor)));
 		}
 		catch (Exception ex)
@@ -618,10 +620,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				AppliedActions.Remove(VillageAftermathActionKind.CulturalReform);
 			}
 			Logger.Log("VillageAftermath", "Apply culture change failed. mode=" + mode + " target=" + (targetCulture?.StringId ?? "N/A") + " error=" + ex);
-			TryDisplayFailureMessage(
-				mutationStarted
-					? "【GCCZ村庄】文化改造执行异常，已锁定本次处置以避免重复扣除；请导出 GCCZ 日志。"
-					: "【GCCZ村庄】文化改造执行失败，本次未生效；请导出 GCCZ 日志。");
+			TryDisplayFailureMessage(SiegeAftermathUiText.VillageCultureFailure(mutationStarted));
 		}
 	}
 
@@ -663,7 +662,9 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 						continue;
 					}
 					InformationManager.DisplayMessage(new InformationMessage(
-						"【GCCZ村庄】" + (village.Name?.ToString() ?? villageId) + "的教化改俗完成，文化已转为" + (culture.Name?.ToString() ?? culture.StringId) + "。",
+						SiegeAftermathUiText.VillageCultureGradualCompleted(
+							village.Name?.ToString() ?? villageId,
+							culture.Name?.ToString() ?? culture.StringId),
 						Color.FromUint(SuccessColor)));
 				}
 				_gradualCultureFinishDayByVillageId.Remove(villageId);

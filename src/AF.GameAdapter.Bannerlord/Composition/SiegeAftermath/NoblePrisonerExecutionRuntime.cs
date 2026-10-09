@@ -367,7 +367,7 @@ internal static class NoblePrisonerExecutionRuntime
 			pending.Elapsed = 0f;
 			pending.NextRefresh = 0f;
 			InformationManager.DisplayMessage(new InformationMessage(
-				pending.ActorHero.Name + "走向" + pending.PrisonerHero.Name + "，准备行刑。",
+				SiegeAftermathUiText.ExecutionApproach(pending.ActorHero.Name?.ToString(), pending.PrisonerHero.Name?.ToString()),
 				Color.FromUint(0xFFDFC16Bu)));
 			return true;
 		}
@@ -499,7 +499,7 @@ internal static class NoblePrisonerExecutionRuntime
 		string prisonerName = pending.PrisonerHero?.Name?.ToString() ?? "某贵族";
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage(actorName + "处决" + prisonerName, Color.FromUint(0xFFFF6B6Bu)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.ExecutionCompleted(actorName, prisonerName), Color.FromUint(0xFFFF6B6Bu)));
 		}
 		catch (Exception ex)
 		{
@@ -545,14 +545,14 @@ internal static class NoblePrisonerExecutionRuntime
 				if (generated > 0)
 				{
 					InformationManager.DisplayMessage(new InformationMessage(
-						actorName + "将“" + (itemName ?? requestedName) + "”交给了玩家。",
+						SiegeAftermathUiText.ExecutionHeadGiven(actorName, itemName ?? requestedName),
 						Color.FromUint(0xFF8DDC7Eu)));
 					NoblePrisonerEscortLog.Log("Generated execution head item id=" + (generatedId ?? "N/A"));
 				}
 				else
 				{
 					InformationManager.DisplayMessage(new InformationMessage(
-						"【贵族俘虏随行】处决完成，但首级 RP 道具生成失败。",
+						SiegeAftermathUiText.ExecutionHeadFailed,
 						Color.FromUint(0xFFFF6B6Bu)));
 				}
 			}
@@ -929,9 +929,7 @@ internal static class NoblePrisonerExecutionRuntime
 		_pending = null;
 		if (showMessage)
 		{
-			string message = reason == "player_cancelled_execution"
-				? "【贵族俘虏随行】已取消处决。"
-				: "【贵族俘虏随行】处决行动中止，未写入处决结果。";
+			string message = SiegeAftermathUiText.ExecutionCancelled(reason == "player_cancelled_execution");
 			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(0xFFFF6B6Bu)));
 		}
 		NoblePrisonerEscortLog.Log("Aborted scene execution actor=" + (pending.ActorHero?.StringId ?? "N/A")

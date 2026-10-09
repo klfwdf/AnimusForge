@@ -42,5 +42,66 @@
     <string id="AF_SETS_Action_Pillage" text="pillage" />
     <string id="AF_SETS_Action_Devastate" text="devastation" />
     <string id="AF_SETS_Action_Mercy" text="mercy" />
+    <string id="AF_SETS_Village_Activated" text="[GCCZ village] You can carry out noble disposition in this village. Normal AF and native dialogue remain available." />
+    <string id="AF_SETS_Village_CultureAfterDialogue" text="[GCCZ village] A culture-change confirmation panel will open after the dialogue ends." />
+    <string id="AF_SETS_Village_InsufficientGold" text="[GCCZ village] Not enough denars to perform {ACTION}." />
+    <string id="AF_SETS_Village_ActionApplied" text="[GCCZ village] Applied {ACTION}: hearths {OLD} → {NEW}{EXTRA}." />
+    <string id="AF_SETS_Village_Action_GatherElders" text="gather elders" />
+    <string id="AF_SETS_Village_Action_RestrainTroops" text="restrain troops" />
+    <string id="AF_SETS_Village_Action_Pacify" text="pacify the village" />
+    <string id="AF_SETS_Village_Action_Relief" text="provide relief" />
+    <string id="AF_SETS_Village_Action_Fine" text="fine the village" />
+    <string id="AF_SETS_Village_Action_RequisitionFood" text="requisition food" />
+    <string id="AF_SETS_Village_Action_RequisitionProduce" text="requisition produce" />
+    <string id="AF_SETS_Village_Action_RequisitionLivestock" text="requisition livestock" />
+    <string id="AF_SETS_Village_Action_LevyRecruits" text="levy recruits" />
+    <string id="AF_SETS_Village_Action_PunishRingleader" text="punish the ringleader" />
+    <string id="AF_SETS_Village_Action_ConfiscateProperty" text="confiscate property" />
+    <string id="AF_SETS_Village_Action_DestroyLivelihood" text="destroy livelihoods" />
+    <string id="AF_SETS_Village_Action_Massacre" text="massacre" />
+    <string id="AF_SETS_Village_Action_CulturalReform" text="change culture" />
+    <string id="AF_SETS_Village_CultureMode_Gradual" text="Gradual education" />
+    <string id="AF_SETS_Village_CultureMode_Migration" text="Migrant resettlement" />
+    <string id="AF_SETS_Village_CultureMode_Purge" text="Purge and colonization" />
+    <string id="AF_SETS_Village_CultureMode_GradualHint" text="Changes to the target culture after 180 days; hearths are not reduced immediately." />
+    <string id="AF_SETS_Village_CultureMode_MigrationHint" text="Changes to the target culture immediately; hearths are reduced by 25% and old volunteer slots are cleared." />
+    <string id="AF_SETS_Village_CultureMode_PurgeHint" text="Changes to the target culture immediately; hearths are reduced by 60%, old rural notables are removed, and recruitment sources are rebuilt." />
+    <string id="AF_SETS_Village_CultureInquiryTitle" text="GCCZ village: culture change" />
+    <string id="AF_SETS_Village_CultureInquiryDescription" text="Choose a change method first. This action does not choose for you." />
+    <string id="AF_SETS_Next" text="Next" />
+    <string id="AF_SETS_Cancel" text="Cancel" />
+    <string id="AF_SETS_Back" text="Back" />
+    <string id="AF_SETS_Village_NoTargetCulture" text="[GCCZ village] No target culture is available." />
+    <string id="AF_SETS_Village_CultureTargetTitle" text="GCCZ village: choose target culture" />
+    <string id="AF_SETS_Village_CultureTargetDescription" text="Change method: {MODE}" />
+    <string id="AF_SETS_Village_CultureGradualStarted" text="[GCCZ village] Gradual education started; the culture will change to {CULTURE} in about 180 days." />
+    <string id="AF_SETS_Village_CultureChanged" text="[GCCZ village] {MODE} complete: culture changed to {CULTURE}; hearths {OLD} → {NEW}." />
+    <string id="AF_SETS_Village_CultureFailureLocked" text="[GCCZ village] Culture change failed after mutation; this disposition is locked to avoid duplicate costs. Export the GCCZ log for diagnosis." />
+    <string id="AF_SETS_Village_CultureFailure" text="[GCCZ village] Culture change failed and had no effect. Export the GCCZ log for diagnosis." />
+    <string id="AF_SETS_Village_CultureGradualCompleted" text="[GCCZ village] Gradual education for {VILLAGE} is complete; the culture is now {CULTURE}." />
+    <string id="AF_SETS_Village_EntryUnavailable" text="[GCCZ village] The village disposition scene cannot be entered right now." />
+    <string id="AF_SETS_Village_StatePrepareFailed" text="[GCCZ village] The village disposition state could not be prepared." />
+    <string id="AF_SETS_Village_SceneNotReady" text="[GCCZ village] The village disposition scene is not ready. Try again." />
+    <string id="AF_SETS_Village_SceneOpenFailed" text="[GCCZ village] Failed to enter the village disposition scene." />
+    <string id="AF_SETS_NativeVictoryMenu" text="[SETS internal unrest] The {NOUN} defenders were defeated. The native siege victory disposition menu is now open; choose the native or GCCZ siege disposition." />
+    <string id="AF_SETS_SettlementCaptured" text="[SETS internal unrest] {SETTLEMENT} has been captured by your clan." />
+    <string id="AF_SETS_IncidentEntryTooltip" text="Enter the {NOUN} in person to decide the fate of the remaining residents." />
+    <string id="AF_SETS_IncidentEntryUnavailableTooltip" text="No owned or attached SETS settlement incident scene is available right now." />
+    <string id="AF_SETS_SettlementFallback" text="this {NOUN}" />
+    <string id="AF_SETS_CastleInspectionPrepareFailed" text="Castle disposition preparation failed; party state was restored." />
+    <string id="AF_SETS_Execution_Approach" text="{ACTOR} walks toward {PRISONER} to execute them." />
+    <string id="AF_SETS_Execution_Completed" text="{ACTOR} executed {PRISONER}." />
+    <string id="AF_SETS_Execution_HeadGiven" text="{ACTOR} gave the player {ITEM}." />
+    <string id="AF_SETS_Execution_HeadFailed" text="[Noble prisoner escort] Execution completed, but the RP head item could not be created." />
+    <string id="AF_SETS_Execution_Cancelled" text="[Noble prisoner escort] Execution was cancelled." />
+    <string id="AF_SETS_Execution_Aborted" text="[Noble prisoner escort] Execution was aborted; no execution result was recorded." />
+    <string id="AF_SETS_Duel_SlaughterStopped" text="[Castle duel] The unfinished slaughter order was stopped; surviving prisoners were restored to the unassigned pool." />
+    <string id="AF_SETS_Duel_Started" text="[Castle duel] The tag took effect: the captive lord picked up {LOADOUT} about 20 meters ahead. After a brief setup, the duel will begin; reaching the last point of health counts as defeat, not death." />
+    <string id="AF_SETS_Duel_LoadoutWithShield" text="{WEAPON} (tier {WEAPON_TIER}) and {SHIELD} (tier {SHIELD_TIER})" />
+    <string id="AF_SETS_Duel_LoadoutWeapon" text="{WEAPON} (tier {WEAPON_TIER})" />
+    <string id="AF_SETS_Duel_Interrupted" text="[Castle duel] The duel could not continue; both sides were restored to the post-siege disposition state." />
+    <string id="AF_SETS_Duel_PlayerWon" text="[Castle duel] You defeated the captive lord. The opponent surrendered and returned to a prisoner stance." />
+    <string id="AF_SETS_Duel_PlayerLost" text="[Castle duel] The captive lord defeated you and lowered their weapon. Both sides remain in the disposition scene." />
+    <string id="AF_SETS_Duel_CombatStarted" text="[Castle duel] Both sides are ready. The duel begins." />
   </strings>
 </base>
