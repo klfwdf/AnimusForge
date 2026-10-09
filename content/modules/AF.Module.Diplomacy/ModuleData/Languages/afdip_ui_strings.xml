@@ -411,5 +411,47 @@
   <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
   <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="Selected: {NAMES} and {COUNT} more." />
   <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="Selected: {NAMES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="The export directory is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="Exported {COUNT} kingdom profile(s)." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="The kingdom to export could not be found." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportProfileNotFound" text="The kingdom profile does not exist." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedPrefix" text="Exported: {KINGDOM}" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidProfileCount" text="The package contains {COUNT} invalid or duplicate kingdom profile(s)." />
+    <string id="AF_DIP_UI_KingdomProfile_CannotMatchWorld" text="A kingdom in the package could not be safely matched to the current world: {REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_UnknownReason" text="unknown reason" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateTarget" text="The package contains a duplicate or invalid kingdom target: {TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_NoReloadableProfiles" text="The package contains no kingdom profiles that can be reloaded." />
+    <string id="AF_DIP_UI_KingdomProfile_SerializationEmpty" text="The serialized rollback snapshot is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotEmpty" text="The rollback snapshot is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotInvalid" text="The rollback snapshot is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadPlanEmpty" text="The kingdom reload plan is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="The kingdom profile reload copy could not be created." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="The world changed and the kingdom target could not be found: {TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="The import contains no safely matching profile for “{KINGDOM}”. Dynamic kingdom IDs match only when the names agree." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="Imported {IMPORTED}; skipped duplicates {DUPLICATES}; invalid or unmatched {UNMATCHED}." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="The single-kingdom import target or path is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix" text="The import path is invalid: " />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDirectoryNotFound" text="The import directory does not exist." />
+    <string id="AF_DIP_UI_KingdomProfile_MultipleSingleImports" text="Multiple single-kingdom files match this kingdom. Delete old copies or select the target JSON file directly." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportNoSafeMatch" text="The import directory contains no safely matching profile for “{KINGDOM}”." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathEmpty" text="The import path is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_OnlyJson" text="Only JSON files can be imported." />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFiles" text="Could not find {FULL} or single-kingdom JSON files." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileLimit" text="The import contains more than the safe limit of {COUNT} files." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileError" text="{FILE}: {ERROR}" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileLimit" text="The package contains more than the safe limit of {COUNT} kingdom profiles." />
+    <string id="AF_DIP_UI_KingdomProfile_FileEmpty" text="The file does not exist or is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_FileTooLarge" text="The file exceeds the 32 MB safety limit." />
+    <string id="AF_DIP_UI_KingdomProfile_RootObjectRequired" text="The root element must be a JSON object." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleCardInvalid" text="The single-kingdom profile has no valid ID, profile text, default text, or explicit override marker." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFormatRequired" text="The JSON structure is not a kingdom profile export." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidUtf8" text="The file is not valid UTF-8." />
+    <string id="AF_DIP_UI_KingdomProfile_EmptyCard" text="The kingdom profile is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_DynamicNameMismatch" text="The dynamic kingdom ID matches, but the names differ." />
+    <string id="AF_DIP_UI_KingdomProfile_NoUniqueMatch" text="The current world has no unique matching kingdom." />
+    <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="The LLM response did not contain a JSON object." />
+    <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="The LLM JSON is missing national_personality or long_term_strategy." />
+    <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON parsing failed: {ERROR}" />
 </strings>
 </base>
