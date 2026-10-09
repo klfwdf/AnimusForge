@@ -46,7 +46,7 @@ public sealed partial class CustomPolicyBehavior
 		List<Settlement> validFiefs = ResolveOwnedLocalPolicyFiefs(request?.SelectedFiefIds);
 		if (validFiefs.Count <= 0)
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策已取消", "评议期间已失去全部目标封地，因此未扣费、未生效、未写入成功记录。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCancelledTitle", "Local Policy Cancelled"), PolicyUiTexts.Get("AFPOL_UI_LocalPolicyLostFiefsCancelled", "All target fiefs were lost during evaluation; no fees deducted, not enacted, and no record created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		request.SelectedFiefIds = validFiefs.Select(x => x.StringId).ToList();
@@ -54,12 +54,12 @@ public sealed partial class CustomPolicyBehavior
 		PolicyEligibility eligibility = EvaluateLocalPolicyEligibility(options, hasOwnedFief: true);
 		if (!eligibility.CanPublish)
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策无法发布", eligibility.Reason + "\n\n评议已经完成，但未扣费、未生效、未写入成功记录。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishTitle", "Local Policy Cannot Be Published"), eligibility.Reason + PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishSuffix", "\n\nEvaluation is complete, but no fees were deducted, the policy did not take effect, and no record was created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		if (!TryPrepareLocalPolicyCostForApplication(request, result.MainAssessment, out string costError))
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策评议失败", BuildPolicyFailurePopupText(costError, result) + "\n\n未扣费、未生效。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyEvalFailedTitle", "Local Policy Evaluation Failed"), BuildPolicyFailurePopupText(costError, result) + PolicyUiTexts.Get("AFPOL_UI_NoFeesNotEnactedSuffix", "\n\nNo fees deducted, not enacted."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
@@ -86,7 +86,7 @@ public sealed partial class CustomPolicyBehavior
 			?? application.KingdomEffects.FirstOrDefault();
 		if (requiresEffectBundle && (sourceEffect == null || !HasAnyTimedPolicyEffect(application)))
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策发布失败", "没有生成可执行的地方数值效果，未扣费、未生效。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyPublishFailedTitle", "Local Policy Publication Failed"), PolicyUiTexts.Get("AFPOL_UI_NoLocalNumericEffects", "No actionable local numeric effects generated; no fees deducted, not enacted."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		if (requiresEffectBundle && !HasExecutablePolicyModuleInstances(application))
@@ -97,7 +97,7 @@ public sealed partial class CustomPolicyBehavior
 					.Where(handle => string.Equals(handle?.Kind, PolicyTargetKindSelector, StringComparison.OrdinalIgnoreCase)
 						|| string.Equals(handle?.Kind, PolicyTargetKindPlan, StringComparison.OrdinalIgnoreCase))
 					.Select(handle => handle.Key)));
-			InformationManager.ShowInquiry(new InquiryData("地方政策发布失败", "后处理没有生成可执行数值效果，未扣费、未写入记录。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyPublishFailedTitle", "Local Policy Publication Failed"), PolicyUiTexts.Get("AFPOL_UI_PostprocessNoNumericEffects", "Post-processing generated no actionable numeric effects; no fees deducted, no record created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		string recordId = Guid.NewGuid().ToString("N");
@@ -106,7 +106,7 @@ public sealed partial class CustomPolicyBehavior
 		if (requiresEffectBundle
 			&& !TryActivatePolicyEffectApplication(request, application, recordId, isRenewal: false, out activeEffectId, out string activationError))
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策发布失败", BuildPolicyFailurePopupText(activationError, result) + "\n\n未扣费、未写入成功记录。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyPublishFailedTitle", "Local Policy Publication Failed"), BuildPolicyFailurePopupText(activationError, result) + PolicyUiTexts.Get("AFPOL_UI_NoFeesNoRecordSuffix", "\n\nNo fees deducted, no record created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		PolicyPublishCostReceipt costReceipt = new PolicyPublishCostReceipt();
@@ -154,8 +154,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				rollbackFailures.Add("本地记录回滚失败：" + recordRollbackException.Message);
 			}
-			InformationManager.ShowInquiry(new InquiryData("地方政策发布失败", "提交政策时发生错误，已撤销效果且未保留成功记录。详细技术信息已写入日志。"
-				+ (rollbackFailures.Count == 0 ? string.Empty : "\n部分回滚步骤未完成，请查看日志。"), true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyPublishFailedTitle", "Local Policy Publication Failed"), PolicyUiTexts.Get("AFPOL_UI_PolicyCommitFailed", "Error occurred while submitting policy; effects reverted and no record kept. Technical details written to log.") + (rollbackFailures.Count == 0 ? string.Empty : PolicyUiTexts.Get("AFPOL_UI_PartialRollbackIncomplete", "\nSome rollback steps incomplete; please check the log.")), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		RunLocalPolicyPostCommitStep(recordId, "replacement", () =>
@@ -194,7 +193,7 @@ public sealed partial class CustomPolicyBehavior
 			|| vassalKingdom == null
 			|| !VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(vassalKingdom.StringId, out int independenceBefore, out int breakawayThreshold, out int rulerRelation, out string rulerName))
 		{
-			InformationManager.ShowInquiry(new InquiryData("附庸国政策已取消", "评议期间宗主关系或统治者身份已经变化，因此政策未生效、未增加独立度、未写入成功记录。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_VassalPolicyCancelledTitle", "Vassal Policy Cancelled"), PolicyUiTexts.Get("AFPOL_UI_VassalRelationshipChangedCancelled", "Suzerainty relationship or ruler status changed during evaluation; policy not enacted, independence unchanged, no record created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
@@ -213,7 +212,7 @@ public sealed partial class CustomPolicyBehavior
 				|| (!sourceEffect.IsPermanentEffect && sourceEffect.DurationDays <= 0)
 				|| !HasAnyTimedPolicyEffect(application)))
 		{
-			InformationManager.ShowInquiry(new InquiryData("附庸国政策发布失败", "没有生成作用于目标附庸国的有效持续效果，政策未生效、未增加独立度。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_VassalPolicyPublishFailedTitle", "Vassal Policy Publication Failed"), PolicyUiTexts.Get("AFPOL_UI_VassalNoValidEffects", "No valid continuous effects targeting the vassal kingdom generated; policy not enacted, independence unchanged."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		request.VassalIndependenceBefore = independenceBefore;
@@ -402,12 +401,16 @@ public sealed partial class CustomPolicyBehavior
 		}
 		RunVassalPolicyPostCommitStep(recordId, "trim-records", TrimLocalPolicyRecords);
 		string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: false)
-			+ "\n\n独立度：" + appliedBefore.ToString(CultureInfo.InvariantCulture)
-			+ " + 发布费用 " + request.VassalPublicationIndependenceCost.ToString(CultureInfo.InvariantCulture)
-			+ " + 政策修正 " + FormatSigned(request.VassalQualityIndependenceDelta)
-			+ " = " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100"
-			+ "\n当前脱离阈值：" + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）"
-			+ (brokeAway ? "\n目标附庸国已达到脱离阈值；脱离是不可逆最终提交，臣属关系和全部持续效果已经终止。" : "");
+			+ PolicyUiTexts.Format("AFPOL_UI_VassalPublishResultSummary",
+				"\n\nIndependence: {BEFORE} + publication cost {COST} + policy modifier {DELTA} = {AFTER}/100\nCurrent breakaway threshold: {THRESHOLD} ({RULER} relation {RELATION})",
+				"BEFORE", appliedBefore.ToString(CultureInfo.InvariantCulture),
+				"COST", request.VassalPublicationIndependenceCost.ToString(CultureInfo.InvariantCulture),
+				"DELTA", FormatSigned(request.VassalQualityIndependenceDelta),
+				"AFTER", independenceAfter.ToString(CultureInfo.InvariantCulture),
+				"THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture),
+				"RULER", rulerName,
+				"RELATION", FormatSigned(rulerRelation))
+			+ (brokeAway ? PolicyUiTexts.Get("AFPOL_UI_VassalBreakawayTerminated", "\nTarget vassal kingdom has reached breakaway threshold; breakaway is irreversible, vassalage and all continuous effects terminated.") : "");
 		RunVassalPolicyPostCommitStep(recordId, "success-popup", () =>
 			ShowPolicySuccessResultPopup("vassal:" + recordId, impactText));
 		RunVassalPolicyPostCommitStep(recordId, "published-log", () =>
@@ -862,11 +865,11 @@ public sealed partial class CustomPolicyBehavior
 		try
 		{
 			InformationManager.ShowInquiry(new InquiryData(
-				"附庸国政策发布失败",
-				BuildPolicyFailurePopupText(message ?? "政策提交失败。", null),
+				PolicyUiTexts.Get("AFPOL_UI_VassalPolicyPublishFailedTitle", "Vassal Policy Publication Failed"),
+				BuildPolicyFailurePopupText(message ?? PolicyUiTexts.Get("AFPOL_UI_PolicySubmissionFailed", "Policy submission failed."), null),
 				true,
 				false,
-				"知道了",
+				PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"),
 				string.Empty,
 				null,
 				null), pauseGameActiveState: true);

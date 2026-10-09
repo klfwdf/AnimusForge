@@ -5458,11 +5458,11 @@ public sealed partial class NpcRulerPolicyBehavior
 		try
 		{
 			bool isVassalPolicy = string.Equals(record?.PolicyKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase);
-			string title = FirstNonEmpty(record.PolicyName, "新政策");
+			string title = FirstNonEmpty(record.PolicyName, PolicyUiTexts.Get("AFPOL_UI_NewPolicy", "New Policy"));
 			string detail = record.PolicyContent ?? "";
 			if (isVassalPolicy && !string.IsNullOrWhiteSpace(record.IssuerKingdomName))
 			{
-				detail = "宗主国：" + record.IssuerKingdomName.Trim() + "\n发布对象：" + FirstNonEmpty(record.KingdomName, record.KingdomId) + "\n\n" + detail;
+				detail = PolicyUiTexts.Format("AFPOL_UI_SuzerainTargetPrefix", "Suzerain: {SUZERAIN}\nTarget: {TARGET}\n\n", "SUZERAIN", record.IssuerKingdomName.Trim(), "TARGET", FirstNonEmpty(record.KingdomName, record.KingdomId)) + detail;
 			}
 			AnimusForgeWorldEventInboxEntry entry = new AnimusForgeWorldEventInboxEntry
 			{
@@ -5470,10 +5470,10 @@ public sealed partial class NpcRulerPolicyBehavior
 				EventKind = isVassalPolicy ? "vassal_policy" : "npc_ruler_policy",
 				PolicyRecordId = record.PolicyId ?? "",
 				IsPlayerPolicy = record.IsPlayerPolicy,
-				KindLabel = isVassalPolicy ? "附庸国政策" : "统治者政策",
-				HeaderRightText = isVassalPolicy ? "宗主发布" : "统治者政策",
-				BodySectionTitleText = "政策内容",
-				ImpactSectionTitleText = "政策影响效果",
+				KindLabel = isVassalPolicy ? PolicyUiTexts.Get("AFPOL_UI_VassalPolicy", "Vassal Policy") : PolicyUiTexts.Get("AFPOL_UI_RulerPolicy", "Ruler Policy"),
+				HeaderRightText = isVassalPolicy ? PolicyUiTexts.Get("AFPOL_UI_SuzerainEnacted", "Suzerain Enacted") : PolicyUiTexts.Get("AFPOL_UI_RulerPolicy", "Ruler Policy"),
+				BodySectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyContentLabel", "Policy Content"),
+				ImpactSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyImpactEffects", "Policy Impact Effects"),
 				ImpactText = BuildEffectSummary(record.Effects),
 				Title = Limit(title, 90),
 				Summary = Limit(FirstNonEmpty(record.ImpactSummary, record.PolicyContent), 260),
@@ -5829,10 +5829,10 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			EventId = eventId,
 			EventKind = "ruler_policy_feedback",
-			KindLabel = "政策衍生事件",
-			HeaderRightText = "关联政策：《" + (policy.PolicyName ?? "") + "》",
-			BodySectionTitleText = "事件经过",
-			Title = FirstNonEmpty(policy.FeedbackTitle, "《" + FirstNonEmpty(policy.PolicyName, "新政策") + "》的余波"),
+			KindLabel = PolicyUiTexts.Get("AFPOL_UI_PolicyDerivedEvent", "Policy-Derived Event"),
+			HeaderRightText = PolicyUiTexts.Format("AFPOL_UI_AssociatedPolicy", "Associated policy: \"{POLICY}\"", "POLICY", policy.PolicyName ?? ""),
+			BodySectionTitleText = PolicyUiTexts.Get("AFPOL_UI_EventCourse", "Event Course"),
+			Title = FirstNonEmpty(policy.FeedbackTitle, PolicyUiTexts.Format("AFPOL_UI_PolicyFeedbackAftermath", "\"{NAME}\" Aftermath", "NAME", FirstNonEmpty(policy.PolicyName, PolicyUiTexts.Get("AFPOL_UI_NewPolicy", "New Policy")))),
 			Summary = policy.FeedbackDigest ?? "",
 			DetailText = policy.PublicFeedback ?? "",
 			KingdomId = policy.KingdomId ?? "",

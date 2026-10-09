@@ -2173,13 +2173,13 @@ public sealed partial class CustomPolicyBehavior
 
 	private static void NotifyPlayerPolicyMaintenanceStateChanged(ActivePolicyEffectSaveData effect, bool funded, bool settlementFailed = false)
 	{
-		string name = string.IsNullOrWhiteSpace(effect?.PolicyName) ? "未命名政策" : effect.PolicyName.Trim();
+		string name = string.IsNullOrWhiteSpace(effect?.PolicyName) ? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy") : effect.PolicyName.Trim();
 		InformationManager.DisplayMessage(new InformationMessage(
 			funded
-				? "《" + name + "》维护费已恢复支付，数值效果恢复生效。"
+				? PolicyUiTexts.Format("AFPOL_UI_MaintenancePaidResume", "\"{NAME}\" maintenance paid; numeric effects resumed.", "NAME", name)
 				: settlementFailed
-					? "《" + name + "》维护费结算异常，今日数值效果暂停；下一日会自动重试。"
-					: "《" + name + "》维护费不足，今日数值效果暂停；下一日会自动重试。",
+					? PolicyUiTexts.Format("AFPOL_UI_MaintenanceSettlementError", "\"{NAME}\" maintenance settlement error; numeric effects paused today, will retry tomorrow.", "NAME", name)
+					: PolicyUiTexts.Format("AFPOL_UI_MaintenanceInsufficientFunds", "\"{NAME}\" maintenance funds insufficient; numeric effects paused today, will retry tomorrow.", "NAME", name),
 			funded ? Colors.Green : Colors.Yellow));
 	}
 

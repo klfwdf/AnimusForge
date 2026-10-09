@@ -4119,11 +4119,11 @@ public sealed partial class CustomPolicyBehavior
 			PolicyCooldownDay = Math.Max(0, request.SubmittedDay),
 			RulerHeroId = Hero.MainHero?.StringId ?? "",
 			RulerName = Hero.MainHero?.Name?.ToString() ?? "",
-			PolicyName = request.PolicyName ?? "未命名政策",
+			PolicyName = request.PolicyName ?? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy"),
 			PolicyContent = request.PolicyContent ?? "",
 			PolicyDigest = generationResult?.MainAssessment?.PolicyContentDigest ?? "",
 			PublicFeedback = CleanPolicyDisplayText(feedback ?? ""),
-			FeedbackTitle = "《" + (request.PolicyName ?? "未命名政策") + "》的民间回响",
+			FeedbackTitle = PolicyUiTexts.Format("AFPOL_UI_PolicyFeedbackTitleFormat", "\"{NAME}\" Public Echoes", "NAME", request.PolicyName ?? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy")),
 			FeedbackDigest = generationResult?.MainAssessment?.FeedbackDigest ?? "",
 			ImpactSummary = CleanPolicyDisplayText((generationResult?.Postprocess?.ImpactSummary ?? "")
 				+ (IsVassalPolicyRequest(request)
