@@ -122,4 +122,39 @@
   <string id="AF_MCM_Shout_StareSeconds" text="Stare trigger time (seconds)" />
   <string id="AF_MCM_Shout_DirectAttack" text="Allow direct player attacks to trigger scene conflict" />
   <string id="AF_MCM_Shout_InputBackground" text="Shout input background" />
+  <string id="AF_UI_Onboarding_YjTesting" text="Testing the three YJ routes; the access-mode selection will open when it finishes..." />
+  <string id="AF_UI_Onboarding_YjAllFailed" text="All three YJ routes failed the speed test. Check the network and retry, or use custom configuration." />
+  <string id="AF_UI_Onboarding_YjProbeFailed" text="YJ route speed test failed. Please retry." />
+  <string id="AF_UI_Onboarding_FlashTitle" text="DeepSeek Flash - Fast recommendation" />
+  <string id="AF_UI_Onboarding_FlashHint" text="Enter your official DeepSeek API key (sk-...):" />
+  <string id="AF_UI_Onboarding_KeyEmpty" text="API key cannot be empty." />
+  <string id="AF_UI_Onboarding_ProTitle" text="DeepSeek Pro - Deep reasoning" />
+  <string id="AF_UI_Onboarding_YjSingleTitle" text="YJ single-group key setup" />
+  <string id="AF_UI_Onboarding_YjSingleHint" text="Enter one YJ API key; it will be applied to all four pipelines:" />
+  <string id="AF_UI_Onboarding_YjOpenManagement" text="Opening the YJ API key management and credit page..." />
+  <string id="AF_UI_Onboarding_QqCopied" text="YJ QQ group number copied: 1097237977" />
+  <string id="AF_UI_Onboarding_QqCopyFailed" text="Could not copy the group number. Add it manually: 1097237977" />
+  <string id="AF_UI_Onboarding_YjFetchingModels" text="Fetching available YJ models..." />
+  <string id="AF_UI_Onboarding_MissingEndpoint" text="Enter the Base URL and API key first." />
+  <string id="AF_UI_Onboarding_ModelParseFailed" text="The endpoint returned no parseable model list." />
+  <string id="AF_UI_Onboarding_ModelFetchFailed" text="Model fetch failed. Check the network and API configuration." />
+  <string id="AF_UI_Onboarding_PrimaryIncomplete" text="The main API configuration is incomplete. Check the URL and key." />
+  <string id="AF_UI_Onboarding_Handshaking" text="Handshaking..." />
+  <string id="AF_UI_Onboarding_EventSkipped" text="Not configured; skipping the optional weekly-report API." />
+  <string id="AF_UI_Onboarding_TestRequired" text="Complete the API connectivity test first." />
+  <string id="AF_UI_Onboarding_OpenSupport" text="Opening the Afdian support page..." />
+  <string id="AF_UI_Onboarding_EditPrimaryUrl" text="Edit main API Base URL" />
+  <string id="AF_UI_Onboarding_EditPrimaryKey" text="Edit main API key" />
+  <string id="AF_UI_Onboarding_EditAuxUrl" text="Edit preprocessing Base URL" />
+  <string id="AF_UI_Onboarding_EditAuxKey" text="Edit preprocessing key" />
+  <string id="AF_UI_Onboarding_EditPostUrl" text="Edit postprocessing Base URL" />
+  <string id="AF_UI_Onboarding_EditPostKey" text="Edit postprocessing key" />
+  <string id="AF_UI_Onboarding_EditEventUrl" text="Edit weekly-report API Base URL" />
+  <string id="AF_UI_Onboarding_EditEventKey" text="Edit weekly-report key" />
+  <string id="AF_UI_Onboarding_YjSelectedRoute" text="Selected route: {HOST} · response about {MS} ms; choose an access mode" />
+  <string id="AF_UI_Onboarding_ModelsFetched" text="Fetched {COUNT} models successfully" />
+  <string id="AF_UI_Onboarding_Target_Primary" text="Main API (response generation)" />
+  <string id="AF_UI_Onboarding_Target_Auxiliary" text="Preprocessing API (intent routing)" />
+  <string id="AF_UI_Onboarding_Target_Postprocess" text="Postprocessing API (action tags)" />
+  <string id="AF_UI_Onboarding_Target_Event" text="Daily and weekly-report API" />
 </strings>
