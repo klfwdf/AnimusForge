@@ -15,4 +15,5 @@
   <LanguageFile xml_path="CNs/afknowledge_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afworldmap_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afdip_ui_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afconv_ui_strings-zh-CN.xml" />
 </LanguageData>

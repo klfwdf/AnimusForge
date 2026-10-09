@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
+      "target": "ModuleData/Languages/afconv_ui_strings.xml"
+    },
+    {
       "owner": "AnimusForge.Illustrator",
       "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml"

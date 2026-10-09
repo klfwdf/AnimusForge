@@ -117,11 +117,12 @@ internal bool OpenNativeConversationTagTestForExternal(Action onFinished = null)
 			};
 			string title = "标签输入 - " + displayName;
 			string subtitle = "当前目标：" + displayName + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。";
-			if (ShoutTextInputPopup.Show(title, subtitle, "输入正文和标签：", "", submit, finish))
+			string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagInputHint", "Enter the text and tags:");
+			if (ShoutTextInputPopup.Show(title, subtitle, inputHint, "", submit, finish))
 			{
 				return true;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData(title, subtitle + "\n\n输入正文和标签：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "执行", "取消", submit, finish), pauseGameActiveState: true);
+				InformationManager.ShowTextInquiry(new TextInquiryData(title, subtitle + "\n\n" + inputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Execute", "Run"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), submit, finish), pauseGameActiveState: true);
 			return true;
 		}
 		catch (Exception ex)

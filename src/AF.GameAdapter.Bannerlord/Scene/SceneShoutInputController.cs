@@ -1674,12 +1674,13 @@ internal sealed class SceneShoutInputController
 		string titleText = text;
 		string text2 = string.IsNullOrWhiteSpace(preface) ? "" : preface;
 		PauseGame();
-		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", delegate(string input)
+		string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_InputHint", "Tell them something:");
+		if (!ShoutTextInputPopup.Show(titleText, text2, inputHint, "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
         }, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket), enableIllustration: true))
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + "请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + inputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), delegate(string input)
 			{
 				OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);
@@ -1698,12 +1699,13 @@ internal sealed class SceneShoutInputController
 		string titleText = "标签输入 - " + text;
 		string subtitle = "当前目标：" + text + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前目标立即执行。";
 		PauseGame();
-		if (!ShoutTextInputPopup.Show(titleText, subtitle, "输入正文和标签：", "", delegate(string input)
+		string tagInputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagInputHint", "Enter the text and tags:");
+		if (!ShoutTextInputPopup.Show(titleText, subtitle, tagInputHint, "", delegate(string input)
 		{
 			OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
 		}, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket)))
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, subtitle + "\n\n输入正文和标签：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "执行", "取消", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, subtitle + "\n\n" + tagInputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Execute", "Run"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), delegate(string input)
 			{
 				OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);

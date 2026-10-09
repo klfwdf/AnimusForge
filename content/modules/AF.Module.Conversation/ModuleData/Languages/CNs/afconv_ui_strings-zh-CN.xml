@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_CONV_UI_Courier_Cancel" text="取消" />
+    <string id="AF_CONV_UI_Courier_Send" text="发送" />
+    <string id="AF_CONV_UI_Courier_WriteTitle" text="写给 {TARGET} 的信" />
+    <string id="AF_CONV_UI_Shout_Gallery" text="画廊" />
+    <string id="AF_CONV_UI_Shout_Encyclopedia" text="图鉴" />
+    <string id="AF_CONV_UI_Shout_Send" text="发送" />
+    <string id="AF_CONV_UI_Shout_Close" text="关闭" />
+    <string id="AF_CONV_UI_Shout_InputHint" text="请输入你想说的话：" />
+    <string id="AF_CONV_UI_Shout_TagInputHint" text="输入正文和标签：" />
+    <string id="AF_CONV_UI_Shout_Execute" text="执行" />
+    <string id="AF_CONV_UI_Shout_BattleScene" text="战斗现场" />
+    <string id="AF_CONV_UI_Native_Illustration" text="场景插画" />
+  </strings>
+</base>

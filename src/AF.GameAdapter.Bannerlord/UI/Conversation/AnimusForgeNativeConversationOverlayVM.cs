@@ -9,6 +9,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
     private readonly Func<bool> _illustrationAvailable;
     private readonly Action _onIllustration;
     [DataSourceProperty] public bool IsIllustrationAvailable => _illustrationAvailable?.Invoke() == true;
+    [DataSourceProperty] public string IllustrationText => ConversationUiLocalization.Text("AF_CONV_UI_Native_Illustration", "Scene illustration");
     public void ShowIllustration() { if (IsIllustrationAvailable) _onIllustration?.Invoke(); }
 	private readonly Action<string> _onSubmit;
 

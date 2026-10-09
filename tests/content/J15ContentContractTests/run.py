@@ -684,6 +684,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
         "sha256": "D72FD63BCC20FD1D8C62810EB939DE8B1AC0A3F7F3F62FF22169565D3D30983A", "revision": "21bbdd52e",
     },
+    "ModuleData/Languages/afconv_ui_strings.xml": {
+        "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
+        "sha256": "E37C1C756BA3DF19F7B26428E29185BCBC10D24A4424FAA48A240B29B545FA2D", "revision": "conversation-courier-ui",
+    },
+    "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
+        "sha256": "619DAD14F48F923A51E47C159F16342CB7F4308A4AFC7AEBF869EE0AF723D441", "revision": "conversation-courier-ui",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
@@ -699,8 +707,8 @@ J15B_REVIEWED_EDITS = {
     "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
     "ModuleData/action_sets.xml": "DD52422AC7F6B5D0BF7049964CD64E1A79E109E62414B0235CF7F7432966DB2B",
     "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
-    "ModuleData/Languages/language_data.xml": "C552D3CC00DB957E729AECA07034C0D297733D71D4F7501D4B4AB0737D1AED6F",
-    "ModuleData/Languages/CNs/language_data.xml": "B8DBB6C8F0A6CF6EF66B70ADF79F6CC8F6B57E1887151111DFB6DFD4A0CE5C65",
+    "ModuleData/Languages/language_data.xml": "828C89218B412EA78E144C03A44808FC2E8FC9FAABD835A1E0968E773A8F1296",
+    "ModuleData/Languages/CNs/language_data.xml": "9BC7C05DB6E3E9C467B2FEFF2A9B51AD8EB1669721CB6EF2F536F965A87691D8",
     # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
     # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
     "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2BB7A1574140F2F3CE6F561320DDE433AEF679D5FC1A7E3A9BE042CE6F60BF5B",

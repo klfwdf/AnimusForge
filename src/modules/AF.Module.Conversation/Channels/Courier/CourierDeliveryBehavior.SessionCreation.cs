@@ -574,7 +574,8 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
 		_letterInputOpen = true;
-		bool opened = CourierLetterInputPopup.Show("写给 " + targetName + " 的信", "", "", "", input =>
+		string letterTitle = ConversationUiLocalization.Text("AF_CONV_UI_Courier_WriteTitle", "Letter to {TARGET}", "TARGET", targetName);
+		bool opened = CourierLetterInputPopup.Show(letterTitle, "", "", "", input =>
 		{
 			if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 			_letterInputOpen = false;
@@ -585,7 +586,7 @@ public sealed partial class CourierDeliveryBehavior
 		});
 		if (!opened)
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData("写给 " + targetName + " 的信", "", true, true, "发送", "取消", input =>
+			InformationManager.ShowTextInquiry(new TextInquiryData(letterTitle, "", true, true, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"), input =>
 			{
 				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 				_letterInputOpen = false;

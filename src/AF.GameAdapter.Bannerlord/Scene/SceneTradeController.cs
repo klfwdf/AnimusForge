@@ -473,14 +473,15 @@ internal sealed class SceneTradeController
 		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下固定资产转给对方：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
 		string titleText = text;
 		PauseGame();
-		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", value => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeChatConfirmed(value); }, delegate
+		string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_InputHint", "Tell them something:");
+		if (!ShoutTextInputPopup.Show(titleText, text2, inputHint, "", value => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeChatConfirmed(value); }, delegate
 		{
             if (!IsUiCurrent(uiRevision, uiStepRevision)) return;
 			ResetShoutTradeState();
 			OnShoutCancelled();
 		}, BuildShoutTargetEncyclopediaAction(_shoutTradeTargetNpc)))
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", value => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeChatConfirmed(value); }, delegate
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n" + inputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), value => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeChatConfirmed(value); }, delegate
 			{
                 if (!IsUiCurrent(uiRevision, uiStepRevision)) return;
 				ResetShoutTradeState();

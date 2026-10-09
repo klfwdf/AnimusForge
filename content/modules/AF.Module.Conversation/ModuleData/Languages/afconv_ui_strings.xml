@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_CONV_UI_Courier_Cancel" text="Cancel" />
+    <string id="AF_CONV_UI_Courier_Send" text="Send" />
+    <string id="AF_CONV_UI_Courier_WriteTitle" text="Letter to {TARGET}" />
+    <string id="AF_CONV_UI_Shout_Gallery" text="Gallery" />
+    <string id="AF_CONV_UI_Shout_Encyclopedia" text="Encyclopedia" />
+    <string id="AF_CONV_UI_Shout_Send" text="Send" />
+    <string id="AF_CONV_UI_Shout_Close" text="Close" />
+    <string id="AF_CONV_UI_Shout_InputHint" text="Tell them something:" />
+    <string id="AF_CONV_UI_Shout_TagInputHint" text="Enter the text and tags:" />
+    <string id="AF_CONV_UI_Shout_Execute" text="Run" />
+    <string id="AF_CONV_UI_Shout_BattleScene" text="Battle scene" />
+    <string id="AF_CONV_UI_Native_Illustration" text="Scene illustration" />
+  </strings>
+</base>
