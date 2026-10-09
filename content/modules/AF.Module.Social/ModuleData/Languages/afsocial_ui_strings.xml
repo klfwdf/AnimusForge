@@ -10,5 +10,48 @@
     <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="[Marriage system] The marriage has taken effect; the wedding notice has been queued by the marriage event." />
     <string id="AF_SOCIAL_UI_MarriageStatus" text="[Marriage system] {STATUS}" />
     <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} loyalty +{AMOUNT}" />
+    <string id="AF_SOCIAL_UI_RecruitmentFailed" text="[Recruitment failed] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSkipped" text="[Recruitment skipped] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentIntercepted" text="[Recruitment intercepted] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSucceeded" text="[Recruitment succeeded] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingClanHero" text="No target hero is available to join the player's clan." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPlayer" text="The target is already the player." />
+    <string id="AF_SOCIAL_UI_RecruitmentPlayerPartyUnavailable" text="The player's clan or party is unavailable." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingNonHero" text="No non-hero NPC is available to join the party." />
+    <string id="AF_SOCIAL_UI_RecruitmentTargetIsHero" text="The target is a hero and must use the hero recruitment path." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingLiveAgent" text="The speaking NPC's live agent could not be found; promotion was cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentInvalidAgentTemplate" text="The current agent is not a promotable non-hero troop template." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingPromotedName" text="The promoted hero's personal name could not be determined; promotion was cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernAlreadyHandled" text="The tavern mercenary pool was already handled by the native option or another flow; recruitment was not repeated." />
+    <string id="AF_SOCIAL_UI_RecruitmentCaptivityCleanupFailed" text="The target hero's captivity state or prisoner roster residue could not be cleared." />
+    <string id="AF_SOCIAL_UI_RecruitmentHeroActivationFailed" text="The target hero could not be restored to an active state for party entry." />
+    <string id="AF_SOCIAL_UI_RecruitmentLordJoinFailed" text="The target hero could not be made a player-clan member or assigned to the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentCompanionJoinFailed" text="The target hero could not be made a companion or assigned to the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyCompanion" text="{NAME} is already a player companion in the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyClanMember" text="{NAME} is already a player-clan member in the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPromoted" text="{NAME} was already promoted from the current scene NPC; a second hero cannot be recruited." />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernSoldiers" text="{COUNT} {NAME} mercenaries joined the player's party as regular troops." />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedCompanion" text="{NAME} was promoted to player companion &quot;{HERO}&quot; and joined the player's party{FOLLOW}." />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedLord" text="{NAME} was promoted to player-clan hero &quot;{HERO}&quot; and joined the player's party{FOLLOW}." />
+    <string id="AF_SOCIAL_UI_MarriageFormalFailed" text="Formal marriage failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeFailed" text="Elope failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceFailed" text="Divorce failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageFormalSucceeded" text="Formal marriage succeeded: {LEFT} and {RIGHT} are now married. Tier gap D={TIER}, clan relation={RELATION}, leader trust={TRUST}.{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeSucceeded" text="Elope succeeded: you and {TARGET} are now married. Current L={LOVE}, personal trust={TRUST}, family harmony F={HARMONY}." />
+    <string id="AF_SOCIAL_UI_MarriageDivorceSucceeded" text="Divorce succeeded: {LEFT} and {RIGHT} are no longer married.{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPair" text="The marriage pair could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonSelf" text="A character cannot marry themselves." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAlreadyMarried" text="The pair already has an active marriage record." />
+    <string id="AF_SOCIAL_UI_MarriageReasonSameClan" text="A formal marriage requires two different clans." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTarget" text="The target marriage partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayerCandidate" text="The player-clan marriage candidate could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNoClan" text="The target has no clan and cannot use the clan marriage flow." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoRecord" text="No active marriage record was found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNotSpouses" text="The pair are not currently spouses." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayer" text="The player hero could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" The previously prepaid bride price of {AMOUNT} denars was consumed." />
+    <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" The other clan leader paid the player a bride price of {AMOUNT} denars." />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" A bride price of {AMOUNT} denars was refunded." />
   </strings>
 </base>
+

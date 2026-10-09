@@ -3585,7 +3585,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			responseText = text.Trim();
 			if (!string.IsNullOrWhiteSpace(value))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_MarriageStatus", "[Marriage system] {STATUS}", ("STATUS", value)), Color.FromUint(4283878655u)));
+				InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_MarriageStatus", "[Marriage system] {STATUS}", ("STATUS", SocialUiLocalization.MarriageStatusForDisplay(value))), Color.FromUint(4283878655u)));
 				Logger.Log("Romance", value);
 			}
 		}
