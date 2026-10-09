@@ -2,6 +2,8 @@
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="AF_WM_ActionRaid" text="烧掠" />
+    <string id="AF_WM_ActionBesiege" text="围攻" />
     <string id="AF_WM_GoToSettlementUntil" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留至指定期限。" />
     <string id="AF_WM_GoToSettlement" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留{DAYS}天。" />
     <string id="AF_WM_Patrol" text="{ACTOR}开始前往{SETTLEMENT}附近，抵达后巡逻{DAYS}天。" />

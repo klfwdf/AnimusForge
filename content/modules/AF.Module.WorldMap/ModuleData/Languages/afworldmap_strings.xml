@@ -2,6 +2,8 @@
 <base type="string">
   <tags><tag language="English" /></tags>
   <strings>
+    <string id="AF_WM_ActionRaid" text="raid" />
+    <string id="AF_WM_ActionBesiege" text="besiege" />
     <string id="AF_WM_GoToSettlementUntil" text="{ACTOR} is heading to {SETTLEMENT}; it will stay there until the specified deadline." />
     <string id="AF_WM_GoToSettlement" text="{ACTOR} is heading to {SETTLEMENT} and will stay there for {DAYS} days." />
     <string id="AF_WM_Patrol" text="{ACTOR} is heading near {SETTLEMENT} and will patrol for {DAYS} days." />
