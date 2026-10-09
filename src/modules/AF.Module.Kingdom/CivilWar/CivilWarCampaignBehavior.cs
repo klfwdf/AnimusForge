@@ -20,7 +20,7 @@ namespace AnimusForge;
 // Thin campaign host. Rules stay in KingdomCivilWarOwner; other domains are not edited.
 internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 {
-	private static readonly TextObject LoyaltyText = new TextObject("内战反对派领地");
+	private static readonly TextObject LoyaltyText = new TextObject("{=AF_DIP_CivilWar_LoyaltyText}Civil-war opposition fief");
 	private bool _loyaltyPatched;
 
 	public override void RegisterEvents()
@@ -58,17 +58,17 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (InformationManager.IsAnyInquiryActive()) return;
 		if (TeamModuleServices.CivilWar.TryTakePoliticalResponse(out CivilWarActionRequest response, out string responseText))
 		{
-			InformationManager.ShowInquiry(new InquiryData("王室交涉", responseText, true, true, "接受／服从", "拒绝／抗命", () => AnswerPolitical(response, true), () => AnswerPolitical(response, false)), true);
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationTitle}Royal negotiation").ToString(), responseText, true, true, new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationAccept}Accept / obey").ToString(), new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationRefuse}Refuse / defy").ToString(), () => AnswerPolitical(response, true), () => AnswerPolitical(response, false)), true);
 			return;
 		}
 		if (TeamModuleServices.CivilWar.HasPendingFollowPrompt && TeamModuleServices.CivilWar.TryTakeFollowPrompt(out string followId, out string followText))
 		{
-			InformationManager.ShowInquiry(new InquiryData("追随叛军", followText, true, true, "追随叛军", "留在王国", () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_FollowRebelsTitle}Follow the rebels").ToString(), followText, true, true, new TextObject("{=AF_DIP_CivilWar_FollowRebelsAccept}Follow the rebels").ToString(), new TextObject("{=AF_DIP_CivilWar_FollowRebelsRefuse}Stay in the kingdom").ToString(), () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
 			return;
 		}
 		if (!TeamModuleServices.CivilWar.HasPendingPlayerUltimatumPrompt) return;
 		if (!TeamModuleServices.CivilWar.TryTakePlayerUltimatumPrompt(out string factionId, out string text)) return;
-		InformationManager.ShowInquiry(new InquiryData("反对派最后通牒", text, true, true, "接受诉求", "拒绝", () => Answer(factionId, true), () => Answer(factionId, false)), true);
+		InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_UltimatumTitle}Opposition ultimatum").ToString(), text, true, true, new TextObject("{=AF_DIP_CivilWar_UltimatumAccept}Accept the demand").ToString(), new TextObject("{=AF_DIP_CivilWar_UltimatumRefuse}Refuse").ToString(), () => Answer(factionId, true), () => Answer(factionId, false)), true);
 	}
 
 	private static void AnswerFollow(string factionId, bool follow)

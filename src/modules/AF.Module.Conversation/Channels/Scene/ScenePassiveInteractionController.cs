@@ -454,7 +454,7 @@ internal sealed class ScenePassiveInteractionController
 			allNpcData.Add(npcData);
 		}
 		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, PASSIVE_STARE_COOLDOWN, source, targetAgent, allNpcData);
-		InformationManager.DisplayMessage(new InformationMessage("你盯着 " + npcData.Name + " 看了很久...", new Color(0.7f, 0.7f, 0.7f)));
+		InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Scene_PassiveStare}You have been staring at {NPC} for a while...").SetTextVariable("NPC", npcData.Name).ToString(), new Color(0.7f, 0.7f, 0.7f)));
 		string factText = BuildPassiveReactionFactText(targetAgent);
 		try
 		{

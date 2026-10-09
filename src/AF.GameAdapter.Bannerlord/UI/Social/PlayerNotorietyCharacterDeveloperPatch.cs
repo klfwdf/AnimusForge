@@ -7,6 +7,7 @@ using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.GauntletUI.Data;
 using TaleWorlds.Library;
 using TaleWorlds.TwoDimension;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -79,7 +80,7 @@ public static class PlayerNotorietyCharacterDeveloperPatch
 		{
 			WidthSizePolicy = SizePolicy.StretchToParent,
 			HeightSizePolicy = SizePolicy.StretchToParent,
-			Text = "玩家知名度/履历",
+			Text = new TextObject("{=AF_UI_Notoriety_Button}Player notoriety / history").ToString(),
 			Brush = root.Context.GetBrush("Popup.Button.Text") ?? root.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
 			DoNotAcceptEvents = true
 		};
