@@ -886,38 +886,38 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public override string Id => "AnimusForge_global_settings";
 
-	public override string DisplayName => "AnimusForge设置";
+	public override string DisplayName => "{=AF_MCM_Main_DisplayName}AnimusForge Settings";
 
 	public override string FolderName => "AnimusForge";
 
 	public override string FormatType => "json";
 
-	[SettingPropertyButton("支持Animusforge制作组", -1, true, "", Content = "打开爱发电", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
-	[SettingPropertyGroup("0. 支持", GroupOrder = -400)]
+	[SettingPropertyButton("{=AF_MCM_Support_Button}Support the AnimusForge team", -1, true, "", Content = "{=AF_MCM_Support_Content}Open Afdian", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
+	[SettingPropertyGroup("{=AF_MCM_Support_Group}0. Support", GroupOrder = -400)]
 	public Action OpenAfdianSupportLink { get; set; }
 
-	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyText("{=AF_MCM_MainApi_Url}API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiUrl { get; set; } = "https://api.openai.com/v1";
 
-	[SettingPropertyText("API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入你的 API 密钥")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyText("{=AF_MCM_MainApi_Key}API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入你的 API 密钥")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiKey { get; set; } = "";
 
-	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyText("{=AF_MCM_MainApi_Model}Model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ModelName
 	{
 		get => ReadModelNameForPreset(ref _mainApiModelName, _mainApiModelDropdown);
 		set => SetModelNameForPreset(value, ref _mainApiModelName, ref _mainApiModelDropdown, ref _mainApiModelOptions);
 	}
 
-	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Action FetchMainModelList { get; set; }
 
-	[SettingPropertyDropdown("模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Dropdown}Model name (dropdown)", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainModelDropdown
 	{
 		get
@@ -955,18 +955,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试 API 连接", -1, true, "", Content = "点击测试", Order = 5)]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyButton("{=AF_MCM_MainApi_Test}Test API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Action TestConnection { get; set; }
 
-	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiThinkingEnabled { get; set; } = true;
 
 	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
 		get
@@ -982,16 +982,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("温度", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("开启流式传输", Order = 10, RequireRestart = false, HintText = "开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 ")]
-	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 ")]
+	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiStreamingEnabled { get; set; } = false;
 
 	[SettingPropertyInteger("最小家族等级", 0, 6, "0", Order = 0, RequireRestart = false)]
@@ -1723,7 +1723,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => SetModelNameForPreset(value, ref _auxiliaryApiModelName, ref _auxiliaryApiModelDropdown, ref _auxiliaryApiModelOptions);
 	}
 
-	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Action FetchAuxiliaryModelList { get; set; }
 
@@ -1751,17 +1751,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "点击测试", Order = 5)]
+	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Action TestAuxiliaryConnection { get; set; }
 
-	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
@@ -1778,11 +1778,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("温度", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认 0.00。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认 0.00。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1802,7 +1802,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => SetModelNameForPreset(value, ref _actionPostprocessApiModelName, ref _actionPostprocessApiModelDropdown, ref _actionPostprocessApiModelOptions);
 	}
 
-	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Action FetchActionPostprocessModelList { get; set; }
 
@@ -1830,17 +1830,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试后处理API连接", -1, true, "", Content = "点击测试", Order = 5)]
+	[SettingPropertyButton("测试后处理API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Action TestActionPostprocessConnection { get; set; }
 
-	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
 	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
@@ -1857,11 +1857,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("温度", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制动作标签与情绪标签判定的随机性。建议保持较低。默认 0.00。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制动作标签与情绪标签判定的随机性。建议保持较低。默认 0.00。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1885,7 +1885,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => SetModelNameForPreset(value, ref _eventAndRebellionApiModelName, ref _eventAndRebellionApiModelDropdown, ref _eventAndRebellionApiModelOptions);
 	}
 
-	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Action FetchEventAndRebellionModelList { get; set; }
 
@@ -1913,17 +1913,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyButton("测试事件/叛乱API连接", -1, true, "", Content = "点击测试", Order = 5)]
+	[SettingPropertyButton("测试事件/叛乱API连接", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Action TestEventAndRebellionConnection { get; set; }
 
-	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public bool EventAndRebellionApiThinkingEnabled { get; set; } = false;
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
@@ -1940,11 +1940,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("温度", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认 0.80。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认 0.80。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 

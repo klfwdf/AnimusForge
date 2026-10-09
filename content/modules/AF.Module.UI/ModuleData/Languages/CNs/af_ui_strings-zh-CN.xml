@@ -69,4 +69,22 @@
   <string id="AF_MCM_TownAmbient_Budget_Hint" text="本次启动期间环境 AI 的输入+输出估算上限。达到上限后自动回退本地台词。0 表示不允许调用。" />
   <string id="AF_MCM_TownAmbient_Usage" text="显示环境 AI 用量提示" />
   <string id="AF_MCM_TownAmbient_Usage_Hint" text="每次环境 AI 回复完成后显示本次估算输入/输出 Token 和本次启动累计用量；建议保持开启。" />
+  <string id="AF_MCM_Main_DisplayName" text="AnimusForge设置" />
+  <string id="AF_MCM_Support_Group" text="0. 支持" />
+  <string id="AF_MCM_Support_Button" text="支持Animusforge制作组" />
+  <string id="AF_MCM_Support_Content" text="打开爱发电" />
+  <string id="AF_MCM_MainApi_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
+  <string id="AF_MCM_MainApi_Url" text="API 地址（支持填写 Base URL）" />
+  <string id="AF_MCM_MainApi_Key" text="API 密钥 (Key)" />
+  <string id="AF_MCM_MainApi_Model" text="模型名称" />
+  <string id="AF_MCM_MainApi_Fetch" text="拉取模型列表" />
+  <string id="AF_MCM_MainApi_FetchContent" text="点击拉取" />
+  <string id="AF_MCM_MainApi_Dropdown" text="模型名称（下拉）" />
+  <string id="AF_MCM_MainApi_Test" text="测试 API 连接" />
+  <string id="AF_MCM_MainApi_TestContent" text="点击测试" />
+  <string id="AF_MCM_MainApi_Thinking" text="开启思维链" />
+  <string id="AF_MCM_MainApi_Reasoning" text="思维链强度" />
+  <string id="AF_MCM_MainApi_Temperature" text="温度" />
+  <string id="AF_MCM_MainApi_MaxTokens" text="最大输出Tokens" />
+  <string id="AF_MCM_MainApi_Streaming" text="开启流式传输" />
 </strings>
