@@ -660,6 +660,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
         "sha256": "DC73CEE6408DAB6F9739E14EE961905FD483D378AD4A2EF3C0E0EC088ACE9170", "revision": "6a00653b1",
     },
+    "ModuleData/Languages/sets_ui_strings.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
+        "sha256": "A561B75E68D12A61531820BA5C2D8160E24C459CD7B5E12EFB28F154326E61D4", "revision": "c77cf9d3b",
+    },
+    "ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
+        "sha256": "F04F7C39ED59933C911DAF5320444DAE72FC7F7B589D2641560060AC33F868A5", "revision": "c77cf9d3b",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
