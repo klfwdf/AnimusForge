@@ -122,4 +122,39 @@
   <string id="AF_MCM_Shout_StareSeconds" text="盯着看触发时间(秒)" />
   <string id="AF_MCM_Shout_DirectAttack" text="允许玩家直接攻击触发场景冲突" />
   <string id="AF_MCM_Shout_InputBackground" text="喊话输入框底色" />
+  <string id="AF_UI_Onboarding_YjTesting" text="正在测试 YJ 三条线路，完成后进入接入方式选择…" />
+  <string id="AF_UI_Onboarding_YjAllFailed" text="YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。" />
+  <string id="AF_UI_Onboarding_YjProbeFailed" text="YJ 线路测速失败，请重试。" />
+  <string id="AF_UI_Onboarding_FlashTitle" text="DeepSeek Flash 极速推荐" />
+  <string id="AF_UI_Onboarding_FlashHint" text="请输入你的 DeepSeek 官方 API Key (sk-...)：" />
+  <string id="AF_UI_Onboarding_KeyEmpty" text="API Key 不能为空" />
+  <string id="AF_UI_Onboarding_ProTitle" text="DeepSeek Pro 深度智谋" />
+  <string id="AF_UI_Onboarding_YjSingleTitle" text="YJ 单分组 Key 接入" />
+  <string id="AF_UI_Onboarding_YjSingleHint" text="请输入一个 YJ API Key，将自动写入 4 条管线：" />
+  <string id="AF_UI_Onboarding_YjOpenManagement" text="正在打开 YJ API Key 管理页与额度购买页..." />
+  <string id="AF_UI_Onboarding_QqCopied" text="已复制 YJ 交流 QQ 群号：1097237977" />
+  <string id="AF_UI_Onboarding_QqCopyFailed" text="复制群号失败，请手动添加：1097237977" />
+  <string id="AF_UI_Onboarding_YjFetchingModels" text="正在拉取 YJ 可用模型列表..." />
+  <string id="AF_UI_Onboarding_MissingEndpoint" text="请先填写 Base URL 与 API Key" />
+  <string id="AF_UI_Onboarding_ModelParseFailed" text="未能从接口解析出模型列表" />
+  <string id="AF_UI_Onboarding_ModelFetchFailed" text="拉取模型失败，请检查网络和 API 配置" />
+  <string id="AF_UI_Onboarding_PrimaryIncomplete" text="主 API 配置不完整，请检查 URL 与 Key" />
+  <string id="AF_UI_Onboarding_Handshaking" text="正在握手..." />
+  <string id="AF_UI_Onboarding_EventSkipped" text="未配置，跳过可选周报 API" />
+  <string id="AF_UI_Onboarding_TestRequired" text="请先完成 API 连通性测试。" />
+  <string id="AF_UI_Onboarding_OpenSupport" text="正在打开爱发电支持页面..." />
+  <string id="AF_UI_Onboarding_EditPrimaryUrl" text="编辑主 API Base URL" />
+  <string id="AF_UI_Onboarding_EditPrimaryKey" text="编辑主 API Key" />
+  <string id="AF_UI_Onboarding_EditAuxUrl" text="编辑前处理 Base URL" />
+  <string id="AF_UI_Onboarding_EditAuxKey" text="编辑前处理 Key" />
+  <string id="AF_UI_Onboarding_EditPostUrl" text="编辑后处理 Base URL" />
+  <string id="AF_UI_Onboarding_EditPostKey" text="编辑后处理 Key" />
+  <string id="AF_UI_Onboarding_EditEventUrl" text="编辑周报 API Base URL" />
+  <string id="AF_UI_Onboarding_EditEventKey" text="编辑周报 Key" />
+  <string id="AF_UI_Onboarding_YjSelectedRoute" text="已选线路：{HOST} · 响应约 {MS} ms；请选择接入方式" />
+  <string id="AF_UI_Onboarding_ModelsFetched" text="成功拉取 {COUNT} 个模型" />
+  <string id="AF_UI_Onboarding_Target_Primary" text="主 API（正文生成）" />
+  <string id="AF_UI_Onboarding_Target_Auxiliary" text="前处理 API（意图路由）" />
+  <string id="AF_UI_Onboarding_Target_Postprocess" text="后处理 API（指令标签）" />
+  <string id="AF_UI_Onboarding_Target_Event" text="每日与周报 API" />
 </strings>
