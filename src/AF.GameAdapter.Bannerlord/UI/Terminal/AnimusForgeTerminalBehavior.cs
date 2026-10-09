@@ -259,11 +259,13 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_lastTerminalHintDay = campaignDayIndex;
 			if (AnimusForgeTerminalSettings.IsHotkeyEnabled)
 			{
-				InformationManager.DisplayMessage(new InformationMessage($"按{GetConfiguredTerminalKeyLabel()}键打开AnimusForge终端。"));
+				TextObject hint = new TextObject("{=AF_TERMINAL_UI_DailyHotkeyHint}Press {KEY} to open the AnimusForge terminal.");
+				hint.SetTextVariable("KEY", GetConfiguredTerminalKeyLabel());
+				InformationManager.DisplayMessage(new InformationMessage(hint.ToString()));
 			}
 			else if (AnimusForgeTerminalSettings.IsMapIconEnabled)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("可点击大地图左下角导航栏中的终端图标打开AnimusForge终端。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_DailyMapIconHint", "Click the terminal icon in the lower-left campaign map navigation bar to open the AnimusForge terminal.")));
 			}
 		}
 		catch (Exception ex)
@@ -321,7 +323,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<AnimusForgeTerminalNode> roots = BuildTerminalRootNodes();
 		if (!AnimusForgeTerminalPopup.Show(roots, ExecuteTerminalLeaf, CloseTerminal))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 AnimusForge 终端失败。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_OpenFailed", "Failed to open the AnimusForge terminal.")));
 			CloseTerminal();
 		}
 	}
@@ -338,7 +340,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			Id = id ?? "",
 			Title = title ?? "",
-			Category = string.IsNullOrWhiteSpace(category) ? "全部" : category,
+			Category = string.IsNullOrWhiteSpace(category) ? Ui("AF_TERMINAL_UI_CategoryAll", "All") : category,
 			Icon = string.IsNullOrWhiteSpace(icon) ? "❖" : icon,
 			Hint = hint ?? ""
 		};
@@ -358,29 +360,34 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		return new List<AnimusForgeTerminalNode>
 		{
-			Node("custom_policy_management", "王国公告", "外交与国家", "♚", "二级面板：撰写公告、地方政策。",
-				Node("policy_compose", "撰写王国公告", "外交与国家", "✍", "继续进入二级：自定义政策或外交宣言。",
-					Node("custom_policy", "撰写自定义政策", "外交与国家", "⚖", "打开自定义政策撰写面板。"),
-					Node("diplomatic_document", "撰写外交宣言", "外交与国家", "⚐", "发布王国外交宣言。")),
-				Node("local_policies", "地方政策", "外交与国家", "♜", "发布只影响玩家家族封地范围的地方政策。")),
-			Node("vassalage_management", "臣属国管理", "外交与国家", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
-			Node("weekly_reports", "王国近况", "外交与国家", "✉", "查看各国最近的外交宣言、政策、快报与近况。"),
+			Node("custom_policy_management", Ui("AF_TERMINAL_UI_Root_KingdomNotices", "Kingdom notices"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "♚", Ui("AF_TERMINAL_UI_Root_KingdomNotices_Hint", "Open the subpanel for notices and local policies."),
+				Node("policy_compose", Ui("AF_TERMINAL_UI_Root_ComposeNotice", "Compose kingdom notice"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "✍", Ui("AF_TERMINAL_UI_Root_ComposeNotice_Hint", "Continue to custom policy or diplomatic declaration."),
+					Node("custom_policy", Ui("AF_TERMINAL_UI_Root_CustomPolicy", "Compose custom policy"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚖", Ui("AF_TERMINAL_UI_Root_CustomPolicy_Hint", "Open the custom policy editor.")),
+					Node("diplomatic_document", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument", "Compose diplomatic declaration"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚐", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument_Hint", "Publish a diplomatic declaration.")),
+				Node("local_policies", Ui("AF_TERMINAL_UI_Root_LocalPolicies", "Local policies"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "♜", Ui("AF_TERMINAL_UI_Root_LocalPolicies_Hint", "Publish policies that affect only the player's clan fiefs.")),
+			Node("vassalage_management", Ui("AF_TERMINAL_UI_Root_Vassalage", "Vassalage management"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚜", Ui("AF_TERMINAL_UI_Root_Vassalage_Hint", "View existing vassal states; use LLM dialogue for termination, amendment, or annexation.")),
+			Node("weekly_reports", Ui("AF_TERMINAL_UI_Root_KingdomNews", "Kingdom news"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "✉", Ui("AF_TERMINAL_UI_Root_KingdomNews_Hint", "View recent diplomatic declarations, policies, bulletins, and news from each kingdom.")),
 
-			Node("tag_catalog", "标签列表", "提示词与规则", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),
-			Node("reload_database", "重载数据库", "提示词与规则", "⚡", "替换非主角知识、世界/王国开局知识、王国性格/战略和声音。"),
+			Node("tag_catalog", Ui("AF_TERMINAL_UI_Root_TagCatalog", "Tag catalog"), Ui("AF_TERMINAL_UI_CategoryPrompts", "Prompts and rules"), "❖", Ui("AF_TERMINAL_UI_Root_TagCatalog_Hint", "View and refresh the body/postprocess tag index or export it to TXT.")),
+			Node("reload_database", Ui("AF_TERMINAL_UI_Root_ReloadDatabase", "Reload database"), Ui("AF_TERMINAL_UI_CategoryPrompts", "Prompts and rules"), "⚡", Ui("AF_TERMINAL_UI_Root_ReloadDatabase_Hint", "Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices.")),
 
-			Node("api_onboarding", "重新进行API首次引导", "AI核心", "⚙", "只重新选择和测试 API 配置。"),
-			Node("analyze_latest_error", "分析最近错误", "AI核心", "⚠", "使用前处理 API 分析本局最近一次 AnimusForge 错误。"),
+			Node("api_onboarding", Ui("AF_TERMINAL_UI_Root_ApiOnboarding", "Run API setup again"), Ui("AF_TERMINAL_UI_CategoryAiCore", "AI core"), "⚙", Ui("AF_TERMINAL_UI_Root_ApiOnboarding_Hint", "Select and test API configuration again.")),
+			Node("analyze_latest_error", Ui("AF_TERMINAL_UI_Root_AnalyzeError", "Analyze latest error"), Ui("AF_TERMINAL_UI_CategoryAiCore", "AI core"), "⚠", Ui("AF_TERMINAL_UI_Root_AnalyzeError_Hint", "Use the preprocessing API to analyze the latest AnimusForge error in this campaign.")),
 
-			Node("settlement_entry_troops", "进城随行配置", "决斗与部队", "♞", "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
-			Node("noble_prisoner_escort", "贵族俘虏随行配置", "决斗与部队", "⚓", "配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
-			Node("troop_inspection", "检阅士兵", "决斗与部队", "⚔", "进入部队检阅流程。"),
-			Node("military_exercise", "军事演习", "决斗与部队", "⚑", "进入军事演习流程。"),
+			Node("settlement_entry_troops", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops", "Settlement entry escort"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "♞", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops_Hint", "Configure companions and troops automatically brought into towns, castles, and villages by SETS.")),
+			Node("noble_prisoner_escort", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort", "Noble prisoner escort"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚓", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort_Hint", "Configure hero prisoners brought into sieges, settlements, lord halls, and wilderness meetings.")),
+			Node("troop_inspection", Ui("AF_TERMINAL_UI_Root_TroopInspection", "Inspect troops"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚔", Ui("AF_TERMINAL_UI_Root_TroopInspection_Hint", "Open the troop inspection flow.")),
+			Node("military_exercise", Ui("AF_TERMINAL_UI_Root_MilitaryExercise", "Military exercise"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚑", Ui("AF_TERMINAL_UI_Root_MilitaryExercise_Hint", "Open the military exercise flow.")),
 
-			Node("player_persona", "修改玩家外貌与背景", "角色与同伴", "♟", "编辑玩家 RP 外貌与背景。"),
-			Node("player_rp_forge", "制造RP物品", "角色与同伴", "⚒", "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
-			Node("trust_query", "信任度查询", "角色与同伴", "⚖", "查询英雄、定居点与商人信任来源。")
+			Node("player_persona", Ui("AF_TERMINAL_UI_Root_PlayerPersona", "Edit player appearance and background"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "♟", Ui("AF_TERMINAL_UI_Root_PlayerPersona_Hint", "Edit the player's RP appearance and background.")),
+			Node("player_rp_forge", Ui("AF_TERMINAL_UI_Root_PlayerRpForge", "Craft RP item"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "⚒", Ui("AF_TERMINAL_UI_Root_PlayerRpForge_Hint", "Spend denars to craft a personal RP item or weapon/equipment.")),
+			Node("trust_query", Ui("AF_TERMINAL_UI_Root_TrustQuery", "Trust query"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "⚖", Ui("AF_TERMINAL_UI_Root_TrustQuery_Hint", "Query trust sources for heroes, settlements, and merchants."))
 		};
+	}
+
+	private static string Ui(string id, string fallback)
+	{
+		return new TextObject("{=" + id + "}" + fallback).ToString();
 	}
 
 	private bool ExecuteTerminalLeaf(string id)
@@ -419,9 +426,12 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		case "analyze_latest_error":
 			if (popupVm == null) return false;
 			bool hasError = AiErrorAnalysisInquiry.TryGetLatestFailure(out string errTitle, out string errDetail);
+			TextObject latestError = new TextObject("{=AF_TERMINAL_UI_DiagnosticsLatestError}Latest error: {TITLE}\n{DETAIL}");
+			latestError.SetTextVariable("TITLE", errTitle ?? "");
+			latestError.SetTextVariable("DETAIL", errDetail ?? "");
 			popupVm.ShowDiagnostics(
-				"捕获哨兵状态: 正常在线",
-				hasError ? $"【最近报错: {errTitle}】\n{errDetail}" : "本局当前未记录到任何致命报错堆栈。",
+				Ui("AF_TERMINAL_UI_DiagnosticsOnline", "Sentinel status: online"),
+				hasError ? latestError.ToString() : Ui("AF_TERMINAL_UI_DiagnosticsNoError", "No fatal error stack has been recorded in this campaign."),
 				hasError
 			);
 			return true;
@@ -435,7 +445,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 			if (!DiplomacyPresentationBridge.OpenComposeFromTerminal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_DiplomaticComposeFailed", "Failed to open the diplomatic declaration editor.")));
 			}
 			return true;
 
@@ -476,7 +486,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 			if (!MyBehavior.OpenDatabaseReloadFromTerminal(OpenRootMenu))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法打开数据库重载流程。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_ReloadDatabaseFailed", "Unable to open the database reload flow.")));
 			}
 			return true;
 
@@ -484,7 +494,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 			if (!ModOnboardingBehavior.OpenApiSetupOnlyFlow())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_ApiOnboardingFailed", "Unable to open API setup.")));
 			}
 			return true;
 
@@ -542,18 +552,18 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 			if (knowledgeLibraryBehavior == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_PlayerPersonaNotReady", "Unable to open the player appearance and background editor: the Knowledge behavior is not initialized.")));
 				return;
 			}
 			knowledgeLibraryBehavior.OpenPlayerAppearanceAndBackgroundEditor(delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已返回玩家外貌与背景设置。"));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_PlayerPersonaReturned", "Returned to player appearance and background settings.")));
 			});
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Terminal", "[ERROR] open player persona editor failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败。"));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_PlayerPersonaOpenFailed", "Failed to open the player appearance and background editor.")));
 		}
 	}
 

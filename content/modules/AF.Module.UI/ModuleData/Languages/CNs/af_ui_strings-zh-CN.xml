@@ -1940,5 +1940,62 @@
   <string id="AF_UI_Weekly_Editor_095" text="周报" />
   <string id="AF_UI_Weekly_Editor_099" text="保存并退出" />
   <string id="AF_UI_Weekly_Editor_RelatedSeparator" text="、" />
+
+
+  <!-- Terminal behavior UI -->
+  <string id="AF_TERMINAL_UI_DailyHotkeyHint" text="按{KEY}键打开 AnimusForge 终端。" />
+  <string id="AF_TERMINAL_UI_DailyMapIconHint" text="点击大地图左下角导航栏中的终端图标打开 AnimusForge 终端。" />
+  <string id="AF_TERMINAL_UI_OpenFailed" text="打开 AnimusForge 终端失败。" />
+  <string id="AF_TERMINAL_UI_CategoryAll" text="全部" />
+  <string id="AF_TERMINAL_UI_CategoryDiplomacy" text="外交与国家" />
+  <string id="AF_TERMINAL_UI_CategoryPrompts" text="提示词与规则" />
+  <string id="AF_TERMINAL_UI_CategoryAiCore" text="AI 核心" />
+  <string id="AF_TERMINAL_UI_CategoryDuelTroops" text="决斗与部队" />
+  <string id="AF_TERMINAL_UI_CategoryCharacters" text="角色与同伴" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="王国公告" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="打开撰写公告和地方政策的二级面板。" />
+  <string id="AF_TERMINAL_UI_Root_ComposeNotice" text="撰写王国公告" />
+  <string id="AF_TERMINAL_UI_Root_ComposeNotice_Hint" text="继续进入自定义政策或外交宣言。" />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="撰写自定义政策" />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy_Hint" text="打开自定义政策撰写面板。" />
+  <string id="AF_TERMINAL_UI_Root_DiplomaticDocument" text="撰写外交宣言" />
+  <string id="AF_TERMINAL_UI_Root_DiplomaticDocument_Hint" text="发布王国外交宣言。" />
+  <string id="AF_TERMINAL_UI_Root_LocalPolicies" text="地方政策" />
+  <string id="AF_TERMINAL_UI_Root_LocalPolicies_Hint" text="发布只影响玩家家族封地范围的地方政策。" />
+  <string id="AF_TERMINAL_UI_Root_Vassalage" text="臣属国管理" />
+  <string id="AF_TERMINAL_UI_Root_Vassalage_Hint" text="只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNews" text="王国近况" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNews_Hint" text="查看各国最近的外交宣言、政策、快报与近况。" />
+  <string id="AF_TERMINAL_UI_Root_TagCatalog" text="标签列表" />
+  <string id="AF_TERMINAL_UI_Root_TagCatalog_Hint" text="查看正文/后处理标签索引，可刷新或导出 TXT。" />
+  <string id="AF_TERMINAL_UI_Root_ReloadDatabase" text="重载数据库" />
+  <string id="AF_TERMINAL_UI_Root_ReloadDatabase_Hint" text="替换非主角知识、世界/王国开局知识、王国性格/战略和声音。" />
+  <string id="AF_TERMINAL_UI_Root_ApiOnboarding" text="重新进行 API 首次引导" />
+  <string id="AF_TERMINAL_UI_Root_ApiOnboarding_Hint" text="只重新选择和测试 API 配置。" />
+  <string id="AF_TERMINAL_UI_Root_AnalyzeError" text="分析最近错误" />
+  <string id="AF_TERMINAL_UI_Root_AnalyzeError_Hint" text="使用前处理 API 分析本局最近一次 AnimusForge 错误。" />
+  <string id="AF_TERMINAL_UI_Root_SettlementEntryTroops" text="进城随行配置" />
+  <string id="AF_TERMINAL_UI_Root_SettlementEntryTroops_Hint" text="配置 SETS 进城、城堡、村庄自动带入的同伴和士兵。" />
+  <string id="AF_TERMINAL_UI_Root_NoblePrisonerEscort" text="贵族俘虏随行配置" />
+  <string id="AF_TERMINAL_UI_Root_NoblePrisonerEscort_Hint" text="配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。" />
+  <string id="AF_TERMINAL_UI_Root_TroopInspection" text="检阅士兵" />
+  <string id="AF_TERMINAL_UI_Root_TroopInspection_Hint" text="进入部队检阅流程。" />
+  <string id="AF_TERMINAL_UI_Root_MilitaryExercise" text="军事演习" />
+  <string id="AF_TERMINAL_UI_Root_MilitaryExercise_Hint" text="进入军事演习流程。" />
+  <string id="AF_TERMINAL_UI_Root_PlayerPersona" text="修改玩家外貌与背景" />
+  <string id="AF_TERMINAL_UI_Root_PlayerPersona_Hint" text="编辑玩家 RP 外貌与背景。" />
+  <string id="AF_TERMINAL_UI_Root_PlayerRpForge" text="制造 RP 物品" />
+  <string id="AF_TERMINAL_UI_Root_PlayerRpForge_Hint" text="投入第纳尔，制造玩家自己的普通 RP 物品或武器装备。" />
+  <string id="AF_TERMINAL_UI_Root_TrustQuery" text="信任度查询" />
+  <string id="AF_TERMINAL_UI_Root_TrustQuery_Hint" text="查询英雄、定居点与商人信任来源。" />
+  <string id="AF_TERMINAL_UI_DiagnosticsOnline" text="捕获哨兵状态：正常在线" />
+  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="最近报错：{TITLE}\n{DETAIL}" />
+  <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="本局当前未记录到任何致命报错堆栈。" />
+  <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="打开外交宣言撰写界面失败。" />
+  <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="无法打开数据库重载流程。" />
+  <string id="AF_TERMINAL_UI_ApiOnboardingFailed" text="无法打开 API 首次引导。" />
+  <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。" />
+  <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="已返回玩家外貌与背景设置。" />
+  <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="打开玩家外貌与背景编辑器失败。" />
 </strings>
 </base>
