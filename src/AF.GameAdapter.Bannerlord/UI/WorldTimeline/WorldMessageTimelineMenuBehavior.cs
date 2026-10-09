@@ -3,6 +3,7 @@ using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -11,7 +12,7 @@ namespace AnimusForge;
 /// </summary>
 public sealed class WorldMessageTimelineMenuBehavior : CampaignBehaviorBase
 {
-	private const string OptionText = "传闻";
+	private static string OptionText => new TextObject("{=AF_UI_Timeline_MenuOption}Rumors").ToString();
 
 	public override void RegisterEvents()
 	{
@@ -44,7 +45,7 @@ public sealed class WorldMessageTimelineMenuBehavior : CampaignBehaviorBase
 	{
 		if (!WorldMessageTimelineUi.Show())
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前无法打开传闻界面。"));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Timeline_OpenFailed}The rumors timeline cannot be opened right now.").ToString()));
 		}
 	}
 }

@@ -598,5 +598,85 @@
     <string id="AF_MCM_CivilWar_MinRefusals_Hint" text="派系的诉求至少被国王拒绝这么多次之后，才可能自动升级为内战（含事件触发的升级）。被拒次数达到 4 次仍未起兵的派系会解散，所以上限为 4。玩家手动起兵不受此限。默认 2。" />
     <string id="AF_MCM_CivilWar_WorldMaxWars" text="世界叛乱上限" />
     <string id="AF_MCM_CivilWar_WorldMaxWars_Hint" text="全球正在进行或等待建国的内战派系达到上限后，NPC派系暂停起兵，名额释放后恢复。玩家手动起兵、提议获准或抗命起兵不受此上限限制，但会计入数量；已登记政变战争也计入，政变发起本身不受此限制。降低上限不会结束已有战争。不统计原版城镇叛乱。默认3场。" />
-  </strings>
+
+  <string id="AF_UI_Weekly_Browser_Title" text="王国近况" />
+  <string id="AF_UI_Weekly_Browser_Country" text="王国" />
+  <string id="AF_UI_Weekly_Browser_NoSelection" text="未选择王国" />
+  <string id="AF_UI_Weekly_Browser_Empty" text="暂无王国近况。" />
+  <string id="AF_UI_Weekly_Browser_Close" text="关闭" />
+  <string id="AF_UI_Weekly_Browser_ArchiveOpenFailed" text="打开档案失败，请查看日志。" />
+  <string id="AF_UI_Weekly_Browser_NotInitialized" text="周报功能尚未初始化，请关闭后重试。" />
+  <string id="AF_UI_Weekly_Browser_Generating" text="正在生成完整周报，请稍候。" />
+  <string id="AF_UI_Weekly_Browser_GenerationFailed" text="完整周报生成失败，原有内容已保留，请重试。" />
+  <string id="AF_UI_Weekly_Browser_GenerationNotProduced" text="完整周报未生成，原有内容已保留，可再次尝试。" />
+  <string id="AF_UI_Weekly_Browser_FilteredEmpty" text="当前筛选下暂无内容。" />
+  <string id="AF_UI_Weekly_Browser_PageSummary" text="共 {COUNT} 条 · 每页 {PAGE_SIZE} 条" />
+  <string id="AF_UI_Weekly_Browser_ReportCount" text="{COUNT} 条" />
+  <string id="AF_UI_Weekly_Browser_FilterAll" text="全部" />
+  <string id="AF_UI_Weekly_Browser_FilterBulletin" text="快报" />
+  <string id="AF_UI_Weekly_Browser_FilterDiplomacy" text="外交" />
+  <string id="AF_UI_Weekly_Browser_FilterPolicy" text="政策" />
+  <string id="AF_UI_Weekly_Browser_FilterRecent" text="近况" />
+  <string id="AF_UI_Weekly_Browser_FilterWeekly" text="周报" />
+  <string id="AF_UI_Weekly_Browser_OpenBulletin" text="打开快报" />
+  <string id="AF_UI_Weekly_Browser_OpenRecent" text="阅读近况" />
+  <string id="AF_UI_Weekly_Browser_OpenDiplomacy" text="阅读宣言" />
+  <string id="AF_UI_Weekly_Browser_OpenPolicy" text="阅读政策" />
+  <string id="AF_UI_Weekly_Browser_OpenWeekly" text="阅读周报" />
+  <string id="AF_UI_Weekly_Browser_StabilityUp" text="稳定度上升！" />
+  <string id="AF_UI_Weekly_Browser_StabilityDown" text="稳定度下降！" />
+  <string id="AF_UI_Weekly_Browser_StabilityFlat" text="稳定度持平。" />
+  <string id="AF_UI_Weekly_Browser_BodyEmpty" text="当前这期周报还没有正文。" />
+  <string id="AF_UI_ConversationHistory_Title" text="AnimusForge 对话历史" />
+  <string id="AF_UI_ConversationHistory_CurrentTarget" text="当前对话对象" />
+  <string id="AF_UI_ConversationHistory_Empty" text="(AnimusForge)当前对象还没有可显示的 AnimusForge 对话历史。" />
+  <string id="AF_UI_ConversationHistory_NoRecords" text="暂无记录" />
+  <string id="AF_UI_ConversationHistory_PageStatus" text="第 {CURRENT} / {TOTAL} 页（{COUNT} 条）" />
+  <string id="AF_UI_ConversationHistory_SpeakerFallback" text="记录" />
+  <string id="AF_UI_ConversationHistory_Close" text="关闭" />
+  <string id="AF_UI_ConversationHistory_Older" text="更早记录" />
+  <string id="AF_UI_ConversationHistory_Newer" text="更新记录" />
+  <string id="AF_UI_Weekly_Timeline_ContinueDeveloper" text="继续游戏（10倍）" />
+  <string id="AF_UI_Weekly_Timeline_CategoryTitle" text="类别（可多选）" />
+  <string id="AF_UI_Weekly_Timeline_CountryTitle" text="国家（可多选）" />
+  <string id="AF_UI_Weekly_Timeline_Selected" text="已选" />
+  <string id="AF_UI_Weekly_Timeline_FilteredEmpty" text="当前筛选下暂无消息" />
+  <string id="AF_UI_Weekly_Timeline_SelectionHint" text="选择左侧类别或国家以查看消息" />
+  <string id="AF_UI_Weekly_Bulletin_Subtitle" text="Chronica  Regnorum" />
+  <string id="AF_UI_Weekly_Bulletin_CopyPrompt" text="复制提示词" />
+  <string id="AF_UI_Weekly_Bulletin_Redraw" text="重绘" />
+  <string id="AF_UI_Weekly_Bulletin_RedrawPrompt" text="重绘（带提示词）" />
+  <string id="AF_UI_Weekly_Bulletin_Gallery" text="画廊" />
+  <string id="AF_UI_Weekly_Bulletin_Delete" text="删除" />
+  <string id="AF_UI_Weekly_Bulletin_OtherMessages" text="其 余 消 息" />
+
+  <string id="AF_UI_Weekly_Report_DefaultTitle" text="周报预览" />
+  <string id="AF_UI_Weekly_Report_EmptyBody" text="当前周报正文为空。" />
+  <string id="AF_UI_Weekly_Report_Military" text="军事事件" />
+  <string id="AF_UI_Weekly_Report_Diplomacy" text="外交事件" />
+  <string id="AF_UI_Weekly_Report_Domestic" text="领地内事件" />
+
+  <string id="AF_UI_ConversationHistory_ConfirmDelete" text="确认删除" />
+  <string id="AF_UI_ConversationHistory_Delete" text="删除" />
+  <string id="AF_UI_ConversationHistory_Save" text="保存" />
+  <string id="AF_UI_ConversationHistory_Edit" text="编辑" />
+  <string id="AF_UI_Timeline_MenuOption" text="传闻" />
+  <string id="AF_UI_Timeline_OpenFailed" text="当前无法打开传闻界面。" />
+
+  <string id="AF_UI_Weekly_Browser_AllKingdoms" text="全部王国" />
+  <string id="AF_UI_Weekly_Browser_DiplomaticImpact" text="外交影响" />
+  <string id="AF_UI_Weekly_Browser_DiplomaticEmpty" text="（该外交消息暂无正文。）" />
+  <string id="AF_UI_Weekly_Browser_PolicyEmpty" text="（该政策暂无正文。）" />
+
+  <string id="AF_UI_Weekly_Browser_AdditionalFact" text="补充事实" />
+  <string id="AF_UI_Weekly_Browser_HistoricalNews" text="历史近况（原档保留）" />
+  <string id="AF_UI_Weekly_Browser_OtherNews" text="其他近况" />
+  <string id="AF_UI_Weekly_Browser_NewsSuffix" text="近况" />
+  <string id="AF_UI_Weekly_Browser_KindBulletin" text="即时快报" />
+  <string id="AF_UI_Weekly_Browser_KindRecent" text="王国近况" />
+  <string id="AF_UI_Weekly_Browser_KindWeekly" text="周报档案" />
+  <string id="AF_UI_Weekly_Browser_Issue" text="第 {NUMBER} 期" />
+  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="卡拉迪亚{DATE}" />
+  <string id="AF_UI_Weekly_Browser_DayNumber" text="第 {DAY} 日" />
+</strings>
 </base>

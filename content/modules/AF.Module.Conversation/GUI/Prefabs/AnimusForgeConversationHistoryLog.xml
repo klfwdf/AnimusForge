@@ -16,7 +16,7 @@
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="24" MarginRight="36" Command.Click="CloseEx" IsEnabled="true">
               <Children>
-                <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="关闭" Brush.FontSize="26" />
+                <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="@CloseText" Brush.FontSize="26" />
               </Children>
             </ButtonWidget>
             <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="10" MarginTop="88" LayoutImp.LayoutMethod="VerticalTopToBottom">
@@ -26,13 +26,13 @@
                   <Children>
                     <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanLoadOlderPage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="112" SuggestedHeight="34" Brush="Popup.Cancel.Button" Command.Click="LoadOlderPage" UpdateChildrenStates="true">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="更早记录" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@OlderPageText" />
                       </Children>
                     </ButtonWidget>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PageStatusText" Brush.FontSize="18" DoNotAcceptEvents="true" />
                     <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanLoadNewerPage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="112" SuggestedHeight="34" Brush="Popup.Done.Button" Command.Click="LoadNewerPage" UpdateChildrenStates="true">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="更新记录" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@NewerPageText" />
                       </Children>
                     </ButtonWidget>
                   </Children>

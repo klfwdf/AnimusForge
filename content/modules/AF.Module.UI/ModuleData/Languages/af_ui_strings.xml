@@ -600,5 +600,85 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_MCM_CivilWar_MinRefusals_Hint" text="A faction’s demands must be rejected by the king at least this many times before it can automatically escalate to civil war, including event-triggered escalation. A faction that has not risen after four refusals is dissolved, so the maximum is 4. Manual player uprisings are exempt. Default: 2." />
     <string id="AF_MCM_CivilWar_WorldMaxWars" text="World rebellion cap" />
     <string id="AF_MCM_CivilWar_WorldMaxWars_Hint" text="When the global cap for civil-war factions currently fighting or waiting to establish a kingdom is reached, NPC factions pause their uprisings and resume when a slot opens. Player uprisings, approved proposals, and defiant uprisings are exempt from the cap but count toward it; registered coup wars also count, while starting a coup is not capped. Lowering the cap does not end existing wars. Native town rebellions are excluded. Default: 3 wars." />
-  </strings>
+
+  <string id="AF_UI_Weekly_Browser_Title" text="Kingdom news" />
+  <string id="AF_UI_Weekly_Browser_Country" text="Kingdom" />
+  <string id="AF_UI_Weekly_Browser_NoSelection" text="No kingdom selected" />
+  <string id="AF_UI_Weekly_Browser_Empty" text="No kingdom news is available." />
+  <string id="AF_UI_Weekly_Browser_Close" text="Close" />
+  <string id="AF_UI_Weekly_Browser_ArchiveOpenFailed" text="Could not open the archive. Check the log." />
+  <string id="AF_UI_Weekly_Browser_NotInitialized" text="The weekly-report system is not initialized. Close and try again." />
+  <string id="AF_UI_Weekly_Browser_Generating" text="Generating the full weekly report..." />
+  <string id="AF_UI_Weekly_Browser_GenerationFailed" text="Full report generation failed; existing content was kept. Try again." />
+  <string id="AF_UI_Weekly_Browser_GenerationNotProduced" text="No full report was generated; existing content was kept. You can try again." />
+  <string id="AF_UI_Weekly_Browser_FilteredEmpty" text="No entries match the current filter." />
+  <string id="AF_UI_Weekly_Browser_PageSummary" text="{COUNT} entries · {PAGE_SIZE} per page" />
+  <string id="AF_UI_Weekly_Browser_ReportCount" text="{COUNT} entries" />
+  <string id="AF_UI_Weekly_Browser_FilterAll" text="All" />
+  <string id="AF_UI_Weekly_Browser_FilterBulletin" text="Bulletin" />
+  <string id="AF_UI_Weekly_Browser_FilterDiplomacy" text="Diplomacy" />
+  <string id="AF_UI_Weekly_Browser_FilterPolicy" text="Policy" />
+  <string id="AF_UI_Weekly_Browser_FilterRecent" text="Recent" />
+  <string id="AF_UI_Weekly_Browser_FilterWeekly" text="Weekly report" />
+  <string id="AF_UI_Weekly_Browser_OpenBulletin" text="Open bulletin" />
+  <string id="AF_UI_Weekly_Browser_OpenRecent" text="Read current news" />
+  <string id="AF_UI_Weekly_Browser_OpenDiplomacy" text="Read declaration" />
+  <string id="AF_UI_Weekly_Browser_OpenPolicy" text="Read policy" />
+  <string id="AF_UI_Weekly_Browser_OpenWeekly" text="Read weekly report" />
+  <string id="AF_UI_Weekly_Browser_StabilityUp" text="Stability increased!" />
+  <string id="AF_UI_Weekly_Browser_StabilityDown" text="Stability decreased!" />
+  <string id="AF_UI_Weekly_Browser_StabilityFlat" text="Stability unchanged." />
+  <string id="AF_UI_Weekly_Browser_BodyEmpty" text="This weekly report has no body text." />
+  <string id="AF_UI_ConversationHistory_Title" text="AnimusForge conversation history" />
+  <string id="AF_UI_ConversationHistory_CurrentTarget" text="Current conversation target" />
+  <string id="AF_UI_ConversationHistory_Empty" text="(AnimusForge) This target has no AnimusForge conversation history to display." />
+  <string id="AF_UI_ConversationHistory_NoRecords" text="No records" />
+  <string id="AF_UI_ConversationHistory_PageStatus" text="Page {CURRENT} / {TOTAL} ({COUNT} entries)" />
+  <string id="AF_UI_ConversationHistory_SpeakerFallback" text="Record" />
+  <string id="AF_UI_ConversationHistory_Close" text="Close" />
+  <string id="AF_UI_ConversationHistory_Older" text="Older records" />
+  <string id="AF_UI_ConversationHistory_Newer" text="Newer records" />
+  <string id="AF_UI_Weekly_Timeline_ContinueDeveloper" text="Continue game (10x)" />
+  <string id="AF_UI_Weekly_Timeline_CategoryTitle" text="Categories (multiple selection)" />
+  <string id="AF_UI_Weekly_Timeline_CountryTitle" text="Kingdoms (multiple selection)" />
+  <string id="AF_UI_Weekly_Timeline_Selected" text="Selected" />
+  <string id="AF_UI_Weekly_Timeline_FilteredEmpty" text="No messages match the current filters" />
+  <string id="AF_UI_Weekly_Timeline_SelectionHint" text="Select a category or kingdom on the left to view messages" />
+  <string id="AF_UI_Weekly_Bulletin_Subtitle" text="Chronica Regnorum" />
+  <string id="AF_UI_Weekly_Bulletin_CopyPrompt" text="Copy prompt" />
+  <string id="AF_UI_Weekly_Bulletin_Redraw" text="Redraw" />
+  <string id="AF_UI_Weekly_Bulletin_RedrawPrompt" text="Redraw with prompt" />
+  <string id="AF_UI_Weekly_Bulletin_Gallery" text="Gallery" />
+  <string id="AF_UI_Weekly_Bulletin_Delete" text="Delete" />
+  <string id="AF_UI_Weekly_Bulletin_OtherMessages" text="Other messages" />
+
+  <string id="AF_UI_Weekly_Report_DefaultTitle" text="Weekly report preview" />
+  <string id="AF_UI_Weekly_Report_EmptyBody" text="This weekly report has no body text." />
+  <string id="AF_UI_Weekly_Report_Military" text="Military events" />
+  <string id="AF_UI_Weekly_Report_Diplomacy" text="Diplomatic events" />
+  <string id="AF_UI_Weekly_Report_Domestic" text="Realm events" />
+
+  <string id="AF_UI_ConversationHistory_ConfirmDelete" text="Confirm delete" />
+  <string id="AF_UI_ConversationHistory_Delete" text="Delete" />
+  <string id="AF_UI_ConversationHistory_Save" text="Save" />
+  <string id="AF_UI_ConversationHistory_Edit" text="Edit" />
+  <string id="AF_UI_Timeline_MenuOption" text="Rumors" />
+  <string id="AF_UI_Timeline_OpenFailed" text="The rumors timeline cannot be opened right now." />
+
+  <string id="AF_UI_Weekly_Browser_AllKingdoms" text="All kingdoms" />
+  <string id="AF_UI_Weekly_Browser_DiplomaticImpact" text="Diplomatic impact" />
+  <string id="AF_UI_Weekly_Browser_DiplomaticEmpty" text="(This diplomatic message has no body text.)" />
+  <string id="AF_UI_Weekly_Browser_PolicyEmpty" text="(This policy has no body text.)" />
+
+  <string id="AF_UI_Weekly_Browser_AdditionalFact" text="Additional fact" />
+  <string id="AF_UI_Weekly_Browser_HistoricalNews" text="Historical news (archive retained)" />
+  <string id="AF_UI_Weekly_Browser_OtherNews" text="Other news" />
+  <string id="AF_UI_Weekly_Browser_NewsSuffix" text="news" />
+  <string id="AF_UI_Weekly_Browser_KindBulletin" text="Bulletin" />
+  <string id="AF_UI_Weekly_Browser_KindRecent" text="Kingdom news" />
+  <string id="AF_UI_Weekly_Browser_KindWeekly" text="Weekly archive" />
+  <string id="AF_UI_Weekly_Browser_Issue" text="Issue {NUMBER}" />
+  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="Calradia {DATE}" />
+  <string id="AF_UI_Weekly_Browser_DayNumber" text="Day {DAY}" />
+</strings>
 </base>
