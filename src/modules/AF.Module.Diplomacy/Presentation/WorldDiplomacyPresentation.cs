@@ -20,17 +20,17 @@ internal static class WorldDiplomacyPresentation
         WorldDiplomacyPlayerContext player = WorldDiplomacyPresentationHost.Player();
         if (player == null)
         {
-            InformationManager.DisplayMessage(new InformationMessage("AI 外交功能尚未初始化。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_NotInitialized", "AI diplomacy is not initialized yet.")));
             return false;
         }
         if (!player.IsRuler)
         {
             InformationManager.ShowInquiry(new InquiryData(
-                "无法发布外交宣言",
-                "只有王国统治者才能发布外交宣言。",
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_RulerOnlyTitle", "Cannot publish diplomatic declaration"),
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_RulerOnlyBody", "Only a kingdom ruler can publish a diplomatic declaration."),
                 true,
                 false,
-                "知道了",
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"),
                 "",
                 onClose,
                 null),
@@ -38,7 +38,7 @@ internal static class WorldDiplomacyPresentation
             return false;
         }
         return WorldDiplomacyComposePopup.Show(
-            "撰写外交宣言",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Title", "Write diplomatic declaration"),
             "",
             "",
             body => DisplayResult(WorldDiplomacyPresentationHost.Submit(new WorldDiplomacyPlayerDocumentCommand(body, player.Generation))),
@@ -65,7 +65,7 @@ internal static class WorldDiplomacyPresentation
     private static void OpenPlayerReplyCompose(WorldDiplomacyDocumentDetail detail)
     {
         if (!WorldDiplomacyPresentationHost.CanOpenReply(detail.DocumentId, detail.RoundId, detail.Generation)) return;
-        WorldDiplomacyComposePopup.Show("回应外交宣言", "", "", body => DisplayResult(
+		WorldDiplomacyComposePopup.Show(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_ReplyTitle", "Reply to diplomatic declaration"), "", "", body => DisplayResult(
             WorldDiplomacyPresentationHost.Submit(new WorldDiplomacyPlayerDocumentCommand(
                 body, detail.Generation, detail.DocumentId, detail.RoundId))), null);
     }
