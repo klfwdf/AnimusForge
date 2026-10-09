@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string id="AF_UI_Onboarding_Title" text="AnimusForge - API Setup Wizard" />
+  <string id="AF_UI_Onboarding_CustomMode" text="Fully custom" />
+  <string id="AF_UI_Onboarding_ApiPanelNotice" text="Configure the Base URL, key, and bound model for four API pipelines in one panel." />
+  <string id="AF_UI_Onboarding_Status_Pending" text="Not tested" />
+  <string id="AF_UI_Onboarding_Status_Testing" text="Testing..." />
+  <string id="AF_UI_Onboarding_Status_Success" text="Connection successful" />
+  <string id="AF_UI_Onboarding_Status_Failed" text="Connection failed" />
+  <string id="AF_UI_Onboarding_KeyPrompt_Title" text="Enter API key" />
+  <string id="AF_UI_Onboarding_KeyPrompt_Hint" text="Enter the API key:" />
+  <string id="AF_UI_Onboarding_Testing" text="Sending handshake test requests to four API pipelines..." />
+  <string id="AF_UI_Onboarding_Yj_Unbound" text="Not bound" />
+  <string id="AF_UI_Onboarding_CustomTitle" text="Fully custom API - Multi-pipeline setup" />
+  <string id="AF_UI_Onboarding_YjTitle" text="YJ API multi-group mode - Dedicated setup" />
+  <string id="AF_UI_Onboarding_YjNotice" text="The Base URL is preset to the YJ endpoint. Configure keys and models for all four pipelines." />
+  <string id="AF_UI_Onboarding_HandshakeSuccess" text="Handshake succeeded" />
+  <string id="AF_UI_Onboarding_EditHint" text="Enter or paste the value (Ctrl+V), then confirm to save or cancel to keep the old value." />
+  <string id="AF_UI_Onboarding_UpdateFailed" text="The interface update failed. Retry the current operation." />
+  <string id="AF_UI_Onboarding_YjMenuTitle" text="YJ API relay - Setup wizard" />
+  <string id="AF_UI_Onboarding_YjMenuSubtitle" text="Direct domestic access without a proxy. Choose single-group or multi-group access." />
+  <string id="AF_UI_Onboarding_YjModelsTitle" text="YJ API dedicated route - Model selection" />
+  <string id="AF_UI_Onboarding_YjModelsSubtitle" text="A single-group key is bound. Choose models for the four pipelines below." />
+  <string id="AF_UI_Onboarding_TestTitle" text="API connectivity handshake test" />
+  <string id="AF_UI_Onboarding_TestSubtitle" text="Testing response speed and connectivity for four API routes in parallel..." />
+  <string id="AF_UI_Onboarding_SuccessTitle" text="🎉 All API connectivity tests passed!" />
+  <string id="AF_UI_Onboarding_SuccessSubtitle" text="The configuration is ready. Click the button below to save it and enter Calradia." />
+  <string id="AF_UI_Onboarding_YjPreset" text="YJ official route preset" />
+  <string id="AF_UI_Onboarding_YjPresetNotice" text="YJ Base URLs are filled automatically. Enter a different group key for each of the four pipelines." />
+  <string id="AF_UI_Onboarding_TestPreparing" text="Preparing the API connectivity test..." />
+  <string id="AF_UI_Onboarding_TestingMany" text="Testing {COUNT} API pipelines in parallel..." />
+  <string id="AF_UI_Onboarding_HandshakeManySuccess" text="✔ {COUNT} API handshakes succeeded! Opening the confirmation screen..." />
+  <string id="AF_UI_Onboarding_TestCancelled" text="The test was cancelled by the user." />
+  <string id="AF_UI_Onboarding_TestException" text="The test encountered an error. Check the network and API configuration." />
+  <string id="AF_UI_Onboarding_TestPartialFailure" text="❌ Some API connectivity tests failed. Check the error details and return to edit." />
+</strings>

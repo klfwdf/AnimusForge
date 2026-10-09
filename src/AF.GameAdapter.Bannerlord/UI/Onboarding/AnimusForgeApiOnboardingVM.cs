@@ -12,6 +12,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -56,7 +57,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public bool IsSuccessViewVisible => _currentView == OnboardingView.Success;
 
 	// Headers
-	private string _titleText = "AnimusForge - API 快捷配置向导";
+	private string _titleText = Localize("{=AF_UI_Onboarding_Title}AnimusForge - API Setup Wizard");
 	[DataSourceProperty]
 	public string TitleText
 	{
@@ -73,7 +74,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Multi-API Panel Details
-	private string _multiApiModeTag = "完全自定义";
+	private string _multiApiModeTag = Localize("{=AF_UI_Onboarding_CustomMode}Fully custom");
 	[DataSourceProperty]
 	public string MultiApiModeTag
 	{
@@ -81,7 +82,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _multiApiModeTag, value, nameof(MultiApiModeTag));
 	}
 
-	private string _multiApiModeNotice = "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型";
+	private string _multiApiModeNotice = Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.");
 	[DataSourceProperty]
 	public string MultiApiModeNotice
 	{
@@ -122,7 +123,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _primaryModelSelector, value, nameof(PrimaryModelSelector));
 	}
 
-	private string _primaryStatusText = "待测试";
+	private string _primaryStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string PrimaryStatusText
 	{
@@ -187,7 +188,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _auxiliaryModelSelector, value, nameof(AuxiliaryModelSelector));
 	}
 
-	private string _auxiliaryStatusText = "待测试";
+	private string _auxiliaryStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string AuxiliaryStatusText
 	{
@@ -252,7 +253,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _postprocessModelSelector, value, nameof(PostprocessModelSelector));
 	}
 
-	private string _postprocessStatusText = "待测试";
+	private string _postprocessStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string PostprocessStatusText
 	{
@@ -317,7 +318,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _eventModelSelector, value, nameof(EventModelSelector));
 	}
 
-	private string _eventStatusText = "待测试";
+	private string _eventStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string EventStatusText
 	{
@@ -350,7 +351,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// YJ Single Group Info
-	private string _yjKeyMasked = "未绑定";
+	private string _yjKeyMasked = Localize("{=AF_UI_Onboarding_Yj_Unbound}Not bound");
 	[DataSourceProperty]
 	public string YjKeyMasked
 	{
@@ -359,7 +360,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Testing Overall State
-	private string _testOverallNotice = "正在向 4 条 API 管线发送握手测试请求...";
+	private string _testOverallNotice = Localize("{=AF_UI_Onboarding_Testing}Sending handshake test requests to four API pipelines...");
 	[DataSourceProperty]
 	public string TestOverallNotice
 	{
@@ -384,7 +385,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _isKeyPromptVisible, value, nameof(IsKeyPromptVisible));
 	}
 
-	private string _keyPromptTitle = "填写 API Key";
+	private string _keyPromptTitle = Localize("{=AF_UI_Onboarding_KeyPrompt_Title}Enter API key");
 	[DataSourceProperty]
 	public string KeyPromptTitle
 	{
@@ -392,7 +393,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _keyPromptTitle, value, nameof(KeyPromptTitle));
 	}
 
-	private string _keyPromptHint = "请输入 API Key：";
+	private string _keyPromptHint = Localize("{=AF_UI_Onboarding_KeyPrompt_Hint}Enter the API key:");
 	[DataSourceProperty]
 	public string KeyPromptHint
 	{
@@ -548,28 +549,32 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		switch (view)
 		{
 			case OnboardingView.Main:
-				TitleText = "AnimusForge - API 快捷配置向导";
+				TitleText = Localize("{=AF_UI_Onboarding_Title}AnimusForge - API Setup Wizard");
 				SubtitleText = "";
 				break;
 			case OnboardingView.YjMenu:
-				TitleText = "YJ API 中转站 · 配置向导";
-				SubtitleText = "免魔法国内直连，请选择单分组或多分组接入方式";
+				TitleText = Localize("{=AF_UI_Onboarding_YjMenuTitle}YJ API relay - Setup wizard");
+				SubtitleText = Localize("{=AF_UI_Onboarding_YjMenuSubtitle}Direct domestic access without a proxy. Choose single-group or multi-group access.");
 				break;
 			case OnboardingView.MultiApi:
-				TitleText = _isCustomMode ? "完全自定义 API · 多管线集中设置" : "YJ API 多分组模式 · 专线集中配置";
-				SubtitleText = _isCustomMode ? "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" : "Base URL 已预设为 YJ 专线，支持 4 条管线分别配置 Key 与模型";
+				TitleText = _isCustomMode
+					? Localize("{=AF_UI_Onboarding_CustomTitle}Fully custom API - Multi-pipeline setup")
+					: Localize("{=AF_UI_Onboarding_YjTitle}YJ API multi-group mode - Dedicated setup");
+				SubtitleText = _isCustomMode
+					? Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.")
+					: Localize("{=AF_UI_Onboarding_YjNotice}The Base URL is preset to the YJ endpoint. Configure keys and models for all four pipelines.");
 				break;
 			case OnboardingView.YjModels:
-				TitleText = "YJ API 中转专线 · 模型选择";
-				SubtitleText = "已绑定单分组 Key，请为以下 4 处场景挑选模型";
+				TitleText = Localize("{=AF_UI_Onboarding_YjModelsTitle}YJ API dedicated route - Model selection");
+				SubtitleText = Localize("{=AF_UI_Onboarding_YjModelsSubtitle}A single-group key is bound. Choose models for the four pipelines below.");
 				break;
 			case OnboardingView.Testing:
-				TitleText = "API 连通性握手测试";
-				SubtitleText = "正在并行测试 4 路 API 的响应速度与连通状态...";
+				TitleText = Localize("{=AF_UI_Onboarding_TestTitle}API connectivity handshake test");
+				SubtitleText = Localize("{=AF_UI_Onboarding_TestSubtitle}Testing response speed and connectivity for four API routes in parallel...");
 				break;
 			case OnboardingView.Success:
-				TitleText = "🎉 全部 API 连通性测试通过！";
-				SubtitleText = "配置已就绪，点击下方按钮保存设置并进入卡拉迪亚";
+				TitleText = Localize("{=AF_UI_Onboarding_SuccessTitle}🎉 All API connectivity tests passed!");
+				SubtitleText = Localize("{=AF_UI_Onboarding_SuccessSubtitle}The configuration is ready. Click the button below to save it and enter Calradia.");
 				break;
 		}
 	}
@@ -720,8 +725,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
         _usingExistingConfig = false;
 		_isCustomMode = true;
-		MultiApiModeTag = "完全自定义";
-		MultiApiModeNotice = "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型";
+		MultiApiModeTag = Localize("{=AF_UI_Onboarding_CustomMode}Fully custom");
+		MultiApiModeNotice = Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.");
 		SwitchView(OnboardingView.MultiApi);
 	}
 
@@ -763,8 +768,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		PostprocessUrl = yjUrl;
 		EventUrl = yjUrl;
 
-		MultiApiModeTag = "YJ 官方专线预设";
-		MultiApiModeNotice = "已自动填充 YJ Base URL，支持 4 条管线分别填入不同分组 Key";
+		MultiApiModeTag = Localize("{=AF_UI_Onboarding_YjPreset}YJ official route preset");
+		MultiApiModeNotice = Localize("{=AF_UI_Onboarding_YjPresetNotice}YJ Base URLs are filled automatically. Enter a different group key for each of the four pipelines.");
 		SwitchView(OnboardingView.MultiApi);
 	}
 
@@ -913,7 +918,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 		_testSucceeded = false;
 		SwitchView(OnboardingView.Testing);
-		TestOverallNotice = "正在准备 API 连通性测试...";
+		TestOverallNotice = Localize("{=AF_UI_Onboarding_TestPreparing}Preparing the API connectivity test...");
 		CanCancelTest = true;
 
 		PrimaryStatusText = "正在握手...";
@@ -955,7 +960,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
             EventStatusText = "未配置，跳过可选周报 API";
         }
         int targetCount = targets.Count;
-        TestOverallNotice = "正在并行测试 " + targetCount + " 条 API...";
+		TestOverallNotice = FormatLocalized("{=AF_UI_Onboarding_TestingMany}Testing {COUNT} API pipelines in parallel...", "COUNT", targetCount.ToString());
 		Task.Run(async () =>
 		{
 			var tasks = targets.Select(t => TestSingleTargetAsync(t, token, generation)).ToArray();
@@ -966,12 +971,12 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			}
 			catch (OperationCanceledException)
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试已由用户取消。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestCancelled}The test was cancelled by the user."));
 				return;
 			}
 			catch (Exception)
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试发生异常，请检查网络和 API 配置。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestException}The test encountered an error. Check the network and API configuration."));
 				return;
 			}
 
@@ -981,7 +986,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
                 _uiDispatch.PostTest(generation, () =>
                 {
                     _testSucceeded = true;
-                    TestOverallNotice = "✔ " + targetCount + " 条 API 握手成功！即将进入确认界面...";
+                    TestOverallNotice = FormatLocalized("{=AF_UI_Onboarding_HandshakeManySuccess}✔ {COUNT} API handshakes succeeded! Opening the confirmation screen...", "COUNT", targetCount.ToString());
                 });
 				try
 				{
@@ -994,7 +999,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			}
 			else
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestPartialFailure}❌ Some API connectivity tests failed. Check the error details and return to edit."));
 			}
 		});
 	}
@@ -1013,7 +1018,9 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private void ApplyTestTargetResult(ModOnboardingBehavior.ApiSetupTarget target, ModOnboardingBehavior.ApiValidationTargetResult res, long ms)
 	{
-		string status = res.Success ? "✔ 握手成功" : ("❌ " + (res.FailureHint ?? "连接失败"));
+		string status = res.Success
+			? Localize("{=AF_UI_Onboarding_HandshakeSuccess}Handshake succeeded")
+			: ("❌ " + (res.FailureHint ?? Localize("{=AF_UI_Onboarding_Status_Failed}Connection failed")));
 		switch (target)
 		{
 			case ModOnboardingBehavior.ApiSetupTarget.Primary:
@@ -1167,7 +1174,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
         // Keep field editing inside the owning 4000-layer popup: vanilla inquiries sit below it.
         KeyPromptTitle = title;
-        KeyPromptHint = "请输入或粘贴内容（Ctrl+V），确定保存，取消保留原值。";
+        KeyPromptHint = Localize("{=AF_UI_Onboarding_EditHint}Enter or paste the value (Ctrl+V), then confirm to save or cancel to keep the old value.");
         PromptKeyInput = initialText ?? "";
         _keyPromptConfirmAction = onConfirmed;
         IsKeyPromptVisible = true;
@@ -1188,7 +1195,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		}
 		catch (Exception)
 		{
-			ShowToast("界面更新失败，请重试当前操作");
+			ShowToast(Localize("{=AF_UI_Onboarding_UpdateFailed}The interface update failed. Retry the current operation."));
 		}
 		if (IsToastVisible)
 		{
@@ -1198,6 +1205,15 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 				IsToastVisible = false;
 			}
 		}
+	}
+
+	private static string Localize(string value) => new TextObject(value).ToString();
+
+	private static string FormatLocalized(string value, string variable, string replacement)
+	{
+		var text = new TextObject(value);
+		text.SetTextVariable(variable, replacement ?? string.Empty);
+		return text.ToString();
 	}
 
 	public override void OnFinalize()
