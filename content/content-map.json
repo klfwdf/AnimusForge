@@ -605,6 +605,16 @@
     },
     {
       "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml",
+      "target": "ModuleData/Languages/afconv_ambient_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
       "source": "content/modules/AF.Module.Conversation/ModuleData/TownAmbientDialogue.json",
       "target": "ModuleData/TownAmbientDialogue.json"
     },
