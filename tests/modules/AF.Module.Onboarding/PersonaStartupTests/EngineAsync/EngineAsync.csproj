@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NuGetAudit>false</NuGetAudit><UseAppHost>false</UseAppHost></PropertyGroup>
+ <ItemGroup>
+  <Compile Include="../../../../../src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs" Link="OnnxEmbeddingEngine.cs" />
+  <Reference Include="Microsoft.ML.OnnxRuntime"><HintPath>$(OnnxManagedDll)</HintPath></Reference>
+  <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
+ </ItemGroup>
+</Project>
