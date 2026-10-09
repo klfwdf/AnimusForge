@@ -276,5 +276,28 @@
   <string id="AF_UI_Terminal_ExecuteBadge" text="执行" />
   <string id="AF_UI_Terminal_Enabled" text="✔ 开启" />
   <string id="AF_UI_Terminal_Disabled" text="✕ 关闭" />
+  <string id="AF_UI_Terminal_TagList" text="指令标签列表" />
+  <string id="AF_UI_Terminal_TagDetails" text="标签详情" />
+  <string id="AF_UI_Terminal_TagInfo" text="标签索引说明" />
+  <string id="AF_UI_Terminal_DiagnosticsOnline2" text="捕获哨兵状态: 在线" />
+  <string id="AF_UI_Terminal_NoFatal" text="本局当前未记录到任何致命报错堆栈。" />
+  <string id="AF_UI_Terminal_DiagnosticsTitle" text="系统错误分析与诊断" />
+  <string id="AF_UI_Terminal_TagExported" text="标签列表已导出" />
+  <string id="AF_UI_Terminal_ExportedTo" text="已导出到：
+{PATH}" />
+  <string id="AF_UI_Terminal_TagExportFailed" text="标签列表导出失败" />
+  <string id="AF_UI_Terminal_UnknownError" text="未知错误。" />
+  <string id="AF_UI_Terminal_TagRefreshFailed" text="刷新标签索引失败" />
+  <string id="AF_UI_Terminal_TagSummaryA" text="从当前 AnimusForge 模块文件、当前程序集和内置运行时规则提取。" />
+  <string id="AF_UI_Terminal_TagSummaryB" text="共 {TOTAL} 项；正文/历史 {BODY} 项，后处理 {POST} 项。" />
+  <string id="AF_UI_Terminal_TagSummaryC" text="已扫描文件：{FILES} 个。可用上方搜索框按标签、功能名或参数名筛选。" />
+  <string id="AF_UI_Terminal_SourceRoots" text="来源根目录：" />
+  <string id="AF_UI_Terminal_Tag" text="标签" />
+  <string id="AF_UI_Terminal_Source" text="来源：" />
+  <string id="AF_UI_Terminal_KeepEntry" text="至少需要保留一个终端入口（按键或图标）。" />
+  <string id="AF_UI_Terminal_HotkeyOff" text="已关闭终端按键呼出（U键）。" />
+  <string id="AF_UI_Terminal_HotkeyOn" text="已开启终端按键呼出（U键）。" />
+  <string id="AF_UI_Terminal_MapIconOff" text="已关闭大地图终端图标入口。" />
+  <string id="AF_UI_Terminal_MapIconOn" text="已开启大地图终端图标入口。" />
   </strings>
 </base>

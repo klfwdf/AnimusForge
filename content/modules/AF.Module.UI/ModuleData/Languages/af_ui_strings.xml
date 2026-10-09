@@ -276,5 +276,28 @@
   <string id="AF_UI_Terminal_ExecuteBadge" text="Execute" />
   <string id="AF_UI_Terminal_Enabled" text="✔ Enabled" />
   <string id="AF_UI_Terminal_Disabled" text="✕ Disabled" />
+  <string id="AF_UI_Terminal_TagList" text="Action tag list" />
+  <string id="AF_UI_Terminal_TagDetails" text="Tag details" />
+  <string id="AF_UI_Terminal_TagInfo" text="Tag index information" />
+  <string id="AF_UI_Terminal_DiagnosticsOnline2" text="Sentinel status: online" />
+  <string id="AF_UI_Terminal_NoFatal" text="No fatal error stack has been recorded this session." />
+  <string id="AF_UI_Terminal_DiagnosticsTitle" text="System error analysis and diagnostics" />
+  <string id="AF_UI_Terminal_TagExported" text="Tag list exported" />
+  <string id="AF_UI_Terminal_ExportedTo" text="Exported to:
+{PATH}" />
+  <string id="AF_UI_Terminal_TagExportFailed" text="Tag list export failed" />
+  <string id="AF_UI_Terminal_UnknownError" text="Unknown error." />
+  <string id="AF_UI_Terminal_TagRefreshFailed" text="Tag index refresh failed" />
+  <string id="AF_UI_Terminal_TagSummaryA" text="Extracted from current module files, the current assembly, and built-in runtime rules." />
+  <string id="AF_UI_Terminal_TagSummaryB" text="Total {TOTAL}; body/history {BODY}, postprocessing {POST}." />
+  <string id="AF_UI_Terminal_TagSummaryC" text="Scanned {FILES} files. Use the search box above to filter tags, feature names, or parameters." />
+  <string id="AF_UI_Terminal_SourceRoots" text="Source roots:" />
+  <string id="AF_UI_Terminal_Tag" text="Tag" />
+  <string id="AF_UI_Terminal_Source" text="Source:" />
+  <string id="AF_UI_Terminal_KeepEntry" text="At least one terminal entry (key or icon) must remain." />
+  <string id="AF_UI_Terminal_HotkeyOff" text="Terminal hotkey access disabled (U key)." />
+  <string id="AF_UI_Terminal_HotkeyOn" text="Terminal hotkey access enabled (U key)." />
+  <string id="AF_UI_Terminal_MapIconOff" text="World-map terminal icon entry disabled." />
+  <string id="AF_UI_Terminal_MapIconOn" text="World-map terminal icon entry enabled." />
   </strings>
 </base>
