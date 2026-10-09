@@ -9001,6 +9001,43 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未验：玩家实际存档、模组组合、实机提示；原玩家具体触发条件仍不能从Token日志唯一确定。未部署/打包/推送。回滚用本次产品提交的定向revert，不回滚其他作者Persistence测试改动。
 
 
+<a id="player-persona-startup-freeze-20261009"></a>
+## 新档玩家背景/外貌确认阻塞风险修复（2026-10-09，OFFLINE_VERIFIED）
+
+用户本轮授权修复并推送；从 origin/main `4ed61998` 创建隔离分支 `codex/player-persona-freeze-20261009`，产品提交 `7089cd05b10b80d394bcfdb06642ec46e148ae9c`。原工作区 NPC 清剿藏身处 dirty/untracked 未修改、未混入。本条处理已证实的同步初始化/界面时序风险；无玩家当次日志和线程栈，**不宣称已复现该玩家卡死或排除所有其他原因**。
+
+### 变化 / 真正调用链
+
+- `CompleteOnboardingAndOpenPlayerPersonaSetup` 保持 PlayerPersona UI 阶段，玩家跳过/确认后完成场景冲突选择，才设置已有 `_AnimusForge_setup_done_v1` 位并释放阶段；import/skip 共用出口。保存键与人物文本不变，重复/旧 generation/旧 owner 回调不再推进新会话，读档/新档清理临时 UI 阶段。
+- `ApplicationTickComposition → MyBehavior.OnEngineTick → CampaignSaveExitController` 只轮询一个任务的完成状态。捕获模块路径后交给 `OnnxEmbeddingEngine.InitializeAsync`；工作线程只做文件/模型工作，不读取 Campaign/UI。单个引擎共享一个初始化任务，后续帧/新档不创建重复模型初始化；冷启动读取仍由原初始化锁保护。
+- 控制器绑定 Campaign 实例与 SaveRuntimeGuard generation；旧结果/退出后的结果不写新档、不弹新提示。加载中 AF 准入保持关闭；完成回主线程发布状态与文字。60 秒停止当前门禁等待并提示保存退出，不假称已终止不可取消的 native 初始化线程。
+- 自定义背景编辑框和摘要菜单均计入前台占用；加载/失败不抢设置弹窗。成功、模型缺失/加载失败、异常、超时分别给反馈；保存再退出原流程保留。
+- 删除主线程同步 `HasCompleteRequiredOnnxFiles` / `EvaluateMissingOnnxGate` 路径及无调用的 MyBehavior 转发；不新增第二套模型会话或替换 ONNX 包。普通同步 `IsAvailable` 仍供既有非门禁消费者使用，本包不声称全仓所有 ONNX 工作已经异步化。
+
+### 代码证据（产品 7089cd05，一基行号）
+
+| 路径 | 符号/行号 | 覆盖责任 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs` | `IsSetupUiActive:263`、`CompleteOnboardingAndOpenPlayerPersonaSetup:3389` | 人设阶段、最终完成、重复/旧会话回调保护 |
+| `src/AF.GameAdapter.Bannerlord/UI/CampaignSaveExitController.cs` | `IsOnnxGateUiBusy:29`、`ProcessPendingMissingOnnxGateCheck:50` | 单任务状态轮询、超时、UI/Campaign/generation 准入 |
+| `src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs` | `InitializeAsync:310`、`EnsureInitialized:474` | 路径快照、单任务共享、后台现有模型初始化 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs` | `OnEngineTick`、`ProcessPendingMissingOnnxGateCheck` | 原 engine-tick 到唯一 controller 的薄桥；移除两个旧同步私有转发 |
+
+### 验证 / 边界
+
+- `PersonaStartupTests/run.py`：实际 controller/SaveRuntimeGuard 源文件 + 原样提取的实际人设回调，UI/Campaign/模型边界为窄 fake；修复候选 **39 项断言 0 失败**。同一用例在 `4ed61998` 基线为38项/22失败（旧版没有时间戳，超时分支缺少1项）；能区分旧阻塞/提前完成/晚回调问题，不是文字搜索冒充行为测试。
+- `EngineAsync`：完整生产 OnnxEmbeddingEngine 源 + 真实 managed ONNX 引用，文件/模型边界阻塞/释放；**18项 0失败**，证实真实异步 yield、调用线程不阻塞、捕获路径、单任务、错误保留。不加载真实 native 模型。
+- 原 `scripts/build/build_single_module.ps1`，Debug、明确本机 pinned 引用：**1.3.15.110062 / 1.4.6.115628 / Bootstrap + 两个实际DLL Coup接缝 PASS**。仅 build-only，无 Stage/Deploy；既有编译警告未隐去。最终日志 `artifacts/persona-freeze-20261009/build-final.log`，3 DLL SHA 与产品源 SHA 在 `receipt.json`。
+- 邻接旧 `DialogueOnboardingRegressionTests`：YJ probe 通过，随后 `Program.cs:208` 场景卷轴“历史记录/赠送物品/人物图鉴/退出交谈”标签查询失败。原版基线的4个相关XML逐字对照未变，实际运行同一探针到相同位置失败；标为 **PREEXISTING_FAIL**，未改卷轴/降断言/刷新oracle来变绿。
+- `git diff --check`、冲突/临时代码扫描与已删同步符号调用搜索通过。工程师自审、玩家视角源码回放由同一代理完成；未进行游戏内实测。测试命令/范围在 `tests/modules/AF.Module.Onboarding/PersonaStartupTests/README.md`。
+
+### 人工验收 / 回退
+
+在匹配实现的游戏中开新档：分别导入/跳过数据库 → 输入外貌及背景 → 确认返回菜单 → 完成/跳过 → 完成场景冲突选择；等待期间应可操作界面、无重复弹窗。再验缺失模型提示和保存退出、初始化中切换存档，以及已有完整设置的旧档。对比日志的 `OnnxGate background initialization started/complete/unavailable/timed out`。该玩家实际故障、真实 Gauntlet 焦点、native 模型耗时、真实 `.sav` 仍待验。
+
+回退仅 focused revert 产品 `7089cd05`；不回滚其他任务、模型、存档或默认接口。推送目标以本线程最终远端核验为准；用户未另行授权游戏部署或打包。
+
+
 <a id="npc-hideout-clear-20261009"></a>
 ## NPC 委托清剿藏身处（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
 

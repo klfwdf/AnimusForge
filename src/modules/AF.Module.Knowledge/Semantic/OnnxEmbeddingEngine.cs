@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Newtonsoft.Json.Linq;
-using TaleWorlds.Engine;
 
 namespace AnimusForge;
 
@@ -302,6 +302,23 @@ public sealed class OnnxEmbeddingEngine
 	private static readonly Lazy<OnnxEmbeddingEngine> _lazy = new Lazy<OnnxEmbeddingEngine>(() => new OnnxEmbeddingEngine());
 
 	private readonly object _initLock = new object();
+    private readonly object _initializationTaskLock = new object();
+    private Task<bool> _initializationTask;
+
+    // Single flight across campaign changes. The worker receives only the captured module path,
+    // never Campaign/UI objects. Native session creation is not forcibly cancellable.
+    internal Task<bool> InitializeAsync(string moduleRoot)
+    {
+        if (string.IsNullOrWhiteSpace(moduleRoot)) throw new ArgumentException("Captured module root is required.", nameof(moduleRoot));
+        lock (_initializationTaskLock)
+        {
+            return _initializationTask ??= Task.Run(() =>
+            {
+                EnsureInitialized(moduleRoot);
+                return _available;
+            });
+        }
+    }
 
 	private volatile bool _initialized;
 
@@ -454,7 +471,7 @@ public sealed class OnnxEmbeddingEngine
 		}
 	}
 
-	private void EnsureInitialized()
+	private void EnsureInitialized(string moduleRoot = null)
 	{
 		if (_initialized)
 		{
@@ -468,7 +485,8 @@ public sealed class OnnxEmbeddingEngine
 			}
 			try
 			{
-				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();
+				AnimusForgeModelStore.ModelFiles files = moduleRoot == null
+                    ? AnimusForgeModelStore.ResolveEmbedding() : AnimusForgeModelStore.ResolveEmbedding(moduleRoot);
 				string text5 = files.ModelPath;
 				string text6 = files.TokenizerPath;
 				string text7 = files.ConfigPath;

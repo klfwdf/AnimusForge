@@ -4272,11 +4272,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
         _campaignSaveExit.ProcessPendingMissingOnnxGateCheck();
     }
 
-	private void EvaluateMissingOnnxGate()
-	{
-        _campaignSaveExit.EvaluateMissingOnnxGate();
-    }
-
 	private void ProcessMissingOnnxGateUiResume()
 	{
         _campaignSaveExit.ProcessMissingOnnxGateUiResume();
@@ -4290,11 +4285,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	private void ExitCurrentGameBecauseOnnxMissing()
 	{
         _campaignSaveExit.ExitCurrentGameBecauseOnnxMissing();
-    }
-
-	private static bool HasCompleteRequiredOnnxFiles()
-	{
-        return CampaignSaveExitController.HasCompleteRequiredOnnxFiles();
     }
 
 	private void ProcessPendingWeeklyReportManualRetryResult()
