@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "C14D0F10166ADC1D0790E2F7E3C82AB6A3FA827AB5AD05E10A171332D099F65E",
-        "revision": "902c1531b",
+        "sha256": "9B27F04B6D936162E92C8046E7B8BABED1D2EDF04AE1CF3308CC433115BB458E",
+        "revision": "b15aa6e31",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "9BC80718243C90ECFF9C182076852CEB92FEC5BC42E42FCE48167D64706B7A3D",
-        "revision": "902c1531b",
+        "sha256": "6E06D5FED6166D2468C04AFA7933BCCA87CEE25A951136D6DC8A37A43E95EEA0",
+        "revision": "b15aa6e31",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
@@ -702,19 +702,19 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "B8F20C9246E739F98A6056B9F73E3B35A2AAC4555AD35657DA090F28CC669B69", "revision": "db595c1d3",
+        "sha256": "FF5D19E48A49E15615BCF3B1C382A01C6F159802155B135046BB50547AC7DE1E", "revision": "89760e94c",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "45A6FBF927EB3A22CD58CDB0541941BAFCCD0E2428F376FDB225509DC50FE209", "revision": "db595c1d3",
+        "sha256": "1ED635AA8E4AEA807316FF64F6B0E3CABE43CB2C9F4F8972F9DCA2AFCD552011", "revision": "89760e94c",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
-        "sha256": "5411B4765D98E9EF00830FB782DCF78B3884901686F8B945F09C4AA45D010822", "revision": "22cfbfdf8",
+        "sha256": "3D6062B5B8DFA236C6ED721A4E41761EFD82F417D4BD91C10FA3C38C7E8B97BB", "revision": "393c52fef",
     },
     "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
-        "sha256": "CA7763D1F5E39060ECA98504FA1698ACC6EEC9E6600F7F5F15EFDB41B9780600", "revision": "22cfbfdf8",
+        "sha256": "7A1A75599F46555E69E51F1439BE79E0F6B56FEFA96CC908DF42F0C48316A96B", "revision": "393c52fef",
     },
     "ModuleData/Languages/afsocial_ui_strings.xml": {
         "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/afsocial_ui_strings.xml",
