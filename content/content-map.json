@@ -509,6 +509,16 @@
       "target": "ModuleData/Languages/sets_hostile_meeting_strings.xml"
     },
     {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
+      "target": "ModuleData/Languages/sets_ui_strings.xml"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml"
+    },
+    {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/ProactiveNpcRequestPrompts.json",
       "target": "ModuleData/ProactiveNpcRequestPrompts.json"

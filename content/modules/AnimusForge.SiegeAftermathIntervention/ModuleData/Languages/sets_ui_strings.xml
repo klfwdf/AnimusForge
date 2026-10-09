@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_SETS_Noun_Castle" text="castle" />
+    <string id="AF_SETS_Noun_Village" text="village" />
+    <string id="AF_SETS_Noun_Town" text="town" />
+    <string id="AF_SETS_Noun_Settlement" text="settlement" />
+    <string id="AF_SETS_Defenders_Castle" text="guards, militia, garrison, and castle lord troops" />
+    <string id="AF_SETS_Defenders_Village" text="village militia" />
+    <string id="AF_SETS_Defenders_Town" text="guards, militia, garrison, and town lord troops" />
+    <string id="AF_SETS_Defenders_Default" text="the defenders" />
+    <string id="AF_SETS_Spawn_Castle" text="the lord's hall entrance" />
+    <string id="AF_SETS_Spawn_Village" text="the village map edge" />
+    <string id="AF_SETS_Spawn_Town" text="the town workshop district" />
+    <string id="AF_SETS_Spawn_Default" text="the edge of the scene" />
+    <string id="AF_SETS_Phase_VillageMilitia" text="village militia" />
+    <string id="AF_SETS_Phase_Garrison" text="{NOUN} garrison" />
+    <string id="AF_SETS_Phase_Militia" text="{NOUN} militia" />
+    <string id="AF_SETS_Phase_Lord" text="hostile lord troops" />
+    <string id="AF_SETS_Civilians_None" text="[SETS] There are no eligible adult civilians to gather." />
+    <string id="AF_SETS_Civilians_Queued" text="[SETS] Gathering {COUNT} adult civilians; they will join command group 3 when ready." />
+    <string id="AF_SETS_Civilians_Gathered" text="[SETS] Gathered {COUNT} adult civilians and assigned them to command group 3." />
+    <string id="AF_SETS_VillageReward" text="[SETS village result] Gained {GOLD} denars; {ITEMS} village supplies were sent to the native loot screen." />
+    <string id="AF_SETS_ConflictStarted" text="[SETS internal unrest] {DEFENDERS} are hostile (wave 0). Selected escort soldiers, companions, and family members have joined your formation and await your orders." />
+    <string id="AF_SETS_ReserveWave" text="[SETS internal unrest] {PHASE} have joined the fight from {SPAWN} (wave {WAVE}; up to {MAX} active waves)." />
+    <string id="AF_SETS_ExitBlocked" text="The internal unrest is not over. Defeat {DEFENDERS} before leaving." />
+    <string id="AF_SETS_Victory_Village" text="[SETS internal unrest] The village militia has been defeated. Press TAB to leave, collect the payment, and open the native loot screen." />
+    <string id="AF_SETS_Victory" text="[SETS internal unrest] {DEFENDERS} have been defeated. Press TAB to leave and open the native siege victory disposition menu; you may choose the native or GCCZ siege disposition." />
+    <string id="AF_SETS_OwnedIncident_Village" text="[SETS] An owned or attached village incident has started; villagers are fleeing. Press TAB at any time to leave and open the GCCZ village disposition menu." />
+    <string id="AF_SETS_OwnedIncident" text="[SETS] An owned or attached {NOUN} incident has started; residents are fleeing. Press TAB at any time to leave and open the SETS disposition menu." />
+    <string id="AF_SETS_ConflictTitle" text="Internal unrest" />
+    <string id="AF_SETS_Confirm" text="Confirm" />
+    <string id="AF_SETS_Memory_UnknownCommander" text="unknown commander" />
+    <string id="AF_SETS_Memory_Aftermath" text="Commander {ACTOR}'s post-siege disposition at this town was settled as {OUTCOME}." />
+    <string id="AF_SETS_Memory_Completed" text="{AFTERMATH} Settled loot valuation: {LOOT}; denars taken: {GOLD}; civilian deaths: {CIVILIANS}; notable deaths: {NOTABLES}; relief delivered: {RELIEF_GOLD} denars and {RELIEF_FOOD} food. This records the actual settlement and does not claim that later promises were fulfilled." />
+    <string id="AF_SETS_Memory_Policy" text="Local policy &quot;{TITLE}&quot; was {STATUS} in this town. This only confirms the policy state; expected economic or public-order effects are not implied." />
+    <string id="AF_SETS_Policy_Published" text="published" />
+    <string id="AF_SETS_Policy_Renewed" text="renewed" />
+    <string id="AF_SETS_Policy_Abolished" text="abolished" />
+    <string id="AF_SETS_Policy_Expired" text="expired" />
+    <string id="AF_SETS_Action_Pillage" text="pillage" />
+    <string id="AF_SETS_Action_Devastate" text="devastation" />
+    <string id="AF_SETS_Action_Mercy" text="mercy" />
+  </strings>
+</base>

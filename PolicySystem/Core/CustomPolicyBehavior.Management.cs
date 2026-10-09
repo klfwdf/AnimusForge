@@ -4580,7 +4580,7 @@ public sealed partial class CustomPolicyBehavior
 			if (!_localPolicyRecords.TryGetValue(recordId ?? "", out string raw)) return;
 			var record = JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw);
 			if (record == null) return;
-			string fact = AnimusForge.SiegeAftermathIntervention.SettlementRuleMemoryEventText.Policy(eventKind, record.PolicyName);
+			string fact = AnimusForge.SiegeAftermathUiText.Policy(eventKind, record.PolicyName);
 			if (string.IsNullOrWhiteSpace(fact)) return;
 			string eventId = "policy:" + recordId + ":" + eventKind + ":" + (record.Renewals?.Count ?? 0);
 			foreach (string id in (targetFiefIds ?? Array.Empty<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
