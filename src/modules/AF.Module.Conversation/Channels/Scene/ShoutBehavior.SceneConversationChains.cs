@@ -472,10 +472,21 @@ internal sealed partial class SceneConversationSessionRuntime
 			string sceneSummonClosureInstruction = _sceneMovement.BuildSceneSummonClosurePromptInstruction(actionPromptParticipants);
 			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null, primaryNpc);
 			bool multiNpcScene = speakableCandidates.Count > 1;
+			bool explicitGroupAddress = IsExplicitSceneGroupAddress(playerText, speakableCandidates.Count);
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
 			int primaryTargetAgentIndex = primaryNpc?.AgentIndex ?? (-1);
 			NpcDataPacket currentSpeaker = await _dispatcher.RunAsync("scene_primary_first_validate", primaryNpc?.Name, primaryTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, primaryTargetAgentIndex), (NpcDataPacket)null);
 			if (!IsCurrentModuleGroup()) return;
+			if (currentSpeaker == null && explicitGroupAddress)
+			{
+				for (int i = 0; i < speakableCandidates.Count && currentSpeaker == null; i++)
+				{
+					NpcDataPacket fallbackCandidate = speakableCandidates[i];
+					if (fallbackCandidate == null || fallbackCandidate.AgentIndex == primaryTargetAgentIndex) continue;
+					currentSpeaker = await _dispatcher.RunAsync("scene_group_fallback_first_validate", fallbackCandidate.Name, fallbackCandidate.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, fallbackCandidate.AgentIndex), (NpcDataPacket)null);
+				}
+				if (currentSpeaker != null) Logger.Log("ShoutBehavior", "[SceneRelay] plural request used fallback first speaker agent=" + currentSpeaker.AgentIndex);
+			}
 			if (currentSpeaker == null)
 			{
 				receipt?.Fail("scene.primary_unavailable");
@@ -493,6 +504,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 			HashSet<int> personaPreparedAgentIndices = new HashSet<int>();
+			HashSet<int> groupAnsweredAgentIndices = new HashSet<int>();
 			bool firstTurn = true;
 			NpcDataPacket previousSpeaker = null;
 			string previousSpeakerReply = "";
@@ -1077,6 +1089,17 @@ internal sealed partial class SceneConversationSessionRuntime
 				else
 				{
 					lastSpeakerOutputText = "";
+				}
+				if (!string.IsNullOrWhiteSpace(cleaned))
+				{
+					groupAnsweredAgentIndices.Add(currentSpeaker.AgentIndex);
+				}
+				if (explicitGroupAddress && relayTargetAgentIndex == currentSpeaker.AgentIndex
+					&& TrySelectUnansweredSceneGroupRelayTarget(relayCandidatesForNextTurn, groupAnsweredAgentIndices, out int forcedRelayTargetAgentIndex))
+				{
+					Logger.Log("ShoutBehavior", "[SceneRelay] self-stop overridden for unanswered plural audience current=" + currentSpeaker.AgentIndex + " next=" + forcedRelayTargetAgentIndex);
+					relayTargetAgentIndex = forcedRelayTargetAgentIndex;
+					relayRequested = true;
 				}
 				if (!string.IsNullOrWhiteSpace(cleaned) && relayRequested)
 				{
@@ -1915,4 +1938,23 @@ internal sealed partial class SceneConversationSessionRuntime
         => RunSceneReplyOnGameThreadAsync(() => GenerateGroupConversationTurnLineCoreAsync(speakerNpc, allNpcData, resolvedHeroes, precomputedContexts, playerText, extraFact, commonCandidatesPrompt, sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, isCurrent), "scene_fallback_capture", speakerNpc?.AgentIndex ?? -1);
     internal Task<string> GetPassiveNpcResponse(NpcDataPacket data, string sceneDesc, string inputActionText, string precalculatedLore, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
         => RunSceneReplyOnGameThreadAsync(() => GetPassiveNpcResponseCoreAsync(data, sceneDesc, inputActionText, precalculatedLore, allNpcData, resolvedHeroes), "scene_passive_capture", data?.AgentIndex ?? -1);
+
+	private static bool IsExplicitSceneGroupAddress(string playerText, int candidateCount)
+	{
+		if (candidateCount < 2 || string.IsNullOrWhiteSpace(playerText)) return false;
+		return Regex.IsMatch(playerText.Trim(), "你们|大家|各位|所有人|所有的人|人人|诸位|兄弟们|姐妹们|在场的|全都|一起说|都来说|大伙", RegexOptions.CultureInvariant);
+	}
+
+	private static bool TrySelectUnansweredSceneGroupRelayTarget(IEnumerable<NpcDataPacket> candidates, HashSet<int> answeredAgentIndices, out int targetAgentIndex)
+	{
+		targetAgentIndex = -1;
+		List<NpcDataPacket> valid = (candidates ?? Enumerable.Empty<NpcDataPacket>())
+			.Where(candidate => candidate != null && candidate.AgentIndex >= 0)
+			.ToList();
+		NpcDataPacket next = valid.FirstOrDefault(candidate => answeredAgentIndices == null || !answeredAgentIndices.Contains(candidate.AgentIndex))
+			?? valid.FirstOrDefault();
+		if (next == null) return false;
+		targetAgentIndex = next.AgentIndex;
+		return true;
+	}
 }
