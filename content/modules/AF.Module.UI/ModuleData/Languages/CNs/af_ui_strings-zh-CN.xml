@@ -494,5 +494,83 @@
     <string id="AF_MCM_Group_CourierStationery" text="NPC 主动接触／信使信纸" />
     <string id="AF_MCM_Courier_Stationery" text="信纸样式" />
     <string id="AF_MCM_Courier_Stationery_Hint" text="选择信使来信、回信和写信界面使用的卡拉迪亚国家信纸预设。" />
-  </strings>
+
+    <string id="AF_UI_Onboarding_Prefab_001" text="YJ API 中转专线" />
+    <string id="AF_UI_Onboarding_Prefab_002" text="自定义 API 配置" />
+    <string id="AF_UI_Onboarding_Prefab_003" text="使用现有 API 配置" />
+    <string id="AF_UI_Onboarding_Prefab_004" text="国内各大运营商直连无需代理。单分组填入 1 个 Key 后直接进入 4 模型统一选择面板；多分组直接进入预设好 YJ URL 的多 API 配置面板。" />
+    <string id="AF_UI_Onboarding_Prefab_005" text="1. 单分组模式：填入 Key ➔ 进入多模型选择面板（推荐）" />
+    <string id="AF_UI_Onboarding_Prefab_006" text="只填入 1 个 Key，随后进入集中面板同时为对话、前处理、后处理、周报挑选模型。" />
+    <string id="AF_UI_Onboarding_Prefab_007" text="填入 Key ➔" />
+    <string id="AF_UI_Onboarding_Prefab_008" text="2. 多分组模式：进入多 API 面板（预设好 YJ URL）" />
+    <string id="AF_UI_Onboarding_Prefab_009" text="直接进入多 API 配置面板，Base URL 已自动填充为 YJ 专线，支持 4 路分别填入不同 Key。" />
+    <string id="AF_UI_Onboarding_Prefab_010" text="进入多 API 面板 ➔" />
+    <string id="AF_UI_Onboarding_Prefab_011" text="3. 获取 API Key 并购买额度（打开官网）" />
+    <string id="AF_UI_Onboarding_Prefab_012" text="在浏览器中依次唤起 YJ API 的 Key 管理页面与额度充值页面，完成后返回输入。" />
+    <string id="AF_UI_Onboarding_Prefab_013" text="打开网页 ↗" />
+    <string id="AF_UI_Onboarding_Prefab_014" text="4. 复制 YJ 玩家交流 QQ 群号" />
+    <string id="AF_UI_Onboarding_Prefab_015" text="群号：1097237977。群内提供额度福利活动、常见问题答疑与维护通知。" />
+    <string id="AF_UI_Onboarding_Prefab_016" text="一键复制群号 📋" />
+    <string id="AF_UI_Onboarding_Prefab_017" text="1. 主 API（角色对话正文）" />
+    <string id="AF_UI_Onboarding_Prefab_018" text="模型:" />
+    <string id="AF_UI_Onboarding_Prefab_019" text="拉取模型" />
+    <string id="AF_UI_Onboarding_Prefab_020" text="2. 前处理 API（意图分类路由）" />
+    <string id="AF_UI_Onboarding_Prefab_021" text="3. 后处理 API（指令标签动作提取）" />
+    <string id="AF_UI_Onboarding_Prefab_022" text="4. 每日与周报 API（宏观大局提炼）" />
+    <string id="AF_UI_Onboarding_Prefab_023" text="🔑 已绑定 Key:" />
+    <string id="AF_UI_Onboarding_Prefab_024" text="刷新所有模型 🔄" />
+    <string id="AF_UI_Onboarding_Prefab_025" text="1. 主 API 角色对话模型（沉浸扮演核心）" />
+    <string id="AF_UI_Onboarding_Prefab_026" text="推荐 deepseek-chat 或 gpt-4o-mini，负责与 NPC 的正文交谈。" />
+    <string id="AF_UI_Onboarding_Prefab_027" text="2. 前处理意图分类模型（快速分流）" />
+    <string id="AF_UI_Onboarding_Prefab_028" text="推荐极速通道 deepseek-chat，负责判断玩家说话动机与场景机制。" />
+    <string id="AF_UI_Onboarding_Prefab_029" text="3. 后处理指令标签模型（动作执行）" />
+    <string id="AF_UI_Onboarding_Prefab_030" text="负责从回复中提取决斗、交易、入队等游戏行为标签。" />
+    <string id="AF_UI_Onboarding_Prefab_031" text="4. 每日与周报写作模型（天下大势）" />
+    <string id="AF_UI_Onboarding_Prefab_032" text="负责总结卡拉迪亚战争形势、领地发展与叛乱情报。" />
+    <string id="AF_UI_Onboarding_Prefab_033" text="1. 主 API 握手状态:" />
+    <string id="AF_UI_Onboarding_Prefab_034" text="2. 前处理意图路由握手状态:" />
+    <string id="AF_UI_Onboarding_Prefab_035" text="3. 后处理指令标签握手状态:" />
+    <string id="AF_UI_Onboarding_Prefab_036" text="4. 每日与周报 API 握手状态:" />
+    <string id="AF_UI_Onboarding_Prefab_037" text="全部 4 路 API 测试通过，配置已就绪！" />
+    <string id="AF_UI_Onboarding_Prefab_038" text="✔ 主 API: @PrimaryModel" />
+    <string id="AF_UI_Onboarding_Prefab_039" text="✔ 前处理 API: @AuxiliaryModel" />
+    <string id="AF_UI_Onboarding_Prefab_040" text="✔ 后处理 API: @PostprocessModel" />
+    <string id="AF_UI_Onboarding_Prefab_041" text="✔ 每日与周报 API: @EventModel" />
+    <string id="AF_UI_Onboarding_Prefab_042" text="点击下方保存设置；新档将继续世界书导入与人物背景配置，已完成引导的存档将返回游戏。" />
+    <string id="AF_UI_Onboarding_Prefab_043" text="支持制作组" />
+    <string id="AF_UI_Onboarding_Prefab_044" text="关闭退出" />
+    <string id="AF_UI_Onboarding_Prefab_045" text="⇦ 返回上级" />
+    <string id="AF_UI_Onboarding_Prefab_046" text="立即连通性测试 ➔" />
+    <string id="AF_UI_Onboarding_Prefab_047" text="完成选择并测试连通性 ➔" />
+    <string id="AF_UI_Onboarding_Prefab_048" text="取消测试" />
+    <string id="AF_UI_Onboarding_Prefab_049" text="保存设置并进入卡拉迪亚 ➔" />
+    <string id="AF_UI_Onboarding_Prefab_050" text="贴" />
+    <string id="AF_UI_Onboarding_Prefab_051" text="取消" />
+    <string id="AF_UI_Onboarding_Prefab_052" text="确定 ➔" />
+    <string id="AF_UI_Onboarding_Prefab_053" text="支持 AnimusForge 制作组" />
+    <string id="AF_UI_Onboarding_Prefab_054" text="AnimusForge 模组完全免费开源！你的支持是持续更新沉浸式 AI 玩法、深度大地图演进与新功能的最大动力。欢迎前往爱发电支持我们！" />
+    <string id="AF_UI_Onboarding_Prefab_055" text="关闭" />
+    <string id="AF_UI_Onboarding_Prefab_056" text="前往爱发电 ↗" />
+    <string id="AF_UI_Terminal_Prefab_001" text="搜索：" />
+    <string id="AF_UI_Terminal_Prefab_002" text="输入关键词搜索设置或功能..." />
+    <string id="AF_UI_Terminal_Prefab_003" text="上一页" />
+    <string id="AF_UI_Terminal_Prefab_004" text="下一页" />
+    <string id="AF_UI_Terminal_Prefab_005" text="索引说明" />
+    <string id="AF_UI_Terminal_Prefab_006" text="导出为 TXT" />
+    <string id="AF_UI_Terminal_Prefab_007" text="刷新字典" />
+    <string id="AF_UI_Terminal_Prefab_008" text="全部" />
+    <string id="AF_UI_Terminal_Prefab_009" text="快报" />
+    <string id="AF_UI_Terminal_Prefab_010" text="外交" />
+    <string id="AF_UI_Terminal_Prefab_011" text="政策" />
+    <string id="AF_UI_Terminal_Prefab_012" text="近况" />
+    <string id="AF_UI_Terminal_Prefab_013" text="周报" />
+    <string id="AF_UI_Terminal_Prefab_014" text="返回列表" />
+    <string id="AF_UI_Terminal_Prefab_015" text="生成完整周报" />
+    <string id="AF_UI_Terminal_Prefab_016" text="调用 AI 诊断分析" />
+    <string id="AF_UI_Terminal_Prefab_017" text="按键呼出" />
+    <string id="AF_UI_Terminal_Prefab_018" text="图标入口" />
+    <string id="AF_UI_Terminal_Prefab_019" text="修改后可保存；ESC 或关闭退出" />
+    <string id="AF_UI_Terminal_Prefab_020" text="返回上一级" />
+    <string id="AF_UI_Terminal_Prefab_021" text="保存设置" />
+    <string id="AF_UI_Terminal_Prefab_022" text="关闭" />  </strings>
 </base>

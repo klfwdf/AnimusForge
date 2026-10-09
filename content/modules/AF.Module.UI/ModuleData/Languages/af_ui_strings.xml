@@ -496,5 +496,83 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_MCM_Group_CourierStationery" text="NPC contact / courier stationery" />
     <string id="AF_MCM_Courier_Stationery" text="Letter style" />
     <string id="AF_MCM_Courier_Stationery_Hint" text="Choose the Calradia faction stationery preset used by courier letters, replies, and composition windows." />
-  </strings>
+
+    <string id="AF_UI_Onboarding_Prefab_001" text="YJ API relay" />
+    <string id="AF_UI_Onboarding_Prefab_002" text="Custom API setup" />
+    <string id="AF_UI_Onboarding_Prefab_003" text="Use existing API setup" />
+    <string id="AF_UI_Onboarding_Prefab_004" text="Direct access through major domestic carriers without a proxy. Enter one key for single-group mode to choose four models, or use the multi-group panel with preset YJ URLs." />
+    <string id="AF_UI_Onboarding_Prefab_005" text="1. Single-group mode: enter a key ➔ choose models (recommended)" />
+    <string id="AF_UI_Onboarding_Prefab_006" text="Enter one key, then choose models for dialogue, preprocessing, postprocessing, and reports in one panel." />
+    <string id="AF_UI_Onboarding_Prefab_007" text="Enter key ➔" />
+    <string id="AF_UI_Onboarding_Prefab_008" text="2. Multi-group mode: open the multi-API panel (YJ URLs preset)" />
+    <string id="AF_UI_Onboarding_Prefab_009" text="Open the multi-API panel with the YJ Base URL filled in; enter a different key for each of the four routes." />
+    <string id="AF_UI_Onboarding_Prefab_010" text="Open multi-API panel ➔" />
+    <string id="AF_UI_Onboarding_Prefab_011" text="3. Get an API key and credits (open website)" />
+    <string id="AF_UI_Onboarding_Prefab_012" text="Open the YJ API key management and credit pages in your browser, then return and enter the key." />
+    <string id="AF_UI_Onboarding_Prefab_013" text="Open website ↗" />
+    <string id="AF_UI_Onboarding_Prefab_014" text="4. Copy the YJ player QQ group number" />
+    <string id="AF_UI_Onboarding_Prefab_015" text="Group: 1097237977. The group provides credit promotions, answers, and maintenance notices." />
+    <string id="AF_UI_Onboarding_Prefab_016" text="Copy group number 📋" />
+    <string id="AF_UI_Onboarding_Prefab_017" text="1. Main API (character dialogue)" />
+    <string id="AF_UI_Onboarding_Prefab_018" text="Model:" />
+    <string id="AF_UI_Onboarding_Prefab_019" text="Fetch models" />
+    <string id="AF_UI_Onboarding_Prefab_020" text="2. Preprocessing API (intent routing)" />
+    <string id="AF_UI_Onboarding_Prefab_021" text="3. Postprocessing API (action tag extraction)" />
+    <string id="AF_UI_Onboarding_Prefab_022" text="4. Daily and weekly report API (world overview)" />
+    <string id="AF_UI_Onboarding_Prefab_023" text="🔑 Bound key:" />
+    <string id="AF_UI_Onboarding_Prefab_024" text="Refresh all models 🔄" />
+    <string id="AF_UI_Onboarding_Prefab_025" text="1. Main API dialogue model (immersive roleplay)" />
+    <string id="AF_UI_Onboarding_Prefab_026" text="Recommended: deepseek-chat or gpt-4o-mini for dialogue with NPCs." />
+    <string id="AF_UI_Onboarding_Prefab_027" text="2. Preprocessing intent model (fast routing)" />
+    <string id="AF_UI_Onboarding_Prefab_028" text="Recommended fast route: deepseek-chat, for player intent and scene mechanisms." />
+    <string id="AF_UI_Onboarding_Prefab_029" text="3. Postprocessing action-tag model (action execution)" />
+    <string id="AF_UI_Onboarding_Prefab_030" text="Extracts duel, trade, recruitment, and other gameplay tags from replies." />
+    <string id="AF_UI_Onboarding_Prefab_031" text="4. Daily and weekly writing model (world events)" />
+    <string id="AF_UI_Onboarding_Prefab_032" text="Summarizes Calradia wars, settlement development, and rebellion reports." />
+    <string id="AF_UI_Onboarding_Prefab_033" text="1. Main API handshake status:" />
+    <string id="AF_UI_Onboarding_Prefab_034" text="2. Preprocessing intent handshake status:" />
+    <string id="AF_UI_Onboarding_Prefab_035" text="3. Postprocessing action-tag handshake status:" />
+    <string id="AF_UI_Onboarding_Prefab_036" text="4. Daily and weekly API handshake status:" />
+    <string id="AF_UI_Onboarding_Prefab_037" text="All four API tests passed; configuration is ready!" />
+    <string id="AF_UI_Onboarding_Prefab_038" text="✔ Main API: @PrimaryModel" />
+    <string id="AF_UI_Onboarding_Prefab_039" text="✔ Preprocessing API: @AuxiliaryModel" />
+    <string id="AF_UI_Onboarding_Prefab_040" text="✔ Postprocessing API: @PostprocessModel" />
+    <string id="AF_UI_Onboarding_Prefab_041" text="✔ Daily and weekly API: @EventModel" />
+    <string id="AF_UI_Onboarding_Prefab_042" text="Click below to save. A new save continues with world-book and character setup; completed saves return to the game." />
+    <string id="AF_UI_Onboarding_Prefab_043" text="Support the team" />
+    <string id="AF_UI_Onboarding_Prefab_044" text="Close and exit" />
+    <string id="AF_UI_Onboarding_Prefab_045" text="⇦ Back" />
+    <string id="AF_UI_Onboarding_Prefab_046" text="Run connectivity test now ➔" />
+    <string id="AF_UI_Onboarding_Prefab_047" text="Finish selection and test connectivity ➔" />
+    <string id="AF_UI_Onboarding_Prefab_048" text="Cancel test" />
+    <string id="AF_UI_Onboarding_Prefab_049" text="Save and enter Calradia ➔" />
+    <string id="AF_UI_Onboarding_Prefab_050" text="Paste" />
+    <string id="AF_UI_Onboarding_Prefab_051" text="Cancel" />
+    <string id="AF_UI_Onboarding_Prefab_052" text="Confirm ➔" />
+    <string id="AF_UI_Onboarding_Prefab_053" text="Support the AnimusForge team" />
+    <string id="AF_UI_Onboarding_Prefab_054" text="AnimusForge is free and open source. Your support helps us continue immersive AI gameplay, world-map evolution, and new features. Visit Afdian to support us!" />
+    <string id="AF_UI_Onboarding_Prefab_055" text="Close" />
+    <string id="AF_UI_Onboarding_Prefab_056" text="Visit Afdian ↗" />
+    <string id="AF_UI_Terminal_Prefab_001" text="Search:" />
+    <string id="AF_UI_Terminal_Prefab_002" text="Enter keywords to search settings or features..." />
+    <string id="AF_UI_Terminal_Prefab_003" text="Previous page" />
+    <string id="AF_UI_Terminal_Prefab_004" text="Next page" />
+    <string id="AF_UI_Terminal_Prefab_005" text="Index information" />
+    <string id="AF_UI_Terminal_Prefab_006" text="Export as TXT" />
+    <string id="AF_UI_Terminal_Prefab_007" text="Refresh index" />
+    <string id="AF_UI_Terminal_Prefab_008" text="All" />
+    <string id="AF_UI_Terminal_Prefab_009" text="Bulletin" />
+    <string id="AF_UI_Terminal_Prefab_010" text="Diplomacy" />
+    <string id="AF_UI_Terminal_Prefab_011" text="Policies" />
+    <string id="AF_UI_Terminal_Prefab_012" text="Recent events" />
+    <string id="AF_UI_Terminal_Prefab_013" text="Weekly report" />
+    <string id="AF_UI_Terminal_Prefab_014" text="Back to list" />
+    <string id="AF_UI_Terminal_Prefab_015" text="Generate full report" />
+    <string id="AF_UI_Terminal_Prefab_016" text="Run AI diagnostic analysis" />
+    <string id="AF_UI_Terminal_Prefab_017" text="Open with hotkey" />
+    <string id="AF_UI_Terminal_Prefab_018" text="Icon entry" />
+    <string id="AF_UI_Terminal_Prefab_019" text="Save after editing; press ESC or Close to exit" />
+    <string id="AF_UI_Terminal_Prefab_020" text="Back to previous level" />
+    <string id="AF_UI_Terminal_Prefab_021" text="Save settings" />
+    <string id="AF_UI_Terminal_Prefab_022" text="Close" />  </strings>
 </base>
