@@ -741,6 +741,7 @@
   <string id="AF_UI_ConversationHistory_Delete" text="删除" />
   <string id="AF_UI_ConversationHistory_Save" text="保存" />
   <string id="AF_UI_ConversationHistory_Edit" text="编辑" />
+  <string id="AF_UI_ConversationHistory_Cancel" text="取消" />
   <string id="AF_UI_Timeline_MenuOption" text="传闻" />
   <string id="AF_UI_Timeline_OpenFailed" text="当前无法打开传闻界面。" />
 

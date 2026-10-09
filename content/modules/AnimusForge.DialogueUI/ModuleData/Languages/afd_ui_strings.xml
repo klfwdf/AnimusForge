@@ -2,6 +2,25 @@
 <base type="string">
   <tags><tag language="English" /></tags>
   <strings>
+    <string id="AFD_MCM_DisplayName" text="AnimusForge - Dialogue UI" />
+    <string id="AFD_MCM_InterfaceStyle" text="Interface style" />
+    <string id="AFD_MCM_InterfaceStyle_Hint" text="Original uses native conversation; scene shouts keep the paused scroll input. New UI uses parchment conversation, map conversation, and history/give panels. New UI is the default and applies when the interface is opened again; no restart is required." />
+    <string id="AFD_MCM_InterfaceGroup" text="1. Interface" />
+    <string id="AFD_MCM_Interface_Original" text="Original" />
+    <string id="AFD_MCM_Interface_New" text="New UI" />
+    <string id="AFD_MCM_BodyFontSize" text="Body font size" />
+    <string id="AFD_MCM_BodyFontSize_Hint" text="Font size for New UI conversation text, options, history, and input. Default: 24. Applies when the interface is opened again; buttons, names, and the native interface are unchanged." />
+    <string id="AFD_MCM_ShoutStyle" text="Scene shout panel style" />
+    <string id="AFD_MCM_ShoutStyle_Hint" text="Paused scroll reuses the bottom scroll input, pauses the game, hides the audience docket, and is also the fallback. Scroll keeps the input at the bottom with an audience docket on the right. Side folio uses a vertical conversation folio. The latter two use a persistent multi-person session in peaceful scenes; during battles, the shout key opens paused input directly. All three panels provide a manual illustration button when image generation is enabled." />
+    <string id="AFD_MCM_ShoutStyle_PausedScroll" text="Paused scroll" />
+    <string id="AFD_MCM_ShoutStyle_Scroll" text="Scroll" />
+    <string id="AFD_MCM_ShoutStyle_SideFolio" text="Side folio" />
+    <string id="AFD_MCM_AutoAi" text="Enter AI mode automatically" />
+    <string id="AFD_MCM_AutoAi_Hint" text="When enabled, scene or map conversations enter AI input mode automatically. Pair with Only Hero enters AI mode automatically to limit the targets. When disabled, ordinary conversation options appear first and AI can still be selected manually. Applies when the next conversation opens." />
+    <string id="AFD_MCM_AutoAiHeroOnly" text="Only Hero enters AI mode automatically" />
+    <string id="AFD_MCM_AutoAiHeroOnly_Hint" text="Applies only when automatic AI mode is enabled. When enabled, only Heroes (lords, companions, notable characters, and other individually identified people) enter AI mode automatically; ordinary bandits, deserters, and soldiers stay in ordinary mode. Disable it to restore automatic switching for all targets. Manual switching remains available." />
+    <string id="AFD_MCM_HistoryDelete" text="Show delete buttons in conversation history" />
+    <string id="AFD_MCM_HistoryDelete_Hint" text="Show a delete button beside each persistent conversation-history line. Deleting removes the visible line and that day's uncompressed memory draft; content already compressed into memory blocks is unaffected." />
     <string id="AFD_UI_Aux_AllDates" text="All dates" />
     <string id="AFD_UI_Aux_CurrentTarget" text="Current conversation target" />
     <string id="AFD_UI_Aux_Day" text="Day {DAY}" />

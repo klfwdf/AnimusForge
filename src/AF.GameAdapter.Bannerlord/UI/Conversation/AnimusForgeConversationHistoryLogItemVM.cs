@@ -200,6 +200,9 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	public string EditButtonText => _isEditing ? Localize("AF_UI_ConversationHistory_Save", "Save") : Localize("AF_UI_ConversationHistory_Edit", "Edit");
 
 	[DataSourceProperty]
+	public string CancelEditText => Localize("AF_UI_ConversationHistory_Cancel", "Cancel");
+
+	[DataSourceProperty]
 	public string EditText
 	{
 		get => _editText;

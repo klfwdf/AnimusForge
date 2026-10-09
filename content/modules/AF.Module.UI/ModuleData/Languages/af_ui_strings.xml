@@ -743,6 +743,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_ConversationHistory_Delete" text="Delete" />
   <string id="AF_UI_ConversationHistory_Save" text="Save" />
   <string id="AF_UI_ConversationHistory_Edit" text="Edit" />
+  <string id="AF_UI_ConversationHistory_Cancel" text="Cancel" />
   <string id="AF_UI_Timeline_MenuOption" text="Rumors" />
   <string id="AF_UI_Timeline_OpenFailed" text="The rumors timeline cannot be opened right now." />
 
