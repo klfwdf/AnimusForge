@@ -33,4 +33,40 @@
   <string id="AF_UI_Onboarding_TestCancelled" text="测试已由用户取消。" />
   <string id="AF_UI_Onboarding_TestException" text="测试发生异常，请检查网络和 API 配置。" />
   <string id="AF_UI_Onboarding_TestPartialFailure" text="❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。" />
+  <string id="AF_MCM_TownAmbient_Group" text="3. 场景喊话/定居点生活" />
+  <string id="AF_MCM_TownAmbient_AiGroup" text="环境 AI 接口" />
+  <string id="AF_MCM_TownAmbient_Enable" text="启用定居点环境闲谈与额外居民" />
+  <string id="AF_MCM_TownAmbient_Enable_Hint" text="覆盖城镇、村庄、港口和领主大厅。关闭后不再生成环境气泡，也不再补充额外居民；重新进入场景后完全生效。" />
+  <string id="AF_MCM_TownAmbient_Density" text="定居点生活性能档位" />
+  <string id="AF_MCM_TownAmbient_Density_Hint" text="0=关闭，1=低负担，2=标准，3=高密度。档位会同时调整城镇、村庄、港口和领主大厅的台词冒出率与额外居民数量。" />
+  <string id="AF_MCM_TownAmbient_Population" text="额外居民目标倍率" />
+  <string id="AF_MCM_TownAmbient_Population_Hint" text="以原版当前定居点居民数为基准，标准值 2.0 左右；高档位最多按 3 倍目标补充。受场景可用出生点和安全上限限制。" />
+  <string id="AF_MCM_TownAmbient_Echo" text="启用环境多人接话" />
+  <string id="AF_MCM_TownAmbient_Echo_Hint" text="偶尔让附近另一名居民接上上一句台词；使用本地预设文本，不调用 AI。关闭可进一步降低气泡与扫描负担。" />
+  <string id="AF_MCM_TownAmbient_Ai" text="启用环境 AI 接口（明确授权）" />
+  <string id="AF_MCM_TownAmbient_Ai_Hint" text="默认关闭。只有你填写独立接口并主动开启后，环境多人接话才可能调用 AI；未开启时始终使用本地预设文本，消耗 0 Token。" />
+  <string id="AF_MCM_TownAmbient_ApiUrl" text="环境 AI API 地址（支持 Base URL）" />
+  <string id="AF_MCM_TownAmbient_ApiUrl_Hint" text="例如 https://api.openai.com/v1 或完整的 /v1/chat/completions。只会连接你填写的地址，不经过 AnimusForge 服务器。" />
+  <string id="AF_MCM_TownAmbient_ApiKey" text="环境 AI API 密钥（Key）" />
+  <string id="AF_MCM_TownAmbient_ApiKey_Hint" text="使用你自己的 API Key。Key 只用于本地直连接口，日志和用量提示不会显示完整密钥。" />
+  <string id="AF_MCM_TownAmbient_Model" text="环境 AI 模型名称" />
+  <string id="AF_MCM_TownAmbient_Model_Hint" text="例如 gpt-4o-mini、deepseek-chat。请填写该接口实际支持的模型名。" />
+  <string id="AF_MCM_TownAmbient_Fetch" text="拉取环境 AI 模型列表" />
+  <string id="AF_MCM_TownAmbient_FetchContent" text="点击拉取" />
+  <string id="AF_MCM_TownAmbient_Fetch_Hint" text="使用你填写的环境 AI 地址和 Key 请求 /models；拉取本身通常不产生聊天 Token。" />
+  <string id="AF_MCM_TownAmbient_Dropdown" text="环境 AI 模型名称（下拉）" />
+  <string id="AF_MCM_TownAmbient_Dropdown_Hint" text="先拉取模型列表，再从下拉选择；选择“*手动填写*”时使用上方文本框。" />
+  <string id="AF_MCM_TownAmbient_Test" text="测试环境 AI 接口" />
+  <string id="AF_MCM_TownAmbient_TestContent" text="点击测试" />
+  <string id="AF_MCM_TownAmbient_Test_Hint" text="只发送一条很短的测试请求；测试本身会消耗少量 Token，并会在游戏内明确提示。" />
+  <string id="AF_MCM_TownAmbient_MaxTokens" text="环境 AI 每次最大输出 Tokens" />
+  <string id="AF_MCM_TownAmbient_MaxTokens_Hint" text="环境接话只需要很短的句子，建议 64～128。数值越高，单次潜在消耗越高。" />
+  <string id="AF_MCM_TownAmbient_Chance" text="环境 AI 触发概率（%）" />
+  <string id="AF_MCM_TownAmbient_Chance_Hint" text="只影响已经产生多人接话事件的场合，不会让 AI 主动扫描或主动发起事件。建议 5～10。" />
+  <string id="AF_MCM_TownAmbient_Rate" text="环境 AI 每分钟最多请求" />
+  <string id="AF_MCM_TownAmbient_Rate_Hint" text="0 表示禁止环境 AI 请求；建议低配 0～1，中配 1～2。超过上限时自动回退本地台词。" />
+  <string id="AF_MCM_TownAmbient_Budget" text="环境 AI 本次启动预算 Tokens" />
+  <string id="AF_MCM_TownAmbient_Budget_Hint" text="本次启动期间环境 AI 的输入+输出估算上限。达到上限后自动回退本地台词。0 表示不允许调用。" />
+  <string id="AF_MCM_TownAmbient_Usage" text="显示环境 AI 用量提示" />
+  <string id="AF_MCM_TownAmbient_Usage_Hint" text="每次环境 AI 回复完成后显示本次估算输入/输出 Token 和本次启动累计用量；建议保持开启。" />
 </strings>
