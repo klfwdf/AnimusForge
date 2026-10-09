@@ -1,3 +1,24 @@
+<a id="mcm-model-preset-continuation-20261009"></a>
+### MCM 模型预设与快报战事修复接续
+
+产品修订 MCM `854e8559d`、快报 `2ee1708aa`；验证与剩余边界见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mcm-model-preset-continuation-20261009)。一基源码职责如下；不是全文件/全仓验收。
+
+| 源码范围 / 符号 | owner / 消费者 / 边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1720–1724`；`AuxiliaryModelName` | 保存真实原地选择；setter 同步该实例的模型名与列表 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1732–1752`；`AuxiliaryModelDropdown` | MCM JSON 回放；主/后处理/事件及环境 AI 同规则 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:5282–5343`；`EnsureModelDropdownCacheHydrated` | 每实例首次读取缓存列表；不由临时预设写回或抢占模型名 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6105–6110`；`ReadModelNameForPreset` | MCM 保存文本前同步当前选择，手动文本保持 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6112–6119`；`SetModelNameForPreset` | 显式文本/预设设置边界重建；无 Tick 分配 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6124–6130`；`ResolveLoadedModelDropdown` | MCM converter 原地改索引后的名称恢复；索引0保留手动模式 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/TownAmbientSettings.cs:71–91`；`TownAmbientAiModelDropdown` | 共享缓存消费者一并使用名称恢复 |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs:101–121`；`ModelPresetIndexPrefix` | 实际 MCM 预设动作构造器前缀；仅 AF 五模型属性，按名映射、末尾补项，保留撤销索引 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:762–784`；`ValidateGeneratedText` | 战事标题/正文/小消息/SHORT 边界校验；正常叙事与民事数量保留 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:843–878`；`BuildUserPrompt` | 发送写作材料前投影隐藏战事人数；原始证据不改 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:273–318`；`PublishWorldBulletin` | 真实发布消费者：违规整期回退事实模板，NPC 轶事不写拒收输出 |
+
+终端 `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:126–158` 四个模型入口采用 MCM 同款原地索引选择，移除重复 setter；战事实句 `WorldBulletinCampaignMaterialPolicy.cs:42–45` 保留 Detail 内部数字但不在 Sentence 中罗列。真实 MCM converter 与 action/undo 已测；UI渲染、完整provider、HTTP及实机未测。
+
 <a id="scene-relay-natural-flow-20261009"></a>
 ### 当前职责导航：场景接力续聊事实与真实消费者
 

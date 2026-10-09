@@ -1,11 +1,32 @@
 <a id="mcm-model-preset-continuation-20261009"></a>
-## MCM 模型预设与快报战事修复接续（2026-10-09，ACTIVE）
+## MCM 模型预设与快报战事修复接续（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
 
-- 来源：用户要求接续会话 `01a11773-3ca3-7081-8721-040732168dca`；实际工作区 `F:/AnimusForge-main`，`main@d3fde95d4`。当前先完成新增预设模型复位与原会话未提交的战事数字切片；此前五项排查保留其未验结论，不把源码风险视为实机复现。
-- 原有 dirty：WorldBulletinPolicy、WorldBulletinStateOwner、WorldBulletinCampaignMaterialPolicy、随包写作要求和 smoke Program 共五文件；两 NuGet 目录保留。没有游戏部署、推送或外仓同步授权。
-- MCM 实证：UI SetSelectedIndexAction 原地修改索引，不走属性 setter；BaseSettingsJsonConverter 保存文本和下拉索引，DropdownJsonConverter 加载时复用 getter 对象。AF 旧版以对象身份判断加载，且下拉选择不更新文本、其他字段 hydrate 会先初始化默认模型。
-- 修改范围：现有模型设置 owner、MCM 下拉适配与终端消费者、专项测试；无新增 Tick 任务、HTTP 请求或存档格式变化。读取下拉避免重复分配/磁盘检查，写缓存只在显式列表操作。
-- 退出门：真实 MCM 转换器回放保存/载入、不同列表顺序、手动模式、默认预设、终端选择；快报 policy 与 host 回归；原统一 1.3/1.4 + Bootstrap 构建。实机和玩家配置未验，禁止标成实机完成。
+- 来源：用户接续会话 `01a11773-3ca3-7081-8721-040732168dca`；实际 `F:/AnimusForge-main`、`main@d3fde95d4`。检查点 `fc69fcc66`；产品 MCM `854e8559d`、快报 `2ee1708aa`。接手的五个快报 dirty 文件已验收并与发布回归一起单独提交；原两 NuGet 目录保留。
+- MCM 修复：真实 SetSelectedIndexAction 原地改索引，保存前文本模型名因此曾停在默认值；DropdownJsonConverter 复用 getter 对象，与旧假设相反。现在五模型同步真实名字，加载按名字恢复、索引0维持手动；预设 UI 复制按名字映射到当前列表，末尾补项避免破坏撤销；终端消费者同步。临时预设读取不写共享缓存，缓存只用于列表，默认预设不继承其他实例的已选值。普通 getter 复用 Dropdown，缓存每实例读取一次；显式设名/拉列表/预设动作边界才整理列表，无新增 Tick/网络任务。
+- 快报修复：继承原会话切片，参战人数从写作事实句移除，旧句与 Detail 在写作投影过滤，内部原始数字事实仍保留。统一不可覆盖的战事规则；标题、战事正文、小消息和 SHORT 出现数字对账则整期采用事实模板，拒收 SHORT 不进入 NPC 轶事；仅写作/发布边界静态正则，不新增轮询。
+- 源码职责、一基范围、实际消费者与覆盖限制统一见[代码导航](architecture/af-framework-code-scope.md#mcm-model-preset-continuation-20261009)。本地证据 `artifacts/mcm-preset-continuation-20261009/receipt.json`、`code-map.json`、`build-final.log`，测试收据按该 receipt 链接。
+
+验证：
+
+| 检查 | 实际结果与边界 |
+| --- | --- |
+| MCM 模型专项 | 两引用快照各47/47 PASS；它们 MCMv5.dll 同 SHA（同一 MCM 核心版本），不冒称不同核心版本矩阵。生产原始属性/方法 + 真 DropdownJsonConverter；.NET Framework 4.7.2 中实际 Harmony patch SetSelectedIndexAction 并 Do/Undo。host path/logger 与属性枚举是替身，非完整 provider/UI |
+| 修前负控 | 同套最终47断言在 `d3fde95d4` 16 PASS/31 FAIL；初期net8探针的 Harmony IL 运行时不兼容已保留，改用游戏 CLR 后通过，未修改生产库以适配测试 |
+| 快报 | policy smoke 141 PASS；真实 WorldBulletinStateOwner/异步完成/发布及邻接生成回放95 PASS；覆盖数字回退与 NPC 轶事拒收。provider和游戏对象为受控输入 |
+| 模式切换既有实现 | NewsCollectionTests 27 PASS：切换清除/旧队列取消/七游戏日/冻结追加与显式编辑失效；没有现场日志，不能宣布玩家弹窗原因已复现 |
+| 原统一双构建 | `build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot <已核实游戏目录> -Configuration Debug`，无 Stage/Deploy；最终exit0。引用1.3.15.110062/1.4.6.115628，各348警告0错误；Bootstrap/探针0警告0错误；双Coup门禁PASS |
+| 保留失败 | 旧 `WorldBulletinPolicy.SmokeTests/run_host_regression.py` 未抽取后来新增的 SynchronizeNewsCollectionMode，CS0103。未用空桩掩盖；本轮发布门由更完整 F4GenerationOwnerTests 覆盖，旧存储入口失败仍需单独维护，未标全仓绿 |
+
+原会话其余五项排查的当前结论（只读，未顺带实施）：
+
+1. 画卷转RP：`extensions/AnimusForge.Illustrator/src/UI/Gallery/GalleryRpItemConverter.cs:26–36` 只用 Theme/ActionSummary，统一追加“事件未真实发生”；忽略详细提示词及重绘差异，缺口确认。未改转换器或来源元数据。
+2. NPC 背景：`KnowledgeLibraryBehavior.cs:1266–1277,6323–6350` 普通背景作为聊天素材整体注入、When=null；具体“瑟曦知道、玩家未知”仍靠模型解读。秘密知情边界风险存在，原句/完整请求未获得，未改人物设定或三渠道。
+3. 投降结算：`LordEncounterBehavior.cs:7552–7555,7615–7641` 投降标记即成功、推进异常后仍成功的风险保留；未证明玩家命中，也未改原版结算或重试。
+4. 周报/快报切换：`MyBehavior.NewsCollection.cs:19–77` 已有清除、epoch、队列取消与新周期；本轮27检查通过。仍需准确提示及 ModeRestart/批次日志辨别旧结果和显式素材变更，不能据此认定坏档。
+5. 扯旗桥段重复：写作规则未固定该句，但 `WorldBulletinPolicy.BuildUserPrompt` 未注入最近几期全文避重；本次数量校验不解决跨期措辞重复。
+
+未验证：两版真实 MCM UI/默认预设切换画面、玩家配置、游戏存档/原故障、真实模型回复及全仓。已保存错误模型名的旧预设无法可靠反推，应重新选择并保存一次。未部署、打包、推送、外仓写入或修改一键流程。候选在 `bin/Debug/single_module_artifacts/`。回滚仅 focused inverse `854e8559d` 与 `2ee1708aa`；检查点 `fc69fcc66`，保留其他作者和历史记录。
+
 <a id="release-v1-5-7-20261009"></a>
 ## 1.5.7 本地打包与累计玩家公告（2026-10-09，LOCAL_PACKAGED_VERIFIED_LIVE_NOT_RUN）
 
