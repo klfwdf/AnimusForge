@@ -8999,3 +8999,37 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 性能：仅动作校验时运行；拒绝宣战时增加一次短路资格读取，不新增 Tick、后台游戏对象读取或额外全表诊断；单次资格检查仍最多一次战争统计。
 - 验收：真实生产源码外交回放4007断言通过，新增覆盖拒绝日志/处理原因一致、上下文拒绝fallback、剩余天数、战争计数及短路扫描次数。原build_single_module.ps1双API（1.3/1.4）、Bootstrap及双接缝检查PASS；产品提交 `b51bf5b88`。证据 `artifacts/war-rejection-20261009/`。
 - 未验：玩家实际存档、模组组合、实机提示；原玩家具体触发条件仍不能从Token日志唯一确定。未部署/打包/推送。回滚用本次产品提交的定向revert，不回滚其他作者Persistence测试改动。
+
+
+<a id="npc-hideout-clear-20261009"></a>
+## NPC 委托清剿藏身处（2026-10-09，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权实现并直接更新 GitHub main；基线 `4ed61998be4efb94f5d0ddff256a120ab4c13b4d`，检查点 `bdaed433`，产品 `60491286d8ba0c1540ddaeeee8cd1dcf1500db40`。隔离于既有人设修复分支，未合入该分支的产品/本地交接；源码发布不等于部署或游戏验收。
+- 在现有话题 17 / `worldmap_party_command` 增加 `[ACTION:WORLDMAP_ORDER:CLEAR_HIDEOUT:settlement:{id}:{days}]`；未指定/非法天数回退 5 天，表示抵达并发动清剿的时限，进行中的原版战斗不被时限强制打断。正文自然表态，标签仍只进后处理。
+- 共享三渠道命令、候选、解析与执行入口；候选只列已发现且仍有驻扎土匪的普通藏身处，最多 12 个，排除原版 busy、任务追踪占用、已有战斗和冷却。接受后复用分兵/总督远征、追加队列、归队；抵达时再次验证，在主线程建立原版非玩家 Hideout MapEvent，胜败/伤亡/战利品走原版战斗，不直接删除地点，不借用玩家的派兵成功率或强制宣战。
+- 只对本功能拥有且无玩家参与的事件隔离玩家专用 `OnHideoutBattleCompleted` 广播；普通玩家清剿及未拥有的事件原样放行。`MapEventEnded` 仅收集结果，待原版 `FinalizeComponent` 完成土匪部队移除后才确认成功和提交 AFEF。安全钩子不可用时不提供/接取此标签。
+- STOP 在行军时取消；原版战斗进行中保留既有队列的 pending-stop/ownership，结算后取消后续命令。读档从既有字符串 Kind/目标/结果和实际 MapEvent 恢复归属，不增存档键、不引入新原生存档类型。不能把他人已清空的地点记成己方成功，也不在不明结算后重开战斗。
+- 性能：藏身处枚举仅在命中的话题准备上下文时运行；执行沿既有小时 Tick 只解析当前目标，完成钩子按弱引用事件身份/执行者队列键查找；读档恢复仅一次。无新逐帧全量扫描、轮询线程、自动 LLM 请求或通用任务框架。
+
+### 已验证与保留项
+
+- 新增生产策略/路由测试 **29 PASS**；最终真实 1.3、1.4 候选各 **14 PASS**，包括新旧标签解析、归一化格式和实际引用 DLL 上两个 Harmony 钩子安装。探针关闭游戏目标验证，不将其宣传为战役或真实模型验收。
+- 原 `scripts/build/build_single_module.ps1` Debug 两实现 + Bootstrap **PASS**，两份最终候选的原 Coup 接缝门禁 **Passed**；SDK 8.0.422，实际引用 1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`。使用现有离线引用覆盖层及仓内 CLI/NuGet 缓存，未改原构建/门禁脚本；保留未触及代码中的 warnings。先前 runtime-only SDK、缺默认依赖根、探针日志根与参考根重叠的问题均记录并按现有入口参数修正。
+- 原 PersistenceChunkReplay **PASS**。全仓 chunk-contract 仍报 `_af_kingdom_civil_war_v2` 缺失/重复绑定；原断言、目录、非本任务文件未改，针对修改源读取 `origin/main` 原内容的只读基线投影复现相同失败。旧 J12DomainLifecycleRegression 的 `WorldDiplomacyRequestLeaseCoordinator.cs` 路径已不在 origin/main，原测试编译受阻；不删/降断言凑通过。
+- 工程师自审：核对最终 diff、主线程准入、唯一原版战斗、原版清理前后事件次序、取消/重复/恢复与三渠道现有消费者；定向 cleanup 与 `git diff --check` 通过。无被替代旧实现或孤儿 helper；保留原攻击、归队及保存兼容路径。
+- 玩家视角为**源码路径推演，未进行游戏内实测**。真实 Campaign、NPC 清剿胜敗与伤亡、LLM RAW→FINAL、玩家剧情/任务兼容、战斗中 STOP 后存读档、两游戏版本实际运行均 **NOT-RUN**；不制作/覆盖游戏包，不修改玩家 ONNX、配置、存档或原版 DLL。
+
+### 源码证据（产品提交绑定，一基行号）
+
+`src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.HideoutClear.cs`: `TryDeferNpcHideoutStop:31`、`RestoreNpcHideoutClearBattleOwnership:42`、`CaptureHideoutClearTarget:56`、`TickClearHideout:98`、`FinalizeNpcHideoutClearBattle:204`；
+`src/modules/AF.Module.WorldMap/Runtime/NpcHideoutClearPolicy.cs`: `EvaluateTarget:21`；
+`src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Protocol.cs`: `TryParseTag/CLEAR_HIDEOUT:42`；
+`src/AF.GameAdapter.Bannerlord/Patches/WorldMap/WorldMapNpcHideoutCompletionPatch.cs`: `EnsurePatched:14`、`BeforeFinalizePrefix:32`。
+
+### 最小人工验收
+
+1. 用有兵的 NPC 独立部队，或主队中的可分兵 NPC，对一个已发现且未被任务占用的普通藏身处说“带兵清剿这个藏身处”；分别复测自由对话、场景喊话与信使（送达后才执行）。确认 RAW/FINAL 新标签、实际分兵/行军、战斗和最终通知，不把口头答应当胜利。
+2. 检查获胜时驻扎土匪真实移除、失败时记录战败而不清空、伤亡与队伍名册一致；隐藏/任务占用/已空目标应拒绝或如实结束，玩家的正常藏身处任务不能因另一个 NPC 的普通清剿误失败。
+3. 行军中 STOP；战斗中 STOP 后保存/读取，确认不重开战斗、不执行后续队列、仍隔离玩家专用回调。保存/加载测试须用可回滚的独立存档，不在进行中的新清剿战斗里降级旧 DLL。
+
+本地收据与真实日志在忽略的 `artifacts/npc-hideout-clear-20261009/`；推送确认以同目录 API/远端 ref 复核收据为准，未将本地 commit 当作远端成功。源码回滚采用产品提交的 focused inverse/revert，不重写历史；已在新战斗中保存的存档不承诺向旧 DLL 降级兼容。
