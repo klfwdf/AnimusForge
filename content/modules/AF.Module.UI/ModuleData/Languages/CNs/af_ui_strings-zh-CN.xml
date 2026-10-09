@@ -1629,5 +1629,316 @@
   <string id="AF_UI_KingdomStability_ForceExecute" text="强制执行" />
   <string id="AF_UI_KingdomStability_Cancel" text="取消" />
   <string id="AF_UI_KingdomStability_ForceResultTitle" text="强制叛乱结果 - {KINGDOM}" />
+  <string id="AF_UI_Persona_MenuPrompt" text="请选择操作：" />
+  <string id="AF_UI_Persona_PersonalityLabel" text="个性：" />
+  <string id="AF_UI_Persona_Set" text="已设置" />
+  <string id="AF_UI_Persona_Unset" text="未设置" />
+  <string id="AF_UI_Persona_BackgroundLabel" text="历史背景：" />
+  <string id="AF_UI_Persona_VoiceCurrent" text="当前音色 ID：" />
+  <string id="AF_UI_Persona_VoiceUnsetAuto" text="未设置（由 VoiceMapping 自动分配）" />
+  <string id="AF_UI_Persona_SetPersonality" text="设置/修改个性" />
+  <string id="AF_UI_Persona_SetBackground" text="设置/修改历史背景" />
+  <string id="AF_UI_Persona_RerollPersona" text="重新生成个性与背景（LLM）" />
+  <string id="AF_UI_Persona_SetVoice" text="设置/修改音色 ID" />
+  <string id="AF_UI_Persona_ClearPersona" text="清空个性、历史背景和音色 ID" />
+  <string id="AF_UI_Persona_Back" text="返回" />
+  <string id="AF_UI_Persona_MenuTitle" text="编辑个性/历史背景 - {NAME}" />
+  <string id="AF_UI_Persona_Execute" text="执行" />
+  <string id="AF_UI_Persona_Cleared" text="已清空该 NPC 的个性、历史背景和音色 ID。" />
+  <string id="AF_UI_Persona_RerollConfirmBody" text="辅助 API 将为该 Hero 生成新的个性和历史背景。" />
+  <string id="AF_UI_Persona_SetWillOverwrite" text="已设置，将被覆盖" />
+  <string id="AF_UI_Persona_RerollVoiceKept" text="音色 ID 不会改变。生成失败时将保留现有数据。" />
+  <string id="AF_UI_Persona_RerollConfirmTitle" text="确认重新生成个性/背景 - {NAME}" />
+  <string id="AF_UI_Persona_ConfirmGenerate" text="生成" />
+  <string id="AF_UI_Persona_Cancel" text="取消" />
+  <string id="AF_UI_Persona_RerollingTitle" text="正在重新生成个性与背景" />
+  <string id="AF_UI_Persona_RerollingBody" text="正在为 {NAME} 生成人设。\n\n请稍候；只有生成并解析成功后才会覆盖现有数据。" />
+  <string id="AF_UI_Persona_RerollSucceededSuffix" text="的个性与历史背景已重新生成；音色 ID 保持不变。" />
+  <string id="AF_UI_Persona_RerollFailedTitle" text="重新生成个性与背景失败" />
+  <string id="AF_UI_Persona_RerollFailedBody" text="本次生成结果未保存；现有个性、历史背景和音色 ID 已保留。\n\n{DETAIL}" />
+  <string id="AF_UI_Persona_Close" text="关闭" />
+  <string id="AF_UI_Persona_ReturnEditor" text="返回编辑器" />
+  <string id="AF_UI_Persona_EditPersonalityTitle" text="设置个性 - {NAME}" />
+  <string id="AF_UI_Persona_PersonalityLoaded" text="当前个性已载入下方输入框。" />
+  <string id="AF_UI_Persona_PersonalityHint" text="请输入新的个性描述（留空则清空）。" />
+  <string id="AF_UI_Persona_PersonalityUpdated" text="个性已更新。" />
+  <string id="AF_UI_Persona_VoiceUnsetAutoParens" text="（未设置 - 由 VoiceMapping 自动分配）" />
+  <string id="AF_UI_Persona_VoiceInputHint" text="请输入新的音色 ID（留空则清空，并使用 VoiceMapping 自动分配）：" />
+  <string id="AF_UI_Persona_VoicePlatformHint" text="提示：音色 ID 取决于所使用的 TTS 平台。" />
+  <string id="AF_UI_Persona_VoiceVolcExample" text="  火山引擎示例：BV001_streaming" />
+  <string id="AF_UI_Persona_VoiceGptExample" text="  GPT-SoVITS 示例：参考音频文件名" />
+  <string id="AF_UI_Persona_VoiceTitle" text="设置音色 ID - {NAME}" />
+  <string id="AF_UI_Persona_Save" text="保存" />
+  <string id="AF_UI_Persona_VoiceCleared" text="音色 ID 已清空（将使用 VoiceMapping 自动分配）。" />
+  <string id="AF_UI_Persona_VoiceUpdatedPrefix" text="音色 ID 已更新为：" />
+  <string id="AF_UI_Persona_EditBackgroundTitle" text="设置历史背景 - {NAME}" />
+  <string id="AF_UI_Persona_BackgroundLoaded" text="当前历史背景已载入下方输入框。" />
+  <string id="AF_UI_Persona_BackgroundHint" text="请输入新的历史背景描述（留空则清空）。" />
+  <string id="AF_UI_Persona_BackgroundUpdated" text="历史背景已更新。" />
+  <string id="AF_UI_Persona_KnowledgeExportSingle" text="导出（单个知识条目，从列表选择）" />
+  <string id="AF_UI_Persona_KnowledgeImportSingle" text="导入（单个知识条目，从文件夹选择）" />
+  <string id="AF_UI_Persona_KnowledgeExportAll" text="全量导出（Knowledge，选择文件夹）" />
+  <string id="AF_UI_Persona_KnowledgeImportAll" text="全量导入（Knowledge，选择文件夹）" />
+  <string id="AF_UI_Persona_KnowledgeEdit" text="编辑 Knowledge 条目…" />
+  <string id="AF_UI_Persona_KnowledgeMenuTitle" text="Knowledge 导入/导出" />
+  <string id="AF_UI_Persona_ChooseAction" text="选择要执行的操作：" />
+  <string id="AF_UI_Persona_Enter" text="进入" />
+  <string id="AF_UI_Persona_KnowledgeUnavailable" text="KnowledgeLibraryBehavior 尚未初始化，无法打开知识编辑器。" />
+  <string id="AF_UI_Persona_KnowledgeImportFolder" text="导入（单个 Knowledge 条目）- 选择文件夹" />
+  <string id="AF_UI_Persona_KnowledgeExportFolder" text="全量导出（Knowledge）- 选择文件夹" />
+  <string id="AF_UI_Persona_KnowledgeImportAllFolder" text="全量导入（Knowledge）- 选择文件夹" />
+  <string id="AF_UI_Persona_KnowledgeNoExport" text="当前没有可导出的知识条目。" />
+  <string id="AF_UI_Persona_KnowledgeChooseExport" text="导出单个知识条目 - 选择条目" />
+  <string id="AF_UI_Persona_KnowledgeChooseExportBody" text="请选择要导出的知识条目：" />
+  <string id="AF_UI_Persona_Choose" text="选择" />
+  <string id="AF_UI_Persona_KnowledgeSingleExportFolder" text="导出（单个知识条目）- 选择文件夹" />
+  <string id="AF_UI_Persona_KnowledgeNoImport" text="该文件夹中没有可导入的知识条目。" />
+  <string id="AF_UI_Persona_KnowledgeChooseImport" text="导入单个知识条目 - 选择条目" />
+  <string id="AF_UI_Persona_KnowledgeChooseImportBody" text="请选择要导入的知识条目：" />
+  <string id="AF_UI_Persona_Import" text="导入" />
+  <string id="AF_UI_Persona_UnnamedExportSingle" text="导出（单个未命名 NPC，从列表选择）" />
+  <string id="AF_UI_Persona_UnnamedImportSingle" text="导入（单个未命名 NPC，从文件夹选择）" />
+  <string id="AF_UI_Persona_UnnamedExportAll" text="全量导出（未命名 NPC，选择文件夹）" />
+  <string id="AF_UI_Persona_UnnamedImportAll" text="全量导入（未命名 NPC，选择文件夹）" />
+  <string id="AF_UI_Persona_UnnamedEdit" text="编辑未命名 NPC 条目…" />
+  <string id="AF_UI_Persona_UnnamedMenuTitle" text="未命名 NPC 导入/导出" />
+  <string id="AF_UI_Persona_UnnamedImportFolder" text="导入（单个未命名 NPC）- 选择文件夹" />
+  <string id="AF_UI_Persona_UnnamedExportFolder" text="全量导出（未命名 NPC）- 选择文件夹" />
+  <string id="AF_UI_Persona_UnnamedImportAllFolder" text="全量导入（未命名 NPC）- 选择文件夹" />
+  <string id="AF_UI_Persona_UnnamedNoExport" text="当前没有可导出的未命名 NPC 条目。" />
+  <string id="AF_UI_Persona_UnnamedChooseExport" text="导出单个未命名 NPC - 选择条目" />
+  <string id="AF_UI_Persona_UnnamedChooseExportBody" text="请选择要导出的条目：" />
+  <string id="AF_UI_Persona_UnnamedSingleExportFolder" text="导出（单个未命名 NPC）- 选择文件夹" />
+  <string id="AF_UI_Persona_UnnamedNoImport" text="该文件夹中没有可导入的未命名 NPC 条目。" />
+  <string id="AF_UI_Persona_UnnamedChooseImport" text="导入单个未命名 NPC - 选择条目" />
+  <string id="AF_UI_Persona_UnnamedChooseImportBody" text="请选择要导入的条目：" />
+  <string id="AF_UI_Persona_UnnamedNoEdit" text="当前没有可编辑的未命名 NPC 条目。" />
+  <string id="AF_UI_Persona_UnnamedChooseEdit" text="编辑未命名 NPC - 选择条目" />
+  <string id="AF_UI_Persona_UnnamedChooseEditBody" text="请选择要编辑的条目：" />
+  <string id="AF_UI_Persona_UnnamedDescriptionTitle" text="编辑未命名 NPC - 描述" />
+  <string id="AF_UI_Persona_UnnamedDescriptionHint" text="请输入新的描述（留空则清空）。" />
+  <string id="AF_UI_Persona_SavedPrefix" text="已保存：" />
+  <string id="AF_UI_Persona_PickNpcExport" text="从导出文件夹选择 NPC…" />
+  <string id="AF_UI_Persona_ManualHeroId" text="手动输入 HeroId…" />
+  <string id="AF_UI_Persona_SearchNpcTitle" text="搜索 NPC" />
+  <string id="AF_UI_Persona_ClearSearch" text="清空搜索" />
+  <string id="AF_UI_Persona_PrevPage" text="上一页" />
+  <string id="AF_UI_Persona_NextPage" text="下一页" />
+  <string id="AF_UI_Persona_HeroSelectionBody" text="可从当前存档的全部 NPC 中选择，也可从旧导出文件夹读取 JSON。\n全部 NPC：{TOTAL}；当前结果：{RESULTS}；第 {PAGE}/{PAGES} 页。" />
+  <string id="AF_UI_Persona_SearchKeyword" text="搜索关键词：{QUERY}" />
+  <string id="AF_UI_Persona_NoSearchResults" text="没有匹配结果，可以重新搜索。" />
+  <string id="AF_UI_Persona_HeroSelectionTitle" text="单个 HeroNPC 导入/导出 - 选择 NPC" />
+  <string id="AF_UI_Persona_ExportFolderMissing" text="找不到导出目录。" />
+  <string id="AF_UI_Persona_NoNpcJson" text="该导出文件夹中没有可识别的 NPC JSON。" />
+  <string id="AF_UI_Persona_PickNpcTitle" text="从导出文件夹选择 NPC" />
+  <string id="AF_UI_Persona_PickNpcBody" text="目录：\n{FOLDER}\n\n请选择要导入/导出的 NPC：" />
+  <string id="AF_UI_Persona_SearchNpcBody" text="输入 NPC 名称或 HeroId，可查询全部 NPC。" />
+  <string id="AF_UI_Persona_Search" text="搜索" />
+  <string id="AF_UI_Persona_SingleNpcImportFolder" text="单个 HeroNPC - 选择导入文件夹" />
+  <string id="AF_UI_Persona_ManualHeroIdTitle" text="手动输入 HeroId" />
+  <string id="AF_UI_Persona_ManualHeroIdBody" text="请输入 HeroId（例如：lord_... / wanderer_...）。\n\n说明：这里不会创建新的游戏角色，只会把导入/导出数据写入该 HeroId 对应的存档数据；只有当游戏中存在或将来出现同 ID 的 Hero 时，这些数据才会被使用。" />
+  <string id="AF_UI_Persona_Confirm" text="确定" />
+  <string id="AF_UI_Persona_NpcMissingId" text="该 NPC 缺少编号，无法导入导出。" />
+  <string id="AF_UI_Persona_SingleExportPersona" text="导出（个性/背景，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleImportPersona" text="导入（个性/背景，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleExportHistory" text="导出（压缩记忆，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleImportHistory" text="导入（压缩记忆，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleExportDebt" text="导出（欠款，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleImportDebt" text="导入（欠款，选择文件夹）" />
+  <string id="AF_UI_Persona_SwitchNpc" text="切换 NPC" />
+  <string id="AF_UI_Persona_SingleNpcOpsTitle" text="单个 HeroNPC 导入/导出 - {NAME} (ID={ID})" />
+  <string id="AF_UI_Persona_SingleNpcPrefix" text="单个 HeroNPC - {NAME}" />
+  <string id="AF_UI_Persona_ExportPersonaSuffix" text="导出（个性/背景）" />
+  <string id="AF_UI_Persona_ImportPersonaSuffix" text="导入（个性/背景）" />
+  <string id="AF_UI_Persona_ExportHistorySuffix" text="导出（压缩记忆）" />
+  <string id="AF_UI_Persona_ImportHistorySuffix" text="导入（压缩记忆）" />
+  <string id="AF_UI_Persona_ExportDebtSuffix" text="导出（欠款）" />
+  <string id="AF_UI_Persona_ImportDebtSuffix" text="导入（欠款）" />
+  <string id="AF_UI_Persona_VoiceMaleYoung" text="青年男性" />
+  <string id="AF_UI_Persona_VoiceMaleMiddle" text="中年男性" />
+  <string id="AF_UI_Persona_VoiceMaleOld" text="老年男性" />
+  <string id="AF_UI_Persona_VoiceFemaleYoung" text="青年女性" />
+  <string id="AF_UI_Persona_VoiceFemaleMiddle" text="中年女性" />
+  <string id="AF_UI_Persona_VoiceFemaleOld" text="老年女性" />
+  <string id="AF_UI_Persona_VoiceGroupOverview" text="分组数量概览（详细 ID 请进入分组查看）" />
+  <string id="AF_UI_Persona_VoiceFallbackLine" text="兜底：{VOICE}" />
+  <string id="AF_UI_Persona_VoiceTotal" text="总 ID 数：{COUNT}" />
+  <string id="AF_UI_Persona_VoiceAdd" text="添加声音 ID 到分组" />
+  <string id="AF_UI_Persona_VoiceRemove" text="删除分组中的声音 ID" />
+  <string id="AF_UI_Persona_VoiceFallbackTitle" text="设置全局兜底声音" />
+  <string id="AF_UI_Persona_VoiceExport" text="导出映射（选择文件夹）" />
+  <string id="AF_UI_Persona_VoiceImport" text="导入映射（选择文件夹）" />
+  <string id="AF_UI_Persona_VoiceReload" text="重新加载配置" />
+  <string id="AF_UI_Persona_VoiceExportFolder" text="导出（VoiceMapping）- 选择文件夹" />
+  <string id="AF_UI_Persona_VoiceImportFolder" text="导入（VoiceMapping）- 选择文件夹" />
+  <string id="AF_UI_Persona_VoiceReloaded" text="已从当前存档重新加载声音映射。" />
+  <string id="AF_UI_Persona_VoiceNoData" text="当前存档中没有声音映射数据。" />
+  <string id="AF_UI_Persona_VoiceAddGroup" text="添加声音 ID - 选择分组" />
+  <string id="AF_UI_Persona_VoiceRemoveGroup" text="删除声音 ID - 选择分组" />
+  <string id="AF_UI_Persona_VoiceAddGroupBody" text="选择分组后输入要添加的声音 ID。" />
+  <string id="AF_UI_Persona_VoiceRemoveGroupBody" text="请选择要删除声音 ID 的分组：" />
+  <string id="AF_UI_Persona_VoiceNoRemovable" text="当前没有任何声音 ID 可删除。" />
+  <string id="AF_UI_Persona_VoiceGroupPrefix" text="分组：" />
+  <string id="AF_UI_Persona_VoiceCount" text="当前数量：{COUNT}" />
+  <string id="AF_UI_Persona_VoiceAddPrompt" text="请输入要添加的声音 ID：" />
+  <string id="AF_UI_Persona_VoiceMcmHint" text="（需与 MCM 中的 TTS 声音 ID 一致）" />
+  <string id="AF_UI_Persona_VoiceAddTitle" text="添加声音 ID - {GROUP}" />
+  <string id="AF_UI_Persona_Add" text="添加" />
+  <string id="AF_UI_Persona_VoiceAdded" text="已添加声音“{VOICE}”到 [{GROUP}]" />
+  <string id="AF_UI_Persona_VoiceGroupEmpty" text="[{GROUP}] 分组没有声音 ID 可删除。" />
+  <string id="AF_UI_Persona_VoiceClearAll" text="⚠ 清空该分组所有声音" />
+  <string id="AF_UI_Persona_VoiceRemoveTitle" text="删除声音 ID - {GROUP}" />
+  <string id="AF_UI_Persona_VoiceRemoveBody" text="分组：{GROUP}\n当前有 {COUNT} 个声音 ID。\n请选择要删除的声音：" />
+  <string id="AF_UI_Persona_Delete" text="删除" />
+  <string id="AF_UI_Persona_VoiceRemoved" text="已从 [{GROUP}] 删除声音“{VOICE}”" />
+  <string id="AF_UI_Persona_VoiceFallbackBody" text="全局兜底声音：当某个分组没有配置声音 ID 时使用。" />
+  <string id="AF_UI_Persona_CurrentPrefix" text="当前：" />
+  <string id="AF_UI_Persona_VoiceFallbackUnset" text="（未设置，最终回退到 MCM 全局设置）" />
+  <string id="AF_UI_Persona_VoiceFallbackHint" text="请输入新的 fallback 声音 ID（留空则清除）：" />
+  <string id="AF_UI_Persona_VoiceFallbackCleared" text="fallback 已清除" />
+  <string id="AF_UI_Persona_VoiceFallbackSetPrefix" text="fallback 已设置为：" />
+
+  <string id="AF_UI_Weekly_Editor_001" text="正在生成完整周报" />
+  <string id="AF_UI_Weekly_Editor_002" text="正在使用该期保存的完整素材补写完整周报正文。\n\n周报：" />
+  <string id="AF_UI_Weekly_Editor_003" text="\n\n请稍候，生成完成或失败前此窗口不会关闭。" />
+  <string id="AF_UI_Weekly_Editor_004" text="完整周报生成失败" />
+  <string id="AF_UI_Weekly_Editor_005" text="完整周报生成失败。" />
+  <string id="AF_UI_Weekly_Editor_007" text="日期未知" />
+  <string id="AF_UI_Weekly_Editor_008" text="无效素材。" />
+  <string id="AF_UI_Weekly_Editor_009" text="素材类型" />
+  <string id="AF_UI_Weekly_Editor_010" text="素材标签" />
+  <string id="AF_UI_Weekly_Editor_011" text="人物" />
+  <string id="AF_UI_Weekly_Editor_013" text="定居点" />
+  <string id="AF_UI_Weekly_Editor_014" text="行动类型" />
+  <string id="AF_UI_Weekly_Editor_015" text="相关人物" />
+  <string id="AF_UI_Weekly_Editor_016" text="相关家族" />
+  <string id="AF_UI_Weekly_Editor_017" text="相关王国" />
+  <string id="AF_UI_Weekly_Editor_018" text="原始素材数" />
+  <string id="AF_UI_Weekly_Editor_019" text="来源StableKey" />
+  <string id="AF_UI_Weekly_Editor_020" text="来源ActionKind" />
+  <string id="AF_UI_Weekly_Editor_021" text="【素材正文】" />
+  <string id="AF_UI_Weekly_Editor_022" text="未能在当前行动记录中定位到这条 NPC 行为，可能是旧记录被裁剪掉了。" />
+  <string id="AF_UI_Weekly_Editor_023" text="这条素材当前没有额外快照文本。" />
+  <string id="AF_UI_Weekly_Editor_024" text="本周事件素材预览" />
+  <string id="AF_UI_Weekly_Editor_026" text="这里展示“如果现在生成本周事件”，系统会拿去喂给事件生成器的素材池。" />
+  <string id="AF_UI_Weekly_Editor_027" text="当前按世界事件与各王国事件分组展示。" />
+  <string id="AF_UI_Weekly_Editor_028" text="当前日期：" />
+  <string id="AF_UI_Weekly_Editor_029" text="当前取材区间：" />
+  <string id="AF_UI_Weekly_Editor_030" text=" 至 " />
+  <string id="AF_UI_Weekly_Editor_031" text="分组数量：" />
+  <string id="AF_UI_Weekly_Editor_032" text="素材总数：" />
+  <string id="AF_UI_Weekly_Editor_033" text="当前已接入的素材：世界开局概要、王国开局概要、本周 NPC 行动。" />
+  <string id="AF_UI_Weekly_Editor_034" text="全部档案" />
+  <string id="AF_UI_Weekly_Editor_037" text="返回分组列表" />
+  <string id="AF_UI_Weekly_Editor_040" text="素材预览" />
+  <string id="AF_UI_Weekly_Editor_041" text="查看素材" />
+  <string id="AF_UI_Weekly_Editor_042" text="分组标题" />
+  <string id="AF_UI_Weekly_Editor_043" text="分组类型" />
+  <string id="AF_UI_Weekly_Editor_044" text="关联王国" />
+  <string id="AF_UI_Weekly_Editor_045" text="素材数量" />
+  <string id="AF_UI_Weekly_Editor_046" text="页码" />
+  <string id="AF_UI_Weekly_Editor_047" text="【说明】" />
+  <string id="AF_UI_Weekly_Editor_048" text="当前这个分组还没有可用素材。" />
+  <string id="AF_UI_Weekly_Editor_049" text="本周素材详情" />
+  <string id="AF_UI_Weekly_Editor_050" text="返回素材列表" />
+  <string id="AF_UI_Weekly_Editor_051" text="查看单组 Prompt" />
+  <string id="AF_UI_Weekly_Editor_052" text="查看 Batch Prompt/Response" />
+  <string id="AF_UI_Weekly_Editor_053" text="本周周报 Prompt 预览" />
+  <string id="AF_UI_Weekly_Editor_054" text="选择要查看的调试视图。单组视图用于逐王国核对，Batch 视图用于查看实际批量请求和最近一次返回。" />
+  <string id="AF_UI_Weekly_Editor_056" text="查看 Prompt" />
+  <string id="AF_UI_Weekly_Editor_057" text="这里展示当前这一周会发给大模型的周报请求 Prompt。" />
+  <string id="AF_UI_Weekly_Editor_058" text="当前只在开发态使用，生成结果会写回事件编辑，不会自动发给 NPC。" />
+  <string id="AF_UI_Weekly_Editor_059" text="篇幅档位：" />
+  <string id="AF_UI_Weekly_Editor_060" text="每分钟生成上限：" />
+  <string id="AF_UI_Weekly_Editor_061" text="未执行" />
+  <string id="AF_UI_Weekly_Editor_062" text="有响应" />
+  <string id="AF_UI_Weekly_Editor_063" text="失败响应" />
+  <string id="AF_UI_Weekly_Editor_064" text="块 | " />
+  <string id="AF_UI_Weekly_Editor_065" text="本周周报 Batch Prompt/Response" />
+  <string id="AF_UI_Weekly_Editor_066" text="查看详情" />
+  <string id="AF_UI_Weekly_Editor_067" text="这里展示当前这一周实际会发送的批量周报请求。" />
+  <string id="AF_UI_Weekly_Editor_068" text="每个批次会显示完整 batch prompt，以及最近一次执行缓存下来的 response 原文。" />
+  <string id="AF_UI_Weekly_Editor_069" text="批次数量：" />
+  <string id="AF_UI_Weekly_Editor_070" text="覆盖周报目标：" />
+  <string id="AF_UI_Weekly_Editor_071" text="已有最近响应缓存：" />
+  <string id="AF_UI_Weekly_Editor_072" text="批次上限：" />
+  <string id="AF_UI_Weekly_Editor_073" text="周报 Prompt 详情" />
+  <string id="AF_UI_Weekly_Editor_074" text="返回 Prompt 列表" />
+  <string id="AF_UI_Weekly_Editor_075" text="【最近一次 Response】" />
+  <string id="AF_UI_Weekly_Editor_076" text="当前没有缓存的 batch response。需要先实际生成一次本周周报。" />
+  <string id="AF_UI_Weekly_Editor_078" text="成功" />
+  <string id="AF_UI_Weekly_Editor_079" text="失败" />
+  <string id="AF_UI_Weekly_Editor_080" text="尝试次数：" />
+  <string id="AF_UI_Weekly_Editor_081" text="失败原因：" />
+  <string id="AF_UI_Weekly_Editor_082" text="响应原文为空。" />
+  <string id="AF_UI_Weekly_Editor_083" text="Batch Prompt/Response 详情" />
+  <string id="AF_UI_Weekly_Editor_084" text="返回 Batch 列表" />
+  <string id="AF_UI_Weekly_Editor_085" text="无" />
+  <string id="AF_UI_Weekly_Editor_086" text="即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 &gt; 世界事件 &gt; 其他王国按距离依次生成\n\n本次预计请求数：" />
+  <string id="AF_UI_Weekly_Editor_087" text="\n篇幅档位：" />
+  <string id="AF_UI_Weekly_Editor_088" text="\n每分钟生成上限：" />
+  <string id="AF_UI_Weekly_Editor_089" text="\n按距离排序的王国：" />
+  <string id="AF_UI_Weekly_Editor_090" text="\n\n是否开始？" />
+  <string id="AF_UI_Weekly_Editor_091" text="生成本周周报草案" />
+  <string id="AF_UI_Weekly_Editor_092" text="开始生成" />
+  <string id="AF_UI_Weekly_Editor_094" text="自动周报" />
+  <string id="AF_UI_Weekly_Editor_096" text="的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。" />
+  <string id="AF_UI_Weekly_Editor_097" text="周报目标已变更" />
+  <string id="AF_UI_Weekly_Editor_098" text="重新采集并生成" />
+  <string id="AF_UI_Weekly_Editor_100" text="在生成过程中遇到了无法自动恢复的 API/模型错误。" />
+  <string id="AF_UI_Weekly_Editor_101" text="失败分组：" />
+  <string id="AF_UI_Weekly_Editor_102" text="未命名分组" />
+  <string id="AF_UI_Weekly_Editor_103" text="自动重试次数：" />
+  <string id="AF_UI_Weekly_Editor_104" text="时间范围：" />
+  <string id="AF_UI_Weekly_Editor_105" text="系统判断这次更像是 RPM（每分钟请求数）超限。" />
+  <string id="AF_UI_Weekly_Editor_106" text="当前 MCM 的【每分钟最多生成周报数】=" />
+  <string id="AF_UI_Weekly_Editor_107" text="建议先下调到 " />
+  <string id="AF_UI_Weekly_Editor_108" text=" 左右，再继续补跑。" />
+  <string id="AF_UI_Weekly_Editor_109" text="接口建议等待：" />
+  <string id="AF_UI_Weekly_Editor_110" text=" 秒。" />
+  <string id="AF_UI_Weekly_Editor_111" text="周事件生成失败" />
+  <string id="AF_UI_Weekly_Editor_112" text="详细失败原因已显示在左下角消息并写入日志。" />
+  <string id="AF_UI_Weekly_Editor_113" text="游戏将暂停在这里。你可以先直接修改 RPM 限制并立即重试，或进入 API 配置流程继续排查。" />
+  <string id="AF_UI_Weekly_Editor_114" text="游戏将暂停在这里。你可以手动重试本周周报生成，或者先进入 API 配置流程修正后再回来重试。" />
+  <string id="AF_UI_Weekly_Editor_115" text="修改RPM并重试" />
+  <string id="AF_UI_Weekly_Editor_116" text="手动重试" />
+  <string id="AF_UI_Weekly_Editor_117" text="调整API信息" />
+  <string id="AF_UI_Weekly_Editor_118" text="无法读取 MCM 设置，暂时不能修改 RPM 限制。" />
+  <string id="AF_UI_Weekly_Editor_119" text="修改周报RPM限制" />
+  <string id="AF_UI_Weekly_Editor_120" text="检测到本次失败疑似触发 RPM 限流。\n\n请输入新的【每分钟最多生成周报数】（范围 1-20）。\n当前值：" />
+  <string id="AF_UI_Weekly_Editor_121" text="\n建议先改为：" />
+  <string id="AF_UI_Weekly_Editor_122" text="\n\n保存后会立即按新速率继续补跑当前周报。" />
+  <string id="AF_UI_Weekly_Editor_123" text="保存并重试" />
+  <string id="AF_UI_Weekly_Editor_124" text="请输入 1-20 之间的整数 RPM。" />
+  <string id="AF_UI_Weekly_Editor_125" text="已将周报 RPM 上限更新为 " />
+  <string id="AF_UI_Weekly_Editor_126" text="，现在开始重试。" />
+  <string id="AF_UI_Weekly_Editor_127" text="打开 RPM 输入框失败：" />
+  <string id="AF_UI_Weekly_Editor_128" text="正在重试生成" />
+  <string id="AF_UI_Weekly_Editor_129" text="中的这个事件，请稍候……\n\n- 当前失败分组：" />
+  <string id="AF_UI_Weekly_Editor_130" text="\n- 后台会再次按每条分组三次重试的规则执行\n- 如果你不想继续等待，可以直接退出当前存档\n- 也可以返回上一界面，稍后再决定是否继续重试" />
+  <string id="AF_UI_Weekly_Editor_131" text="正在重试生成此事件" />
+  <string id="AF_UI_Weekly_Editor_132" text="返回上一界面" />
+  <string id="AF_UI_Weekly_Editor_133" text="未找到 API 配置引导，请先检查 MCM 中的 Base URL、API Key 与模型名。" />
+  <string id="AF_UI_Weekly_Editor_134" text="当前已无法找到全部失败的周报分组，未发送新请求；请保存退出后检查本周素材。" />
+  <string id="AF_UI_Weekly_Editor_135" text="重新采集周报素材失败，未发送新请求。" />
+  <string id="AF_UI_Weekly_Editor_136" text="周事件补跑成功，已解除暂停。" />
+  <string id="AF_UI_Weekly_Editor_137" text="周报目标在失败后已变更，旧素材不能重试。" />
+  <string id="AF_UI_Weekly_Editor_138" text="周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。" />
+  <string id="AF_UI_Weekly_Editor_139" text="周事件补跑仍未成功，请检查 API / 模型配置后再试。" />
+  <string id="AF_UI_Weekly_Editor_140" text="周事件补跑异常失败：" />
+
+  <string id="AF_UI_Weekly_Editor_006" text="返回" />
+  <string id="AF_UI_Weekly_Editor_012" text="王国" />
+  <string id="AF_UI_Weekly_Editor_025" text="查看" />
+  <string id="AF_UI_Weekly_Editor_035" text="其他近况" />
+  <string id="AF_UI_Weekly_Editor_036" text="关闭" />
+  <string id="AF_UI_Weekly_Editor_038" text="上一页" />
+  <string id="AF_UI_Weekly_Editor_039" text="下一页" />
+  <string id="AF_UI_Weekly_Editor_055" text="进入" />
+  <string id="AF_UI_Weekly_Editor_077" text="执行结果：" />
+  <string id="AF_UI_Weekly_Editor_093" text="取消" />
+  <string id="AF_UI_Weekly_Editor_095" text="周报" />
+  <string id="AF_UI_Weekly_Editor_099" text="保存并退出" />
+  <string id="AF_UI_Weekly_Editor_RelatedSeparator" text="、" />
 </strings>
 </base>
