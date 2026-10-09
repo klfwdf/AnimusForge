@@ -892,19 +892,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public override string FormatType => "json";
 
-	[SettingPropertyButton("{=AF_MCM_Support_Button}Support the AnimusForge team", -1, true, "", Content = "{=AF_MCM_Support_Content}Open Afdian", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
+	[SettingPropertyButton("{=AF_MCM_Support_Button}Support the AnimusForge team", -1, true, "", Content = "{=AF_MCM_Support_Content}Open Afdian", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Support_Hint}Opens the Afdian page in the system default browser.")]
 	[SettingPropertyGroup("{=AF_MCM_Support_Group}0. Support", GroupOrder = -400)]
 	public Action OpenAfdianSupportLink { get; set; }
 
-	[SettingPropertyText("{=AF_MCM_MainApi_Url}API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
+	[SettingPropertyText("{=AF_MCM_MainApi_Url}API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Url_Hint}Enter your endpoint, for example https://api.openai.com/v1 or https://api.openai.com/v1/chat/completions. When you enter /v1, the mod automatically requests /v1/chat/completions.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiUrl { get; set; } = "https://api.openai.com/v1";
 
-	[SettingPropertyText("{=AF_MCM_MainApi_Key}API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入你的 API 密钥")]
+	[SettingPropertyText("{=AF_MCM_MainApi_Key}API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Key_Hint}Enter your API key.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiKey { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_MainApi_Model}Model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。")]
+	[SettingPropertyText("{=AF_MCM_MainApi_Model}Model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Model_Hint}For example, gpt-4o-mini. Enter a model supported by your configured endpoint.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public string ModelName
 	{
@@ -916,7 +916,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Action FetchMainModelList { get; set; }
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Dropdown}Model name (dropdown)", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Dropdown}Model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainModelDropdown
 	{
@@ -959,13 +959,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Action TestConnection { get; set; }
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiThinkingEnabled { get; set; } = true;
 
 	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
@@ -982,104 +982,104 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Temperature_Hint}Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_MainApi_MaxTokens_Hint}The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 ")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Streaming_Hint}When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request.")]
 	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiStreamingEnabled { get; set; } = false;
 
-	[SettingPropertyInteger("最小家族等级", 0, 6, "0", Order = 0, RequireRestart = false)]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_MinClanTier}Minimum clan tier", 0, 6, "0", Order = 0, RequireRestart = false)]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int MinimumClanTier { get; set; } = 0;
 
-	[SettingPropertyFloatingInteger("战败血量阈值", 0.1f, 0.5f, "#0%", Order = 1, RequireRestart = false)]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Duel_HealthThreshold}Defeat health threshold", 0.1f, 0.5f, "#0%", Order = 1, RequireRestart = false)]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
-	[SettingPropertyBool("启用决斗家族声望转移", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。")]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyBool("{=AF_MCM_Duel_RenownTransfer}Enable duel clan renown transfer", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
 
-	[SettingPropertyInteger("声望最低扣减", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。")]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMinimum}Minimum renown loss", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。")]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyMinimum { get; set; } = DefaultDuelLoserClanRenownPenaltyMinimum;
 
-	[SettingPropertyInteger("按当前声望扣减（%）", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。")]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownPercent}Renown loss by current percentage (%)", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。")]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyPercent { get; set; } = DefaultDuelLoserClanRenownPenaltyPercent;
 
-	[SettingPropertyInteger("声望最高扣减", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "单场决斗最多扣减的家族声望。默认 150；设为 0 表示不设上限。")]
-	[SettingPropertyGroup("2. 决斗规则")]
+	[SettingPropertyInteger("{=AF_MCM_Duel_RenownMaximum}Maximum renown loss", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "单场决斗最多扣减的家族声望。默认 150；设为 0 表示不设上限。")]
+	[SettingPropertyGroup("{=AF_MCM_Duel_Group}2. Duel rules")]
 	public int DuelLoserClanRenownPenaltyMaximum { get; set; } = DefaultDuelLoserClanRenownPenaltyMaximum;
 
-	[SettingPropertyBool("NPC 交出装备后自动补回", Order = 0, RequireRestart = false, HintText = "开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。")]
-	[SettingPropertyGroup("10. 物品与交易", GroupOrder = 100)]
+	[SettingPropertyBool("{=AF_MCM_Items_Restore}Restore NPC equipment after it is given away", Order = 0, RequireRestart = false, HintText = "开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。")]
+	[SettingPropertyGroup("{=AF_MCM_Items_Group}10. Items and trade", GroupOrder = 100)]
 	public bool EnableNpcBattleEquipmentRestore { get; set; } = true;
 
-	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyText("{=AF_MCM_Shout_Key}Scene shout key (one uppercase letter)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string ShoutKey { get; set; } = "T";
 
-	[SettingPropertyText("复杂交流按键 (仅限单个大写字母)", -1, true, "", Order = 1, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyText("{=AF_MCM_Shout_SpecialKey}Complex interaction key (one uppercase letter)", -1, true, "", Order = 1, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string ShoutSpecialMenuKey { get; set; } = "Y";
 
-	[SettingPropertyText("终端按键 (仅限单个大写字母)", -1, true, "", Order = 2, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyText("{=AF_MCM_Shout_TerminalKey}Terminal key (one uppercase letter)", -1, true, "", Order = 2, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string TerminalKey { get; set; } = "U";
 
-	[SettingPropertyText("倒地金币拾取键 (仅限单个大写字母)", -1, true, "", Order = 3, RequireRestart = false, HintText = "场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyText("{=AF_MCM_Shout_GoldKey}Downed-gold pickup key (one uppercase letter)", -1, true, "", Order = 3, RequireRestart = false, HintText = "场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string SceneTauntGoldPickupKey { get; set; } = "F";
 
-	[SettingPropertyFloatingInteger("喊话起始范围(米)", 1f, 150f, "0.0", Order = 4, RequireRestart = false, HintText = "按下 T/Y 时使用的基础喊话范围。默认 4 米。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_InitialRange}Initial shout range (m)", 1f, 150f, "0.0", Order = 4, RequireRestart = false, HintText = "按下 T/Y 时使用的基础喊话范围。默认 4 米。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float ShoutInitialRangeMeters { get; set; } = 4f;
 
-	[SettingPropertyFloatingInteger("喊话最大范围(米)", 1f, 150f, "0.0", Order = 5, RequireRestart = false, HintText = "按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_MaxRange}Maximum shout range (m)", 1f, 150f, "0.0", Order = 5, RequireRestart = false, HintText = "按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float ShoutMaxRangeMeters { get; set; } = 150f;
 
-	[SettingPropertyInteger("喊话回复最小字数", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。默认 40。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_MinLength}Minimum shout reply length", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。默认 40。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutMinTokens { get; set; } = DefaultShoutMinTokens;
 
-	[SettingPropertyInteger("喊话回复最大字数", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。默认 200；若小于最小字数，运行时会按最小字数处理。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_MaxLength}Maximum shout reply length", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。默认 200；若小于最小字数，运行时会按最小字数处理。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutMaxTokens { get; set; } = DefaultShoutMaxTokens;
 
-	[SettingPropertyInteger("内心思考最小字数", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_ThoughtLength}Minimum inner-thought length", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int ShoutThoughtMinTokens { get; set; } = 200;
 
-	[SettingPropertyBool("关闭内心思考", Order = 9, RequireRestart = false, HintText = "开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyBool("{=AF_MCM_Shout_DisableThought}Disable inner thought", Order = 9, RequireRestart = false, HintText = "开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public bool DisableShoutInnerThoughtPrompt { get; set; } = true;
 
-	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 10, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_BubbleFont}Bubble font size", 10, 40, "0", Order = 10, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyFloatingInteger("对话超时每字秒数", 0.5f, 3f, "0.0", Order = 11, RequireRestart = false, HintText = "场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Shout_Timeout}Conversation timeout seconds per visible character", 0.5f, 3f, "0.0", Order = 11, RequireRestart = false, HintText = "场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float SceneConversationTimeoutSecondsPerVisibleCharacter { get; set; } = 1f;
 
-	[SettingPropertyInteger("盯着看触发时间(秒)", 1, 120, "0", Order = 12, RequireRestart = false, HintText = "玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyInteger("{=AF_MCM_Shout_StareSeconds}Stare trigger time (seconds)", 1, 120, "0", Order = 12, RequireRestart = false, HintText = "玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int PassiveStareTriggerSeconds { get; set; } = 15;
 
-	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 13, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyBool("{=AF_MCM_Shout_DirectAttack}Allow direct player attacks to trigger scene conflict", Order = 13, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 
-	[SettingPropertyDropdown("喊话输入框底色", Order = 14, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
-	[SettingPropertyGroup("3. 场景喊话")]
+	[SettingPropertyDropdown("{=AF_MCM_Shout_InputBackground}Shout input background", Order = 14, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public Dropdown<string> ShoutInputUiBackgroundDropdown
 	{
 		get
@@ -1727,7 +1727,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Action FetchAuxiliaryModelList { get; set; }
 
-	[SettingPropertyDropdown("辅助模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyDropdown("辅助模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryModelDropdown
 	{
@@ -1755,13 +1755,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Action TestAuxiliaryConnection { get; set; }
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
@@ -1806,7 +1806,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Action FetchActionPostprocessModelList { get; set; }
 
-	[SettingPropertyDropdown("后处理模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyDropdown("后处理模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessModelDropdown
 	{
@@ -1834,13 +1834,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Action TestActionPostprocessConnection { get; set; }
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
 	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
@@ -1889,7 +1889,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Action FetchEventAndRebellionModelList { get; set; }
 
-	[SettingPropertyDropdown("事件/叛乱模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyDropdown("事件/叛乱模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionModelDropdown
 	{
@@ -1923,7 +1923,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{

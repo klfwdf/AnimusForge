@@ -87,4 +87,39 @@
   <string id="AF_MCM_MainApi_Temperature" text="温度" />
   <string id="AF_MCM_MainApi_MaxTokens" text="最大输出Tokens" />
   <string id="AF_MCM_MainApi_Streaming" text="开启流式传输" />
+  <string id="AF_MCM_Support_Hint" text="点击后会用系统默认浏览器打开爱发电页面。" />
+  <string id="AF_MCM_MainApi_Url_Hint" text="请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。" />
+  <string id="AF_MCM_MainApi_Key_Hint" text="填入你的 API 密钥" />
+  <string id="AF_MCM_MainApi_Model_Hint" text="例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。" />
+  <string id="AF_MCM_MainApi_Dropdown_Hint" text="请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。" />
+  <string id="AF_MCM_MainApi_Thinking_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_MCM_MainApi_Temperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
+  <string id="AF_MCM_MainApi_MaxTokens_Hint" text="主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。" />
+  <string id="AF_MCM_MainApi_Streaming_Hint" text="开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 " />
+  <string id="AF_MCM_Duel_Group" text="2. 决斗规则" />
+  <string id="AF_MCM_Shout_Group" text="3. 场景喊话" />
+  <string id="AF_MCM_Items_Group" text="10. 物品与交易" />
+  <string id="AF_MCM_Duel_MinClanTier" text="最小家族等级" />
+  <string id="AF_MCM_Duel_HealthThreshold" text="战败血量阈值" />
+  <string id="AF_MCM_Duel_RenownTransfer" text="启用决斗家族声望转移" />
+  <string id="AF_MCM_Duel_RenownMinimum" text="声望最低扣减" />
+  <string id="AF_MCM_Duel_RenownPercent" text="按当前声望扣减（%）" />
+  <string id="AF_MCM_Duel_RenownMaximum" text="声望最高扣减" />
+  <string id="AF_MCM_Items_Restore" text="NPC 交出装备后自动补回" />
+  <string id="AF_MCM_Shout_Key" text="喊话按键 (仅限单个大写字母)" />
+  <string id="AF_MCM_Shout_SpecialKey" text="复杂交流按键 (仅限单个大写字母)" />
+  <string id="AF_MCM_Shout_TerminalKey" text="终端按键 (仅限单个大写字母)" />
+  <string id="AF_MCM_Shout_GoldKey" text="倒地金币拾取键 (仅限单个大写字母)" />
+  <string id="AF_MCM_Shout_InitialRange" text="喊话起始范围(米)" />
+  <string id="AF_MCM_Shout_MaxRange" text="喊话最大范围(米)" />
+  <string id="AF_MCM_Shout_MinLength" text="喊话回复最小字数" />
+  <string id="AF_MCM_Shout_MaxLength" text="喊话回复最大字数" />
+  <string id="AF_MCM_Shout_ThoughtLength" text="内心思考最小字数" />
+  <string id="AF_MCM_Shout_DisableThought" text="关闭内心思考" />
+  <string id="AF_MCM_Shout_BubbleFont" text="气泡字体大小" />
+  <string id="AF_MCM_Shout_Timeout" text="对话超时每字秒数" />
+  <string id="AF_MCM_Shout_StareSeconds" text="盯着看触发时间(秒)" />
+  <string id="AF_MCM_Shout_DirectAttack" text="允许玩家直接攻击触发场景冲突" />
+  <string id="AF_MCM_Shout_InputBackground" text="喊话输入框底色" />
 </strings>
