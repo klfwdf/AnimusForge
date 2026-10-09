@@ -74,13 +74,13 @@
                             <ListPanel Id="DetailList" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                               <Children>
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="12" Brush="Popup.Description.Text" Brush.FontSize="18" Text="@RemainingText" />
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="【政策正文】" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="@ContentSectionTitleText" />
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" MarginBottom="14" Brush="Popup.Description.Text" Brush.FontSize="18" Text="@ContentText" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" MarginBottom="12" Sprite="StdAssets\Popup\divider" />
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="【民众反馈】" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="@FeedbackSectionTitleText" />
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" MarginBottom="14" Brush="Popup.Description.Text" Brush.FontSize="18" Text="@FeedbackText" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" MarginBottom="12" Sprite="StdAssets\Popup\divider" />
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="【每日效果】" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" Brush="Popup.Title.Text" Brush.FontSize="21" Text="@ImpactSectionTitleText" />
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" MarginBottom="14" Brush="Popup.Description.Text" Brush.FontSize="18" Text="@EffectText" />
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="17" Text="@CostText" />
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="17" Text="@CycleText" />

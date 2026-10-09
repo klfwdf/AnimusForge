@@ -573,6 +573,9 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		AbolishText = PolicyUiTexts.Get("AFPOL_UI_AbolishPolicy", "Stop Policy");
 		ReReviewText = PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review");
 		CloseText = PolicyUiTexts.Get("AFPOL_UI_BackToPolicyMenu", "Back to Policy Menu");
+		ContentSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyContentSection", "[Policy Content]");
+		FeedbackSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]");
+		ImpactSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyDailyImpactSection", "[Daily Impact]");
 		bool showVassalFirst = !_allRecords.Any(x => !string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase))
 			&& _allRecords.Any(x => string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase));
 		ShowScope(showVassalFirst);
@@ -588,6 +591,9 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	[DataSourceProperty] public string AbolishText { get; set; }
 	[DataSourceProperty] public string ReReviewText { get; set; }
 	[DataSourceProperty] public string CloseText { get; set; }
+	[DataSourceProperty] public string ContentSectionTitleText { get; set; }
+	[DataSourceProperty] public string FeedbackSectionTitleText { get; set; }
+	[DataSourceProperty] public string ImpactSectionTitleText { get; set; }
 	[DataSourceProperty] public MBBindingList<LocalPolicyHistoryRecordItemVM> RecordItems { get; set; }
 	[DataSourceProperty] public bool HasRecords { get => _hasRecords; set { if (value != _hasRecords) { _hasRecords = value; OnPropertyChangedWithValue(value, nameof(HasRecords)); } } }
 	[DataSourceProperty] public bool ShowEmptyState { get => _showEmptyState; set { if (value != _showEmptyState) { _showEmptyState = value; OnPropertyChangedWithValue(value, nameof(ShowEmptyState)); } } }
