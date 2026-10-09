@@ -1,5 +1,6 @@
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Localization;
 using System;using System.Collections.Generic;using System.Linq;using System.Diagnostics;using System.Threading.Tasks;using Newtonsoft.Json;
 using static AnimusForge.MyBehavior;
 namespace AnimusForge;
@@ -57,6 +58,15 @@ internal sealed class WeeklyReportRuntimePort
 // Runs the existing detached generation and budgeted commit algorithms. Queue/revision authorities are injected unchanged.
 internal sealed class WeeklyReportRuntimeOwner
 {
+// Player-facing generation notices only. Report bodies, batch labels, material text and protocol stay verbatim.
+private static string Ui(string id, string fallback) => new TextObject("{" + "=" + id + "}" + fallback).ToString();
+private static string Ui(string id, string fallback, params (string Name, string Value)[] variables)
+{
+	TextObject text = new TextObject("{" + "=" + id + "}" + fallback);
+	foreach ((string name, string value) in variables) text.SetTextVariable(name, value ?? "");
+	return text.ToString();
+}
+
 internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(WeeklyReportBatchRequest batch)
 	{
 		string text = BuildWeeklyReportBatchPreviewKey(batch);
@@ -320,7 +330,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x,_port.IsKingdomEligible)).ToList();
 		if (list.Count == 0)
 		{
-			_port.DisplayMessage("当前没有可生成周报的分组。");
+			_port.DisplayMessage(Ui("AF_WEEKLY_NoGeneratableGroups", "There are no weekly-report groups available to generate."));
 			if (openViewerWhenDone)
 			{
 				_port.OpenEditor();
@@ -355,7 +365,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			generationResult.BlockedByFatalFailure = true;
 			generationResult.BlockedByChangedRecord = true;
 			generationResult.FailureCount = groupMap.Count;
-			_port.DisplayMessage("周报目标在失败后已变更，旧素材重试已取消；请重新生成本周周报。");
+			_port.DisplayMessage(Ui("AF_WEEKLY_TargetChangedRetryCancelled", "The weekly-report target changed after the failure, so the old material retry was cancelled. Generate this week's report again."));
 			return generationResult;
 		}
 		Dictionary<string, string> capturedRecordStates = capturedRecordStatesOverride ?? currentRecordStates;
@@ -744,7 +754,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
 			{
 				hasReportedMissing = true;
-				reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+				reason ??= Ui("AF_WEEKLY_BatchNoUsableBlock", "{LABEL}: the batch request produced no usable weekly-report block - {REASON}", ("LABEL", BuildWeeklyReportBatchDisplayLabel(batch)), ("REASON", batchResult?.FailureReason ?? Ui("AF_WEEKLY_UnknownError", "unknown error")));
 				context.Targets.RecordMissing(reportId, missingGroup, reason);
 			}
 		}
@@ -755,7 +765,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 				string reportId = BuildWeeklyReportGroupReportId(group);
 				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId))
 				{
-					reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+					reason ??= Ui("AF_WEEKLY_BatchNoUsableBlock", "{LABEL}: the batch request produced no usable weekly-report block - {REASON}", ("LABEL", BuildWeeklyReportBatchDisplayLabel(batch)), ("REASON", batchResult?.FailureReason ?? Ui("AF_WEEKLY_UnknownError", "unknown error")));
 					context.Targets.RecordMissing(reportId, group, reason);
 				}
 			}
@@ -1427,11 +1437,11 @@ internal bool ProcessPendingWeeklyWaveLaunches()
 		{
 			if (context.WaveIndex == 1)
 			{
-				_port.DisplayMessage("开始生成" + context.DisplayLabel + "，共 " + context.TotalTargets + " 条周报目标，" + context.TotalBatches + " 个批次；将按分钟整批发送，每分钟同时发送 " + context.BurstSize + " 个请求。");
+				_port.DisplayMessage(Ui("AF_WEEKLY_GenerationStarted", "Started generating {LABEL}: {TARGETS} weekly-report targets in {BATCHES} batches. Requests are sent as minute-sized bursts, {BURST} requests per minute.", ("LABEL", context.DisplayLabel), ("TARGETS", context.TotalTargets), ("BATCHES", context.TotalBatches), ("BURST", context.BurstSize)));
 			}
 			string waveLabel = string.Join(" | ", context.Batches.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
 			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + context.DisplayLabel + " wave " + context.WaveIndex + "/" + context.TotalWaves + " launch count=" + context.Batches.Count + " :: " + waveLabel);
-			_port.DisplayMessage("周报批次 " + context.WaveIndex + "/" + context.TotalWaves + " 已发出，共 " + context.Batches.Count + " 个请求。");
+			_port.DisplayMessage(Ui("AF_WEEKLY_WaveLaunched", "Weekly-report batch {WAVE}/{TOTAL} launched with {COUNT} requests.", ("WAVE", context.WaveIndex), ("TOTAL", context.TotalWaves), ("COUNT", context.Batches.Count)));
 			runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>(context.Batches.Count);
 			for (int i = 0; i < context.Batches.Count; i++)
 			{
@@ -1603,7 +1613,7 @@ internal async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(eventId);
 		if (eventRecordEntry == null)
 		{
-			_port.FullFailure("未找到该期周报记录。");
+			_port.FullFailure(Ui("AF_WEEKLY_RecordNotFound", "No weekly-report record was found for that issue."));
 			return false;
 		}
 		if (!string.IsNullOrWhiteSpace(eventRecordEntry.Summary))
@@ -1613,7 +1623,7 @@ internal async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = BuildWeeklyReportRecordPreviewGroup(eventRecordEntry);
 		if (weeklyEventMaterialPreviewGroup == null || (weeklyEventMaterialPreviewGroup.Materials?.Count ?? 0) == 0)
 		{
-			_port.FullFailure("该期周报没有可用的完整素材。");
+			_port.FullFailure(Ui("AF_WEEKLY_NoUsableFullMaterial", "That issue has no usable full-report material."));
 			return false;
 		}
 		int num = Math.Max(1, eventRecordEntry.WeekIndex);
@@ -1637,17 +1647,17 @@ internal async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 				}
 				if (currentEntry == null || !string.Equals(capturedSource, BuildWeeklyFullReportSourceState(currentEntry), StringComparison.Ordinal))
 				{
-					_port.FullFailure("该期周报或素材已变更，请重新选择后生成。");
+					_port.FullFailure(Ui("AF_WEEKLY_IssueOrMaterialChanged", "That weekly-report issue or its material changed. Select it again and regenerate."));
 					return false;
 				}
 				if (apiCallResult == null || !apiCallResult.Success)
 				{
-					_port.FullFailure("完整周报生成失败：" + (apiCallResult?.ErrorMessage ?? "未知错误"));
+					_port.FullFailure(Ui("AF_WEEKLY_FullGenerationFailed", "Full weekly-report generation failed: {REASON}", ("REASON", apiCallResult?.ErrorMessage ?? Ui("AF_WEEKLY_UnknownError", "unknown error"))));
 					return false;
 				}
 				if (!_port.ParseFullResponse(apiCallResult.Content, out var title, out var shortSummary, out var report))
 				{
-					_port.FullFailure(LlmRetryPrompt.BuildFailureDetail("完整周报返回内容无法解析。", apiCallResult.Content, apiCallResult.ResponseBody));
+					_port.FullFailure(LlmRetryPrompt.BuildFailureDetail(Ui("AF_WEEKLY_UnparsableFullResponse", "The full weekly-report response could not be parsed."), apiCallResult.Content, apiCallResult.ResponseBody));
 					return false;
 				}
 				string previousPublishedProductState = _port.ProductState(currentEntry);
@@ -1660,7 +1670,7 @@ internal async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 				_port.NotifyProduct(previousPublishedProductState, FindWeeklyReportRecordById(capturedEventId));
 				_port.NotifyTimeline();
 				_port.HideInquiry();
-				_port.DisplayMessage("完整周报已生成。");
+				_port.DisplayMessage(Ui("AF_WEEKLY_FullGenerated", "The full weekly report has been generated."));
 				return true;
 			}).ConfigureAwait(false);
 		}
@@ -1668,7 +1678,7 @@ internal async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 		{
 			return await _port.FullCompletions.Enqueue(runtimeGeneration, () =>
 			{
-				_port.FullFailure("完整周报生成失败：" + ex.Message);
+				_port.FullFailure(Ui("AF_WEEKLY_FullGenerationFailed", "Full weekly-report generation failed: {REASON}", ("REASON", ex.Message)));
 				return false;
 			}).ConfigureAwait(false);
 		}
