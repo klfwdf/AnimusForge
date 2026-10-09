@@ -9,6 +9,7 @@ using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
@@ -223,8 +224,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private readonly List<AnimusForgeTerminalNode> _roots;
 	private readonly Stack<AnimusForgeTerminalNode> _path = new Stack<AnimusForgeTerminalNode>();
 
-	private string _titleText = "AnimusForge 终端";
-	private string _subtitleText = "选择工具或调节机制参数；可搜索、分页。按 ESC 或关闭退出。";
+	private string _titleText = new TextObject("{=AF_UI_Terminal_Title}AnimusForge Terminal").ToString();
+	private string _subtitleText = new TextObject("{=AF_UI_Terminal_Subtitle}Choose a tool or adjust a mechanism setting. Search, paginate, then press ESC or Close to exit.").ToString();
 	private string _breadcrumbText = "终端 / 全部";
 	private string _selectedTab = "全部";
 	private bool _hasUnsavedChanges;
@@ -373,7 +374,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		string[] tabs = new[] { "战争", "全部", "外交与国家", "提示词与规则", "AI核心", "决斗与部队", "场景互动", "角色与同伴" };
 		foreach (string tab in tabs)
 		{
-			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, SelectTab));
+			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, LocalizeTab(tab), SelectTab));
 		}
 
 		// 默认折叠“全部”标签页下的 MCM 二级分组，避免首屏内容过长
@@ -386,6 +387,22 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 
 		RefreshItems();
+	}
+
+	private static string LocalizeTab(string tab)
+	{
+		string key = tab switch
+		{
+			"战争" => "{=AF_UI_Terminal_War}War",
+			"外交与国家" => "{=AF_UI_Terminal_Diplomacy}Diplomacy and kingdoms",
+			"提示词与规则" => "{=AF_UI_Terminal_Prompt}Prompts and rules",
+			"AI核心" => "{=AF_UI_Terminal_Ai}AI core",
+			"决斗与部队" => "{=AF_UI_Terminal_Duel}Duels and parties",
+			"场景互动" => "{=AF_UI_Terminal_Scene}Scene interaction",
+			"角色与同伴" => "{=AF_UI_Terminal_Characters}Characters and companions",
+			_ => "{=AF_UI_Terminal_All}All"
+		};
+		return new TextObject(key).ToString();
 	}
 
 	public void ToggleGroupCollapse(string groupKey)
@@ -1006,11 +1023,15 @@ public sealed class AnimusForgeTerminalTabItemVM : ViewModel
 	public string TabId { get; }
 
 	[DataSourceProperty]
+	public string DisplayText { get; }
+
+	[DataSourceProperty]
 	public bool IsSelected { get => _isSelected; set { if (value != _isSelected) { _isSelected = value; OnPropertyChangedWithValue(value, nameof(IsSelected)); } } }
 
-	public AnimusForgeTerminalTabItemVM(string tabId, Action<string> onSelect)
+	public AnimusForgeTerminalTabItemVM(string tabId, string displayText, Action<string> onSelect)
 	{
 		TabId = tabId ?? "";
+		DisplayText = displayText ?? TabId;
 		_onSelect = onSelect;
 	}
 
