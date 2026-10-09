@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_WEV_UI_Title" text="World Events" />
+    <string id="AF_WEV_UI_Subtitle" text="Read-only view of NPC ruler policies, public feedback, and world events." />
+    <string id="AF_WEV_UI_Empty" text="No world events yet." />
+    <string id="AF_WEV_UI_Close" text="Close" />
+    <string id="AF_WEV_UI_CountryColumn" text="Kingdoms" />
+    <string id="AF_WEV_UI_CountryEmpty" text="No events for this kingdom." />
+    <string id="AF_WEV_UI_Delete" text="Delete record" />
+    <string id="AF_WEV_UI_UnknownKingdom" text="Unknown Kingdom" />
+    <string id="AF_WEV_UI_WorldEvent" text="World Event" />
+    <string id="AF_WEV_UI_DefaultEventTitle" text="AnimusForge Event" />
+    <string id="AF_WEV_UI_EventDetails" text="Event Details" />
+    <string id="AF_WEV_UI_PolicyImpact" text="Policy Impact" />
+    <string id="AF_WEV_UI_ReReview" text="Review policy again" />
+    <string id="AF_WEV_UI_New" text="New" />
+  </strings>
+</base>

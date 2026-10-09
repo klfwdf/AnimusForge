@@ -167,11 +167,11 @@ internal sealed class WorldEventInboxOwner
 			entry.EventId = Guid.NewGuid().ToString("N");
 		}
 		entry.EventKind = First(entry.EventKind, "world_event");
-		entry.KindLabel = First(entry.KindLabel, "世界事件");
-		entry.Title = First(entry.Title, "AnimusForge 事件");
+		entry.KindLabel = First(entry.KindLabel, WorldEventUiLocalization.Text("AF_WEV_UI_WorldEvent", "World Event"));
+		entry.Title = First(entry.Title, WorldEventUiLocalization.Text("AF_WEV_UI_DefaultEventTitle", "AnimusForge Event"));
 		entry.Summary = First(entry.Summary, entry.DetailText);
 		entry.DetailText = First(entry.DetailText, entry.Summary);
-		entry.BodySectionTitleText = First(entry.BodySectionTitleText, "事件详情");
+		entry.BodySectionTitleText = First(entry.BodySectionTitleText, WorldEventUiLocalization.Text("AF_WEV_UI_EventDetails", "Event Details"));
 		entry.Day = Math.Max(0, entry.Day);
 		entry.CreatedUtcTicks = entry.CreatedUtcTicks > 0 ? entry.CreatedUtcTicks : DateTime.UtcNow.Ticks;
 		entry.StableKey = First(entry.StableKey, entry.EventId);

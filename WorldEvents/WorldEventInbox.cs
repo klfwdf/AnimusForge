@@ -247,12 +247,14 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	private string _selectedPolicyHistoryKey;
 	[DataSourceProperty] public bool ShowDeleteSelectedRecord { get; private set; }
 	[DataSourceProperty] public bool CanDeleteSelectedRecord { get; private set; }
-	[DataSourceProperty] public string DeleteText => "删除记录";
+	[DataSourceProperty] public string DeleteText => WorldEventUiLocalization.Text("AF_WEV_UI_Delete", "Delete record");
 	private readonly Action<string> _onReReview;
 	private string _titleText;
 	private string _subtitleText;
 	private string _emptyStateText;
 	private string _closeText;
+	private string _countryColumnTitleText;
+	private string _selectedCountryEmptyStateText;
 	private string _selectedCountryTitleText;
 	private string _selectedRecordTitleText;
 	private string _selectedRecordKindLabel;
@@ -292,10 +294,12 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		_onDelete = onDelete;
 		_onReReview = onReReview;
 		WorldEventInboxPopupData source = data ?? new WorldEventInboxPopupData();
-		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "世界事件" : source.TitleText.Trim();
-		SubtitleText = string.IsNullOrWhiteSpace(source.SubtitleText) ? "只读查看 NPC 统治者政策、民众反馈和世界事件。" : source.SubtitleText.Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? "暂无世界事件。" : source.EmptyStateText.Trim();
-		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? "关闭" : source.CloseText.Trim();
+		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? WorldEventUiLocalization.Text("AF_WEV_UI_Title", "World Events") : source.TitleText.Trim();
+		SubtitleText = string.IsNullOrWhiteSpace(source.SubtitleText) ? WorldEventUiLocalization.Text("AF_WEV_UI_Subtitle", "Read-only view of NPC ruler policies, public feedback, and world events.") : source.SubtitleText.Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? WorldEventUiLocalization.Text("AF_WEV_UI_Empty", "No world events yet.") : source.EmptyStateText.Trim();
+		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? WorldEventUiLocalization.Text("AF_WEV_UI_Close", "Close") : source.CloseText.Trim();
+		CountryColumnTitleText = WorldEventUiLocalization.Text("AF_WEV_UI_CountryColumn", "Kingdoms");
+		SelectedCountryEmptyStateText = WorldEventUiLocalization.Text("AF_WEV_UI_CountryEmpty", "No events for this kingdom.");
 		CountryItems = new MBBindingList<WorldEventCountryItemVM>();
 		RecordItems = new MBBindingList<WorldEventRecordItemVM>();
 		List<WorldEventCountryData> countries = source.Countries ?? new List<WorldEventCountryData>();
@@ -316,7 +320,7 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		}
 		else
 		{
-			SelectedCountryTitleText = "世界事件";
+			SelectedCountryTitleText = WorldEventUiLocalization.Text("AF_WEV_UI_WorldEvent", "World Event");
 			SelectedCountryHasRecords = false;
 			ShowSelectedCountryEmptyState = false;
 			ClearSelectedRecord();
@@ -331,6 +335,10 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	public string EmptyStateText { get => _emptyStateText; set { if (value != _emptyStateText) { _emptyStateText = value; OnPropertyChangedWithValue(value, nameof(EmptyStateText)); } } }
 	[DataSourceProperty]
 	public string CloseText { get => _closeText; set { if (value != _closeText) { _closeText = value; OnPropertyChangedWithValue(value, nameof(CloseText)); } } }
+	[DataSourceProperty]
+	public string CountryColumnTitleText { get => _countryColumnTitleText; private set { if (value != _countryColumnTitleText) { _countryColumnTitleText = value; OnPropertyChangedWithValue(value, nameof(CountryColumnTitleText)); } } }
+	[DataSourceProperty]
+	public string SelectedCountryEmptyStateText { get => _selectedCountryEmptyStateText; private set { if (value != _selectedCountryEmptyStateText) { _selectedCountryEmptyStateText = value; OnPropertyChangedWithValue(value, nameof(SelectedCountryEmptyStateText)); } } }
 	[DataSourceProperty]
 	public string SelectedCountryTitleText { get => _selectedCountryTitleText; set { if (value != _selectedCountryTitleText) { _selectedCountryTitleText = value; OnPropertyChangedWithValue(value, nameof(SelectedCountryTitleText)); } } }
 	[DataSourceProperty]
@@ -427,7 +435,7 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	{
 		if (country == null)
 		{
-			return "世界事件";
+			return WorldEventUiLocalization.Text("AF_WEV_UI_WorldEvent", "World Event");
 		}
 		return country.KingdomName;
 	}
@@ -497,7 +505,7 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		SelectedRecordImpactText = "";
 		SelectedRecordUnreadMarkerText = "";
 		_selectedRecordPolicyRecordId = "";
-		SelectedRecordReReviewText = "重新评议政策";
+		SelectedRecordReReviewText = WorldEventUiLocalization.Text("AF_WEV_UI_ReReview", "Review policy again");
 		SelectedRecordReReviewDisabledReasonText = "";
 		UpdateSelectedRecordHeaderLayout("");
 		HasSelectedRecordPolicyName = false;
@@ -553,7 +561,7 @@ public sealed class WorldEventCountryItemVM : ViewModel
 	public WorldEventCountryData Source { get; }
 	public int Index { get; }
 	[DataSourceProperty]
-	public string KingdomName => string.IsNullOrWhiteSpace(Source.KingdomName) ? "未知国家" : Source.KingdomName.Trim();
+	public string KingdomName => string.IsNullOrWhiteSpace(Source.KingdomName) ? WorldEventUiLocalization.Text("AF_WEV_UI_UnknownKingdom", "Unknown Kingdom") : Source.KingdomName.Trim();
 	public int UnreadCount => Math.Max(0, Source.UnreadCount);
 	public int TotalCount => Math.Max(0, Source.Records?.Count ?? 0);
 	public bool HasUnread => UnreadCount > 0;
@@ -588,7 +596,7 @@ public sealed class WorldEventCountryItemVM : ViewModel
 	}
 
 	[DataSourceProperty]
-	public string UnreadText => HasUnread ? ("新 " + UnreadCount.ToString(CultureInfo.InvariantCulture)) : "";
+	public string UnreadText => HasUnread ? (WorldEventUiLocalization.Text("AF_WEV_UI_New", "New") + " " + UnreadCount.ToString(CultureInfo.InvariantCulture)) : "";
 
 	public void ExecuteSelect()
 	{
@@ -623,17 +631,17 @@ public sealed class WorldEventRecordItemVM : ViewModel
 		EventId = data.EventId ?? "";
 		Index = index;
 		_select = select;
-		KindLabel = data.KindLabel ?? "世界事件";
+		KindLabel = data.KindLabel ?? WorldEventUiLocalization.Text("AF_WEV_UI_WorldEvent", "World Event");
 		HeaderRightText = data.HeaderRightText ?? "";
 		DateText = data.DateText ?? "";
-		TitleText = data.TitleText ?? "世界事件";
+		TitleText = data.TitleText ?? WorldEventUiLocalization.Text("AF_WEV_UI_WorldEvent", "World Event");
 		IndexTitleText = string.IsNullOrWhiteSpace(data.IndexTitleText) ? TitleText : data.IndexTitleText;
 		MetaText = data.MetaText ?? "";
 		IndexMetaText = data.IndexMetaText ?? "";
 		PolicyNameText = data.PolicyNameText ?? "";
-		BodySectionTitleText = data.BodySectionTitleText ?? "详情";
+		BodySectionTitleText = data.BodySectionTitleText ?? WorldEventUiLocalization.Text("AF_WEV_UI_EventDetails", "Event Details");
 		BodyText = data.BodyText ?? "";
-		ImpactSectionTitleText = data.ImpactSectionTitleText ?? "政策影响效果";
+		ImpactSectionTitleText = data.ImpactSectionTitleText ?? WorldEventUiLocalization.Text("AF_WEV_UI_PolicyImpact", "Policy Impact");
 		ImpactText = data.ImpactText ?? "";
 		_unreadMarkerText = data.UnreadMarkerText ?? "";
 		_isUnread = data.IsUnread;
@@ -642,7 +650,7 @@ public sealed class WorldEventRecordItemVM : ViewModel
 		PolicyRecordId = data.PolicyRecordId ?? "";
 		ShowReReview = data.ShowReReview;
 		CanReReview = data.CanReReview;
-		ReReviewText = string.IsNullOrWhiteSpace(data.ReReviewText) ? "重新评议政策" : data.ReReviewText.Trim();
+		ReReviewText = string.IsNullOrWhiteSpace(data.ReReviewText) ? WorldEventUiLocalization.Text("AF_WEV_UI_ReReview", "Review policy again") : data.ReReviewText.Trim();
 		ReReviewDisabledReasonText = data.ReReviewDisabledReasonText ?? "";
 	}
 
@@ -739,10 +747,10 @@ public sealed class WorldEventRecordItemVM : ViewModel
 
 public sealed class WorldEventInboxPopupData
 {
-	public string TitleText = "世界事件";
-	public string SubtitleText = "只读查看 NPC 统治者政策、民众反馈和世界事件。";
-	public string EmptyStateText = "暂无世界事件。";
-	public string CloseText = "关闭";
+	public string TitleText = WorldEventUiLocalization.Text("AF_WEV_UI_Title", "World Events");
+	public string SubtitleText = WorldEventUiLocalization.Text("AF_WEV_UI_Subtitle", "Read-only view of NPC ruler policies, public feedback, and world events.");
+	public string EmptyStateText = WorldEventUiLocalization.Text("AF_WEV_UI_Empty", "No world events yet.");
+	public string CloseText = WorldEventUiLocalization.Text("AF_WEV_UI_Close", "Close");
 	public List<WorldEventCountryData> Countries = new List<WorldEventCountryData>();
 	public int SelectedCountryIndex;
 }
@@ -774,7 +782,7 @@ public sealed class WorldEventRecordData
 	public string ImpactText = "";
 	public string UnreadMarkerText = "";
 	public string PolicyRecordId = "";
-	public string ReReviewText = "重新评议政策";
+	public string ReReviewText = WorldEventUiLocalization.Text("AF_WEV_UI_ReReview", "Review policy again");
 	public string ReReviewDisabledReasonText = "";
 	public bool IsUnread;
 	public bool HasPolicyName;

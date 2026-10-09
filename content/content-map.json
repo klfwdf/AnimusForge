@@ -12,6 +12,16 @@
       "target": "ModuleData/Languages/afconv_ui_strings.xml"
     },
     {
+      "owner": "AF.Module.WorldEvents",
+      "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.WorldEvents",
+      "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/afwev_ui_strings.xml",
+      "target": "ModuleData/Languages/afwev_ui_strings.xml"
+    },
+    {
       "owner": "AnimusForge.Illustrator",
       "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml"
