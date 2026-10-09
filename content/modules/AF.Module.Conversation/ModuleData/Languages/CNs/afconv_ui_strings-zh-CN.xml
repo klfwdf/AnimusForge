@@ -79,5 +79,85 @@
     <string id="AF_CONV_UI_Companion_Title" text="{HERO}想与你交谈" />
     <string id="AF_CONV_UI_Companion_Description" text="{HERO}就在你的队伍中，想在你方便时与你谈谈。" />
     <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
+    <string id="AF_CONV_UI_Courier_ReturnedUndelivered" text="信使队已返回，未交付的信件与物资已退还。" />
+    <string id="AF_CONV_UI_Courier_ReturnedDisbanded" text="信使队已返回并解散。" />
+    <string id="AF_CONV_UI_Courier_ReplyTitle" text="信使带回了回信" />
+    <string id="AF_CONV_UI_Courier_Wrote" text="{NAME}写道：" />
+    <string id="AF_CONV_UI_Courier_ReplyButton" text="回信" />
+    <string id="AF_CONV_UI_Courier_Close" text="关闭" />
+    <string id="AF_CONV_UI_Courier_ReplyNotice" text="信使带回了{NAME}的回信。" />
+    <string id="AF_CONV_UI_Courier_EmptyReply" text="（无回信正文）" />
+    <string id="AF_CONV_UI_Courier_EmptyInbound" text="（无来信正文）" />
+    <string id="AF_CONV_UI_Courier_Destroyed" text="信使部队已被歼灭。{RECIPIENT}{DETAIL}" />
+    <string id="AF_CONV_UI_Courier_RecipientSuffix" text=" 收件人：{NAME}。" />
+    <string id="AF_CONV_UI_Courier_ReturnDetail" text=" {DETAIL}" />
+    <string id="AF_CONV_UI_Courier_DestroyerDetail" text=" 歼灭者：{NAME}" />
+    <string id="AF_CONV_UI_Courier_LostDetail" text=" 信使队伍已从大地图消失。" />
+    <string id="AF_CONV_UI_Courier_UnknownFaction" text="未知势力" />
+    <string id="AF_CONV_UI_Courier_RestoredLetters" text="已恢复库存中的信件物品 x{COUNT}。" />
+    <string id="AF_CONV_UI_Courier_LetterInventoryMissing" text="信件物品未加入库存：找不到玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterCreateFailed" text="信件物品生成失败，未加入库存。" />
+    <string id="AF_CONV_UI_Courier_LetterWriteFailed" text="信件物品生成了，但未能写入玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterAdded" text="信件已放入玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterAddFailed" text="信件物品加入库存失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_WaitInboundTitle" text="等待信使来信生成" />
+    <string id="AF_CONV_UI_Courier_WaitInboundDescription" text="信使已经抵达你的队伍，正在等待{NAME}写完信件正文。&#10;&#10;游戏时间已暂停，信件生成完成后会自动送达。" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundTitle" text="等待信使回信生成" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundDescription" text="信使已经抵达 {NAME} 的位置，正在等待对方读信并写下回信。&#10;&#10;游戏时间已暂停，回信生成完成后会自动继续并执行后处理标签。" />
+    <string id="AF_CONV_UI_Courier_WaitInboundNotice" text="信使已抵达，正在等待来信生成。游戏时间已暂停。" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundNotice" text="信使已抵达，正在等待回信生成。游戏时间已暂停。" />
+    <string id="AF_CONV_UI_Courier_TargetEscaping" text="信使目标正在逃亡，信使正前往最近定居点等待。" />
+    <string id="AF_CONV_UI_Courier_TargetCaptive" text="信使目标处于俘虏状态，信使正前往最近定居点等待。" />
+    <string id="AF_CONV_UI_Courier_TargetReturned" text="信使目标重新出现，信使正在路上。" />
+    <string id="AF_CONV_UI_Courier_InboundTitle" text="信使送来{KIND}" />
+    <string id="AF_CONV_UI_Courier_InboundLetter" text="来信" />
+    <string id="AF_CONV_UI_Courier_InboundWrote" text="{NAME}写道：" />
+    <string id="AF_CONV_UI_Courier_Acknowledge" text="知道了" />
+    <string id="AF_CONV_UI_Shout_SelfTalk" text="你正在自言自语..." />
+    <string id="AF_CONV_UI_Shout_PrimaryGone" text="[场景喊话] 异色主对象已经离场，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_PrimaryMissing" text="[场景喊话] 没有找到异色主对象，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_AudienceStale" text="[场景喊话] 在场人物快照已失效，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_PrimaryThinking" text="{NAME} 正在思考..." />
+    <string id="AF_CONV_UI_Shout_HighlightedTarget" text="异色主对象" />
+    <string id="AF_CONV_UI_Shout_PrimaryReadFailed" text="[场景喊话] 无法读取异色主对象，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_IllustrationUnavailable" text="[AI画卷] 截图生图功能尚未加载。" />
+    <string id="AF_CONV_UI_Shout_IllustrationPending" text="喊话回复尚未完成；当前面板仅提供截图生图。" />
+    <string id="AF_CONV_UI_Shout_IllustrationNoTarget" text="当前没有有效喊话目标，可以点击生图；发送喊话仍需框选有效目标。" />
+    <string id="AF_CONV_UI_Shout_IllustrationBattleHint" text="战斗中可手动生成当前现场插画。" />
+    <string id="AF_CONV_UI_Shout_IllustrationDraftHint" text="生图不使用未发送的输入草稿。" />
+    <string id="AF_CONV_UI_Shout_NoSendTarget" text="[场景喊话] 当前没有可发送喊话的目标。" />
+    <string id="AF_CONV_UI_Shout_TargetInvalid" text="[场景喊话] 目标或交流资格已失效，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_InputOpenFailed" text="[场景喊话] 输入面板打开失败。" />
+    <string id="AF_CONV_UI_Shout_PassiveFailed" text="[被动回应失败] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_ErrorPrefix" text="[场景喊话] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_PreprocessFailed" text="AnimusForge 前处理失败" />
+    <string id="AF_CONV_UI_Shout_RelayTargetUnavailable" text="异色主对象当前无法回应" />
+    <string id="AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable" text="本轮接力已结束：当前接话者已离场或无法回应" />
+    <string id="AF_CONV_UI_Shout_RoundStoppedBeforeActions" text="本轮回应已停止，本轮尚未进入动作处理。" />
+    <string id="AF_CONV_UI_Shout_RoundErrorStoppedActions" text="本轮回应发生错误，系统已停止后续动作处理。" />
+    <string id="AF_CONV_UI_Shout_RelaySpeakerUnavailable" text="本轮接力已结束：当前发言者已无法继续回应" />
+    <string id="AF_CONV_UI_Shout_RelayInterrupted" text="本轮接力已中断：行为处理失败或超时" />
+    <string id="AF_CONV_UI_Shout_RelayNoSpeaker" text="本轮未选出有效的接话者" />
+    <string id="AF_CONV_UI_Shout_RelayEnded" text="本轮接力已结束" />
+    <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="本轮接力已结束：选中的接话者已离场或无法回应" />
+    <string id="AF_CONV_UI_Shout_BudgetLimit" text="本轮接力已结束：已达到场景回应人数预算" />
+    <string id="AF_CONV_UI_Shout_BudgetDenied" text="本轮接力已结束：场景回应预算未允许继续接话" />
+    <string id="AF_CONV_UI_Shout_RelayEndedTurnLimit" text="本轮接力已结束：已达到发言次数上限" />
+    <string id="AF_CONV_UI_Shout_RelayNoNextSpeaker" text="本轮接力已结束：当前无人可接话" />
+    <string id="AF_CONV_UI_Shout_RelayThinking" text="{NAME}正在思考该说什么。" />
+    <string id="AF_CONV_UI_Native_Exited" text="已退出当前对话。" />
+    <string id="AF_CONV_UI_Native_LongWaitEscape" text="NPC回复等待较久，现在可以按 ESC 结束本次对话；处理完成前不能切回普通模式。" />
+    <string id="AF_CONV_UI_Native_Postprocess" text="正在处理NPC（{NAME}）的行为" />
+    <string id="AF_CONV_UI_Native_InputReady" text="你现在可以回复了！" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutTitle" text="原生对话前处理超时" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutDescription" text="ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。&#10;&#10;是否重试刚才这句话？" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutTitle" text="NPC开口前处理超时" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutDescription" text="ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。&#10;&#10;是否让NPC重新尝试开口？" />
+    <string id="AF_CONV_UI_Native_Retry" text="重试" />
+    <string id="AF_CONV_UI_Native_Cancel" text="取消" />
+    <string id="AF_CONV_UI_Native_MemoryUnconfirmed" text="AnimusForge 记忆记录未确认" />
+    <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge 动作处理未完成" />
+    <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC主动开口失败" />
+    <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge 自由对话提交失败" />
   </strings>
 </base>

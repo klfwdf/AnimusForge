@@ -25,7 +25,7 @@ public partial class ShoutBehavior
     public static void RequestSceneIllustrationForExternal(Func<bool> panelStillOpen)
     {
         if (SceneIllustrationRequestHook != null) SceneIllustrationRequestHook(panelStillOpen);
-        else InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 截图生图功能尚未加载。"));
+        else InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_IllustrationUnavailable", "[AI illustration] Scene capture and image generation is not loaded.")));
     }
 
     public static bool IsSceneIllustrationBattleForExternal
@@ -68,25 +68,25 @@ public partial class ShoutBehavior
         };
         if (!imageOnly) PauseGame();
         if (!ShoutTextInputPopup.Show(packet?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_BattleScene", IsSceneIllustrationBattleForExternal ? "Battle scene" : "Scene"),
-            imageOnly ? "喊话回复尚未完成；当前面板仅提供截图生图。" : packet == null ? "当前没有有效喊话目标，可以点击生图；发送喊话仍需框选有效目标。" : "战斗中可手动生成当前现场插画。",
-            "生图不使用未发送的输入草稿。", "", input =>
+            imageOnly ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_IllustrationPending", "The shout reply is not finished; this panel currently only provides scene image generation.") : packet == null ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_IllustrationNoTarget", "There is no valid shout target; you can generate an image, but sending a shout still requires selecting a valid target.") : ConversationUiLocalization.Text("AF_CONV_UI_Shout_IllustrationBattleHint", "You can manually generate an illustration of the current scene during combat."),
+            ConversationUiLocalization.Text("AF_CONV_UI_Shout_IllustrationDraftHint", "Image generation does not use unsent input drafts."), "", input =>
             {
                 if (packet == null)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 当前没有可发送喊话的目标。"));
+                    InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_NoSendTarget", "[Scene shout] There is no target available for sending a shout.")));
                     close(); return;
                 }
                 // Keep onboarding, target eligibility and movement suppression on the real send path.
                 if (!TryPrepareShoutTarget(out var prepared) || prepared.AgentIndex != packet.AgentIndex)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 目标或交流资格已失效，请重新框选。"));
+                    InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetInvalid", "[Scene shout] The target or communication eligibility is no longer valid; select targets again.")));
                     close(); return;
                 }
                 OnShoutConfirmedWithContext(input, null, packet.AgentIndex);
             }, close, BuildShoutTargetEncyclopediaAction(packet), enableIllustration: true))
         {
             close();
-            InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 输入面板打开失败。"));
+            InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_InputOpenFailed", "[Scene shout] Failed to open the input panel.")));
         }
     }
 }

@@ -90,7 +90,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		if (framedAgents.Count == 0)
 		{
 			receipt?.Fail("scene.no_framed_target");
-			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_SelfTalk", "You are talking to yourself..."), new Color(0.6f, 0.6f, 0.6f)));
 			_ports.ResumeGame();
 			return Task.CompletedTask;
 		}
@@ -101,7 +101,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			if (primaryTarget == null)
 			{
 				receipt?.Fail("scene.primary_unavailable");
-				InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 异色主对象已经离场，请重新框选。", new Color(1f, 0.5f, 0.3f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryGone", "[Scene shout] The primary highlighted target has left; select targets again."), new Color(1f, 0.5f, 0.3f)));
 				_ports.ResumeGame();
 				return Task.CompletedTask;
 			}
@@ -113,7 +113,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 		if (primaryTarget == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 没有找到异色主对象，请重新框选。", new Color(1f, 0.5f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryMissing", "[Scene shout] No primary highlighted target was found; select targets again."), new Color(1f, 0.5f, 0.3f)));
 			_ports.ResumeGame();
 			return Task.CompletedTask;
 		}
@@ -127,12 +127,12 @@ internal sealed partial class SceneConversationSessionRuntime
 		if (!audienceBuilt)
 		{
 			receipt?.Fail("scene.audience_stale");
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 在场人物快照已失效，请重新框选。", new Color(1f, 0.5f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_AudienceStale", "[Scene shout] The scene participant snapshot is stale; select targets again."), new Color(1f, 0.5f, 0.3f)));
 			_ports.ResumeGame();
 			return Task.CompletedTask;
 		}
 		_ports.ActivateMultiSceneMovementSuppression(new int[1] { primaryTarget.Index });
-		InformationManager.DisplayMessage(new InformationMessage((primaryTarget.Name?.ToString() ?? "异色主对象") + " 正在思考...", new Color(0.7f, 0.7f, 0.7f)));
+		InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryThinking", "{NAME} is thinking...", "NAME", primaryTarget.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_HighlightedTarget", "highlighted target")), new Color(0.7f, 0.7f, 0.7f)));
 		string sceneDesc = ShoutUtils.GetCurrentSceneDescription();
 		List<NpcDataPacket> allNpcData = audienceAgents.Select((Agent a) => ShoutUtils.ExtractNpcData(a)).Where((NpcDataPacket d) => d != null).ToList();
 		ApplySceneLocalDisambiguatedNames(allNpcData);
@@ -141,7 +141,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		{
 			receipt?.Fail("scene.primary_unavailable");
 			_ports.RemoveSceneMovementSuppressionAgents(new int[1] { primaryTarget.Index });
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 无法读取异色主对象，请重新框选。", new Color(1f, 0.5f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryReadFailed", "[Scene shout] Could not read the primary highlighted target; select targets again."), new Color(1f, 0.5f, 0.3f)));
 			_ports.ResumeGame();
 			return Task.CompletedTask;
 		}
@@ -249,7 +249,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						try
 						{
 							if (receipt != null && !IsModuleSceneGroupCurrent(receipt, receipt.RuntimeGeneration, receipt.SceneSessionId, receipt.ConversationEpoch)) return;
-							LlmRetryPrompt.ShowFailurePopup("AnimusForge 前处理失败", ex.Message);
+							LlmRetryPrompt.ShowFailurePopup(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PreprocessFailed", "AnimusForge pre-processing failed"), ex.Message);
 						}
 						catch
 						{

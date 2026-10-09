@@ -71,11 +71,11 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			else if (!session.DeliveryApplied)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("信使队已返回，未交付的信件与物资已退还。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReturnedUndelivered", "The courier party returned; undelivered letters and cargo were returned."), Colors.Yellow));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("信使队已返回并解散。", Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReturnedDisbanded", "The courier party returned and disbanded."), Colors.Green));
 			}
 			CompleteAndDestroyCourier(session, courier);
 		}
@@ -91,7 +91,7 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
 		string cleanedReply = CourierVisibleLetterSanitizer.Clean(replyText);
-		string body = string.IsNullOrWhiteSpace(cleanedReply) ? "（无回信正文）" : cleanedReply;
+		string body = string.IsNullOrWhiteSpace(cleanedReply) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_EmptyReply", "(No reply text)") : cleanedReply;
 		if (TryPublishCourierReplyMapNotification(senderHeroId, name, body))
 		{
 			return;
@@ -99,7 +99,7 @@ public sealed partial class CourierDeliveryBehavior
 		Action replyAction = string.IsNullOrWhiteSpace(senderHeroId) ? null : (() => OpenCourierReplyFlowForExternal(senderHeroId, name));
 		try
 		{
-			if (CourierLetterReplyPopup.ShowWithReply("信使带回了回信", name + "写道：", body, replyAction, "回信", null, "关闭"))
+			if (CourierLetterReplyPopup.ShowWithReply(ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyTitle", "The courier brought a reply"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Wrote", "{NAME} wrote:", "NAME", name), body, replyAction, ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyButton", "Reply"), null, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Close", "Close")))
 			{
 				return;
 			}
@@ -108,7 +108,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			Log("show courier reply popup failed sender=" + name + " error=" + ex.Message);
 		}
-		InformationManager.DisplayMessage(new InformationMessage("信使带回了" + name + "的回信。", Colors.Green));
+		InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyNotice", "The courier brought a reply from {NAME}.", "NAME", name), Colors.Green));
 	}
 
 	private static bool TryPublishCourierReplyMapNotification(string senderHeroId, string senderName, string replyText)
@@ -366,7 +366,7 @@ public sealed partial class CourierDeliveryBehavior
 				return;
 			}
 			Hero recipient = ResolveRecipient(session);
-			string destroyerName = destroyerParty?.Name?.ToString() ?? "未知势力";
+			string destroyerName = destroyerParty?.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_UnknownFaction", "unknown faction");
 			Log("destroyed session=" + session.Id + " party=" + destroyedParty.StringId + " destroyer=" + destroyerName + " deliveryApplied=" + session.DeliveryApplied);
 			if (IsInboundToPlayer(session))
 			{
@@ -374,7 +374,7 @@ public sealed partial class CourierDeliveryBehavior
 				return;
 			}
 			FailModuleCourierSession(session, "courier.transport_destroyed", CoreCourierTransportOutcome.Destroyed);
-			DisplayCourierDestroyedStatus(session, "歼灭者：" + destroyerName);
+			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName));
 			TryMoveHeroLossesToDestroyer(session, destroyerParty);
 			string fact = "[AFEF玩家行为补充] " + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家") + "通过信使寄出的信使队在途中被" + destroyerName + "歼灭。";
 			if (!session.DeliveryApplied)
@@ -489,7 +489,7 @@ public sealed partial class CourierDeliveryBehavior
 			return;
 		}
 		FailModuleCourierSession(session, "courier.transport_missing", CoreCourierTransportOutcome.Missing);
-		DisplayCourierDestroyedStatus(session, "信使队伍已从大地图消失。");
+		DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_LostDetail", " The courier party disappeared from the campaign map."));
 		Hero recipient = ResolveRecipient(session);
 		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, "[AFEF玩家行为补充] 玩家派出的信使队失去踪迹，信件与随信物资未能确认送达。");
 		session.Stage = CourierStage.Destroyed.ToString();
@@ -508,7 +508,7 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		try
 		{
-			DisplayCourierDestroyedStatus(session, "歼灭者：" + (destroyerName ?? "未知势力"));
+			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_UnknownFaction", "unknown faction")));
 			Hero sender = ResolveSender(session);
 			string senderName = string.IsNullOrWhiteSpace(session?.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
 			MyBehavior.AppendExternalDialogueHistory(sender, null, null, "[AFEF NPC行为补充] " + senderName + "派往玩家处的信使队在途中被" + (destroyerName ?? "未知势力") + "歼灭，这封" + GetInboundLetterKindDisplayText(session) + "未能确认送达。");
@@ -535,7 +535,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return;
 		}
-		DisplayCourierDestroyedStatus(session, "信使队伍已从大地图消失。");
+		DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_LostDetail", " The courier party disappeared from the campaign map."));
 		Hero sender = ResolveSender(session);
 		string senderName = string.IsNullOrWhiteSpace(session.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
 		MyBehavior.AppendExternalDialogueHistory(sender, null, null, "[AFEF NPC行为补充] " + senderName + "派往玩家处的信使队失去踪迹，这封" + GetInboundLetterKindDisplayText(session) + "未能确认送达。");
@@ -555,9 +555,9 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		try
 		{
-			string recipientName = string.IsNullOrWhiteSpace(session?.RecipientName) ? "" : " 收件人：" + session.RecipientName + "。";
-			string detailText = string.IsNullOrWhiteSpace(detail) ? "" : " " + detail.Trim();
-			InformationManager.DisplayMessage(new InformationMessage("信使部队已被歼灭。" + recipientName + detailText, Colors.Red));
+			string recipientName = string.IsNullOrWhiteSpace(session?.RecipientName) ? "" : ConversationUiLocalization.Text("AF_CONV_UI_Courier_RecipientSuffix", " Recipient: {NAME}.", "NAME", session.RecipientName);
+			string detailText = string.IsNullOrWhiteSpace(detail) ? "" : ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReturnDetail", " {DETAIL}", "DETAIL", detail.Trim());
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_Destroyed", "The courier party was destroyed.{RECIPIENT}{DETAIL}", ("RECIPIENT", recipientName), ("DETAIL", detailText)), Colors.Red));
 			Log("status courier_destroyed session=" + (session?.Id ?? "") + " recipient=" + (session?.RecipientHeroId ?? "") + " detail=" + (detail ?? ""));
 		}
 		catch
