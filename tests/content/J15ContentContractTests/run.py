@@ -702,11 +702,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
-        "sha256": "5899F46D116DC7EDBE829117012D7710E9ABD07FDA2903889086594BECCFABB7", "revision": "gathering-ui-6c2c03e63",
+        "sha256": "5899F46D116DC7EDBE829117012D7710E9ABD07FDA2903889086594BECCFABB7", "revision": "298608a78",
     },
     "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
-        "sha256": "296ABF96BE7F23EFCD12CA2C83F17E377556E7DCB4A4CEF7992371C938CA7518", "revision": "gathering-ui-6c2c03e63",
+        "sha256": "296ABF96BE7F23EFCD12CA2C83F17E377556E7DCB4A4CEF7992371C938CA7518", "revision": "298608a78",
     },
     "ModuleData/Languages/afconv_ui_strings.xml": {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
@@ -1408,3 +1408,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
