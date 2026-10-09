@@ -37,6 +37,8 @@ def main() -> int:
     pairs = [
         (root / "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
          root / "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml"),
+        (root / "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/sceneactions_strings.xml",
+         root / "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml"),
     ]
     for english, chinese in pairs:
         en = strings(english)

@@ -10,82 +10,82 @@ namespace AnimusForge;
 /// </summary>
 public partial class DuelSettings
 {
-	private const string SceneActionsRootGroup = "{=SAX_MCM_Group_General}18. 自然语言动作与阵前演讲";
+	private const string SceneActionsRootGroup = "{=SAX_MCM_Group_General}18. Natural Actions and Battle Speech";
 	private const string SceneActionsGeneralGroup = SceneActionsRootGroup;
-	private const string SceneActionsSpeechGroup = SceneActionsRootGroup + "/{=SAX_MCM_Group_Speech}阵前演讲";
-	private const string SceneActionsStageGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Stage}演讲者站位";
-	private const string SceneActionsAudienceGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Audience}听众回应";
-	private const string SceneActionsAudienceVoiceGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Voices}原生战吼";
-	private const string SceneActionsAudienceReplyGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Replies}士兵文字回应";
-	private const string SceneActionsAdvanceGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Advance}演讲后发令";
-	private const string SceneActionsSafetyGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Safety}安全与诊断";
+	private const string SceneActionsSpeechGroup = SceneActionsRootGroup + "/{=SAX_MCM_Group_Speech}Battle speech";
+	private const string SceneActionsStageGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Stage}Speaker staging";
+	private const string SceneActionsAudienceGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Audience}Audience response";
+	private const string SceneActionsAudienceVoiceGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Voices}Native battle cries";
+	private const string SceneActionsAudienceReplyGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Replies}Soldier spoken replies";
+	private const string SceneActionsAdvanceGroup = SceneActionsAudienceGroup + "/{=SAX_MCM_Group_Advance}Post-speech order";
+	private const string SceneActionsSafetyGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Safety}Safety and diagnostics";
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_NaturalReplyActions}自然语言回复动作",
+		"{=SAX_MCM_NaturalReplyActions}Natural-language reply actions",
 		Order = 0,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_NaturalReplyActions_Hint}只控制普通 AF 对话和场景喊话回复中的自然语言动作解析与播放。关闭后保留普通文字回复，不影响独立的阵前演讲子系统。")]
+		HintText = "{=SAX_MCM_NaturalReplyActions_Hint}Controls natural-language action parsing and playback in ordinary AF dialogue and scene-shout replies. Disabling it keeps ordinary text replies and does not affect the independent battle-speech subsystem.")]
 	[SettingPropertyGroup(SceneActionsGeneralGroup, GroupOrder = 180)]
 	public bool NaturalLanguageReplyActionsEnabled { get; set; } = true;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_BattleSpeechEnabled}启用阵前演讲",
+		"{=SAX_MCM_BattleSpeechEnabled}Enable battle speech",
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_BattleSpeechEnabled_Hint}阵前演讲总开关。关闭后隐藏本组的 T 键演讲、正文长度、站位、听众回应和演讲后发令设置。")]
+		HintText = "{=SAX_MCM_BattleSpeechEnabled_Hint}Master switch for battle speech. Disabling it hides T-key routing, speech length, staging, audience response, and post-speech order options.")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup, GroupOrder = 181)]
 	public bool BattleSpeechEnabled { get; set; } = true;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_TKeyBattleSpeechEnabled}允许 T 键自然语言进入演讲通道",
+		"{=SAX_MCM_TKeyBattleSpeechEnabled}Enable battle-speech recognition from T-key scene shout",
 		Order = 1,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_TKeyBattleSpeechEnabled_Hint}T 键只接受玩家演讲；Y 键的演讲菜单仍由阵前演讲开关和当前战斗阶段控制。")]
+		HintText = "{=SAX_MCM_TKeyBattleSpeechEnabled_Hint}When enabled, T-key scene-shout text can enter the battle-speech channel. Y-key speech entries still require the main battle-speech switch and an eligible battle phase.")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup)]
 	public bool TKeyBattleSpeechEnabled { get; set; } = true;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_ReplyMin}演讲正文建议最少字数",
+		"{=SAX_MCM_ReplyMin}Suggested battle speech minimum characters (6-160)",
 		6, 160, "0", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_ReplyMin_Hint}给 AF 的正文长度建议下限；略短的合法正文仍会原样使用，不会因此回退。必须不大于建议最多字数。")]
+		HintText = "{=SAX_MCM_ReplyMin_Hint}Suggested lower bound sent to AF. A valid shorter speech is still used unchanged and does not trigger fallback. Must not exceed the suggested maximum.")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup)]
 	public int ReplyMinimumChars { get; set; } = 60;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_ReplyMax}演讲正文建议最多字数",
+		"{=SAX_MCM_ReplyMax}Suggested battle speech maximum characters (6-160)",
 		6, 160, "0", Order = 3, RequireRestart = false,
-		HintText = "{=SAX_MCM_ReplyMax_Hint}给 AF 的正文长度建议上限；超过建议的合法正文仍会原样使用，不截断、不回退。")]
+		HintText = "{=SAX_MCM_ReplyMax_Hint}Suggested upper bound sent to AF. A valid longer speech is still used unchanged, without truncation or fallback.")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup)]
 	public int ReplyMaximumChars { get; set; } = 160;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_NpcPositioning}演讲者走到阵前",
+		"{=SAX_MCM_NpcPositioning}Move NPC to the front line",
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_NpcPositioning_Hint}NPC 演讲时只走到己方阵线前方；不会强制改变步行者、骑手或坐骑的自然朝向。关闭后保留原地演讲，不使用脚本移动。")]
+		HintText = "{=SAX_MCM_NpcPositioning_Hint}Moves an NPC speaker in front of the friendly line without forcing the natural facing of an infantry speaker, rider, or mount. Disabling keeps the speaker in place and takes no scripted movement control.")]
 	[SettingPropertyGroup(SceneActionsStageGroup, GroupOrder = 182)]
 	public bool NpcPositioningEnabled { get; set; } = true;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_FrontDistance}阵前距离",
+		"{=SAX_MCM_FrontDistance}Distance in front of troops",
 		2f, 25f, "0.0 m", Order = 1, RequireRestart = false,
-		HintText = "{=SAX_MCM_FrontDistance_Hint}NPC 相对己方阵线中心向前移动的距离；只在“演讲者走到阵前”开启时生效。")]
+		HintText = "{=SAX_MCM_FrontDistance_Hint}Distance the NPC moves forward from the friendly line center. Used only while speaker staging is enabled.")]
 	[SettingPropertyGroup(SceneActionsStageGroup)]
 	public float FrontDistanceMeters { get; set; } = 10f;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_ArrivalRadius}到位判定半径",
+		"{=SAX_MCM_ArrivalRadius}Arrival radius",
 		0.5f, 4f, "0.0 m", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_ArrivalRadius_Hint}NPC 与目标站位相距不超过此半径即视为到位；只影响站位移动判定。")]
+		HintText = "{=SAX_MCM_ArrivalRadius_Hint}The NPC is considered in position inside this radius. This affects only staging arrival detection.")]
 	[SettingPropertyGroup(SceneActionsStageGroup)]
 	public float ArrivalRadiusMeters { get; set; } = 1.5f;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_MoveTimeout}移动超时",
+		"{=SAX_MCM_MoveTimeout}Movement timeout",
 		3f, 45f, "0.0 s", Order = 3, RequireRestart = false,
-		HintText = "{=SAX_MCM_MoveTimeout_Hint}NPC 走向阵前的最长等待时间；超时会在当前位置安全开讲，不传送、不重复请求。")]
+		HintText = "{=SAX_MCM_MoveTimeout_Hint}Maximum staging wait. On timeout the NPC safely speaks from the current position; no teleport and no duplicate request.")]
 	[SettingPropertyGroup(SceneActionsStageGroup)]
 	public float MovementTimeoutSeconds { get; set; } = 15f;
 
@@ -98,47 +98,47 @@ public partial class DuelSettings
 	public float PacingMaximumIntervalSeconds { get; set; } = 4.5f;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_AlliedAudience}包含盟军听众",
+		"{=SAX_MCM_AlliedAudience}Include allied troops",
 		Order = 0,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_AlliedAudience_Hint}听众快照是否包含同侧盟军；盟军可以回应，但不会接受演讲后的玩家编队 Advance。")]
+		HintText = "{=SAX_MCM_AlliedAudience_Hint}Includes same-side allies in the frozen audience. Allies may respond but never receive the player's post-speech Advance order.")]
 	[SettingPropertyGroup(SceneActionsAudienceGroup, GroupOrder = 183)]
 	public bool IncludeAlliedAudience { get; set; } = true;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_VisualResponders}最多播放动作的士兵",
+		"{=SAX_MCM_VisualResponders}Soldiers responding with actions",
 		1, 128, "0", Order = 1, RequireRestart = false,
-		HintText = "{=SAX_MCM_VisualResponders_Hint}演讲结束后最多抽取多少名士兵播放受控动作；采用确定性抽样和分批提交，避免全军同帧同步。")]
+		HintText = "{=SAX_MCM_VisualResponders_Hint}Maximum soldiers sampled for controlled response actions. Sampling is deterministic and submissions are batched to avoid full-army frame synchronization.")]
 	[SettingPropertyGroup(SceneActionsAudienceGroup)]
 	public int MaximumVisualResponders { get; set; } = 60;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_VisualWave}每波动作人数",
+		"{=SAX_MCM_VisualWave}Action responders per wave",
 		1, 16, "0", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_VisualWave_Hint}每一批提交的士兵动作人数；只是批次大小，不等于每 Tick 允许的桥接调用上限。")]
+		HintText = "{=SAX_MCM_VisualWave_Hint}Soldier actions in one logical wave. This is a wave size, not the per-Mission-tick bridge-call budget.")]
 	[SettingPropertyGroup(SceneActionsAudienceGroup)]
 	public int VisualWaveSize { get; set; } = 6;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_TickBudget}每 Tick 最多提交动作数",
+		"{=SAX_MCM_TickBudget}Maximum actions submitted per tick",
 		1, 16, "0", Order = 3, RequireRestart = false,
-		HintText = "{=SAX_MCM_TickBudget_Hint}每个 Mission Tick 最多提交多少个动作桥接调用；用于限制单帧负载，与每波人数独立。")]
+		HintText = "{=SAX_MCM_TickBudget_Hint}Maximum action bridge calls submitted per Mission tick. Limits frame load independently from the logical wave size.")]
 	[SettingPropertyGroup(SceneActionsAudienceGroup)]
 	public int MaximumVisualSubmissionsPerTick { get; set; } = 6;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_Voices}启用听众原生战吼",
+		"{=SAX_MCM_Voices}Native audience voices",
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_Voices_Hint}启用后在士兵回应阶段分批播放原生战吼；不调用 AF TTS。关闭后隐藏战吼人数、批次和间隔。")]
+		HintText = "{=SAX_MCM_Voices_Hint}Plays native battle cries in batches during audience response without AF TTS. Disabling hides battle-cry count, wave, and interval options.")]
 	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup, GroupOrder = 184)]
 	public bool AudienceVoicesEnabled { get; set; } = true;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_VoiceCount}战吼士兵人数",
+		"{=SAX_MCM_VoiceCount}Audience voice count",
 		0, 24, "0", Order = 1, RequireRestart = false,
-		HintText = "{=SAX_MCM_VoiceCount_Hint}本场最多参与原生战吼的士兵数量；只影响声音规模和性能。")]
+		HintText = "{=SAX_MCM_VoiceCount_Hint}Maximum soldiers using native battle cries in this speech. Affects sound scale and performance only.")]
 	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
 	public int AudienceVoiceCount { get; set; } = 22;
 
@@ -150,44 +150,44 @@ public partial class DuelSettings
 	public float AudienceVoiceWaveIntervalSeconds { get; set; } = 0.18f;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_AudienceReplies}启用士兵文字回应",
+		"{=SAX_MCM_AudienceReplies}Spoken replies from multiple soldiers",
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_AudienceReplies_Hint}启用后让多名士兵用短句回应演讲；关闭后隐藏文字回应人数、批次、字数和间隔。")]
+		HintText = "{=SAX_MCM_AudienceReplies_Hint}Lets multiple soldiers answer the speech with short lines. Disabling hides reply count, waves, length, and interval options.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup, GroupOrder = 185)]
 	public bool AudienceRepliesEnabled { get; set; } = true;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyCount}文字回应士兵人数",
+		"{=SAX_MCM_AudienceReplyCount}Soldiers giving spoken replies",
 		0, 100, "0", Order = 1, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyCount_Hint}本场最多生成文字回应的士兵数量；每个士兵只提交一次请求。")]
+		HintText = "{=SAX_MCM_AudienceReplyCount_Hint}Maximum soldiers generating written replies for this speech. Each selected soldier is submitted only once.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyCount { get; set; } = 24;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyWaveSize}每波文字回应人数上限",
+		"{=SAX_MCM_AudienceReplyWaveSize}Maximum soldiers replying together",
 		2, 20, "0", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyWaveSize_Hint}同一批最多提交的文字回应人数；是逻辑波次大小，不等于每 Tick 提交预算。")]
+		HintText = "{=SAX_MCM_AudienceReplyWaveSize_Hint}Maximum written replies in one logical wave. Independent from the per-Mission-tick submission budget.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyWaveSize { get; set; } = 5;
 
-	[SettingPropertyInteger("{=SAX_MCM_AudienceReplyTickBudget}每 Tick 最多提交文字回应", 2, 20, "0", Order = 11, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyTickBudget_Hint}独立于每波人数的 Mission Tick 提交预算，用于限制桥接调用和单帧负载。")]
+	[SettingPropertyInteger("{=SAX_MCM_AudienceReplyTickBudget}Maximum spoken replies submitted per tick", 2, 20, "0", Order = 11, RequireRestart = false,
+		HintText = "{=SAX_MCM_AudienceReplyTickBudget_Hint}Hard Mission-tick budget for spoken soldier reply bridge calls; independent from the logical wave size.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int MaximumAudienceReplySubmissionsPerTick { get; set; } = 8;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyMinimumChars}士兵回应建议最少字数",
+		"{=SAX_MCM_AudienceReplyMinimumChars}Suggested minimum spoken reply characters",
 		4, 80, "0", Order = 4, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMinimumChars_Hint}给 AF 的单条士兵回应长度建议下限；略短的合法回应仍会原样显示。")]
+		HintText = "{=SAX_MCM_AudienceReplyMinimumChars_Hint}Suggested lower bound sent to AF for each soldier reply. A valid shorter reply is still displayed unchanged.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyMinimumChars { get; set; } = 8;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyMaximumChars}士兵回应建议最多字数",
+		"{=SAX_MCM_AudienceReplyMaximumChars}Suggested maximum spoken reply characters",
 		4, 80, "0", Order = 5, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMaximumChars_Hint}给 AF 的单条士兵回应长度建议上限；超过建议的合法回应仍会原样显示。建议保持简短，避免多人同时显示造成阅读压力。")]
+		HintText = "{=SAX_MCM_AudienceReplyMaximumChars_Hint}Suggested upper bound sent to AF for each soldier reply. A valid longer reply is still displayed unchanged; shorter replies remain easier to read in a crowd.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyMaximumChars { get; set; } = 24;
 
@@ -195,69 +195,69 @@ public partial class DuelSettings
 	public int CombatSpeechDefaultsVersion { get; set; } = 0;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_AudienceReplyMinInterval}文字回应最小随机间隔",
+		"{=SAX_MCM_AudienceReplyMinInterval}Minimum random reply wave interval",
 		0.1f, 0.5f, "0.00 s", Order = 6, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMinInterval_Hint}连续文字回应波次的随机间隔下限；与每 Tick 提交预算共同限制请求峰值。")]
+		HintText = "{=SAX_MCM_AudienceReplyMinInterval_Hint}Lower bound of the random delay between written-reply waves. Works with the per-tick budget to limit request spikes.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public float AudienceReplyMinimumIntervalSeconds { get; set; } = 0.2f;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_AudienceReplyMaxInterval}文字回应最大随机间隔",
+		"{=SAX_MCM_AudienceReplyMaxInterval}Maximum random reply wave interval",
 		0.1f, 0.5f, "0.00 s", Order = 7, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMaxInterval_Hint}连续文字回应波次的随机间隔上限；必须不小于最小随机间隔。")]
+		HintText = "{=SAX_MCM_AudienceReplyMaxInterval_Hint}Upper bound of the random delay between written-reply waves. Must not be below the minimum interval.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public float AudienceReplyMaximumIntervalSeconds { get; set; } = 0.5f;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_AudienceResponseStartDelay}听众回应开始延迟",
+		"{=SAX_MCM_AudienceResponseStartDelay}Audience response start delay",
 		0.5f, 12f, "0.0 s", Order = 8, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceResponseStartDelay_Hint}正文完成后仍至少等待多久才开始士兵文字回应和原生战吼；正文未完成时不会插入听众回应。")]
+		HintText = "{=SAX_MCM_AudienceResponseStartDelay_Hint}Minimum delay after the speech body finishes before written soldier replies and native battle cries begin. Audience reactions never interrupt an unfinished speech.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public float AudienceResponseStartDelaySeconds { get; set; } = 3f;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_AudienceFinalReactionHold}结尾听众动作保持时间",
+		"{=SAX_MCM_AudienceFinalReactionHold}Final audience reaction hold",
 		0.5f, 8f, "0.0 s", Order = 9, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceFinalReactionHold_Hint}最后一批欢呼或回应提交后，至少保持多久才允许清理动作并执行 Advance；用于避免欢呼抽搐。")]
+		HintText = "{=SAX_MCM_AudienceFinalReactionHold_Hint}Minimum hold after the final audience reaction is submitted before its action channels may be cleared and Advance is issued.")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public float AudienceFinalReactionHoldSeconds { get; set; } = 2.5f;
 
 	public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_Advance}演讲后播放发令并 Advance",
+		"{=SAX_MCM_Advance}Command gesture then order all formations to Advance",
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_Advance_Hint}演讲和听众回应完成后，演讲者播放发令动作，再向玩家直属编队下达 Advance；盟军只回应，不接受该命令。")]
+		HintText = "{=SAX_MCM_Advance_Hint}After the speech and audience response, the speaker performs a command gesture and orders the player's formations to Advance. Allies respond but are not ordered.")]
 	[SettingPropertyGroup(SceneActionsAdvanceGroup, GroupOrder = 186)]
 	public bool TacticalAdvanceEnabled { get; set; } = true;
 
 	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_AdvanceDelay}发令后 Advance 延迟",
+		"{=SAX_MCM_AdvanceDelay}Advance delay after command gesture",
 		1.5f, 5f, "0.0 s", Order = 1, RequireRestart = false,
-		HintText = "{=SAX_MCM_AdvanceDelay_Hint}发令动作完成后等待多久再向玩家直属编队下达 Advance；只在上方开关开启时生效。")]
+		HintText = "{=SAX_MCM_AdvanceDelay_Hint}Delay between the command gesture and Advance orders to the player's formations. Used only while post-speech Advance is enabled.")]
 	[SettingPropertyGroup(SceneActionsAdvanceGroup)]
 	public float TacticalAdvanceDelaySeconds { get; set; } = 1.8f;
 
-	[SettingPropertyFloatingInteger("{=SAX_MCM_EnemyRadius}战斗模式近敌半径", 5f, 75f, "0.0 m", Order = 0, RequireRestart = false,
-		HintText = "{=SAX_MCM_EnemyRadius_Hint}敌人进入该半径后演讲继续但留在原地；士兵只可文字回应，抑制演讲者/听众动作、战吼、发令动作和 Advance。")]
+	[SettingPropertyFloatingInteger("{=SAX_MCM_EnemyRadius}Enemy interruption radius", 5f, 75f, "0.0 m", Order = 0, RequireRestart = false,
+		HintText = "{=SAX_MCM_EnemyRadius_Hint}When an enemy enters this radius, the speech continues in place. Soldiers may show written replies, but speaker/audience actions, native battle cries, command gestures, and Advance are suppressed.")]
 	[SettingPropertyGroup(SceneActionsSafetyGroup, GroupOrder = 187)]
 	public float EnemyInterruptRadiusMeters { get; set; } = 10f;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_Notifications}屏幕通知",
+		"{=SAX_MCM_Notifications}Screen notifications",
 		Order = 1,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_Notifications_Hint}显示演讲开始、取消和结束等状态提示；关闭只影响 UI，不影响演讲执行。")]
+		HintText = "{=SAX_MCM_Notifications_Hint}Shows battle-speech start, cancellation, and completion notices. Disabling affects UI only, not execution.")]
 	[SettingPropertyGroup(SceneActionsSafetyGroup)]
 	public bool ScreenNotifications { get; set; } = true;
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_Diagnostics}详细诊断日志",
+		"{=SAX_MCM_Diagnostics}Detailed diagnostics",
 		Order = 2,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_Diagnostics_Hint}写入自然语言动作和阵前演讲的诊断日志；关闭可减少日志 I/O，不改变功能。")]
+		HintText = "{=SAX_MCM_Diagnostics_Hint}Writes detailed natural-action and battle-speech diagnostics. Disabling reduces log I/O without changing behavior.")]
 	[SettingPropertyGroup(SceneActionsSafetyGroup)]
 	public bool DiagnosticsEnabled { get; set; }
 
