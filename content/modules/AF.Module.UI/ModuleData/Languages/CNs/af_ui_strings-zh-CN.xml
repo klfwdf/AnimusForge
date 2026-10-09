@@ -927,7 +927,7 @@
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Hint" text="示例: zh_male_M392_conversation_wvae_bigtts" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. 火山引擎 TTS（专用）" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Title" text="火山专用 extra_param(JSON对象)" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="将原样写入 request.extra_param（字符串）。示例：{\" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="将 TTS Volc Additional JSON 原样写入 request.extra_param（字符串）。请使用 JSON 对象格式。" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. 火山引擎 TTS（专用）" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Title" text="火山专用音频格式" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Hint" text="V1 encoding，当前播放器仅支持 wav 或 pcm。" />
