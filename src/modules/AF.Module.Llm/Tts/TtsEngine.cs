@@ -106,6 +106,12 @@ internal sealed class TtsEngine : IDisposable
 		Timeout = TimeSpan.FromSeconds(30.0)
 	};
 
+	// Keep V1 proxy redirect behavior; never forward a V3 API Key through redirects.
+	private static readonly HttpClient _v3HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
+	{
+		Timeout = TimeSpan.FromSeconds(30.0)
+	};
+
 	private readonly BlockingCollection<TtsJob> _jobQueue = new BlockingCollection<TtsJob>(32);
 
 	private Thread _workerThread;
@@ -286,7 +292,7 @@ internal sealed class TtsEngine : IDisposable
 			};
 			if (!TryEnqueueJob(item, onAccepted))
 			{
-				Logger.Log("TtsEngine", "[WARN] TTS 请求未入队（已取消、已关闭或队列已满）: " + text.Substring(0, Math.Min(30, text.Length)));
+				Logger.Log("TtsEngine", "[WARN] TTS 请求未入队（已取消、已关闭或队列已满）: " + "textChars=" + text.Length);
 				return false;
 			}
 			return true;
@@ -697,22 +703,23 @@ internal sealed class TtsEngine : IDisposable
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			NotifyPlaybackFailed(job, "TTS API URL is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 API 地址未配置");
+			Logger.Log("TtsEngine", "[WARN] 火山 API 地址未配置");
 			return;
 		}
-		if ((text ?? "").IndexOf("/api/v3/", StringComparison.OrdinalIgnoreCase) >= 0)
+		int protocolVersion = VolcTtsGateway.GetVersion(text);
+		if (protocolVersion == 0)
 		{
-			NotifyPlaybackFailed(job, "Unsupported URL for current engine. Please use V1 endpoint: https://openspeech.bytedance.com/api/v1/tts");
-			Logger.Log("TtsEngine", "[WARN] 当前引擎仅支持 V1 非流式接口，请将 API 地址改为 https://openspeech.bytedance.com/api/v1/tts");
+			NotifyPlaybackFailed(job, VolcTtsGateway.DescribeError("tts_endpoint_unsupported"));
+			Logger.Log("TtsEngine", "[WARN] " + VolcTtsGateway.DescribeError("tts_endpoint_unsupported"));
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			NotifyPlaybackFailed(job, "TTS token is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 Token 未配置（Authorization: Bearer;token）");
+			NotifyPlaybackFailed(job, "TTS Token / API Key is missing.");
+			Logger.Log("TtsEngine", "[WARN] 火山凭据未配置；V1 需要 Token，V3 需要新控制台 API Key");
 			return;
 		}
-		if (string.IsNullOrWhiteSpace(text3))
+		if (protocolVersion == 1 && string.IsNullOrWhiteSpace(text3))
 		{
 			NotifyPlaybackFailed(job, "TTS app id is missing.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 AppID 未配置");
@@ -721,13 +728,13 @@ internal sealed class TtsEngine : IDisposable
 		if (string.IsNullOrWhiteSpace(text4))
 		{
 			NotifyPlaybackFailed(job, "TTS resource id is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 Resource ID 未配置（X-Api-Resource-Id）");
+			Logger.Log("TtsEngine", "[WARN] 火山 Resource ID 未配置（X-Api-Resource-Id）");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text5))
 		{
 			NotifyPlaybackFailed(job, "TTS voice type is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 voice_type 未配置");
+			Logger.Log("TtsEngine", "[WARN] 火山音色未配置");
 			return;
 		}
 		string audioEncoding = (text6 ?? "wav").Trim().ToLowerInvariant();
@@ -737,7 +744,7 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[ERROR] 当前播放器仅支持 wav/pcm，请将【火山专用音频格式】改为 wav 或 pcm");
 			return;
 		}
-		Logger.Log("TtsEngine", $"在线合成开始: text={job.Text.Substring(0, Math.Min(50, job.Text.Length))}..., voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		Logger.Log("TtsEngine", $"在线合成开始: protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
@@ -745,12 +752,12 @@ internal sealed class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken);
+		byte[] array = CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out string synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
 		{
-			NotifyPlaybackFailed(job, "TTS synthesis returned empty audio.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 API 返回空音频数据");
+			NotifyPlaybackFailed(job, string.IsNullOrEmpty(synthesisError) ? "TTS synthesis returned empty audio." : synthesisError);
+			Logger.Log("TtsEngine", "[WARN] 火山 API 未获得可播放音频");
 		}
 		else
 		{
@@ -993,8 +1000,9 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson, CancellationToken cancellationToken)
+	private byte[] CallVolcApi(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson, CancellationToken cancellationToken, out string failureReason)
 	{
+		failureReason = string.Empty;
 		try
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -1009,13 +1017,14 @@ internal sealed class TtsEngine : IDisposable
 				speedRatio,
 				loudnessRatio,
 				extraParamJson);
-			TtsSynthesisResult result = new LegacyVolcTtsGateway(_httpClient)
+			TtsSynthesisResult result = new VolcTtsGateway(_httpClient, _v3HttpClient)
 				.SynthesizeAsync(request, token, cancellationToken)
 				.GetAwaiter()
 				.GetResult();
 			if (!result.Success)
 			{
-				Logger.Log("TtsEngine", "[ERROR] 火山 V1 Gateway failure: " + (result.ErrorCode ?? "unknown"));
+				failureReason = VolcTtsGateway.DescribeError(result.ErrorCode);
+				Logger.Log("TtsEngine", "[ERROR] 火山 Gateway failure: " + (result.ErrorCode ?? "unknown") + "; logId=" + result.LogId);
 				return null;
 			}
 			cancellationToken.ThrowIfCancellationRequested();
@@ -1027,7 +1036,8 @@ internal sealed class TtsEngine : IDisposable
 		}
 		catch (Exception exception)
 		{
-			Logger.Log("TtsEngine", "[ERROR] 火山 V1 Gateway invocation failed: " + exception.GetType().Name + ": " + exception.Message);
+			failureReason = VolcTtsGateway.DescribeError("tts_gateway_" + exception.GetType().Name);
+			Logger.Log("TtsEngine", "[ERROR] 火山 Gateway invocation failed: " + exception.GetType().Name);
 			return null;
 		}
 	}

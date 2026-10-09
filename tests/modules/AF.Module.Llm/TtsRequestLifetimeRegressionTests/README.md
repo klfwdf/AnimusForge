@@ -20,7 +20,7 @@ python -B -m unittest discover -s tests/modules/AF.Module.Llm/TtsRequestLifetime
 
 ## 覆盖
 
-43 个可执行场景：队列满、取消、dequeue/activation 空隙、发布前接受回调、锁外回调、回调重入/异常、Stop/Dispose、重复 terminal、worker 存活、极速合成、传给 Gateway 的真实 cancellation token、晚网络失败及已排队 UI callback、同 AgentIndex 新轮、两条同 Agent 合法 FIFO、取消 active-old 保留 queued-new、mission/session/epoch/save generation 失效。
+51 个可执行场景（保留原 43 项，增加 6 项实际测试按钮和 2 项 V3 路由）：队列满、取消、dequeue/activation 空隙、发布前接受回调、锁外回调、回调重入/异常、Stop/Dispose、重复 terminal、worker 存活、极速合成、传给 Gateway 的真实 cancellation token、晚网络失败及已排队 UI callback、同 AgentIndex 新轮、两条同 Agent 合法 FIFO、取消 active-old 保留 queued-new、mission/session/epoch/save generation 失效。
 
 Scene 在 onAccepted 注册 RequestId 独立 owner 及准备回调，在该请求首个主线程事件消费前一次性激活 bubble/token/feed，不以最新 accepted 覆盖仍在正常播放的请求。terminal/cancel 和显式 Mission reset 回收 owner 与 Mission 引用。
 
@@ -31,3 +31,12 @@ Scene 在 onAccepted 注册 RequestId 独立 owner 及准备回调，在该请�
 ## 保留与移除
 
 生产保留旧事件 / `SpeakAsync` 公共签名，兼容仍可能存在的外部订阅；项目内消费者必须使用 request-scoped 事件。旧全局 `_cancelCurrent`、全局测试 bypass、无请求身份的内部消费路径应删除。真实声音、口型、地图对话、暂停/切场景和第三方订阅仍需实机验收。
+
+## V3 兼容升级（2026-10-10）
+
+- runner 编译完整当前 `TtsEngine` 和真实 `VolcTtsGateway` 路由，网络 V1/V3 Gateway 均为可控 fixture；不声称这里验证真实 HTTP。
+- 当前 SceneAudioLipSyncController / NativeConversationPlaybackWaitAdapter 的 12 个消费方法/类型直接抽取，只有测试容器访问修饰符与 Native 静态存储适配；方法体不改写。端口仅提供 scene/session 值。原 historical_source 全仓绑定因无关 WarStats 改动失效，不再作为此生产消费者的来源；未改历史 oracle 或放宽其断言。
+- 测试按钮 delegate 从当前 DuelSettings 原文抽取，覆盖 V3 无 AppID 入队、总开关/专用开关关闭、空 URL、不支持 V3 协议、V1 缺 AppID 禁止入队；UI 显示是 stub，非游戏点击。
+- 真 HTTP 见现有 `tests/replay/TtsGatewayReplayTests`：7 组 V1 契约检查 + 29 项 V3 回放，实际候选 DLL、实际 HttpClient、loopback TCP chunked server，包含真实播放器 WAV 解析和生产 V3 禁重定向客户端。30 秒请求体停顿测试不访问线上服务。
+- 所有输出使用 `tests/output_isolation.py` 的独立 artifacts run root。`--consumer-source` 只用于显式当前 owner 拼接候选，不能以旧平铺源码假冒当前消费链。
+- 遗留 `test_wiring.py` 仍绑定历史全仓 projection，不在本轮扩展修复范围；上述行为测试不是全仓静态接线/实机验收。

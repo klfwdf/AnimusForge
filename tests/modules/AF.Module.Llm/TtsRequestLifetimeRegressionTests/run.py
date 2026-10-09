@@ -22,17 +22,24 @@ def main():
  if a.mutation=='duplicate-terminal':source=source.replace(' || job.TerminalPublished','',1)
  if a.mutation=='late-legacy-event':source=source.replace('if (!job.Request.IsCancellationRequested) { legacyEvent?.Invoke(); }','legacyEvent?.Invoke();',1).replace('InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request)','InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request, allowCancelled: true)')
  (out/'TtsEngine.cs').write_text(source,encoding='utf-8')
- (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
+ (out/'VolcTtsGateway.cs').write_text((ROOT/'src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ settings_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs').read_text(encoding='utf-8-sig')
+ button_start=settings_source.index('TestTtsVolcDedicatedVoice = delegate')
+ button_end=settings_source.index('\n\t\tFetchMainModelList = delegate',button_start)
+ (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@TTS_TEST_BUTTON@@',settings_source[button_start:button_end]),encoding='utf-8')
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- from af2_terminal_migration_review import historical_source
- consumer=(historical_source('ShoutBehavior.cs') if a.consumer_source.resolve()==(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').resolve() else a.consumer_source.read_text(encoding='utf-8-sig'))
+ # Read current owners, not the historical whole-repository projection (which binds unrelated modules).
+ owner_paths=[ROOT/'src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs',ROOT/'src/AF.GameAdapter.Bannerlord/Scene/NativeConversationPlaybackWaitAdapter.cs']
+ default_consumer=ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs'
+ consumer=('\n'.join(path.read_text(encoding='utf-8-sig') for path in owner_paths) if a.consumer_source.resolve()==default_consumer.resolve() else a.consumer_source.read_text(encoding='utf-8-sig'))
  if a.mutation=='match-agent-only':consumer=consumer.replace('ReferenceEquals(_nativeConversationTtsPlaybackRequest, request)','_nativeConversationTtsPlaybackWaitAgentIndex == request.AgentIndex')
- if a.mutation=='ignore-scene-epoch':consumer=consumer.replace('&& owner.ConversationEpoch == _sceneConversationEpoch','')
+ if a.mutation=='ignore-scene-epoch':consumer=consumer.replace('&& owner.ConversationEpoch == _ports.ConversationEpoch()','')
  signatures=['private sealed class TtsPlaybackOwner','private void TrackTtsPlaybackRequest(','private bool IsTtsPlaybackRequestCurrent(','private bool PrepareTtsPlaybackRequest(','private bool IsActiveTtsPlaybackRequest(','private void RetireTtsPlaybackRequest(','private static long RegisterNativeConversationTtsPlaybackWait(','private static int ResolveNativeConversationTtsPlaybackWaitTimeoutMs(','private static bool CompleteNativeConversationTtsPlaybackWait(','private static bool IsNativeConversationTtsPlaybackWaitRequest(','private static bool IsNativeConversationTtsPlaybackWaitToken(','private static void CompleteNativeConversationTtsPlaybackWaitByToken(']
- extracted='\n'.join(ex.declaration(consumer,x) for x in signatures)
- extracted+='\n'+'\n'.join(re.findall(r'private readonly Dictionary<(?:long, TtsPlaybackOwner|int, long)>[^;]+;',consumer))
+ # Only access modifiers and the native fixture's static storage differ; method bodies are verbatim.
+ extracted='\n'.join(ex.declaration(consumer,x.replace('private static ', 'internal ').replace('private ', 'internal ')).replace(x.replace('private static ', 'internal ').replace('private ', 'internal '),x,1) for x in signatures)
+ extracted+='\n'+'\n'.join(re.findall(r'internal readonly Dictionary<(?:long, TtsPlaybackOwner|int, long)>[^;]+;',consumer)).replace('internal readonly', 'private readonly')
  (out/'Consumer.cs').write_text((HERE/'ConsumerHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',extracted),encoding='utf-8')
- (out/'consumer-source.txt').write_text(str(a.consumer_source.resolve())+'\nSHA256='+hashlib.sha256(consumer.encode()).hexdigest(),encoding='utf-8')
+ (out/'consumer-source.txt').write_text('\n'.join(str(path) for path in (owner_paths if a.consumer_source.resolve()==default_consumer.resolve() else [a.consumer_source.resolve()]))+'\nSHA256='+hashlib.sha256(consumer.encode()).hexdigest(),encoding='utf-8')
  (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit></PropertyGroup></Project>')
  (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
  env=os.environ.copy();env['DOTNET_ROOT']=str(Path(a.dotnet).parent);env['DOTNET_CLI_HOME']=str(out/'cli');env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'

@@ -6,7 +6,11 @@ namespace AnimusForge {
  static class SaveRuntimeGuard {public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}
 }
 sealed class TtsConsumerSubject {
- readonly object _ttsBubbleSyncLock=new();
+ readonly object _requestLock=new();
+ bool _retired=false;
+ sealed class ScenePorts {public Func<int> SceneSessionId,ConversationEpoch;}
+ readonly ScenePorts _ports;
+ public TtsConsumerSubject(){_ports=new(){SceneSessionId=()=>_sceneHistorySessionId,ConversationEpoch=()=>_sceneConversationEpoch};}
  int _sceneHistorySessionId=1,_sceneConversationEpoch=1;
  static readonly object _nativeConversationTtsPlaybackWaitLock=new();
  static TaskCompletionSource<bool> _nativeConversationTtsPlaybackWaitTcs;
