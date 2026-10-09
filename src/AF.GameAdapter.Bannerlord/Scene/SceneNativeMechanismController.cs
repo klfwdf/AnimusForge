@@ -144,8 +144,8 @@ internal void TickPendingNativeSceneMechanismActions()
 	{
 		try
 		{
-			string suffix = pendingCount > 1 ? (" 当前待执行 " + pendingCount + " 个。") : "";
-			InformationManager.DisplayMessage(new InformationMessage("SCENE_MOVE已准备。请手动退出对话框，退出后将执行NPC场景动作。" + suffix, new Color(1f, 0.95f, 0.25f)));
+			string suffix = pendingCount > 1 ? ConversationUiLocalization.Text("AF_CONV_UI_Native_PendingActionsSuffix", " {COUNT} actions are pending.", ("COUNT", pendingCount)) : "";
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_SceneMoveReady", "SCENE_MOVE is ready. Exit the conversation panel manually; the NPC scene action will execute after you leave.{SUFFIX}", ("SUFFIX", suffix)), new Color(1f, 0.95f, 0.25f)));
 		}
 		catch
 		{
@@ -244,7 +244,7 @@ internal void TickPendingNativeSceneMechanismActions()
 			}
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage("SCENE_TAUNT_FIGHT已触发：10秒后将自动退出对话并爆发冲突。", new Color(1f, 0.55f, 0.25f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_TauntFightTriggered", "SCENE_TAUNT_FIGHT was triggered; the conversation will close automatically in 10 seconds and the conflict will begin."), new Color(1f, 0.55f, 0.25f)));
 			}
 			catch
 			{
@@ -309,7 +309,7 @@ internal void TickPendingNativeSceneMechanismActions()
 			bool started = SceneTauntBehavior.TryStartSceneTauntFightForExternal(pending.TargetHero, pending.TargetCharacter, pending.TargetAgentIndex, pending.TargetKey, "native_scene_taunt_fight_delay_elapsed");
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage(started ? "冲突爆发！" : "冲突未能爆发：当前场景目标不可用。", started ? new Color(1f, 0.35f, 0.2f) : new Color(1f, 0.75f, 0.25f)));
+				InformationManager.DisplayMessage(new InformationMessage(started ? ConversationUiLocalization.Text("AF_CONV_UI_Native_ConflictStarted", "The conflict has begun!") : ConversationUiLocalization.Text("AF_CONV_UI_Native_ConflictUnavailable", "The conflict could not begin: the current scene target is unavailable."), started ? new Color(1f, 0.35f, 0.2f) : new Color(1f, 0.75f, 0.25f)));
 			}
 			catch
 			{

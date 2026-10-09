@@ -224,7 +224,7 @@ internal sealed class SceneTradeBannerlordAdapter
 				+ " expected=" + (_shoutTradeTargetHeroOverride?.StringId ?? _shoutTradeTargetCharacterOverride?.StringId ?? "")
 				+ " current=" + (Campaign.Current?.ConversationManager?.OneToOneConversationCharacter?.StringId ?? ""));
 			InformationManager.DisplayMessage(new InformationMessage(
-				"交易目标已经离场或失效，本次给予/展示没有执行。",
+				ConversationUiLocalization.Text("AF_CONV_UI_Trade_TargetInvalid", "The trade target left or became invalid; the give/show action was not performed."),
 				new Color(1f, 0.45f, 0.25f)));
 		}
 		catch
@@ -287,7 +287,7 @@ internal sealed class SceneTradeBannerlordAdapter
 			{
 				IsGold = true,
 				ItemId = null,
-				Name = "第纳尔",
+				Name = ConversationUiLocalization.Text("AF_CONV_UI_Trade_Denars", "Denars"),
 				AvailableAmount = num,
 				Item = null
 			});
@@ -469,7 +469,7 @@ internal sealed class SceneTradeBannerlordAdapter
                 authoritativeReceipt = true;
 				if (flag2)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("已将 " + shoutPendingTradeItem.ItemName + " 转交给 " + GetShoutTradeTargetDisplayName() + "。", new Color(0.4f, 1f, 0.4f)));
+					InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_AssetDelivered", "Transferred {ITEM} to {TARGET}.", ("ITEM", shoutPendingTradeItem.ItemName), ("TARGET", GetShoutTradeTargetDisplayName())), new Color(0.4f, 1f, 0.4f)));
 				}
 				else if (!string.IsNullOrWhiteSpace(statusText))
 				{
@@ -486,7 +486,11 @@ internal sealed class SceneTradeBannerlordAdapter
                 shoutPendingTradeItem.PartyTransferPartialFact = PartyTransferExecutionOwner.BuildPartialEffectFact(shoutPendingTradeItem.PartyEntry, partyEffect);
 				if (num > 0)
 				{
-					string information = (shoutPendingTradeItem.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops) ? ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "转入" + GetShoutTradeTargetDisplayName() + "的麾下") : (shoutPendingTradeItem.PartyEntry.IsHero ? ("已将俘虏" + shoutPendingTradeItem.ItemName + "交给" + GetShoutTradeTargetDisplayName()) : ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "俘虏交给" + GetShoutTradeTargetDisplayName()));
+					string information = shoutPendingTradeItem.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops
+						? ConversationUiLocalization.Text("AF_CONV_UI_Trade_TroopsDelivered", "Transferred {AMOUNT} {ITEM} to {TARGET}'s party.", ("AMOUNT", num), ("ITEM", shoutPendingTradeItem.ItemName), ("TARGET", GetShoutTradeTargetDisplayName()))
+						: shoutPendingTradeItem.PartyEntry.IsHero
+							? ConversationUiLocalization.Text("AF_CONV_UI_Trade_HeroPrisonerDelivered", "Gave prisoner {ITEM} to {TARGET}.", ("ITEM", shoutPendingTradeItem.ItemName), ("TARGET", GetShoutTradeTargetDisplayName()))
+							: ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrisonersDelivered", "Gave {AMOUNT} {ITEM} prisoners to {TARGET}.", ("AMOUNT", num), ("ITEM", shoutPendingTradeItem.ItemName), ("TARGET", GetShoutTradeTargetDisplayName()));
 					InformationManager.DisplayMessage(new InformationMessage(information, new Color(0.4f, 1f, 0.4f)));
 				}
 			}
@@ -538,7 +542,7 @@ internal sealed class SceneTradeBannerlordAdapter
                             authoritativeReceipt = true;
 							if (num2 > 0)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("已将 " + num2 + " 第纳尔交给 " + GetShoutTradeTargetDisplayName() + " 所在部队。", new Color(0.4f, 1f, 0.4f)));
+								InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_GoldDeliveredToParty", "Gave {AMOUNT} denars to the party containing {TARGET}.", ("AMOUNT", num2), ("TARGET", GetShoutTradeTargetDisplayName())), new Color(0.4f, 1f, 0.4f)));
 								RecordScenePrepaidTransfer(text, num2);
 							}
 						}
@@ -861,7 +865,7 @@ internal sealed class SceneTradeBannerlordAdapter
 		{
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("【展示估值】你向 " + GetShoutTradeTargetDisplayName() + " 展示了总值为 " + totalValue + " 第纳尔的财物。", new Color(0.95f, 0.85f, 0.25f)));
+		InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_DisplayValue", "[Show valuation] You showed {TARGET} goods worth {VALUE} denars in total.", ("TARGET", GetShoutTradeTargetDisplayName()), ("VALUE", totalValue)), new Color(0.95f, 0.85f, 0.25f)));
 	}
 
 	internal static string GetPlayerDisplayNameForShout()
@@ -872,7 +876,7 @@ internal sealed class SceneTradeBannerlordAdapter
 	internal string GetShoutTradeTargetDisplayName()
 	{
 		string text = (_shoutTradeTargetNpc?.Name ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "对方" : text;
+		return string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_TargetFallback", "the other party") : text;
 	}
 
 	internal void RecordShoutShownResources()
@@ -1018,34 +1022,34 @@ internal sealed class SceneTradeBannerlordAdapter
 		ResolveShoutTradeRuntimeTarget(out var hero, out var character, out var _);
 		if (IsNativeConversationSelfTarget(hero, character))
 		{
-			return "不能把资源给予自己。";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Trade_IneligibleSelf", "You cannot give resources to yourself.");
 		}
 		if (IsShoutPartyTransferMode(mode))
 		{
 			if (!MyBehavior.IsPartyTransferLordEligibleForExternal(hero, character))
 			{
-				return "只有领主才能谈部队与俘虏转移。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Trade_IneligibleLord", "Only a lord can discuss troop or prisoner transfers.");
 			}
 			PartyBase counterparty = MyBehavior.ResolvePartyTransferCounterpartyForExternal(hero, character, GetShoutTradeTargetAgentIndex());
 			if (counterparty == null)
 			{
 				Logger.Log("ShoutBehavior", "[ShoutTrade] party transfer blocked: no counterparty target=" + (hero?.StringId ?? character?.StringId ?? _shoutTradeTargetNpc?.Name ?? "null") + " mode=" + mode);
-				return "当前目标没有可接收部队或俘虏的队伍。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoCounterpartyParty", "The target has no party that can receive troops or prisoners.");
 			}
 		}
 		if (IsShoutSettlementTransferMode(mode) && !MyBehavior.IsSettlementTransferLeaderEligibleForExternal(hero, character))
 		{
-			return "当前目标没有可转移的固定资产。";
+			return ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoTargetAssets", "The target has no fixed assets available for transfer.");
 		}
 		return null;
 	}
 
 	internal static string GetNoShoutTradeOptionsMessage(ShoutChatMode mode)
 	{
-		return mode == ShoutChatMode.GiveTroops ? "你当前没有可转移给对方的部队。"
-			: mode == ShoutChatMode.GivePrisoners ? "你当前没有可转移给对方的俘虏。"
-			: IsShoutSettlementTransferMode(mode) ? "你当前没有可转移给对方的固定资产。"
-			: "你没有可用的物品或第纳尔。";
+		return mode == ShoutChatMode.GiveTroops ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoTroops", "You have no troops available to transfer to the other party.")
+			: mode == ShoutChatMode.GivePrisoners ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoPrisoners", "You have no prisoners available to transfer to the other party.")
+			: IsShoutSettlementTransferMode(mode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoAssets", "You have no fixed assets available to transfer to the other party.")
+			: ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoItems", "You have no available items or denars.");
 	}
 
 	internal static List<ScenePresentationTradeOption> LoadScenePresentationTradeOptionsForExternal(string mode, out string status)
@@ -1055,7 +1059,7 @@ internal sealed class SceneTradeBannerlordAdapter
 		SceneTradeController owner = CurrentInstance?._j17SceneTradeController;
 		if (owner == null || !owner.IsPresentationSessionLive() || !IsBannerlordMainThreadForNativeActions())
 		{
-			status = "场景会话已结束。";
+			status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_SessionEnded", "The scene conversation session has ended.");
 			return result;
 		}
 		if (!TryParsePresentationTradeMode(mode, out ShoutChatMode chatMode))
@@ -1066,14 +1070,14 @@ internal sealed class SceneTradeBannerlordAdapter
 		// (A leftover scene target from an abandoned popup flow is not a live owner and is replaced.)
 		if (owner._shoutTradeActionOnly)
 		{
-			status = "另一个给予流程正在进行，请先完成它。";
+			status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_OtherFlow", "Another give flow is in progress. Finish it first.");
 			return result;
 		}
 		ScenePresentationController.Member addressee = owner.FindPresentationMember(owner.Presentation._presentationAddresseeIndex);
 		NpcDataPacket target = owner.IsPresentationAudience(addressee) ? ShoutUtils.ExtractNpcData(addressee.Agent) : null;
 		if (target == null)
 		{
-			status = "当前没有可以给予的对话对象。";
+			status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoConversationTarget", "There is no conversation target available for giving.");
 			return result;
 		}
 		// Reopening the give panel replaces a staged gift; refresh the session banner when that happens.
@@ -1115,7 +1119,7 @@ internal sealed class SceneTradeBannerlordAdapter
 				Index = i,
                 FlowRevision = owner.FlowRevision,
 				Name = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(option.Name),
-				Category = option.IsGold ? "货币" : asset != null ? (asset.TypeLabel ?? "固定资产") : party != null ? (chatMode == ShoutChatMode.GiveTroops ? "部队" : "俘虏") : "物品",
+				Category = option.IsGold ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_Currency", "Currency") : asset != null ? (asset.TypeLabel ?? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveAssets", "Fixed assets")) : party != null ? (chatMode == ShoutChatMode.GiveTroops ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_Troops", "Troops") : ConversationUiLocalization.Text("AF_CONV_UI_Trade_Prisoners", "Prisoners")) : ConversationUiLocalization.Text("AF_CONV_UI_Trade_Item", "Item"),
 				Available = Math.Max(0, option.AvailableAmount),
 				UnitValue = option.IsGold ? 1 : asset != null ? Math.Max(0, asset.GuidePriceDenars)
 					: party != null ? Math.Max(0, chatMode == ShoutChatMode.GiveTroops ? party.HirePriceDenarsPerUnit : party.BuyPriceDenarsPerUnit)

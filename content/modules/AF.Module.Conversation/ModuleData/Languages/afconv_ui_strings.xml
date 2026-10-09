@@ -176,5 +176,113 @@
     <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge action processing did not complete" />
     <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC opening failed" />
     <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge free conversation submission failed" />
+    <string id="AF_CONV_UI_Trade_TargetFallback" text="the other party" />
+    <string id="AF_CONV_UI_Trade_GiveItems" text="Give items" />
+    <string id="AF_CONV_UI_Trade_ShowItems" text="Show items" />
+    <string id="AF_CONV_UI_Trade_GiveTroops" text="Give troops" />
+    <string id="AF_CONV_UI_Trade_GivePrisoners" text="Give prisoners" />
+    <string id="AF_CONV_UI_Trade_GiveAssets" text="Transfer fixed assets" />
+    <string id="AF_CONV_UI_Trade_MenuTitle" text="Give/Show - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_MenuDescription" text="Current target: {TARGET}&#10;This performs only a give or show action and does not request an AI reply. The action is written to AnimusForge conversation history for later AI conversations." />
+    <string id="AF_CONV_UI_Trade_AvailableAmount" text="Available: {AMOUNT}" />
+    <string id="AF_CONV_UI_Trade_TroopHint" text="Available: {AMOUNT} | Daily wage: {WAGE} denars/day | Hire price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Trade_PrisonerHint" text="Available: {AMOUNT} | Purchase price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Trade_SourceHint" text=" | Source: {SOURCE}" />
+    <string id="AF_CONV_UI_Trade_SourceSuffix" text=" (Source: {SOURCE})" />
+    <string id="AF_CONV_UI_Trade_AssetHint" text="Daily income: {INCOME} denars | One-time settlement guide price: {PRICE} denars | Type: {TYPE}" />
+    <string id="AF_CONV_UI_Trade_Town" text="Town" />
+    <string id="AF_CONV_UI_Trade_Castle" text="Castle" />
+    <string id="AF_CONV_UI_Trade_Denars" text="Denars" />
+    <string id="AF_CONV_UI_Trade_Currency" text="Currency" />
+    <string id="AF_CONV_UI_Trade_Item" text="Item" />
+    <string id="AF_CONV_UI_Trade_Troops" text="Troops" />
+    <string id="AF_CONV_UI_Trade_Prisoners" text="Prisoners" />
+    <string id="AF_CONV_UI_Trade_TargetTitle" text="{MODE}{SUFFIX} - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_ActionOnlyNote" text="&#10;This action is recorded in conversation history only; it does not request an AI reply." />
+    <string id="AF_CONV_UI_Trade_CurrentTarget" text="Current target: {TARGET}" />
+    <string id="AF_CONV_UI_Trade_SelectTroops" text="Select troops to transfer to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectPrisoners" text="Select prisoners to give to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectAssets" text="Select fixed assets to transfer to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectItems" text="Select items or denars to use (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_PrepareTroops" text="You are preparing to transfer these troops to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PreparePrisoners" text="You are preparing to give these prisoners to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareAssets" text="You are preparing to transfer these fixed assets to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareGive" text="You are preparing to give the other party these items:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareShow" text="You are preparing to show the other party these items:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_TransferTroopLine" text="  · Transfer {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerHeroLine" text="  · Deliver prisoner {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerLine" text="  · Deliver {AMOUNT} {ITEM} prisoners" />
+    <string id="AF_CONV_UI_Trade_TransferAssetLine" text="  · Transfer {TYPE} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_GiveGoldLine" text="  · Give {AMOUNT} denars" />
+    <string id="AF_CONV_UI_Trade_ShowGoldLine" text="  · Show {AMOUNT} denars" />
+    <string id="AF_CONV_UI_Trade_GiveItemLine" text="  · Give {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_ShowItemLine" text="  · Show {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_AmountTitleGive" text="Amount to give" />
+    <string id="AF_CONV_UI_Trade_AmountTitleShow" text="Amount to show" />
+    <string id="AF_CONV_UI_Trade_AmountTitleTransfer" text="Amount to transfer" />
+    <string id="AF_CONV_UI_Trade_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.&#10;Enter an integer from 1 to {MAX}:" />
+    <string id="AF_CONV_UI_Trade_InvalidAmount" text="Enter a valid amount." />
+    <string id="AF_CONV_UI_Trade_Interrupted" text="The give/show flow was interrupted; the resource and target outcome could not be confirmed. This confirmation was consumed and must not be repeated." />
+    <string id="AF_CONV_UI_Trade_Recorded" text="The give/show action was recorded. The NPC will know about it in later AI conversations." />
+    <string id="AF_CONV_UI_Trade_CommitInterrupted" text="The give/show action was interrupted and its outcome could not be confirmed. Do not repeat the delivery." />
+    <string id="AF_CONV_UI_Trade_TargetInvalid" text="The trade target left or became invalid; the give/show action was not performed." />
+    <string id="AF_CONV_UI_Trade_ListExpired" text="The give list is no longer valid. Open it again." />
+    <string id="AF_CONV_UI_Trade_SelectResource" text="Select at least one resource to give." />
+    <string id="AF_CONV_UI_Trade_AmountOutOfRange" text="The amount exceeds the available range: {RESOURCE}" />
+    <string id="AF_CONV_UI_Trade_NoDelivery" text="The target left or the give action expired; nothing was delivered and no line was sent." />
+    <string id="AF_CONV_UI_Trade_ResourcesChanged" text="The resource or amount changed; nothing was delivered." />
+    <string id="AF_CONV_UI_Trade_DisplayValue" text="[Show valuation] You showed {TARGET} goods worth {VALUE} denars in total." />
+    <string id="AF_CONV_UI_Trade_AssetDelivered" text="Transferred {ITEM} to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_GoldDeliveredToParty" text="Gave {AMOUNT} denars to the party containing {TARGET}." />
+    <string id="AF_CONV_UI_Trade_TroopsDelivered" text="Transferred {AMOUNT} {ITEM} to {TARGET}'s party." />
+    <string id="AF_CONV_UI_Trade_HeroPrisonerDelivered" text="Gave prisoner {ITEM} to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_PrisonersDelivered" text="Gave {AMOUNT} {ITEM} prisoners to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_IneligibleSelf" text="You cannot give resources to yourself." />
+    <string id="AF_CONV_UI_Trade_IneligibleLord" text="Only a lord can discuss troop or prisoner transfers." />
+    <string id="AF_CONV_UI_Trade_NoCounterpartyParty" text="The target has no party that can receive troops or prisoners." />
+    <string id="AF_CONV_UI_Trade_NoTargetAssets" text="The target has no fixed assets available for transfer." />
+    <string id="AF_CONV_UI_Trade_NoTroops" text="You have no troops available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoPrisoners" text="You have no prisoners available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoAssets" text="You have no fixed assets available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoItems" text="You have no available items or denars." />
+    <string id="AF_CONV_UI_Trade_SessionEnded" text="The scene conversation session has ended." />
+    <string id="AF_CONV_UI_Trade_OtherFlow" text="Another give flow is in progress. Finish it first." />
+    <string id="AF_CONV_UI_Trade_NoConversationTarget" text="There is no conversation target available for giving." />
+    <string id="AF_CONV_UI_Shout_TargetFallback" text="nearby person" />
+    <string id="AF_CONV_UI_Shout_ModeNormal" text="Talk" />
+    <string id="AF_CONV_UI_Shout_ModeGive" text="Give items and talk" />
+    <string id="AF_CONV_UI_Shout_ModeShow" text="Show items and talk" />
+    <string id="AF_CONV_UI_Shout_ModeTroops" text="Give troops and talk" />
+    <string id="AF_CONV_UI_Shout_ModePrisoners" text="Give prisoners and talk" />
+    <string id="AF_CONV_UI_Shout_ModeAssets" text="Transfer fixed assets and talk" />
+    <string id="AF_CONV_UI_Shout_TagTest" text="Tag test" />
+    <string id="AF_CONV_UI_Shout_TagTestDescription" text="Enter NPC-visible text and post-processing tags without calling the API; execute them immediately for the current target." />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayer" text="Speech" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayerDescription" text="Give a speech to your allied soldiers." />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpc" text="NPC speech" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpcDescription" text="Have the currently highlighted allied primary target give a speech." />
+    <string id="AF_CONV_UI_Shout_ModeDescription" text="Current target: {TARGET}&#10;This menu lets you talk while giving or showing items, or transfer troops, prisoners, or fixed assets.&#10;Choose an interaction mode:" />
+    <string id="AF_CONV_UI_Shout_SpeechInputFailed" text="The speech input could not be opened; returning to normal scene state." />
+    <string id="AF_CONV_UI_Shout_Processing" text="Processing..." />
+    <string id="AF_CONV_UI_Shout_TagTitle" text="Tag input - {TARGET}" />
+    <string id="AF_CONV_UI_Shout_TagSubtitle" text="Current target: {TARGET}&#10;Enter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current target." />
+    <string id="AF_CONV_UI_Shout_OpenFailed" text="[Scene shout] Failed to open the shout interface; state was reset." />
+    <string id="AF_CONV_UI_Scene_RoleLord" text="Lord" />
+    <string id="AF_CONV_UI_Scene_RoleNotable" text="Notable" />
+    <string id="AF_CONV_UI_Scene_RoleWanderer" text="Wanderer" />
+    <string id="AF_CONV_UI_Scene_Attacked" text="[Scene session] You were attacked; the session panel was collapsed (press T to expand)." />
+    <string id="AF_CONV_UI_Scene_NoParticipants" text="[Scene session] There is no one nearby to talk to; the session ended." />
+    <string id="AF_CONV_UI_Scene_SessionEnded" text="The scene conversation session has ended." />
+    <string id="AF_CONV_UI_Scene_RoundActive" text="The previous response is still running; click &quot;Interrupt&quot; to speak over it." />
+    <string id="AF_CONV_UI_Scene_Processing" text="The previous line is still processing. Please wait." />
+    <string id="AF_CONV_UI_Scene_PlayerSpeaker" text="You" />
+    <string id="AF_CONV_UI_Scene_FactSpeaker" text="Record" />
+    <string id="AF_CONV_UI_Native_SceneMoveReady" text="SCENE_MOVE is ready. Exit the conversation panel manually; the NPC scene action will execute after you leave.{SUFFIX}" />
+    <string id="AF_CONV_UI_Native_PendingActionsSuffix" text=" {COUNT} actions are pending." />
+    <string id="AF_CONV_UI_Native_TauntFightTriggered" text="SCENE_TAUNT_FIGHT was triggered; the conversation will close automatically in 10 seconds and the conflict will begin." />
+    <string id="AF_CONV_UI_Native_ConflictStarted" text="The conflict has begun!" />
+    <string id="AF_CONV_UI_Native_ConflictUnavailable" text="The conflict could not begin: the current scene target is unavailable." />
+    <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} arrived with {TARGET}." />
+    <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} was summoned." />
   </strings>
 </base>
