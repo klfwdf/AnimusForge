@@ -279,8 +279,20 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			// The overlay is the first consumer for direct/native restored entries; the custom
+			// encounter menu is not their only producer. Re-arm only the current valid invitation.
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true) return false;
 			Hero hero = ShoutBehavior.GetNativeConversationTargetHeroForExternal();
-			return hero != null && Instance?._openingOwner.Matches(true, Instance._activeSession?.Id, GetHeroKey(hero)) == true;
+			ProactiveNpcRequestBehavior owner = Instance;
+			if (hero == null || owner?.IsActiveHero(hero) != true || owner._sessionOwner.IsExpired(NowHours())) return false;
+			string sessionId = owner._activeSession.Id;
+			string heroId = GetHeroKey(hero);
+			if (!owner._openingOwner.Matches(true, sessionId, heroId))
+			{
+				if (DuelSettings.GetSettings()?.EnableProactiveNpcRequests != true || !owner._sessionOwner.CanResumeNativeOpening) return false;
+				owner.MarkConversationOpeningInternal(hero, nativeConversation: true);
+			}
+			return owner._openingOwner.Matches(true, sessionId, heroId);
 		}
 		catch
 		{
