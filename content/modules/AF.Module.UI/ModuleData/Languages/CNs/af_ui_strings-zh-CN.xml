@@ -176,4 +176,46 @@
   <string id="AF_UI_Weekly_Bulletin_FooterHint" text="点击人名与地名，查阅百科" />
   <string id="AF_UI_Weekly_Bulletin_Close" text="封 存 快 报" />
   <string id="AF_UI_Weekly_Bulletin_EmptyBody" text="本期快报正文为空。" />
+  <string id="AF_UI_Timeline_Rumors" text="传闻" />
+  <string id="AF_UI_Timeline_SubtitlePrefix" text="外交、政策与周报按时间正序汇总，最新消息位于底部；可叠加类别和国家筛选。当前显示最近 " />
+  <string id="AF_UI_Timeline_Empty" text="暂无可查看的外交消息、政策或周报。" />
+  <string id="AF_UI_Common_Close" text="关闭" />
+  <string id="AF_UI_Timeline_PolicyRecord" text="政策记录" />
+  <string id="AF_UI_Timeline_PolicyImpact" text="政策影响效果" />
+  <string id="AF_UI_Timeline_WeeklyArchive" text="快报与周报档案" />
+  <string id="AF_UI_Timeline_UnknownCountry" text="未知国家" />
+  <string id="AF_UI_Timeline_WeeklyEmpty" text="（本期周报尚无正文）" />
+  <string id="AF_UI_Timeline_WeeklyTags" text="周报标签" />
+  <string id="AF_UI_Timeline_DiplomaticDocument" text="外交公文" />
+  <string id="AF_UI_Timeline_DiplomaticArchived" text="（该外交消息正文已经整理入外交编年档案。）" />
+  <string id="AF_UI_Timeline_DiplomaticImpact" text="外交结果与外交影响" />
+  <string id="AF_UI_Timeline_KingdomPolicy" text="王国政策" />
+  <string id="AF_UI_Timeline_LocalPolicy" text="地方政策" />
+  <string id="AF_UI_Timeline_VassalPolicy" text="附庸政策" />
+  <string id="AF_UI_Timeline_Policy" text="政策" />
+  <string id="AF_UI_Timeline_DiplomaticResponse" text="外交回应" />
+  <string id="AF_UI_Timeline_DiplomaticNote" text="外交照会" />
+  <string id="AF_UI_Timeline_DiplomaticResult" text="外交结果" />
+  <string id="AF_UI_Timeline_DiplomaticMessage" text="外交消息" />
+  <string id="AF_UI_Timeline_DayPrefix" text="第" />
+  <string id="AF_UI_Timeline_UnknownDate" text="未知日期" />
+  <string id="AF_UI_Timeline_NoRumors" text="暂无传闻。" />
+  <string id="AF_UI_Timeline_GenerateWeekly" text="生成完整周报" />
+  <string id="AF_UI_Timeline_Pause" text="暂停游戏" />
+  <string id="AF_UI_Timeline_All" text="全部" />
+  <string id="AF_UI_Timeline_Diplomacy" text="外交" />
+  <string id="AF_UI_Timeline_Weekly" text="快报 / 周报" />
+  <string id="AF_UI_Timeline_ResumeTriple" text="继续游戏（3倍）" />
+  <string id="AF_UI_Timeline_TimeLocked" text="时间已锁定不可操作" />
+  <string id="AF_UI_Timeline_AllCountries" text="全部国家" />
+  <string id="AF_UI_Timeline_GeneratingWeekly" text="正在生成完整周报…" />
+  <string id="AF_UI_Timeline_AllMessages" text="全部消息" />
+  <string id="AF_UI_Timeline_New" text="新" />
+  <string id="AF_UI_Timeline_Details" text="详情" />
+  <string id="AF_UI_Timeline_Subtitle" text="外交、政策与周报按时间正序汇总，最新消息位于底部；可叠加类别和国家筛选。当前显示最近 {COUNT} 条可用记录。" />
+  <string id="AF_UI_Timeline_DefaultSubtitle" text="外交、政策与周报按时间正序汇总，最新消息位于底部。" />
+  <string id="AF_UI_Timeline_WeeklyTitle" text="{NAME}周报" />
+  <string id="AF_UI_Timeline_BodyTitle" text="{KIND}正文" />
+  <string id="AF_UI_Timeline_Day" text="第{DAY}天" />
+  <string id="AF_UI_Timeline_MultiCountry" text="{NAME}等{COUNT}项" />
 </strings>
