@@ -62,6 +62,16 @@
       "target": "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml"
     },
     {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/ModuleData/Languages/afevent_ui_strings.xml",
+      "target": "ModuleData/Languages/afevent_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml"
+    },
+    {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
       "target": "ModuleData/PreprocessPrompts.json",
