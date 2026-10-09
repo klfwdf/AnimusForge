@@ -9221,16 +9221,16 @@ internal static partial class Program
 		IReadOnlyList<PolicyPromptMenuEntry> rootEntries = PolicyPromptEditorUi.BuildRootEntriesForContractTests();
 		Check(rootEntries.Select(entry => entry.Title).SequenceEqual(new[]
 		{
-			"玩家AI编写",
-			"玩家政策评议",
-			"NPC 统治者政策",
-			"政策效果要求"
+			"Player AI drafting",
+			"Player policy evaluation",
+			"NPC ruler policy",
+			"Policy effect requirements"
 		}), "Policy prompt hub must expose the four approved natural-language layers in order.");
 		Check(rootEntries.All(entry => IsSafePlayerVisiblePolicyText(entry.Title + "\n" + entry.Hint)),
 			"Policy prompt hub titles and hints must not expose source symbols, internal IDs, JSON fields, or target handles.");
 		PolicyPromptMenuEntry commonEffectEntry = PolicyPromptEditorUi.BuildCommonEffectEntryForContractTests();
 		Check(commonEffectEntry != null
-			&& string.Equals(commonEffectEntry.Title, "全部效果共同要求", StringComparison.Ordinal)
+			&& string.Equals(commonEffectEntry.Title, "Shared requirements for all effects", StringComparison.Ordinal)
 			&& IsSafePlayerVisiblePolicyText(commonEffectEntry.Title + "\n" + commonEffectEntry.Hint),
 			"The effect editor must expose one natural-language common layer instead of repeating shared rules in every module.");
 
