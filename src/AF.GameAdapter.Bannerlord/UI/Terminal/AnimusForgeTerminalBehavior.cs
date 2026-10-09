@@ -617,7 +617,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 					? Ui("AF_TERMINAL_UI_Forge_StaminaReadFailed", "Unable to read this crafter's crafting stamina.")
 					: crafter.HasEnoughCraftingStamina
 						? ""
-						: UiFormat("AF_TERMINAL_UI_Forge_StaminaInsufficient", "Crafting stamina is insufficient; at least {COST} points are required.", ("COST", crafter.CraftingStaminaCost))).ToList();
+						: UiFormat("AF_TERMINAL_UI_Forge_StaminaInsufficient", "Crafting stamina is insufficient; at least {COST} points are required.", ("COST", crafter.CraftingStaminaCost)))).ToList();
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
 			Ui("AF_TERMINAL_UI_Forge_SelectCrafter", "Select crafter"),
 			"",
