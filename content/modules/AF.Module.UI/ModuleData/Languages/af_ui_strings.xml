@@ -286,6 +286,20 @@
   <string id="AF_UI_Common_Cancel" text="Cancel" />
   <string id="AF_UI_Common_Save" text="Save" />
   <string id="AF_UI_Common_Back" text="Back" />
+  <string id="AF_UI_SaveExit_OnnxReady" text="The local knowledge model is ready." />
+  <string id="AF_UI_SaveExit_OnnxUnavailable" text="The local knowledge model is missing or failed to load. Check the Modules\AnimusForge\ONNX model package and Mod_Logic.txt, then restart the game." />
+  <string id="AF_UI_SaveExit_OnnxTimeout" text="Local knowledge model initialization exceeded 60 seconds and stopped waiting. The game remains usable; save and exit, then check the model package and Mod_Logic.txt before restarting." />
+  <string id="AF_UI_SaveExit_OnnxInitializing" text="Initializing the local knowledge model. The first load may take a while; AF conversations are unavailable until it finishes." />
+  <string id="AF_UI_SaveExit_OnnxStartFailed" text="Could not start the local knowledge model loader. Check Mod_Logic.txt and restart the game." />
+  <string id="AF_UI_SaveExit_OnnxStillLoading" text="The local knowledge model is still loading. Please wait; you do not need to re-enter the player's background." />
+  <string id="AF_UI_SaveExit_OnnxPopupTitle" text="Local knowledge model unavailable" />
+  <string id="AF_UI_SaveExit_OnnxPopupBody" text="Extract the complete RAG model package into Modules\AnimusForge\ONNX, then restart the game." />
+  <string id="AF_UI_SaveExit_SaveAndExit" text="Save and exit" />
+  <string id="AF_UI_SaveExit_Failed" text="Save and exit failed: {ERROR}" />
+  <string id="AF_UI_SaveExit_SaveInProgress" text="A save is already in progress. Another save will run after it finishes, then the game will exit automatically." />
+  <string id="AF_UI_SaveExit_Saving" text="Saving the current game. The game will exit automatically when saving is complete." />
+  <string id="AF_UI_SaveExit_SaveHandlerMissing" text="Save and exit failed: no save handler was found." />
+  <string id="AF_UI_SaveExit_SaveFailed" text="Saving the current game failed; exit cancelled." />
   <string id="AF_UI_Common_NoContent" text="No content to display." />
   <string id="AF_UI_RpForge_NameRequired" text="Enter an item name first." />
   <string id="AF_UI_RpForge_MinInvestment" text="At least 1 denar is required to craft an item." />

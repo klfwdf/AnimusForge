@@ -286,6 +286,20 @@
   <string id="AF_UI_Common_Cancel" text="取消" />
   <string id="AF_UI_Common_Save" text="保存" />
   <string id="AF_UI_Common_Back" text="返回" />
+  <string id="AF_UI_SaveExit_OnnxReady" text="本地知识模型已就绪。" />
+  <string id="AF_UI_SaveExit_OnnxUnavailable" text="本地知识模型缺失或加载失败。请检查 Modules\AnimusForge\ONNX 模型包和 Mod_Logic.txt，修复后重新启动游戏。" />
+  <string id="AF_UI_SaveExit_OnnxTimeout" text="本地知识模型初始化超过 60 秒，已停止等待。游戏界面仍可操作，请保存退出并检查模型包和 Mod_Logic.txt 后重启。" />
+  <string id="AF_UI_SaveExit_OnnxInitializing" text="正在初始化本地知识模型，首次加载可能较慢；完成前暂不可使用 AF 对话。" />
+  <string id="AF_UI_SaveExit_OnnxStartFailed" text="无法启动本地知识模型加载，请检查 Mod_Logic.txt 后重启游戏。" />
+  <string id="AF_UI_SaveExit_OnnxStillLoading" text="本地知识模型仍在加载，请稍候；无需重新填写玩家背景。" />
+  <string id="AF_UI_SaveExit_OnnxPopupTitle" text="本地知识模型不可用" />
+  <string id="AF_UI_SaveExit_OnnxPopupBody" text="请将完整 RAG 模型包解压到 Modules\AnimusForge\ONNX 后重新启动游戏。" />
+  <string id="AF_UI_SaveExit_SaveAndExit" text="保存并退出" />
+  <string id="AF_UI_SaveExit_Failed" text="保存并退出失败：{ERROR}" />
+  <string id="AF_UI_SaveExit_SaveInProgress" text="检测到当前已有保存进行中，完成后将再保存一次并自动退出。" />
+  <string id="AF_UI_SaveExit_Saving" text="正在保存当前存档，保存完成后将自动退出。" />
+  <string id="AF_UI_SaveExit_SaveHandlerMissing" text="保存并退出失败：未找到存档保存器。" />
+  <string id="AF_UI_SaveExit_SaveFailed" text="保存当前存档失败，已取消退出。" />
   <string id="AF_UI_Common_NoContent" text="暂无可显示内容。" />
   <string id="AF_UI_RpForge_NameRequired" text="请先填写物品名称。" />
   <string id="AF_UI_RpForge_MinInvestment" text="制造物品至少需要投入 1 第纳尔。" />
