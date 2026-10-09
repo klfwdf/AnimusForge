@@ -54,7 +54,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyText("环境 AI 模型名称", -1, true, "", Order = 2, RequireRestart = false,
 		HintText = "例如 gpt-4o-mini、deepseek-chat。请填写该接口实际支持的模型名。")]
 	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
-	public string TownAmbientAiModelName { get; set; } = "gpt-4o-mini";
+	public string TownAmbientAiModelName
+	{
+		get => ReadModelNameForPreset(ref _townAmbientAiModelName, _townAmbientAiModelDropdown);
+		set => SetModelNameForPreset(value, ref _townAmbientAiModelName, ref _townAmbientAiModelDropdown, ref _townAmbientAiModelOptions);
+	}
 
 	[SettingPropertyButton("拉取环境 AI 模型列表", -1, true, "", Content = "点击拉取", Order = 3, RequireRestart = false,
 		HintText = "使用你填写的环境 AI 地址和 Key 请求 /models；拉取本身通常不产生聊天 Token。")]
@@ -70,19 +74,19 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selected = GetTownAmbientAiSelectedModelOption();
-			_townAmbientAiModelDropdown = BuildDropdownFromOptions(_townAmbientAiModelOptions, selected, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out var _);
+			if (_townAmbientAiModelDropdown == null || _townAmbientAiModelDropdown.Count == 0)
+				_townAmbientAiModelDropdown = BuildDropdownFromOptions(_townAmbientAiModelOptions, selected, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out var _);
 			return _townAmbientAiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
-			string selected = GetTownAmbientAiSelectedModelOption();
-			_townAmbientAiModelDropdown = BuildDropdownFromIncoming(value, _townAmbientAiModelOptions, selected, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out var normalized);
+			string selected = _townAmbientAiModelName;
+			_townAmbientAiModelDropdown = BuildDropdownFromIncoming(ResolveLoadedModelDropdown(value, _townAmbientAiModelDropdown, _townAmbientAiModelName), _townAmbientAiModelOptions, selected, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out var normalized);
 			if (!string.IsNullOrWhiteSpace(normalized) && !IsManualModelOption(normalized))
 			{
 				TownAmbientAiModelName = normalized;
 			}
-			PersistModelDropdownCacheSnapshot();
 		}
 	}
 

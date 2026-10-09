@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using HarmonyLib;
+using MCM.Common;
 
 namespace AnimusForge;
 
@@ -44,6 +45,12 @@ public static class McmDropdownRuntimeRefresh
 			}
 			Type modOptionsVmType = AccessTools.TypeByName("MCM.UI.GUI.ViewModels.ModOptionsVM");
 			Harmony harmony = new Harmony("AnimusForge.mcm.dropdown.refresh");
+			Type indexActionType = AccessTools.TypeByName("MCM.UI.Actions.SetSelectedIndexAction");
+			ConstructorInfo indexActionCtor = indexActionType == null ? null : AccessTools.Constructor(indexActionType, new[] { typeof(IRef), typeof(object) });
+			if (indexActionCtor != null)
+				harmony.Patch(indexActionCtor, prefix: new HarmonyMethod(typeof(McmDropdownRuntimeRefresh), nameof(ModelPresetIndexPrefix)));
+			else
+				Logger.Log("MCM", "[WARN] 未找到 MCM 预设下拉复制入口，动态模型预设跨列表顺序恢复不可用。");
 			ConstructorInfo ctor = AccessTools.Constructor(settingsPropertyVmType, new Type[]
 			{
 				AccessTools.TypeByName("MCM.Abstractions.ISettingsPropertyDefinition"),
@@ -87,6 +94,30 @@ public static class McmDropdownRuntimeRefresh
 				return;
 			}
 		}
+	}
+
+	// UI choices supply a selector VM; preset copies supply a Dropdown. Only AF's
+	// model presets need name mapping. Append missing names to preserve undo indices.
+	internal static void ModelPresetIndexPrefix(IRef __0, ref object __1)
+	{
+		if (!(__0 is PropertyRef property) || !(property.Instance is DuelSettings)
+			|| !(__1 is Dropdown<string> source)) return;
+		switch (property.PropertyInfo.Name)
+		{
+			case nameof(DuelSettings.MainModelDropdown):
+			case nameof(DuelSettings.AuxiliaryModelDropdown):
+			case nameof(DuelSettings.ActionPostprocessModelDropdown):
+			case nameof(DuelSettings.EventAndRebellionModelDropdown):
+			case nameof(DuelSettings.TownAmbientAiModelDropdown):
+				break;
+			default: return;
+		}
+		if (source.SelectedIndex < 0 || source.SelectedIndex >= source.Count
+			|| !(__0.Value is Dropdown<string> target)) return;
+		string name = source[source.SelectedIndex];
+		int index = target.FindIndex(x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase));
+		if (index < 0) { target.Add(name); index = target.Count - 1; }
+		__1 = new Dropdown<string>(target, index);
 	}
 
 	public static void OnApplicationTick()

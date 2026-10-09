@@ -906,7 +906,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
-	public string ModelName { get; set; } = "gpt-4o-mini";
+	public string ModelName
+	{
+		get => ReadModelNameForPreset(ref _mainApiModelName, _mainApiModelDropdown);
+		set => SetModelNameForPreset(value, ref _mainApiModelName, ref _mainApiModelDropdown, ref _mainApiModelOptions);
+	}
 
 	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
@@ -919,36 +923,35 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		get
 		{
 			EnsureModelDropdownCacheHydrated();
-			_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
 			string selectedOption = GetMainSelectedModelOption();
-			if (IsRemovedMainModelPreset(selectedOption))
+			if (_mainApiModelDropdown == null || _mainApiModelDropdown.Count == 0 || IsRemovedMainModelPreset(selectedOption))
 			{
-				selectedOption = ManualDropdownModelName;
+				_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
+				if (IsRemovedMainModelPreset(selectedOption)) selectedOption = ManualDropdownModelName;
+				_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
 			}
-			_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
-			PersistSelectionIfChanged();
 			return _mainApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
 			_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
-			string selectedOption = GetMainSelectedModelOption();
+			string selectedOption = _mainApiModelName;
 			if (IsRemovedMainModelPreset(selectedOption))
 			{
 				selectedOption = ManualDropdownModelName;
 			}
-			_mainApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _mainApiModelDropdown, selectedOption), _mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var normalizedSelectedOption);
+			_mainApiModelDropdown = BuildDropdownFromIncoming(ResolveLoadedModelDropdown(value, _mainApiModelDropdown, _mainApiModelName), _mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var normalizedSelectedOption);
 			_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
 			if (IsRemovedMainModelPreset(normalizedSelectedOption))
 			{
 				normalizedSelectedOption = ManualDropdownModelName;
+				_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, normalizedSelectedOption, DefaultDropdownModelName, false, out _mainApiModelOptions, out _);
 			}
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				ModelName = normalizedSelectedOption;
 			}
-			PersistModelDropdownCacheSnapshot();
 		}
 	}
 
@@ -1714,7 +1717,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyText("辅助模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于规则检索、规则路由与简易场景对话链路的低成本模型名称。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
-	public string AuxiliaryModelName { get; set; } = "gpt-4o-mini";
+	public string AuxiliaryModelName
+	{
+		get => ReadModelNameForPreset(ref _auxiliaryApiModelName, _auxiliaryApiModelDropdown);
+		set => SetModelNameForPreset(value, ref _auxiliaryApiModelName, ref _auxiliaryApiModelDropdown, ref _auxiliaryApiModelOptions);
+	}
 
 	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
@@ -1728,20 +1735,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetAuxiliarySelectedModelOption();
-			_auxiliaryApiModelDropdown = BuildDropdownFromOptions(_auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
-			PersistSelectionIfChanged();
+			if (_auxiliaryApiModelDropdown == null || _auxiliaryApiModelDropdown.Count == 0)
+				_auxiliaryApiModelDropdown = BuildDropdownFromOptions(_auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
 			return _auxiliaryApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
-			string selectedOption = GetAuxiliarySelectedModelOption();
-			_auxiliaryApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _auxiliaryApiModelDropdown, selectedOption), _auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var normalizedSelectedOption);
+			string selectedOption = _auxiliaryApiModelName;
+			_auxiliaryApiModelDropdown = BuildDropdownFromIncoming(ResolveLoadedModelDropdown(value, _auxiliaryApiModelDropdown, _auxiliaryApiModelName), _auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				AuxiliaryModelName = normalizedSelectedOption;
 			}
-			PersistModelDropdownCacheSnapshot();
 		}
 	}
 
@@ -1790,7 +1796,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyText("后处理模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于标签后处理的模型名称。留空时将继续回退使用主API。后处理建议优先使用带思考/推理能力的模型（例如 OpenAI 的推理模型）或更高级模型，以提升标签判定稳定性。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
-	public string ActionPostprocessModelName { get; set; } = "";
+	public string ActionPostprocessModelName
+	{
+		get => ReadModelNameForPreset(ref _actionPostprocessApiModelName, _actionPostprocessApiModelDropdown);
+		set => SetModelNameForPreset(value, ref _actionPostprocessApiModelName, ref _actionPostprocessApiModelDropdown, ref _actionPostprocessApiModelOptions);
+	}
 
 	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
@@ -1804,20 +1814,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetActionPostprocessSelectedModelOption();
-			_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(_actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
-			PersistSelectionIfChanged();
+			if (_actionPostprocessApiModelDropdown == null || _actionPostprocessApiModelDropdown.Count == 0)
+				_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(_actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
 			return _actionPostprocessApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
-			string selectedOption = GetActionPostprocessSelectedModelOption();
-			_actionPostprocessApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _actionPostprocessApiModelDropdown, selectedOption), _actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var normalizedSelectedOption);
+			string selectedOption = _actionPostprocessApiModelName;
+			_actionPostprocessApiModelDropdown = BuildDropdownFromIncoming(ResolveLoadedModelDropdown(value, _actionPostprocessApiModelDropdown, _actionPostprocessApiModelName), _actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				ActionPostprocessModelName = normalizedSelectedOption;
 			}
-			PersistModelDropdownCacheSnapshot();
 		}
 	}
 
@@ -1870,7 +1879,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyText("事件/叛乱模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于事件周报与王国叛乱命名的模型名称。留空时将继续回退使用主API。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
-	public string EventAndRebellionModelName { get; set; } = "";
+	public string EventAndRebellionModelName
+	{
+		get => ReadModelNameForPreset(ref _eventAndRebellionApiModelName, _eventAndRebellionApiModelDropdown);
+		set => SetModelNameForPreset(value, ref _eventAndRebellionApiModelName, ref _eventAndRebellionApiModelDropdown, ref _eventAndRebellionApiModelOptions);
+	}
 
 	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
@@ -1884,20 +1897,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetEventAndRebellionSelectedModelOption();
-			_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
-			PersistSelectionIfChanged();
+			if (_eventAndRebellionApiModelDropdown == null || _eventAndRebellionApiModelDropdown.Count == 0)
+				_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
 			return _eventAndRebellionApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
-			string selectedOption = GetEventAndRebellionSelectedModelOption();
-			_eventAndRebellionApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _eventAndRebellionApiModelDropdown, selectedOption), _eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var normalizedSelectedOption);
+			string selectedOption = _eventAndRebellionApiModelName;
+			_eventAndRebellionApiModelDropdown = BuildDropdownFromIncoming(ResolveLoadedModelDropdown(value, _eventAndRebellionApiModelDropdown, _eventAndRebellionApiModelName), _eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				EventAndRebellionModelName = normalizedSelectedOption;
 			}
-			PersistModelDropdownCacheSnapshot();
 		}
 	}
 
@@ -5269,6 +5281,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private void EnsureModelDropdownCacheHydrated()
 	{
+		if (_modelDropdownCacheHydrated) return;
 		string modelDropdownCachePath;
 		try { modelDropdownCachePath = GetModelDropdownCachePath(); }
 		catch (Exception ex)
@@ -5318,7 +5331,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			MergeCachedDropdownState(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, modelDropdownCacheSnapshot.ActionPostprocessOptions, modelDropdownCacheSnapshot.ActionPostprocessSelected, ActionPostprocessModelName, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out _actionPostprocessApiModelDropdown);
 			MergeCachedDropdownState(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, modelDropdownCacheSnapshot.EventAndRebellionOptions, modelDropdownCacheSnapshot.EventAndRebellionSelected, EventAndRebellionModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out _eventAndRebellionApiModelDropdown);
 			MergeCachedDropdownState(_townAmbientAiModelOptions, _townAmbientAiModelDropdown, modelDropdownCacheSnapshot.TownAmbientAiOptions, modelDropdownCacheSnapshot.TownAmbientAiSelected, TownAmbientAiModelName, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out _townAmbientAiModelDropdown);
-			TrySyncManualModelWithSelectedOption();
 			_modelDropdownCacheHydrated = true;
 			_modelDropdownCacheLastWriteUtcTicks = num;
 		}
@@ -5438,51 +5450,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static string ResolveHydratedSelectedModelOption(Dropdown<string> runtimeDropdown, string cachedSelectedOption, string manualModel, string fallbackModel, bool preserveBlankSelection)
 	{
-		string text = ReadSelectedModelOption(runtimeDropdown);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = NormalizeModelOption(manualModel);
-		string text3 = NormalizeModelOption(fallbackModel);
-		string text4 = NormalizeModelOption(cachedSelectedOption);
-		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text3, StringComparison.OrdinalIgnoreCase))
-		{
-			return text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text4))
-		{
-			return text4;
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		return preserveBlankSelection ? string.Empty : text3;
-	}
-
-	private void TrySyncManualModelWithSelectedOption()
-	{
-		string text = ReadSelectedModelOption(_mainApiModelDropdown);
-		if (!string.IsNullOrWhiteSpace(text) && !IsManualModelOption(text))
-		{
-			ModelName = text;
-		}
-		string text2 = ReadSelectedModelOption(_auxiliaryApiModelDropdown);
-		if (!string.IsNullOrWhiteSpace(text2) && !IsManualModelOption(text2))
-		{
-			AuxiliaryModelName = text2;
-		}
-		string text3 = ReadSelectedModelOption(_actionPostprocessApiModelDropdown);
-		if (!string.IsNullOrWhiteSpace(text3) && !IsManualModelOption(text3))
-		{
-			ActionPostprocessModelName = text3;
-		}
-		string text4 = ReadSelectedModelOption(_eventAndRebellionApiModelDropdown);
-		if (!string.IsNullOrWhiteSpace(text4) && !IsManualModelOption(text4))
-		{
-			EventAndRebellionModelName = text4;
-		}
+		string selected = ReadSelectedModelOption(runtimeDropdown);
+		if (!string.IsNullOrWhiteSpace(selected)) return selected;
+		string model = NormalizeModelOption(manualModel);
+		return model.Length > 0 ? model : preserveBlankSelection ? string.Empty : NormalizeModelOption(fallbackModel);
 	}
 
 	private static string NormalizeModelOption(string value)
@@ -6129,40 +6100,40 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return BuildDropdownFromOptions(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection, out normalizedOptions, out normalizedSelectedOption);
 	}
 
-	// MCM saves a dropdown as an index only. On load it hands the setter a freshly built Dropdown whose index
-	// may no longer match the current list order (e.g. after the model list was re-fetched), which silently
-	// selected a different model. The live dropdown instance is reused by programmatic/user edits, so only a
-	// different instance is treated as a load and re-resolved by the remembered model name.
-	// Assumption: MCM's loader passes a new Dropdown instance (its core source is not in this repo).
-	private static Dropdown<string> ResolveIncomingDropdownByName(Dropdown<string> incoming, Dropdown<string> live, string rememberedOption)
+	// MCM UI edits SelectedIndex in-place; capture that value before the text field
+	// is serialized. Manual mode keeps the independently entered text.
+	private static string ReadModelNameForPreset(ref string name, Dropdown<string> dropdown)
 	{
-		if (incoming == null || incoming.Count <= 0 || ReferenceEquals(incoming, live))
-		{
-			return incoming;
-		}
-		string name = NormalizeModelOption(rememberedOption);
-		if (string.IsNullOrWhiteSpace(name))
-		{
-			return incoming;
-		}
-		// A name missing from the list is appended by BuildModelOptionList, so it is kept rather than replaced.
-		return BuildDropdownFromOptions(ReadDropdownValues(incoming), name, "", preserveBlankSelection: false, out _, out _);
+		string selected = ReadSelectedModelOption(dropdown);
+		if (!string.IsNullOrWhiteSpace(selected) && !IsManualModelOption(selected)) name = selected;
+		return name;
 	}
 
-	private string _lastPersistedSelectionKey = "";
-
-	// Keeps the cached selected names in step with what MCM is about to serialize as an index.
-	// Runs from the dropdown getters (UI refresh / save), only touching disk when a selection changed.
-	private void PersistSelectionIfChanged()
+	private static void SetModelNameForPreset(string value, ref string name, ref Dropdown<string> dropdown, ref List<string> options)
 	{
-		string key = ReadSelectedModelOption(_mainApiModelDropdown) + "|" + ReadSelectedModelOption(_auxiliaryApiModelDropdown) + "|" + ReadSelectedModelOption(_actionPostprocessApiModelDropdown) + "|" + ReadSelectedModelOption(_eventAndRebellionApiModelDropdown);
-		if (string.Equals(key, _lastPersistedSelectionKey, StringComparison.Ordinal))
-		{
-			return;
-		}
-		_lastPersistedSelectionKey = key;
-		PersistModelDropdownCacheSnapshot();
+		name = value ?? "";
+		if (dropdown == null || dropdown.Count == 0) return;
+		string selected = IsManualModelOption(ReadSelectedModelOption(dropdown)) ? ManualDropdownModelName : NormalizeModelOption(name);
+		if (selected.Length == 0) selected = ManualDropdownModelName;
+		dropdown = BuildDropdownFromOptions(options, selected, "", false, out options, out _);
 	}
+
+	// The real MCM JSON converter mutates and returns the getter's existing object.
+	// Its nonzero index is not stable across catalog changes: the text name wins.
+	// Index zero is the stable manual sentinel. A separate object carries its own name.
+	private static Dropdown<string> ResolveLoadedModelDropdown(Dropdown<string> incoming, Dropdown<string> live, string storedName)
+	{
+		if (incoming == null || incoming.Count == 0 || !ReferenceEquals(incoming, live)) return incoming;
+		string selected = incoming.SelectedIndex == 0 ? ManualDropdownModelName : NormalizeModelOption(storedName);
+		if (selected.Length == 0) selected = ManualDropdownModelName;
+		return BuildDropdownFromOptions(ReadDropdownValues(incoming), selected, "", false, out _, out _);
+	}
+
+	private string _mainApiModelName = "gpt-4o-mini";
+	private string _auxiliaryApiModelName = "gpt-4o-mini";
+	private string _actionPostprocessApiModelName = "";
+	private string _eventAndRebellionApiModelName = "";
+	private string _townAmbientAiModelName = "gpt-4o-mini";
 
 	private static string BuildModelListApiUrl(string rawApiUrl)
 	{
