@@ -176,4 +176,46 @@
   <string id="AF_UI_Weekly_Bulletin_FooterHint" text="Click a person or settlement name to open the encyclopedia" />
   <string id="AF_UI_Weekly_Bulletin_Close" text="Archive bulletin" />
   <string id="AF_UI_Weekly_Bulletin_EmptyBody" text="This bulletin has no body text." />
+  <string id="AF_UI_Timeline_Rumors" text="Rumors" />
+  <string id="AF_UI_Timeline_SubtitlePrefix" text="Diplomacy, policies, and weekly reports are ordered from oldest to newest; latest entries are at the bottom. Filter by category and country. Showing the latest " />
+  <string id="AF_UI_Timeline_Empty" text="No diplomacy, policy, or weekly-report messages are available." />
+  <string id="AF_UI_Common_Close" text="Close" />
+  <string id="AF_UI_Timeline_PolicyRecord" text="Policy record" />
+  <string id="AF_UI_Timeline_PolicyImpact" text="Policy effects" />
+  <string id="AF_UI_Timeline_WeeklyArchive" text="Bulletin and weekly-report archive" />
+  <string id="AF_UI_Timeline_UnknownCountry" text="Unknown kingdom" />
+  <string id="AF_UI_Timeline_WeeklyEmpty" text="(This weekly report has no body text.)" />
+  <string id="AF_UI_Timeline_WeeklyTags" text="Weekly-report tags" />
+  <string id="AF_UI_Timeline_DiplomaticDocument" text="Diplomatic document" />
+  <string id="AF_UI_Timeline_DiplomaticArchived" text="(This diplomatic message has been filed in the diplomatic chronicle.)" />
+  <string id="AF_UI_Timeline_DiplomaticImpact" text="Diplomatic result and impact" />
+  <string id="AF_UI_Timeline_KingdomPolicy" text="Kingdom policy" />
+  <string id="AF_UI_Timeline_LocalPolicy" text="Local policy" />
+  <string id="AF_UI_Timeline_VassalPolicy" text="Vassal policy" />
+  <string id="AF_UI_Timeline_Policy" text="Policy" />
+  <string id="AF_UI_Timeline_DiplomaticResponse" text="Diplomatic response" />
+  <string id="AF_UI_Timeline_DiplomaticNote" text="Diplomatic note" />
+  <string id="AF_UI_Timeline_DiplomaticResult" text="Diplomatic result" />
+  <string id="AF_UI_Timeline_DiplomaticMessage" text="Diplomatic message" />
+  <string id="AF_UI_Timeline_DayPrefix" text="Day " />
+  <string id="AF_UI_Timeline_UnknownDate" text="Unknown date" />
+  <string id="AF_UI_Timeline_NoRumors" text="No rumors." />
+  <string id="AF_UI_Timeline_GenerateWeekly" text="Generate full weekly report" />
+  <string id="AF_UI_Timeline_Pause" text="Pause game" />
+  <string id="AF_UI_Timeline_All" text="All" />
+  <string id="AF_UI_Timeline_Diplomacy" text="Diplomacy" />
+  <string id="AF_UI_Timeline_Weekly" text="Bulletin / weekly report" />
+  <string id="AF_UI_Timeline_ResumeTriple" text="Resume game (3x)" />
+  <string id="AF_UI_Timeline_TimeLocked" text="Time is locked and cannot be changed" />
+  <string id="AF_UI_Timeline_AllCountries" text="All kingdoms" />
+  <string id="AF_UI_Timeline_GeneratingWeekly" text="Generating full weekly report..." />
+  <string id="AF_UI_Timeline_AllMessages" text="All messages" />
+  <string id="AF_UI_Timeline_New" text="New" />
+  <string id="AF_UI_Timeline_Details" text="Details" />
+  <string id="AF_UI_Timeline_Subtitle" text="Diplomacy, policies, and weekly reports are ordered from oldest to newest; latest entries are at the bottom. Filter by category and country. Showing the latest {COUNT} available records." />
+  <string id="AF_UI_Timeline_DefaultSubtitle" text="Diplomacy, policies, and weekly reports are ordered from oldest to newest; latest entries are at the bottom." />
+  <string id="AF_UI_Timeline_WeeklyTitle" text="{NAME} weekly report" />
+  <string id="AF_UI_Timeline_BodyTitle" text="{KIND} body" />
+  <string id="AF_UI_Timeline_Day" text="Day {DAY}" />
+  <string id="AF_UI_Timeline_MultiCountry" text="{NAME} and {COUNT} more" />
 </strings>
