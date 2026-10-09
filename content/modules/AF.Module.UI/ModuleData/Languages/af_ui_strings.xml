@@ -69,4 +69,22 @@
   <string id="AF_MCM_TownAmbient_Budget_Hint" text="Estimated input plus output limit for ambient AI during this session. Local text is used after the limit; 0 forbids calls." />
   <string id="AF_MCM_TownAmbient_Usage" text="Show ambient AI usage notices" />
   <string id="AF_MCM_TownAmbient_Usage_Hint" text="After each ambient AI reply, show estimated input/output tokens and the session total. Keeping this enabled is recommended." />
+  <string id="AF_MCM_Main_DisplayName" text="AnimusForge Settings" />
+  <string id="AF_MCM_Support_Group" text="0. Support" />
+  <string id="AF_MCM_Support_Button" text="Support the AnimusForge team" />
+  <string id="AF_MCM_Support_Content" text="Open Afdian" />
+  <string id="AF_MCM_MainApi_Group" text="1. AI core configuration/1. Main API (response generation)" />
+  <string id="AF_MCM_MainApi_Url" text="API address (Base URL supported)" />
+  <string id="AF_MCM_MainApi_Key" text="API key" />
+  <string id="AF_MCM_MainApi_Model" text="Model name" />
+  <string id="AF_MCM_MainApi_Fetch" text="Fetch model list" />
+  <string id="AF_MCM_MainApi_FetchContent" text="Fetch" />
+  <string id="AF_MCM_MainApi_Dropdown" text="Model name (dropdown)" />
+  <string id="AF_MCM_MainApi_Test" text="Test API connection" />
+  <string id="AF_MCM_MainApi_TestContent" text="Test" />
+  <string id="AF_MCM_MainApi_Thinking" text="Enable reasoning" />
+  <string id="AF_MCM_MainApi_Reasoning" text="Reasoning strength" />
+  <string id="AF_MCM_MainApi_Temperature" text="Temperature" />
+  <string id="AF_MCM_MainApi_MaxTokens" text="Maximum output tokens" />
+  <string id="AF_MCM_MainApi_Streaming" text="Enable streaming" />
 </strings>
