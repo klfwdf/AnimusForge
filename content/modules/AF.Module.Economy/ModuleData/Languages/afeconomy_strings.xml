@@ -64,5 +64,36 @@
     <string id="AF_ECO_UI_DebtDueToday" text="repayment deadline: due today ({DATE})" />
     <string id="AF_ECO_UI_DebtOverdue" text="repayment deadline: {DAYS} day(s) overdue (due {DATE})" />
     <string id="AF_ECO_UI_DebtNoDeadline" text="no deadline" />
+    <string id="AF_ECO_UI_RpForgeConfirmInput" text="Validating input and preparing safe templates... (Esc to cancel)" />
+    <string id="AF_ECO_UI_RpForgePreparingCandidates" text="Preparing the top 50 safe templates... (Esc to cancel)" />
+    <string id="AF_ECO_UI_RpForgeOutcomeGood" text="Good" />
+    <string id="AF_ECO_UI_RpForgeOutcomeNormal" text="Normal" />
+    <string id="AF_ECO_UI_RpForgeOutcomeBad" text="Degraded" />
+    <string id="AF_ECO_UI_RpForgeOutcomeJunk" text="Junk item" />
+    <string id="AF_ECO_UI_RpForgeOutcomeSuccess" text="Success" />
+    <string id="AF_ECO_UI_RpForgeLabelItemName" text="Item name" />
+    <string id="AF_ECO_UI_RpForgeLabelMatchingTemplate" text="Matching template" />
+    <string id="AF_ECO_UI_RpForgeLabelTemplateType" text="Template type" />
+    <string id="AF_ECO_UI_RpForgeLabelBasePrice" text="Base price" />
+    <string id="AF_ECO_UI_RpForgeLabelInvestment" text="Investment" />
+    <string id="AF_ECO_UI_RpForgeLabelCraftedValue" text="Crafted value" />
+    <string id="AF_ECO_UI_RpForgeConfirmationLine" text="{LABEL}: {VALUE}" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPrice" text="{LABEL}: {AMOUNT} denars" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPlayerChoice" text="Template selection: player choice ({COUNT} candidates)" />
+    <string id="AF_ECO_UI_RpForgeConfirmationExactMatch" text="Template selection: exact game-data match" />
+    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="Craft success chance: 100%\nResult: the item will be crafted successfully." />
+    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="Craft success chance: {CHANCE}\nOn a miss: a junk item (the investment is still consumed)." />
+    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="\n\nConfirm crafting?" />
+    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="\n\nWarning: degradation is more likely than 33.33%; consider raising smithing from {CURRENT} to {RECOMMENDED} (one level per {PRICE} denars of template value)." />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectRetained" text="{OUTCOME} {PROBABILITY}: positive attributes retained {RETAINED}; weight +{WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectBonus" text="{OUTCOME} {PROBABILITY}: each positive attribute +{VALUE}; weight -{WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectStable" text="{OUTCOME} {PROBABILITY}: positive attributes and weight unchanged" />
+    <string id="AF_ECO_UI_RpForgeCompleted" text="Crafted: {NAME}\nOutcome: {OUTCOME}\nItem value: {VALUE} denars\nCrafting stamina: -{STAMINA}; base crafting XP: +{EXPERIENCE}{ATTRIBUTES}" />
+    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="\nBase crafting XP notification was interrupted by another mod; the item and costs were still settled to prevent duplicate rewards." />
+    <string id="AF_ECO_UI_PartyTransferVolunteerReceived" text="Recruited {AMOUNT} {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferTroopReceived" text="Received {AMOUNT} {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="Received prisoner {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferPrisonerReceived" text="Received {AMOUNT} {NAME} prisoners" />
+    <string id="AF_ECO_UI_PartyTransferBatchSummary" text="Party and prisoner transfer: attempted {ATTEMPTED}, succeeded {SUCCEEDED}, failed or partial {FAILED}; transferred {UNITS} units; estimated value {VALUE} denars." />
   </strings>
 </base>

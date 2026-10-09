@@ -189,4 +189,92 @@ internal static class EconomyUiTexts
 
 	public static string DebtNoDeadline
 		=> Text("AF_ECO_UI_DebtNoDeadline", "no deadline");
+
+	public static string PlayerRpForgeConfirmInput
+		=> Text("AF_ECO_UI_RpForgeConfirmInput", "Validating input and preparing safe templates... (Esc to cancel)");
+
+	public static string PlayerRpForgePreparingCandidates
+		=> Text("AF_ECO_UI_RpForgePreparingCandidates", "Preparing the top 50 safe templates... (Esc to cancel)");
+
+	public static string PlayerRpOutcomeLabel(string outcome)
+	{
+		string normalized = (outcome ?? string.Empty).Trim().ToLowerInvariant();
+		return normalized switch
+		{
+			"good" => Text("AF_ECO_UI_RpForgeOutcomeGood", "Good"),
+			"normal" => Text("AF_ECO_UI_RpForgeOutcomeNormal", "Normal"),
+			"bad" => Text("AF_ECO_UI_RpForgeOutcomeBad", "Degraded"),
+			"junk" => Text("AF_ECO_UI_RpForgeOutcomeJunk", "Junk item"),
+			_ => Text("AF_ECO_UI_RpForgeOutcomeSuccess", "Success")
+		};
+	}
+
+	public static string PlayerRpConfirmationLine(string label, string value)
+		=> Text("AF_ECO_UI_RpForgeConfirmationLine", "{LABEL}: {VALUE}", ("LABEL", label), ("VALUE", value));
+
+	public static string PlayerRpLabelItemName => Text("AF_ECO_UI_RpForgeLabelItemName", "Item name");
+
+	public static string PlayerRpLabelMatchingTemplate => Text("AF_ECO_UI_RpForgeLabelMatchingTemplate", "Matching template");
+
+	public static string PlayerRpLabelTemplateType => Text("AF_ECO_UI_RpForgeLabelTemplateType", "Template type");
+
+	public static string PlayerRpLabelBasePrice => Text("AF_ECO_UI_RpForgeLabelBasePrice", "Base price");
+
+	public static string PlayerRpLabelInvestment => Text("AF_ECO_UI_RpForgeLabelInvestment", "Investment");
+
+	public static string PlayerRpLabelCraftedValue => Text("AF_ECO_UI_RpForgeLabelCraftedValue", "Crafted value");
+
+	public static string PlayerRpConfirmationPriceLine(string label, object amount)
+		=> Text("AF_ECO_UI_RpForgeConfirmationPrice", "{LABEL}: {AMOUNT} denars", ("LABEL", label), ("AMOUNT", amount));
+
+	public static string PlayerRpConfirmationPlayerChoice(object count)
+		=> Text("AF_ECO_UI_RpForgeConfirmationPlayerChoice", "Template selection: player choice ({COUNT} candidates)", ("COUNT", count));
+
+	public static string PlayerRpConfirmationExactMatch
+		=> Text("AF_ECO_UI_RpForgeConfirmationExactMatch", "Template selection: exact game-data match");
+
+	public static string PlayerRpConfirmationGuaranteed
+		=> Text("AF_ECO_UI_RpForgeConfirmationGuaranteed", "Craft success chance: 100%\nResult: the item will be crafted successfully.");
+
+	public static string PlayerRpConfirmationChance(string chance)
+		=> Text("AF_ECO_UI_RpForgeConfirmationChance", "Craft success chance: {CHANCE}\nOn a miss: a junk item (the investment is still consumed).", ("CHANCE", chance));
+
+	public static string PlayerRpConfirmationQuestion
+		=> Text("AF_ECO_UI_RpForgeConfirmationQuestion", "\n\nConfirm crafting?");
+
+	public static string PlayerRpEquipmentWarning(object currentSmithing, object recommendedSmithing, object pricePerLevel)
+		=> Text("AF_ECO_UI_RpForgeEquipmentWarning", "\n\nWarning: degradation is more likely than 33.33%; consider raising smithing from {CURRENT} to {RECOMMENDED} (one level per {PRICE} denars of template value).",
+			("CURRENT", currentSmithing), ("RECOMMENDED", recommendedSmithing), ("PRICE", pricePerLevel));
+
+	public static string PlayerRpEquipmentEffectRetained(string outcome, string probability, string retained, string weightIncrease)
+		=> Text("AF_ECO_UI_RpForgeEquipmentEffectRetained", "{OUTCOME} {PROBABILITY}: positive attributes retained {RETAINED}; weight +{WEIGHT}",
+			("OUTCOME", outcome), ("PROBABILITY", probability), ("RETAINED", retained), ("WEIGHT", weightIncrease));
+
+	public static string PlayerRpEquipmentEffectBonus(string outcome, string probability, object bonus, string weightReduction)
+		=> Text("AF_ECO_UI_RpForgeEquipmentEffectBonus", "{OUTCOME} {PROBABILITY}: each positive attribute +{VALUE}; weight -{WEIGHT}",
+			("OUTCOME", outcome), ("PROBABILITY", probability), ("VALUE", bonus), ("WEIGHT", weightReduction));
+
+	public static string PlayerRpEquipmentEffectStable(string outcome, string probability)
+		=> Text("AF_ECO_UI_RpForgeEquipmentEffectStable", "{OUTCOME} {PROBABILITY}: positive attributes and weight unchanged", ("OUTCOME", outcome), ("PROBABILITY", probability));
+
+	public static string PlayerRpCraftCompleted(string name, string outcome, object value, object stamina, object experience, string attributes)
+		=> Text("AF_ECO_UI_RpForgeCompleted", "Crafted: {NAME}\nOutcome: {OUTCOME}\nItem value: {VALUE} denars\nCrafting stamina: -{STAMINA}; base crafting XP: +{EXPERIENCE}{ATTRIBUTES}",
+			("NAME", name), ("OUTCOME", outcome), ("VALUE", value), ("STAMINA", stamina), ("EXPERIENCE", experience), ("ATTRIBUTES", attributes));
+
+	public static string PlayerRpCraftXpInterrupted
+		=> Text("AF_ECO_UI_RpForgeXpInterrupted", "\nBase crafting XP notification was interrupted by another mod; the item and costs were still settled to prevent duplicate rewards.");
+
+	public static string PartyTransferTroopReceived(object amount, string name, bool volunteer)
+		=> volunteer
+			? Text("AF_ECO_UI_PartyTransferVolunteerReceived", "Recruited {AMOUNT} {NAME}", ("AMOUNT", amount), ("NAME", name))
+			: Text("AF_ECO_UI_PartyTransferTroopReceived", "Received {AMOUNT} {NAME}", ("AMOUNT", amount), ("NAME", name));
+
+	public static string PartyTransferPrisonerReceived(object amount, string name, bool hero)
+		=> hero
+			? Text("AF_ECO_UI_PartyTransferHeroPrisonerReceived", "Received prisoner {NAME}", ("NAME", name))
+			: Text("AF_ECO_UI_PartyTransferPrisonerReceived", "Received {AMOUNT} {NAME} prisoners", ("AMOUNT", amount), ("NAME", name));
+
+	public static string PartyTransferBatchSummary(object attempted, object succeeded, object failed, object units, object value)
+		=> Text("AF_ECO_UI_PartyTransferBatchSummary", "Party and prisoner transfer: attempted {ATTEMPTED}, succeeded {SUCCEEDED}, failed or partial {FAILED}; transferred {UNITS} units; estimated value {VALUE} denars.",
+			("ATTEMPTED", attempted), ("SUCCEEDED", succeeded), ("FAILED", failed), ("UNITS", units), ("VALUE", value));
 }
