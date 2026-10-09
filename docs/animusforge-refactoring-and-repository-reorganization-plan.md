@@ -9063,6 +9063,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Protocol.cs`: `TryParseTag/CLEAR_HIDEOUT:42`；
 `src/AF.GameAdapter.Bannerlord/Patches/WorldMap/WorldMapNpcHideoutCompletionPatch.cs`: `EnsurePatched:14`、`BeforeFinalizePrefix:32`。
 
+### 发布前上游增量整合
+
+发布前 main 更新到 `819726f573b2d4dd70acf4edc7d293a53fcf3760`（人设开场/ONNX 异步初始化修复，非旧人设拒答分支）。保留完整上游提交及双方父历史，整合提交 `55f6da6c8723d1c23d02bfd5d83ea3875781a7ad`；仅 HANDOFF/台账新增段落发生冲突，逐段保留双方内容。WorldMap 产品源码、规则、专项测试与 `60491286d8ba0c1540ddaeeee8cd1dcf1500db40` 完全一致。整合后的原 Debug 双 API + Bootstrap、双 Coup 门禁和两实际候选各 14 项探针全部复验通过；原上游人设 callback/controller 回放 39、完整 engine 异步回放 18 项通过（UI/Campaign/model 边界仍为替身，不是实机）。最终候选/hash 以本地更新收据为准；没有强推或覆盖上游改动。
+
 ### 最小人工验收
 
 1. 用有兵的 NPC 独立部队，或主队中的可分兵 NPC，对一个已发现且未被任务占用的普通藏身处说“带兵清剿这个藏身处”；分别复测自由对话、场景喊话与信使（送达后才执行）。确认 RAW/FINAL 新标签、实际分兵/行军、战斗和最终通知，不把口头答应当胜利。

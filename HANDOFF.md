@@ -2,6 +2,7 @@
 
 - 用户要求实现并直接发布 main；基于 main `4ed61998`，产品 `60491286`。增加 CLEAR_HIDEOUT，沿既有队列建立原版后台战斗；只对自有 NPC 事件隔离玩家完成回调，保护任务占用目标、STOP 与读档归属。未部署游戏。
 - Debug 1.3/1.4 + Bootstrap 与双最终 DLL 原 Coup 门禁通过；29 项策略/路由、两实际候选各 14 项标签/Harmony 探针通过。完整战役/LLM/存读档实测未跑；既有 chunk-contract 内战绑定和旧 J12 缺源路径失败保留。
+- 发布前保留合入 main `819726f5` 的开场卡顿修复，双父整合 `55f6da6c`；WorldMap 源码未变，整合候选双构建/门禁及两版专项探针复验通过，上游 39+18 回放通过。
 - [唯一主台账：行为、源码坐标、离线证据、旧失败与人工步骤](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-hideout-clear-20261009)。本地收据 `artifacts/npc-hideout-clear-20261009/`；GitHub 状态以远端 ref 复核收据为准，不能用本地提交代替成功推送。
 
 # 当前交接：新档玩家背景/外貌确认阻塞风险（2026-10-09，OFFLINE_VERIFIED）
