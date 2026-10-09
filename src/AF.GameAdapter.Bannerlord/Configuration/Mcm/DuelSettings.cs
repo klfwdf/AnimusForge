@@ -1319,44 +1319,44 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return EventAndRebellionApiMaxTokens;
 	}
 
-	[SettingPropertyBool("【开发者】开启全代码截获", Order = 0, RequireRestart = false, HintText = "⚠\ufe0f 极其硬核的调试功能！\n开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。\n日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Trace}Enable full-code interception", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Dev_Trace_Hint}⚠️ Advanced debugging feature!\nWhen enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace).\nProduces a very large log and is intended for developers only.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableDeepTrace { get; set; } = false;
 
-	[SettingPropertyBool("【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）", Order = 1, RequireRestart = false, HintText = "开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、个性背景等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Data}Enable data management (history/debt/persona/player history)", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Dev_Data_Hint}Adds a Developer data-management entry to the town menu for NPC histories, debts, and persona data; the character screen also exposes player history editing.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableDevEditHistory { get; set; } = false;
 
-	[SettingPropertyBool("新成年人物自动生成个性与背景", Order = 2, RequireRestart = false, HintText = "开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_AdultPersona}Generate persona and background for new adults", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Dev_AdultPersona_Hint}When enabled, the preprocessing API generates persona and history for hero children when they become adults. Existing persona or background is never overwritten.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_ModLogic}Write Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Dev_ModLogic_Hint}Master logic-log switch. When disabled, Mod_Logic.txt is no longer written.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableModLogicLog { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入详细调试日志", Order = 5, RequireRestart = false, HintText = "只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Verbose}Write verbose debug log", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Dev_Verbose_Hint}Enable only while investigating an issue. Writes detailed Mod_Logic diagnostics and may produce many lines in large campaigns.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableVerboseModLogicLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Observability.jsonl", Order = 6, RequireRestart = false, HintText = "结构化观测日志开关。关闭后不再写入 Observability.jsonl。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Observability}Write Observability.jsonl", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Dev_Observability_Hint}Structured observability-log switch. When disabled, Observability.jsonl is no longer written.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableObservabilityLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 HitRate_Stats.txt", Order = 7, RequireRestart = false, HintText = "命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_HitRate}Write HitRate_Stats.txt", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Dev_HitRate_Hint}Hit-rate statistics log switch. When disabled, HitRate_Stats.txt is no longer written.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableHitRateStatsLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 8, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Token}Write Token_Stats.txt", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Dev_Token_Hint}Token statistics log switch. When disabled, Token_Stats.txt is no longer written.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableTokenStatsLog { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 9, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Event}Write Event_Logs.txt", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Dev_Event_Hint}Event-system weekly-report log switch. When disabled, Event_Logs.txt is no longer written.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableEventLogs { get; set; } = true;
 
-	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 10, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每3天。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyDropdown("{=AF_MCM_Dev_Cleanup}Schedule cleanup of all logs", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Dev_Cleanup_Hint}Periodically clears current log files under AnimusForge/Logs by real time. Files and the UTF-8 BOM are retained. Default: every 3 days.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public Dropdown<string> LogCleanupIntervalDropdown
 	{
 		get
@@ -1370,20 +1370,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后每30秒向 Mod_Logic.txt 写入 FPS、慢帧和帧总耗时。只有同时开启详细调试日志时才采集各 Tick/Scope 耗时；普通游玩不承担逐 Scope 统计成本。默认关闭。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Performance}Enable performance monitoring", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Dev_Performance_Hint}Every 30 seconds writes FPS, slow frames, and total frame time to Mod_Logic.txt. Tick/Scope timings are collected only with verbose logs enabled. Off by default.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnablePerformanceMonitor { get; set; } = false;
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按单帧预算分批执行。维护会在每个大地图 Tick 推进，不因行军暂停。默认开启。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_Deferred}Defer daily maintenance", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Dev_Deferred_Hint}Daily settlement registers maintenance jobs; memory overview, kingdom maintenance, and weekly-report preparation run later in bounded per-frame batches. Advances on campaign-map ticks and is not paused by travel. Enabled by default.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，只有存在待办才按每帧预算推进；不会因玩家行军暂停。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyInteger("{=AF_MCM_Dev_Budget}Daily maintenance frame budget (ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Dev_Budget_Hint}When deferred maintenance is enabled, work advances within this per-frame budget only when jobs are pending. Higher values finish faster but can create frame spikes. Default: 3.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
-	[SettingPropertyBool("【诊断】AI聊天卡死时生成线程 Dump", Order = 14, RequireRestart = false, HintText = "仅在 AnimusForge 自由对话的 AI 模式或场景喊话正在处理时，主线程连续 5 秒无心跳才生成紧凑线程 dump。普通对话、非 AI 游玩和原版保存期间自动停用。默认开启。")]
-	[SettingPropertyGroup("4. 开发者选项")]
+	[SettingPropertyBool("{=AF_MCM_Dev_FreezeDump}Create thread dump when AI chat freezes", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Dev_FreezeDump_Hint}Only while AF free-conversation AI mode or scene shout is processing, creates a compact thread dump after five seconds without a main-thread heartbeat. Disabled for ordinary chat, non-AI play, and native saving. Enabled by default.")]
+	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableFreezeDumpCapture { get; set; } = true;
 
 	public string GetLogCleanupIntervalSelection()
