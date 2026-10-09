@@ -186,7 +186,7 @@ public sealed class AnimusForgeTerminalPopup
 		if (_dataSource != null && _dataSource.HasUnsavedChanges)
 		{
 			if (!TerminalSettingsRegistry.SaveSettings())
-				InformationManager.DisplayMessage(new InformationMessage("终端设置未能保存，请检查 MCM 或日志后重试。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_SaveFailed}Terminal settings could not be saved. Check MCM or the log and retry.").ToString(), Colors.Red));
 		}
 		try
 		{
@@ -257,8 +257,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private Action _returnToView;
 
 	// 内嵌模块：AI 错误诊断
-	private string _diagnosticsStatusText = "捕获哨兵状态: 正常在线";
-	private string _diagnosticsDetailText = "暂无待分析的最近异常。";
+	private string _diagnosticsStatusText = new TextObject("{=AF_UI_Terminal_DiagnosticsOnline}Sentinel status: online").ToString();
+	private string _diagnosticsDetailText = new TextObject("{=AF_UI_Terminal_DiagnosticsEmpty}No recent exception is waiting for analysis.").ToString();
 	private bool _hasLatestErrorToAnalyze;
 
 	[DataSourceProperty]
@@ -302,7 +302,17 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	[DataSourceProperty]
 	public float MenuContentTop => IsTagCatalogBrowser ? 98f : (IsSearchVisible ? 50f : 6f);
 	[DataSourceProperty]
-	public string TagCatalogStatusText => _tagCatalogSnapshot == null ? "" : $"索引：{_tagCatalogSnapshot.Entries.Count} 项 · {_tagCatalogSnapshot.BuiltUtc.ToLocalTime():HH:mm:ss} 更新；可搜索参数/来源";
+	public string TagCatalogStatusText
+	{
+		get
+		{
+			if (_tagCatalogSnapshot == null) return "";
+			var text = new TextObject("{=AF_UI_Terminal_IndexStatus}Index: {COUNT} entries · updated {TIME}; parameters and sources are searchable");
+			text.SetTextVariable("COUNT", _tagCatalogSnapshot.Entries.Count.ToString());
+			text.SetTextVariable("TIME", _tagCatalogSnapshot.BuiltUtc.ToLocalTime().ToString("HH:mm:ss"));
+			return text.ToString();
+		}
+	}
 
 	[DataSourceProperty]
 	public bool IsDetailsVisible => _currentViewMode == TerminalViewMode.Details;
@@ -343,7 +353,16 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public bool IsSearchEmpty => string.IsNullOrWhiteSpace(_searchText);
 
 	[DataSourceProperty]
-	public string MenuPageText => $"{_menuPage + 1}/{Math.Max(1, (_filteredCount + MenuPageSize - 1) / MenuPageSize)} 页 · {_filteredCount} 项";
+	public string MenuPageText
+	{
+		get
+		{
+			var text = new TextObject("{=AF_UI_Terminal_Page}Page {PAGE} · {COUNT} items");
+			text.SetTextVariable("PAGE", $"{_menuPage + 1}/{Math.Max(1, (_filteredCount + MenuPageSize - 1) / MenuPageSize)}");
+			text.SetTextVariable("COUNT", _filteredCount.ToString());
+			return text.ToString();
+		}
+	}
 	[DataSourceProperty]
 	public bool HasPreviousMenuPage => _menuPage > 0;
 	[DataSourceProperty]
@@ -482,7 +501,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 		_activeListeningItem = item;
 		item.IsListeningKey = true;
-		item.DisplayValue = "请按任意键 (ESC取消)...";
+		item.DisplayValue = new TextObject("{=AF_UI_Terminal_AnyKey}Press any key (ESC cancels)...").ToString();
 		item.OnPropertyChanged(nameof(item.DisplayValue));
 	}
 
@@ -493,7 +512,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			_activeListeningItem.IsListeningKey = false;
 			DuelSettings s = DuelSettings.GetSettings();
 			string orig = s != null ? _activeListeningItem.SettingDef?.Getter(s)?.ToString() ?? "" : "";
-			_activeListeningItem.DisplayValue = string.IsNullOrWhiteSpace(orig) ? "未设置" : orig.ToUpperInvariant();
+			_activeListeningItem.DisplayValue = string.IsNullOrWhiteSpace(orig) ? new TextObject("{=AF_UI_Terminal_Unset}Not set").ToString() : orig.ToUpperInvariant();
 			_activeListeningItem.OnPropertyChanged(nameof(_activeListeningItem.DisplayValue));
 			_activeListeningItem = null;
 		}
@@ -631,11 +650,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			_hasUnsavedChanges = false;
 			OnPropertyChanged(nameof(HasUnsavedChanges));
-			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 终端设置已成功保存！", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_Saved}AnimusForge terminal settings saved.").ToString(), Colors.Green));
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("保存设置失败，请查看日志。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_SaveError}Settings could not be saved. Check the log.").ToString(), Colors.Red));
 		}
 	}
 
@@ -1219,10 +1238,10 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		Id = node?.Id ?? "";
 		Title = node?.Title ?? "";
 		CodeName = "";
-		HintText = string.IsNullOrWhiteSpace(node?.Hint) ? "无附加说明。" : node.Hint;
+		HintText = string.IsNullOrWhiteSpace(node?.Hint) ? new TextObject("{=AF_UI_Terminal_NoHint}No additional description.").ToString() : node.Hint;
 		IconText = string.IsNullOrWhiteSpace(node?.Icon) ? "❖" : node.Icon;
-		BadgeText = node?.IsBranch == true ? "子面板" : "动作";
-		ButtonText = node?.IsBranch == true ? "进入 ➔" : node?.OnExecute != null ? "查看" : "执行 ⚡";
+		BadgeText = node?.IsBranch == true ? new TextObject("{=AF_UI_Terminal_Branch}Panel").ToString() : new TextObject("{=AF_UI_Terminal_Action}Action").ToString();
+		ButtonText = node?.IsBranch == true ? new TextObject("{=AF_UI_Terminal_Enter}Enter ➔").ToString() : node?.OnExecute != null ? new TextObject("{=AF_UI_Terminal_View}View").ToString() : new TextObject("{=AF_UI_Terminal_Execute}Execute ⚡").ToString();
 		_image = node?.ImageFactory?.Invoke();
 	}
 
@@ -1234,7 +1253,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		Id = def?.Id ?? "";
 		Title = def?.DisplayName ?? "";
 		CodeName = def?.Id ?? "";
-		HintText = string.IsNullOrWhiteSpace(def?.HintText) ? "按需调节该机制项的运行参数或开关。" : def.HintText;
+		HintText = string.IsNullOrWhiteSpace(def?.HintText) ? new TextObject("{=AF_UI_Terminal_SettingHint}Adjust this mechanism setting or switch as needed.").ToString() : def.HintText;
 		IconText = "⚙";
 
 		DuelSettings settings = DuelSettings.GetSettings();
@@ -1248,22 +1267,22 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		{
 			case TerminalSettingType.Bool:
 				ItemKind = TerminalItemKind.BoolSetting;
-				BadgeText = "开关";
+				BadgeText = new TextObject("{=AF_UI_Terminal_Toggle}Toggle").ToString();
 				BoolValue = Convert.ToBoolean(def.Getter(settings));
-				BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
+				BoolStatusText = BoolValue ? new TextObject("{=AF_UI_Terminal_Enabled}✔ Enabled").ToString() : new TextObject("{=AF_UI_Terminal_Disabled}✕ Disabled").ToString();
 				break;
 
 			case TerminalSettingType.Integer:
 			case TerminalSettingType.FloatingInteger:
 				ItemKind = TerminalItemKind.NumericSetting;
-				BadgeText = "参数";
+				BadgeText = new TextObject("{=AF_UI_Terminal_Parameter}Parameter").ToString();
 				object numVal = def.Getter(settings);
 				DisplayValue = FormatNumeric(numVal, def.FormatString, def.Id);
 				break;
 
 			case TerminalSettingType.Dropdown:
 				ItemKind = TerminalItemKind.DropdownSetting;
-				BadgeText = "下拉";
+				BadgeText = new TextObject("{=AF_UI_Terminal_Dropdown}Dropdown").ToString();
 				DisplayValue = def.Getter(settings)?.ToString() ?? "";
 				var dropdown = def.DropdownGetter?.Invoke(settings);
 				if (dropdown != null && dropdown.Count > 0)
@@ -1279,22 +1298,22 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 			case TerminalSettingType.Hotkey:
 				ItemKind = TerminalItemKind.HotkeySetting;
-				BadgeText = "按键";
+				BadgeText = new TextObject("{=AF_UI_Terminal_Hotkey}Key").ToString();
 				string keyStr = def.Getter(settings)?.ToString() ?? "";
-				DisplayValue = string.IsNullOrWhiteSpace(keyStr) ? "未设置" : keyStr.ToUpperInvariant();
+				DisplayValue = string.IsNullOrWhiteSpace(keyStr) ? new TextObject("{=AF_UI_Terminal_Unset}Not set").ToString() : keyStr.ToUpperInvariant();
 				break;
 
 			case TerminalSettingType.Text:
 				ItemKind = TerminalItemKind.TextSetting;
-				BadgeText = "文本";
+				BadgeText = new TextObject("{=AF_UI_Terminal_Text}Text").ToString();
 				string raw = def.Getter(settings)?.ToString() ?? "";
 				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
 				break;
 
 			case TerminalSettingType.Button:
 				ItemKind = TerminalItemKind.ButtonSetting;
-				BadgeText = "执行";
-				ButtonText = "执行 ⚡";
+				BadgeText = new TextObject("{=AF_UI_Terminal_ExecuteBadge}Execute").ToString();
+				ButtonText = new TextObject("{=AF_UI_Terminal_Execute}Execute ⚡").ToString();
 				break;
 		}
 	}
