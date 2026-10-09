@@ -484,6 +484,11 @@
       "target": "ModuleData/Languages/CNs/gccz_town_manual_strings.xml"
     },
     {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/gccz_town_manual_strings.xml",
+      "target": "ModuleData/Languages/gccz_town_manual_strings.xml"
+    },
+    {
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/language_data.xml",
       "target": "ModuleData/Languages/CNs/language_data.xml"

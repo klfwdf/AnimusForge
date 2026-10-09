@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="gccz_town_manual_setting_name" text="Town Manual" />
+    <string id="gccz_town_manual_setting_content" text="Open Manual" />
+    <string id="gccz_town_manual_setting_hint" text="Open a paged manual describing GCCZ town operations." />
+    <string id="gccz_npc_response_unlimited_name" text="Unlimited NPC Responses" />
+    <string id="gccz_npc_response_unlimited_hint" text="Only affects GCCZ town scenes. Removes the 1-10 response cap while each NPC still responds once and remains subject to population, queue, and cleanup safeguards." />
+    <string id="gccz_npc_response_limit_name" text="NPC Response Limit" />
+    <string id="gccz_npc_response_limit_hint" text="Applies when unlimited NPC responses are disabled. Limits ambient NPC replies per player utterance, GCCZ semantic action, or player attack event in an active town scene. The direct conversation partner is not counted. Range: 1-10." />
+  </strings>
+</base>
