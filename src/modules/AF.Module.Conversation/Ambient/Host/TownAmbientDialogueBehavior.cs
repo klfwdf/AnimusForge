@@ -569,7 +569,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 					Logger.Log("TownAmbient", "ai_echo_fallback error=" + batch.Result.Error);
 					if (DuelSettings.ShouldShowTownAmbientAiUsage() && (batch.Result.InputTokens > 0 || batch.Result.OutputTokens > 0))
 					{
-						InformationManager.DisplayMessage(new InformationMessage(string.Format("[环境 AI] 本次请求虽未能生成接话，但已计入约 {0} 输入 + {1} 输出 Token。", batch.Result.InputTokens, batch.Result.OutputTokens), Color.FromUint(4294967040u)));
+						InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Ambient_AiReplyFailedUsage", "[Ambient AI] This request did not produce a reply, but used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", batch.Result.InputTokens), ("OUTPUT", batch.Result.OutputTokens)), Color.FromUint(4294967040u)));
 					}
 				}
 				continue;
@@ -595,8 +595,10 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			}
 			if (DuelSettings.ShouldShowTownAmbientAiUsage())
 			{
-				string source = batch.Result.FromCache ? "缓存（0 Token）" : string.Format("输入 {0} + 输出 {1} Token", batch.Result.InputTokens, batch.Result.OutputTokens);
-				InformationManager.DisplayMessage(new InformationMessage(string.Format("[环境 AI] {0}；本次启动累计约 {1} Token，已请求 {2} 次。", source, batch.Result.SessionEstimatedTokens, batch.Result.SessionRequests), Color.FromUint(4294967040u)));
+				string source = batch.Result.FromCache
+					? ConversationUiLocalization.Text("AF_CONV_UI_Ambient_CacheSource", "cache (0 tokens)")
+					: ConversationUiLocalization.Text("AF_CONV_UI_Ambient_TokenSource", "{INPUT} input + {OUTPUT} output tokens", ("INPUT", batch.Result.InputTokens), ("OUTPUT", batch.Result.OutputTokens));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Ambient_AiUsage", "[Ambient AI] {SOURCE}; about {TOTAL} tokens used this session across {REQUESTS} requests.", ("SOURCE", source), ("TOTAL", batch.Result.SessionEstimatedTokens), ("REQUESTS", batch.Result.SessionRequests)), Color.FromUint(4294967040u)));
 			}
 		}
 	}

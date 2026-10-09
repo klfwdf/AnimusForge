@@ -2731,7 +2731,7 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 				text = "T";
 				text2 = "Y";
 			}
-			AnimusForgeQuickInfo.Show("按住" + text + "键预览喊话范围，松开后说话；按住" + text2 + "键打开复杂交流");
+			AnimusForgeQuickInfo.Show(ConversationUiLocalization.Text("AF_CONV_UI_Shout_KeyHint", "Hold {KEY} to preview the shout range, then release to speak; hold {SPECIAL} to open advanced interaction.", ("KEY", text), ("SPECIAL", text2)));
 		}
 		catch
 		{
