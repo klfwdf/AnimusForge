@@ -127,12 +127,12 @@
                   <Children>
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="76" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ToggleEditMode" IsSelected="@IsEditMode" IsVisible="@CanToggleEdit">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="编辑" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@EditButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="76" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="84" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ToggleDeleteMode" IsSelected="@IsDeleteMode" IsVisible="@CanToggleDelete">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="删除" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@DeleteText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                   </Children>
@@ -179,7 +179,7 @@
                                         </ButtonWidget>
                                         <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="64" SuggestedHeight="22" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="92" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCancelEdit" IsVisible="@IsEditing">
                                           <Children>
-                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="取消" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@CancelEditText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                                           </Children>
                                         </ButtonWidget>
                                         <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="84" SuggestedHeight="22" HorizontalAlignment="Right" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteDelete" IsVisible="@IsDeleteVisible" IsSelected="@IsDeleteArmed">
@@ -204,23 +204,23 @@
                     </Widget>
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="294" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="LoadOlderPage" IsEnabled="@CanLoadOlderPage">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="更早记录" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@LoadOlderText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="540" SuggestedHeight="38" MarginLeft="116" MarginTop="294" HorizontalAlignment="Left" VerticalAlignment="Top" Text="@PageStatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#765639FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="666" MarginTop="294" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="LoadNewerPage" IsEnabled="@CanLoadNewerPage">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="更新记录" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@LoadNewerText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                   </Children>
                 </Widget>
                 <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="112" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1080" MarginTop="498" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="LatestHistory" IsEnabled="@CanInteract">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="回到最新" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@LatestText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                   </Children>
                 </ButtonWidget>
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="184" SuggestedHeight="38" MarginLeft="88" MarginTop="498" HorizontalAlignment="Left" VerticalAlignment="Top" Text="按日期查看" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#765639FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="184" SuggestedHeight="38" MarginLeft="88" MarginTop="498" HorizontalAlignment="Left" VerticalAlignment="Top" Text="@DateFilterText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#765639FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
               </Children>
             </Widget>
             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="610" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" DoNotAcceptEvents="true" IsVisible="@IsTrade">

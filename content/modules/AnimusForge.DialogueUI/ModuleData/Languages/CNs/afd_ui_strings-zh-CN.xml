@@ -2,6 +2,25 @@
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="AFD_MCM_DisplayName" text="AnimusForge - 对话界面" />
+    <string id="AFD_MCM_InterfaceStyle" text="界面风格" />
+    <string id="AFD_MCM_InterfaceStyle_Hint" text="原版使用原生对话；场景喊话保留暂停卷轴输入。新 UI 使用羊皮纸对话、地图对话以及历史/给予面板。默认使用新 UI，下次打开界面时生效，无需重启。" />
+    <string id="AFD_MCM_InterfaceGroup" text="1. 界面" />
+    <string id="AFD_MCM_Interface_Original" text="原版" />
+    <string id="AFD_MCM_Interface_New" text="新 UI" />
+    <string id="AFD_MCM_BodyFontSize" text="正文字号" />
+    <string id="AFD_MCM_BodyFontSize_Hint" text="新 UI 对话正文、选项、历史和输入文字的字号。默认 24。下次打开界面时生效；按钮、人物名和原版界面不受影响。" />
+    <string id="AFD_MCM_ShoutStyle" text="场景喊话面板风格" />
+    <string id="AFD_MCM_ShoutStyle_Hint" text="暂停卷轴复用底部卷轴输入、暂停游戏并隐藏受众名录，也作为兜底。卷轴将输入保留在底部并在右侧显示受众名录。侧边手札使用竖版对谈手札。后两种在和平场景使用持续多人会话；战斗中喊话键直接打开暂停输入。启用生图后，三种面板都提供手动生图按钮。" />
+    <string id="AFD_MCM_ShoutStyle_PausedScroll" text="暂停卷轴" />
+    <string id="AFD_MCM_ShoutStyle_Scroll" text="卷轴" />
+    <string id="AFD_MCM_ShoutStyle_SideFolio" text="侧边手札" />
+    <string id="AFD_MCM_AutoAi" text="自动进入 AI 模式" />
+    <string id="AFD_MCM_AutoAi_Hint" text="开启后，场景或地图对话会自动进入 AI 输入模式。可配合“仅 Hero 自动进入 AI 模式”限制对象。关闭后先显示普通对话选项，仍可手动选择 AI；下次打开对话时生效。" />
+    <string id="AFD_MCM_AutoAiHeroOnly" text="仅 Hero 自动进入 AI 模式" />
+    <string id="AFD_MCM_AutoAiHeroOnly_Hint" text="仅在自动 AI 模式开启时生效。开启后，只有 Hero（领主、同伴、要人及其他有独立身份的人物）自动进入 AI；普通劫匪、逃兵和士兵保持普通模式。关闭后恢复对所有对象自动切换，仍可手动切换。" />
+    <string id="AFD_MCM_HistoryDelete" text="在对话历史中显示删除按钮" />
+    <string id="AFD_MCM_HistoryDelete_Hint" text="在每条持久对话历史旁显示删除按钮。删除会移除可见记录及当天尚未压缩的记忆草稿；已经压缩进记忆块的内容不受影响。" />
     <string id="AFD_UI_Aux_AllDates" text="全部日期" />
     <string id="AFD_UI_Aux_CurrentTarget" text="当前对话对象" />
     <string id="AFD_UI_Aux_Day" text="第 {DAY} 日" />
