@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <base type="string">
   <tags><tag language="English" /></tags>
   <strings>
@@ -68,5 +67,119 @@
     <string id="AF_DIP_UI_Archive_Title" text="Kingdom announcements" />
     <string id="AF_DIP_UI_Archive_Empty" text="There are no kingdom announcements yet." />
     <string id="AF_DIP_UI_Archive_Day" text="Day {DAY}" />
+  <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="Edit current kingdom…" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="Export all kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="Import all kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="Restore all kingdom default profiles" />
+    <string id="AF_DIP_UI_Common_Back" text="Back" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescription" text="Independent kingdom profile data; it is not injected into AI diplomacy requests.&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCount" text="Profiles: " />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCountSuffix" text=" entries; player overrides: " />
+    <string id="AF_DIP_UI_KingdomProfile_CountSuffix" text=" entries.&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescriptionTail" text="A new kingdom’s LLM founding profile is saved as a fixed default; player edits take priority." />
+    <string id="AF_DIP_UI_KingdomProfile_Title" text="Kingdom strategy and personality" />
+    <string id="AF_DIP_UI_Common_Enter" text="Enter" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllFolderTitle" text="Export all kingdom strategy and personality - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAllFolderTitle" text="Import all kingdom strategy and personality - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_NoEditableKingdoms" text="There are no editable kingdoms." />
+    <string id="AF_DIP_UI_KingdomProfile_SelectTitle" text="Edit kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectDescription" text="Select a kingdom. Only kingdom names are shown; profiles for eliminated kingdoms are retained." />
+    <string id="AF_DIP_UI_Common_Edit" text="Edit" />
+    <string id="AF_DIP_UI_KingdomProfile_NotFound" text="The selected kingdom could not be found." />
+    <string id="AF_DIP_UI_KingdomProfile_InitFailed" text="The kingdom profile could not be initialized." />
+    <string id="AF_DIP_UI_KingdomProfile_EditPersonality" text="Edit kingdom personality" />
+    <string id="AF_DIP_UI_KingdomProfile_EditStrategy" text="Edit long-term strategy" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetOne" text="Restore this kingdom default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOne" text="Export this kingdom" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOne" text="Import this kingdom" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingRunning" text="LLM founding profile is being generated…" />
+    <string id="AF_DIP_UI_KingdomProfile_Regenerate" text="Regenerate this kingdom’s LLM founding default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_BackToList" text="Back to kingdom list" />
+    <string id="AF_DIP_UI_KingdomProfile_DetailTitlePrefix" text="Kingdom profile - " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneFolderTitle" text="Export single kingdom profile - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOneFolderTitle" text="Import single kingdom profile - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityTitlePrefix" text="Edit kingdom personality - " />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityDescription" text="Describe the kingdom’s decision style, values, responses to risk and humiliation, and non-negotiable boundaries. Saving creates a player override." />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityPrompt" text="Enter the kingdom personality; leaving it empty is allowed." />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityUpdated" text="Kingdom personality updated." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyTitlePrefix" text="Edit long-term strategy - " />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyDescription" text="Describe the kingdom’s long-term, stable, and sustainable direction. Saving creates a player override." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyPrompt" text="Enter the long-term strategy; leaving it empty is allowed." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyUpdated" text="Long-term strategy updated." />
+    <string id="AF_DIP_UI_KingdomProfile_ResetTitle" text="Restore kingdom default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionPrefix" text="This clears the player override for “" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionSuffix" text="”. The kingdom returns to its current default baseline (which may come from an authored preset, the initial bundle, or a locked-in LLM founding profile). Continue?" />
+    <string id="AF_DIP_UI_Common_RestoreDefault" text="Restore default" />
+    <string id="AF_DIP_UI_Common_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDonePrefix" text="Restored “" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDoneSuffix" text="” to its default kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllTitle" text="Restore all kingdom default profiles" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDescription" text="This clears player overrides for every kingdom, but does not delete authored or initial-bundle defaults, or a founding default already locked in by LLM for a new kingdom. Export a backup first. Continue?" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllButton" text="Restore all defaults" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDone" text="All kingdom default profiles restored." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateEliminated" text="The eliminated kingdom keeps its current profile; no LLM regeneration will be requested." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateUnavailable" text="This kingdom does not have a regenerable dynamic founding profile." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateRunning" text="This kingdom’s LLM founding profile is already being generated." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateQueued" text="Regeneration has been queued; when it finishes it will become this kingdom’s new default profile. Player overrides will not be replaced." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFailed" text="Export failed: " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllExists" text="This folder already contains a full kingdom profile export." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDone" text="Export complete: " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneExists" text="This folder already contains a single-kingdom export." />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteExport" text="Overwrite export" />
+    <string id="AF_DIP_UI_KingdomProfile_UseNewFolder" text="Use a new folder (automatic)" />
+    <string id="AF_DIP_UI_KingdomProfile_ExistingExportTitle" text="Existing export detected" />
+    <string id="AF_DIP_UI_Common_Select" text="Select" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFailed" text="Import failed: " />
+    <string id="AF_DIP_UI_KingdomProfile_NoSafeMatchesPrefix" text="No safely matching kingdom profiles; invalid or unmatched " />
+    <string id="AF_DIP_UI_KingdomProfile_ItemsSuffix" text=" entries." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDone" text="Import complete: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllTitle" text="Duplicates detected - kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionPrefix" text="Matching profiles: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionMiddle" text="; existing player overrides, bundle defaults, or LLM founding defaults: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSkipped" text="; invalid or unmatched: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSuffix" text=". Choosing “Skip” skips the entire kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneTitlePrefix" text="Duplicates detected - " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneDescription" text="This kingdom already has a player override, bundle default, or LLM founding default. Choosing “Skip” skips the entire kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteImport" text="Overwrite import" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNonDuplicates" text="Import non-duplicate information only" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerExportsUnavailable" text="PlayerExports path is unavailable: " />
+    <string id="AF_DIP_UI_KingdomProfile_ManualExportFolder" text="Enter a folder name manually…" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualImportPath" text="Enter a folder name/path manually…" />
+    <string id="AF_DIP_UI_KingdomProfile_UseLatestExport" text="Use latest player export (automatic)" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectExportFolder" text="Select a destination folder." />
+    <string id="AF_DIP_UI_KingdomProfile_SelectImportFolder" text="Select a source folder; you may also enter a read-only absolute directory or JSON file." />
+    <string id="AF_DIP_UI_KingdomProfile_EnterExportFolder" text="Enter export folder name" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterImportPath" text="Enter import folder name/path" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFolderHint" text="Leave empty for an automatic timestamp; exports are always restricted to PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathHint" text="Leave empty for the latest player export; names search the mod directory first, and you may also enter a read-only absolute directory or .json file." />
+    <string id="AF_DIP_UI_Common_Confirm" text="Confirm" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidExportFolder" text="The export folder name is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOutsideRoot" text="The export destination must be inside PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPath" text="The absolute path does not exist or is not a JSON file." />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFolders" text="There are no import folders under PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFolderNotFound" text="The folder was not found in the mod directory or PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_IdLabel" text="ID: " />
+    <string id="AF_DIP_UI_KingdomProfile_CultureLabel" text="Culture: " />
+    <string id="AF_DIP_UI_KingdomProfile_Unknown" text="Unknown" />
+    <string id="AF_DIP_UI_KingdomProfile_StatusLabel" text="Status: " />
+    <string id="AF_DIP_UI_KingdomProfile_Eliminated" text="Eliminated (profile retained)" />
+    <string id="AF_DIP_UI_KingdomProfile_Active" text="Active" />
+    <string id="AF_DIP_UI_KingdomProfile_CurrentSourceLabel" text="Current source: " />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerOverride" text="Player override" />
+    <string id="AF_DIP_UI_KingdomProfile_DefaultSourceLabel" text="Default source: " />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingLabel" text="LLM founding profile: " />
+    <string id="AF_DIP_UI_KingdomProfile_LastErrorLabel" text="Latest error: " />
+    <string id="AF_DIP_UI_KingdomProfile_AuthoredDefault" text="Authored kingdom default" />
+    <string id="AF_DIP_UI_KingdomProfile_GenericDefault" text="Culture/generic default" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingFallback" text="New kingdom temporary default (awaiting LLM)" />
+    <string id="AF_DIP_UI_KingdomProfile_LlmFoundingDefault" text="LLM founding default (locked in)" />
+    <string id="AF_DIP_UI_KingdomProfile_BundleDefault" text="Initial bundle default" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationRunning" text="Generating" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationFailedPrefix" text="Generation failed; it will retry after cooldown or can be retried manually (" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix" text=" )" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationComplete" text="Completed and locked in" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="Kingdom eliminated; automatic generation stopped" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="Awaiting generation (" />
+    <string id="AF_DIP_UI_KingdomProfile_Empty" text="(empty)" />
   </strings>
 </base>
