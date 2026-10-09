@@ -1485,39 +1485,39 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFoodDaysThreshold { get; set; } = 2;
 
-	[SettingPropertyInteger("缺钱现金阈值", 1, 50000, "0", Order = 9, RequireRestart = false, HintText = "NPC 领主可用现金低于该值时，可以触发缺钱主动接触。运行时不会低于原版队伍现金下限。默认 5000。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Money}Cash shortage threshold", 1, 50000, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Money_Hint}A cash need can trigger when an NPC lord has less available cash than this value. Runtime respects the native party cash floor. Default: 5000.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMoneyGoldThreshold { get; set; } = 5000;
 
-	[SettingPropertyInteger("缺钱军饷阈值(天)", 0, 30, "0", Order = 10, RequireRestart = false, HintText = "NPC 领主现金可支付军饷天数小于等于该值时，可以触发缺钱主动接触；0 表示只看现金阈值和未付军饷。正常游玩默认 2 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Wage}Wage coverage threshold (days)", 0, 30, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Wage_Hint}A cash need can trigger when the lord can cover wages for at most this many days; 0 checks only cash and unpaid wages. Default: 2 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMoneyWageDaysThreshold { get; set; } = 2;
 
-	[SettingPropertyInteger("缺兵兵力比例阈值(%)", 1, 100, "0", Order = 11, RequireRestart = false, HintText = "NPC 领主当前人数低于队伍人数上限的该比例时，可以触发缺兵主动接触。正常游玩默认 45；测试时可调到 90 或 100。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Troop}Troop ratio threshold (%)", 1, 100, "0", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Troop_Hint}A troop shortage can trigger when current troops are below this percentage of party capacity. Default: 45; tests may use 90 or 100.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTroopRatioThresholdPercent { get; set; } = 45;
 
-	[SettingPropertyInteger("俘虏容量阈值(%)", 1, 150, "0", Order = 12, RequireRestart = false, HintText = "NPC 领主当前俘虏数量达到俘虏上限的该比例时，可以触发俘虏过载或赎买主动接触。正常游玩默认 90；100 表示接近满员，超过 100 表示只在超载时触发。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Prisoner}Prisoner capacity threshold (%)", 1, 150, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Prisoner_Hint}Prisoner overload or ransom contact can trigger at this percentage of capacity. Default: 90; above 100 triggers only when over capacity.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestPrisonerRatioThresholdPercent { get; set; } = 90;
 
-	[SettingPropertyInteger("低士气阈值", 0, 100, "0", Order = 13, RequireRestart = false, HintText = "NPC 领主队伍士气低于或等于该值时，可以触发低士气主动接触；0 表示关闭该需求。正常游玩默认 35。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Morale}Low morale threshold", 0, 100, "0", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Morale_Hint}Low-morale contact can trigger at or below this value; 0 disables the need. Default: 35.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestLowMoraleThreshold { get; set; } = 35;
 
-	[SettingPropertyInteger("缺马比例阈值(%)", 0, 100, "0", Order = 14, RequireRestart = false, HintText = "NPC 领主队伍坐骑数量低于队伍人数的该比例时，可以触发缺马/机动不足主动接触；0 表示关闭该需求。正常游玩默认 25。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Mount}Mount ratio threshold (%)", 0, 100, "0", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Mount_Hint}Mount shortage can trigger when mounts fall below this percentage of troop count; 0 disables the need. Default: 25.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestMountRatioThresholdPercent { get; set; } = 25;
 
-	[SettingPropertyInteger("负重压力阈值(%)", 50, 150, "0", Order = 15, RequireRestart = false, HintText = "NPC 领主队伍总负重达到库存容量的该比例时，可以触发负重压力主动接触。正常游玩默认 92。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Overburden}Overburden threshold (%)", 50, 150, "0", Order = 15, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Overburden_Hint}Overburden contact can trigger when total party weight reaches this percentage of inventory capacity. Default: 92.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestOverburdenRatioThresholdPercent { get; set; } = 92;
 
-	[SettingPropertyInteger("家族金库阈值", 0, 200000, "0", Order = 16, RequireRestart = false, HintText = "NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_ClanGold}Clan treasury threshold", 0, 200000, "0", Order = 16, RequireRestart = false, HintText = "{=AF_MCM_Proactive_ClanGold_Hint}Clan financial pressure can trigger below this treasury value; 0 ignores the treasury. Default: 15000.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestClanGoldThreshold { get; set; } = 15000;
 
-	[SettingPropertyInteger("家族债务阈值", 0, 200000, "0", Order = 17, RequireRestart = false, HintText = "NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_ClanDebt}Clan debt threshold", 0, 200000, "0", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Proactive_ClanDebt_Hint}Clan financial pressure can trigger above this kingdom-debt value; 0 ignores debt. Default: 5000.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
 

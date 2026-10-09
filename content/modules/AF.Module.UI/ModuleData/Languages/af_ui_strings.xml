@@ -400,5 +400,23 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Proactive_Distance_Hint" text="Maximum candidate distance equals player sight range multiplied by this value. Default: 1.0." />
   <string id="AF_MCM_Proactive_Food" text="Food threshold (days)" />
   <string id="AF_MCM_Proactive_Food_Hint" text="A food need can trigger when an NPC party has at most this many food days or is already starving. Default: 2 days." />
+  <string id="AF_MCM_Proactive_Money" text="Cash shortage threshold" />
+  <string id="AF_MCM_Proactive_Money_Hint" text="A cash need can trigger when an NPC lord has less available cash than this value. Runtime respects the native party cash floor. Default: 5000." />
+  <string id="AF_MCM_Proactive_Wage" text="Wage coverage threshold (days)" />
+  <string id="AF_MCM_Proactive_Wage_Hint" text="A cash need can trigger when the lord can cover wages for at most this many days; 0 checks only cash and unpaid wages. Default: 2 days." />
+  <string id="AF_MCM_Proactive_Troop" text="Troop ratio threshold (%)" />
+  <string id="AF_MCM_Proactive_Troop_Hint" text="A troop shortage can trigger when current troops are below this percentage of party capacity. Default: 45; tests may use 90 or 100." />
+  <string id="AF_MCM_Proactive_Prisoner" text="Prisoner capacity threshold (%)" />
+  <string id="AF_MCM_Proactive_Prisoner_Hint" text="Prisoner overload or ransom contact can trigger at this percentage of capacity. Default: 90; above 100 triggers only when over capacity." />
+  <string id="AF_MCM_Proactive_Morale" text="Low morale threshold" />
+  <string id="AF_MCM_Proactive_Morale_Hint" text="Low-morale contact can trigger at or below this value; 0 disables the need. Default: 35." />
+  <string id="AF_MCM_Proactive_Mount" text="Mount ratio threshold (%)" />
+  <string id="AF_MCM_Proactive_Mount_Hint" text="Mount shortage can trigger when mounts fall below this percentage of troop count; 0 disables the need. Default: 25." />
+  <string id="AF_MCM_Proactive_Overburden" text="Overburden threshold (%)" />
+  <string id="AF_MCM_Proactive_Overburden_Hint" text="Overburden contact can trigger when total party weight reaches this percentage of inventory capacity. Default: 92." />
+  <string id="AF_MCM_Proactive_ClanGold" text="Clan treasury threshold" />
+  <string id="AF_MCM_Proactive_ClanGold_Hint" text="Clan financial pressure can trigger below this treasury value; 0 ignores the treasury. Default: 15000." />
+  <string id="AF_MCM_Proactive_ClanDebt" text="Clan debt threshold" />
+  <string id="AF_MCM_Proactive_ClanDebt_Hint" text="Clan financial pressure can trigger above this kingdom-debt value; 0 ignores debt. Default: 5000." />
   </strings>
 </base>
