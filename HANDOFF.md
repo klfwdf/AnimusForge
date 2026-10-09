@@ -1,4 +1,11 @@
-﻿# 当前交接：Native raw连续性、游戏时间提示与远端外交合并（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+# 当前交接：共享文本输入、群体接力与主动邀请接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+- 冻结构建源码33e136a392b431346525bb5a06baf4715a67bca6，保留Native raw/elapsed/外交合并。UI cab974619/65397fb08、原生Inquiry回放f505c6bf0、群体接力25c40cf22、邀请33e136a39、来源诊断c739cb8ab同候选；公共编辑器签名和业务保存语义保留。
+- 共享41路由/59输入断言、Illustrator8/21、prefab focus/按钮通过；原生62入口独立只读补审，不称全UI实机绿。邀请153、relay33+15和修前负控为受控证据；07:06–07:07 lord_3_17原现场未证实，新规则下真实provider接力选择未验。
+- 双API/Bootstrap/双Coup gate通过；原统一命令旧Stage预检exit1，保存旧Stage后原StageOnly重组exit0。正式部署exit0更新11文件，3381 Stage/安装和9程序产物SHA一致，Recovery deploy-8ca68dd81b504f13bb2c6d0ccb083cba complete、11旧备份通过。32,198跟踪构建输入编译后未变；未改脚本，不push/package/启动游戏。
+- [唯一主台账、分阶段receipt/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#text-editor-relay-invitation-fix-20261009)、[真实代码导航](docs/architecture/af-framework-code-scope.md#text-editor-relay-invitation-fix-20261009)。本地证据artifacts/text-editor-input-audit-20261009/，其他输入补审artifacts/input-popup-chain-review-20261009/。下一步实机键鼠/百科/MCM和真实provider/邀请复验；历史SAV/full-repo未验不改绿。源码定向inverse；安装按Recovery manifest逐文件恢复；两个NuGet未跟踪目录保留。
+
+## 历史交接：Native raw连续性、游戏时间提示与远端外交合并（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
 
 - raw `c77d448e5` 每回合携带权威未压缩记忆并与Native短史精确计数合并，修复旧草稿仍在但重进请求漏掉；保留跨日同文/重复、pending输入和AFEF当下/过往角色。elapsed `d4beb7b76` 按真实新会话票据提示游戏交流间隔，失败retry不消费、current主回复接受后消费，unknown/截断/压缩日期保守降级；prefix不写保存记忆。
 - 远端 `8f7e38e6f` 与WIP `5c13cc419` 经merge `cce411837` 合入同一外交owner。9文件交集复核无重复产品实现，保留本地隔离/传播/retry与远端玩家多动作/配置预算；旧测试Host只保留单helper/call，文档历史保留，本条统一收敛当前状态。

@@ -1,3 +1,25 @@
+<a id="text-editor-relay-invitation-fix-20261009"></a>
+### 当前职责导航：共享文本输入交接与同候选接力/邀请修复
+
+构建源码`33e136a392b431346525bb5a06baf4715a67bca6`，UI产品cab974619/65397fb08、回放f505c6bf0；relay25c40cf22、邀请33e136a39及诊断c739cb8ab同候选。部署/失败恢复/未验见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#text-editor-relay-invitation-fix-20261009)。12符号当前一基范围/source与method SHA由本地`artifacts/text-editor-input-audit-20261009/ui-code-map.json`绑定该修订，并通过recorded/working-tree坐标校验；不以定位/编译/安装SHA代替实机。
+
+| 当前源码（一基范围）/符号 | owner与真实消费者、有限覆盖 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs:18–40`；`public DevPopupInputLease` | named screen/layer lease acquisition, restrictions/focus/suspend |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs:45–62`；`public void Dispose` | idempotent lifecycle-safe parent restoration, external LastActiveState retained |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs:46–54`；`public static bool Show` | 38 ordinary calls and GCCZ direct caller through unchanged public signature |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs:56–66`；`internal static ScreenLayer CaptureInputOwner` | open boundary chooses at most current hit/focus parent; no global scan |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs:72–98`；`internal static bool TryShowOwned` | explicit Illustrator owners and default captured parent validation |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs:142–183`；`private void Close` | child mask/focus removal, parent lease release and dismissal ownership |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs:136–140`；`private void OnScreenChanged` | screen changes retire editor without reopening ordinary business menu |
+| `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationRedrawPromptEditor.cs:9–46`；`internal static IDisposable Show` | prompt/current-image semantics and submit/cancel/restore ownership |
+| `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:245–256`；`private void OpenRedrawPromptEditor` | card/fullscreen explicit parent layer and owner-alive predicate |
+| `extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopup.cs:84–124`；`private void OpenCurrentImageEditor` | selected image revision/owner guards and gallery owned editor |
+| `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:515–534`；`private static void OpenRedrawPromptEditor` | weekly/bulletin overlay explicit parent and slot scope guards |
+| `src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs:60–74`；`private void SetIllustrationPromptEditing` | weekly host layer also releases input while child overlay editor owns input |
+
+共享41路由/59断言、Illustrator8/21及双DLL符号确认覆盖输入交接；独立62原生构造点仅只读补审，不由该lease自动改写。全局QueryManager保留原生命周期，保存/返回资格和业务回调仍由各模块拥有。真实GPU/设备/MCM/百科、07:07原现场、provider接力选择、玩家档及全仓门禁未验。旧“只隐藏root”的画卷记载保留历史语境，本条和主台账替代其当前实现说明。
+
 <a id="native-memory-continuity-fix-20261009"></a>
 ### 当前职责导航：Native raw连续性与游戏时间边界
 
