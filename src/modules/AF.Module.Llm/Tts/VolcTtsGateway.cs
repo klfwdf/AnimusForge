@@ -11,7 +11,6 @@ public sealed class VolcTtsGateway : ITtsGateway
 {
     private readonly HttpClient _httpClient;
     private readonly HttpClient _v3HttpClient;
-    public VolcTtsGateway(HttpClient httpClient) : this(httpClient, httpClient) { }
     public VolcTtsGateway(HttpClient httpClient, HttpClient v3HttpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
