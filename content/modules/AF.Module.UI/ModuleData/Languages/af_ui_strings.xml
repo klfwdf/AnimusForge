@@ -1573,5 +1573,49 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomRebellion_TargetMissing" text="The forced rebellion cannot start: the target kingdom or clan was not found." />
   <string id="AF_UI_KingdomRebellion_ThisKingdom" text="this kingdom" />
   <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="an unknown kingdom" />
+  <string id="AF_UI_KingdomStability_NoKingdoms" text="No kingdoms are available for testing." />
+  <string id="AF_UI_KingdomStability_Back" text="Back" />
+  <string id="AF_UI_KingdomStability_LabDescription" text="Use this lab to test kingdom stability and town-holding clan rebellion logic." />
+  <string id="AF_UI_KingdomStability_DefaultDescription" text="All kingdoms start at stability 50 (Average) and do not rebel automatically by default." />
+  <string id="AF_UI_KingdomStability_WeeklyReportDescription" text="STAB_* ratings in weekly reports also change kingdom stability; manual adjustments and weekly ratings affect later weekly resolution." />
+  <string id="AF_UI_KingdomStability_SelectKingdom" text="Select a kingdom to open its details." />
+  <string id="AF_UI_KingdomStability_LabTitle" text="Kingdom Stability and Rebellion Lab" />
+  <string id="AF_UI_KingdomStability_Enter" text="Enter" />
+  <string id="AF_UI_KingdomStability_KingdomNotFound" text="The selected kingdom could not be found." />
+  <string id="AF_UI_KingdomStability_UnknownKingdom" text="unknown kingdom" />
+  <string id="AF_UI_KingdomStability_PlayerImmunitySuffix" text=" (player-kingdom stability rebellion immunity)" />
+  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}] weekly rebellion chance {CHANCE}{IMMUNITY}" />
+  <string id="AF_UI_KingdomStability_KingdomFallback" text="kingdom" />
+  <string id="AF_UI_KingdomStability_DetailKingdom" text="Kingdom: {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_DetailStability" text="Current stability: {VALUE} ({TIER})" />
+  <string id="AF_UI_KingdomStability_DetailWeeklyBalance" text="Dynamic weekly balance modifier: {VALUE}" />
+  <string id="AF_UI_KingdomStability_DetailRelation" text="Current non-royal relation modifier: {VALUE} (applies to the king and adult non-royal clan members in this kingdom)" />
+  <string id="AF_UI_KingdomStability_DetailClanCount" text="Effective non-royal clans: {COUNT}; royal-domain daily loyalty modifier: {VALUE}" />
+  <string id="AF_UI_KingdomStability_DetailImmuneChance" text="This week's rebellion chance: 0% (player-kingdom stability rebellion immunity is enabled)" />
+  <string id="AF_UI_KingdomStability_DetailChance" text="This week's rebellion chance: {CHANCE}" />
+  <string id="AF_UI_KingdomStability_DetailKing" text="Current king: {HERO}" />
+  <string id="AF_UI_KingdomStability_DetailRulingClan" text="Ruling clan: {CLAN}" />
+  <string id="AF_UI_KingdomStability_DetailImmuneCandidates" text="Automatic rebellion candidates: the mod's stability rebellion check is skipped while immunity is active." />
+  <string id="AF_UI_KingdomStability_DetailCandidates" text="Automatic rebellion candidates:" />
+  <string id="AF_UI_KingdomStability_DetailCandidate" text="- {CLAN} | Relation {RELATION} | Towns {TOWNS} | Castles {CASTLES} | Score {SCORE}" />
+  <string id="AF_UI_KingdomStability_DetailNoCandidates" text="No clans currently meet the automatic rebellion requirements." />
+  <string id="AF_UI_KingdomStability_Adjust" text="Adjust stability" />
+  <string id="AF_UI_KingdomStability_TestRoll" text="Test this week's rebellion check" />
+  <string id="AF_UI_KingdomStability_ForceRebellion" text="Force rebellion for this kingdom" />
+  <string id="AF_UI_KingdomStability_BackToList" text="Back to kingdom list" />
+  <string id="AF_UI_KingdomStability_DetailTitle" text="Kingdom stability details - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_Execute" text="Execute" />
+  <string id="AF_UI_KingdomStability_EditPrompt" text="Enter a stability value from 0 to 100.\n\nCurrent value: {VALUE} ({TIER})\nDefault: 50 (Average)\n\nTiers:\n90-100 Extremely high\n75-89 High\n60-74 Fairly high\n40-59 Average\n25-39 Poor\n10-24 Very poor\n0-9 Extremely poor" />
+  <string id="AF_UI_KingdomStability_EditTitle" text="Adjust stability - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_Save" text="Save" />
+  <string id="AF_UI_KingdomStability_InvalidValue" text="Enter an integer from 0 to 100." />
+  <string id="AF_UI_KingdomStability_Updated" text="{KINGDOM} stability updated to {VALUE} ({TIER})." />
+  <string id="AF_UI_KingdomStability_TestResultTitle" text="Rebellion test result - {KINGDOM}" />
+  <string id="AF_UI_KingdomStability_BackToDetails" text="Back to details" />
+  <string id="AF_UI_KingdomStability_ForceTitle" text="Force kingdom rebellion" />
+  <string id="AF_UI_KingdomStability_ForceBody" text="This skips the stability probability check but does not relax relation requirements. The system will still choose the best town-holding clan from those that currently meet the automatic rebellion requirements.\n\nIf no clan meets the relation requirements, no rebellion will occur.\n\nThis action will permanently change the kingdom structure in the save. Continue?" />
+  <string id="AF_UI_KingdomStability_ForceExecute" text="Force execution" />
+  <string id="AF_UI_KingdomStability_Cancel" text="Cancel" />
+  <string id="AF_UI_KingdomStability_ForceResultTitle" text="Forced rebellion result - {KINGDOM}" />
 </strings>
 </base>
