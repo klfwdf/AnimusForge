@@ -445,5 +445,156 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_MappingTarget_Settlement" text="定居点" />
     <string id="AF_KNOWLEDGE_MappingTarget_Automatic" text="自动目标" />
     <string id="AF_KNOWLEDGE_MappingTarget_Generic" text="目标" />
+    <string id="AF_KNOWLEDGE_PrototypeSearch" text="搜索原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeClearSearch" text="清空搜索" />
+    <string id="AF_KNOWLEDGE_PrototypePreviousPage" text="上一页" />
+    <string id="AF_KNOWLEDGE_PrototypeNextPage" text="下一页" />
+    <string id="AF_KNOWLEDGE_PrototypeBack" text="返回原型句菜单" />
+    <string id="AF_KNOWLEDGE_PrototypeViewTitle" text="查看原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchTitle" text="搜索原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchPrompt" text="输入关键词：" />
+    <string id="AF_KNOWLEDGE_PrototypeDetailTitle" text="原型句详情" />
+    <string id="AF_KNOWLEDGE_PrototypeRemoveTitle" text="删除原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeRemovePrompt" text="选择要删除的原型句：" />
+    <string id="AF_KNOWLEDGE_PrototypeCountSummary" text="{COUNT} 条，第 {PAGE}/{PAGES} 页。{SEARCH}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_VariantAdd" text="新增提示词" />
+    <string id="AF_KNOWLEDGE_VariantMenuTitle" text="编辑提示词" />
+    <string id="AF_KNOWLEDGE_VariantMenuDescription" text="条件留空=通用；填写任意条件=专属。命中时会选最具体的一条。" />
+    <string id="AF_KNOWLEDGE_VariantEnter" text="进入" />
+    <string id="AF_KNOWLEDGE_VariantEditorTitle" text="提示词编辑" />
+    <string id="AF_KNOWLEDGE_VariantEditContent" text="编辑提示词内容" />
+    <string id="AF_KNOWLEDGE_VariantEditCondition" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_VariantDelete" text="删除此提示词" />
+    <string id="AF_KNOWLEDGE_VariantCurrentCondition" text="当前条件：{CONDITION}" />
+    <string id="AF_KNOWLEDGE_VariantContentPrompt" text="请输入内容。" />
+    <string id="AF_KNOWLEDGE_VariantTruncated" text="
+……（内容过长，仅显示前 220 字）" />
+    <string id="AF_KNOWLEDGE_WhenCulture" text="文化（CultureId）" />
+    <string id="AF_KNOWLEDGE_WhenKingdom" text="势力/王国（KingdomId）" />
+    <string id="AF_KNOWLEDGE_WhenSettlement" text="定居点（SettlementId）" />
+    <string id="AF_KNOWLEDGE_WhenRole" text="身份（大类 + 细分 NPC）" />
+    <string id="AF_KNOWLEDGE_WhenGender" text="性别（不限/男/女）" />
+    <string id="AF_KNOWLEDGE_WhenClanLeader" text="是否家族族长（不限/是/否）" />
+    <string id="AF_KNOWLEDGE_WhenSkill" text="技能等级（SkillId &gt;= 值）" />
+    <string id="AF_KNOWLEDGE_WhenClear" text="清空全部条件（变成通用）" />
+    <string id="AF_KNOWLEDGE_WhenEditorTitle" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_RoleSearchOption" text="搜索本类具体 NPC…" />
+    <string id="AF_KNOWLEDGE_RoleClearSearch" text="清除搜索" />
+    <string id="AF_KNOWLEDGE_RoleClearSpecificOption" text="清空本类细分已选（{COUNT}）" />
+    <string id="AF_KNOWLEDGE_RoleToggleAll" text="整类生效：{ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}：可直接勾整类，也可只勾本类里的具体 NPC。
+当前整类：{SELECTED}
+当前细分已选：{SPECIFIC}
+结果总数：{TOTAL}，第 {PAGE}/{PAGES} 页" />
+    <string id="AF_KNOWLEDGE_RoleEditorTitle" text="身份条件" />
+    <string id="AF_KNOWLEDGE_RoleEditorDescription" text="先选一个大类，再进入该类选择具体 NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。" />
+    <string id="AF_KNOWLEDGE_RoleClearAllSpecific" text="清空全部细分身份" />
+    <string id="AF_KNOWLEDGE_RoleSwitchSelection" text="切换选中" />
+    <string id="AF_KNOWLEDGE_RoleMultiSelectError" text="搜索、翻页、整类切换这类操作项不能和细分 NPC 一起多选。" />
+    <string id="AF_KNOWLEDGE_RoleSearchPrompt" text="输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。" />
+    <string id="AF_KNOWLEDGE_PickerAdd" text="添加" />
+    <string id="AF_KNOWLEDGE_PickerSelect" text="选择" />
+    <string id="AF_KNOWLEDGE_PickerNoNpc" text="未找到可选 NPC。" />
+    <string id="AF_KNOWLEDGE_PickerNpcTitle" text="选择 NPC" />
+    <string id="AF_KNOWLEDGE_PickerMultiDescription" text="可多选，确认后加入列表。" />
+    <string id="AF_KNOWLEDGE_PickerNoCulture" text="未找到可选文化。" />
+    <string id="AF_KNOWLEDGE_PickerCultureTitle" text="选择文化" />
+    <string id="AF_KNOWLEDGE_PickerNoFaction" text="未找到可选势力。" />
+    <string id="AF_KNOWLEDGE_PickerFactionTitle" text="选择势力/王国" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeKingdom" text="王国" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeFaction" text="势力" />
+    <string id="AF_KNOWLEDGE_PickerNoSettlement" text="未找到可选定居点。" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTitle" text="选择定居点" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeVillage" text="村庄" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeCastle" text="城堡" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeTown" text="城镇" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeSettlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerNoKingdom" text="未找到可选王国。" />
+    <string id="AF_KNOWLEDGE_PickerKingdomTitle" text="选择王国" />
+    <string id="AF_KNOWLEDGE_PickerKingdomDescription" text="选择一个王国作为映射目标。" />
+    <string id="AF_KNOWLEDGE_PickerNoHero" text="未找到可选英雄。" />
+    <string id="AF_KNOWLEDGE_PickerHeroTitle" text="选择英雄" />
+    <string id="AF_KNOWLEDGE_PickerNoClan" text="未找到可选家族。" />
+    <string id="AF_KNOWLEDGE_PickerClanTitle" text="选择家族" />
+    <string id="AF_KNOWLEDGE_PickerStringListPick" text="从列表选择" />
+    <string id="AF_KNOWLEDGE_PickerStringListAdd" text="手动输入（一次一个）" />
+    <string id="AF_KNOWLEDGE_PickerDelete" text="删除" />
+    <string id="AF_KNOWLEDGE_PickerStringListDescription" text="一次输入一个值，确定后加入列表。" />
+    <string id="AF_KNOWLEDGE_PickerStringListInputPrompt" text="请输入一个值：" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemoveTitle" text="删除 - {TITLE}" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemovePrompt" text="选择要删除的项：" />
+    <string id="AF_KNOWLEDGE_SkillPicker" text="从列表选择技能" />
+    <string id="AF_KNOWLEDGE_SkillManual" text="手动输入 SkillId" />
+    <string id="AF_KNOWLEDGE_SkillRemove" text="删除技能条件" />
+    <string id="AF_KNOWLEDGE_SkillTitle" text="技能等级条件" />
+    <string id="AF_KNOWLEDGE_SkillDescription" text="配置 SkillId &gt;= 数值。数值=0 表示无门槛（Skill&gt;=0）；数值&lt;0 表示移除该技能条件。" />
+    <string id="AF_KNOWLEDGE_SkillManualTitle" text="手动输入 SkillId" />
+    <string id="AF_KNOWLEDGE_SkillPrompt" text="请输入 SkillId：" />
+    <string id="AF_KNOWLEDGE_SkillRemoveTitle" text="删除技能条件" />
+    <string id="AF_KNOWLEDGE_SkillRemovePrompt" text="选择要删除的项：" />
+    <string id="AF_KNOWLEDGE_SkillSetTitle" text="设置技能下限" />
+    <string id="AF_KNOWLEDGE_SkillSetPrompt" text="请输入最低技能等级（整数）：" />
+    <string id="AF_KNOWLEDGE_SkillNoSkills" text="未找到可选技能。" />
+    <string id="AF_KNOWLEDGE_SkillPickerTitle" text="选择技能" />
+    <string id="AF_KNOWLEDGE_SkillPickerDescription" text="选择一个技能后，继续设置最低等级。" />
+    <string id="AF_KNOWLEDGE_WhenGeneral" text="通用" />
+    <string id="AF_KNOWLEDGE_WhenCultureLabel" text="文化" />
+    <string id="AF_KNOWLEDGE_WhenKingdomLabel" text="势力" />
+    <string id="AF_KNOWLEDGE_WhenSettlementLabel" text="定居点" />
+    <string id="AF_KNOWLEDGE_WhenRoleLabel" text="身份" />
+    <string id="AF_KNOWLEDGE_WhenSpecificIdentityLabel" text="细分身份" />
+    <string id="AF_KNOWLEDGE_WhenGenderLabel" text="性别" />
+    <string id="AF_KNOWLEDGE_WhenClanLeaderLabel" text="族长" />
+    <string id="AF_KNOWLEDGE_WhenSkillLabel" text="技能" />
+    <string id="AF_KNOWLEDGE_WhenLabelExclusive" text="专属({CATEGORIES})" />
+    <string id="AF_KNOWLEDGE_WhenDetailGeneral" text="当前：通用（无条件）" />
+    <string id="AF_KNOWLEDGE_WhenDetail" text="当前条件：
+CultureId: {CULTURE}
+KingdomId: {KINGDOM}
+SettlementId: {SETTLEMENT}
+Roles: {ROLES}
+细分身份: {IDENTITIES}
+SkillMin: {SKILLS}
+Gender: {GENDER}
+ClanLeader: {CLAN_LEADER}" />
+    <string id="AF_KNOWLEDGE_WhenEmpty" text="（空）" />
+    <string id="AF_KNOWLEDGE_WhenAny" text="不限" />
+    <string id="AF_KNOWLEDGE_WhenFemale" text="女" />
+    <string id="AF_KNOWLEDGE_WhenMale" text="男" />
+    <string id="AF_KNOWLEDGE_WhenYes" text="是" />
+    <string id="AF_KNOWLEDGE_WhenNo" text="否" />
+    <string id="AF_KNOWLEDGE_RoleLord" text="领主" />
+    <string id="AF_KNOWLEDGE_RoleNotable" text="要人" />
+    <string id="AF_KNOWLEDGE_RoleWanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_RoleSoldier" text="士兵" />
+    <string id="AF_KNOWLEDGE_RoleVillager" text="村民" />
+    <string id="AF_KNOWLEDGE_RoleTownsfolk" text="镇民" />
+    <string id="AF_KNOWLEDGE_RoleCommoner" text="未分类对象" />
+    <string id="AF_KNOWLEDGE_RoleUnknown" text="未知" />
+    <string id="AF_KNOWLEDGE_RoleEntryWithId" text="{NAME}（{TYPE}={ID}）" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeader" text="{NAME} ({ID})" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeaderNamed" text="{NAME}（{LABEL}：{LEADER}）" />
+    <string id="AF_KNOWLEDGE_PickerPageSummary" text="共 {COUNT} 个{KIND}，第 {PAGE}/{PAGES} 页。{SUFFIX}{SEARCH}" />
+    <string id="AF_KNOWLEDGE_PickerNoMatch" text="未找到可选{KIND}。" />
+    <string id="AF_KNOWLEDGE_PickerNoMatchQuery" text="未找到匹配的{KIND}：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerCurrentLeader" text="现任领袖" />
+    <string id="AF_KNOWLEDGE_PickerCurrentClanLeader" text="当前族长" />
+    <string id="AF_KNOWLEDGE_PickerCurrentRuler" text="当前统治者" />
+    <string id="AF_KNOWLEDGE_PickerSearchTitle" text="搜索{KIND}" />
+    <string id="AF_KNOWLEDGE_PickerSearchPrompt" text="输入{KIND}名称或 {ID}：" />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchTitle" text="搜索 {ROLE}" />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchPrompt" text="输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。" />
+    <string id="AF_KNOWLEDGE_PickerNoSelectable" text="未找到可选{KIND}。" />
+    <string id="AF_KNOWLEDGE_PickerSearchNoMatch" text="未找到匹配的{KIND}：{QUERY}" />
+    <string id="AF_KNOWLEDGE_StringListRemoveTitle" text="删除 - {TITLE}" />
+    <string id="AF_KNOWLEDGE_SkillItem" text="{ID} &gt;= {VALUE}" />
+    <string id="AF_KNOWLEDGE_RoleCategoryItem" text="{PREFIX}{ROLE}{SPECIFIC}" />
+    <string id="AF_KNOWLEDGE_PickerKindHeroes" text="英雄" />
+    <string id="AF_KNOWLEDGE_PickerKindClans" text="家族" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlements" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerKindHero" text="英雄" />
+    <string id="AF_KNOWLEDGE_PickerKindClan" text="家族" />
+    <string id="AF_KNOWLEDGE_RoleSpecificCount" text="（细分已选 {COUNT}）" />
   </strings>
 </base>

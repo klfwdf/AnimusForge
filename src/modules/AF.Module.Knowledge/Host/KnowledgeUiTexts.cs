@@ -213,4 +213,42 @@ internal static class KnowledgeUiTexts
 	public static string RagGenerated(int count) => Text("AF_KNOWLEDGE_RagGenerated", "[Knowledge] Generated and added {COUNT} RAG short texts.", ("COUNT", count.ToString()));
 	public static string RagNoNew => Text("AF_KNOWLEDGE_RagNoNew", "[Knowledge] No new RAG short texts were generated; they may duplicate existing content.");
 	public static string PrototypeDisabled => Text("AF_KNOWLEDGE_PrototypeDisabled", "[Knowledge] Prototype sentences are disabled. Maintain keywords, RAG short texts and prompts directly.");
+
+	public static string PrototypeCountSummary(int count, string query, int page, int pages, bool empty)
+		=> Ui("AF_KNOWLEDGE_PrototypeCountSummary", "{COUNT} entries, page {PAGE}/{PAGES}.{SEARCH}{EMPTY}",
+			("COUNT", count.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
+			("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : $"\nCurrent search: {query}"),
+			("EMPTY", empty ? "\nThere is no content on this page." : ""));
+	public static string VariantEditorDescription(string condition, string preview, bool truncated)
+		=> Ui("AF_KNOWLEDGE_VariantEditorDescription", "Current conditions: {CONDITION}\n\nCurrent content preview:\n{PREVIEW}{TRUNCATED}",
+			("CONDITION", condition), ("PREVIEW", string.IsNullOrEmpty(preview) ? NoValue : preview),
+			("TRUNCATED", truncated ? "\n... (content too long; showing the first 220 characters)" : ""));
+	public static string RoleSearchOption(string query)
+		=> Ui("AF_KNOWLEDGE_RoleSearchOption", string.IsNullOrWhiteSpace(query) ? "Search specific NPCs in this category..." : "Search: {QUERY}", ("QUERY", query ?? ""));
+	public static string RoleClearSpecificOption(int count)
+		=> Ui("AF_KNOWLEDGE_RoleClearSpecificOption", "Clear selected specific entries in this category ({COUNT})", ("COUNT", count.ToString()));
+	public static string RoleDescription(string role, bool selected, int selectedSpecific, int total, int page, int pages)
+		=> Ui("AF_KNOWLEDGE_RoleDescription", "{ROLE}: select the whole category or individual NPCs.\nWhole category: {SELECTED}\nSpecific entries selected: {SPECIFIC}\nTotal results: {TOTAL}, page {PAGE}/{PAGES}",
+			("ROLE", role), ("SELECTED", selected ? "selected" : "not selected"), ("SPECIFIC", selectedSpecific.ToString()),
+			("TOTAL", total.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()));
+	public static string PickerNoMatch(string kind, string query)
+		=> Ui("AF_KNOWLEDGE_PickerNoMatch", string.IsNullOrWhiteSpace(query) ? "No selectable {KIND} found." : "No matching {KIND} found: {QUERY}", ("KIND", kind), ("QUERY", query ?? ""));
+	public static string PickerPageSummary(string kind, int count, int page, int pages, string query, string suffix)
+		=> Ui("AF_KNOWLEDGE_PickerPageSummary", "{COUNT} {KIND}, page {PAGE}/{PAGES}.{SUFFIX}{SEARCH}",
+			("COUNT", count.ToString()), ("KIND", kind), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
+			("SUFFIX", suffix), ("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : $"\nCurrent search: {query}"));
+	public static string PickerEntryWithLeader(string name, string id, string leaderLabel, string leader)
+		=> Ui("AF_KNOWLEDGE_PickerEntryWithLeader", string.IsNullOrWhiteSpace(leader) ? "{NAME} ({ID})" : "{NAME} ({LEADER_LABEL}: {LEADER})",
+			("NAME", name), ("ID", id), ("LEADER_LABEL", leaderLabel), ("LEADER", leader));
+	public static string PickerSearchPrompt(string kind, string idName)
+		=> Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}: ", ("KIND", kind), ("ID", idName));
+	public static string PickerRoleSearchPrompt(string role)
+		=> Ui("AF_KNOWLEDGE_PickerRoleSearchPrompt", "Enter a name, HeroId or CharacterId. Search is limited to this category.", ("ROLE", role));
+	public static string StringListRemoveTitle(string title) => Ui("AF_KNOWLEDGE_StringListRemoveTitle", "Delete - {TITLE}", ("TITLE", title));
+	public static string SkillItem(string id, int value) => Ui("AF_KNOWLEDGE_SkillItem", "{ID} >= {VALUE}", ("ID", id), ("VALUE", value.ToString()));
+	public static string WhenLabelExclusive(string categories) => Ui("AF_KNOWLEDGE_WhenLabelExclusive", "Specific ({CATEGORIES})", ("CATEGORIES", categories));
+	public static string WhenDetail(string culture, string kingdom, string settlement, string roles, string identities, string skills, string gender, string clanLeader)
+		=> Ui("AF_KNOWLEDGE_WhenDetail", "Current conditions:\nCultureId: {CULTURE}\nKingdomId: {KINGDOM}\nSettlementId: {SETTLEMENT}\nRoles: {ROLES}\nSpecific identities: {IDENTITIES}\nSkillMin: {SKILLS}\nGender: {GENDER}\nClanLeader: {CLAN_LEADER}",
+			("CULTURE", culture), ("KINGDOM", kingdom), ("SETTLEMENT", settlement), ("ROLES", roles), ("IDENTITIES", identities),
+			("SKILLS", skills), ("GENDER", gender), ("CLAN_LEADER", clanLeader));
 }
