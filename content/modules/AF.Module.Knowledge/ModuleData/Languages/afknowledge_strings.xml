@@ -595,5 +595,14 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_PickerKindHero" text="hero" />
     <string id="AF_KNOWLEDGE_PickerKindClan" text="clan" />
     <string id="AF_KNOWLEDGE_RoleSpecificCount" text=" (specific entries selected: {COUNT})" />
+    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="
+Current search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="
+There is no content on this page." />
+    <string id="AF_KNOWLEDGE_RoleSelected" text="selected" />
+    <string id="AF_KNOWLEDGE_RoleNotSelected" text="not selected" />
+    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="
+Current search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" Select one to add it to the list." />
   </strings>
 </base>

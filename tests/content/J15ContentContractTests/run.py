@@ -674,11 +674,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afknowledge_strings.xml": {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
-        "sha256": "9F36973E96D5CEA33DC504AF132654E231F75471E9859F874B28BF567230C48D", "revision": "knowledge-remaining-editor-localization",
+        "sha256": "1CB72D709D0019542EDD050CDA6A752CD9B4F91B9004B64754A2023F93C7F82F", "revision": "knowledge-dynamic-localization",
     },
     "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml": {
         "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
-        "sha256": "E5D2892058701E4FFD296613A9F8E3D3DFC6F3B6B4EF35EE30F9BB3B0797035A", "revision": "knowledge-remaining-editor-localization",
+        "sha256": "7A9E25D0A6751B88D519C4848295F6F9B896B9B701E54C54555B379DE45EDF5B", "revision": "knowledge-dynamic-localization",
     },
     "ModuleData/Languages/sets_ui_strings.xml": {
         "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",

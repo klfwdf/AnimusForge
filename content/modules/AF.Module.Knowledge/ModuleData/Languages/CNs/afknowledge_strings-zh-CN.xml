@@ -596,5 +596,14 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_PickerKindHero" text="英雄" />
     <string id="AF_KNOWLEDGE_PickerKindClan" text="家族" />
     <string id="AF_KNOWLEDGE_RoleSpecificCount" text="（细分已选 {COUNT}）" />
+    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="
+搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="
+当前页无内容。" />
+    <string id="AF_KNOWLEDGE_RoleSelected" text="已选中" />
+    <string id="AF_KNOWLEDGE_RoleNotSelected" text="未选中" />
+    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="
+当前搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" 选择一个后会加入列表。" />
   </strings>
 </base>

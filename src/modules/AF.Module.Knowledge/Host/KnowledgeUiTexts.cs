@@ -217,26 +217,26 @@ internal static class KnowledgeUiTexts
 	public static string PrototypeCountSummary(int count, string query, int page, int pages, bool empty)
 		=> Ui("AF_KNOWLEDGE_PrototypeCountSummary", "{COUNT} entries, page {PAGE}/{PAGES}.{SEARCH}{EMPTY}",
 			("COUNT", count.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
-			("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : $"\nCurrent search: {query}"),
-			("EMPTY", empty ? "\nThere is no content on this page." : ""));
+			("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : Ui("AF_KNOWLEDGE_PrototypeCurrentSearch", "\nCurrent search: {QUERY}", ("QUERY", query))),
+			("EMPTY", empty ? Ui("AF_KNOWLEDGE_PrototypeNoContent", "\nThere is no content on this page.") : ""));
 	public static string VariantEditorDescription(string condition, string preview, bool truncated)
 		=> Ui("AF_KNOWLEDGE_VariantEditorDescription", "Current conditions: {CONDITION}\n\nCurrent content preview:\n{PREVIEW}{TRUNCATED}",
 			("CONDITION", condition), ("PREVIEW", string.IsNullOrEmpty(preview) ? NoValue : preview),
-			("TRUNCATED", truncated ? "\n... (content too long; showing the first 220 characters)" : ""));
+			("TRUNCATED", truncated ? Ui("AF_KNOWLEDGE_VariantTruncated", "\n... (content too long; showing the first 220 characters)") : ""));
 	public static string RoleSearchOption(string query)
 		=> Ui("AF_KNOWLEDGE_RoleSearchOption", string.IsNullOrWhiteSpace(query) ? "Search specific NPCs in this category..." : "Search: {QUERY}", ("QUERY", query ?? ""));
 	public static string RoleClearSpecificOption(int count)
 		=> Ui("AF_KNOWLEDGE_RoleClearSpecificOption", "Clear selected specific entries in this category ({COUNT})", ("COUNT", count.ToString()));
 	public static string RoleDescription(string role, bool selected, int selectedSpecific, int total, int page, int pages)
 		=> Ui("AF_KNOWLEDGE_RoleDescription", "{ROLE}: select the whole category or individual NPCs.\nWhole category: {SELECTED}\nSpecific entries selected: {SPECIFIC}\nTotal results: {TOTAL}, page {PAGE}/{PAGES}",
-			("ROLE", role), ("SELECTED", selected ? "selected" : "not selected"), ("SPECIFIC", selectedSpecific.ToString()),
+			("ROLE", role), ("SELECTED", selected ? Ui("AF_KNOWLEDGE_RoleSelected", "selected") : Ui("AF_KNOWLEDGE_RoleNotSelected", "not selected")), ("SPECIFIC", selectedSpecific.ToString()),
 			("TOTAL", total.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()));
 	public static string PickerNoMatch(string kind, string query)
 		=> Ui("AF_KNOWLEDGE_PickerNoMatch", string.IsNullOrWhiteSpace(query) ? "No selectable {KIND} found." : "No matching {KIND} found: {QUERY}", ("KIND", kind), ("QUERY", query ?? ""));
 	public static string PickerPageSummary(string kind, int count, int page, int pages, string query, string suffix)
 		=> Ui("AF_KNOWLEDGE_PickerPageSummary", "{COUNT} {KIND}, page {PAGE}/{PAGES}.{SUFFIX}{SEARCH}",
 			("COUNT", count.ToString()), ("KIND", kind), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
-			("SUFFIX", suffix), ("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : $"\nCurrent search: {query}"));
+			("SUFFIX", suffix), ("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : Ui("AF_KNOWLEDGE_PickerCurrentSearch", "\nCurrent search: {QUERY}", ("QUERY", query))));
 	public static string PickerEntryWithLeader(string name, string id, string leaderLabel, string leader)
 		=> Ui("AF_KNOWLEDGE_PickerEntryWithLeader", string.IsNullOrWhiteSpace(leader) ? "{NAME} ({ID})" : "{NAME} ({LEADER_LABEL}: {LEADER})",
 			("NAME", name), ("ID", id), ("LEADER_LABEL", leaderLabel), ("LEADER", leader));
