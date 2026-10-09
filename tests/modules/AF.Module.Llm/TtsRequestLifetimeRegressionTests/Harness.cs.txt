@@ -6,11 +6,13 @@ using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Contracts {
- public sealed class TtsSynthesisRequest { public string Text; public TtsSynthesisRequest(string a,string b,string c,string d,string text,string f,int g,float h,float i,string j){Text=text;} }
- public sealed class TtsSynthesisResult { public bool Success;public string ErrorCode;public byte[] AudioBytes; }
+ public interface ITtsGateway {Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest r,string t,CancellationToken c);}
+ public sealed class TtsSynthesisRequest { public string Text, Endpoint; public TtsSynthesisRequest(string a,string b,string c,string d,string text,string f,int g,float h,float i,string j){Text=text;Endpoint=a;} }
+ public sealed class TtsSynthesisResult { public bool Success;public string ErrorCode;public byte[] AudioBytes;public string LogId;public TtsSynthesisResult(){}public TtsSynthesisResult(bool s,byte[] a,int? c,string e){Success=s;AudioBytes=a;ErrorCode=e;} }
 }
 namespace AnimusForge.Refactor.Adapters {
- public sealed class LegacyVolcTtsGateway {
+ public sealed class VolcV3TtsGateway : ITtsGateway {public VolcV3TtsGateway(System.Net.Http.HttpClient c){} public Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest r,string t,CancellationToken c)=>Task.FromResult(LegacyVolcTtsGateway.Send(r,c));}
+ public sealed class LegacyVolcTtsGateway : ITtsGateway {
   public static Func<TtsSynthesisRequest,CancellationToken,TtsSynthesisResult> Send = (_,_)=>new(){Success=true,AudioBytes=new byte[16]};
   public LegacyVolcTtsGateway(System.Net.Http.HttpClient c){}
   public Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest r,string t,CancellationToken c)=>Task.FromResult(Send(r,c));
@@ -20,7 +22,12 @@ namespace AnimusForge {
  static class Logger { public static void Log(string a,string b){} }
  static class BannerlordExceptionSentinel { public static ConcurrentQueue<Exception> Errors=new(); public static void ReportObservedException(string a,Exception b,string c=null){Errors.Enqueue(b);} }
  static class ShoutBehavior { public static bool CanAgentParticipateInSceneSpeechExternal(int i)=>true;public static bool ShouldUseMapConversationTableauPlaybackForNativeTtsExternal()=>true; }
+ sealed class InformationMessage {public string Text;public InformationMessage(string t,object c=null){Text=t;}}
+ static class InformationManager {public static List<string> Messages=new();public static void DisplayMessage(InformationMessage m)=>Messages.Add(m.Text);}
+ static class Color {public static object FromUint(uint n)=>null;}
  sealed class DuelSettings {
+  public Action TestTtsVolcDedicatedVoice;
+  public DuelSettings(){@@TTS_TEST_BUTTON@@}
   public bool EnableTtsSpeech=true,TtsVolcDedicatedEnabled=true,TtsSceneUseWinmmAudible=false;
   public string TtsVolcDedicatedApiUrl="https://fixture.invalid",TtsVolcDedicatedApiKey="fixture",TtsVolcDedicatedAppKey="fixture",TtsVolcDedicatedResourceId="fixture",TtsVolcDedicatedSpeaker="fixture",TtsVolcDedicatedAudioFormat="pcm",TtsVolcDedicatedAdditionsJson="{}";
   public int TtsVolcDedicatedSampleRate=24000;
@@ -44,6 +51,10 @@ static class Program {
  static void Check(string name,Action test){try{DuelSettings.Read=()=>new();LegacyVolcTtsGateway.Send=(_,_)=>new(){Success=true,AudioBytes=new byte[16]};while(BannerlordExceptionSentinel.Errors.TryDequeue(out _)){};test();Passed++;Console.WriteLine("PASS "+name);}catch(Exception e){Failed++;Console.WriteLine("FAIL "+name+": "+e);}}
  static int Main(){
   typeof(TtsEngine).GetField("_tempAudioDir",F).SetValue(null,Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));
+  foreach(string scenario in new[]{"v3-no-app","master-disabled","provider-disabled","url-empty","url-unsupported","v1-no-app"})
+  Check("settings test button: "+scenario,()=>{using var e=Manual();var slot=typeof(TtsEngine).GetField("_instance",F);object prior=slot.GetValue(null);slot.SetValue(null,e);try{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};if(scenario=="master-disabled")settings.EnableTtsSpeech=false;if(scenario=="provider-disabled")settings.TtsVolcDedicatedEnabled=false;if(scenario=="url-empty")settings.TtsVolcDedicatedApiUrl="";if(scenario=="url-unsupported")settings.TtsVolcDedicatedApiUrl+="/sse";if(scenario=="v1-no-app")settings.TtsVolcDedicatedApiUrl="https://fixture.invalid";DuelSettings.Read=()=>settings;InformationManager.Messages.Clear();settings.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==(scenario=="v3-no-app"?1:0),"incorrect enqueue");Assert(InformationManager.Messages.Count==1,"missing or duplicated feedback");}finally{slot.SetValue(null,prior);}});
+  Check("V3 without AppID reaches gateway and keeps request ownership",()=>{DuelSettings.Read=()=>new(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};int sent=0,done=0;LegacyVolcTtsGateway.Send=(r,c)=>{Assert(c.CanBeCanceled,"lost request token");Interlocked.Increment(ref sent);return new(){Success=true,AudioBytes=new byte[16]};};using var e=Active();e.OnRequestPlaybackFinished+=_=>Interlocked.Increment(ref done);Speak(e);Eventually(()=>done==1&&Jobs(e).Count==0,"not finished");Assert(sent==1,"duplicate or missing request");});
+  Check("unsupported V3 fails before network and next job survives",()=>{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional/sse"};DuelSettings.Read=()=>settings;int sent=0,failed=0,done=0;LegacyVolcTtsGateway.Send=(r,c)=>{Interlocked.Increment(ref sent);return new(){Success=true,AudioBytes=new byte[16]};};using var e=Active();e.OnRequestPlaybackFailed+=(_,_)=>Interlocked.Increment(ref failed);e.OnRequestPlaybackFinished+=_=>Interlocked.Increment(ref done);Speak(e);Eventually(()=>failed==1&&Jobs(e).Count==0,"missing failure");Assert(sent==0,"unsupported sent");settings.TtsVolcDedicatedApiUrl="https://fixture.invalid";Speak(e);Eventually(()=>done==1&&Jobs(e).Count==0,"worker did not recover");Assert(sent==1,"next not sent");});
   Check("not-ready rejects without acceptance",()=>{using var e=new TtsEngine();int n=0;Assert(!Speak(e,_=>n++),"accepted");Assert(n==0,"callback");});
   Check("blank rejects without acceptance",()=>{using var e=Manual();int n=0;Assert(!Speak(e,_=>n++," "),"accepted");Assert(n==0,"callback");});
   Check("acceptance precedes publication and runs outside lock",()=>{using var e=Manual();Assert(Speak(e,r=>{Assert(!Monitor.IsEntered(Get(e,"_requestLock")),"lock held");Assert((int)Get(e,"_reservedQueueSlots")==1,"unreserved");Assert(((ICollection)Get(e,"_jobQueue")).Count==0,"published early");}),"rejected");});
