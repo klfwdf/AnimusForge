@@ -1414,7 +1414,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				SynchronizeArmyObjectiveForCommand(party, command);
 				state.Stage = CommandStage.Traveling.ToString();
 				state.LastIssuedActionKey = actionKey;
-				NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在前往" + GetSettlementName(settlement) + "，若原版AI打断会自动重新下达前往命令。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, actionKey + ":refresh", WorldMapUiText.Result("AF_WM_StatusGoToSettlement", "{ACTOR} is heading to {SETTLEMENT}; if native AI interrupts, the move command will be issued again.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Progress);
 				Log("go_refresh hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " " + DescribePartyAi(party));
 			}
 		}
@@ -1485,7 +1485,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				state.LastIssuedActionKey = actionKey;
 			}
-			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在" + GetSettlementName(settlement) + "附近巡逻，若原版AI打断会自动重新下达巡逻命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, actionKey + ":refresh", WorldMapUiText.Result("AF_WM_StatusPatrolSettlement", "{ACTOR} is patrolling near {SETTLEMENT}; if native AI interrupts, the patrol command will be issued again.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Progress);
 			Log("patrol_refresh hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " " + DescribePartyAi(party));
 		}
 		if (state.ArrivalDay < 0.0 && IsPartyNearSettlementForPatrol(party, settlement, PatrolArrivalDistance))
@@ -1538,7 +1538,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (!TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: true, "resume_follow:" + phase))
 			{
 				SetPendingSafeExit(state, PendingSafeExitResumeFollow, "resume_follow:" + phase);
-				NotifyCommandStatus(state, "follow_siege_wait_exit:" + (state.FollowSiegeSettlementId ?? ""), GetActorName(state, hero, party) + "正在完成当前战斗，结算后将退出攻城并恢复跟随。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, "follow_siege_wait_exit:" + (state.FollowSiegeSettlementId ?? ""), WorldMapUiText.Result("AF_WM_StatusFollowSiegeWaitExit", "{ACTOR} is finishing the current battle; after it resolves, the party will leave the siege and resume following.", ("ACTOR", GetActorName(state, hero, party))), CommandMessageTone.Progress);
 				return;
 			}
 		}
@@ -1562,7 +1562,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				NotifyCommandStatus(state, escortActionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + targetName + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, escortActionKey + ":refresh", WorldMapUiText.Result("AF_WM_StatusFollowing", "{ACTOR} is following {TARGET}; if native AI interrupts, the follow command will be issued again.", ("ACTOR", GetActorName(state, hero, party)), ("TARGET", targetName)), CommandMessageTone.Progress);
 			}
 			Log("follow_refresh actor=" + GetActorLogId(state, hero, party) + " target=" + (targetParty?.StringId ?? command.TargetId ?? "") + " " + DescribePartyAi(party));
 		}
@@ -1615,7 +1615,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				SetPartyAiAction.GetActionForBesiegingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false);
 				state.Stage = CommandStage.Traveling.ToString();
 				state.LastIssuedActionKey = actionKey;
-				NotifyCommandStatus(state, actionKey, GetActorName(state, hero, party) + "正在跟随" + targetName + "加入玩家对" + GetSettlementName(settlement) + "的围攻。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, actionKey, WorldMapUiText.Result("AF_WM_StatusFollowSiegeTravel", "{ACTOR} is following {TARGET} to join the player's siege of {SETTLEMENT}.", ("ACTOR", GetActorName(state, hero, party)), ("TARGET", targetName), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Progress);
 				Log("follow_siege_travel actor=" + GetActorLogId(state, hero, party) + " target=" + (targetParty?.StringId ?? "") + " settlement=" + settlementId + " " + DescribePartyAi(party));
 			}
 			return;
@@ -1642,7 +1642,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (becameActive)
 		{
 			LogFact(state, hero, GetActorName(state, hero, party) + "已经随" + targetName + "加入对" + GetSettlementName(settlement) + "的围攻。");
-			NotifyCommandStatus(state, activeActionKey, GetActorName(state, hero, party) + "已经加入对" + GetSettlementName(settlement) + "的围攻。", CommandMessageTone.Success);
+			NotifyCommandStatus(state, activeActionKey, WorldMapUiText.Result("AF_WM_StatusFollowSiegeActive", "{ACTOR} has joined the siege of {SETTLEMENT}.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Success);
 			Log("follow_siege_active actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlementId + " owned=" + state.FollowSiegeJoinedByCommand);
 		}
 	}
@@ -2251,7 +2251,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.EngageCommitted = false;
 			state.Stage = CommandStage.Tracking.ToString();
 			state.LastIssuedActionKey = "raid_retry:" + settlement.StringId;
-			NotifyCommandStatus(state, state.LastIssuedActionKey + ":" + reason, GetActorName(state, hero, party) + "的烧村行动被原版事件提前中断，正在重新保持对" + GetSettlementName(settlement) + "的烧掠命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, state.LastIssuedActionKey + ":" + reason, WorldMapUiText.Result("AF_WM_StatusRaidInterrupted", "{ACTOR}'s village raid was interrupted by a native event; maintaining the raid command against {SETTLEMENT} again.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Progress);
 			Log("raid_retry_after_nonfinal_end actor=" + GetActorLogId(state, hero, party) + " settlement=" + (settlement.StringId ?? "") + " reason=" + (reason ?? "") + " hp=" + settlement.SettlementHitPoints.ToString("0.000") + " troops=" + raidEvent.AttackerSide.TroopCount + " " + DescribePartyAi(party));
 			return true;
 		}
@@ -2404,7 +2404,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage_party:" + targetParty.StringId;
-		NotifyCommandStatus(state, state.LastIssuedActionKey + ":reengage", GetHeroName(actorHero) + "重新追上" + GetPartyName(targetParty) + "，继续执行攻击命令。", CommandMessageTone.Progress);
+		NotifyCommandStatus(state, state.LastIssuedActionKey + ":reengage", WorldMapUiText.Result("AF_WM_StatusReengageParty", "{ACTOR} caught up with {TARGET} again and is continuing the attack command.", ("ACTOR", GetHeroName(actorHero)), ("TARGET", GetPartyName(targetParty))), CommandMessageTone.Progress);
 		Log("party_attack_reengage hero=" + (actorHero?.StringId ?? "") + " targetParty=" + targetParty.StringId + " " + DescribePartyAi(party));
 	}
 
@@ -2439,7 +2439,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage:" + targetHero.StringId;
-		NotifyCommandStatus(state, state.LastIssuedActionKey + ":reengage", GetHeroName(actorHero) + "重新追上" + GetHeroName(targetHero) + "的部队，继续执行攻击命令。", CommandMessageTone.Progress);
+		NotifyCommandStatus(state, state.LastIssuedActionKey + ":reengage", WorldMapUiText.Result("AF_WM_StatusReengageHero", "{ACTOR} caught up with {TARGET}'s party again and is continuing the attack command.", ("ACTOR", GetHeroName(actorHero)), ("TARGET", GetHeroName(targetHero))), CommandMessageTone.Progress);
 		Log("attack_reengage hero=" + (actorHero?.StringId ?? "") + " target=" + targetHero.StringId + " " + DescribePartyAi(party));
 	}
 
@@ -2470,8 +2470,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				IssueMergeApproachAction(party, MobileParty.MainParty);
 				state.LastIssuedActionKey = "merge_to_player";
 				NotifyCommandStatus(state, "merge_to_player_refresh", IsForeignClanGuestHero(hero)
-					? (GetHeroName(hero) + "正率部前往玩家主队，若原版AI打断会自动重新下达客军并队命令。")
-					: (GetHeroName(hero) + "正在返回玩家部队，若原版AI打断会自动重新下达回队命令。"), CommandMessageTone.Progress);
+					? WorldMapUiText.Result("AF_WM_StatusMergeForeign", "{HERO} is leading the guest force toward the player's main party; if native AI interrupts, the guest-force merge command will be issued again.", ("HERO", GetHeroName(hero)))
+					: WorldMapUiText.Result("AF_WM_StatusMerge", "{HERO} is returning to the player's party; if native AI interrupts, the merge command will be issued again.", ("HERO", GetHeroName(hero))), CommandMessageTone.Progress);
 				Log("merge_refresh hero=" + (hero?.StringId ?? "") + " " + DescribePartyAi(party));
 			}
 			return;
@@ -2549,7 +2549,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				Log("merge destroy deferred hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? "") + " rollback=" + rollbackSucceeded + " attempt=" + state.MergeTransferFailureCount);
 				if (!rollbackSucceeded || state.MergeTransferFailureCount >= 3)
 				{
-					NotifyCommandStatus(state, "merge_to_player_destroy_stopped", GetHeroName(hero) + "的临时部队无法安全销毁，自动合并已停止，以免重复转移资产。", CommandMessageTone.Failure);
+					NotifyCommandStatus(state, "merge_to_player_destroy_stopped", WorldMapUiText.Result("AF_WM_StatusMergeDestroyStopped", "{HERO}'s temporary party could not be safely destroyed; automatic merging stopped to avoid transferring assets twice.", ("HERO", GetHeroName(hero))), CommandMessageTone.Failure);
 					AdvanceCommand(hero, party, state, "merge_destroy_failed", terminalFailure: true);
 					return;
 				}
@@ -2577,12 +2577,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("merge to player transfer failed hero=" + (hero?.StringId ?? "") + " stage=" + transferStage + " rollback=" + rollbackSucceeded + " attempt=" + state.MergeTransferFailureCount + " error=" + ex);
 			if (!rollbackSucceeded || state.MergeTransferFailureCount >= 3)
 			{
-				NotifyCommandStatus(state, "merge_to_player_transfer_stopped", GetHeroName(hero) + "的兵员转入连续失败，自动合并已停止，以免重复回滚损坏资产。", CommandMessageTone.Failure);
+				NotifyCommandStatus(state, "merge_to_player_transfer_stopped", WorldMapUiText.Result("AF_WM_StatusMergeTransferStopped", "Transferring troops from {HERO} failed repeatedly; automatic merging stopped to avoid damaging assets through repeated rollback.", ("HERO", GetHeroName(hero))), CommandMessageTone.Failure);
 				AdvanceCommand(hero, party, state, "merge_transfer_failed", terminalFailure: true);
 				return;
 			}
 			state.MergeRetryAfterDay = NowDay() + 0.25;
-			NotifyCommandStatus(state, "merge_to_player_transfer_failed", GetHeroName(hero) + "已经抵达玩家部队，但兵员转入失败；资产已回滚，将在6游戏小时后重试。", CommandMessageTone.Failure);
+			NotifyCommandStatus(state, "merge_to_player_transfer_failed", WorldMapUiText.Result("AF_WM_StatusMergeTransferRetry", "{HERO} reached the player's party, but the troop transfer failed; assets were rolled back and will be retried in six in-game hours.", ("HERO", GetHeroName(hero))), CommandMessageTone.Failure);
 		}
 	}
 
@@ -3864,12 +3864,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.Stage = CommandStage.New.ToString();
 		if (besiegerParty != null)
 		{
-			NotifyCommandStatus(state, "go_to_besieged_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? "") + ":" + (besiegerParty.StringId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "正在被敌对的" + GetPartyName(besiegerParty) + "围攻，改为攻击围城部队。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, "go_to_besieged_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? "") + ":" + (besiegerParty.StringId ?? ""), WorldMapUiText.Result("AF_WM_StatusGoToBesiegedConverted", "{ACTOR}'s destination {SETTLEMENT} is under siege by hostile {BESIEGER}; the move command was changed to attack the besieging force.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement)), ("BESIEGER", GetPartyName(besiegerParty))), CommandMessageTone.Progress);
 			Log("current_go_to_besieged_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " besieger=" + (besiegerParty.StringId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
 		}
 		else
 		{
-			NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), WorldMapUiText.Result("AF_WM_StatusGoToHostileConverted", "{ACTOR}'s destination {SETTLEMENT} is hostile; the move command will use the native attack behavior.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Progress);
 			Log("current_go_to_hostile_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
 		}
 		return true;
@@ -5039,7 +5039,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (mapEvent != null && !mapEvent.IsFinalized && !IsCommandContinuingCurrentSettlementAttack(party, command, mapEvent.MapEventSettlement, mapEvent))
 			{
 				string waitKey = "preempt_wait_map_event:" + (phase ?? "") + ":" + (command.Kind ?? "") + ":" + (command.TargetId ?? "");
-				NotifyCommandStatus(state, waitKey, GetActorName(state, hero, party) + "正在参与" + GetMapEventPreemptReason(mapEvent) + "，将在原版战斗结算后执行新的大地图命令。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, waitKey, WorldMapUiText.Result("AF_WM_StatusPreemptMapEvent", "{ACTOR} is participating in {REASON}; the new world-map command will run after the native battle resolves.", ("ACTOR", GetActorName(state, hero, party)), ("REASON", GetMapEventPreemptReasonForUi(mapEvent))), CommandMessageTone.Progress);
 				Log("preempt_deferred actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " event=" + GetMapEventPreemptReason(mapEvent) + " phase=" + (phase ?? ""));
 				return false;
 			}
@@ -5049,7 +5049,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				if (HasActiveSiegeMapEvent(party, siegeSettlement))
 				{
 					string waitKey = "preempt_wait_siege_event:" + (phase ?? "") + ":" + (command.Kind ?? "") + ":" + (command.TargetId ?? "");
-					NotifyCommandStatus(state, waitKey, GetActorName(state, hero, party) + "正在参与当前攻城事件，结算后再退出围城执行新命令。", CommandMessageTone.Progress);
+					NotifyCommandStatus(state, waitKey, WorldMapUiText.Result("AF_WM_StatusPreemptSiege", "{ACTOR} is participating in the current siege event; after it resolves, the party will leave the siege and run the new world-map command.", ("ACTOR", GetActorName(state, hero, party))), CommandMessageTone.Progress);
 					return false;
 				}
 				try
@@ -5088,7 +5088,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				reason = "当前原版行动";
 			}
 			string key = "preempt:" + phase + ":" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "");
-			NotifyCommandStatus(state, key, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, key, WorldMapUiText.Result("AF_WM_StatusPreemptChanged", "{ACTOR} abandoned {REASON} and switched to the new world-map command.", ("ACTOR", GetActorName(state, hero, party)), ("REASON", LocalizePreemptReason(reason))), CommandMessageTone.Progress);
 			LogFact(state, hero, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。");
 			Log("preempt_activity actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
 			return true;
@@ -5193,6 +5193,48 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 		}
 		return "当前原版事件";
+	}
+
+	private static string GetMapEventPreemptReasonForUi(MapEvent mapEvent)
+	{
+		try
+		{
+			if (mapEvent == null)
+			{
+				return WorldMapUiText.Result("AF_WM_PreemptNativeEvent", "the current native event");
+			}
+			if (mapEvent.IsRaid)
+			{
+				return WorldMapUiText.Result("AF_WM_PreemptRaid", "the current raid");
+			}
+			if (mapEvent.IsForcingSupplies)
+			{
+				return WorldMapUiText.Result("AF_WM_PreemptSupplies", "the current supply requisition");
+			}
+			if (mapEvent.IsForcingVolunteers)
+			{
+				return WorldMapUiText.Result("AF_WM_PreemptVolunteers", "the current volunteer requisition");
+			}
+			if (mapEvent.IsSiegeAssault)
+			{
+				return WorldMapUiText.Result("AF_WM_PreemptSiege", "the current siege");
+			}
+		}
+		catch
+		{
+		}
+		return WorldMapUiText.Result("AF_WM_PreemptNativeEvent", "the current native event");
+	}
+
+	private static string LocalizePreemptReason(string reason)
+	{
+		switch ((reason ?? "").Trim())
+		{
+			case "当前围城": return WorldMapUiText.Result("AF_WM_PreemptSiege", "the current siege");
+			case "当前战略行动": return WorldMapUiText.Result("AF_WM_PreemptStrategicAction", "the current strategic action");
+			case "当前原版行动": return WorldMapUiText.Result("AF_WM_PreemptNativeAction", "the current native action");
+			default: return reason;
+		}
 	}
 
 	private static void LeaveArmyIfNeeded(MobileParty party)
