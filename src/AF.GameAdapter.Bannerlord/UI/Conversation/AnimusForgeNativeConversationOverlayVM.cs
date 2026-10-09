@@ -242,13 +242,13 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		_onGiveShow = onGiveShow;
 		_onEditPersona = onEditPersona;
 		_onTagTest = onTagTest;
-		PersonaEditButtonText = "编辑NPC";
-		TagTestButtonText = "标签输入";
+		PersonaEditButtonText = "{=AF_UI_Conversation_EditNpc}Edit NPC";
+		TagTestButtonText = "{=AF_UI_Conversation_TagInput}Tag input";
 		IsPersonaEditVisible = false;
 		IsTagTestVisible = false;
 		InputText = "";
-		AIChatHistoryButtonText = "对话历史";
-		GiveShowButtonText = "给予/展示";
+		AIChatHistoryButtonText = "{=AF_UI_Conversation_History}Conversation history";
+		GiveShowButtonText = "{=AF_UI_Conversation_GiveShow}Give / show";
 		IsInputEnabled = true;
 		CanSwitchTalk = true;
 		AIChatboxOffset = 0f;
@@ -331,6 +331,6 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private void RefreshSwitchTitle()
 	{
-		SwitchTitle = IsCustomAnswerVisible ? "普通模式" : "AI模式";
+		SwitchTitle = IsCustomAnswerVisible ? "{=AF_UI_Conversation_NormalMode}Normal mode" : "{=AF_UI_Conversation_AiMode}AI mode";
 	}
 }
