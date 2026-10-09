@@ -719,7 +719,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			WarStatsVm.RefreshContent();
 		}
-		BreadcrumbText = "终端 / 战争";
+		BreadcrumbText = "Terminal / " + new TextObject("{=AF_UI_Terminal_WarBreadcrumb}War").ToString();
 		SetViewMode(TerminalViewMode.WarStats);
 	}
 
@@ -729,7 +729,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		WeeklyReportVm?.OnFinalize();
 		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack,
 			link => AnimusForgeTerminalPopup.ActivePopup?.OpenArchiveEncyclopediaLink(link));
-		BreadcrumbText = "终端 / " + _selectedTab + " / 王国近况";
+		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_WeeklyBreadcrumb}Current kingdom reports").ToString();
 		SetViewMode(TerminalViewMode.WeeklyReports);
 	}
 
@@ -738,7 +738,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		_returnToView = ReturnToMenu;
 		VassalageVm?.OnFinalize();
 		VassalageVm = new TerminalVassalageTributeHistoryPopupVM(data ?? new TerminalTributaryPaymentHistoryData(), ExecuteBack);
-		BreadcrumbText = "终端 / " + _selectedTab + " / 臣属贡金结算记录";
+		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_VassalBreadcrumb}Vassal tribute settlement history").ToString();
 		SetViewMode(TerminalViewMode.Vassalage);
 	}
 
@@ -906,18 +906,18 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private static string BuildTagCatalogEntryDetailText(AnimusForgeTagCatalogEntry entry)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("标签：" + (entry.Tag ?? ""));
-		stringBuilder.AppendLine("分类：" + (entry.Category ?? "标签"));
+		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_TagLabel}Tag:").ToString() + " " + (entry.Tag ?? ""));
+		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_CategoryLabel}Category:").ToString() + " " + (entry.Category ?? new TextObject("{=AF_UI_Terminal_Tag}Tag").ToString()));
 		if (!string.IsNullOrWhiteSpace(entry.Description))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("说明：");
+			stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_DescriptionLabel}Description:").ToString());
 			stringBuilder.AppendLine(entry.Description.Trim());
 		}
 		if (entry.Sources != null && entry.Sources.Count > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("来源：");
+			stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_SourcesLabel}Sources:").ToString());
 			foreach (string source in entry.Sources)
 			{
 				stringBuilder.AppendLine(source);

@@ -299,5 +299,12 @@
   <string id="AF_UI_Terminal_HotkeyOn" text="已开启终端按键呼出（U键）。" />
   <string id="AF_UI_Terminal_MapIconOff" text="已关闭大地图终端图标入口。" />
   <string id="AF_UI_Terminal_MapIconOn" text="已开启大地图终端图标入口。" />
+  <string id="AF_UI_Terminal_WarBreadcrumb" text="战争" />
+  <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="王国近况" />
+  <string id="AF_UI_Terminal_VassalBreadcrumb" text="臣属贡金结算记录" />
+  <string id="AF_UI_Terminal_TagLabel" text="标签：" />
+  <string id="AF_UI_Terminal_CategoryLabel" text="分类：" />
+  <string id="AF_UI_Terminal_DescriptionLabel" text="说明：" />
+  <string id="AF_UI_Terminal_SourcesLabel" text="来源：" />
   </strings>
 </base>
