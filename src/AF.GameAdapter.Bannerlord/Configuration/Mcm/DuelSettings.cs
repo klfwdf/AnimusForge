@@ -2158,112 +2158,112 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool DisableBuiltInSceneReplyFormatPrompt { get; set; } = false;
 
-	[SettingPropertyBool("由AI评估政策消耗", Order = 1, RequireRestart = false, HintText = "开启后，AI 会根据政策规模和执行难度评估所需第纳尔；第纳尔不足时，全部政策效果按实际投入比例折减。关闭后使用下面的固定第纳尔消耗。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyBool("{=AF_MCM_Policy_UseAiCost}Evaluate policy cost with AI", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Policy_UseAiCost_Hint}When enabled, AI estimates the denar cost from policy scale and execution difficulty; insufficient denars proportionally reduce all policy effects. When disabled, use the fixed denar cost below.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
 
-	[SettingPropertyDropdown("政策评议接口", Order = 0, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyDropdown("{=AF_MCM_Policy_EvaluationApi}Policy evaluation API", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Policy_EvaluationApi_Hint}Reuses the selected channel’s URL, key, model, and endpoint rules; incomplete selections fall back to the main API. Explicitly selecting preprocessing is independent of the normal preprocessing switch.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public Dropdown<string> PlayerPolicyApiSourceDropdown { get; set; } = BuildPolicyApiSourceDropdown(0);
 
-	[SettingPropertyDropdown("AI编写接口", Order = 1, RequireRestart = false, HintText = "只决定AI编写使用主链路、前处理或后处理；默认前处理。所选配置不完整时自动回退主接口，不影响政策评议接口。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyDropdown("{=AF_MCM_Policy_AutoDraftApi}AI drafting API", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Policy_AutoDraftApi_Hint}Selects whether AI drafting uses the main, preprocessing, or postprocessing channel; preprocessing is the default. Incomplete selections fall back to the main API and do not affect policy evaluation.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public Dropdown<string> PlayerPolicyAutoDraftApiSourceDropdown { get; set; } = BuildPlayerPolicyAutoDraftApiSourceDropdown(1);
 
-	[SettingPropertyInteger("固定第纳尔消耗", 0, 500000, "0", Order = 2, RequireRestart = false, HintText = "仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_GoldCost}Fixed denar cost", 0, 500000, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Policy_GoldCost_Hint}Applies only when AI policy-cost evaluation is disabled. Denars are deducted when a player policy is published; default 50000, and 0 means free.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public int CustomPolicyGoldCost { get; set; } = DefaultCustomPolicyGoldCost;
 
 	[Obsolete("Player policy influence cost is retained only for legacy settings compatibility and is no longer used.")]
 	public int CustomPolicyInfluenceCost { get; set; }
 
-	[SettingPropertyInteger("民众反馈篇幅", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "设置玩家政策发布后民众反馈的目标篇幅。默认约 900 字，可在 100—1800 字之间调整；实际长度可能随模型输出略有浮动。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_FeedbackChars}Public feedback length", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Policy_FeedbackChars_Hint}Target length for public feedback after a player policy is published. Default is about 900 characters; adjust from 100 to 1800. Actual length may vary slightly with model output.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
-	[SettingPropertyBool("跟随所选API Token", Order = 4, RequireRestart = false, HintText = "开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyBool("{=AF_MCM_Policy_FollowTokens}Follow selected API token limit", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Policy_FollowTokens_Hint}When enabled, use the maximum output tokens of the effective API source; if it falls back to the main API, use the main API token limit. When disabled, always use the custom policy value below.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public bool PlayerPolicyFollowSelectedApiTokens { get; set; } = true;
 
-	[SettingPropertyInteger("自定义最大输出Tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 5, RequireRestart = false, HintText = "仅在关闭“跟随所选API Token”后使用。只影响玩家政策，允许 1000—100000；不修改其他 API 的全局上限。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_CustomTokens}Custom maximum output tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Policy_CustomTokens_Hint}Used only when following the selected API token limit is disabled. Affects player policies only; range 1000–100000 and does not change other API global limits.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public int PlayerPolicyCustomMaxTokens { get; set; } = DefaultPolicyApiMaxTokens;
 
-	[SettingPropertyInteger("效果解析最大输出Tokens", PlayerPolicyEffectPostprocessMaxTokensMinimum, PlayerPolicyEffectPostprocessMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "玩家政策第二阶段效果 JSON 的最大输出 Tokens。默认 5000；实际值不会超过上方玩家政策当前生效的 Token 上限。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_EffectTokens}Effect parsing maximum output tokens", PlayerPolicyEffectPostprocessMaxTokensMinimum, PlayerPolicyEffectPostprocessMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Policy_EffectTokens_Hint}Maximum output tokens for the player-policy second-stage effect JSON. Default 5000; the effective value never exceeds the current player-policy token limit above.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public int PlayerPolicyEffectPostprocessMaxTokens { get; set; } = DefaultPlayerPolicyEffectPostprocessMaxTokens;
 
-	[SettingPropertyInteger("效果模块详规数量", PlayerPolicyEffectModuleDetailCountMinimum, PlayerPolicyEffectModuleDetailCountMaximum, "0", Order = 7, RequireRestart = false, HintText = "兼容旧配置，保存值仍可为 1—30，默认 6；最终最多向第二阶段注入 8 个详规，超过 8 的设置按 8 执行。该设置不限制 ONNX 内部候选池。数值越高，提示词和 Token 消耗越大。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_EffectDetail}Effect module detail count", PlayerPolicyEffectModuleDetailCountMinimum, PlayerPolicyEffectModuleDetailCountMaximum, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Policy_EffectDetail_Hint}Legacy-compatible value range is 1–30, default 6; at most 8 detail modules enter stage two, and values above 8 execute as 8. This does not limit the ONNX candidate pool. Higher values use more prompt tokens.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public int PlayerPolicyEffectModuleDetailCount { get; set; } = DefaultPlayerPolicyEffectModuleDetailCount;
 
-	[SettingPropertyBool("领主投票考虑利益、关系与性格", Order = 8, RequireRestart = false, HintText = "开启后，王国议程中的自定义政策（玩家与 NPC 统治者提出的均适用）投票时，领主除原版政治立场外，还会考虑政策效果对自己封地、家族的实际利弊，以及与提案人的关系和政策手段与自身性格的匹配。已谈妥的拉票承诺优先兑现，不受影响。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyBool("{=AF_MCM_Policy_VoteInterest}Let lord votes consider interest, relations, and personality", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Policy_VoteInterest_Hint}When enabled, kingdom agenda votes on custom policies also consider effects on the lord’s fiefs and clan, relations with the proposer, and whether policy methods match the lord personality. Settled canvassing promises retain priority.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public bool PolicyVoteInterestEnabled { get; set; } = true;
 
-	[SettingPropertyFloatingInteger("投票利益权重", 0f, 3f, "0.00", Order = 9, RequireRestart = false, HintText = "政策效果对领主自身利益的影响倍率。1.00 时，明显惠及其封地的政策约可抵消普通贵族对王权类政策的反感；0 表示不考虑利益。默认 1.00。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Policy_VoteInterestWeight}Vote interest weight", 0f, 3f, "0.00", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Policy_VoteInterestWeight_Hint}Multiplier for policy effects on the lord’s own interests. At 1.00, a clear fief benefit can offset ordinary dislike of crown policies; 0 ignores interest. Default: 1.00.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public float PolicyVoteInterestWeight { get; set; } = 1f;
 
-	[SettingPropertyFloatingInteger("投票关系权重", 0f, 3f, "0.00", Order = 10, RequireRestart = false, HintText = "领主与提案人关系对投票方向的影响倍率。1.00 时，关系 +100 相当于一项中等收益，关系 -100 相当于一项中等损失；0 表示关系只按原版影响投票力度。默认 1.00。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Policy_VoteRelationWeight}Vote relation weight", 0f, 3f, "0.00", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Policy_VoteRelationWeight_Hint}Multiplier for the proposer–lord relation in vote direction. At 1.00, relation +100 is about a moderate benefit and -100 a moderate loss; 0 uses only the native relation influence. Default: 1.00.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public float PolicyVoteRelationWeight { get; set; } = 1f;
 
-	[SettingPropertyFloatingInteger("投票性格权重", 0f, 3f, "0.00", Order = 11, RequireRestart = false, HintText = "仁慈、荣誉、慷慨、勇气、审慎与政策手段的匹配倍率。默认 1；0 关闭性格评分。实际利益损失仍计入，坏特质不保证赞成。旧政策没有性格评议数据时保持原评分，可重新评议生成。")]
-	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Policy_VotePersonalityWeight}Vote personality weight", 0f, 3f, "0.00", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Policy_VotePersonalityWeight_Hint}Multiplier for matching mercy, honor, generosity, valor, prudence, and policy methods. Default: 1; 0 disables personality scoring. Actual losses still count, and bad traits do not guarantee approval.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Player_Group}16. Policy system/1. Player policy", GroupOrder = 160)]
 	public float PolicyVotePersonalityWeight { get; set; } = 1f;
 
-	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyBool("{=AF_MCM_Policy_EnableNpcRuler}Enable NPC ruler policies", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Policy_EnableNpcRuler_Hint}When enabled, NPC kingdoms create and publish policies at the configured interval. When disabled, no new policies are generated; active policies and records remain unchanged.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
 
-	[SettingPropertyDropdown("API来源", Order = 1, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyDropdown("{=AF_MCM_Policy_RulerApi}API source", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Policy_RulerApi_Hint}Reuses the selected channel’s URL, key, model, and endpoint rules; incomplete selections fall back to the main API. Explicit preprocessing selection is independent of the normal preprocessing switch.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public Dropdown<string> NpcRulerPolicyApiSourceDropdown { get; set; } = BuildPolicyApiSourceDropdown(3);
 
-	[SettingPropertyInteger("政策检查间隔（天）", NpcRulerPolicyCheckIntervalMinDays, NpcRulerPolicyCheckIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "每隔多少个游戏日检查一次是否需要生成新的 NPC 政策。默认 7 天，可在 1—30 天之间调整；没有符合条件的王国时，本轮不会生成政策。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_RulerInterval}Policy check interval (days)", NpcRulerPolicyCheckIntervalMinDays, NpcRulerPolicyCheckIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Policy_RulerInterval_Hint}How often to check whether a new NPC policy is needed. Default: 7 days; range 1–30. No policy is generated when no kingdom qualifies.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public int NpcRulerPolicyCheckIntervalDays { get; set; } = DefaultNpcRulerPolicyCheckIntervalDays;
 
 	[Obsolete("NPC ruler policy generation is fixed to one policy per check.")]
 	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = 1;
 
-	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_RulerCooldown}Same-kingdom policy cooldown (days)", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Policy_RulerCooldown_Hint}Minimum game days between policy drafts for the same NPC kingdom. Default: 7, range 1–30; pending, approved, and rejected normal drafts all count. Player vassal policies are exempt but suppress the target kingdom’s NPC ruler policy for this duration.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
 
-	[SettingPropertyBool("跟随所选API Token", Order = 5, RequireRestart = false, HintText = "开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyBool("{=AF_MCM_Policy_RulerFollowTokens}Follow selected API token limit", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Policy_RulerFollowTokens_Hint}When enabled, use the effective API source maximum output tokens; if it falls back to the main API, use the main API limit. When disabled, always use the custom policy value below.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public bool NpcRulerPolicyFollowSelectedApiTokens { get; set; } = true;
 
-	[SettingPropertyInteger("自定义最大输出Tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "仅在关闭“跟随所选API Token”后使用。只影响 NPC 统治者政策，允许 1000—100000；不修改其他 API 的全局上限。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_RulerCustomTokens}Custom maximum output tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Policy_RulerCustomTokens_Hint}Used only when following the selected API token limit is disabled. Affects NPC ruler policies only; range 1000–100000 and does not change other API global limits.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Ruler_Group}16. Policy system/2. NPC ruler policy", GroupOrder = 160)]
 	public int NpcRulerPolicyCustomMaxTokens { get; set; } = DefaultPolicyApiMaxTokens;
 
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
-	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
+	[SettingPropertyBool("{=AF_MCM_Diplomacy_Enable}Enable AI diplomacy", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Enable_Hint}When enabled, kingdoms publish declarations, negotiate, and take diplomatic actions. Diplomacy and clerk drafting reuse the event/rebellion API and fall back to the main API when incomplete. When disabled, native kingdom diplomacy decisions resume.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public bool EnableWorldDiplomacy { get; set; } = true;
 
-	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
+	[SettingPropertyBool("{=AF_MCM_Diplomacy_NewGamePeace}Peace at the start of a new game", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_NewGamePeace_Hint}Applies only to newly created saves and ends kingdom wars present at campaign start. Disabled by default; changing it does not reset wars in the current save.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = false;
 
-	[SettingPropertyBool("外交宣言送达提示", Order = 2, RequireRestart = false, HintText = "已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭只隐藏送达提示，不影响交涉、传播、快报素材或王国公告。默认开启。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
+	[SettingPropertyBool("{=AF_MCM_Diplomacy_MapNotice}Show declaration delivery notices", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_MapNotice_Hint}Delivered diplomatic declarations show a lower-left text notice instead of a right-side notification. Hiding notices does not affect negotiation, propagation, bulletin material, or kingdom announcements.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyMapNotifications { get; set; } = true;
 
 	[Obsolete("Legacy configuration compatibility only; ordinary event capacity and one opening per day replace the interval.")]
 	public int WorldDiplomacyRoundIntervalDays { get; set; } = 3;
 
-	[SettingPropertyInteger("同时进行的普通外交事件上限", 1, WorldDiplomacyMaxConcurrentOrdinaryRoundsMax, "0", Order = 3, RequireRestart = false, HintText = "普通自动外交与政策触发共用此上限，默认3场。满额时保留政策待办，已有交涉照常回复和收尾；降低上限不会取消已有事件。每天最多补开1场；玩家主动外交和口头承诺事件不占此名额。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_MaxRounds}Maximum concurrent ordinary diplomacy events", 1, WorldDiplomacyMaxConcurrentOrdinaryRoundsMax, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_MaxRounds_Hint}Shared by ordinary automatic diplomacy and policy triggers; default 3. When full, policy work remains pending while existing talks finish. Lowering the limit does not cancel existing events. At most one opens per day; player diplomacy and verbal-promise events do not use this slot.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
 	public int WorldDiplomacyMaxConcurrentOrdinaryRounds { get; set; } = DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds;
 
-	[SettingPropertyDropdown("单场外交参与国规模", Order = 4, RequireRestart = false, HintText = "少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
+	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_Activity}Countries per diplomacy event", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Activity_Hint}Low allows up to 2 countries, medium up to 3, and high up to 5, including the initiator. Only countries with real diplomatic business are selected. Default: medium; this is per-event participation, not the concurrent-event count.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyActivityDropdown { get; set; } = new Dropdown<string>(
 		new List<string> { "少量", "适中", "较多" },
 		1);
@@ -2271,24 +2271,24 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[Obsolete("Legacy configuration compatibility only; court and civilian delivery settings control propagation.")]
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
 
-	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/3. 传播", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_CourtDays}Farthest court delivery (days)", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_CourtDays_Hint}Assigns court delivery time by distance. Controls the farthest court and the relay pace for a new event round; countries do not all wait this many days. Default: 7; lower values produce denser replies.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Propagation_Group}17. AI diplomacy (testing)/3. Propagation", GroupOrder = 170)]
 	public int WorldDiplomacyCourtMaxDeliveryDays { get; set; } = 7;
 
-	[SettingPropertyInteger("宣言传遍大陆（天）", 7, 42, "0", Order = 7, RequireRestart = false, HintText = "按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/3. 传播", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_ContinentDays}Declaration spreads across the continent (days)", 7, 42, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_ContinentDays_Hint}Schedules when local nobles and civilians learn a declaration by distance. Default: 21 days; does not control automatic opening frequency or replace court delivery time.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Propagation_Group}17. AI diplomacy (testing)/3. Propagation", GroupOrder = 170)]
 	public int WorldDiplomacyContinentSpreadDays { get; set; } = 21;
 
-	[SettingPropertyDropdown("单场外交目标时长", Order = 5, RequireRestart = false, HintText = "决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
+	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_RoundLength}Diplomacy event target duration", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_RoundLength_Hint}Typical event closing time: compact about 15 days, standard about 21, and relaxed about 28. Results may end it early or briefly extend cleanup. Default: standard; affects new events only.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
 
-	[SettingPropertyInteger("AI外交宣言最小字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Minimum AI declaration characters", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default minimum 100, adjustable from 1 to 1000; does not limit player editing.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
 
-	[SettingPropertyInteger("AI外交宣言最大字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Maximum AI declaration characters", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default maximum 500, adjustable from 1 to 1000; values below the minimum use the minimum.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
 
 	// 仅保留用于兼容旧配置反序列化；自由外交流程不再读取或展示这些设置。
@@ -2307,28 +2307,28 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[Obsolete("Legacy configuration compatibility only; published declarations use their fixed semantic weight.")]
 	public int WorldDiplomacyDocumentInfluencePercent { get; set; } = 100;
 
-	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_WarCooldown}Proactive-war cooldown (days)", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_WarCooldown_Hint}After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Protection_Group}17. AI diplomacy (testing)/5. War and proposal protection", GroupOrder = 170)]
 	public int WorldDiplomacyOffensiveWarCooldownDays { get; set; } = 42;
 
-	[SettingPropertyInteger("和平保护期（天）", 0, 60, "0", Order = 12, RequireRestart = false, HintText = "两国议和后，普通外交争端在此期间不能再次引发战争。默认21天；设为0关闭此保护，不影响其他宣战资格限制。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_PeaceProtection}Peace protection period (days)", 0, 60, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_PeaceProtection_Hint}After two kingdoms make peace, ordinary diplomatic disputes cannot start another war during this period. Default: 21; 0 disables this protection but does not change other war-eligibility rules.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Protection_Group}17. AI diplomacy (testing)/5. War and proposal protection", GroupOrder = 170)]
 	public int WorldDiplomacyPeaceProtectionDays { get; set; } = 21;
 
-	[SettingPropertyInteger("贸易/结盟失败冷却（天）", 0, 672, "0", Order = 13, RequireRestart = false, HintText = "贸易或结盟提议未达成后，同一提出国向同一对象国暂时不能再提出相同类型提议。反向提议与另一类型分别计算。默认168天；设为0关闭。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_ProposalCooldown}Trade/alliance failed-proposal cooldown (days)", 0, 672, "0", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_ProposalCooldown_Hint}After a trade or alliance proposal fails, the same issuer cannot propose the same type to the same target during this period. Reverse proposals and other types are tracked separately. Default: 168; 0 disables.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Protection_Group}17. AI diplomacy (testing)/5. War and proposal protection", GroupOrder = 170)]
 	public int WorldDiplomacyTradeAllianceFailedProposalCooldownDays { get; set; } = 168;
 
-	[SettingPropertyInteger("威慑退让国内关系奖励", WorldDiplomacyThreatComplianceIssuerRelationRewardMin, WorldDiplomacyThreatComplianceIssuerRelationRewardMax, "0", Order = 14, RequireRestart = false, HintText = "对象国明确服从谴责或最后通牒后，发出国正式、非雇佣兵封臣家族的族长与当前国王增加此关系。每次威慑只结算一次。默认10；设为0关闭奖励。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_ThreatReward}Threat compliance relation reward", WorldDiplomacyThreatComplianceIssuerRelationRewardMin, WorldDiplomacyThreatComplianceIssuerRelationRewardMax, "0", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_ThreatReward_Hint}After the target kingdom explicitly complies with a condemnation or ultimatum, increase relation between the issuer’s eligible clan leader and the current king. Settled once per threat. Default: 10; 0 disables.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Protection_Group}17. AI diplomacy (testing)/5. War and proposal protection", GroupOrder = 170)]
 	public int WorldDiplomacyThreatComplianceIssuerRelationReward { get; set; } = DefaultWorldDiplomacyThreatComplianceIssuerRelationReward;
 
-	[SettingPropertyInteger("外交档案压缩触发值（千估算Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交档案达到该估算长度时开始分批压缩。默认800，即约800k Tokens，控制档案积压与压缩频率；不代表每次宣言携带这么多历史。宣言全部输入另有32k估算Tokens上限，压缩每批另有128k输入上限。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/6. 长期档案（高级）", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_CompressTrigger}Archive compression trigger (thousand estimated tokens)", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_CompressTrigger_Hint}Start batched compression when the long-term diplomacy archive reaches this estimated size. Default: 800 (about 800k tokens); controls backlog and frequency, not history carried by each declaration.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Archive_Group}17. AI diplomacy (testing)/6. Long-term archive (advanced)", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTriggerThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
 
-	[SettingPropertyInteger("外交档案压缩后目标（千估算Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/6. 长期档案（高级）", GroupOrder = 170)]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_CompressTarget}Archive compression target (thousand estimated tokens)", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_CompressTarget_Hint}Target combined size of the long-term snapshot and protected facts after each batch. Default: 48 (about 48k tokens), maximum 60k; declarations use only relevant material. Actual summaries also follow the selected API output-token limit.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Archive_Group}17. AI diplomacy (testing)/6. Long-term archive (advanced)", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
 
 	// 仅保留用于兼容旧 MCM 配置反序列化；新的长期记忆不再按累计 API Tokens 触发。
@@ -2342,12 +2342,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("AI外交与书记官代笔偏好", -1, true, "", Content = "打开编辑器", Order = 17, RequireRestart = false, HintText = "编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
+	[SettingPropertyButton("{=AF_MCM_Diplomacy_Edit}Edit AI diplomacy and clerk-drafting preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Edit_Content}Open editor", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Edit_Hint}Edit diplomacy decision and writing preferences. Clerk drafting expands the player’s existing content faithfully without adding substantive clauses. Blank adds no preference; fixed facts and output rules remain enforced.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyButton("恢复默认外交与代笔偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。")]
-	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
+	[SettingPropertyButton("{=AF_MCM_Diplomacy_Restore}Restore default diplomacy and drafting preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Restore_Content}Restore default", Order = 18, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Restore_Hint}Restores the mod default preference text. Only preference text is restored; event limits, propagation, length, and protection settings on this page are unchanged.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
 	[SettingPropertyBool("启用宴会功能", Order = 0, RequireRestart = false, HintText = "宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。")]

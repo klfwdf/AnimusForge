@@ -2670,6 +2670,91 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Notoriety_Distance_Hint" text="玩家发信瞬间，目标 NPC 与玩家距离小于玩家视野范围乘以该倍率时，信使链路可让 NPC 知道玩家近期行动。默认 3.0。" />
   <string id="AF_MCM_Notoriety_Debug" text="写入知名度调试日志" />
   <string id="AF_MCM_Notoriety_Debug_Hint" text="开启后在 Mod_Logic.txt 中写入玩家知名度记录、知晓判定、总结与注入相关日志。" />
+  
+  <string id="AF_MCM_Policy_Player_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_MCM_Policy_Ruler_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_MCM_Diplomacy_Base_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_MCM_Diplomacy_Pacing_Group" text="17. AI外交（测试中）/2. 事件节奏" />
+  <string id="AF_MCM_Diplomacy_Propagation_Group" text="17. AI外交（测试中）/3. 传播" />
+  <string id="AF_MCM_Diplomacy_Declaration_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_MCM_Diplomacy_Protection_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
+  <string id="AF_MCM_Diplomacy_Archive_Group" text="17. AI外交（测试中）/6. 长期档案（高级）" />
+  <string id="AF_MCM_Policy_UseAiCost" text="由AI评估政策消耗" />
+  <string id="AF_MCM_Policy_UseAiCost_Hint" text="开启后，AI 会根据政策规模和执行难度评估所需第纳尔；第纳尔不足时，全部政策效果按实际投入比例折减。关闭后使用下面的固定第纳尔消耗。" />
+  <string id="AF_MCM_Policy_EvaluationApi" text="政策评议接口" />
+  <string id="AF_MCM_Policy_EvaluationApi_Hint" text="复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。" />
+  <string id="AF_MCM_Policy_AutoDraftApi" text="AI编写接口" />
+  <string id="AF_MCM_Policy_AutoDraftApi_Hint" text="只决定AI编写使用主链路、前处理或后处理；默认前处理。所选配置不完整时自动回退主接口，不影响政策评议接口。" />
+  <string id="AF_MCM_Policy_GoldCost" text="固定第纳尔消耗" />
+  <string id="AF_MCM_Policy_GoldCost_Hint" text="仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。" />
+  <string id="AF_MCM_Policy_FeedbackChars" text="民众反馈篇幅" />
+  <string id="AF_MCM_Policy_FeedbackChars_Hint" text="设置玩家政策发布后民众反馈的目标篇幅。默认约 900 字，可在 100—1800 字之间调整；实际长度可能随模型输出略有浮动。" />
+  <string id="AF_MCM_Policy_FollowTokens" text="跟随所选API Token" />
+  <string id="AF_MCM_Policy_FollowTokens_Hint" text="开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。" />
+  <string id="AF_MCM_Policy_CustomTokens" text="自定义最大输出Tokens" />
+  <string id="AF_MCM_Policy_CustomTokens_Hint" text="仅在关闭“跟随所选API Token”后使用。只影响玩家政策，允许 1000—100000；不修改其他 API 的全局上限。" />
+  <string id="AF_MCM_Policy_EffectTokens" text="效果解析最大输出Tokens" />
+  <string id="AF_MCM_Policy_EffectTokens_Hint" text="玩家政策第二阶段效果 JSON 的最大输出 Tokens。默认 5000；实际值不会超过上方玩家政策当前生效的 Token 上限。" />
+  <string id="AF_MCM_Policy_EffectDetail" text="效果模块详规数量" />
+  <string id="AF_MCM_Policy_EffectDetail_Hint" text="兼容旧配置，保存值仍可为 1—30，默认 6；最终最多向第二阶段注入 8 个详规，超过 8 的设置按 8 执行。该设置不限制 ONNX 内部候选池。数值越高，提示词和 Token 消耗越大。" />
+  <string id="AF_MCM_Policy_VoteInterest" text="领主投票考虑利益、关系与性格" />
+  <string id="AF_MCM_Policy_VoteInterest_Hint" text="开启后，王国议程中的自定义政策（玩家与 NPC 统治者提出的均适用）投票时，领主除原版政治立场外，还会考虑政策效果对自己封地、家族的实际利弊，以及与提案人的关系和政策手段与自身性格的匹配。已谈妥的拉票承诺优先兑现，不受影响。" />
+  <string id="AF_MCM_Policy_VoteInterestWeight" text="投票利益权重" />
+  <string id="AF_MCM_Policy_VoteInterestWeight_Hint" text="政策效果对领主自身利益的影响倍率。1.00 时，明显惠及其封地的政策约可抵消普通贵族对王权类政策的反感；0 表示不考虑利益。默认 1.00。" />
+  <string id="AF_MCM_Policy_VoteRelationWeight" text="投票关系权重" />
+  <string id="AF_MCM_Policy_VoteRelationWeight_Hint" text="领主与提案人关系对投票方向的影响倍率。1.00 时，关系 +100 相当于一项中等收益，关系 -100 相当于一项中等损失；0 表示关系只按原版影响投票力度。默认 1.00。" />
+  <string id="AF_MCM_Policy_VotePersonalityWeight" text="投票性格权重" />
+  <string id="AF_MCM_Policy_VotePersonalityWeight_Hint" text="仁慈、荣誉、慷慨、勇气、审慎与政策手段的匹配倍率。默认 1；0 关闭性格评分。实际利益损失仍计入，坏特质不保证赞成。旧政策没有性格评议数据时保持原评分，可重新评议生成。" />
+  <string id="AF_MCM_Policy_EnableNpcRuler" text="启用NPC统治者政策" />
+  <string id="AF_MCM_Policy_EnableNpcRuler_Hint" text="开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。" />
+  <string id="AF_MCM_Policy_RulerApi" text="API来源" />
+  <string id="AF_MCM_Policy_RulerApi_Hint" text="复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。" />
+  <string id="AF_MCM_Policy_RulerInterval" text="政策检查间隔（天）" />
+  <string id="AF_MCM_Policy_RulerInterval_Hint" text="每隔多少个游戏日检查一次是否需要生成新的 NPC 政策。默认 7 天，可在 1—30 天之间调整；没有符合条件的王国时，本轮不会生成政策。" />
+  <string id="AF_MCM_Policy_RulerCooldown" text="同一王国政策冷却（天）" />
+  <string id="AF_MCM_Policy_RulerCooldown_Hint" text="同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。" />
+  <string id="AF_MCM_Policy_RulerFollowTokens" text="跟随所选API Token" />
+  <string id="AF_MCM_Policy_RulerFollowTokens_Hint" text="开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。" />
+  <string id="AF_MCM_Policy_RulerCustomTokens" text="自定义最大输出Tokens" />
+  <string id="AF_MCM_Policy_RulerCustomTokens_Hint" text="仅在关闭“跟随所选API Token”后使用。只影响 NPC 统治者政策，允许 1000—100000；不修改其他 API 的全局上限。" />
+  <string id="AF_MCM_Diplomacy_Enable" text="启用AI外交" />
+  <string id="AF_MCM_Diplomacy_Enable_Hint" text="开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。" />
+  <string id="AF_MCM_Diplomacy_NewGamePeace" text="新游戏开局全大陆和平" />
+  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。" />
+  <string id="AF_MCM_Diplomacy_MapNotice" text="外交宣言送达提示" />
+  <string id="AF_MCM_Diplomacy_MapNotice_Hint" text="已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭只隐藏送达提示，不影响交涉、传播、快报素材或王国公告。默认开启。" />
+  <string id="AF_MCM_Diplomacy_MaxRounds" text="同时进行的普通外交事件上限" />
+  <string id="AF_MCM_Diplomacy_MaxRounds_Hint" text="普通自动外交与政策触发共用此上限，默认3场。满额时保留政策待办，已有交涉照常回复和收尾；降低上限不会取消已有事件。每天最多补开1场；玩家主动外交和口头承诺事件不占此名额。" />
+  <string id="AF_MCM_Diplomacy_Activity" text="单场外交参与国规模" />
+  <string id="AF_MCM_Diplomacy_Activity_Hint" text="少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。" />
+  <string id="AF_MCM_Diplomacy_CourtDays" text="宣言送达最远王庭（天）" />
+  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
+  <string id="AF_MCM_Diplomacy_ContinentDays" text="宣言传遍大陆（天）" />
+  <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。" />
+  <string id="AF_MCM_Diplomacy_RoundLength" text="单场外交目标时长" />
+  <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin" text="AI外交宣言最小字数" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax" text="AI外交宣言最大字数" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_WarCooldown" text="再次主动开战间隔（天）" />
+  <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。" />
+  <string id="AF_MCM_Diplomacy_PeaceProtection" text="和平保护期（天）" />
+  <string id="AF_MCM_Diplomacy_PeaceProtection_Hint" text="两国议和后，普通外交争端在此期间不能再次引发战争。默认21天；设为0关闭此保护，不影响其他宣战资格限制。" />
+  <string id="AF_MCM_Diplomacy_ProposalCooldown" text="贸易/结盟失败冷却（天）" />
+  <string id="AF_MCM_Diplomacy_ProposalCooldown_Hint" text="贸易或结盟提议未达成后，同一提出国向同一对象国暂时不能再提出相同类型提议。反向提议与另一类型分别计算。默认168天；设为0关闭。" />
+  <string id="AF_MCM_Diplomacy_ThreatReward" text="威慑退让国内关系奖励" />
+  <string id="AF_MCM_Diplomacy_ThreatReward_Hint" text="对象国明确服从谴责或最后通牒后，发出国正式、非雇佣兵封臣家族的族长与当前国王增加此关系。每次威慑只结算一次。默认10；设为0关闭奖励。" />
+  <string id="AF_MCM_Diplomacy_CompressTrigger" text="外交档案压缩触发值（千估算Tokens）" />
+  <string id="AF_MCM_Diplomacy_CompressTrigger_Hint" text="长期外交档案达到该估算长度时开始分批压缩。默认800，即约800k Tokens，控制档案积压与压缩频率；不代表每次宣言携带这么多历史。宣言全部输入另有32k估算Tokens上限，压缩每批另有128k输入上限。" />
+  <string id="AF_MCM_Diplomacy_CompressTarget" text="外交档案压缩后目标（千估算Tokens）" />
+  <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
+  <string id="AF_MCM_Diplomacy_Edit" text="AI外交与书记官代笔偏好" />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。" />
+  <string id="AF_MCM_Diplomacy_Edit_Content" text="打开编辑器" />
+  <string id="AF_MCM_Diplomacy_Restore" text="恢复默认外交与代笔偏好" />
+  <string id="AF_MCM_Diplomacy_Restore_Hint" text="确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。" />
+  <string id="AF_MCM_Diplomacy_Restore_Content" text="恢复默认" />
   </strings>
 </base>
 

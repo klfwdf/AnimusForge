@@ -2639,6 +2639,91 @@ Choose how to proceed:" />
   <string id="AF_MCM_Notoriety_Distance_Hint" text="When the target NPC is within player sight range multiplied by this value at the moment a letter is sent, the courier chain can expose the player recent action. Default: 3.0." />
   <string id="AF_MCM_Notoriety_Debug" text="Write notoriety debug log" />
   <string id="AF_MCM_Notoriety_Debug_Hint" text="Writes player notoriety records, knowledge checks, summaries, and injection details to Mod_Logic.txt." />
+  
+  <string id="AF_MCM_Policy_Player_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_MCM_Policy_Ruler_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_MCM_Diplomacy_Base_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_MCM_Diplomacy_Pacing_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
+  <string id="AF_MCM_Diplomacy_Propagation_Group" text="17. AI diplomacy (testing)/3. Propagation" />
+  <string id="AF_MCM_Diplomacy_Declaration_Group" text="17. AI diplomacy (testing)/4. Declarations and drafting" />
+  <string id="AF_MCM_Diplomacy_Protection_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
+  <string id="AF_MCM_Diplomacy_Archive_Group" text="17. AI diplomacy (testing)/6. Long-term archive (advanced)" />
+  <string id="AF_MCM_Policy_UseAiCost" text="Evaluate policy cost with AI" />
+  <string id="AF_MCM_Policy_UseAiCost_Hint" text="When enabled, AI estimates the denar cost from policy scale and execution difficulty; insufficient denars proportionally reduce all policy effects. When disabled, use the fixed denar cost below." />
+  <string id="AF_MCM_Policy_EvaluationApi" text="Policy evaluation API" />
+  <string id="AF_MCM_Policy_EvaluationApi_Hint" text="Reuses the selected channel’s URL, key, model, and endpoint rules; incomplete selections fall back to the main API. Explicitly selecting preprocessing is independent of the normal preprocessing switch." />
+  <string id="AF_MCM_Policy_AutoDraftApi" text="AI drafting API" />
+  <string id="AF_MCM_Policy_AutoDraftApi_Hint" text="Selects whether AI drafting uses the main, preprocessing, or postprocessing channel; preprocessing is the default. Incomplete selections fall back to the main API and do not affect policy evaluation." />
+  <string id="AF_MCM_Policy_GoldCost" text="Fixed denar cost" />
+  <string id="AF_MCM_Policy_GoldCost_Hint" text="Applies only when AI policy-cost evaluation is disabled. Denars are deducted when a player policy is published; default 50000, and 0 means free." />
+  <string id="AF_MCM_Policy_FeedbackChars" text="Public feedback length" />
+  <string id="AF_MCM_Policy_FeedbackChars_Hint" text="Target length for public feedback after a player policy is published. Default is about 900 characters; adjust from 100 to 1800. Actual length may vary slightly with model output." />
+  <string id="AF_MCM_Policy_FollowTokens" text="Follow selected API token limit" />
+  <string id="AF_MCM_Policy_FollowTokens_Hint" text="When enabled, use the maximum output tokens of the effective API source; if it falls back to the main API, use the main API token limit. When disabled, always use the custom policy value below." />
+  <string id="AF_MCM_Policy_CustomTokens" text="Custom maximum output tokens" />
+  <string id="AF_MCM_Policy_CustomTokens_Hint" text="Used only when following the selected API token limit is disabled. Affects player policies only; range 1000–100000 and does not change other API global limits." />
+  <string id="AF_MCM_Policy_EffectTokens" text="Effect parsing maximum output tokens" />
+  <string id="AF_MCM_Policy_EffectTokens_Hint" text="Maximum output tokens for the player-policy second-stage effect JSON. Default 5000; the effective value never exceeds the current player-policy token limit above." />
+  <string id="AF_MCM_Policy_EffectDetail" text="Effect module detail count" />
+  <string id="AF_MCM_Policy_EffectDetail_Hint" text="Legacy-compatible value range is 1–30, default 6; at most 8 detail modules enter stage two, and values above 8 execute as 8. This does not limit the ONNX candidate pool. Higher values use more prompt tokens." />
+  <string id="AF_MCM_Policy_VoteInterest" text="Let lord votes consider interest, relations, and personality" />
+  <string id="AF_MCM_Policy_VoteInterest_Hint" text="When enabled, kingdom agenda votes on custom policies also consider effects on the lord’s fiefs and clan, relations with the proposer, and whether policy methods match the lord personality. Settled canvassing promises retain priority." />
+  <string id="AF_MCM_Policy_VoteInterestWeight" text="Vote interest weight" />
+  <string id="AF_MCM_Policy_VoteInterestWeight_Hint" text="Multiplier for policy effects on the lord’s own interests. At 1.00, a clear fief benefit can offset ordinary dislike of crown policies; 0 ignores interest. Default: 1.00." />
+  <string id="AF_MCM_Policy_VoteRelationWeight" text="Vote relation weight" />
+  <string id="AF_MCM_Policy_VoteRelationWeight_Hint" text="Multiplier for the proposer–lord relation in vote direction. At 1.00, relation +100 is about a moderate benefit and -100 a moderate loss; 0 uses only the native relation influence. Default: 1.00." />
+  <string id="AF_MCM_Policy_VotePersonalityWeight" text="Vote personality weight" />
+  <string id="AF_MCM_Policy_VotePersonalityWeight_Hint" text="Multiplier for matching mercy, honor, generosity, valor, prudence, and policy methods. Default: 1; 0 disables personality scoring. Actual losses still count, and bad traits do not guarantee approval." />
+  <string id="AF_MCM_Policy_EnableNpcRuler" text="Enable NPC ruler policies" />
+  <string id="AF_MCM_Policy_EnableNpcRuler_Hint" text="When enabled, NPC kingdoms create and publish policies at the configured interval. When disabled, no new policies are generated; active policies and records remain unchanged." />
+  <string id="AF_MCM_Policy_RulerApi" text="API source" />
+  <string id="AF_MCM_Policy_RulerApi_Hint" text="Reuses the selected channel’s URL, key, model, and endpoint rules; incomplete selections fall back to the main API. Explicit preprocessing selection is independent of the normal preprocessing switch." />
+  <string id="AF_MCM_Policy_RulerInterval" text="Policy check interval (days)" />
+  <string id="AF_MCM_Policy_RulerInterval_Hint" text="How often to check whether a new NPC policy is needed. Default: 7 days; range 1–30. No policy is generated when no kingdom qualifies." />
+  <string id="AF_MCM_Policy_RulerCooldown" text="Same-kingdom policy cooldown (days)" />
+  <string id="AF_MCM_Policy_RulerCooldown_Hint" text="Minimum game days between policy drafts for the same NPC kingdom. Default: 7, range 1–30; pending, approved, and rejected normal drafts all count. Player vassal policies are exempt but suppress the target kingdom’s NPC ruler policy for this duration." />
+  <string id="AF_MCM_Policy_RulerFollowTokens" text="Follow selected API token limit" />
+  <string id="AF_MCM_Policy_RulerFollowTokens_Hint" text="When enabled, use the effective API source maximum output tokens; if it falls back to the main API, use the main API limit. When disabled, always use the custom policy value below." />
+  <string id="AF_MCM_Policy_RulerCustomTokens" text="Custom maximum output tokens" />
+  <string id="AF_MCM_Policy_RulerCustomTokens_Hint" text="Used only when following the selected API token limit is disabled. Affects NPC ruler policies only; range 1000–100000 and does not change other API global limits." />
+  <string id="AF_MCM_Diplomacy_Enable" text="Enable AI diplomacy" />
+  <string id="AF_MCM_Diplomacy_Enable_Hint" text="When enabled, kingdoms publish declarations, negotiate, and take diplomatic actions. Diplomacy and clerk drafting reuse the event/rebellion API and fall back to the main API when incomplete. When disabled, native kingdom diplomacy decisions resume." />
+  <string id="AF_MCM_Diplomacy_NewGamePeace" text="Peace at the start of a new game" />
+  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="Applies only to newly created saves and ends kingdom wars present at campaign start. Disabled by default; changing it does not reset wars in the current save." />
+  <string id="AF_MCM_Diplomacy_MapNotice" text="Show declaration delivery notices" />
+  <string id="AF_MCM_Diplomacy_MapNotice_Hint" text="Delivered diplomatic declarations show a lower-left text notice instead of a right-side notification. Hiding notices does not affect negotiation, propagation, bulletin material, or kingdom announcements." />
+  <string id="AF_MCM_Diplomacy_MaxRounds" text="Maximum concurrent ordinary diplomacy events" />
+  <string id="AF_MCM_Diplomacy_MaxRounds_Hint" text="Shared by ordinary automatic diplomacy and policy triggers; default 3. When full, policy work remains pending while existing talks finish. Lowering the limit does not cancel existing events. At most one opens per day; player diplomacy and verbal-promise events do not use this slot." />
+  <string id="AF_MCM_Diplomacy_Activity" text="Countries per diplomacy event" />
+  <string id="AF_MCM_Diplomacy_Activity_Hint" text="Low allows up to 2 countries, medium up to 3, and high up to 5, including the initiator. Only countries with real diplomatic business are selected. Default: medium; this is per-event participation, not the concurrent-event count." />
+  <string id="AF_MCM_Diplomacy_CourtDays" text="Farthest court delivery (days)" />
+  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="Assigns court delivery time by distance. Controls the farthest court and the relay pace for a new event round; countries do not all wait this many days. Default: 7; lower values produce denser replies." />
+  <string id="AF_MCM_Diplomacy_ContinentDays" text="Declaration spreads across the continent (days)" />
+  <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="Schedules when local nobles and civilians learn a declaration by distance. Default: 21 days; does not control automatic opening frequency or replace court delivery time." />
+  <string id="AF_MCM_Diplomacy_RoundLength" text="Diplomacy event target duration" />
+  <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="Typical event closing time: compact about 15 days, standard about 21, and relaxed about 28. Results may end it early or briefly extend cleanup. Default: standard; affects new events only." />
+  <string id="AF_MCM_Diplomacy_DeclarationMin" text="Minimum AI declaration characters" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default minimum 100, adjustable from 1 to 1000; does not limit player editing." />
+  <string id="AF_MCM_Diplomacy_DeclarationMax" text="Maximum AI declaration characters" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default maximum 500, adjustable from 1 to 1000; values below the minimum use the minimum." />
+  <string id="AF_MCM_Diplomacy_WarCooldown" text="Proactive-war cooldown (days)" />
+  <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations." />
+  <string id="AF_MCM_Diplomacy_PeaceProtection" text="Peace protection period (days)" />
+  <string id="AF_MCM_Diplomacy_PeaceProtection_Hint" text="After two kingdoms make peace, ordinary diplomatic disputes cannot start another war during this period. Default: 21; 0 disables this protection but does not change other war-eligibility rules." />
+  <string id="AF_MCM_Diplomacy_ProposalCooldown" text="Trade/alliance failed-proposal cooldown (days)" />
+  <string id="AF_MCM_Diplomacy_ProposalCooldown_Hint" text="After a trade or alliance proposal fails, the same issuer cannot propose the same type to the same target during this period. Reverse proposals and other types are tracked separately. Default: 168; 0 disables." />
+  <string id="AF_MCM_Diplomacy_ThreatReward" text="Threat compliance relation reward" />
+  <string id="AF_MCM_Diplomacy_ThreatReward_Hint" text="After the target kingdom explicitly complies with a condemnation or ultimatum, increase relation between the issuer’s eligible clan leader and the current king. Settled once per threat. Default: 10; 0 disables." />
+  <string id="AF_MCM_Diplomacy_CompressTrigger" text="Archive compression trigger (thousand estimated tokens)" />
+  <string id="AF_MCM_Diplomacy_CompressTrigger_Hint" text="Start batched compression when the long-term diplomacy archive reaches this estimated size. Default: 800 (about 800k tokens); controls backlog and frequency, not history carried by each declaration." />
+  <string id="AF_MCM_Diplomacy_CompressTarget" text="Archive compression target (thousand estimated tokens)" />
+  <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="Target combined size of the long-term snapshot and protected facts after each batch. Default: 48 (about 48k tokens), maximum 60k; declarations use only relevant material. Actual summaries also follow the selected API output-token limit." />
+  <string id="AF_MCM_Diplomacy_Edit" text="Edit AI diplomacy and clerk-drafting preferences" />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="Edit diplomacy decision and writing preferences. Clerk drafting expands the player’s existing content faithfully without adding substantive clauses. Blank adds no preference; fixed facts and output rules remain enforced." />
+  <string id="AF_MCM_Diplomacy_Edit_Content" text="Open editor" />
+  <string id="AF_MCM_Diplomacy_Restore" text="Restore default diplomacy and drafting preferences" />
+  <string id="AF_MCM_Diplomacy_Restore_Hint" text="Restores the mod default preference text. Only preference text is restored; event limits, propagation, length, and protection settings on this page are unchanged." />
+  <string id="AF_MCM_Diplomacy_Restore_Content" text="Restore default" />
   </strings>
 </base>
 
