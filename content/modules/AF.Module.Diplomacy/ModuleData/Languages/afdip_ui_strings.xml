@@ -31,6 +31,15 @@
     <string id="AF_DIP_UI_Vote_AgendaFuture" text="You can participate in this agenda. Voting begins in about {DAYS} days. Click to view the details." />
     <string id="AF_DIP_UI_Vote_AgendaVoting" text="This agenda has entered the voting phase. Click to open the voting screen." />
     <string id="AF_DIP_UI_Vote_AgendaDetails" text="You can participate in this kingdom agenda. Click to view the details." />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotAllowed" text="Agenda submission failed: the current kingdom rules do not allow this agenda." />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotRetained" text="Agenda submission failed: the kingdom did not retain this agenda." />
+    <string id="AF_DIP_UI_Vote_ProposalSubmitted" text="{CLAN} proposed a new agenda." />
+    <string id="AF_DIP_UI_Vote_DealFulfilledChoice" text="Vote deal fulfilled: {NPC} voted for “{OPTION}” as promised." />
+    <string id="AF_DIP_UI_Vote_DealFulfilled" text="Vote deal fulfilled: {NPC} voted as promised." />
+    <string id="AF_DIP_UI_Vote_DealPromised" text="{CLAN} promised to vote for “{OPTION}” on “{AGENDA}”." />
+    <string id="AF_DIP_UI_Vote_MeetingInvalidated" text="This agenda is no longer valid; the vote meeting cannot be opened." />
+    <string id="AF_DIP_UI_Vote_MeetingOpened" text="Vote meeting opened: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_MeetingOpenFailed" text="Could not open the vote meeting. Check the AnimusForge log." />
     <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="Vassalage management" />
     <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="Tribute records" />
     <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="No tribute deposits have been recorded." />
@@ -295,5 +304,4 @@
     <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins." />
 </strings>
 </base>
-
 
