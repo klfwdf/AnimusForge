@@ -16944,6 +16944,26 @@
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/afworldmap_strings.xml",
+      "target": "ModuleData/Languages/afworldmap_strings.xml"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
+      "target": "ModuleData/Languages/afdip_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml"
     }
   ]
 }
