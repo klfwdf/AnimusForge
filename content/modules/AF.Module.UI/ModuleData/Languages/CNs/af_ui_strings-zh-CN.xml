@@ -1997,6 +1997,67 @@
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="已返回玩家外貌与背景设置。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="打开玩家外貌与背景编辑器失败。" />
+  <string id="AF_TERMINAL_UI_Forge_SelectCrafter" text="选择制造者" />
+  <string id="AF_TERMINAL_UI_Forge_NoCrafters" text="当前没有可用的家族成员或同伴。" />
+  <string id="AF_TERMINAL_UI_Forge_Back" text="返回" />
+  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}\n锻造等级：{SKILL}\n锻造体力：{STAMINA}（消耗 {COST}）" />
+  <string id="AF_TERMINAL_UI_Forge_Unavailable" text="不可用" />
+  <string id="AF_TERMINAL_UI_Forge_StaminaReadFailed" text="无法读取该制造者的锻造体力。" />
+  <string id="AF_TERMINAL_UI_Forge_StaminaInsufficient" text="锻造体力不足，至少需要 {COST} 点。" />
+  <string id="AF_TERMINAL_UI_Forge_Select" text="选择" />
+  <string id="AF_TERMINAL_UI_Forge_OpenFailed" text="无法打开玩家 RP 物品制造界面。" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateCandidatesFailed" text="无法建立安全模板候选榜单。" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateSelectionOpenFailed" text="无法打开模板选择" />
+  <string id="AF_TERMINAL_UI_Forge_NoSelectableTemplates" text="当前没有可选择的安全模板。" />
+  <string id="AF_TERMINAL_UI_Forge_NoDisplayableTemplates" text="当前没有可显示的安全模板。" />
+  <string id="AF_TERMINAL_UI_Forge_UnknownType" text="未知类型" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="第 {RANK} 项 {NAME}\n{TYPE}\n{PRICE} 第纳尔" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="模板 ID：{ID}\n类型：{TYPE}\n标准价格：{PRICE} 第纳尔" />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplateTitle" text="选择 RP 物品模板" />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplateDescription" text="请从 {COUNT} 个安全候选（最多 50）中手动选择。可搜索；每项显示原版物品图标、类型和标准价格。" />
+  <string id="AF_TERMINAL_UI_Forge_SelectTemplate" text="选择模板" />
+  <string id="AF_TERMINAL_UI_Forge_ReturnToEdit" text="返回修改" />
+  <string id="AF_TERMINAL_UI_Forge_PreviewFailed" text="无法预览制造结果" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionTitle" text="填写 RP 物品介绍" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionItem" text="物品：{NAME}" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionPrompt" text="请填写该物品的介绍；取消或留空不会覆盖已有介绍。" />
+  <string id="AF_TERMINAL_UI_Forge_IntroductionNotSaved" text="物品介绍未保存：" />
+  <string id="AF_TERMINAL_UI_Forge_UnknownReason" text="未知原因。" />
+  <string id="AF_TERMINAL_UI_Forge_CompletedFallback" text="已成功制造 RP 物品。" />
+  <string id="AF_TERMINAL_UI_Forge_CompletionTitle" text="制造完成" />
+  <string id="AF_TERMINAL_UI_Forge_ReturnToTerminal" text="返回终端" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="名称：{NAME}\n投入：{INVESTMENT} 第纳尔\n模式：{MODE}\n\n确认后才会扣除第纳尔并制造物品。" />
+  <string id="AF_TERMINAL_UI_Forge_ModeEquipment" text="武器与装备" />
+  <string id="AF_TERMINAL_UI_Forge_ModeItem" text="普通 RP 物品" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationTitle" text="确认制造" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationWeaponTitle" text="制造“{NAME}”·{INVESTMENT} 第纳尔" />
+  <string id="AF_TERMINAL_UI_Forge_Confirm" text="确认制造" />
+  <string id="AF_TERMINAL_UI_Forge_CommitFailed" text="制造未完成" />
+  <string id="AF_TERMINAL_UI_Forge_CommitSuccess" text="已成功制造“{NAME}”。" />
+  <string id="AF_TERMINAL_UI_Forge_ReasonUnavailable" text="原因未提供。" />
+  <string id="AF_TERMINAL_UI_Forge_ErrorTitle" text="玩家 RP 物品制造" />
+  <string id="AF_TERMINAL_UI_Trust_QueryTitle" text="信任度查询" />
+  <string id="AF_TERMINAL_UI_Trust_SearchSettlement" text="搜索定居点信任" />
+  <string id="AF_TERMINAL_UI_Trust_SearchHero" text="搜索 NPC 信任" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementBrowserTitle" text="定居点信任查询" />
+  <string id="AF_TERMINAL_UI_Trust_HeroBrowserTitle" text="NPC 信任查询" />
+  <string id="AF_TERMINAL_UI_Trust_Hint" text="信任度：{TRUST}" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementDetailsTitle" text="定居点信任详情" />
+  <string id="AF_TERMINAL_UI_Trust_HeroDetailsTitle" text="NPC 信任详情" />
+  <string id="AF_TERMINAL_UI_Trust_SettlementNotFound" text="未找到定居点。" />
+  <string id="AF_TERMINAL_UI_Trust_HeroNotFound" text="未找到 NPC。" />
+  <string id="AF_TERMINAL_UI_Trust_UnknownSettlement" text="未知定居点" />
+  <string id="AF_TERMINAL_UI_Trust_UnknownHero" text="未知 NPC" />
+  <string id="AF_TERMINAL_UI_Trust_UnknownFaction" text="未知势力" />
+  <string id="AF_TERMINAL_UI_Trust_NameLine" text="名称：{NAME}" />
+  <string id="AF_TERMINAL_UI_Trust_FactionLine" text="所属势力：{FACTION}" />
+  <string id="AF_TERMINAL_UI_Trust_LevelLine" text="信任度：{TRUST}" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantTrustHeading" text="商贩信任度：" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantWeapon" text="武器商" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantArmor" text="防具商" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantHorse" text="马商" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantGoods" text="杂货商" />
+  <string id="AF_TERMINAL_UI_Trust_MerchantBlacksmith" text="铁匠" />
   <string id="AF_UI_Duel_LocalReady" text="双方就位！5 秒后开始决斗！（准备期间无敌。）" />
   <string id="AF_UI_Duel_Started" text="决斗开始！" />
   <string id="AF_UI_Duel_LeavingArena" text="正在退出竞技场……" />
