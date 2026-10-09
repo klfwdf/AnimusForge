@@ -162,7 +162,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _lastMeetingWasSameMapFactionConflict;
 
-	private static TextObject _lastMeetingPlayerFactionName = new TextObject("你的势力");
+	private static TextObject _lastMeetingPlayerFactionName = new TextObject("{=AF_ENC_UI_PlayerFaction}Your faction");
 
 	private static bool _disableCustomEncounterMenuForCurrentEncounter;
 
@@ -3161,7 +3161,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		RegisterPendingNativeEncounterAttackConversationEndHook();
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("挑衅已升级为敌对行动：5秒后将自动结束对话并攻入敌阵。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_ENC_UI_TauntEscalated}The taunt has escalated into hostile action. The conversation will end and your party will attack in 5 seconds.").ToString(), Colors.Yellow));
 		}
 		catch
 		{
@@ -3889,7 +3889,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("custom_encounter_menu_opened");
 				try
 				{
-					AnimusForgeQuickInfo.Show("对方并没有同意放你离开。", _targetHero?.CharacterObject);
+					AnimusForgeQuickInfo.Show(new TextObject("{=AF_ENC_UI_ReleaseDenied}The other party did not agree to let you leave.").ToString(), _targetHero?.CharacterObject);
 				}
 				catch
 				{
@@ -5957,7 +5957,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		Logger.Log("MeetingTaunt", "Battle tag ignored: player health is below the minimum ratio. Reason=" + (reason ?? "N/A"));
 		try
 		{
-			AnimusForgeQuickInfo.Show("你的伤势过重，无法投入战斗", Hero.MainHero?.CharacterObject);
+			AnimusForgeQuickInfo.Show(new TextObject("{=AF_ENC_UI_HealthTooLowForBattle}Your injuries are too severe to fight.").ToString(), Hero.MainHero?.CharacterObject);
 		}
 		catch
 		{
@@ -5970,9 +5970,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		string text = target?.Name?.ToString();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "该NPC";
+			text = new TextObject("{=AF_ENC_UI_NpcFallback}this NPC").ToString();
 		}
-		return "你的健康状况不允许你与" + text + "会面";
+		TextObject message = new TextObject("{=AF_ENC_UI_PlayerHealthTooLowForMeeting}Your health does not allow a meeting with {TARGET}.");
+		message.SetTextVariable("TARGET", text);
+		return message.ToString();
 	}
 
 	private static string GetTargetLowHealthMeetingBlockedMessage(Hero target)
@@ -5980,9 +5982,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		string text = target?.Name?.ToString();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "该领主";
+			text = new TextObject("{=AF_ENC_UI_LordFallback}lord").ToString();
 		}
-		return text + " 的血量低于 21%，暂时无法与你会面。";
+		TextObject message = new TextObject("{=AF_ENC_UI_TargetHealthTooLowForMeeting}{TARGET}'s health is below 21%, so they cannot meet with you right now.");
+		message.SetTextVariable("TARGET", text);
+		return message.ToString();
 	}
 
 	private static void DisplayLowHealthMeetingBlockedMessageOnce(Hero target, string message)
@@ -6019,12 +6023,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			Hero hero = EnsureEncounterTargetHero("menu_init");
 			bool flag = HasPendingForceNativeDefeatCaptivityMenu();
-			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
+			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("{=AF_ENC_UI_LordFallback}lord"));
 			TextObject bodyText;
 			if (flag)
 			{
-				args.MenuTitle = new TextObject("遭遇结果");
-				bodyText = new TextObject("正在进入原版被俘结算。");
+				args.MenuTitle = new TextObject("{=AF_ENC_UI_EncounterResult}Encounter result");
+				bodyText = new TextObject("{=AF_ENC_UI_EnteringCaptivitySettlement}Entering the native prisoner settlement.");
 			}
 			else if (ProactiveNpcRequestBehavior.TryBuildMenuText(hero, out var proactiveTitle, out var proactiveBody))
 			{
@@ -6033,10 +6037,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				args.MenuTitle = new TextObject("遭遇领主");
-				TextObject content = (IsHostileEncounterInitiatedByOpponent() ? new TextObject("对方试图向你发动进攻。") : new TextObject(""));
+				args.MenuTitle = new TextObject("{=AF_ENC_UI_EncounterLord}Encountered lord");
+				TextObject content = (IsHostileEncounterInitiatedByOpponent() ? new TextObject("{=AF_ENC_UI_OpponentInitiatedAttack}The other party is attempting to attack you.") : new TextObject(""));
 				GameTexts.SetVariable("ENCOUNTER_INTENT", content);
-				bodyText = new TextObject("你在荒野中遇到了{TARGET_NAME}。{ENCOUNTER_INTENT}");
+				bodyText = new TextObject("{=AF_ENC_UI_WildernessEncounter}You encountered {TARGET_NAME} in the wilderness. {ENCOUNTER_INTENT}");
 			}
 			GameTexts.SetVariable("MENU_BODY_TEXT", bodyText);
 			ApplyLordEncounterMenuBackground(args, hero);
@@ -6050,12 +6054,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_meet_condition");
-			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			GameTexts.SetVariable("MEET_LORD_LABEL", new TextObject("与{TARGET_NAME}会面"));
+			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("{=AF_ENC_UI_LordFallback}lord"));
+			GameTexts.SetVariable("MEET_LORD_LABEL", new TextObject("{=AF_ENC_UI_MeetLord}Meet {TARGET_NAME}"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
-				args.Tooltip = new TextObject("无法识别当前遭遇领主，请先离开后重新接触。");
+				args.Tooltip = new TextObject("{=AF_ENC_UI_TargetUnavailableTooltip}The encountered lord could not be identified. Leave and make contact again.");
 			}
 			else if (IsMainHeroHealthTooLowForMeeting())
 			{
@@ -6082,7 +6086,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero == null)
 			{
 				Logger.Log("LordEncounter", "Meet option clicked but target hero is null after refresh.");
-				AnimusForgeQuickInfo.Show("当前未识别到遭遇领主，请先离开并重新接触。");
+				AnimusForgeQuickInfo.Show(new TextObject("{=AF_ENC_UI_TargetUnavailable}The encountered lord could not be identified. Leave and make contact again.").ToString());
 				return;
 			}
 			if (IsMainHeroHealthTooLowForMeeting())
@@ -6114,12 +6118,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_native_dialogue_condition");
-			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			GameTexts.SetVariable("NATIVE_DIALOGUE_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("进入对话") : new TextObject("进入原版对话"));
+			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("{=AF_ENC_UI_LordFallback}lord"));
+			GameTexts.SetVariable("NATIVE_DIALOGUE_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("{=AF_ENC_UI_EnterDialogue}Enter conversation") : new TextObject("{=AF_ENC_UI_EnterNativeDialogue}Enter native conversation"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
-				args.Tooltip = new TextObject("无法识别当前遭遇领主，请先离开后重新接触。");
+				args.Tooltip = new TextObject("{=AF_ENC_UI_TargetUnavailableTooltip}The encountered lord could not be identified. Leave and make contact again.");
 			}
 			return true;
 		}, delegate
@@ -6128,7 +6132,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero == null)
 			{
 				Logger.Log("LordEncounter", "Native dialogue option clicked but target hero is null after refresh.");
-				AnimusForgeQuickInfo.Show("当前未识别到遭遇领主，请先离开并重新接触。");
+				AnimusForgeQuickInfo.Show(new TextObject("{=AF_ENC_UI_TargetUnavailable}The encountered lord could not be identified. Leave and make contact again.").ToString());
 				return;
 			}
 			ProactiveNpcRequestBehavior.MarkNativeConversationOpening(hero);
@@ -6141,8 +6145,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				return false;
 			}
 			Hero hero = EnsureEncounterTargetHero("menu_attack_condition");
-			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			GameTexts.SetVariable("PRIMARY_ACTION_LABEL", new TextObject("攻击{TARGET_NAME}"));
+			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("{=AF_ENC_UI_LordFallback}lord"));
+			GameTexts.SetVariable("PRIMARY_ACTION_LABEL", new TextObject("{=AF_ENC_UI_AttackLord}Attack {TARGET_NAME}"));
 			return true;
 		}, delegate
 		{
@@ -6151,7 +6155,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			TryApplyImmediateAttackConsequencesForEncounter(target, "menu_attack_option");
 			GameMenu.SwitchToMenu("encounter");
 		});
-		starter.AddGameMenuOption("AnimusForge_lord_encounter", "leave_lord", "离开", delegate
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "leave_lord", "{=AF_ENC_UI_Leave}Leave", delegate
 		{
 			if (HasPendingForceNativeDefeatCaptivityMenu())
 			{
@@ -7389,7 +7393,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				AnimusForgeQuickInfo.Show(flag ? "对方同意放你离开，正在退出当前会面。" : "对方同意放你离开。", _targetHero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(flag ? new TextObject("{=AF_ENC_UI_ReleaseAcceptedExit}The other party agreed to let you leave. Exiting this meeting.").ToString() : new TextObject("{=AF_ENC_UI_ReleaseAccepted}The other party agreed to let you leave.").ToString(), _targetHero?.CharacterObject);
 			}
 			catch
 			{
@@ -7422,7 +7426,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			DisableCustomEncounterMenuForCurrentEncounter("native_conversation_release_scheduled");
 			try
 			{
-				string message = "对方同意放你离开，10秒后将自动结束当前对话并回到大地图。";
+				string message = new TextObject("{=AF_ENC_UI_ReleaseScheduled}The other party agreed to let you leave. This conversation will end and you will return to the campaign map in 10 seconds.").ToString();
 				InformationManager.DisplayMessage(new InformationMessage(message, new Color(0.4f, 1f, 0.4f)));
 				AnimusForgeQuickInfo.Show(message, request.Target?.CharacterObject);
 			}
@@ -7624,7 +7628,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			int capturedFallbackHeroes = CaptureRemainingNpcSurrenderPartyHeroes(surrenderParties, reason ?? "native_conversation_npc_surrender");
 			try
 			{
-				AnimusForgeQuickInfo.Show("对方已投降，正在进入俘虏与战利品结算。", targetHero?.CharacterObject ?? targetCharacter);
+				AnimusForgeQuickInfo.Show(new TextObject("{=AF_ENC_UI_SurrenderSettlement}The other party has surrendered. Entering prisoner and loot settlement.").ToString(), targetHero?.CharacterObject ?? targetCharacter);
 			}
 			catch
 			{
@@ -8229,7 +8233,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			_pendingNativeConversationNpcSurrenderReason = reason ?? "native_conversation_npc_surrender_tag";
 			try
 			{
-				string message = "对方已同意投降。请手动离开当前对话，离开后将进入俘虏与战利品结算。";
+				string message = new TextObject("{=AF_ENC_UI_SurrenderAccepted}The other party agreed to surrender. Leave this conversation manually to enter prisoner and loot settlement.").ToString();
 				InformationManager.DisplayMessage(new InformationMessage(message, new Color(0.4f, 1f, 0.4f)));
 				AnimusForgeQuickInfo.Show(message, targetHero?.CharacterObject ?? targetCharacter);
 			}
@@ -8622,7 +8626,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				_meetingStartedForProactiveRequestHero = null;
 			}
 			_lastMeetingWasSameMapFactionConflict = false;
-			_lastMeetingPlayerFactionName = new TextObject("你的势力");
+			_lastMeetingPlayerFactionName = new TextObject("{=AF_ENC_UI_PlayerFaction}Your faction");
 			try
 			{
 				IFaction faction = PartyBase.MainParty?.MapFaction;

@@ -4338,7 +4338,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		catch
 		{
 		}
-		TextObject message = new TextObject("背叛是不可饶恕的");
+		TextObject message = new TextObject("{=AF_ENC_UI_BetrayalUnforgivable}Betrayal is unforgivable.");
 		try
 		{
 			MBInformationManager.AddQuickInformation(message);

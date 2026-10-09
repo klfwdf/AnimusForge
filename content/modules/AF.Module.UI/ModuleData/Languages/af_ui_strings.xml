@@ -2,6 +2,54 @@
 <base type="string">
   <tags><tag language="English" /></tags>
   <strings>
+  <string id="AF_ENC_UI_PlayerFaction" text="Your faction" />
+  <string id="AF_ENC_UI_TauntEscalated" text="The taunt has escalated into hostile action. The conversation will end and your party will attack in 5 seconds." />
+  <string id="AF_ENC_UI_ReleaseDenied" text="The other party did not agree to let you leave." />
+  <string id="AF_ENC_UI_HealthTooLowForBattle" text="Your injuries are too severe to fight." />
+  <string id="AF_ENC_UI_PlayerHealthTooLowForMeeting" text="Your health does not allow a meeting with {TARGET}." />
+  <string id="AF_ENC_UI_TargetHealthTooLowForMeeting" text="{TARGET}'s health is below 21%, so they cannot meet with you right now." />
+  <string id="AF_ENC_UI_LordFallback" text="lord" />
+  <string id="AF_ENC_UI_NpcFallback" text="this NPC" />
+  <string id="AF_ENC_UI_EncounterResult" text="Encounter result" />
+  <string id="AF_ENC_UI_EnteringCaptivitySettlement" text="Entering the native prisoner settlement." />
+  <string id="AF_ENC_UI_EncounterLord" text="Encountered lord" />
+  <string id="AF_ENC_UI_OpponentInitiatedAttack" text="The other party is attempting to attack you." />
+  <string id="AF_ENC_UI_WildernessEncounter" text="You encountered {TARGET_NAME} in the wilderness. {ENCOUNTER_INTENT}" />
+  <string id="AF_ENC_UI_MeetLord" text="Meet {TARGET_NAME}" />
+  <string id="AF_ENC_UI_TargetUnavailableTooltip" text="The encountered lord could not be identified. Leave and make contact again." />
+  <string id="AF_ENC_UI_TargetUnavailable" text="The encountered lord could not be identified. Leave and make contact again." />
+  <string id="AF_ENC_UI_EnterDialogue" text="Enter conversation" />
+  <string id="AF_ENC_UI_EnterNativeDialogue" text="Enter native conversation" />
+  <string id="AF_ENC_UI_AttackLord" text="Attack {TARGET_NAME}" />
+  <string id="AF_ENC_UI_Leave" text="Leave" />
+  <string id="AF_ENC_UI_SurrenderSettlement" text="The other party has surrendered. Entering prisoner and loot settlement." />
+  <string id="AF_ENC_UI_ReleaseAcceptedExit" text="The other party agreed to let you leave. Exiting this meeting." />
+  <string id="AF_ENC_UI_ReleaseAccepted" text="The other party agreed to let you leave." />
+  <string id="AF_ENC_UI_ReleaseScheduled" text="The other party agreed to let you leave. This conversation will end and you will return to the campaign map in 10 seconds." />
+  <string id="AF_ENC_UI_SurrenderAccepted" text="The other party agreed to surrender. Leave this conversation manually to enter prisoner and loot settlement." />
+  <string id="AF_ENC_UI_BetrayalUnforgivable" text="Betrayal is unforgivable." />
+  <string id="AF_ENC_UI_Escort_MapOnly" text="Noble prisoner escort can only be configured on the campaign map." />
+  <string id="AF_ENC_UI_Escort_ConfigTitle" text="Noble prisoner escort configuration" />
+  <string id="AF_ENC_UI_Escort_ConfigHint" text="Only hero prisoners in the player's main party can be selected:" />
+  <string id="AF_ENC_UI_Configure" text="Configure" />
+  <string id="AF_ENC_UI_Close" text="Close" />
+  <string id="AF_ENC_UI_Escort_ExecutionUnavailable" text="The current target cannot be executed." />
+  <string id="AF_ENC_UI_Escort_PrisonerRosterUnavailable" text="The player's prisoner roster is unavailable." />
+  <string id="AF_ENC_UI_Escort_HeroPrisoners" text="Hero prisoners in the player's main party" />
+  <string id="AF_ENC_UI_Escort_ModeWithLimit" text="{MODE} (limit {LIMIT})" />
+  <string id="AF_ENC_UI_Escort_ConfigureMode" text="Configure {MODE}" />
+  <string id="AF_ENC_UI_Escort_Configuring" text="Configuring {MODE}." />
+  <string id="AF_ENC_UI_Escort_ConfigOpenFailed" text="Could not open the configuration screen." />
+  <string id="AF_ENC_UI_Escort_LimitExceeded" text="Noble prisoner escort cannot exceed {LIMIT} people." />
+  <string id="AF_ENC_UI_Escort_ProfileSaved" text="{MODE} saved: {COUNT}/{LIMIT}." />
+  <string id="AF_ENC_UI_Escort_AvailableHint" text="{COUNT}/{LIMIT} available" />
+  <string id="AF_ENC_UI_Escort_AvailableWithMissing" text="{COUNT}/{LIMIT} available; {MISSING} are no longer in the player's main-party prisoner roster." />
+  <string id="AF_ENC_UI_Escort_AvailableConfigured" text="{TEXT} Configured: {CONFIGURED}. Hero prisoners only." />
+  <string id="AF_ENC_UI_Escort_ModeTownAftermath" text="Town siege aftermath escort (5)" />
+  <string id="AF_ENC_UI_Escort_ModeSettlementEntry" text="Town/castle settlement escort (5)" />
+  <string id="AF_ENC_UI_Escort_ModeLordsHall" text="Town/castle lord's hall escort (5)" />
+  <string id="AF_ENC_UI_Escort_ModeWorldMeeting" text="Wilderness meeting escort (1)" />
+  <string id="AF_ENC_UI_Escort_ModeDefault" text="Noble prisoner escort" />
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API Setup Wizard" />
   <string id="AF_UI_Onboarding_CustomMode" text="Fully custom" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="Configure the Base URL, key, and bound model for four API pipelines in one panel." />
