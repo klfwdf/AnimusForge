@@ -449,6 +449,16 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 
 public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 {
+	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + fallback);
+		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
+		{
+			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
+		}
+		return text.ToString();
+	}
+
 	private Action<string> _onSelect;
 
 	private string _countryId;
@@ -545,6 +555,9 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 
 public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
+
 	[DataSourceProperty] public string EntryKind { get; private set; }
 	// Static after construction; each drives one accent strip on the card.
 	[DataSourceProperty] public bool IsBulletinKind => EntryKind == "bulletin";
