@@ -31,11 +31,11 @@ internal sealed class DebtImportExportAdapter
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, NpcDataIdentityFileAdapter.ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -71,7 +71,7 @@ internal sealed class DebtImportExportAdapter
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 					return;
 				}
 				text2 = Path.Combine(importDir, "debt");
@@ -91,14 +91,14 @@ internal sealed class DebtImportExportAdapter
 				}
 				if (!Directory.Exists(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 debt 目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("debt")));
 					return;
 				}
 			}
 			RewardSystemBehavior rs = RewardSystemBehavior.Instance;
 			if (rs == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：RewardSystemBehavior 未初始化。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.BehaviorNotInitialized("RewardSystemBehavior")));
 				return;
 			}
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> all = rs.ExportDebtEntries() ?? new Dictionary<string, RewardSystemBehavior.DebtExportEntry>();
@@ -109,7 +109,7 @@ internal sealed class DebtImportExportAdapter
 			if (string.IsNullOrEmpty(text3) || !File.Exists(text3))
 			{
 				rs.ImportDebtEntries(DebtImportMergePolicy.ApplySingleImportedDebtEntry(all, heroId, null));
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 				return;
 			}
 			RewardSystemBehavior.DebtExportEntry entry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text3);
@@ -118,15 +118,15 @@ internal sealed class DebtImportExportAdapter
 			Action action = delegate
 			{
 				rs.ImportDebtEntries(DebtImportMergePolicy.ApplySingleImportedDebtEntry(all, heroId, entry));
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已跳过重复条目：" + heroId));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.DuplicateSkipped(heroId)));
 			};
 			if (flag && flag2)
 			{
-				_showDuplicate("检测到重复 - 欠款", "检测到该 NPC 已存在欠款记录：" + heroId + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.DebtDuplicateTitle(), ImportExportUiText.DebtDuplicateBody(heroId), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -137,7 +137,7 @@ internal sealed class DebtImportExportAdapter
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -152,11 +152,11 @@ internal sealed class DebtImportExportAdapter
 			string text = export.CandidatePath;
 			ExportDebtToDirectory(text);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -167,19 +167,19 @@ internal sealed class DebtImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				return;
 			}
 			string path = Path.Combine(importDir, "debt");
 			if (!Directory.Exists(path))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 debt 目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("debt")));
 				return;
 			}
 			RewardSystemBehavior rs = RewardSystemBehavior.Instance;
 			if (rs == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：RewardSystemBehavior 未初始化。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.BehaviorNotInitialized("RewardSystemBehavior")));
 				return;
 			}
 			string[] files = Directory.GetFiles(path, "*.json");
@@ -217,16 +217,16 @@ internal sealed class DebtImportExportAdapter
 			Action action = delegate
 			{
 				rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(exist, dict, true));
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 			};
 			Action onSkipDuplicates = delegate
 			{
 				rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(exist, dict, false));
-				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompletedDuplicates(importDir)));
 			};
 			if (num > 0)
 			{
-				_showDuplicate("检测到重复 - 欠款", "导入数据与当前游戏存在重复 HeroId。\n重复：" + num + " / 总计：" + count + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.DebtDuplicateTitle(), ImportExportUiText.DebtDuplicateMany(num, count), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -237,7 +237,7 @@ internal sealed class DebtImportExportAdapter
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 

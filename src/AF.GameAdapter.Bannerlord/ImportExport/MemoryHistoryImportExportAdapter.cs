@@ -39,11 +39,11 @@ internal sealed class MemoryHistoryImportExportAdapter
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, NpcDataIdentityFileAdapter.ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -81,7 +81,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 					return;
 				}
 				text2 = Path.Combine(importDir, "compressed_memory");
@@ -101,19 +101,19 @@ internal sealed class MemoryHistoryImportExportAdapter
 				}
 				if (!Directory.Exists(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 compressed_memory 目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("compressed_memory")));
 					return;
 				}
 				text3 = NpcDataIdentityFileAdapter.FindNpcJsonByHeroId(text2, heroId);
 			}
 			if (string.IsNullOrEmpty(text3) || !File.Exists(text3))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.NpcExportMissing()));
 				return;
 			}
 			if (!CompressedMemoryExportBundleReader.TryRead(text3, out var bundle, out var memoryImportError))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：" + memoryImportError));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(memoryImportError)));
 				return;
 			}
 			bool flag = true;
@@ -132,11 +132,11 @@ internal sealed class MemoryHistoryImportExportAdapter
 				if (!_isCurrent(importGeneration)) return;
 				if (ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆数据无效。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.InvalidData("compressed-memory data")));
 				}
 			};
 			Action onSkipDuplicates = delegate
@@ -144,16 +144,16 @@ internal sealed class MemoryHistoryImportExportAdapter
 				if (!_isCurrent(importGeneration)) return;
 				if (ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompletedDuplicates(heroId)));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆数据无效。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.InvalidData("compressed-memory data")));
 				}
 			};
 			if (flag && flag2)
 			{
-				_showDuplicate("检测到重复 - 压缩记忆", "检测到该 NPC 已存在压缩记忆数据：" + heroId + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.DuplicateTitle("compressed memory"), ImportExportUiText.DuplicateExisting("compressed-memory", heroId), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -165,7 +165,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 		catch (Exception ex)
 		{
 			if (!_isCurrent(importGeneration)) return;
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -180,11 +180,11 @@ internal sealed class MemoryHistoryImportExportAdapter
 			string text = export.CandidatePath;
 			ExportCompressedMemoryToDirectory(text);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -197,13 +197,13 @@ internal sealed class MemoryHistoryImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				return;
 			}
 			string path = Path.Combine(importDir, "compressed_memory");
 			if (!Directory.Exists(path))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 compressed_memory 目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("compressed_memory")));
 				return;
 			}
 			string[] files = Directory.GetFiles(path, "*.json");
@@ -232,7 +232,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 			}
 			if (files.Length > 0 && dict.Count == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆文件全部无效（跳过 " + invalidMemoryFiles + " 个）。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.AllInvalid(invalidMemoryFiles)));
 				return;
 			}
 			int num = 0;
@@ -262,7 +262,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 						ApplyCompressedMemoryExportBundle(item.Key, item.Value, overwriteExisting: true);
 					}
 				}
-				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件）：" + importDir : "导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? ImportExportUiText.PartialImport(invalidMemoryFiles, importDir) : ImportExportUiText.ImportCompleted(importDir)));
 			};
 			Action onSkipDuplicates = delegate
 			{
@@ -274,11 +274,11 @@ internal sealed class MemoryHistoryImportExportAdapter
 						ApplyCompressedMemoryExportBundle(item2.Key, item2.Value, overwriteExisting: false);
 					}
 				}
-				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件，已跳过重复）：" + importDir : "导入完成（已跳过重复）：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? ImportExportUiText.PartialImportDuplicates(invalidMemoryFiles, importDir) : ImportExportUiText.ImportCompletedDuplicates(importDir)));
 			};
 			if (num > 0)
 			{
-				_showDuplicate("检测到重复 - 压缩记忆", "导入数据与当前游戏存在重复 HeroId。\n重复：" + num + " / 总计：" + count + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.DuplicateTitle("compressed memory"), ImportExportUiText.DuplicateMany("compressed-memory", num, count), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -290,7 +290,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 		catch (Exception ex)
 		{
 			if (!_isCurrent(importGeneration)) return;
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
