@@ -53,11 +53,11 @@ internal sealed class DeveloperRootEditorController
 		long generation = _port.CaptureGeneration();
 		if (!_port.IsCurrent(generation)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("edit_hero", "编辑 HeroNPC（压缩记忆/赊账/个性背景）…", null));
-		list.Add(new InquiryElement("single_ie", "单个 HeroNPC 导入/导出…", null));
-		list.Add(new InquiryElement("export_hero_all", "全量导出（HeroNPC：压缩记忆+赊账+个性背景，选文件夹）", null));
-		list.Add(new InquiryElement("import_hero_all", "全量导入（HeroNPC：压缩记忆+赊账+个性背景，选文件夹）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("HeroNPC 编辑/导入/导出", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(generation)) OnDevHeroNpcMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("edit_hero", DeveloperUiText.T("AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_","Edit HeroNPC (compressed memory/debt/personality and background)..."), null));
+		list.Add(new InquiryElement("single_ie", DeveloperUiText.T("AF_UI_Developer_Single_HeroNPC_import_export","Single HeroNPC import/export..."), null));
+		list.Add(new InquiryElement("export_hero_all", DeveloperUiText.T("AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p","Export all HeroNPC data (compressed memory, debt, personality/background)"), null));
+		list.Add(new InquiryElement("import_hero_all", DeveloperUiText.T("AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p","Import all HeroNPC data (compressed memory, debt, personality/background)"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_HeroNPC_edit_import_export","HeroNPC edit/import/export"), DeveloperUiText.T("AF_UI_Developer_Choose_an_operation","Choose an operation:"), list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Enter","Enter"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevHeroNpcMenuSelected(selected); }, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 		});
@@ -79,10 +79,10 @@ internal sealed class DeveloperRootEditorController
 				_port.OpenDevSingleNpcHeroSelection();
 				break;
 			case "export_hero_all":
-				_port.OpenExportFolderPicker("全量导出（HeroNPC）- 选择文件夹", ExportImportScope.HeroNpcAll, OpenDevHeroNpcMenu);
+				_port.OpenExportFolderPicker(DeveloperUiText.T("AF_UI_Developer_Export_all_HeroNPC_data_choose_a_folder","Export all HeroNPC data - choose a folder"), ExportImportScope.HeroNpcAll, OpenDevHeroNpcMenu);
 				break;
 			case "import_hero_all":
-				_port.OpenImportFolderPicker("全量导入（HeroNPC）- 选择文件夹", ExportImportScope.HeroNpcAll, OpenDevHeroNpcMenu);
+				_port.OpenImportFolderPicker(DeveloperUiText.T("AF_UI_Developer_Import_all_HeroNPC_data_choose_a_folder","Import all HeroNPC data - choose a folder"), ExportImportScope.HeroNpcAll, OpenDevHeroNpcMenu);
 				break;
 			}
 		}
@@ -93,10 +93,10 @@ internal sealed class DeveloperRootEditorController
 		long generation = _port.CaptureGeneration();
 		if (!_port.IsCurrent(generation)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("export_all", "导出（全部，选择文件夹）", null));
-		list.Add(new InquiryElement("import_all", "导入（全部，选择文件夹）", null));
-		list.Add(new InquiryElement("clear_all", "清理全部数据（当前存档，不删除导出备份）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("全部数据管理", "选择要执行的操作：\n" + BuildAllDataSummaryText(), list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(generation)) OnDevAllDataMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("export_all", DeveloperUiText.T("AF_UI_Developer_Export_all_data_choose_a_folder","Export all data (choose a folder)"), null));
+		list.Add(new InquiryElement("import_all", DeveloperUiText.T("AF_UI_Developer_Import_all_data_choose_a_folder","Import all data (choose a folder)"), null));
+		list.Add(new InquiryElement("clear_all", DeveloperUiText.T("AF_UI_Developer_Clear_all_data_current_save_exported_backups_are","Clear all data (current save; exported backups are kept)"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_All_data_management","All data management"), DeveloperUiText.T("AF_UI_Developer_Choose_operation_summary","Choose an operation:\n") + BuildAllDataSummaryText(), list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Enter","Enter"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevAllDataMenuSelected(selected); }, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 		});
@@ -112,11 +112,11 @@ internal sealed class DeveloperRootEditorController
 			string text = selected[0].Identifier as string;
 			if (text == "export_all")
 			{
-				_port.OpenExportFolderPicker("导出（全部）- 选择文件夹", ExportImportScope.All, OpenDevAllDataMenu);
+				_port.OpenExportFolderPicker(DeveloperUiText.T("AF_UI_Developer_Export_all_data_choose_a_folder","Export all data - choose a folder"), ExportImportScope.All, OpenDevAllDataMenu);
 			}
 			else if (text == "import_all")
 			{
-				_port.OpenImportFolderPicker("导入（全部）- 选择文件夹", ExportImportScope.All, OpenDevAllDataMenu);
+				_port.OpenImportFolderPicker(DeveloperUiText.T("AF_UI_Developer_Import_all_data_choose_a_folder","Import all data - choose a folder"), ExportImportScope.All, OpenDevAllDataMenu);
 			}
 			else if (text == "clear_all")
 			{
@@ -130,23 +130,23 @@ internal sealed class DeveloperRootEditorController
 		try
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("Hero 个性/背景：" + _port.CountPersonaProfiles() + " 条");
-			stringBuilder.AppendLine("旧对话历史：" + _port.CountDialogueHistory() + " 人");
-			stringBuilder.AppendLine("压缩记忆：" + _port.CountCompressedMemoryOwnersForDev() + " 人");
-			stringBuilder.AppendLine("NPC 行动记录：" + _port.CountNpcActionOwnersForDev() + " 人");
-			stringBuilder.AppendLine("赊账/欠款：" + _port.CountDebtOwnersForDev() + " 人");
-			stringBuilder.AppendLine("未命名 NPC：" + _port.CountUnnamedPersonaForDev() + " 条");
-			stringBuilder.AppendLine("Knowledge：" + _port.CountKnowledgeRulesForDev() + " 条");
-			stringBuilder.AppendLine("事件记录：" + _port.CountEventRecords() + " 条");
-			stringBuilder.AppendLine("王国稳定度：" + _port.CountKingdomStability() + " 条");
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_HeroPersona","Hero personality/background: {COUNT}", "COUNT", _port.CountPersonaProfiles().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Dialogue","Old dialogue history: {COUNT} people", "COUNT", _port.CountDialogueHistory().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Memory","Compressed memory: {COUNT} people", "COUNT", _port.CountCompressedMemoryOwnersForDev().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Actions","NPC action records: {COUNT} people", "COUNT", _port.CountNpcActionOwnersForDev().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Debt","Debt: {COUNT} people", "COUNT", _port.CountDebtOwnersForDev().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Unnamed","Unnamed NPCs: {COUNT}", "COUNT", _port.CountUnnamedPersonaForDev().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Knowledge","Knowledge: {COUNT}", "COUNT", _port.CountKnowledgeRulesForDev().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Events","Event records: {COUNT}", "COUNT", _port.CountEventRecords().ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Stability","Kingdom stability: {COUNT}", "COUNT", _port.CountKingdomStability().ToString()));
 			KingdomStrategicProfileBehavior kingdomProfiles = KingdomStrategicProfileBehavior.Instance;
-			stringBuilder.AppendLine("国家战略/性格：" + (kingdomProfiles?.GetProfileCountForDev() ?? 0) + " 条（玩家覆盖 " + (kingdomProfiles?.GetPlayerOverrideCountForDev() ?? 0) + " 条）");
-			stringBuilder.AppendLine("声音映射：" + _port.CountVoiceMappingForDev() + " 个声音");
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_KingdomProfiles","Kingdom strategy/personality: {COUNT} ({OVERRIDES} player overrides)", "COUNT", (kingdomProfiles?.GetProfileCountForDev() ?? 0).ToString(), "OVERRIDES", (kingdomProfiles?.GetPlayerOverrideCountForDev() ?? 0).ToString()));
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Summary_Voice","Voice mappings: {COUNT}", "COUNT", _port.CountVoiceMappingForDev().ToString()));
 			return stringBuilder.ToString().TrimEnd();
 		}
 		catch
 		{
-			return "当前数据统计失败，但仍可执行清理。";
+			return DeveloperUiText.T("AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s","Current data statistics failed, but clearing is still available.");
 		}
 	}
 
@@ -154,19 +154,16 @@ internal sealed class DeveloperRootEditorController
 	{
 		long generation = _port.CaptureGeneration();
 		if (!_port.IsCurrent(generation)) return;
-		string text = "这会清空当前存档中的 AnimusForge 数据，包括：\n" +
-			"HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、国家战略/性格玩家覆盖、声音映射、耐心状态等。\n\n" +
-			"不会删除 PlayerExports 下已经导出的备份文件，也不会回滚已经真实发生的原版世界状态变化。\n\n" +
-			"此操作不可撤销。建议先执行一次“导出（全部）”。是否继续？";
+		string text = DeveloperUiText.T("AF_UI_Developer_ClearConfirm_Body","This clears AnimusForge data in the current save, including:\nHeroNPC personality/background, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.\n\nExported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.\n\nThis action cannot be undone. Export all data first if you need a backup. Continue?");
 		Action clear = delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			_port.ClearAllDataForCurrentSave();
-			InformationManager.DisplayMessage(new InformationMessage("已清理当前存档中的 AnimusForge 可清理数据；国家战略与性格已恢复默认基线。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_ClearCompleted","Cleared AnimusForge data from the current save; kingdom strategy and personality were restored to the default baseline.")));
 			OpenDevAllDataMenu();
 		};
   Action[] choices = _confirmation.BeginConfirmation(clear, null, OpenDevAllDataMenu);
-  InformationManager.ShowInquiry(new InquiryData("确认清理全部数据", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清理", "取消", choices[0], choices[2]));
+  InformationManager.ShowInquiry(new InquiryData(DeveloperUiText.T("AF_UI_Developer_Confirm_clearing_all_data","Confirm clearing all data"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Clear","Clear"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), choices[0], choices[2]));
 	}
 
 	internal void OpenDevTownEditorHeroSelection()
@@ -179,7 +176,7 @@ internal sealed class DeveloperRootEditorController
 		EditableHeroes = BuildDevEditableHeroList();
 		if (EditableHeroes == null || EditableHeroes.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的 NPC。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_There_are_no_editable_NPCs","There are no editable NPCs.")));
 			OpenDevHeroNpcMenu();
 			return;
 		}
@@ -196,7 +193,7 @@ internal sealed class DeveloperRootEditorController
 		}
 		if (EditableHeroes == null || EditableHeroes.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的 NPC。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_There_are_no_editable_NPCs","There are no editable NPCs.")));
 			OpenDevHeroNpcMenu();
 			return;
 		}
@@ -218,11 +215,11 @@ internal sealed class DeveloperRootEditorController
 			}).ToList();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("search", "搜索 NPC", null));
+		list.Add(new InquiryElement("back", DeveloperUiText.T("AF_UI_Developer_Back","Back"), null));
+		list.Add(new InquiryElement("search", DeveloperUiText.T("AF_UI_Developer_Search_NPC","Search NPC"), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list.Add(new InquiryElement("clear_search", "清空搜索", null));
+			list.Add(new InquiryElement("clear_search", DeveloperUiText.T("AF_UI_Developer_Clear_search","Clear search"), null));
 		}
 		const int pageSize = 40;
 		int num = Math.Max(1, (int)Math.Ceiling((double)filteredHeroes.Count / (double)pageSize));
@@ -233,11 +230,11 @@ internal sealed class DeveloperRootEditorController
 		HeroSelectionPage = page;
 		if (page > 0)
 		{
-			list.Add(new InquiryElement("prev_page", "上一页", null));
+			list.Add(new InquiryElement("prev_page", DeveloperUiText.T("AF_UI_Developer_Previous_page","Previous page"), null));
 		}
 		if (page + 1 < num)
 		{
-			list.Add(new InquiryElement("next_page", "下一页", null));
+			list.Add(new InquiryElement("next_page", DeveloperUiText.T("AF_UI_Developer_Next_page","Next page"), null));
 		}
 		list.Add(new InquiryElement("__sep__", "----------------", null));
 		int num2 = page * pageSize;
@@ -248,17 +245,16 @@ internal sealed class DeveloperRootEditorController
 			string title = string.IsNullOrEmpty(text3) ? text2 : (text2 + " (ID=" + text3 + ")");
 			list.Add(new InquiryElement(item, title, null));
 		}
-		string descriptionText = $"全部 NPC：{EditableHeroes.Count} 个";
-		descriptionText = descriptionText + $"\n当前结果：{filteredHeroes.Count} 个，第 {page + 1}/{num} 页。";
+		string descriptionText = DeveloperUiText.F("AF_UI_Developer_HeroSelection_Body","All NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}.", "TOTAL", EditableHeroes.Count.ToString(), "RESULTS", filteredHeroes.Count.ToString(), "PAGE", (page + 1).ToString(), "PAGES", num.ToString());
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			descriptionText = descriptionText + "\n搜索关键词：" + text;
+			descriptionText = descriptionText + "\n" + DeveloperUiText.F("AF_UI_Developer_HeroSelection_Query","Search keyword: {QUERY}", "QUERY", text);
 		}
 		if (filteredHeroes.Count == 0)
 		{
-			descriptionText += "\n没有匹配结果，可以重新搜索。";
+			descriptionText += "\n" + DeveloperUiText.T("AF_UI_Developer_HeroSelection_Empty","No matches; you can search again.");
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑 HeroNPC - 选择NPC", descriptionText, list, isExitShown: true, 0, 1, "确定", "返回", selected => { if (_port.IsCurrent(generation)) OnDevHeroSelected(selected); }, delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_Edit_HeroNPC_choose_an_NPC","Edit HeroNPC - choose an NPC"), descriptionText, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Confirm","Confirm"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevHeroSelected(selected); }, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			OpenDevHeroNpcMenu();
@@ -345,7 +341,7 @@ internal sealed class DeveloperRootEditorController
 			switch (text2)
 			{
 			case "search":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索 NPC", "输入 NPC 名称或 HeroId，可查询全部 NPC。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(DeveloperUiText.T("AF_UI_Developer_Search_NPC","Search NPC"), DeveloperUiText.T("AF_UI_Developer_Enter_an_NPC_name_or_HeroId_to_search_all_NPCs","Enter an NPC name or HeroId to search all NPCs."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Search","Search"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(string input)
 				{
     if (!_port.IsCurrent(generation)) return;
 					OpenDevTownEditorHeroSelectionPaged(0, input);
@@ -388,22 +384,22 @@ internal sealed class DeveloperRootEditorController
 			SelectedHero = npc;
 			string text = npc.Name?.ToString() ?? "NPC";
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("请选择要执行的操作：");
-			stringBuilder.AppendLine(" - 管理压缩记忆");
-			stringBuilder.AppendLine(" - 编辑赊账/欠款");
-			stringBuilder.AppendLine(" - 编辑角色个性/历史背景");
-			stringBuilder.AppendLine(" - 查看行动记录（结构化）");
+			stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Choose_operation","Choose an operation:"));
+			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Manage_memory","Manage compressed memory"));
+			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Edit_debt","Edit debt"));
+			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Edit_persona","Edit personality/background"));
+			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_View_actions","View structured action records"));
 			List<InquiryElement> list = new List<InquiryElement>();
-			list.Add(new InquiryElement("edit_history", "压缩记忆管理", null));
-			list.Add(new InquiryElement("edit_debt", "编辑赊账/欠款", null));
-			list.Add(new InquiryElement("edit_persona", "编辑角色个性/历史背景", null));
-			list.Add(new InquiryElement("view_actions", "查看行动记录（结构化）", null));
+			list.Add(new InquiryElement("edit_history", DeveloperUiText.T("AF_UI_Developer_Compressed_memory_management","Compressed memory management"), null));
+			list.Add(new InquiryElement("edit_debt", DeveloperUiText.T("AF_UI_Developer_Edit_debt","Edit debt"), null));
+			list.Add(new InquiryElement("edit_persona", DeveloperUiText.T("AF_UI_Developer_Edit_personality_background","Edit personality/background"), null));
+			list.Add(new InquiryElement("view_actions", DeveloperUiText.T("AF_UI_Developer_View_structured_action_records","View structured action records"), null));
 			if (NpcEditorReturnAction == null)
 			{
-				stringBuilder.AppendLine(" - 切换 NPC");
-				list.Add(new InquiryElement("switch_npc", "切换 NPC", null));
+				stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Switch_NPC","Switch NPC"));
+				list.Add(new InquiryElement("switch_npc", DeveloperUiText.T("AF_UI_Developer_Switch_NPC","Switch NPC"), null));
 			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑 HeroNPC - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(generation)) OnDevNpcMainMenuSelected(selected); }, delegate
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.F("AF_UI_Developer_Edit_HeroNPC_Title","Edit HeroNPC - {NPC}", "NPC", text), stringBuilder.ToString(), list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Enter","Enter"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevNpcMainMenuSelected(selected); }, delegate
 			{
     if (!_port.IsCurrent(generation)) return;
 				ReturnFromDevNpcEditor(npc);
@@ -481,8 +477,8 @@ internal sealed class DeveloperRootEditorController
 		}
 		RewardSystemBehavior.Instance.GetDebtSnapshot(npc, out var owedGold, out var items);
 		string text = npc.Name?.ToString() ?? "NPC";
-		string text2 = "当前金币欠款: " + owedGold + "。\n输入新的金币欠款数值（允许为 0）：";
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置金币欠款 - " + text, text2, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		string text2 = DeveloperUiText.F("AF_UI_Developer_DebtPrompt","Current gold debt: {GOLD}.\nEnter a new gold debt value (0 allowed):", "GOLD", owedGold.ToString());
+		InformationManager.ShowTextInquiry(new TextInquiryData(DeveloperUiText.F("AF_UI_Developer_DebtTitle","Set gold debt - {NPC}", "NPC", text), text2, isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Confirm","Confirm"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(string input)
 		{
     if (!_port.IsCurrent(generation)) return;
 			int result;
@@ -492,13 +488,13 @@ internal sealed class DeveloperRootEditorController
 			}
 			else if (!int.TryParse(input, out result) || result < 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入合法的非负整数."));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Enter_a_valid_non_negative_integer","Enter a valid non-negative integer.")));
 				OpenDevSetDebtGoldSimple(npc);
 			}
 			else
 			{
 				RewardSystemBehavior.Instance.SetDebt(npc, result, items);
-				InformationManager.DisplayMessage(new InformationMessage("已更新金币欠款为 " + result + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Developer_Gold_debt_updated","Gold debt updated to {GOLD}.", "GOLD", result.ToString())));
 				OpenDevDebtMenu(npc);
 			}
 		}, delegate
@@ -518,7 +514,7 @@ internal sealed class DeveloperRootEditorController
 		}
 		SelectedHero = npc;
 		string text = npc.Name?.ToString() ?? "NPC";
-		string descriptionText = "请选择要执行的操作：";
+		string descriptionText = DeveloperUiText.T("AF_UI_Developer_Choose_operation","Choose an operation:");
 		try
 		{
 			if (RewardSystemBehavior.Instance != null)
@@ -534,10 +530,10 @@ internal sealed class DeveloperRootEditorController
 		{
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("set_gold", "设置金币欠款", null));
-		list.Add(new InquiryElement("clear_debt", "清空所有欠款", null));
-		list.Add(new InquiryElement("back", "返回", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑赊账/欠款 - " + text, descriptionText, list, isExitShown: true, 0, 1, "执行", "返回", selected => { if (_port.IsCurrent(generation)) OnDevDebtMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("set_gold", DeveloperUiText.T("AF_UI_Developer_Set_gold_debt","Set gold debt"), null));
+		list.Add(new InquiryElement("clear_debt", DeveloperUiText.T("AF_UI_Developer_Clear_all_debt","Clear all debt"), null));
+		list.Add(new InquiryElement("back", DeveloperUiText.T("AF_UI_Developer_Back","Back"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.F("AF_UI_Developer_Edit_debt_title","Edit debt - {NPC}", "NPC", text), descriptionText, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Apply","Apply"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevDebtMenuSelected(selected); }, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			ShowDevEditInquiry(npc);
@@ -569,7 +565,7 @@ internal sealed class DeveloperRootEditorController
 			if (RewardSystemBehavior.Instance != null)
 			{
 				RewardSystemBehavior.Instance.SetDebt(devEditingHero, 0, new Dictionary<string, int>());
-				InformationManager.DisplayMessage(new InformationMessage("已清空该NPC的所有欠款."));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_All_debt_for_this_NPC_was_cleared","All debt for this NPC was cleared.")));
 			}
 			OpenDevDebtMenu(devEditingHero);
 		}
@@ -634,16 +630,16 @@ internal sealed class DeveloperRootEditorController
 			page = num - 1;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("recent", "查看近期行动", null));
-		list.Add(new InquiryElement("major", "查看重大行动", null));
+		list.Add(new InquiryElement("back", DeveloperUiText.T("AF_UI_Developer_Back","Back"), null));
+		list.Add(new InquiryElement("recent", DeveloperUiText.T("AF_UI_Developer_View_recent_actions","View recent actions"), null));
+		list.Add(new InquiryElement("major", DeveloperUiText.T("AF_UI_Developer_View_major_actions","View major actions"), null));
 		if (page > 0)
 		{
-			list.Add(new InquiryElement("prev_page", "上一页", null));
+			list.Add(new InquiryElement("prev_page", DeveloperUiText.T("AF_UI_Developer_Previous_page","Previous page"), null));
 		}
 		if (page + 1 < num)
 		{
-			list.Add(new InquiryElement("next_page", "下一页", null));
+			list.Add(new InquiryElement("next_page", DeveloperUiText.T("AF_UI_Developer_Next_page","Next page"), null));
 		}
 		list.Add(new InquiryElement("__sep__", "----------------", null));
 		int num2 = page * pageSize;
@@ -653,7 +649,7 @@ internal sealed class DeveloperRootEditorController
 		}
 		string text = npc.Name?.ToString() ?? "NPC";
 		string descriptionText = BuildDevNpcActionMenuDescription(npc, recentOnly, page, num, devNpcActionEntries.Count, devNpcActionEntries2.Count);
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("行动记录 - " + text, descriptionText, list, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_Action_records","Action records - ") + text, descriptionText, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_View","View"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(List<InquiryElement> selected)
 		{
     if (!_port.IsCurrent(generation)) return;
 			if (selected == null || selected.Count == 0)
@@ -705,15 +701,15 @@ internal sealed class DeveloperRootEditorController
 		string text = npc?.Name?.ToString() ?? "NPC";
 		List<NpcActionEntry> devNpcActionEntries = _port.GetDevNpcActionEntries(npc, recentOnly: true);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("当前 NPC：" + text);
-		stringBuilder.AppendLine("当前视图：" + (recentOnly ? "近期行动" : "重大行动"));
-		stringBuilder.AppendLine("近期行动数：" + devNpcActionEntries.Count);
-		stringBuilder.AppendLine("重大行动数：" + majorCount);
-		stringBuilder.AppendLine($"第 {page + 1}/{Math.Max(1, totalPages)} 页，本页类型总数：{currentCount}");
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Action_CurrentNpc","Current NPC: {NPC}", "NPC", text));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Action_CurrentView","Current view: {VIEW}", "VIEW", recentOnly ? DeveloperUiText.T("AF_UI_Developer_Recent_actions","Recent actions") : DeveloperUiText.T("AF_UI_Developer_Major_actions","Major actions")));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Action_RecentCount","Recent action count: {COUNT}", "COUNT", devNpcActionEntries.Count.ToString()));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Action_MajorCount","Major action count: {COUNT}", "COUNT", majorCount.ToString()));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Action_Page","Page {PAGE}/{PAGES}; entries on this page: {COUNT}", "PAGE", (page + 1).ToString(), "PAGES", Math.Max(1, totalPages).ToString(), "COUNT", currentCount.ToString()));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("说明：");
-		stringBuilder.AppendLine(" - 行动记录已按单个 NPC 存储");
-		stringBuilder.AppendLine(" - 详情里会显示时间、地点、人物、家族、王国、定居点归属等结构化字段");
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Notes","Notes:"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Action_records_are_stored_per_NPC"," - Action records are stored per NPC"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Details_show_structured_fields_such_as_time_plac"," - Details show structured fields such as time, place, people, clan, kingdom, and settlement ownership"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -727,20 +723,20 @@ internal sealed class DeveloperRootEditorController
 			return;
 		}
 		string text = npc.Name?.ToString() ?? "NPC";
-		string text2 = "行动详情 - " + text;
+		string text2 = DeveloperUiText.T("AF_UI_Developer_Action_details","Action details - ") + text;
 		string text3 = NpcActionEditorProjection.BuildDevNpcActionDetailSubtitle(_display, entry);
 		string text4 = NpcActionEditorProjection.BuildDevNpcActionDetailText(_display, entry);
 		if (DevWeeklyReportPopup.Show(text2, text3, text4, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			OpenDevNpcActionMenu(npc, recentOnly, page);
-		}, "返回行动列表"))
+		}, DeveloperUiText.T("AF_UI_Developer_Back_to_action_list","Back to action list")))
 		{
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回行动列表", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text2, text4, list, isExitShown: true, 0, 1, "返回", "关闭", delegate
+		list.Add(new InquiryElement("back", DeveloperUiText.T("AF_UI_Developer_Back_to_action_list","Back to action list"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text2, text4, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Back","Back"), DeveloperUiText.T("AF_UI_Developer_Close","Close"), delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			OpenDevNpcActionMenu(npc, recentOnly, page);
@@ -763,12 +759,12 @@ internal static bool TryParseDevSelectionInt(string id, string prefix, out int v
 	}
 
  internal static void InitializeRootMenuTitle(Action<string> setTitle)
- { try { setTitle("开发者工具"); } catch { } }
+ { try { setTitle(DeveloperUiText.T("AF_UI_Developer_Developer_tools","Developer tools")); } catch { } }
  internal static bool RootEntryCondition(Action setSubmenu,Func<bool> readEnabled)
  { setSubmenu();return readEnabled(); }
  internal static void RootEntryConsequence(Func<bool> readEnabled,Action<string> switchMenu)
  {
-  if(!readEnabled()) InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+  if(!readEnabled()) InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Developer_data_management_is_disabled_enable_it_","Developer data management is disabled (enable it in MCM).")));
   else switchMenu("AnimusForge_dev_root");
  }
  internal static bool RootBackCondition(Action setLeave)
@@ -778,7 +774,7 @@ internal static bool TryParseDevSelectionInt(string id, string prefix, out int v
  internal static void OpenKingdomStrategicProfilesMenu(Func<Action> captureOpenMenu)
  {
   Action open=captureOpenMenu();
-  if(open==null) { InformationManager.DisplayMessage(new InformationMessage("国家战略与性格数据行为尚未初始化。"));return; }
+  if(open==null) { InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Kingdom_strategy_and_personality_data_behavior_i","Kingdom strategy and personality data behavior is not initialized.")));return; }
   open();
  }
 

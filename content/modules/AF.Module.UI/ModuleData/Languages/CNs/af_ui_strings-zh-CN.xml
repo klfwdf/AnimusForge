@@ -2082,5 +2082,201 @@
   <string id="AF_UI_Duel_TargetUnavailable" text="决斗失败：目标 NPC 当前没有可用实体。" />
   <string id="AF_UI_Duel_TargetIsPlayer" text="决斗失败：不能把玩家自己作为决斗目标。" />
   <string id="AF_UI_Duel_TargetInvalid" text="决斗失败：目标 NPC 无效。" />
+
+  <string id="AF_UI_Developer_Action_CurrentNpc" text="当前 NPC：{NPC}" />
+  <string id="AF_UI_Developer_Action_CurrentView" text="当前视图：{VIEW}" />
+  <string id="AF_UI_Developer_Action_MajorCount" text="重大行动数：{COUNT}" />
+  <string id="AF_UI_Developer_Action_Page" text="第 {PAGE}/{PAGES} 页；本页类型总数：{COUNT}" />
+  <string id="AF_UI_Developer_Action_RecentCount" text="近期行动数：{COUNT}" />
+  <string id="AF_UI_Developer_Action_details" text="行动详情 - " />
+  <string id="AF_UI_Developer_Action_records" text="行动记录 - " />
+  <string id="AF_UI_Developer_Action_records_are_stored_per_NPC" text=" - 行动记录已按单个 NPC 存储" />
+  <string id="AF_UI_Developer_AllImportDuplicates" text="导入数据与当前游戏存在重复。
+个性/背景：{PERSONA}
+对话历史：{HISTORY}
+欠款：{DEBT}
+未命名 NPC：{UNNAMED}
+Knowledge：{KNOWLEDGE}
+声音映射：{VOICE}
+世界开局概要：{WORLD}
+王国开局概要：{KINGDOM}
+事件记录：{EVENTS}
+国家战略/性格：{PROFILES}（无法匹配 {UNMATCHED}）
+请选择处理方式：" />
+  <string id="AF_UI_Developer_All_data_management" text="全部数据管理" />
+  <string id="AF_UI_Developer_All_debt_for_this_NPC_was_cleared" text="已清空该 NPC 的所有欠款。" />
+  <string id="AF_UI_Developer_Apply" text="执行" />
+  <string id="AF_UI_Developer_Back" text="返回" />
+  <string id="AF_UI_Developer_Back_to_action_list" text="返回行动列表" />
+  <string id="AF_UI_Developer_Cancel" text="取消" />
+  <string id="AF_UI_Developer_Choose" text="选择" />
+  <string id="AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut" text="选择 a mod 文件夹 or player export; a read-only absolute 路径 是also accepted." />
+  <string id="AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso" text="选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。" />
+  <string id="AF_UI_Developer_Choose_a_target_folder_existing_contents_may_be_overwrit" text="选择 a target 文件夹 (existing contents may be overwritten)." />
+  <string id="AF_UI_Developer_Choose_again" text="选择 again" />
+  <string id="AF_UI_Developer_Choose_an_operation" text="请选择要执行的操作：" />
+  <string id="AF_UI_Developer_Choose_operation" text="请选择要执行的操作：" />
+  <string id="AF_UI_Developer_Choose_operation_summary" text="请选择要执行的操作：
+" />
+  <string id="AF_UI_Developer_Choose_the_export_target_folder_existing_contents_may_be" text="选择 the export target 文件夹 (existing contents may be overwritten)." />
+  <string id="AF_UI_Developer_Clear" text="清理" />
+  <string id="AF_UI_Developer_ClearCompleted" text="已清理当前存档中的 AnimusForge 可清理数据；国家战略与性格已恢复默认基线。" />
+  <string id="AF_UI_Developer_ClearConfirm_Body" text="这会清空当前存档中的 AnimusForge 数据，包括：
+HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、国家战略/性格玩家覆盖、声音映射、耐心状态等。
+
+不会删除 PlayerExports 下已经导出的备份文件，也不会回滚已经真实发生的原版世界状态变化。
+
+此操作不可撤销。建议先执行一次“导出（全部）”。是否继续？" />
+  <string id="AF_UI_Developer_Clear_all_data_current_save_exported_backups_are" text="清理 all 数据 (current save; exported backups are kept)" />
+  <string id="AF_UI_Developer_Clear_all_debt" text="清空所有欠款" />
+  <string id="AF_UI_Developer_Clear_search" text="清空搜索" />
+  <string id="AF_UI_Developer_Close" text="关闭" />
+  <string id="AF_UI_Developer_Compressed_memory_management" text="压缩记忆管理" />
+  <string id="AF_UI_Developer_Confirm" text="确定" />
+  <string id="AF_UI_Developer_Confirm_clearing_all_data" text="确定 clearing all 数据" />
+  <string id="AF_UI_Developer_Confirm_database_reload" text="确认重载数据库" />
+  <string id="AF_UI_Developer_Confirm_reload" text="确认重载" />
+  <string id="AF_UI_Developer_Continue" text="继续" />
+  <string id="AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s" text="当前 数据 statistics 失败, but clearing 是still 可用." />
+  <string id="AF_UI_Developer_Database_package_validation_body" text="本次重载尚未修改存档。
+
+{ERROR}" />
+  <string id="AF_UI_Developer_Database_package_validation_failed" text="数据库资料包校验失败" />
+  <string id="AF_UI_Developer_Database_reload_completed" text="数据库重载完成：" />
+  <string id="AF_UI_Developer_Database_reload_failed" text="数据库重载失败：" />
+  <string id="AF_UI_Developer_DebtPrompt" text="当前金币欠款：{GOLD}。
+输入新的金币欠款数值（允许为 0）：" />
+  <string id="AF_UI_Developer_DebtTitle" text="设置金币欠款 - {NPC}" />
+  <string id="AF_UI_Developer_Details_show_structured_fields_such_as_time_plac" text=" - 详情里会显示时间、地点、人物、家族、王国、定居点归属等结构化字段" />
+  <string id="AF_UI_Developer_Developer_data_management_is_disabled_enable_it_" text="开发者数据管理未开启（请在 MCM 中启用）。" />
+  <string id="AF_UI_Developer_Developer_tools" text="开发者工具" />
+  <string id="AF_UI_Developer_Duplicates_detected_import_all_HeroNPC_data" text="检测到重复 - HeroNPC 全量导入" />
+  <string id="AF_UI_Developer_Duplicates_detected_import_all_data" text="检测到重复 - 全部导入" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_Title" text="编辑 HeroNPC - {NPC}" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_choose_an_NPC" text="编辑 HeroNPC - 选择 NPC" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="编辑 HeroNPC（压缩记忆/赊账/个性背景）…" />
+  <string id="AF_UI_Developer_Edit_debt" text="编辑赊账/欠款" />
+  <string id="AF_UI_Developer_Edit_debt_title" text="Edit debt - {NPC}" />
+  <string id="AF_UI_Developer_Edit_persona" text="编辑角色个性/历史背景" />
+  <string id="AF_UI_Developer_Edit_personality_background" text="编辑角色个性/历史背景" />
+  <string id="AF_UI_Developer_Enter" text="进入" />
+  <string id="AF_UI_Developer_Enter_a_folder_name_manually" text="输入 a 文件夹 name manually..." />
+  <string id="AF_UI_Developer_Enter_a_folder_name_or_path_manually" text="输入 a 文件夹 name or 路径 manually..." />
+  <string id="AF_UI_Developer_Enter_a_package_folder_path_manually" text="输入 a 资料包 文件夹/路径 manually..." />
+  <string id="AF_UI_Developer_Enter_a_valid_non_negative_integer" text="请输入合法的非负整数。" />
+  <string id="AF_UI_Developer_Enter_an_NPC_name_or_HeroId_to_search_all_NPCs" text="输入 an NPC name or HeroId to search all NPCs." />
+  <string id="AF_UI_Developer_Enter_export_folder_name" text="输入 export 文件夹 name" />
+  <string id="AF_UI_Developer_Enter_import_folder_name_path" text="输入 import 文件夹 name/路径" />
+  <string id="AF_UI_Developer_Enter_package_folder_path" text="输入 资料包 文件夹/路径" />
+  <string id="AF_UI_Developer_Enter_the_complete_read_only_package_folder_path" text="输入 the complete read-only 资料包 文件夹 路径." />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_choose_a_folder" text="导出 all HeroNPC 数据 - 选择文件夹" />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="导出 all HeroNPC 数据 (compressed memory, debt, 个性/背景)" />
+  <string id="AF_UI_Developer_Export_all_data_choose_a_folder" text="导出全部数据 - 选择文件夹" />
+  <string id="AF_UI_Developer_Export_completed" text="导出完成：" />
+  <string id="AF_UI_Developer_Export_failed" text="导出失败：" />
+  <string id="AF_UI_Developer_Export_folder_already_exists" text="导出文件夹已存在" />
+  <string id="AF_UI_Developer_Export_folder_exists_body" text="目标文件夹已存在且包含内容：
+{PATH}
+是否覆盖导出？" />
+  <string id="AF_UI_Developer_Gold_debt_updated" text="已更新金币欠款为 {GOLD}。" />
+  <string id="AF_UI_Developer_HeroImportDuplicates" text="导入数据与当前游戏存在重复。
+个性/背景：{PERSONA}
+压缩记忆：{MEMORY}
+欠款：{DEBT}
+请选择处理方式：" />
+  <string id="AF_UI_Developer_HeroNPC_edit_import_export" text="HeroNPC 编辑/导入/导出" />
+  <string id="AF_UI_Developer_HeroSelection_Body" text="全部 NPC：{TOTAL}；当前结果：{RESULTS}；第 {PAGE}/{PAGES} 页。" />
+  <string id="AF_UI_Developer_HeroSelection_Empty" text="没有匹配结果，可以重新搜索。" />
+  <string id="AF_UI_Developer_HeroSelection_Query" text="搜索关键词：{QUERY}" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_choose_a_folder" text="导入 all HeroNPC 数据 - 选择文件夹" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="导入 all HeroNPC 数据 (compressed memory, debt, 个性/背景)" />
+  <string id="AF_UI_Developer_Import_all_data_choose_a_folder" text="导入全部数据 - 选择文件夹" />
+  <string id="AF_UI_Developer_Import_completed" text="导入 完成: " />
+  <string id="AF_UI_Developer_Import_completed_duplicates_path" text="导入完成（已跳过重复）：{PATH}" />
+  <string id="AF_UI_Developer_Import_completed_duplicates_skipped" text="导入 完成 (duplicates skipped): " />
+  <string id="AF_UI_Developer_Import_completed_path" text="导入完成：{PATH}" />
+  <string id="AF_UI_Developer_Import_failed" text="导入失败：" />
+  <string id="AF_UI_Developer_Import_failed_export_directory_not_found" text="导入失败：找不到导出目录。" />
+  <string id="AF_UI_Developer_Import_non_duplicate_data_only" text="导入 non-duplicate 数据 only" />
+  <string id="AF_UI_Developer_Kept_and_not_imported_from_the_package" text="会保留且不会从资料包导入：" />
+  <string id="AF_UI_Developer_Kingdom_strategy_and_personality_data_behavior_i" text="Kingdom strategy and personality 数据 behavior 是不 initialized." />
+  <string id="AF_UI_Developer_Knowledge_exported" text="Knowledge exported: {COUNT} 条." />
+  <string id="AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_" text="Leave blank for an 自动 timestamp; an existing name overwrites that export." />
+  <string id="AF_UI_Developer_Leave_blank_for_the_latest_player_export_names_search_th" text="Leave blank for the latest player export; names search the mod 文件夹 first, or enter a full 资料包 路径." />
+  <string id="AF_UI_Developer_Leave_blank_to_choose_the_latest_player_export_a_full_fo" text="Leave blank to choose the latest player export; a full 文件夹 or .json 路径 是also accepted." />
+  <string id="AF_UI_Developer_Major_actions" text="重大行动" />
+  <string id="AF_UI_Developer_Manage_memory" text="管理压缩记忆" />
+  <string id="AF_UI_Developer_Next_page" text="下一页" />
+  <string id="AF_UI_Developer_Notes" text="说明：" />
+  <string id="AF_UI_Developer_Overwrite_export" text="覆盖 export" />
+  <string id="AF_UI_Developer_Overwrite_import" text="覆盖 import" />
+  <string id="AF_UI_Developer_Partial_import_completed" text="部分导入完成（跳过 {COUNT} 个无效压缩记忆文件）：{PATH}" />
+  <string id="AF_UI_Developer_Partial_import_completed_duplicates" text="部分导入完成（跳过 {COUNT} 个无效压缩记忆文件，已跳过重复）：{PATH}" />
+  <string id="AF_UI_Developer_PlayerExports_path_is_unavailable" text="PlayerExports 路径不可用：" />
+  <string id="AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p" text="Player导出s 路径 是un可用; a read-only absolute 路径 can still be imported." />
+  <string id="AF_UI_Developer_Previous_page" text="上一页" />
+  <string id="AF_UI_Developer_Recent_actions" text="近期行动" />
+  <string id="AF_UI_Developer_Reload_DayZero" text="• 上述开局知识的第 0 日派生记录（游戏日达到 7 天后，可能按现有 API 设置请求 LLM 生成短摘要）" />
+  <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• 未出现在资料包的当前王国 {COUNT} 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）" />
+  <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• 其中 {COUNT} 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词" />
+  <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• 资料包内 {COUNT} 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）" />
+  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC 个性、背景、记忆和外貌" />
+  <string id="AF_UI_Developer_Reload_KeepPlayer" text="• 主角外貌、背景、主角专用知识和直接声音 ID" />
+  <string id="AF_UI_Developer_Reload_KeepSettings" text="• 动态事件记录、API 配置、LLM 提示词及其他设置" />
+  <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• 王国性格与长期战略 {COUNT} 个王国" />
+  <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• 非主角知识：{COUNT} 条" />
+  <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• 世界开局知识 1 份，以及王国开局知识 {COUNT} 条" />
+  <string id="AF_UI_Developer_Reload_VoiceMapping" text="• 声音映射 1 份，以及 NPC 声音 ID {COUNT} 条" />
+  <string id="AF_UI_Developer_Reload_database_choose_a_package" text="重载数据库 - 选择资料包" />
+  <string id="AF_UI_Developer_Search" text="搜索" />
+  <string id="AF_UI_Developer_Search_NPC" text="搜索 NPC" />
+  <string id="AF_UI_Developer_Set_gold_debt" text="设置金币欠款" />
+  <string id="AF_UI_Developer_Single_HeroNPC_import_export" text="Single HeroNPC import/export..." />
+  <string id="AF_UI_Developer_Source_package" text="来源资料包：" />
+  <string id="AF_UI_Developer_Summary_Actions" text="NPC 行动 记录: {COUNT} 人" />
+  <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} 人" />
+  <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} 人" />
+  <string id="AF_UI_Developer_Summary_Events" text="Event 记录: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero 个性/背景: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_KingdomProfiles" text="Kingdom strategy/personality: {COUNT} ({OVERRIDES} player overrides)" />
+  <string id="AF_UI_Developer_Summary_Knowledge" text="Knowledge: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Memory" text="Compressed memory: {COUNT} 人" />
+  <string id="AF_UI_Developer_Summary_Stability" text="Kingdom stability: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Unnamed" text="Unnamed NPCs: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Voice" text="Voice mappings: {COUNT}" />
+  <string id="AF_UI_Developer_Switch_NPC" text="切换 NPC" />
+  <string id="AF_UI_Developer_There_are_no_editable_NPCs" text="There are 没有 editable NPCs." />
+  <string id="AF_UI_Developer_This_NPC_has_no_ID_and_cannot_be_imported_or_exported" text="本次NPC has 没有 ID and can不 be imported or exported." />
+  <string id="AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu" text="本次overwrites the 数据base 数据 listed above in the current save. 继续?" />
+  <string id="AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport" text="Unable to open the 资料包 picker; check the Player导出s 路径." />
+  <string id="AF_UI_Developer_Unknown_error" text="未知错误。" />
+  <string id="AF_UI_Developer_Use_a_new_folder_automatic" text="Use a new 文件夹 (自动)" />
+  <string id="AF_UI_Developer_Use_the_latest_player_export_automatic" text="使用最新玩家导出 (自动)" />
+  <string id="AF_UI_Developer_View" text="查看" />
+  <string id="AF_UI_Developer_View_actions" text="查看行动记录（结构化）" />
+  <string id="AF_UI_Developer_View_major_actions" text="查看 major 行动s" />
+  <string id="AF_UI_Developer_View_recent_actions" text="查看 recent 行动s" />
+  <string id="AF_UI_Developer_View_structured_action_records" text="查看行动记录（结构化）" />
+  <string id="AF_UI_Developer_Warning_Knowledge_export_failed_the_previous_export_was_kept" text="警告: Knowledge export 失败; the previous export was kept. 原因： " />
+  <string id="AF_UI_Developer_Warning_Knowledge_import_failed_and_was_skipped_Reason" text="警告: Knowledge import 失败 and was skipped. 原因： " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_export_failed_the_previ" text="警告: 国家战略/性格 export 失败; the previous export was kept. 原因： " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_failed_and_was_s" text="警告: 国家战略/性格 import 失败 and was skipped. 原因： " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_file_is_invalid_" text="警告: 国家战略/性格 import file 是invalid and was skipped. 原因： " />
+  <string id="AF_UI_Developer_Will_delete_and_reload" text="将删除并重载：" />
+  <string id="AF_UI_Onboarding_Import_Import_cancelled" text="导入 cancelled." />
+  <string id="AF_UI_Onboarding_Import_Import_failed" text="导入 失败: " />
+  <string id="AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized" text="导入 失败: MyBehavior 是不 initialized." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_export_directory_not_found" text="导入 失败: export directory 不 found." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_behavior_is_" text="导入 失败: 国家战略/性格 数据 behavior 是不 initialized." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_is_invalid_R" text="导入 失败: 国家战略/性格 数据 是invalid. 原因： " />
+  <string id="AF_UI_Onboarding_Import_Import_failed_required_data_was_not_fully_imported" text="导入 失败: required 数据 was 不 fully imported." />
+  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="国家战略与性格已从资料包导入：匹配 {MATCHED} 条；无法匹配 {UNMATCHED} 条。" />
+  <string id="AF_UI_Onboarding_Import_Missing_event_data" text="导入 失败: event_数据\\WorldOpeningSummary.json or event_数据\\KingdomOpeningSummaries.json 是missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_kingdom_profiles" text="导入 失败: kingdom_profiles\\KingdomProfiles.json 是missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_knowledge" text="导入 失败: knowledge\\rules\\*.json (or knowledge\\KnowledgeRules.json) 是missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_personality_background" text="导入 失败: personality_background\\*.json 是missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_unnamed_persona" text="导入 失败: unnamed_persona\\*.json 是missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_voice_mapping" text="导入 失败: voice_mapping\\VoiceMapping.json 是missing." />
+  <string id="AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the" text="该 资料包 contains 没有 kingdom card that safely matches the current world." />
 </strings>
 </base>

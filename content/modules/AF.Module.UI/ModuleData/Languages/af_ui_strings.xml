@@ -2077,6 +2077,176 @@ Estimated requests: " />
   <string id="AF_UI_Duel_TargetUnavailable" text="Duel failed: the target NPC has no usable entity right now." />
   <string id="AF_UI_Duel_TargetIsPlayer" text="Duel failed: the player cannot be selected as the duel target." />
   <string id="AF_UI_Duel_TargetInvalid" text="Duel failed: the target NPC is invalid." />
+
+  <string id="AF_UI_Developer_Action_CurrentNpc" text="Current NPC: {NPC}" />
+  <string id="AF_UI_Developer_Action_CurrentView" text="Current view: {VIEW}" />
+  <string id="AF_UI_Developer_Action_MajorCount" text="Major action count: {COUNT}" />
+  <string id="AF_UI_Developer_Action_Page" text="Page {PAGE}/{PAGES}; entries on this page: {COUNT}" />
+  <string id="AF_UI_Developer_Action_RecentCount" text="Recent action count: {COUNT}" />
+  <string id="AF_UI_Developer_Action_details" text="Action details - " />
+  <string id="AF_UI_Developer_Action_records" text="Action records - " />
+  <string id="AF_UI_Developer_Action_records_are_stored_per_NPC" text=" - Action records are stored per NPC" />
+  <string id="AF_UI_Developer_AllImportDuplicates" text="Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nDialogue history: {HISTORY}\nDebt: {DEBT}\nUnnamed NPCs: {UNNAMED}\nKnowledge: {KNOWLEDGE}\nVoice mapping: {VOICE}\nWorld opening summary: {WORLD}\nKingdom opening summaries: {KINGDOM}\nEvent records: {EVENTS}\nKingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_All_data_management" text="All data management" />
+  <string id="AF_UI_Developer_All_debt_for_this_NPC_was_cleared" text="All debt for this NPC was cleared." />
+  <string id="AF_UI_Developer_Apply" text="Apply" />
+  <string id="AF_UI_Developer_Back" text="Back" />
+  <string id="AF_UI_Developer_Back_to_action_list" text="Back to action list" />
+  <string id="AF_UI_Developer_Cancel" text="Cancel" />
+  <string id="AF_UI_Developer_Choose" text="Choose" />
+  <string id="AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut" text="Choose a mod folder or player export; a read-only absolute path is also accepted." />
+  <string id="AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso" text="Choose a source package. Knowledge, kingdom strategy/personality, and voice data are validated before confirmation." />
+  <string id="AF_UI_Developer_Choose_a_target_folder_existing_contents_may_be_overwrit" text="Choose a target folder (existing contents may be overwritten)." />
+  <string id="AF_UI_Developer_Choose_again" text="Choose again" />
+  <string id="AF_UI_Developer_Choose_an_operation" text="Choose an operation:" />
+  <string id="AF_UI_Developer_Choose_operation" text="Choose an operation:" />
+  <string id="AF_UI_Developer_Choose_operation_summary" text="Choose an operation:\n" />
+  <string id="AF_UI_Developer_Choose_the_export_target_folder_existing_contents_may_be" text="Choose the export target folder (existing contents may be overwritten)." />
+  <string id="AF_UI_Developer_Clear" text="Clear" />
+  <string id="AF_UI_Developer_ClearCompleted" text="Cleared AnimusForge data from the current save; kingdom strategy and personality were restored to the default baseline." />
+  <string id="AF_UI_Developer_ClearConfirm_Body" text="This clears AnimusForge data in the current save, including:\nHeroNPC personality/background, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.\n\nExported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.\n\nThis action cannot be undone. Export all data first if you need a backup. Continue?" />
+  <string id="AF_UI_Developer_Clear_all_data_current_save_exported_backups_are" text="Clear all data (current save; exported backups are kept)" />
+  <string id="AF_UI_Developer_Clear_all_debt" text="Clear all debt" />
+  <string id="AF_UI_Developer_Clear_search" text="Clear search" />
+  <string id="AF_UI_Developer_Close" text="Close" />
+  <string id="AF_UI_Developer_Compressed_memory_management" text="Compressed memory management" />
+  <string id="AF_UI_Developer_Confirm" text="Confirm" />
+  <string id="AF_UI_Developer_Confirm_clearing_all_data" text="Confirm clearing all data" />
+  <string id="AF_UI_Developer_Confirm_database_reload" text="Confirm database reload" />
+  <string id="AF_UI_Developer_Confirm_reload" text="Confirm reload" />
+  <string id="AF_UI_Developer_Continue" text="Continue" />
+  <string id="AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s" text="Current data statistics failed, but clearing is still available." />
+  <string id="AF_UI_Developer_Database_package_validation_body" text="This reload has not modified the save.\n\n{ERROR}" />
+  <string id="AF_UI_Developer_Database_package_validation_failed" text="Database package validation failed" />
+  <string id="AF_UI_Developer_Database_reload_completed" text="Database reload completed:" />
+  <string id="AF_UI_Developer_Database_reload_failed" text="Database reload failed:" />
+  <string id="AF_UI_Developer_DebtPrompt" text="Current gold debt: {GOLD}.\nEnter a new gold debt value (0 allowed):" />
+  <string id="AF_UI_Developer_DebtTitle" text="Set gold debt - {NPC}" />
+  <string id="AF_UI_Developer_Details_show_structured_fields_such_as_time_plac" text=" - Details show structured fields such as time, place, people, clan, kingdom, and settlement ownership" />
+  <string id="AF_UI_Developer_Developer_data_management_is_disabled_enable_it_" text="Developer data management is disabled (enable it in MCM)." />
+  <string id="AF_UI_Developer_Developer_tools" text="Developer tools" />
+  <string id="AF_UI_Developer_Duplicates_detected_import_all_HeroNPC_data" text="Duplicates detected - import all HeroNPC data" />
+  <string id="AF_UI_Developer_Duplicates_detected_import_all_data" text="Duplicates detected - import all data" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_Title" text="Edit HeroNPC - {NPC}" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_choose_an_NPC" text="Edit HeroNPC - choose an NPC" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="Edit HeroNPC (compressed memory/debt/personality and background)..." />
+  <string id="AF_UI_Developer_Edit_debt" text="Edit debt" />
+  <string id="AF_UI_Developer_Edit_debt_title" text="Edit debt - {NPC}" />
+  <string id="AF_UI_Developer_Edit_persona" text="Edit personality/background" />
+  <string id="AF_UI_Developer_Edit_personality_background" text="Edit personality/background" />
+  <string id="AF_UI_Developer_Enter" text="Enter" />
+  <string id="AF_UI_Developer_Enter_a_folder_name_manually" text="Enter a folder name manually..." />
+  <string id="AF_UI_Developer_Enter_a_folder_name_or_path_manually" text="Enter a folder name or path manually..." />
+  <string id="AF_UI_Developer_Enter_a_package_folder_path_manually" text="Enter a package folder/path manually..." />
+  <string id="AF_UI_Developer_Enter_a_valid_non_negative_integer" text="Enter a valid non-negative integer." />
+  <string id="AF_UI_Developer_Enter_an_NPC_name_or_HeroId_to_search_all_NPCs" text="Enter an NPC name or HeroId to search all NPCs." />
+  <string id="AF_UI_Developer_Enter_export_folder_name" text="Enter export folder name" />
+  <string id="AF_UI_Developer_Enter_import_folder_name_path" text="Enter import folder name/path" />
+  <string id="AF_UI_Developer_Enter_package_folder_path" text="Enter package folder/path" />
+  <string id="AF_UI_Developer_Enter_the_complete_read_only_package_folder_path" text="Enter the complete read-only package folder path." />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_choose_a_folder" text="Export all HeroNPC data - choose a folder" />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="Export all HeroNPC data (compressed memory, debt, personality/background)" />
+  <string id="AF_UI_Developer_Export_all_data_choose_a_folder" text="Export all data - choose a folder" />
+  <string id="AF_UI_Developer_Export_completed" text="Export completed: " />
+  <string id="AF_UI_Developer_Export_failed" text="Export failed: " />
+  <string id="AF_UI_Developer_Export_folder_already_exists" text="Export folder already exists" />
+  <string id="AF_UI_Developer_Export_folder_exists_body" text="The target folder already exists and contains:\n{PATH}\nOverwrite this export?" />
+  <string id="AF_UI_Developer_Gold_debt_updated" text="Gold debt updated to {GOLD}." />
+  <string id="AF_UI_Developer_HeroImportDuplicates" text="Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nCompressed memory: {MEMORY}\nDebt: {DEBT}\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_HeroNPC_edit_import_export" text="HeroNPC edit/import/export" />
+  <string id="AF_UI_Developer_HeroSelection_Body" text="All NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}." />
+  <string id="AF_UI_Developer_HeroSelection_Empty" text="No matches; you can search again." />
+  <string id="AF_UI_Developer_HeroSelection_Query" text="Search keyword: {QUERY}" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_choose_a_folder" text="Import all HeroNPC data - choose a folder" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="Import all HeroNPC data (compressed memory, debt, personality/background)" />
+  <string id="AF_UI_Developer_Import_all_data_choose_a_folder" text="Import all data - choose a folder" />
+  <string id="AF_UI_Developer_Import_completed" text="Import completed: " />
+  <string id="AF_UI_Developer_Import_completed_duplicates_path" text="Import completed (duplicates skipped): {PATH}" />
+  <string id="AF_UI_Developer_Import_completed_duplicates_skipped" text="Import completed (duplicates skipped): " />
+  <string id="AF_UI_Developer_Import_completed_path" text="Import completed: {PATH}" />
+  <string id="AF_UI_Developer_Import_failed" text="Import failed: " />
+  <string id="AF_UI_Developer_Import_failed_export_directory_not_found" text="Import failed: export directory not found." />
+  <string id="AF_UI_Developer_Import_non_duplicate_data_only" text="Import non-duplicate data only" />
+  <string id="AF_UI_Developer_Kept_and_not_imported_from_the_package" text="Kept and not imported from the package:" />
+  <string id="AF_UI_Developer_Kingdom_strategy_and_personality_data_behavior_i" text="Kingdom strategy and personality data behavior is not initialized." />
+  <string id="AF_UI_Developer_Knowledge_exported" text="Knowledge exported: {COUNT} entries." />
+  <string id="AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_" text="Leave blank for an automatic timestamp; an existing name overwrites that export." />
+  <string id="AF_UI_Developer_Leave_blank_for_the_latest_player_export_names_search_th" text="Leave blank for the latest player export; names search the mod folder first, or enter a full package path." />
+  <string id="AF_UI_Developer_Leave_blank_to_choose_the_latest_player_export_a_full_fo" text="Leave blank to choose the latest player export; a full folder or .json path is also accepted." />
+  <string id="AF_UI_Developer_Major_actions" text="Major actions" />
+  <string id="AF_UI_Developer_Manage_memory" text="Manage compressed memory" />
+  <string id="AF_UI_Developer_Next_page" text="Next page" />
+  <string id="AF_UI_Developer_Notes" text="Notes:" />
+  <string id="AF_UI_Developer_Overwrite_export" text="Overwrite export" />
+  <string id="AF_UI_Developer_Overwrite_import" text="Overwrite import" />
+  <string id="AF_UI_Developer_Partial_import_completed" text="Partial import completed (skipped {COUNT} invalid compressed-memory files): {PATH}" />
+  <string id="AF_UI_Developer_Partial_import_completed_duplicates" text="Partial import completed (skipped {COUNT} invalid compressed-memory files; duplicates were skipped): {PATH}" />
+  <string id="AF_UI_Developer_PlayerExports_path_is_unavailable" text="PlayerExports path is unavailable: " />
+  <string id="AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p" text="PlayerExports path is unavailable; a read-only absolute path can still be imported." />
+  <string id="AF_UI_Developer_Previous_page" text="Previous page" />
+  <string id="AF_UI_Developer_Recent_actions" text="Recent actions" />
+  <string id="AF_UI_Developer_Reload_DayZero" text="• Day-zero derived records for the opening Knowledge (after day 7, the current API settings may request short summaries from the LLM)" />
+  <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• {COUNT} current kingdoms absent from the package will be restored to their current defaults (this does not automatically request a kingdom LLM)" />
+  <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• {COUNT} duplicate trigger words stay on the original entry so split Knowledge entries do not compete for the same keyword" />
+  <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• {COUNT} package entries with duplicate IDs will receive stable file-name-based IDs (package files are not modified)" />
+  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC personality, background, memory, and appearance" />
+  <string id="AF_UI_Developer_Reload_KeepPlayer" text="• Player appearance, background, player-only Knowledge, and direct voice ID" />
+  <string id="AF_UI_Developer_Reload_KeepSettings" text="• Dynamic event records, API configuration, LLM Prompts, and other settings" />
+  <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• Kingdom personality and long-term strategy for {COUNT} kingdoms" />
+  <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• Non-player Knowledge: {COUNT} entries" />
+  <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• One world-opening Knowledge entry and {COUNT} kingdom-opening entries" />
+  <string id="AF_UI_Developer_Reload_VoiceMapping" text="• One voice mapping and {COUNT} NPC voice IDs" />
+  <string id="AF_UI_Developer_Reload_database_choose_a_package" text="Reload database - choose a package" />
+  <string id="AF_UI_Developer_Search" text="Search" />
+  <string id="AF_UI_Developer_Search_NPC" text="Search NPC" />
+  <string id="AF_UI_Developer_Set_gold_debt" text="Set gold debt" />
+  <string id="AF_UI_Developer_Single_HeroNPC_import_export" text="Single HeroNPC import/export..." />
+  <string id="AF_UI_Developer_Source_package" text="Source package:" />
+  <string id="AF_UI_Developer_Summary_Actions" text="NPC action records: {COUNT} people" />
+  <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} people" />
+  <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} people" />
+  <string id="AF_UI_Developer_Summary_Events" text="Event records: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero personality/background: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_KingdomProfiles" text="Kingdom strategy/personality: {COUNT} ({OVERRIDES} player overrides)" />
+  <string id="AF_UI_Developer_Summary_Knowledge" text="Knowledge: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Memory" text="Compressed memory: {COUNT} people" />
+  <string id="AF_UI_Developer_Summary_Stability" text="Kingdom stability: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Unnamed" text="Unnamed NPCs: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_Voice" text="Voice mappings: {COUNT}" />
+  <string id="AF_UI_Developer_Switch_NPC" text="Switch NPC" />
+  <string id="AF_UI_Developer_There_are_no_editable_NPCs" text="There are no editable NPCs." />
+  <string id="AF_UI_Developer_This_NPC_has_no_ID_and_cannot_be_imported_or_exported" text="This NPC has no ID and cannot be imported or exported." />
+  <string id="AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu" text="This overwrites the database data listed above in the current save. Continue?" />
+  <string id="AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport" text="Unable to open the package picker; check the PlayerExports path." />
+  <string id="AF_UI_Developer_Unknown_error" text="Unknown error." />
+  <string id="AF_UI_Developer_Use_a_new_folder_automatic" text="Use a new folder (automatic)" />
+  <string id="AF_UI_Developer_Use_the_latest_player_export_automatic" text="Use the latest player export (automatic)" />
+  <string id="AF_UI_Developer_View" text="View" />
+  <string id="AF_UI_Developer_View_actions" text="View structured action records" />
+  <string id="AF_UI_Developer_View_major_actions" text="View major actions" />
+  <string id="AF_UI_Developer_View_recent_actions" text="View recent actions" />
+  <string id="AF_UI_Developer_View_structured_action_records" text="View structured action records" />
+  <string id="AF_UI_Developer_Warning_Knowledge_export_failed_the_previous_export_was_kept" text="Warning: Knowledge export failed; the previous export was kept. Reason: " />
+  <string id="AF_UI_Developer_Warning_Knowledge_import_failed_and_was_skipped_Reason" text="Warning: Knowledge import failed and was skipped. Reason: " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_export_failed_the_previ" text="Warning: kingdom strategy/personality export failed; the previous export was kept. Reason: " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_failed_and_was_s" text="Warning: kingdom strategy/personality import failed and was skipped. Reason: " />
+  <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_file_is_invalid_" text="Warning: kingdom strategy/personality import file is invalid and was skipped. Reason: " />
+  <string id="AF_UI_Developer_Will_delete_and_reload" text="Will delete and reload:" />
+  <string id="AF_UI_Onboarding_Import_Import_cancelled" text="Import cancelled." />
+  <string id="AF_UI_Onboarding_Import_Import_failed" text="Import failed: " />
+  <string id="AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized" text="Import failed: MyBehavior is not initialized." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_export_directory_not_found" text="Import failed: export directory not found." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_behavior_is_" text="Import failed: kingdom strategy/personality data behavior is not initialized." />
+  <string id="AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_is_invalid_R" text="Import failed: kingdom strategy/personality data is invalid. Reason: " />
+  <string id="AF_UI_Onboarding_Import_Import_failed_required_data_was_not_fully_imported" text="Import failed: required data was not fully imported." />
+  <string id="AF_UI_Onboarding_Import_Kingdom_profiles_imported" text="Kingdom strategy/personality imported from the package: matched {MATCHED} entries; unmatched {UNMATCHED}." />
+  <string id="AF_UI_Onboarding_Import_Missing_event_data" text="Import failed: event_data\\WorldOpeningSummary.json or event_data\\KingdomOpeningSummaries.json is missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_kingdom_profiles" text="Import failed: kingdom_profiles\\KingdomProfiles.json is missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_knowledge" text="Import failed: knowledge\\rules\\*.json (or knowledge\\KnowledgeRules.json) is missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_personality_background" text="Import failed: personality_background\\*.json is missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_unnamed_persona" text="Import failed: unnamed_persona\\*.json is missing." />
+  <string id="AF_UI_Onboarding_Import_Missing_voice_mapping" text="Import failed: voice_mapping\\VoiceMapping.json is missing." />
+  <string id="AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the" text="The package contains no kingdom card that safely matches the current world." />
 </strings>
 </base>
 
