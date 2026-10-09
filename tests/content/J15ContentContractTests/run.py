@@ -638,11 +638,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afpol_ui_strings.xml": {
         "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_ui_strings.xml",
-        "sha256": "1CDBAE32262CC9371AD11E21E29584C3FD43541871171FA4E6518ECD114AE9D6", "revision": "be7c7681d",
+        "sha256": "4DCD130145AF35376071A9B677A16CCF87AE81F9E904948BD13AE52F620D1064", "revision": "0250513bc",
     },
     "ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml": {
         "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
-        "sha256": "9C3EAF88B2493A47697D5F415F72E17F6A51B9E3C7702809690387E6EE2607D5", "revision": "be7c7681d",
+        "sha256": "8A808B9D9C872766915FAC89A09EB810F9EF28B58366B06221BFF45F6752BBBB", "revision": "0250513bc",
     },
     "ModuleData/Languages/afeconomy_strings.xml": {
         "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
