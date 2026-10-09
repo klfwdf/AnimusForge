@@ -302,6 +302,8 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="Generated and locked the national personality and long-term strategy for new kingdom “" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”." />
     <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins." />
+    <string id="AF_DIP_UI_Reward_VassalageTitle" text="Vassalage treaty" />
+    <string id="AF_DIP_UI_Reward_AnnexationTitle" text="Kingdom annexation" />
+    <string id="AF_DIP_UI_Reward_FailureSuffix" text=" failed" />
 </strings>
 </base>
-

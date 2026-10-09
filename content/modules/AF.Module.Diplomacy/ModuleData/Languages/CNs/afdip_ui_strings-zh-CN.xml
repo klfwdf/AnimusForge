@@ -302,6 +302,8 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="已为新国家“" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”生成并固化国家性格与长期战略。" />
     <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管，请在“王国公告”中发布外交宣言。" />
+    <string id="AF_DIP_UI_Reward_VassalageTitle" text="臣属国条约" />
+    <string id="AF_DIP_UI_Reward_AnnexationTitle" text="国家吞并" />
+    <string id="AF_DIP_UI_Reward_FailureSuffix" text="失败" />
 </strings>
 </base>
-

@@ -59,8 +59,13 @@ internal sealed class DiplomacyPoliticalRewardPort : IDiplomacyPoliticalRewardPo
     }
     public void Show(DiplomacyPoliticalRewardKind kind, bool applied, string status)
     {
-        string title = kind == DiplomacyPoliticalRewardKind.Vassalage ? "臣属国条约" : "国家吞并";
-        InformationManager.DisplayMessage(new InformationMessage("【" + title + (applied ? "" : "失败") + "】" + status,
+        string title = kind == DiplomacyPoliticalRewardKind.Vassalage
+            ? DiplomacyUiLocalization.Text("AF_DIP_UI_Reward_VassalageTitle", "Vassalage treaty")
+            : DiplomacyUiLocalization.Text("AF_DIP_UI_Reward_AnnexationTitle", "Kingdom annexation");
+        string failureSuffix = applied
+            ? ""
+            : DiplomacyUiLocalization.Text("AF_DIP_UI_Reward_FailureSuffix", " failed");
+        InformationManager.DisplayMessage(new InformationMessage("【" + title + failureSuffix + "】" + status,
             Color.FromUint(applied ? 4278242559u : 4294936661u)));
     }
     public void Unsupported(DiplomacyPoliticalRewardKind kind, string tag) =>
