@@ -40,7 +40,7 @@ internal static class WorldBulletinCampaignMaterialPolicy
     // Only large field battles swing stability, by one point; the rest is carried by war weariness.
     internal static int BattleStability(int troops,int threshold)=>troops>threshold?1:0;
     internal static string BattleSentence(string location,bool sallyOut,bool siege,string winner,string winnerFaction,string loser,string loserFaction,int troops)
-        => location+(sallyOut?"出城战：":siege?"攻城战：":"一战：")+winner+"（"+winnerFaction+"）击败"+loser+"（"+loserFaction+"）"+(sallyOut?"的本次参战部队":"")+(troops>0?"，双方约"+troops+"人参战。":"。");
+        => location+(sallyOut?"出城战：":siege?"攻城战：":"一战：")+winner+"（"+winnerFaction+"）击败"+loser+"（"+loserFaction+"）"+(sallyOut?"的本次参战部队":"")+"。";
     internal static string BattleDetail(int winnerTroops,string winnerLoss,int loserTroops,string loserLoss,bool sallyOut,bool winnerLord,string winnerTitle,bool loserLord,string loserTitle)
         => "胜方"+winnerTroops+"人，"+winnerLoss+"；败方"+loserTroops+"人，"+loserLoss+(winnerLord?"；胜方统帅："+winnerTitle:"")+(loserLord?"；败方统帅："+loserTitle:"")+(sallyOut?"；本次出城战仅记录本场交战的参战部队，不代表围城军或守军整支军团覆灭；未确认整支军团被击败":"");
     internal static string CapturedWho(bool ruler,string kingdom,string name,string affiliation)=>ruler?kingdom+"的君主"+name:name+"（"+affiliation+"）";

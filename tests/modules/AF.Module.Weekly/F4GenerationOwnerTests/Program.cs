@@ -7,7 +7,7 @@ internal static class Program {
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
  static async Task TestBulletinDelayedCompletion()
  {
-     foreach(string mode in new[]{"epoch","generation","disabled","success"})
+     foreach(string mode in new[]{"epoch","generation","disabled","success","battle-rejected"})
      {
          var records=new List<EventRecordEntry>();var api=new TaskCompletionSource<ApiCallResult>();
          int cancelled=0,notices=0;bool publishing=true;
@@ -24,6 +24,10 @@ internal static class Program {
          state.Events.Add(new WorldBulletinEvent {Key="confirmed-fact",Kind="war_declared",Day=4,Hour=100,Score=100,Sentence="确定发生的事实。",Group="fact"});
          var selection=WorldBulletinPolicy.Select(state.Events,state.World,new(),102);
          var template=WorldBulletinPolicy.BuildTemplate(selection);
+         if(mode=="battle-rejected") {
+             selection.Major.Kind="battle";
+             foreach(var fact in selection.MajorFacts)fact.Kind="battle";
+         }
          long generation=SaveRuntimeGuard.CaptureGeneration();owner.InFlight=true;
          var pending=owner.RunWorldBulletinRequestAsync(102,generation,selection,template,"system","user",null);
          Check(records.Count==0&&owner.MainThreadActions.IsEmpty,"background request does not publish before result "+mode);
@@ -34,7 +38,7 @@ internal static class Program {
          }
          if(mode=="generation")SaveRuntimeGuard.AdvanceGeneration("bulletin delayed save switch");
          if(mode=="disabled")publishing=false;
-         api.SetResult(new ApiCallResult {Success=true,Content="{bad response"});await pending;
+         api.SetResult(new ApiCallResult {Success=true,Content=mode=="battle-rejected"?"[TITLE]战报\n[MAJOR]双方三百人对五百人，阵亡八十人。\n[SHORT]阵亡八十人。":"{bad response"});await pending;
          Check(records.Count==0&&owner.MainThreadActions.Count==1,"completed worker only enqueues commit "+mode);
          owner.ProcessWorldBulletinMainThreadActions();
          if(mode=="epoch")Check(records.Count==0&&cancelled==1&&owner.InFlight&&state.World.WindowEndHour==102,"old epoch cannot publish or retire new equal-window request");
@@ -46,6 +50,12 @@ internal static class Program {
              Check(issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"accepted commit retains factual source graph after provider parse failure");
              owner.CompleteWorldBulletin(102,generation,selection,template,null,null);
              Check(records.Count==1&&notices==1,"completed window cannot duplicate publication or notice");
+         }
+         if(mode=="battle-rejected") {
+             var issue=records.Single(r=>WeeklyReportArchivePolicy.IsBulletin(r.EventId));
+             Check(!issue.Summary.Contains("八十")&&!issue.Summary.Contains("三百")&&issue.Summary.Contains("确定发生的事实"),"battle numeric response falls back at actual publication boundary");
+             Check(string.IsNullOrEmpty(issue.BulletinAnecdote),"rejected response does not enter NPC anecdote");
+             Check(notices==1&&issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"fallback keeps publication notice and confirmed source graph");
          }
      }
  }
