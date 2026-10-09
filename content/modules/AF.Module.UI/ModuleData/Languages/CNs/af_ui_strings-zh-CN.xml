@@ -475,5 +475,24 @@
   <string id="AF_MCM_Letter_TargetChars_Hint" text="NPC 主动来信正文的目标字数。默认 220 字。" />
   <string id="AF_MCM_Letter_Debug" text="写入主动来信调试日志" />
   <string id="AF_MCM_Letter_Debug_Hint" text="在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。" />
+    <string id="AF_MCM_Settlement_DisableProsperity" text="取消繁荣度耗粮" />
+    <string id="AF_MCM_Group_PolicySystem" text="政策系统" />
+    <string id="AF_MCM_Settlement_DisableProsperity_Hint" text="开启后，城市和城堡不再因繁荣度消耗粮食；驻军、围城、供粮和政策粮食变化保持不变。" />
+    <string id="AF_MCM_SceneAudience_AutoExclude" text="自动屏蔽未框选人物" />
+    <string id="AF_MCM_Group_SceneShout" text="场景喊话" />
+    <string id="AF_MCM_SceneAudience_AutoExclude_Hint" text="开启后，场景喊话只包含框选或手动邀请的人物；后来靠近的旁观者不会自动加入，下一轮喊话生效。" />
+    <string id="AF_MCM_Group_News" text="周报／快报" />
+    <string id="AF_MCM_News_Mode" text="主模式" />
+    <string id="AF_MCM_News_Mode_Hint" text="周报汇总世界与各国事件；快报在大事后收集近期消息。切换模式会重新收集并取消旧重试，已有档案保留。" />
+    <string id="AF_MCM_News_AutoBulletin" text="自动发布快报" />
+    <string id="AF_MCM_News_AutoBulletin_Hint" text="仅快报模式生效。关闭后不再生成新的快报，但仍记录近期事件供 NPC 知情，已有档案保留。" />
+    <string id="AF_MCM_News_Weekly" text="周报" />
+    <string id="AF_MCM_News_Bulletin" text="快报" />
+    <string id="AF_MCM_News_WritingRequirements" text="快报写作要求" />
+    <string id="AF_MCM_Common_OpenEditor" text="打开编辑器" />
+    <string id="AF_MCM_News_WritingRequirements_Hint" text="独立编辑快报写作要求，保存后下次快报请求生效；清空则移除附加要求。" />
+    <string id="AF_MCM_Group_CourierStationery" text="NPC 主动接触／信使信纸" />
+    <string id="AF_MCM_Courier_Stationery" text="信纸样式" />
+    <string id="AF_MCM_Courier_Stationery_Hint" text="选择信使来信、回信和写信界面使用的卡拉迪亚国家信纸预设。" />
   </strings>
 </base>

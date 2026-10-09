@@ -17,8 +17,8 @@ public partial class DuelSettings
         set => _worldBulletinWritingRequirements = NormalizeWorldBulletinWritingRequirementsText(value);
     }
 
-    [SettingPropertyButton("快报写作要求", -1, true, "", Content = "打开编辑器", Order = 1,
-        RequireRestart = false, HintText = "独立编辑快报写作要求。默认允许合理补写动作、短对白和报刊轶事，保留真实主体与重大结果，避免战事数字对账。保存后下次快报请求生效；清空则不追加这段要求。输出格式与结果边界始终保留。")]
+    [SettingPropertyButton("{=AF_MCM_News_WritingRequirements}Bulletin writing requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 1,
+        RequireRestart = false, HintText = "{=AF_MCM_News_WritingRequirements_Hint}Edit bulletin writing requirements separately. Changes apply to the next bulletin request; clearing the field removes the extra requirements.")]
     [SettingPropertyGroup(NewsSettingsGroup + "/快报", GroupOrder = 1)]
     public Action EditWorldBulletinWritingRequirements { get; set; }
 
