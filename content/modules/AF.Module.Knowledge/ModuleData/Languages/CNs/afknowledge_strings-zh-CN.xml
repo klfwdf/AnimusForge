@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="条件重复" />
+    <string id="AF_KNOWLEDGE_DuplicateCondition" text="不允许存在多个条件完全相同的提示词。\n\n重复对象：{ITEM} 条提示词\n\n重复条件：\n{CONDITION}" />
+    <string id="AF_KNOWLEDGE_Back" text="返回" />
+    <string id="AF_KNOWLEDGE_PlayerPersonaCreateFailed" text="打开玩家角色介绍失败：无法创建知识条目。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceCreateFailed" text="打开玩家外貌与背景编辑器失败：无法创建知识条目。" />
+    <string id="AF_KNOWLEDGE_PlayerNameKeywordConflict" text="玩家本名关键词未能自动加入，因为它已被其他知识占用（RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_KeywordAlreadyExists" text="这个称呼已经存在了。" />
+    <string id="AF_KNOWLEDGE_KeywordConflict" text="添加失败：这个称呼已被其他知识占用（RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundRequiresCondition" text="细化背景至少需要保留一个条件；如果想写通用背景，请回到上一层使用“背景信息（照旧）”。" />
+    <string id="AF_KNOWLEDGE_SettingsUnavailable" text="无法读取 MCM 设置。" />
+    <string id="AF_KNOWLEDGE_InvalidInteger" text="请输入有效整数。" />
+    <string id="AF_KNOWLEDGE_CreateRuleEmpty" text="创建失败：第一个关键词为空或无法用于命名。" />
+    <string id="AF_KNOWLEDGE_CreateRuleDuplicate" text="创建失败：已存在同名知识条目（ID={ID}）。请换一个关键词。" />
+    <string id="AF_KNOWLEDGE_CreateRuleKeywordConflict" text="创建失败：关键词已被其他知识条目占用（关键词={KEYWORD}，RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_BulkActionsCannotMix" text="批量删除页里，操作按钮不能和知识条目一起多选。" />
+    <string id="AF_KNOWLEDGE_NoRulesSelected" text="没有选中可删除的知识。" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDeleteTitle" text="确认批量删除" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="将要删除以下知识：\n\n{PREVIEW}\n\n共 {COUNT} 条。此操作不可撤销。" />
+    <string id="AF_KNOWLEDGE_ConfirmDelete" text="确认删除" />
+    <string id="AF_KNOWLEDGE_Deleted" text="已删除知识 {COUNT} 条。" />
+    <string id="AF_KNOWLEDGE_AgeRangeTitle" text="设置年龄范围" />
+    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="请输入年龄范围，格式为 最小-最大。\n例如：18-35\n当前值：{MIN}-{MAX}" />
+    <string id="AF_KNOWLEDGE_InvalidAgeRange" text="请输入合法范围，例如 18-35。" />
+    <string id="AF_KNOWLEDGE_Confirm" text="确定" />
+    <string id="AF_KNOWLEDGE_KeywordInRuleAlreadyExists" text="添加失败：该关键词已存在于本知识条目中。" />
+    <string id="AF_KNOWLEDGE_RagTooLong" text="添加失败：RAG专用短句不能超过 {MAX} 字符。" />
+    <string id="AF_KNOWLEDGE_RagAlreadyExists" text="添加失败：该RAG专用短句已存在于本知识条目中。" />
+    <string id="AF_KNOWLEDGE_RagGenerationNoSource" text="[知识] 生成失败：当前知识缺少可供生成的内容。" />
+    <string id="AF_KNOWLEDGE_RagGenerating" text="[知识] 正在生成 RAG专用短句，请稍候..." />
+    <string id="AF_KNOWLEDGE_RagGenerated" text="[知识] 已生成并添加 {COUNT} 条 RAG专用短句。" />
+    <string id="AF_KNOWLEDGE_RagNoNew" text="[知识] 未生成新的 RAG专用短句，可能与现有内容重复。" />
+    <string id="AF_KNOWLEDGE_PrototypeDisabled" text="[知识] 原型句功能已停用。请直接维护“关键词 + RAG专用短句 + 提示词”。" />
+  </strings>
+</base>
