@@ -18,6 +18,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -5469,7 +5470,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : "已有");
 		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? "通用（无条件）" : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
-		InformationManager.ShowInquiry(new InquiryData("条件重复", "不允许存在多个条件完全相同的提示词。\n\n重复对象：" + text + " 条提示词\n\n重复条件：\n" + text2, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", null, null));
+		InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_DuplicateConditionTitle}Duplicate condition").ToString(), KnowledgeUiTexts.DuplicateVariantCondition(text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), "", null, null));
 	}
 
 private static LoreVariant PickBestVariant(LoreRule rule, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader)
@@ -5824,7 +5825,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
 		if (orCreatePlayerPersonaRule == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：无法创建知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerPersonaCreateFailed));
 			onReturn();
 			return;
 		}
@@ -5846,7 +5847,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
 		if (orCreatePlayerPersonaRule == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败：无法创建知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerAppearanceCreateFailed));
 			onReturn();
 			return;
 		}
@@ -5954,7 +5955,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			if (showConflictMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("玩家本名关键词未能自动加入，因为它已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerNameKeywordConflict(foundRuleId)));
 			}
 			return false;
 		}
@@ -6039,12 +6040,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							string foundRuleId;
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("这个称呼已经存在了。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordAlreadyExists));
 								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
 							}
 							else if (TryFindRuleIdByKeyword(text2, rule.Id, out foundRuleId))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：这个称呼已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordConflict(foundRuleId)));
 								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
 							}
 							else
@@ -6551,7 +6552,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						loreWhen = NormalizeWhenForStorage(loreWhen);
 						if (loreWhen == null)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("细化背景至少需要保留一个条件；如果想写通用背景，请回到上一层使用“背景信息（照旧）”。"));
+							InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.DetailedBackgroundRequiresCondition));
 							OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
 						}
 						else
@@ -6623,7 +6624,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.SettingsUnavailable));
 			onReturn();
 			return;
 		}
@@ -6698,7 +6699,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							string s = (input ?? "").Trim();
 							if (!int.TryParse(s, out var result))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("请输入有效整数。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidInteger));
 								OpenRetrievalSettingsMenu(onReturn);
 							}
 							else
@@ -6956,17 +6957,17 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string foundRuleId;
 			if (string.IsNullOrEmpty(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：第一个关键词为空或无法用于命名。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleEmpty));
 				CreateNewRule(onReturn);
 			}
 			else if (HasRuleIdIgnoreCase(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：已存在同名知识条目（ID=" + text2 + "）。请换一个关键词。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleDuplicate(text2)));
 				CreateNewRule(onReturn);
 			}
 			else if (TryFindRuleIdByKeyword(text, null, out foundRuleId))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：关键词已被其他知识条目占用（关键词=" + text + "，RuleId=" + foundRuleId + "）。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleKeywordConflict(text, foundRuleId)));
 				CreateNewRule(onReturn);
 			}
 			else
@@ -7125,7 +7126,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				if (list4.Count > 1)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("批量删除页里，操作按钮不能和知识条目一起多选。"));
+					InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.BulkActionsCannotMix));
 					OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 					return;
 				}
@@ -7157,7 +7158,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			List<RuleIndexItem> list6 = list.Where((RuleIndexItem x) => x != null && list4.Contains((x.Id ?? "").Trim(), StringComparer.OrdinalIgnoreCase)).ToList();
 			if (list6.Count == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("没有选中可删除的知识。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.NoRulesSelected));
 				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 				return;
 			}
@@ -7167,7 +7168,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				text6 = text6 + "\n- ... 以及另外 " + (list6.Count - 8) + " 条";
 			}
-			InformationManager.ShowInquiry(new InquiryData("确认批量删除", "将要删除以下知识：\n\n" + text6 + "\n\n共 " + list7.Count + " 条。此操作不可撤销。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "返回", delegate
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_ConfirmBulkDeleteTitle}Confirm bulk deletion").ToString(), KnowledgeUiTexts.ConfirmBulkDelete(text6, list7.Count), isAffirmativeOptionShown: true, isNegativeOptionShown: true, new TextObject("{=AF_KNOWLEDGE_ConfirmDelete}Delete").ToString(), new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), delegate
 			{
 				int num5 = 0;
 				try
@@ -7184,7 +7185,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				{
 					num5 = 0;
 				}
-				InformationManager.DisplayMessage(new InformationMessage("已删除知识 " + num5 + " 条。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Deleted(num5)));
 				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 			}, delegate
 			{
@@ -7579,12 +7580,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreTextMapping loreTextMapping = CloneTextMapping(mapping);
 		int num = NormalizeMemberAgeBound(loreTextMapping.AgeMin, 0);
 		int num2 = NormalizeMemberAgeBound(loreTextMapping.AgeMax, 120);
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置年龄范围", $"请输入年龄范围，格式为 最小-最大。\n例如：18-35\n当前值：{num}-{num2}", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AgeRangeTitle, KnowledgeUiTexts.AgeRangePrompt(num, num2), isAffirmativeOptionShown: true, isNegativeOptionShown: true, new TextObject("{=AF_KNOWLEDGE_Confirm}Confirm").ToString(), new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), delegate(string input)
 		{
 			string[] array = ((input ?? "").Trim()).Replace(" ", "").Split(new char[1] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 			if (array.Length != 2 || !int.TryParse(array[0], out var result) || !int.TryParse(array[1], out var result2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入合法范围，例如 18-35。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidAgeRange));
 				OpenTextMappingAgeRangeEditor(loreTextMapping, onConfigured, onCancel);
 				return;
 			}
@@ -8347,12 +8348,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							string foundRuleId;
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：该关键词已存在于本知识条目中。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordInRuleAlreadyExists));
 								OpenKeywordMenu(rule, onReturn);
 							}
 							else if (TryFindRuleIdByKeyword(text2, rule.Id, out foundRuleId))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：关键词已被其他知识条目占用（关键词=" + text2 + "，RuleId=" + foundRuleId + "）。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleKeywordConflict(text2, foundRuleId)));
 								OpenKeywordMenu(rule, onReturn);
 							}
 							else
@@ -8481,7 +8482,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						}
 						else if (text3.Length > RagShortTextMaxLength)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("添加失败：RAG专用短句不能超过 " + RagShortTextMaxLength + " 字符。"));
+							InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagTooLong(RagShortTextMaxLength)));
 							OpenRagShortTextMenu(rule, onReturn);
 						}
 						else
@@ -8497,7 +8498,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							}
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：该RAG专用短句已存在于本知识条目中。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagAlreadyExists));
 							}
 							else
 							{
@@ -8991,11 +8992,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = BuildRagShortTextGenerationUserPrompt(rule, RagShortTextAutoGenerateCount, list);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[知识] 生成失败：当前知识缺少可供生成的内容。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerationNoSource));
 			onDone();
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 正在生成 RAG专用短句，请稍候..."));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerating));
 		try
 		{
 			string systemPrompt = BuildRagShortTextGenerationSystemPrompt();
@@ -9024,11 +9025,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			if (num > 0)
 			{
 				TouchRuleData();
-				InformationManager.DisplayMessage(new InformationMessage("[知识] 已生成并添加 " + num + " 条 RAG专用短句。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerated(num)));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[知识] 未生成新的 RAG专用短句，可能与现有内容重复。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagNoNew));
 			}
 		}
 		catch (Exception ex)
@@ -9041,7 +9042,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private void OpenPrototypeMenu(LoreRule rule, Action onReturn)
 	{
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 原型句功能已停用。请直接维护“关键词 + RAG专用短句 + 提示词”。"));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PrototypeDisabled));
 		onReturn?.Invoke();
 	}
 

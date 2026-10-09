@@ -168,7 +168,8 @@ public sealed class DebtPromiseQuest : QuestBase
 		bool hasPlayerLink = player?.CharacterObject != null;
 		string note = GetDisplayText(_debtNote, "无");
 		// This is the sole task-completion instruction: the agreement must be released through a conversation with the counterpart.
-		note += "\n\n与NPC聊天完成或解除该承诺即可结束此任务。";
+		TextObject completionInstruction = new TextObject("{=AF_ECO_DebtPromise_Instruction}Talk with the counterparty to complete or release this promise.");
+		note += "\n\n" + completionInstruction.ToString();
 		if (hasCounterpartyLink)
 		{
 			note = note.Replace("NPC", "{NPC.LINK}");
@@ -188,7 +189,8 @@ public sealed class DebtPromiseQuest : QuestBase
 		}
 		// Entity matching runs only while a task log is created or migrated, never in a campaign tick.
 		List<KeyValuePair<string, TextObject>> entityLinks = ReplaceKnownEntityNamesWithLinkTags(ref note);
-		TextObject text = new TextObject("{=AF_DEBT_PROMISE_START}" + note);
+		TextObject text = new TextObject("{=AF_DEBT_PROMISE_START}{NOTE}");
+		text.SetTextVariable("NOTE", note);
 		if (hasCounterpartyLink)
 		{
 			StringHelpers.SetCharacterProperties("NPC", counterparty.CharacterObject, text, includeDetails: false);

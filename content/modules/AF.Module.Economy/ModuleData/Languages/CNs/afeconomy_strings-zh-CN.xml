@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_DEBT_PROMISE_TITLE" text="承诺：{DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_EXPIRED_TITLE" text="承诺已过期：{DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_START" text="{NOTE}" />
+    <string id="AF_DEBT_PROMISE_COMPLETE" text="此承诺已完成或解除。" />
+    <string id="AF_DEBT_PROMISE_EXPIRED" text="承诺已过期，但仍可在之后解除或完成。" />
+    <string id="AF_ECO_DebtPromise_Instruction" text="与对方聊天即可完成或解除该承诺。" />
+  </strings>
+</base>

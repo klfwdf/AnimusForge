@@ -54,6 +54,26 @@
       "logicalName": "AnimusForge.Defaults.RpItemIntroductionPrompts.json"
     },
     {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
+      "target": "ModuleData/Languages/afeconomy_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
+      "target": "ModuleData/Languages/afknowledge_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml"
+    },
+    {
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
       "target": "ModuleData/GcczTownPrompt.zh-CN.json",

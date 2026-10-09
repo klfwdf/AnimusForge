@@ -9,4 +9,6 @@
   <LanguageFile xml_path="afpol_ui_strings.xml" />
   <LanguageFile xml_path="coup_strings.xml" />
   <LanguageFile xml_path="illustrator_strings.xml" />
+  <LanguageFile xml_path="afeconomy_strings.xml" />
+  <LanguageFile xml_path="afknowledge_strings.xml" />
 </LanguageData>

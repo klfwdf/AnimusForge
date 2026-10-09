@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="Duplicate condition" />
+    <string id="AF_KNOWLEDGE_DuplicateCondition" text="Identical conditions cannot be used by multiple prompts.\n\nDuplicate item: {ITEM} prompt\n\nCondition:\n{CONDITION}" />
+    <string id="AF_KNOWLEDGE_Back" text="Back" />
+    <string id="AF_KNOWLEDGE_PlayerPersonaCreateFailed" text="Could not open the player profile editor: the knowledge entry could not be created." />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceCreateFailed" text="Could not open the player appearance and background editor: the knowledge entry could not be created." />
+    <string id="AF_KNOWLEDGE_PlayerNameKeywordConflict" text="The player's real-name keyword could not be added because another knowledge entry already uses it (RuleId={RULE_ID})." />
+    <string id="AF_KNOWLEDGE_KeywordAlreadyExists" text="This name is already present." />
+    <string id="AF_KNOWLEDGE_KeywordConflict" text="Could not add the name: another knowledge entry already uses it (RuleId={RULE_ID})." />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundRequiresCondition" text="A detailed background needs at least one condition. To write a general background, return and use &quot;Background information (legacy)&quot;." />
+    <string id="AF_KNOWLEDGE_SettingsUnavailable" text="The MCM settings could not be read." />
+    <string id="AF_KNOWLEDGE_InvalidInteger" text="Enter a valid integer." />
+    <string id="AF_KNOWLEDGE_CreateRuleEmpty" text="Creation failed: the first keyword is empty or cannot be used as a name." />
+    <string id="AF_KNOWLEDGE_CreateRuleDuplicate" text="Creation failed: a knowledge entry with this name already exists (ID={ID}). Choose another keyword." />
+    <string id="AF_KNOWLEDGE_CreateRuleKeywordConflict" text="Creation failed: the keyword is already used by another knowledge entry (keyword={KEYWORD}, RuleId={RULE_ID})." />
+    <string id="AF_KNOWLEDGE_BulkActionsCannotMix" text="The bulk-delete page cannot select an operation together with knowledge entries." />
+    <string id="AF_KNOWLEDGE_NoRulesSelected" text="No deletable knowledge entries are selected." />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDeleteTitle" text="Confirm bulk deletion" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="The following knowledge entries will be deleted:\n\n{PREVIEW}\n\nTotal: {COUNT}. This action cannot be undone." />
+    <string id="AF_KNOWLEDGE_ConfirmDelete" text="Delete" />
+    <string id="AF_KNOWLEDGE_Deleted" text="Deleted {COUNT} knowledge entries." />
+    <string id="AF_KNOWLEDGE_AgeRangeTitle" text="Set age range" />
+    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="Enter an age range in minimum-maximum format.\nExample: 18-35\nCurrent value: {MIN}-{MAX}" />
+    <string id="AF_KNOWLEDGE_InvalidAgeRange" text="Enter a valid range, for example 18-35." />
+    <string id="AF_KNOWLEDGE_Confirm" text="Confirm" />
+    <string id="AF_KNOWLEDGE_KeywordInRuleAlreadyExists" text="Could not add the keyword: it is already present in this knowledge entry." />
+    <string id="AF_KNOWLEDGE_RagTooLong" text="Could not add the RAG short text: it cannot exceed {MAX} characters." />
+    <string id="AF_KNOWLEDGE_RagAlreadyExists" text="Could not add the RAG short text: it is already present in this knowledge entry." />
+    <string id="AF_KNOWLEDGE_RagGenerationNoSource" text="[Knowledge] Generation failed: this entry has no content that can be used for generation." />
+    <string id="AF_KNOWLEDGE_RagGenerating" text="[Knowledge] Generating RAG short texts. Please wait..." />
+    <string id="AF_KNOWLEDGE_RagGenerated" text="[Knowledge] Generated and added {COUNT} RAG short texts." />
+    <string id="AF_KNOWLEDGE_RagNoNew" text="[Knowledge] No new RAG short texts were generated; they may duplicate existing content." />
+    <string id="AF_KNOWLEDGE_PrototypeDisabled" text="[Knowledge] Prototype sentences are disabled. Maintain keywords, RAG short texts and prompts directly." />
+  </strings>
+</base>

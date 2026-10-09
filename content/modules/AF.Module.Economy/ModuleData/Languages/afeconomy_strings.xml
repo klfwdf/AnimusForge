@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_DEBT_PROMISE_TITLE" text="Promise: {DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_EXPIRED_TITLE" text="Expired promise: {DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_START" text="{NOTE}" />
+    <string id="AF_DEBT_PROMISE_COMPLETE" text="This promise has been completed or released." />
+    <string id="AF_DEBT_PROMISE_EXPIRED" text="This promise has expired, but it can still be released or completed later." />
+    <string id="AF_ECO_DebtPromise_Instruction" text="Talk with the counterparty to complete or release this promise." />
+  </strings>
+</base>
