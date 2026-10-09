@@ -477,5 +477,24 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Letter_TargetChars_Hint" text="Target body length for an unsolicited NPC letter. Default: 220 characters." />
   <string id="AF_MCM_Letter_Debug" text="Write unsolicited-letter debug log" />
   <string id="AF_MCM_Letter_Debug_Hint" text="Logs candidate scores, chance, motives, cooldowns, and skip reasons to Mod_Logic.txt." />
+    <string id="AF_MCM_Settlement_DisableProsperity" text="Disable prosperity food consumption" />
+    <string id="AF_MCM_Group_PolicySystem" text="Policy system" />
+    <string id="AF_MCM_Settlement_DisableProsperity_Hint" text="When enabled, towns and castles no longer consume food from prosperity. Garrison, siege, supply, and policy food changes remain unchanged." />
+    <string id="AF_MCM_SceneAudience_AutoExclude" text="Auto-exclude unframed participants" />
+    <string id="AF_MCM_Group_SceneShout" text="Scene shout" />
+    <string id="AF_MCM_SceneAudience_AutoExclude_Hint" text="When enabled, scene shout includes only framed or manually invited characters; later bystanders are not added automatically. Takes effect on the next shout." />
+    <string id="AF_MCM_Group_News" text="Weekly reports / bulletins" />
+    <string id="AF_MCM_News_Mode" text="Primary mode" />
+    <string id="AF_MCM_News_Mode_Hint" text="Weekly reports summarize world and kingdom events. Bulletins collect recent news after major events. Switching mode restarts collection and cancels old retries; existing archives are kept." />
+    <string id="AF_MCM_News_AutoBulletin" text="Auto-publish bulletins" />
+    <string id="AF_MCM_News_AutoBulletin_Hint" text="Applies only in bulletin mode. When disabled, no new bulletin generation starts, while recent events remain available to NPCs and existing archives are kept." />
+    <string id="AF_MCM_News_Weekly" text="Weekly report" />
+    <string id="AF_MCM_News_Bulletin" text="Bulletin" />
+    <string id="AF_MCM_News_WritingRequirements" text="Bulletin writing requirements" />
+    <string id="AF_MCM_Common_OpenEditor" text="Open editor" />
+    <string id="AF_MCM_News_WritingRequirements_Hint" text="Edit bulletin writing requirements separately. Changes apply to the next bulletin request; clearing the field removes the extra requirements." />
+    <string id="AF_MCM_Group_CourierStationery" text="NPC contact / courier stationery" />
+    <string id="AF_MCM_Courier_Stationery" text="Letter style" />
+    <string id="AF_MCM_Courier_Stationery_Hint" text="Choose the Calradia faction stationery preset used by courier letters, replies, and composition windows." />
   </strings>
 </base>
