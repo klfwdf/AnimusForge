@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_KINGDOM_CW_Target" text="目标" />
+    <string id="AF_KINGDOM_CW_Role_King" text="国王" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="未表态" />
+    <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="某王国" />
+</strings>
+</base>

@@ -22,4 +22,5 @@
   <LanguageFile xml_path="afsocial_ui_strings.xml" />
   <LanguageFile xml_path="afwev_ui_strings.xml" />
   <LanguageFile xml_path="afonboarding_ui_strings.xml" />
+  <LanguageFile xml_path="afkingdom_ui_strings.xml" />
 </LanguageData>
