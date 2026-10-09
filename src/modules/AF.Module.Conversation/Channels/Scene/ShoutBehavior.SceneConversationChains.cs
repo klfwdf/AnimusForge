@@ -351,7 +351,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					_ports.PostMainThread(delegate
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[被动回应失败] " + output, new Color(1f, 0.3f, 0.3f)));
+						InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PassiveFailed", "[Passive response failed] {OUTPUT}", "OUTPUT", output), new Color(1f, 0.3f, 0.3f)));
 					});
 					return "（没说话）";
 				}
@@ -499,7 +499,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					_ports.ReleaseSceneConversationConstraints(failedPrimaryParticipants, primaryTargetAgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 					return true;
 				}, fallback: false);
-				_ports.QueueSceneInfoMessage("异色主对象当前无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+				_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayTargetUnavailable", "The primary highlighted target cannot respond right now."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				return;
 			}
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
@@ -541,7 +541,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				if (validatedCurrentSpeaker == null)
 				{
 					receipt?.Fail("scene.target_unavailable");
-					_ports.QueueSceneInfoMessage("本轮接力已结束：当前接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+					_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable", "This relay round ended: the current speaker left or cannot respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					break;
 				}
 				currentSpeaker = validatedCurrentSpeaker;
@@ -558,8 +558,8 @@ internal sealed partial class SceneConversationSessionRuntime
 					{
 						Logger.Log("ShoutBehavior", "[SceneRelay] budget_rejected agent=" + currentSpeaker.AgentIndex + " reason=" + responseBudgetDecision.Reason);
 						string budgetStopMessage = responseBudgetDecision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
-							? "本轮接力已结束：已达到场景回应人数预算"
-							: "本轮接力已结束：场景回应预算未允许继续接话";
+							? ConversationUiLocalization.Text("AF_CONV_UI_Shout_BudgetLimit", "This relay round ended: the scene response participant budget was reached.")
+							: ConversationUiLocalization.Text("AF_CONV_UI_Shout_BudgetDenied", "This relay round ended: the scene response budget did not allow another speaker.");
 						_ports.QueueSceneInfoMessage(budgetStopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 						break;
 					}
@@ -851,7 +851,7 @@ internal sealed partial class SceneConversationSessionRuntime
 									{
 										receipt?.Fail("scene.main_reply_failed");
 										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
-										_ports.QueueSceneInfoMessage("本轮回应已停止，本轮尚未进入动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundStoppedBeforeActions", "This response round stopped before action processing began."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 										break;
 									}
 									output = hostResult.VisibleReply ?? "";
@@ -864,7 +864,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							if (sceneShoutDetachedSubmitted)
 							{
 								receipt?.Fail("scene.main_reply_failed");
-								_ports.QueueSceneInfoMessage("本轮回应发生错误，系统已停止后续动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+								_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundErrorStoppedActions", "This response round encountered an error; subsequent action processing was stopped."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 								break;
 							}
 						}
@@ -888,7 +888,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						Logger.Log("ShoutBehavior(主动)", "<<< API错误: " + output);
 						_ports.PostMainThread(delegate
 						{
-							InformationManager.DisplayMessage(new InformationMessage("[场景喊话] " + output, new Color(1f, 0.3f, 0.3f)));
+							InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_ErrorPrefix", "[Scene shout] {OUTPUT}", "OUTPUT", output), new Color(1f, 0.3f, 0.3f)));
 						});
 						break;
 					}
@@ -1057,26 +1057,26 @@ internal sealed partial class SceneConversationSessionRuntime
 							if (postprocessOutcome?.Status == ScenePostprocessStatus.TargetUnavailable)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] stopped because the current postprocess target became unavailable agent=" + currentSpeaker.AgentIndex);
-								_ports.QueueSceneInfoMessage("本轮接力已结束：当前发言者已无法继续回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelaySpeakerUnavailable", "This relay round ended: the current speaker can no longer respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (postprocessOutcome?.Succeeded != true)
 							{
 								receipt?.Fail("scene.postprocess_unconfirmed");
 								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
-								_ports.QueueSceneInfoMessage("本轮接力已中断：行为处理失败或超时", new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayInterrupted", "This relay round was interrupted: behavior processing failed or timed out."), new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex < 0)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] no valid relay selection agent=" + currentSpeaker.AgentIndex + " candidates=" + relayCandidatesForNextTurn.Count);
-								_ports.QueueSceneInfoMessage("本轮未选出有效的接话者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayNoSpeaker", "No valid next speaker was selected for this round."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] current speaker selected itself; relay stopped agent=" + currentSpeaker.AgentIndex);
-								_ports.QueueSceneInfoMessage("本轮接力已结束", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else
@@ -1108,14 +1108,14 @@ internal sealed partial class SceneConversationSessionRuntime
 					resolvedRelayTargetAgentIndex = nextSpeaker?.AgentIndex ?? (-1);
 					if (nextSpeaker == null)
 					{
-						_ports.QueueSceneInfoMessage("本轮接力已结束：选中的接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+						_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelaySelectedUnavailable", "This relay round ended: the selected next speaker left or cannot respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					}
 				}
 				if (!relayPostprocessSelected && !suppressBattleSpeechFollowups && !string.IsNullOrWhiteSpace(cleaned))
 				{
-					string stopMessage = endRequested ? "本轮接力已结束"
-						: remainingTurns <= 0 ? "本轮接力已结束：已达到发言次数上限"
-						: "本轮接力已结束：当前无人可接话";
+					string stopMessage = endRequested ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended.")
+						: remainingTurns <= 0 ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEndedTurnLimit", "This relay round ended: the speaking turn limit was reached.")
+						: ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayNoNextSpeaker", "This relay round ended: no one else can take the next turn.");
 					_ports.QueueSceneInfoMessage(stopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				}
 			if (relayPostprocessSelected && !string.IsNullOrWhiteSpace(cleaned))

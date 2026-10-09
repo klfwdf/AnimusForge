@@ -848,12 +848,12 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			Logger.Log("NativeConversationOverlay", "Native preprocess timeout retry prompt shown. Generation=" + generation + " inputLen=" + retryText.Length);
 			InformationManager.ShowInquiry(new InquiryData(
-				"原生对话前处理超时",
-				"ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。\n\n是否重试刚才这句话？",
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_PreprocessTimeoutTitle", "Native conversation pre-processing timed out"),
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_PreprocessTimeoutDescription", "ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.\n\nRetry this line?"),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"取消",
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_Retry", "Retry"),
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_Cancel", "Cancel"),
 				delegate
 				{
 					RetryNativeConversationTextFromPopup(retryText);
@@ -882,12 +882,12 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			Logger.Log("NativeConversationOverlay", "Native NPC opening preprocess timeout retry prompt shown. Generation=" + generation);
 			InformationManager.ShowInquiry(new InquiryData(
-				"NPC开口前处理超时",
-				"ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。\n\n是否让NPC重新尝试开口？",
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_NpcOpeningTimeoutTitle", "NPC opening pre-processing timed out"),
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_NpcOpeningTimeoutDescription", "ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.\n\nLet the NPC try opening again?"),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"取消",
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_Retry", "Retry"),
+				ConversationUiLocalization.Text("AF_CONV_UI_Native_Cancel", "Cancel"),
 				delegate
 				{
 					RetryNativeConversationNpcOpeningFromPopup();
@@ -1149,7 +1149,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message));
+						RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? ConversationUiLocalization.Text("AF_CONV_UI_Native_MemoryUnconfirmed", "AnimusForge memory record was not confirmed") : ConversationUiLocalization.Text("AF_CONV_UI_Native_ActionIncomplete", "AnimusForge action processing did not complete"), ex.Message));
 			});
 		}
 		catch (Exception ex)
@@ -1164,7 +1164,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "[ERROR] NPC initiated opening failed: " + ex);
 				try
 				{
-					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup("AnimusForge NPC主动开口失败", ex.Message));
+					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ConversationUiLocalization.Text("AF_CONV_UI_Native_NpcOpeningFailed", "AnimusForge NPC opening failed"), ex.Message));
 				}
 				catch
 				{
@@ -1366,7 +1366,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message));
+						RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? ConversationUiLocalization.Text("AF_CONV_UI_Native_MemoryUnconfirmed", "AnimusForge memory record was not confirmed") : ConversationUiLocalization.Text("AF_CONV_UI_Native_ActionIncomplete", "AnimusForge action processing did not complete"), ex.Message));
 			});
 		}
 		catch (Exception ex)
@@ -1381,7 +1381,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "[ERROR] Submit failed: " + ex);
 				try
 				{
-					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup("AnimusForge 自由对话提交失败", ex.Message));
+					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ConversationUiLocalization.Text("AF_CONV_UI_Native_FreeConversationFailed", "AnimusForge free conversation submission failed"), ex.Message));
 				}
 				catch
 				{
@@ -1574,7 +1574,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
             LordEncounterBehavior.PreparePlayerRequestedNativeConversationLeave();
             Close(silent: true);
 			manager?.EndConversation();
-			InformationManager.DisplayMessage(new InformationMessage("已退出当前对话。", new Color(0.35f, 1f, 0.35f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_Exited", "The current conversation was closed."), new Color(0.35f, 1f, 0.35f)));
 		}
 		catch (Exception ex)
 		{
@@ -1586,7 +1586,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("NPC回复等待较久，现在可以按 ESC 结束本次对话；处理完成前不能切回普通模式。", new Color(1f, 0.95f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_LongWaitEscape", "The NPC reply is taking a while. Press ESC to end this conversation; normal mode cannot be restored until processing finishes."), new Color(1f, 0.95f, 0.25f)));
 		}
 		catch (Exception ex)
 		{
@@ -1635,7 +1635,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		}
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("正在处理NPC（" + (string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim()) + "）的行为", new Color(1f, 0.95f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_Postprocess", "Processing {NAME}'s actions", "NAME", string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim()), new Color(1f, 0.95f, 0.25f)));
 		}
 		catch (Exception ex)
 		{
@@ -1675,7 +1675,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("你现在可以回复了！", new Color(0.35f, 1f, 0.35f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_InputReady", "You can reply now!"), new Color(0.35f, 1f, 0.35f)));
 		}
 		catch (Exception ex)
 		{

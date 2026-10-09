@@ -79,5 +79,85 @@
     <string id="AF_CONV_UI_Companion_Title" text="{HERO} would like to talk to you" />
     <string id="AF_CONV_UI_Companion_Description" text="{HERO} is in your party and would like to talk when you have time." />
     <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
+    <string id="AF_CONV_UI_Courier_ReturnedUndelivered" text="The courier party returned; undelivered letters and cargo were returned." />
+    <string id="AF_CONV_UI_Courier_ReturnedDisbanded" text="The courier party returned and disbanded." />
+    <string id="AF_CONV_UI_Courier_ReplyTitle" text="The courier brought a reply" />
+    <string id="AF_CONV_UI_Courier_Wrote" text="{NAME} wrote:" />
+    <string id="AF_CONV_UI_Courier_ReplyButton" text="Reply" />
+    <string id="AF_CONV_UI_Courier_Close" text="Close" />
+    <string id="AF_CONV_UI_Courier_ReplyNotice" text="The courier brought a reply from {NAME}." />
+    <string id="AF_CONV_UI_Courier_EmptyReply" text="(No reply text)" />
+    <string id="AF_CONV_UI_Courier_EmptyInbound" text="(No letter text)" />
+    <string id="AF_CONV_UI_Courier_Destroyed" text="The courier party was destroyed.{RECIPIENT}{DETAIL}" />
+    <string id="AF_CONV_UI_Courier_RecipientSuffix" text=" Recipient: {NAME}." />
+    <string id="AF_CONV_UI_Courier_ReturnDetail" text=" {DETAIL}" />
+    <string id="AF_CONV_UI_Courier_DestroyerDetail" text=" Destroyer: {NAME}" />
+    <string id="AF_CONV_UI_Courier_LostDetail" text=" The courier party disappeared from the campaign map." />
+    <string id="AF_CONV_UI_Courier_UnknownFaction" text="unknown faction" />
+    <string id="AF_CONV_UI_Courier_RestoredLetters" text="Restored {COUNT} letter item(s) to the inventory." />
+    <string id="AF_CONV_UI_Courier_LetterInventoryMissing" text="The letter item was not added: player inventory not found." />
+    <string id="AF_CONV_UI_Courier_LetterCreateFailed" text="The letter item could not be created and was not added to the inventory." />
+    <string id="AF_CONV_UI_Courier_LetterWriteFailed" text="The letter item was created but could not be written to the player inventory." />
+    <string id="AF_CONV_UI_Courier_LetterAdded" text="The letter was added to the player inventory." />
+    <string id="AF_CONV_UI_Courier_LetterAddFailed" text="Failed to add the letter item to the inventory: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_WaitInboundTitle" text="Waiting for the incoming letter" />
+    <string id="AF_CONV_UI_Courier_WaitInboundDescription" text="The courier has reached your party and is waiting for {NAME} to finish writing the letter.&#10;&#10;Game time is paused; the letter will be delivered automatically when generation finishes." />
+    <string id="AF_CONV_UI_Courier_WaitOutboundTitle" text="Waiting for a courier reply" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundDescription" text="The courier has reached {NAME} and is waiting for them to read the letter and write a reply.&#10;&#10;Game time is paused; it will resume automatically after the reply is generated and post-processing tags are applied." />
+    <string id="AF_CONV_UI_Courier_WaitInboundNotice" text="The courier has arrived and is waiting for the incoming letter to be generated. Game time is paused." />
+    <string id="AF_CONV_UI_Courier_WaitOutboundNotice" text="The courier has arrived and is waiting for a reply to be generated. Game time is paused." />
+    <string id="AF_CONV_UI_Courier_TargetEscaping" text="The courier's target is fleeing; the courier is waiting at the nearest settlement." />
+    <string id="AF_CONV_UI_Courier_TargetCaptive" text="The courier's target is captive; the courier is waiting at the nearest settlement." />
+    <string id="AF_CONV_UI_Courier_TargetReturned" text="The courier's target has reappeared; the courier is on the way." />
+    <string id="AF_CONV_UI_Courier_InboundTitle" text="The courier delivered {KIND}" />
+    <string id="AF_CONV_UI_Courier_InboundLetter" text="letter" />
+    <string id="AF_CONV_UI_Courier_InboundWrote" text="{NAME} wrote:" />
+    <string id="AF_CONV_UI_Courier_Acknowledge" text="Got it" />
+    <string id="AF_CONV_UI_Shout_SelfTalk" text="You are talking to yourself..." />
+    <string id="AF_CONV_UI_Shout_PrimaryGone" text="[Scene shout] The primary highlighted target has left; select targets again." />
+    <string id="AF_CONV_UI_Shout_PrimaryMissing" text="[Scene shout] No primary highlighted target was found; select targets again." />
+    <string id="AF_CONV_UI_Shout_AudienceStale" text="[Scene shout] The scene participant snapshot is stale; select targets again." />
+    <string id="AF_CONV_UI_Shout_PrimaryThinking" text="{NAME} is thinking..." />
+    <string id="AF_CONV_UI_Shout_HighlightedTarget" text="highlighted target" />
+    <string id="AF_CONV_UI_Shout_PrimaryReadFailed" text="[Scene shout] Could not read the primary highlighted target; select targets again." />
+    <string id="AF_CONV_UI_Shout_IllustrationUnavailable" text="[AI illustration] Scene capture and image generation is not loaded." />
+    <string id="AF_CONV_UI_Shout_IllustrationPending" text="The shout reply is not finished; this panel currently only provides scene image generation." />
+    <string id="AF_CONV_UI_Shout_IllustrationNoTarget" text="There is no valid shout target; you can generate an image, but sending a shout still requires selecting a valid target." />
+    <string id="AF_CONV_UI_Shout_IllustrationBattleHint" text="You can manually generate an illustration of the current scene during combat." />
+    <string id="AF_CONV_UI_Shout_IllustrationDraftHint" text="Image generation does not use unsent input drafts." />
+    <string id="AF_CONV_UI_Shout_NoSendTarget" text="[Scene shout] There is no target available for sending a shout." />
+    <string id="AF_CONV_UI_Shout_TargetInvalid" text="[Scene shout] The target or communication eligibility is no longer valid; select targets again." />
+    <string id="AF_CONV_UI_Shout_InputOpenFailed" text="[Scene shout] Failed to open the input panel." />
+    <string id="AF_CONV_UI_Shout_PassiveFailed" text="[Passive response failed] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_ErrorPrefix" text="[Scene shout] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_PreprocessFailed" text="AnimusForge pre-processing failed" />
+    <string id="AF_CONV_UI_Shout_RelayTargetUnavailable" text="The primary highlighted target cannot respond right now." />
+    <string id="AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable" text="This relay round ended: the current speaker left or cannot respond." />
+    <string id="AF_CONV_UI_Shout_RoundStoppedBeforeActions" text="This response round stopped before action processing began." />
+    <string id="AF_CONV_UI_Shout_RoundErrorStoppedActions" text="This response round encountered an error; subsequent action processing was stopped." />
+    <string id="AF_CONV_UI_Shout_RelaySpeakerUnavailable" text="This relay round ended: the current speaker can no longer respond." />
+    <string id="AF_CONV_UI_Shout_RelayInterrupted" text="This relay round was interrupted: behavior processing failed or timed out." />
+    <string id="AF_CONV_UI_Shout_RelayNoSpeaker" text="No valid next speaker was selected for this round." />
+    <string id="AF_CONV_UI_Shout_RelayEnded" text="This relay round ended." />
+    <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="This relay round ended: the selected next speaker left or cannot respond." />
+    <string id="AF_CONV_UI_Shout_BudgetLimit" text="This relay round ended: the scene response participant budget was reached." />
+    <string id="AF_CONV_UI_Shout_BudgetDenied" text="This relay round ended: the scene response budget did not allow another speaker." />
+    <string id="AF_CONV_UI_Shout_RelayEndedTurnLimit" text="This relay round ended: the speaking turn limit was reached." />
+    <string id="AF_CONV_UI_Shout_RelayNoNextSpeaker" text="This relay round ended: no one else can take the next turn." />
+    <string id="AF_CONV_UI_Shout_RelayThinking" text="{NAME} is thinking about what to say." />
+    <string id="AF_CONV_UI_Native_Exited" text="The current conversation was closed." />
+    <string id="AF_CONV_UI_Native_LongWaitEscape" text="The NPC reply is taking a while. Press ESC to end this conversation; normal mode cannot be restored until processing finishes." />
+    <string id="AF_CONV_UI_Native_Postprocess" text="Processing {NAME}'s actions" />
+    <string id="AF_CONV_UI_Native_InputReady" text="You can reply now!" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutTitle" text="Native conversation pre-processing timed out" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutDescription" text="ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.&#10;&#10;Retry this line?" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutTitle" text="NPC opening pre-processing timed out" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutDescription" text="ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.&#10;&#10;Let the NPC try opening again?" />
+    <string id="AF_CONV_UI_Native_Retry" text="Retry" />
+    <string id="AF_CONV_UI_Native_Cancel" text="Cancel" />
+    <string id="AF_CONV_UI_Native_MemoryUnconfirmed" text="AnimusForge memory record was not confirmed" />
+    <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge action processing did not complete" />
+    <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC opening failed" />
+    <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge free conversation submission failed" />
   </strings>
 </base>

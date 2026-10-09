@@ -443,7 +443,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (restored > 0)
 			{
 				Log("restore courier letter inventory reason=" + (reason ?? "") + " restored=" + restored);
-				InformationManager.DisplayMessage(new InformationMessage("已恢复库存中的信件物品 x" + restored + "。", Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_RestoredLetters", "Restored {COUNT} letter item(s) to the inventory.", "COUNT", restored), Colors.Green));
 			}
 		}
 		catch (Exception ex)
@@ -465,7 +465,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (roster == null)
 			{
 				Log("courier letter inventory item skipped: player item roster missing session=" + (session?.Id ?? "") + " reply=" + isReply);
-				InformationManager.DisplayMessage(new InformationMessage("信件物品未加入库存：找不到玩家库存。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterInventoryMissing", "The letter item was not added: player inventory not found."), Colors.Red));
 				return false;
 			}
 			string name = string.IsNullOrWhiteSpace(senderName) ? (sender?.Name?.ToString() ?? "NPC") : senderName.Trim();
@@ -479,7 +479,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (generated <= 0 || string.IsNullOrWhiteSpace(itemStringId))
 			{
 				Log("courier letter inventory item create failed session=" + (session?.Id ?? "") + " reply=" + isReply);
-				InformationManager.DisplayMessage(new InformationMessage("信件物品生成失败，未加入库存。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterCreateFailed", "The letter item could not be created and was not added to the inventory."), Colors.Red));
 				return false;
 			}
 			uint objectId = 0u;
@@ -488,7 +488,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (after <= 0)
 			{
 				Log("courier letter inventory item add not observed session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply);
-				InformationManager.DisplayMessage(new InformationMessage("信件物品生成了，但未能写入玩家库存。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterWriteFailed", "The letter item was created but could not be written to the player inventory."), Colors.Red));
 				return false;
 			}
 			RewardSystemBehavior.TryPrimeGeneratedInventoryItemForExternal(itemStringId, displayName, templateItemId, objectId, out string normalizedItemStringId, out string templateStringId, out uint normalizedObjectId, "courier_letter_added_prime");
@@ -501,14 +501,14 @@ public sealed partial class CourierDeliveryBehavior
 				objectId = normalizedObjectId;
 			}
 			bool remembered = Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after) == true;
-			InformationManager.DisplayMessage(new InformationMessage("信件已放入玩家库存。", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterAdded", "The letter was added to the player inventory."), Colors.Green));
 			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " clanTier=" + senderClanTier + " template=" + templateItemId + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
 			return remembered;
 		}
 		catch (Exception ex)
 		{
 			Log("courier letter inventory item add failed session=" + (session?.Id ?? "") + " reply=" + isReply + " error=" + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("信件物品加入库存失败：" + ex.Message, Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterAddFailed", "Failed to add the letter item to the inventory: {ERROR}", "ERROR", ex.Message), Colors.Red));
 		}
 		return false;
 	}

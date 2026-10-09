@@ -1749,7 +1749,7 @@ public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex) => S
 
 	internal static string BuildAutoGroupRelayThinkingInfoMessage(NpcDataPacket npc)
 	{
-		return BuildAutoGroupRelayInfoDisplayName(npc) + "正在思考该说什么。";
+		return ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayThinking", "{NAME} is thinking about what to say.", "NAME", BuildAutoGroupRelayInfoDisplayName(npc));
 	}
 
 	private static string ResolveSceneHistorySpeakerNameForPrompt(int speakerAgentIndex, string fallbackSpeakerName, IEnumerable<NpcDataPacket> nearbyData = null)
