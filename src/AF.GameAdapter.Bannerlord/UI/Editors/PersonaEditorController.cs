@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 using ExportImportScope = AnimusForge.MyBehavior.ExportImportScope;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -55,6 +56,36 @@ internal sealed class PersonaEditorPort
 }
 internal sealed class PersonaEditorController
 {
+	private static readonly Type LocalizedTextObjectType = Type.GetType("TaleWorlds.Localization.TextObject, TaleWorlds.Localization");
+	private static readonly ConstructorInfo LocalizedTextObjectConstructor = LocalizedTextObjectType?.GetConstructor(new[] { typeof(string) });
+	private static readonly MethodInfo SetTextVariableMethod = LocalizedTextObjectType?.GetMethod("SetTextVariable", new[] { typeof(string), typeof(object) })
+		?? LocalizedTextObjectType?.GetMethod("SetTextVariable", new[] { typeof(string), typeof(string) });
+
+	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		if (LocalizedTextObjectConstructor == null)
+		{
+			string result = fallback;
+			if (variables != null)
+			{
+				foreach (var variable in variables)
+				{
+					result = result.Replace("{" + variable.Name + "}", variable.Value ?? string.Empty);
+				}
+			}
+			return result;
+		}
+		object text = LocalizedTextObjectConstructor.Invoke(new object[] { $"{{={id}}}{fallback}" });
+		if (variables != null)
+		{
+			foreach (var variable in variables)
+			{
+				SetTextVariableMethod?.Invoke(text, new object[] { variable.Name, variable.Value ?? string.Empty });
+			}
+		}
+		return text.ToString();
+	}
+
  private readonly PersonaEditorPort _port;
  private long _generation = long.MinValue;
  internal void SynchronizeGeneration(long generation)
@@ -142,18 +173,18 @@ internal sealed class PersonaEditorController
 			string npcVoiceId = _port.GetNpcVoiceId(npc);
 			bool flag3 = !string.IsNullOrWhiteSpace(npcVoiceId);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("请选择要执行的操作：");
-			stringBuilder.AppendLine("当前个性：" + (flag ? "已设置" : "未设置"));
-			stringBuilder.AppendLine("当前历史背景：" + (flag2 ? "已设置" : "未设置"));
-			stringBuilder.AppendLine("当前音色ID：" + (flag3 ? npcVoiceId : "未设置（使用VoiceMapping自动分配）"));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_MenuPrompt", "Choose an action:"));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Personality: ") + (flag ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_BackgroundLabel", "History background: ") + (flag2 ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:") + (flag3 ? npcVoiceId : Localize("AF_UI_Persona_VoiceUnsetAuto", "not set (assigned automatically by VoiceMapping)")));
 			List<InquiryElement> list = new List<InquiryElement>();
-			list.Add(new InquiryElement("set_personality", "设置/修改个性", null));
-			list.Add(new InquiryElement("set_background", "设置/修改历史背景", null));
-			list.Add(new InquiryElement("reroll_persona", "重生个性背景（LLM）", null));
-			list.Add(new InquiryElement("set_voice", "设置/修改音色ID", null));
-			list.Add(new InquiryElement("clear_persona", "清空个性、历史背景与音色ID", null));
-			list.Add(new InquiryElement("back", "返回", null));
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑个性/历史背景 - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "执行", "返回", selected => { if (IsEditorCurrent(npc, editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
+			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit personality"), null));
+			list.Add(new InquiryElement("set_background", Localize("AF_UI_Persona_SetBackground", "Set or edit history background"), null));
+			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate personality and background (LLM)"), null));
+			list.Add(new InquiryElement("set_voice", Localize("AF_UI_Persona_SetVoice", "Set or edit voice ID"), null));
+			list.Add(new InquiryElement("clear_persona", Localize("AF_UI_Persona_ClearPersona", "Clear personality, history background, and voice ID"), null));
+			list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_MenuTitle", "Edit personality/history - {NAME}", ("NAME", text)), stringBuilder.ToString(), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Execute", "Execute"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (IsEditorCurrent(npc, editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
 			{
 				if (!IsEditorCurrent(npc, editorGeneration)) return;
 				ReturnFromDevPersonaMenu(npc);
@@ -212,7 +243,7 @@ internal sealed class PersonaEditorController
 			break;
 		case "clear_persona":
 			_port.ClearPersona(devEditingHero);
-			InformationManager.DisplayMessage(new InformationMessage("已清空该NPC的个性、历史背景与音色ID."));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_Cleared", "Cleared this NPC's personality, history background, and voice ID.")));
 			OpenDevPersonaMenu(devEditingHero);
 			break;
 		default:
@@ -248,12 +279,12 @@ internal sealed class PersonaEditorController
 		_port.GetNpcPersonaStrings(npc, out var personality, out var background);
 		string name = npc.Name?.ToString() ?? "NPC";
 		StringBuilder description = new StringBuilder();
-		description.AppendLine("将调用辅助 API，为该 Hero 重新生成一套个性与历史背景。");
+		description.AppendLine(Localize("AF_UI_Persona_RerollConfirmBody", "The auxiliary API will generate a new personality and history background for this Hero."));
 		description.AppendLine();
-		description.AppendLine("当前个性：" + (string.IsNullOrWhiteSpace(personality) ? "未设置" : "已设置，将被覆盖"));
-		description.AppendLine("当前历史背景：" + (string.IsNullOrWhiteSpace(background) ? "未设置" : "已设置，将被覆盖"));
-		description.AppendLine("音色 ID 不会改变。生成失败时会保留当前数据。");
-		InformationManager.ShowInquiry(new InquiryData("确认重生个性背景 - " + name, description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认生成", "取消", delegate
+		description.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Personality: ") + (string.IsNullOrWhiteSpace(personality) ? Localize("AF_UI_Persona_Unset", "not set") : Localize("AF_UI_Persona_SetWillOverwrite", "set; it will be overwritten")));
+		description.AppendLine(Localize("AF_UI_Persona_BackgroundLabel", "History background: ") + (string.IsNullOrWhiteSpace(background) ? Localize("AF_UI_Persona_Unset", "not set") : Localize("AF_UI_Persona_SetWillOverwrite", "set; it will be overwritten")));
+		description.AppendLine(Localize("AF_UI_Persona_RerollVoiceKept", "The voice ID will not change. Existing data is kept if generation fails."));
+		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollConfirmTitle", "Confirm personality/background regeneration - {NAME}", ("NAME", name)), description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_ConfirmGenerate", "Generate"), Localize("AF_UI_Persona_Cancel", "Cancel"), delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			_ = RunHeroPersonaRerollAsync(npc, onClosed);
@@ -272,7 +303,7 @@ internal sealed class PersonaEditorController
 		}
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string name = npc.Name?.ToString() ?? "NPC";
-		InformationManager.ShowInquiry(new InquiryData("正在重生个性背景", "正在为 " + name + " 生成新的人设。\n\n完成前请稍候；只有生成并解析成功后才会覆盖旧数据。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollingTitle", "Regenerating personality and background"), Localize("AF_UI_Persona_RerollingBody", "Generating a new persona for {NAME}.\n\nPlease wait; existing data is overwritten only after generation and parsing succeed.", ("NAME", name)), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		Logger.Log("NpcPersona", "[REROLL] Request started for " + (npc.StringId ?? "") + ".");
 		string failureDetail;
 		try
@@ -293,12 +324,12 @@ internal sealed class PersonaEditorController
 			if (string.IsNullOrWhiteSpace(failureDetail))
 			{
 				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
-				InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
+				InformationManager.DisplayMessage(new InformationMessage(name + Localize("AF_UI_Persona_RerollSucceededSuffix", "'s personality and history background were regenerated; the voice ID is unchanged.")));
 				InvokePersonaRerollClosed(onClosed);
 				return true;
 			}
 			Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
-			InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "未保存本次生成结果，现有个性、历史背景与音色 ID 已保留。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
+				InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollFailedTitle", "Personality and background regeneration failed"), Localize("AF_UI_Persona_RerollFailedBody", "The generated result was not saved; the existing personality, history background, and voice ID were kept.\n\n{DETAIL}", ("DETAIL", failureDetail.Trim())), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? Localize("AF_UI_Persona_Close", "Close") : Localize("AF_UI_Persona_ReturnEditor", "Return to editor"), "", delegate
 			{
 				InvokePersonaRerollClosed(onClosed);
 			}, null), pauseGameActiveState: true);
@@ -327,11 +358,11 @@ internal sealed class PersonaEditorController
 			_port.SelectedHero = npc;
 			_port.GetNpcPersonaStrings(npc, out var personality, out var background);
 			string text = npc.Name?.ToString() ?? "NPC";
-			DevTextEditorHelper.ShowLongTextEditor("设置个性 - " + text, "当前个性已载入下方输入框。", "请输入新的个性描述（留空=清空）。", personality ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_EditPersonalityTitle", "Edit personality - {NAME}", ("NAME", text)), Localize("AF_UI_Persona_PersonalityLoaded", "The current personality is loaded in the input box below."), Localize("AF_UI_Persona_PersonalityHint", "Enter a new personality description (leave blank to clear)."), personality ?? "", delegate(string input)
 			{
 				if (!IsEditorCurrent(npc, generation)) return;
 				_port.SavePersonaText(npc, (input ?? "").Trim(), (background ?? "").Trim());
-				InformationManager.DisplayMessage(new InformationMessage("个性已更新."));
+				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_PersonalityUpdated", "Personality updated.")));
 				OpenDevPersonaMenu(npc);
 			}, delegate
 			{
@@ -351,18 +382,18 @@ internal sealed class PersonaEditorController
 			string npcVoiceId = _port.GetNpcVoiceId(npc);
 			string text = npc.Name?.ToString() ?? "NPC";
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("当前音色ID：");
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(npcVoiceId) ? "（未设置 - 使用VoiceMapping自动分配）" : npcVoiceId);
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:"));
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(npcVoiceId) ? Localize("AF_UI_Persona_VoiceUnsetAutoParens", "(not set - assigned automatically by VoiceMapping)") : npcVoiceId);
 			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("请输入新的音色ID（留空=清空，将使用VoiceMapping自动分配）：");
-			stringBuilder.AppendLine("提示：音色ID取决于您使用的TTS平台。");
-			stringBuilder.AppendLine("  火山引擎例如: BV001_streaming");
-			stringBuilder.AppendLine("  GPT-SoVITS例如: 参考音频文件名");
-			InformationManager.ShowTextInquiry(new TextInquiryData("设置音色ID - " + text, stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceInputHint", "Enter a new voice ID (leave blank to clear and use VoiceMapping assignment):"));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoicePlatformHint", "Hint: the voice ID depends on your TTS platform."));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceVolcExample", "  Volcengine example: BV001_streaming"));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceGptExample", "  GPT-SoVITS example: reference audio filename"));
+			InformationManager.ShowTextInquiry(new TextInquiryData(Localize("AF_UI_Persona_VoiceTitle", "Set voice ID - {NAME}", ("NAME", text)), stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_Save", "Save"), Localize("AF_UI_Persona_Back", "Back"), delegate(string input)
 			{
 				if (!IsEditorCurrent(npc, generation)) return;
 				_port.SaveVoice(npc, (input ?? "").Trim());
-				string information = (string.IsNullOrWhiteSpace(input) ? "音色ID已清空（将使用VoiceMapping自动分配）." : ("音色ID已更新为: " + input.Trim()));
+				string information = (string.IsNullOrWhiteSpace(input) ? Localize("AF_UI_Persona_VoiceCleared", "Voice ID cleared (VoiceMapping assignment will be used).") : (Localize("AF_UI_Persona_VoiceUpdatedPrefix", "Voice ID updated to: ") + input.Trim()));
 				InformationManager.DisplayMessage(new InformationMessage(information));
 				OpenDevPersonaMenu(npc);
 			}, delegate
@@ -382,11 +413,11 @@ internal sealed class PersonaEditorController
 			_port.SelectedHero = npc;
 			_port.GetNpcPersonaStrings(npc, out var personality, out var background);
 			string text = npc.Name?.ToString() ?? "NPC";
-			DevTextEditorHelper.ShowLongTextEditor("设置历史背景 - " + text, "当前历史背景已载入下方输入框。", "请输入新的历史背景描述（留空=清空）。", background ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_EditBackgroundTitle", "Edit history background - {NAME}", ("NAME", text)), Localize("AF_UI_Persona_BackgroundLoaded", "The current history background is loaded in the input box below."), Localize("AF_UI_Persona_BackgroundHint", "Enter a new history background description (leave blank to clear)."), background ?? "", delegate(string input)
 			{
 				if (!IsEditorCurrent(npc, generation)) return;
 				_port.SavePersonaText(npc, (personality ?? "").Trim(), (input ?? "").Trim());
-				InformationManager.DisplayMessage(new InformationMessage("历史背景已更新."));
+				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_BackgroundUpdated", "History background updated.")));
 				OpenDevPersonaMenu(npc);
 			}, delegate
 			{
@@ -401,13 +432,13 @@ internal sealed class PersonaEditorController
 		long editorGeneration = _port.CaptureGeneration();
 		if (!_port.IsCurrent(editorGeneration)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("single_export_rule", "导出（单个知识条目，从列表选择）", null));
-		list.Add(new InquiryElement("single_import_rule", "导入（单个知识条目，从文件夹选择）", null));
-		list.Add(new InquiryElement("export_knowledge", "全量导出（Knowledge，选文件夹）", null));
-		list.Add(new InquiryElement("import_knowledge", "全量导入（Knowledge，选文件夹）", null));
-		list.Add(new InquiryElement("edit_knowledge", "编辑 Knowledge 条目…", null));
-		list.Add(new InquiryElement("back", "返回", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("Knowledge 导入/导出", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevKnowledgeMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("single_export_rule", Localize("AF_UI_Persona_KnowledgeExportSingle", "Export one knowledge entry (choose from list)"), null));
+		list.Add(new InquiryElement("single_import_rule", Localize("AF_UI_Persona_KnowledgeImportSingle", "Import one knowledge entry (choose a folder)"), null));
+		list.Add(new InquiryElement("export_knowledge", Localize("AF_UI_Persona_KnowledgeExportAll", "Export all Knowledge entries (choose a folder)"), null));
+		list.Add(new InquiryElement("import_knowledge", Localize("AF_UI_Persona_KnowledgeImportAll", "Import all Knowledge entries (choose a folder)"), null));
+		list.Add(new InquiryElement("edit_knowledge", Localize("AF_UI_Persona_KnowledgeEdit", "Edit Knowledge entries..."), null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_KnowledgeMenuTitle", "Knowledge import/export"), Localize("AF_UI_Persona_ChooseAction", "Choose an action:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevKnowledgeMenuSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 		});
@@ -435,7 +466,7 @@ internal sealed class PersonaEditorController
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("KnowledgeLibraryBehavior 未初始化，无法打开知识编辑。"));
+				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_KnowledgeUnavailable", "KnowledgeLibraryBehavior is not initialized; the knowledge editor cannot be opened.")));
 				OpenDevKnowledgeMenu();
 			}
 			break;
@@ -445,7 +476,7 @@ internal sealed class PersonaEditorController
 		case "single_import_rule":
 			KnowledgeImportPicked = false;
 			KnowledgeImportFolder = null;
-			_port.OpenFolderPickerWithCallback("导入（单个知识条目）- 选择文件夹", isExport: false, delegate(string folderName)
+			_port.OpenFolderPickerWithCallback(Localize("AF_UI_Persona_KnowledgeImportFolder", "Import one Knowledge entry - choose a folder"), isExport: false, delegate(string folderName)
 			{
 				if (!_port.IsCurrent(editorGeneration)) return;
 				KnowledgeImportPicked = true;
@@ -467,10 +498,10 @@ internal sealed class PersonaEditorController
 			});
 			break;
 		case "export_knowledge":
-			_port.OpenExportFolderPicker("全量导出（Knowledge）- 选择文件夹", ExportImportScope.Knowledge, OpenDevKnowledgeMenu);
+			_port.OpenExportFolderPicker(Localize("AF_UI_Persona_KnowledgeExportFolder", "Export all Knowledge entries - choose a folder"), ExportImportScope.Knowledge, OpenDevKnowledgeMenu);
 			break;
 		case "import_knowledge":
-			_port.OpenImportFolderPicker("全量导入（Knowledge）- 选择文件夹", ExportImportScope.Knowledge, OpenDevKnowledgeMenu);
+			_port.OpenImportFolderPicker(Localize("AF_UI_Persona_KnowledgeImportAllFolder", "Import all Knowledge entries - choose a folder"), ExportImportScope.Knowledge, OpenDevKnowledgeMenu);
 			break;
 		}
 	}
@@ -482,12 +513,12 @@ internal sealed class PersonaEditorController
 		List<KnowledgeLibraryBehavior.RuleIndexItem> list = (KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>())?.GetRuleIndexItemsForDev(400);
 		if (list == null || list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可导出的知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_KnowledgeNoExport", "There are no Knowledge entries to export.")));
 			OpenDevKnowledgeMenu();
 			return;
 		}
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
+		list2.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (KnowledgeLibraryBehavior.RuleIndexItem item in list)
 		{
 			string text = (item?.Id ?? "").Trim();
@@ -497,7 +528,7 @@ internal sealed class PersonaEditorController
 				list2.Add(new InquiryElement(text, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("导出单个知识条目 - 选择条目", "请选择要导出的知识条目：", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_KnowledgeChooseExport", "Export one Knowledge entry - choose an entry"), Localize("AF_UI_Persona_KnowledgeChooseExportBody", "Choose a Knowledge entry to export:"), list2, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -520,7 +551,7 @@ internal sealed class PersonaEditorController
 					}
 					else
 					{
-						_port.OpenFolderPickerWithCallback("导出（单个知识条目）- 选择文件夹", isExport: true, delegate(string folderName)
+						_port.OpenFolderPickerWithCallback(Localize("AF_UI_Persona_KnowledgeSingleExportFolder", "Export one Knowledge entry - choose a folder"), isExport: true, delegate(string folderName)
 						{
 							if (!_port.IsCurrent(editorGeneration)) return;
 							_port.ExportSingleKnowledgeRuleData(folderName, rid);
@@ -543,12 +574,12 @@ internal sealed class PersonaEditorController
 		List<string> knowledgeRuleIdsFromImportFolderForDev = _port.GetKnowledgeRuleIdsFromImportFolderForDev(folderName, 400);
 		if (knowledgeRuleIdsFromImportFolderForDev == null || knowledgeRuleIdsFromImportFolderForDev.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该文件夹中没有可导入的知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_KnowledgeNoImport", "This folder contains no importable Knowledge entries.")));
 			OpenDevKnowledgeMenu();
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (string item in knowledgeRuleIdsFromImportFolderForDev)
 		{
 			string text = (item ?? "").Trim();
@@ -557,7 +588,7 @@ internal sealed class PersonaEditorController
 				list.Add(new InquiryElement(text, text, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("导入单个知识条目 - 选择条目", "请选择要导入的知识条目：", list, isExitShown: true, 0, 1, "导入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_KnowledgeChooseImport", "Import one Knowledge entry - choose an entry"), Localize("AF_UI_Persona_KnowledgeChooseImportBody", "Choose a Knowledge entry to import:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Import", "Import"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -598,13 +629,13 @@ internal sealed class PersonaEditorController
 		long editorGeneration = _port.CaptureGeneration();
 		if (!_port.IsCurrent(editorGeneration)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("single_export_unnamed", "导出（单个未命名NPC，从列表选择）", null));
-		list.Add(new InquiryElement("single_import_unnamed", "导入（单个未命名NPC，从文件夹选择）", null));
-		list.Add(new InquiryElement("export_unnamed", "全量导出（未命名NPC，选文件夹）", null));
-		list.Add(new InquiryElement("import_unnamed", "全量导入（未命名NPC，选文件夹）", null));
-		list.Add(new InquiryElement("edit_unnamed", "编辑未命名NPC条目…", null));
-		list.Add(new InquiryElement("back", "返回", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("未命名NPC 导入/导出", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevUnnamedPersonaMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("single_export_unnamed", Localize("AF_UI_Persona_UnnamedExportSingle", "Export one unnamed NPC (choose from list)"), null));
+		list.Add(new InquiryElement("single_import_unnamed", Localize("AF_UI_Persona_UnnamedImportSingle", "Import one unnamed NPC (choose a folder)"), null));
+		list.Add(new InquiryElement("export_unnamed", Localize("AF_UI_Persona_UnnamedExportAll", "Export all unnamed NPCs (choose a folder)"), null));
+		list.Add(new InquiryElement("import_unnamed", Localize("AF_UI_Persona_UnnamedImportAll", "Import all unnamed NPCs (choose a folder)"), null));
+		list.Add(new InquiryElement("edit_unnamed", Localize("AF_UI_Persona_UnnamedEdit", "Edit unnamed NPC entries..."), null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_UnnamedMenuTitle", "Unnamed NPC import/export"), Localize("AF_UI_Persona_ChooseAction", "Choose an action:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevUnnamedPersonaMenuSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 		});
@@ -627,7 +658,7 @@ internal sealed class PersonaEditorController
 		case "single_import_unnamed":
 			UnnamedImportPicked = false;
 			UnnamedImportFolder = null;
-			_port.OpenFolderPickerWithCallback("导入（单个未命名NPC）- 选择文件夹", isExport: false, delegate(string folderName)
+			_port.OpenFolderPickerWithCallback(Localize("AF_UI_Persona_UnnamedImportFolder", "Import one unnamed NPC - choose a folder"), isExport: false, delegate(string folderName)
 			{
 				if (!_port.IsCurrent(editorGeneration)) return;
 				UnnamedImportPicked = true;
@@ -649,10 +680,10 @@ internal sealed class PersonaEditorController
 			});
 			break;
 		case "export_unnamed":
-			_port.OpenExportFolderPicker("全量导出（未命名NPC）- 选择文件夹", ExportImportScope.UnnamedPersona, OpenDevUnnamedPersonaMenu);
+			_port.OpenExportFolderPicker(Localize("AF_UI_Persona_UnnamedExportFolder", "Export all unnamed NPCs - choose a folder"), ExportImportScope.UnnamedPersona, OpenDevUnnamedPersonaMenu);
 			break;
 		case "import_unnamed":
-			_port.OpenImportFolderPicker("全量导入（未命名NPC）- 选择文件夹", ExportImportScope.UnnamedPersona, OpenDevUnnamedPersonaMenu);
+			_port.OpenImportFolderPicker(Localize("AF_UI_Persona_UnnamedImportAllFolder", "Import all unnamed NPCs - choose a folder"), ExportImportScope.UnnamedPersona, OpenDevUnnamedPersonaMenu);
 			break;
 		case "edit_unnamed":
 			OpenDevUnnamedPersonaIndexSelection();
@@ -667,12 +698,12 @@ internal sealed class PersonaEditorController
 		List<ShoutUtils.UnnamedPersonaIndexItem> unnamedPersonaIndexItemsForDev = ShoutUtils.GetUnnamedPersonaIndexItemsForDev(200);
 		if (unnamedPersonaIndexItemsForDev == null || unnamedPersonaIndexItemsForDev.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可导出的未命名NPC条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_UnnamedNoExport", "There are no unnamed NPC entries to export.")));
 			OpenDevUnnamedPersonaMenu();
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (ShoutUtils.UnnamedPersonaIndexItem item in unnamedPersonaIndexItemsForDev)
 		{
 			if (item != null && !string.IsNullOrWhiteSpace(item.Key))
@@ -685,7 +716,7 @@ internal sealed class PersonaEditorController
 				}
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("导出单个未命名NPC - 选择条目", "请选择要导出的条目：", list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_UnnamedChooseExport", "Export one unnamed NPC - choose an entry"), Localize("AF_UI_Persona_UnnamedChooseExportBody", "Choose an entry to export:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -708,7 +739,7 @@ internal sealed class PersonaEditorController
 					}
 					else
 					{
-						_port.OpenFolderPickerWithCallback("导出（单个未命名NPC）- 选择文件夹", isExport: true, delegate(string folderName)
+						_port.OpenFolderPickerWithCallback(Localize("AF_UI_Persona_UnnamedSingleExportFolder", "Export one unnamed NPC - choose a folder"), isExport: true, delegate(string folderName)
 						{
 							if (!_port.IsCurrent(editorGeneration)) return;
 							_port.ExportSingleUnnamedPersonaData(folderName, k);
@@ -731,12 +762,12 @@ internal sealed class PersonaEditorController
 		List<string> unnamedPersonaKeysFromImportFolderForDev = _port.GetUnnamedPersonaKeysFromImportFolderForDev(folderName, 400);
 		if (unnamedPersonaKeysFromImportFolderForDev == null || unnamedPersonaKeysFromImportFolderForDev.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该文件夹中没有可导入的未命名NPC条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_UnnamedNoImport", "This folder contains no importable unnamed NPC entries.")));
 			OpenDevUnnamedPersonaMenu();
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (string item in unnamedPersonaKeysFromImportFolderForDev)
 		{
 			string text = (item ?? "").Trim().ToLower();
@@ -745,7 +776,7 @@ internal sealed class PersonaEditorController
 				list.Add(new InquiryElement(text, text, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("导入单个未命名NPC - 选择条目", "请选择要导入的条目：", list, isExitShown: true, 0, 1, "导入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_UnnamedChooseImport", "Import one unnamed NPC - choose an entry"), Localize("AF_UI_Persona_UnnamedChooseImportBody", "Choose an entry to import:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Import", "Import"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -788,12 +819,12 @@ internal sealed class PersonaEditorController
 		List<ShoutUtils.UnnamedPersonaIndexItem> unnamedPersonaIndexItemsForDev = ShoutUtils.GetUnnamedPersonaIndexItemsForDev(200);
 		if (unnamedPersonaIndexItemsForDev == null || unnamedPersonaIndexItemsForDev.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的未命名NPC条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_UnnamedNoEdit", "There are no editable unnamed NPC entries.")));
 			OpenDevUnnamedPersonaMenu();
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (ShoutUtils.UnnamedPersonaIndexItem item in unnamedPersonaIndexItemsForDev)
 		{
 			if (item != null && !string.IsNullOrWhiteSpace(item.Key))
@@ -802,7 +833,7 @@ internal sealed class PersonaEditorController
 				list.Add(new InquiryElement(item.Key, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑未命名NPC - 选择条目", "选择一个条目进行编辑：", list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevUnnamedPersonaIndexSelected(selected); }, delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_UnnamedChooseEdit", "Edit unnamed NPC - choose an entry"), Localize("AF_UI_Persona_UnnamedChooseEditBody", "Choose an entry to edit:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevUnnamedPersonaIndexSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			OpenDevUnnamedPersonaMenu();
@@ -859,12 +890,12 @@ internal sealed class PersonaEditorController
 		{
 			text2 = text2.Substring(0, 240);
 		}
-		DevTextEditorHelper.ShowLongTextEditor("编辑未命名NPC - 描述", "Key: " + k, "请输入新的“描述”（留空=清空）。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_UnnamedDescriptionTitle", "Edit unnamed NPC - description"), "Key: " + k, Localize("AF_UI_Persona_UnnamedDescriptionHint", "Enter a new description (leave blank to clear)."), text, delegate(string input)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			string personality2 = (input ?? "").Trim();
 			ShoutUtils.SaveUnnamedPersonaByKey(k, personality2, "");
-			InformationManager.DisplayMessage(new InformationMessage("已保存：" + k));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_SavedPrefix", "Saved: ") + k));
 			OpenDevUnnamedPersonaIndexSelection();
 		}, delegate
 		{
@@ -909,13 +940,13 @@ internal sealed class PersonaEditorController
 			}).ToList();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("pick_from_export", "从导出文件夹选择NPC…", null));
-		list.Add(new InquiryElement("manual_id", "手动输入 HeroId…", null));
-		list.Add(new InquiryElement("search", "搜索 NPC", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		list.Add(new InquiryElement("pick_from_export", Localize("AF_UI_Persona_PickNpcExport", "Choose an NPC from an export folder..."), null));
+		list.Add(new InquiryElement("manual_id", Localize("AF_UI_Persona_ManualHeroId", "Enter HeroId manually..."), null));
+		list.Add(new InquiryElement("search", Localize("AF_UI_Persona_SearchNpcTitle", "Search NPC"), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list.Add(new InquiryElement("clear_search", "清空搜索", null));
+			list.Add(new InquiryElement("clear_search", Localize("AF_UI_Persona_ClearSearch", "Clear search"), null));
 		}
 		const int pageSize = 40;
 		int num = Math.Max(1, (int)Math.Ceiling((double)filteredHeroes.Count / (double)pageSize));
@@ -926,11 +957,11 @@ internal sealed class PersonaEditorController
 		SingleNpcPage = page;
 		if (page > 0)
 		{
-			list.Add(new InquiryElement("prev_page", "上一页", null));
+			list.Add(new InquiryElement("prev_page", Localize("AF_UI_Persona_PrevPage", "Previous page"), null));
 		}
 		if (page + 1 < num)
 		{
-			list.Add(new InquiryElement("next_page", "下一页", null));
+			list.Add(new InquiryElement("next_page", Localize("AF_UI_Persona_NextPage", "Next page"), null));
 		}
 		list.Add(new InquiryElement("__sep__", "----------------", null));
 		int num2 = page * pageSize;
@@ -947,16 +978,16 @@ internal sealed class PersonaEditorController
 				list.Add(new InquiryElement(item, text3 + " (ID=" + text2 + ")", null));
 			}
 		}
-		string descriptionText = $"可从当前存档全部 NPC 中选择，也可从旧导出文件夹读取 JSON。\n全部 NPC：{_port.EditableHeroes.Count} 个；当前结果：{filteredHeroes.Count} 个，第 {page + 1}/{num} 页。";
+		string descriptionText = Localize("AF_UI_Persona_HeroSelectionBody", "Choose from all NPCs in the current save or read JSON from an old export folder.\nAll NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}.", ("TOTAL", _port.EditableHeroes.Count.ToString()), ("RESULTS", filteredHeroes.Count.ToString()), ("PAGE", (page + 1).ToString()), ("PAGES", num.ToString()));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			descriptionText = descriptionText + "\n搜索关键词：" + text;
+			descriptionText = descriptionText + "\n" + Localize("AF_UI_Persona_SearchKeyword", "Search keyword: {QUERY}", ("QUERY", text));
 		}
 		if (filteredHeroes.Count == 0)
 		{
-			descriptionText += "\n没有匹配结果，可以重新搜索。";
+			descriptionText += "\n" + Localize("AF_UI_Persona_NoSearchResults", "No matches; you can search again.");
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("单个 HeroNPC 导入/导出 - 选择NPC", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevSingleNpcHeroSelected(selected); }, delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_HeroSelectionTitle", "Single HeroNPC import/export - choose NPC"), descriptionText, list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevSingleNpcHeroSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			_port.OpenDevHeroNpcMenu();
@@ -986,7 +1017,7 @@ internal sealed class PersonaEditorController
 		}
 		if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("找不到导出目录。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_ExportFolderMissing", "The export folder could not be found.")));
 			OpenDevSingleNpcHeroSelection();
 			return;
 		}
@@ -1042,12 +1073,12 @@ internal sealed class PersonaEditorController
 		}
 		if (idToName.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该导出文件夹中没有可识别的 NPC JSON。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_NoNpcJson", "This export folder contains no recognizable NPC JSON files.")));
 			OpenDevSingleNpcHeroSelection();
 			return;
 		}
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
+		list2.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		foreach (KeyValuePair<string, string> item2 in idToName.OrderBy((KeyValuePair<string, string> k) => k.Key))
 		{
 			string text6 = (item2.Key ?? "").Trim();
@@ -1058,7 +1089,7 @@ internal sealed class PersonaEditorController
 				list2.Add(new InquiryElement(text6, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("从导出文件夹选择 NPC", "目录：\n" + text2 + "\n\n请选择要导入/导出的 NPC：", list2, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_PickNpcTitle", "Choose NPC from export folder"), Localize("AF_UI_Persona_PickNpcBody", "Folder:\n{FOLDER}\n\nChoose an NPC to import or export:", ("FOLDER", text2)), list2, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -1125,7 +1156,7 @@ internal sealed class PersonaEditorController
 				_port.OpenDevHeroNpcMenu();
 				return;
 			case "search":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索 NPC", "输入 NPC 名称或 HeroId，可查询全部 NPC。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(Localize("AF_UI_Persona_SearchNpcTitle", "Search NPC"), Localize("AF_UI_Persona_SearchNpcBody", "Enter an NPC name or HeroId to search all NPCs."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_Search", "Search"), Localize("AF_UI_Persona_Back", "Back"), delegate(string input)
 				{
 					if (!_port.IsCurrent(editorGeneration)) return;
 					OpenDevSingleNpcHeroSelectionPaged(0, input);
@@ -1148,14 +1179,14 @@ internal sealed class PersonaEditorController
 				OpenDevSingleNpcHeroSelectionPaged(SingleNpcPage, SingleNpcQuery);
 				return;
 			case "pick_from_export":
-				_port.OpenFolderPickerWithCallback("单个 HeroNPC - 选择导入文件夹", isExport: false, delegate(string folderName)
+				_port.OpenFolderPickerWithCallback(Localize("AF_UI_Persona_SingleNpcImportFolder", "Single HeroNPC - choose an import folder"), isExport: false, delegate(string folderName)
 				{
 					if (!_port.IsCurrent(editorGeneration)) return;
 					OpenDevSingleNpcHeroSelectionFromExportFolder(folderName);
 				}, OpenDevSingleNpcHeroSelection);
 				return;
 			case "manual_id":
-				InformationManager.ShowTextInquiry(new TextInquiryData("手动输入 HeroId", "请输入 HeroId（例如：lord_... / wanderer_...）。\n\n说明：这里不会创建新的游戏角色，只是把导入/导出数据写入到该 HeroId 对应的存档数据里；只有当游戏里存在/将来出现同 ID 的 Hero 时，这些数据才会被使用。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(Localize("AF_UI_Persona_ManualHeroIdTitle", "Enter HeroId manually"), Localize("AF_UI_Persona_ManualHeroIdBody", "Enter a HeroId (for example: lord_... / wanderer_...).\n\nThis does not create a new character; it writes import/export data to the save data for that HeroId. The data is used only when a Hero with the same ID exists or appears later in the game."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_Confirm", "Confirm"), Localize("AF_UI_Persona_Back", "Back"), delegate(string input)
 				{
 					if (!_port.IsCurrent(editorGeneration)) return;
 					string manualHeroId = (input ?? "").Trim();
@@ -1197,7 +1228,7 @@ internal sealed class PersonaEditorController
 		string text2 = (hero.StringId ?? "").Trim();
 		if (string.IsNullOrEmpty(text2))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该NPC缺少编号，无法导入导出。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_NpcMissingId", "This NPC has no ID and cannot be imported or exported.")));
 			OpenDevSingleNpcHeroSelection();
 		}
 		else
@@ -1220,15 +1251,15 @@ internal sealed class PersonaEditorController
 		}
 		string text2 = (string.IsNullOrEmpty(OpsHeroName) ? "NPC" : OpsHeroName);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("export_persona", "导出（个性/背景，选择文件夹）", null));
-		list.Add(new InquiryElement("import_persona", "导入（个性/背景，选择文件夹）", null));
-		list.Add(new InquiryElement("export_history", "导出（压缩记忆，选择文件夹）", null));
-		list.Add(new InquiryElement("import_history", "导入（压缩记忆，选择文件夹）", null));
-		list.Add(new InquiryElement("export_debt", "导出（欠款，选择文件夹）", null));
-		list.Add(new InquiryElement("import_debt", "导入（欠款，选择文件夹）", null));
-		list.Add(new InquiryElement("change_hero", "切换NPC", null));
-		list.Add(new InquiryElement("back", "返回", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("单个 HeroNPC 导入/导出 - " + text2 + " (ID=" + text + ")", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevSingleNpcOpsSelected(selected); }, delegate
+		list.Add(new InquiryElement("export_persona", Localize("AF_UI_Persona_SingleExportPersona", "Export personality/background (choose a folder)"), null));
+		list.Add(new InquiryElement("import_persona", Localize("AF_UI_Persona_SingleImportPersona", "Import personality/background (choose a folder)"), null));
+		list.Add(new InquiryElement("export_history", Localize("AF_UI_Persona_SingleExportHistory", "Export compressed memory (choose a folder)"), null));
+		list.Add(new InquiryElement("import_history", Localize("AF_UI_Persona_SingleImportHistory", "Import compressed memory (choose a folder)"), null));
+		list.Add(new InquiryElement("export_debt", Localize("AF_UI_Persona_SingleExportDebt", "Export debt (choose a folder)"), null));
+		list.Add(new InquiryElement("import_debt", Localize("AF_UI_Persona_SingleImportDebt", "Import debt (choose a folder)"), null));
+		list.Add(new InquiryElement("change_hero", Localize("AF_UI_Persona_SwitchNpc", "Switch NPC"), null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_SingleNpcOpsTitle", "Single HeroNPC import/export - {NAME} (ID={ID})", ("NAME", text2), ("ID", text)), Localize("AF_UI_Persona_ChooseAction", "Choose an action:"), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevSingleNpcOpsSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			OpenDevSingleNpcHeroSelection();
@@ -1257,7 +1288,7 @@ internal sealed class PersonaEditorController
 			OpenDevSingleNpcHeroSelection();
 			return;
 		}
-		string text3 = "单个 HeroNPC - " + (string.IsNullOrEmpty(OpsHeroName) ? "NPC" : OpsHeroName);
+		string text3 = Localize("AF_UI_Persona_SingleNpcPrefix", "Single HeroNPC - {NAME}", ("NAME", string.IsNullOrEmpty(OpsHeroName) ? "NPC" : OpsHeroName));
 		switch (text)
 		{
 		case "back":
@@ -1267,22 +1298,22 @@ internal sealed class PersonaEditorController
 			OpenDevSingleNpcHeroSelection();
 			break;
 		case "export_persona":
-			_port.OpenFolderPicker(text3 + " - 导出（个性/背景）", isExport: true, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportPersonaSuffix", "Export personality/background"), isExport: true, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "import_persona":
-			_port.OpenFolderPicker(text3 + " - 导入（个性/背景）", isExport: false, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ImportPersonaSuffix", "Import personality/background"), isExport: false, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "export_history":
-			_port.OpenFolderPicker(text3 + " - 导出（压缩记忆）", isExport: true, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportHistorySuffix", "Export compressed memory"), isExport: true, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "import_history":
-			_port.OpenFolderPicker(text3 + " - 导入（压缩记忆）", isExport: false, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ImportHistorySuffix", "Import compressed memory"), isExport: false, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "export_debt":
-			_port.OpenFolderPicker(text3 + " - 导出（欠款）", isExport: true, ExportImportScope.Debt, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportDebtSuffix", "Export debt"), isExport: true, ExportImportScope.Debt, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "import_debt":
-			_port.OpenFolderPicker(text3 + " - 导入（欠款）", isExport: false, ExportImportScope.Debt, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ImportDebtSuffix", "Import debt"), isExport: false, ExportImportScope.Debt, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		}
 	}
@@ -1291,12 +1322,12 @@ internal sealed class PersonaEditorController
 	{
 		return (key ?? "").ToLowerInvariant() switch
 		{
-			"male_young" => "青男", 
-			"male_middle" => "中男", 
-			"male_old" => "老男", 
-			"female_young" => "青女", 
-			"female_middle" => "中女", 
-			"female_old" => "老女", 
+			"male_young" => Localize("AF_UI_Persona_VoiceMaleYoung", "Young male"),
+			"male_middle" => Localize("AF_UI_Persona_VoiceMaleMiddle", "Middle-aged male"),
+			"male_old" => Localize("AF_UI_Persona_VoiceMaleOld", "Older male"),
+			"female_young" => Localize("AF_UI_Persona_VoiceFemaleYoung", "Young female"),
+			"female_middle" => Localize("AF_UI_Persona_VoiceFemaleMiddle", "Middle-aged female"),
+			"female_old" => Localize("AF_UI_Persona_VoiceFemaleOld", "Older female"),
 			_ => key ?? "", 
 		};
 	}
@@ -1306,7 +1337,7 @@ internal sealed class PersonaEditorController
 		long editorGeneration = _port.CaptureGeneration();
 		if (!_port.IsCurrent(editorGeneration)) return;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("分组数量概览（详细ID请进分组查看）");
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceGroupOverview", "Group counts (open a group to see voice IDs)") );
 		stringBuilder.AppendLine("------------------------------");
 		int num = 0;
 		string[] allGroupKeys = VoiceMapper.AllGroupKeys;
@@ -1318,17 +1349,17 @@ internal sealed class PersonaEditorController
 		}
 		string fallbackVoice = VoiceMapper.GetFallbackVoice();
 		stringBuilder.AppendLine("------------------------------");
-		stringBuilder.AppendLine("兜底: " + (string.IsNullOrWhiteSpace(fallbackVoice) ? "未设置" : fallbackVoice));
-		stringBuilder.AppendLine($"总ID: {num}");
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceFallbackLine", "Fallback: {VOICE}", ("VOICE", string.IsNullOrWhiteSpace(fallbackVoice) ? Localize("AF_UI_Persona_Unset", "not set") : fallbackVoice)));
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceTotal", "Total IDs: {COUNT}", ("COUNT", num.ToString())));
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("add_voice", "添加声音ID到分组", null));
-		list.Add(new InquiryElement("remove_voice", "删除分组中的声音ID", null));
-		list.Add(new InquiryElement("set_fallback", "设置全局兜底声音(fallback)", null));
-		list.Add(new InquiryElement("export_voice_map", "导出映射（选文件夹）", null));
-		list.Add(new InquiryElement("import_voice_map", "导入映射（选文件夹）", null));
-		list.Add(new InquiryElement("reload", "重新加载配置文件", null));
-		list.Add(new InquiryElement("back", "返回", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("声音映射管理", stringBuilder.ToString(), list, isExitShown: true, 0, 1, "进入", "返回", selected => { if (_port.IsCurrent(editorGeneration)) OnDevVoiceMappingMenuSelected(selected); }, delegate
+		list.Add(new InquiryElement("add_voice", Localize("AF_UI_Persona_VoiceAdd", "Add a voice ID to a group"), null));
+		list.Add(new InquiryElement("remove_voice", Localize("AF_UI_Persona_VoiceRemove", "Remove a voice ID from a group"), null));
+		list.Add(new InquiryElement("set_fallback", Localize("AF_UI_Persona_VoiceFallbackTitle", "Set global fallback voice"), null));
+		list.Add(new InquiryElement("export_voice_map", Localize("AF_UI_Persona_VoiceExport", "Export mapping (choose a folder)"), null));
+		list.Add(new InquiryElement("import_voice_map", Localize("AF_UI_Persona_VoiceImport", "Import mapping (choose a folder)"), null));
+		list.Add(new InquiryElement("reload", Localize("AF_UI_Persona_VoiceReload", "Reload configuration"), null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_VoiceTitle", "Voice mapping manager"), stringBuilder.ToString(), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Enter", "Enter"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (_port.IsCurrent(editorGeneration)) OnDevVoiceMappingMenuSelected(selected); }, delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 		});
@@ -1353,21 +1384,21 @@ internal sealed class PersonaEditorController
 				OpenDevVoiceMappingSetFallback();
 				break;
 			case "export_voice_map":
-				_port.OpenExportFolderPicker("导出（VoiceMapping）- 选择文件夹", ExportImportScope.VoiceMapping, OpenDevVoiceMappingMenu);
+				_port.OpenExportFolderPicker(Localize("AF_UI_Persona_VoiceExportFolder", "Export VoiceMapping - choose a folder"), ExportImportScope.VoiceMapping, OpenDevVoiceMappingMenu);
 				break;
 			case "import_voice_map":
-				_port.OpenImportFolderPicker("导入（VoiceMapping）- 选择文件夹", ExportImportScope.VoiceMapping, OpenDevVoiceMappingMenu);
+				_port.OpenImportFolderPicker(Localize("AF_UI_Persona_VoiceImportFolder", "Import VoiceMapping - choose a folder"), ExportImportScope.VoiceMapping, OpenDevVoiceMappingMenu);
 				break;
 			case "reload":
 				VoiceMapper.ReloadConfig();
 				if (!string.IsNullOrWhiteSpace(_port.VoiceMappingStorage()))
 				{
 					VoiceMapper.ImportMappingJson(_port.VoiceMappingStorage(), overwriteExisting: true, saveToFile: false);
-					InformationManager.DisplayMessage(new InformationMessage("已从当前存档重新加载声音映射。"));
+					InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceReloaded", "Voice mapping was reloaded from the current save.")));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage("当前存档中没有声音映射数据。"));
+					InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceNoData", "The current save has no voice mapping data.")));
 				}
 				OpenDevVoiceMappingMenu();
 				break;
@@ -1379,10 +1410,10 @@ internal sealed class PersonaEditorController
 	{
 		long editorGeneration = _port.CaptureGeneration();
 		if (!_port.IsCurrent(editorGeneration)) return;
-		string titleText = (isAdd ? "添加声音ID - 选择分组" : "删除声音ID - 选择分组");
-		string descriptionText = (isAdd ? "选择分组后输入要添加的声音ID。" : "选择要删除声音ID的分组：");
+		string titleText = (isAdd ? Localize("AF_UI_Persona_VoiceAddGroup", "Add voice ID - choose a group") : Localize("AF_UI_Persona_VoiceRemoveGroup", "Remove voice ID - choose a group"));
+		string descriptionText = (isAdd ? Localize("AF_UI_Persona_VoiceAddGroupBody", "Choose a group, then enter the voice ID to add.") : Localize("AF_UI_Persona_VoiceRemoveGroupBody", "Choose the group whose voice ID you want to remove:"));
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
 		string[] allGroupKeys = VoiceMapper.AllGroupKeys;
 		foreach (string text in allGroupKeys)
 		{
@@ -1395,11 +1426,11 @@ internal sealed class PersonaEditorController
 		}
 		if (!isAdd && list.Count <= 1)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有任何声音ID可删除。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceNoRemovable", "There are no voice IDs to remove.")));
 			OpenDevVoiceMappingMenu();
 			return;
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -1437,12 +1468,12 @@ internal sealed class PersonaEditorController
 		string displayName = VoiceMapper.GetGroupDisplayName(groupKey);
 		List<string> voicesForGroup = VoiceMapper.GetVoicesForGroup(groupKey);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("分组: " + displayName);
-		stringBuilder.AppendLine($"当前数量: {voicesForGroup.Count}");
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceGroupPrefix", "Group: ") + displayName);
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCount", "Current count: {COUNT}", ("COUNT", voicesForGroup.Count.ToString())));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("请输入要添加的声音ID：");
-		stringBuilder.AppendLine("（与MCM中的TTS声音ID一致）");
-		InformationManager.ShowTextInquiry(new TextInquiryData("添加声音ID - " + displayName, stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "添加", "返回", delegate(string input)
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceAddPrompt", "Enter the voice ID to add:"));
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceMcmHint", "(Must match the TTS voice ID in MCM)"));
+		InformationManager.ShowTextInquiry(new TextInquiryData(Localize("AF_UI_Persona_VoiceAddTitle", "Add voice ID - {GROUP}", ("GROUP", displayName)), stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_Add", "Add"), Localize("AF_UI_Persona_Back", "Back"), delegate(string input)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			string text = (input ?? "").Trim();
@@ -1453,7 +1484,7 @@ internal sealed class PersonaEditorController
 			else
 			{
 				VoiceMapper.AddVoiceToGroup(groupKey, text);
-				InformationManager.DisplayMessage(new InformationMessage("已添加声音 \"" + text + "\" 到 [" + displayName + "]"));
+				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceAdded", "Added voice \"{VOICE}\" to [{GROUP}]", ("VOICE", text), ("GROUP", displayName))));
 				OpenDevVoiceMappingMenu();
 			}
 		}, delegate
@@ -1471,18 +1502,18 @@ internal sealed class PersonaEditorController
 		List<string> voicesForGroup = VoiceMapper.GetVoicesForGroup(groupKey);
 		if (voicesForGroup.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[" + displayName + "] 分组没有声音ID可删除。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceGroupEmpty", "[{GROUP}] has no voice IDs to remove.", ("GROUP", displayName))));
 			OpenDevVoiceMappingSelectGroup(isAdd: false);
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("clear_all", "⚠ 清空该分组所有声音", null));
+		list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
+		list.Add(new InquiryElement("clear_all", Localize("AF_UI_Persona_VoiceClearAll", "⚠ Clear all voices in this group"), null));
 		for (int i = 0; i < voicesForGroup.Count; i++)
 		{
 			list.Add(new InquiryElement(voicesForGroup[i], $"{i + 1}. {voicesForGroup[i]}", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除声音ID - " + displayName, $"分组: {displayName}\n当前共 {voicesForGroup.Count} 个声音ID。\n选择要删除的声音：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_VoiceRemoveTitle", "Remove voice ID - {GROUP}", ("GROUP", displayName)), Localize("AF_UI_Persona_VoiceRemoveBody", "Group: {GROUP}\nThere are {COUNT} voice IDs.\nChoose a voice to remove:", ("GROUP", displayName), ("COUNT", voicesForGroup.Count.ToString())), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Delete", "Delete"), Localize("AF_UI_Persona_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			if (selected == null || selected.Count == 0)
@@ -1503,13 +1534,13 @@ internal sealed class PersonaEditorController
 					{
 						VoiceMapper.RemoveVoiceFromGroup(groupKey, item);
 					}
-					InformationManager.DisplayMessage(new InformationMessage("已清空 [" + displayName + "] 的所有声音ID"));
+					InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceCleared", "Cleared all voice IDs in [{GROUP}]", ("GROUP", displayName))));
 					OpenDevVoiceMappingMenu();
 				}
 				else
 				{
 					VoiceMapper.RemoveVoiceFromGroup(groupKey, text);
-					InformationManager.DisplayMessage(new InformationMessage("已删除声音 \"" + text + "\" from [" + displayName + "]"));
+					InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_VoiceRemoved", "Removed voice \"{VOICE}\" from [{GROUP}]", ("VOICE", text), ("GROUP", displayName))));
 					List<string> voicesForGroup3 = VoiceMapper.GetVoicesForGroup(groupKey);
 					if (voicesForGroup3.Count > 0)
 					{
@@ -1535,16 +1566,16 @@ internal sealed class PersonaEditorController
 		if (!_port.IsCurrent(editorGeneration)) return;
 		string fallbackVoice = VoiceMapper.GetFallbackVoice();
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("全局兜底声音(fallback)：当某个分组没有配置声音ID时，使用此声音。");
-		stringBuilder.AppendLine("当前: " + (string.IsNullOrWhiteSpace(fallbackVoice) ? "（未设置，最终回退到MCM全局设置）" : fallbackVoice));
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceFallbackBody", "Global fallback voice: used when a group has no configured voice ID."));
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_CurrentPrefix", "Current: ") + (string.IsNullOrWhiteSpace(fallbackVoice) ? Localize("AF_UI_Persona_VoiceFallbackUnset", "(not set; ultimately falls back to the global MCM setting)") : fallbackVoice));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("输入新的 fallback 声音ID（留空=清除）：");
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置全局兜底声音(fallback)", stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
+		stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceFallbackHint", "Enter a new fallback voice ID (leave blank to clear):"));
+		InformationManager.ShowTextInquiry(new TextInquiryData(Localize("AF_UI_Persona_VoiceFallbackTitle", "Set global fallback voice"), stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_Save", "Save"), Localize("AF_UI_Persona_Back", "Back"), delegate(string input)
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			string text = (input ?? "").Trim();
 			VoiceMapper.SetFallbackVoice(text);
-			string information = (string.IsNullOrWhiteSpace(text) ? "fallback 已清除" : ("fallback 已设置为: " + text));
+			string information = (string.IsNullOrWhiteSpace(text) ? Localize("AF_UI_Persona_VoiceFallbackCleared", "Fallback voice cleared") : (Localize("AF_UI_Persona_VoiceFallbackSetPrefix", "Fallback voice set to: ") + text));
 			InformationManager.DisplayMessage(new InformationMessage(information));
 			OpenDevVoiceMappingMenu();
 		}, delegate
