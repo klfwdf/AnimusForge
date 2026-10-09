@@ -418,5 +418,37 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Proactive_ClanGold_Hint" text="Clan financial pressure can trigger below this treasury value; 0 ignores the treasury. Default: 15000." />
   <string id="AF_MCM_Proactive_ClanDebt" text="Clan debt threshold" />
   <string id="AF_MCM_Proactive_ClanDebt_Hint" text="Clan financial pressure can trigger above this kingdom-debt value; 0 ignores debt. Default: 5000." />
+  <string id="AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold" text="Marriage-pressure adult threshold" />
+  <string id="AF_MCM_ProactiveNpcRequestMarriageAdultClanThreshold_Hint" text="Inheritance or marriage-pressure contact can trigger when the NPC clan has no more than this many adult core members and at least one adult unmarried member. Default: 3." />
+  <string id="AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold" text="Fief loyalty threshold" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefLoyaltyThreshold_Hint" text="Governance-concern contact can trigger when NPC clan fief loyalty is at or below this value; 0 ignores loyalty. Default: 35." />
+  <string id="AF_MCM_ProactiveNpcRequestFiefSecurityThreshold" text="Fief security threshold" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefSecurityThreshold_Hint" text="Governance-concern contact can trigger when NPC clan fief security is at or below this value; 0 ignores security. Default: 35." />
+  <string id="AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold" text="Fief garrison threshold" />
+  <string id="AF_MCM_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="Governance-concern contact can trigger when an NPC clan fief garrison is at or below this value; 0 ignores garrisons. Default: 80." />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold" text="Isolation influence threshold" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationInfluenceThreshold_Hint" text="At or below this NPC clan influence, the ally count may trigger contact about a lack of allies; 0 ignores influence. Default: 40." />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans" text="Maximum friendly clans for isolation" />
+  <string id="AF_MCM_ProactiveNpcRequestIsolationMaxFriendlyClans_Hint" text="When the NPC clan has no more than this many friendly clans in the same kingdom with relations above 20, low influence or hostile relations may trigger contact about a lack of allies. Default: 1." />
+  <string id="AF_MCM_ProactiveNpcKnownMajorMultiplier" text="Known-history need multiplier" />
+  <string id="AF_MCM_ProactiveNpcKnownMajorMultiplier_Hint" text="Multiplier for need-driven contact probability when the NPC already knows major events in the player history. Default: 2.0." />
+  <string id="AF_MCM_ProactiveNpcNotorietyChanceMultiplier" text="Notoriety trigger multiplier" />
+  <string id="AF_MCM_ProactiveNpcNotorietyChanceMultiplier_Hint" text="Multiplier converting effective player notoriety into additional proactive NPC contact probability. Default for normal play: 0.35." />
+  <string id="AF_MCM_ProactiveNpcMinNeedUrgency" text="Minimum need urgency" />
+  <string id="AF_MCM_ProactiveNpcMinNeedUrgency_Hint" text="Minimum need urgency required for proactive NPC contact. Test mode treats this as 0 at runtime. Default for normal play: 60." />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueDays" text="Request-type fatigue (days)" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueDays_Hint" text="After the player receives a request of a given type, greatly reduces that type trigger chance for this many game days. 0 disables type fatigue. Default: 10 days." />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier" text="Fatigued-type probability multiplier" />
+  <string id="AF_MCM_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="Multiplies both need-driven and notoriety-driven probabilities for requests under type fatigue, and reduces that need priority among candidates. Default: 0.20." />
+  <string id="AF_MCM_ProactiveNpcRequestMountShortageWeight" text="Mount-shortage request weight" />
+  <string id="AF_MCM_ProactiveNpcRequestMountShortageWeight_Hint" text="Candidate-weight and trigger-probability multiplier for mount-shortage or horse-purchase requests in map contact and unsolicited letters. Default: 0.35; 0 retains need detection but prevents proactive initiation. Map pursuit in test mode still uses 1.00." />
+  <string id="AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays" text="Romantic interaction global cooldown (days)" />
+  <string id="AF_MCM_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Hint" text="Shared hard cooldown across map pursuit, unsolicited letters, and companion chat for romantic interactions with the opposite sex and private relations above 30. Default: 21 days." />
+  <string id="AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays" text="Proactive greeting global cooldown (days)" />
+  <string id="AF_MCM_ProactiveNpcRequestGreetingGlobalCooldownDays_Hint" text="Shared hard cooldown after an NPC with private relations above 20 pursues the player or sends an unsolicited greeting letter. Default: 42 days." />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier" text="Territorial questioning range multiplier" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="When the player is within player sight range times this multiplier of a kingdom settlement, that kingdom lords of a different culture who do not know the player history may proactively question their origins and purpose. Default: 3.0." />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays" text="Territorial questioning global cooldown (days)" />
+  <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="Shared hard cooldown after territorial questioning is successfully initiated. Default: 42 days." />
   </strings>
 </base>
