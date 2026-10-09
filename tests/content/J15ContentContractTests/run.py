@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "502A3ACCCDE0B20C4D45AA2EF2F8CF92E95D3E7CB49D22A8761CAA605AFD87D3",
-        "revision": "5c955202b",
+        "sha256": "6EBC2FF65932881C1DD8EF2CF7E5C7B6BFE8C2FABE3B23FC8BF29712BDEE0F22",
+        "revision": "7b4ebf7f8",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "A6CD77BD4602B69D9F7CDCECBB965123F4526B4B8398EA15614842AD9881361B",
-        "revision": "5c955202b",
+        "sha256": "46AFBD9B95BE26B46DCB02595AA8C2652547FD237D6522442EC75E0D1B0B9808",
+        "revision": "7b4ebf7f8",
     },
     "ModuleData/Languages/afevent_ui_strings.xml": {
         "owner": "AF.Module.UI",
