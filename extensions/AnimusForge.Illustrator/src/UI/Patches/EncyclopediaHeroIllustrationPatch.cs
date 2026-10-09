@@ -196,7 +196,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 WidthSizePolicy = SizePolicy.StretchToParent,
                 HeightSizePolicy = SizePolicy.StretchToParent,
-                Text = "【纪事插画】",
+                Text = IllustratorUiText.EncyclopediaButton,
                 Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
                 DoNotAcceptEvents = true
             };
@@ -257,7 +257,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             Hero hero = ResolveHero(vm);
             if (hero == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage("无法获取当前英雄信息。"));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.HeroUnavailable));
                 return;
             }
 

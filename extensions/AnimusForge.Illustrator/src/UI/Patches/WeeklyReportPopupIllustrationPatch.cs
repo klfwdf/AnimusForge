@@ -25,7 +25,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private string _spriteName = string.Empty;
         private bool _hasIllustration;
         private bool _isLoading;
-        private string _statusText = "正在构思本周纪事画卷...";
+        private string _statusText = IllustratorUiText.WeeklyThinking;
         private string _titleText = string.Empty;
         private string _promptText = string.Empty;
         private bool _showPrompt;
@@ -48,7 +48,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         public WeeklyReportIllustrationOverlayVM(string title, Action onRegenerate, Action onRegenerateWithPrompt)
         {
-            _titleText = title ?? "帝国纪事油画";
+            _titleText = title ?? IllustratorUiText.WeeklyDefaultTitle;
             _onRegenerate = onRegenerate;
             _onRegenerateWithPrompt = onRegenerateWithPrompt;
             _redrawText = IllustratorUiText.Redraw;
@@ -192,11 +192,11 @@ namespace AnimusForge.Illustrator.UI.Patches
             try
             {
                 Input.SetClipboardText(PromptText);
-                StatusText = "提示词已复制到剪贴板";
+                StatusText = IllustratorUiText.CardCopySuccess;
             }
             catch (Exception ex)
             {
-                StatusText = "复制失败: " + ex.Message;
+                StatusText = IllustratorUiText.CardCopyFailed(ex.Message);
             }
         }
 
@@ -335,7 +335,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
             IllustratorRuntime.DefaultImageChanged += OnDefaultImageChanged;
-            if (!JoinPendingGeneration()) BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
+            if (!JoinPendingGeneration()) BeginCachedLoad(IllustratorUiText.WeeklyDrawing);
         }
 
         private static bool AttachWorldBulletinSlot(global::AnimusForge.WorldBulletinIllustrationVM slot, string eventId, string title, string subtitleText, string bodyText, global::AnimusForge.WorldBulletinIllustrationPlan plan)
@@ -362,7 +362,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _bulletinSlot = slot;
                 _sink = slot;
                 slot.TitleText = title ?? "";
-                slot.StatusText = "正在为本期快报绘制新插画...";
+                slot.StatusText = IllustratorUiText.WeeklyDrawing;
                 slot.OnRegenerate = TriggerRegenerate;
                 slot.OnRegenerateBasedOnImage = null;
                 slot.OnRegenerateWithPrompt = () => { if (ReferenceEquals(ownerScope, _scope)) OpenRedrawPromptEditor(); };
@@ -392,12 +392,12 @@ namespace AnimusForge.Illustrator.UI.Patches
             CachedIllustrationItem item = _activeItem;
             if (item == null)
             {
-                _bulletinSlot.StatusText = "这张插画尚未存档，无法删除。";
+                _bulletinSlot.StatusText = IllustratorUiText.WeeklyDeleteUnsaved;
                 return;
             }
             if (!DiskImageCacheManager.DeleteItem(item, _scope.CampaignKey))
             {
-                _bulletinSlot.StatusText = "删除失败，请到画廊中处理。";
+                _bulletinSlot.StatusText = IllustratorUiText.WeeklyDeleteFailed;
                 return;
             }
             if (!string.IsNullOrEmpty(_activeSpriteName))
@@ -410,7 +410,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _bulletinSlot.SpriteName = string.Empty;
             _bulletinSlot.PromptText = string.Empty;
             _bulletinSlot.HasIllustration = false;
-            _bulletinSlot.StatusText = "插画已移入回收区，点击【重绘】重新绘制。";
+            _bulletinSlot.StatusText = IllustratorUiText.WeeklyDeleted;
             BulletinIllustrationPreloader.MarkDeleted(_currentEventKey);
         }
 
@@ -425,7 +425,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (!job.Ready) return;
             if (result != null)
             {
-                if (!Publish(result.Saved, result.Prompt, result.Result.ImageBytes)) _sink.StatusText = "本期配图加载失败，可点击重绘。";
+                if (!Publish(result.Saved, result.Prompt, result.Result.ImageBytes)) _sink.StatusText = IllustratorUiText.WeeklyLoadFailed;
                 return;
             }
             if (_sink.HasIllustration) return;
@@ -438,12 +438,12 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (!ReferenceEquals(viewScope, _scope) || !viewScope.IsCurrent || _bulletinSlot == null || key != _currentEventKey || load != _redrawCount) return;
                     _sink.IsLoading = false;
                     if (error != null || cached == null || !Publish(cached, cached.Prompt))
-                        _sink.StatusText = "本期配图读取失败，可点击重绘。";
+                        _sink.StatusText = IllustratorUiText.WeeklyLoadFailed;
                     else _sink.StatusText = cached.DisplayStatusText;
                 }))
             {
                 _sink.IsLoading = false;
-                _sink.StatusText = "配图读取繁忙，请稍后重开本期快报。";
+                _sink.StatusText = IllustratorUiText.WeeklyReadBusy;
             }
         }
 
@@ -482,7 +482,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 });
             if (!cacheLoadStarted)
             {
-                _sink.StatusText = autoGenerate ? "正在准备最新纪事画卷..." : idleStatus;
+                _sink.StatusText = autoGenerate ? IllustratorUiText.WeeklyThinking : idleStatus;
                 _sink.IsLoading = false;
                 if (autoGenerate) TriggerRegenerate();
             }
@@ -498,7 +498,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             try { TriggerRegenerateCore(playerRedrawPrompt); }
             catch (Exception ex)
             {
-                if (_sink != null) { _sink.IsLoading = false; _sink.StatusText = "生成准备失败：" + ex.Message; }
+                if (_sink != null) { _sink.IsLoading = false; _sink.StatusText = IllustratorUiText.WeeklyPrepareFailed(ex.Message); }
             }
         }
 
@@ -514,14 +514,14 @@ namespace AnimusForge.Illustrator.UI.Patches
                     var options = IllustratorRuntime.CaptureOptions();
                     if (_bulletinSlot != null) options = options?.WithSceneImageSize();
                     ++_redrawCount;
-                    sink.IsLoading = true; sink.StatusText = "正在基于本图重绘…";
+                    sink.IsLoading = true; sink.StatusText = IllustratorUiText.WeeklyRedrawLoading;
                     if (_bulletinSlot != null) { BulletinIllustrationPreloader.EditCurrentImage(source, prompt, options); return; }
                     CurrentImageRedraw.Start(owner, source, prompt, options, null, result => {
                         if (!ReferenceEquals(owner, _scope) || !ReferenceEquals(sink, _sink)) return;
                         if (result.Saved != null && Publish(result.Saved, result.Result.ResolvedPrompt, result.Result.ImageBytes))
-                            sink.StatusText = "重绘完成，已保存为新版本。";
-                        else { sink.IsLoading = false; sink.StatusText = "重绘失败：" + (result.Result?.ErrorMessage ?? "未能保存图片"); }
-                    }, error => { if (ReferenceEquals(owner, _scope)) { sink.IsLoading = false; sink.StatusText = "重绘失败：" + error; } });
+                            sink.StatusText = IllustratorUiText.WeeklyRedrawSuccess;
+                        else { sink.IsLoading = false; sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(result.Result?.ErrorMessage ?? IllustratorUiText.WeeklyNotSaved); }
+                    }, error => { if (ReferenceEquals(owner, _scope)) { sink.IsLoading = false; sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(error); } });
                 }, status => sink.StatusText = status,
                 editing => {
                     if (!ReferenceEquals(owner, _scope)) return;
@@ -563,7 +563,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _joinedGeneration = pending;
             ++_redrawCount; // invalidate older asynchronous cache callbacks
             _sink.IsLoading = true;
-            _sink.StatusText = "画卷正在后台生成，完成后会通知并更新画廊。";
+            _sink.StatusText = IllustratorUiText.WeeklyBackground;
             return true;
         }
 
@@ -576,7 +576,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (ReferenceEquals(update.Source, _scope)) return;
             _sink.IsLoading = false;
             if (update.Saved != null && Publish(update.Saved, update.Saved.Prompt)) _sink.StatusText = update.Saved.DisplayStatusText;
-            else _sink.StatusText = "绘制失败：" + (update.Error ?? "面板图像加载失败；可在画廊查看。");
+            else _sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(update.Error ?? IllustratorUiText.WeeklyLoadFailed);
         }
 
         internal sealed class GenerationResult
@@ -599,15 +599,15 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (JoinPendingGeneration()) return;
             _sink.IsLoading = true;
             _sink.HasIllustration = false;
-            _sink.StatusText = "正在构思本周纪事插画...";
+            _sink.StatusText = IllustratorUiText.WeeklyThinking;
             var owner = _scope;
             StartGeneration(owner, _currentContext, _currentEventKey, false, ++_redrawCount,
                 result =>
                 {
                     if (!ReferenceEquals(owner, _scope) || _sink == null) return;
                     if (result.Result?.Success == true && Publish(result.Saved, result.Prompt, result.Result.ImageBytes))
-                        _sink.StatusText = result.Saved?.DisplayStatusText ?? "本周纪事已绘制完成";
-                    else { _sink.IsLoading = false; _sink.StatusText = "绘制未成功：" + result.Result?.ErrorMessage; }
+                        _sink.StatusText = result.Saved?.DisplayStatusText ?? IllustratorUiText.WeeklyComplete;
+                    else { _sink.IsLoading = false; _sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(result.Result?.ErrorMessage ?? IllustratorUiText.WeeklyNotSaved); }
                 }, error => { if (ReferenceEquals(owner, _scope) && _sink != null) { _sink.IsLoading = false; _sink.StatusText = error; } },
                 status => { if (ReferenceEquals(owner, _scope) && _sink != null) _sink.StatusText = status; }, playerRedrawPrompt);
         }
@@ -684,7 +684,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke(direction.StatusText + "，正在绘制纪事画卷..."); });
+                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke(direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing); });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
@@ -696,7 +696,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, campaignKey);
                 }
                 return new GenerationResult { Result = result, Saved = saved, Prompt = effectivePrompt };
-            }, complete, fail, result => result.Saved, result => result.Result?.ErrorMessage ?? "未能保存图像");
+            }, complete, fail, result => result.Saved, result => result.Result?.ErrorMessage ?? IllustratorUiText.WeeklyNotSaved);
         }
 
         /// <summary>周报纪事画的随机构图变体——同一事件每次生成应有不同取景。</summary>
@@ -718,7 +718,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (_scope?.IsCurrent != true || _sink == null || _sink.IsLoading || image.Category != "weekly_report" ||
                 image.CampaignKey != _scope.CampaignKey || image.SubjectKey != _currentEventKey) return;
             ++_redrawCount;
-            if (Publish(image, image.Prompt)) _sink.StatusText = "已显示新设置的默认画卷。";
+            if (Publish(image, image.Prompt)) _sink.StatusText = IllustratorUiText.WeeklyDefaultChanged;
         }
 
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)

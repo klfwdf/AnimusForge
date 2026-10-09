@@ -197,8 +197,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 popup._screenshotMission = mission;
                 popup._joinedGeneration = generation;
                 popup._joinedSubjectKey = subjectKey;
-                popup._dataSource.TitleText = "场景画卷";
-                popup._dataSource.SetLoading(status + " 可关闭面板，完成后自动保存到画廊。");
+                popup._dataSource.TitleText = IllustratorUiText.Gallery;
+                popup._dataSource.SetLoading(status + " " + IllustratorUiText.CardAutoSaveHint);
                 screen.AddLayer(popup._layer);
                 _activeInstance = popup;
             }
@@ -279,7 +279,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
             if (update.Saved != null && PublishImage(update.Saved))
                 _dataSource.SetReady(update.Saved.DisplayStatusText);
-            else _dataSource.SetReady("绘制失败：" + (update.Error ?? "面板图像加载失败；可在画廊查看。"));
+            else _dataSource.SetReady(IllustratorUiText.CardPrepareFailed(update.Error ?? IllustratorUiText.WeeklyLoadFailed));
         }
 
         private static bool StartCachedImageLoad(IllustrationCardPopup popup, string key, string campaignKey, string category, Action<CachedIllustrationItem, Exception> completed)
@@ -335,7 +335,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 });
 
                 string heroName = hero.Name != null ? hero.Name.ToString() : "英雄";
-                popup._dataSource.TitleText = $"【纪事肖像 · {heroName}】";
+                popup._dataSource.TitleText = IllustratorUiText.PortraitTitle(heroName);
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
 
@@ -463,7 +463,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         ? convContext.InterlocutorCharacter.Name.ToString()
                         : "对方");
 
-                popup._dataSource.TitleText = useFullscreen ? "【场景插画】" : $"【会晤插画 · 与 {partnerName}】";
+                popup._dataSource.TitleText = useFullscreen ? IllustratorUiText.SceneTitle : IllustratorUiText.ConversationTitle(partnerName);
                 if (popup._backdropLayer != null) topScreen.AddLayer(popup._backdropLayer);
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
@@ -606,7 +606,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string detailedPrompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = direction.StatusText + "，正在绘制画卷..."; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefsList;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
@@ -624,7 +624,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
-                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? "纪事肖像绘制完成");
+                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? IllustratorUiText.PortraitComplete);
                 }
                 else
                 {
@@ -771,8 +771,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                             SetSceneProbeFailure("未能显示导出的预览");
                             return;
                         }
-                        _dataSource.TitleText = "【独立场景 · 全景试采】";
-                        _dataSource.SetReady("全景试采完成：仅预览，未调用模型");
+                        _dataSource.TitleText = IllustratorUiText.SceneProbeTitle;
+                        _dataSource.SetReady(IllustratorUiText.SceneProbeComplete);
                     }
                     catch (Exception ex) { SetSceneProbeFailure(ex.Message); }
                 }, SetSceneProbeFailure);
@@ -907,7 +907,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         ? (!sceneSource.RequiresMissionPanorama ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;
                     scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
                         promptPlan.DirectorOnlyFacts + sceneDirectorNote, promptPlan.PlayerRedrawPrompt);
-                    sceneStatus = sceneCapture.StatusText + "，正在整理人物参考...";
+                    sceneStatus = sceneCapture.StatusText + " · " + IllustratorUiText.PortraitPreparing;
                 }
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus; });
 
@@ -981,7 +981,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string detailedPrompt = direction.Prompt;
                 if (options?.EnableReferenceImageForGeneration != false)
                     IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture?.References ?? session?.SceneReferences, direction, token);
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus + "；" + direction.StatusText + "，正在绘制画卷..."; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus + " · " + direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
@@ -1007,7 +1007,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         _autoReplyArmed = true;
                         ConversationIllustrationPatch.LogAutoRedraw("armed popup=" + _instanceId);
                     }
-                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? "会晤插画绘制完成");
+                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? IllustratorUiText.ConversationComplete);
                 }
                 else
                 {

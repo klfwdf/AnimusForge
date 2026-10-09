@@ -97,5 +97,88 @@
     <string id="AF_ILL_UI_SET_DEFAULT" text="设为默认" />
     <string id="AF_ILL_UI_DELETE" text="删除" />
     <string id="AF_ILL_UI_OPEN_FOLDER" text="打开本地图片目录" />
+    <string id="AF_ILL_UI_GALLERY_WELCOME" text="欢迎查阅卡拉迪亚纪事画廊。" />
+    <string id="AF_ILL_UI_GALLERY_READING" text="正在读取画廊…" />
+    <string id="AF_ILL_UI_GALLERY_BUSY" text="画廊后台操作繁忙，请稍后刷新。" />
+    <string id="AF_ILL_UI_GALLERY_LOADING" text="正在载入画卷…" />
+    <string id="AF_ILL_UI_GALLERY_TEXTURE_FAILED" text="图片纹理加载失败，请刷新画廊。" />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_ALL" text="暂无收录画卷，将在快报生成时自动绘制。" />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_FAVORITES" text="暂无收藏画卷，可在“全部”中选中画卷后点击“收藏”。" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE" text="收藏" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE" text="取消收藏" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_FAILED" text="收藏失败" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE_FAILED" text="取消收藏失败" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_ADDED" text="已收藏：" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_REMOVED" text="已取消收藏：" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_ALL" text="共收录 {COUNT} 幅历史画卷" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_FAVORITES" text="共收藏 {COUNT} 幅画卷" />
+    <string id="AF_ILL_UI_GALLERY_ERROR" text="画廊操作失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_LOAD_ERROR" text="画卷载入失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITED" text="已收藏：{TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITED" text="已取消收藏：{TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_TITLE" text="转为 RP 物品" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_HINT" text="确认画卷介绍后加入背包。向 NPC 展示时会读取这段介绍；可在此修正画面内容。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_CANCELLED" text="已取消转换，未添加物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_UNAVAILABLE" text="无法打开画卷介绍编辑框。" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_LOADING" text="正在重新读取本地图并设置默认…" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_FAILED" text="设为默认失败。" />
+    <string id="AF_ILL_UI_GALLERY_DELETE_FAILED" text="删除失败" />
+    <string id="AF_ILL_UI_GALLERY_FOLDER_FAILED" text="打开目录失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_READY" text="就绪" />
+    <string id="AF_ILL_UI_CARD_COPY_SUCCESS" text="提示词已复制到剪贴板" />
+    <string id="AF_ILL_UI_CARD_COPY_FAILED" text="复制失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_PREPARE_FAILED" text="生成准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_PROBE_FAILED" text="试采失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_REDRAW_FAILED" text="重绘准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE_HINT" text="描述对当前图片的修改要求；留空不会开始重绘。" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT_HINT" text="填写本次重绘的画面要求；留空不会开始生成。" />
+    <string id="AF_ILL_UI_REDRAW_REQUIRED" text="请填写本次重绘提示词，未开始生成。" />
+    <string id="AF_ILL_UI_SAVE" text="保存" />
+    <string id="AF_ILL_UI_CANCEL" text="取消" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="帝国纪事油画" />
+    <string id="AF_ILL_UI_WEEKLY_THINKING" text="正在构思本周纪事画卷…" />
+    <string id="AF_ILL_UI_WEEKLY_DRAWING" text="正在为本期快报绘制新插画…" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="这张插画尚未存档，无法删除。" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="删除失败，请到画廊中处理。" />
+    <string id="AF_ILL_UI_WEEKLY_DELETED" text="插画已移入回收区，点击“重绘”重新绘制。" />
+    <string id="AF_ILL_UI_WEEKLY_LOAD_FAILED" text="本期配图加载失败，可点击重绘。" />
+    <string id="AF_ILL_UI_WEEKLY_READ_BUSY" text="配图读取繁忙，请稍后重开本期快报。" />
+    <string id="AF_ILL_UI_WEEKLY_PREPARE_FAILED" text="生成准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_LOADING" text="正在基于本图重绘…" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_SUCCESS" text="重绘完成，已保存为新版本。" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_FAILED" text="重绘失败：{ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_BACKGROUND" text="画卷正在后台生成，完成后会通知并更新画廊。" />
+    <string id="AF_ILL_UI_WEEKLY_COMPLETE" text="本周纪事已绘制完成" />
+    <string id="AF_ILL_UI_WEEKLY_NOT_SAVED" text="绘制未成功，未能保存图像。" />
+    <string id="AF_ILL_UI_ENCYCLOPEDIA_BUTTON" text="【纪事插画】" />
+    <string id="AF_ILL_UI_HERO_UNAVAILABLE" text="无法获取当前英雄信息。" />
+    <string id="AF_ILL_UI_API_TEST_PREFIX" text="生图 API 测试" />
+    <string id="AF_ILL_UI_API_TEST_CANCELING" text="正在取消测试…" />
+    <string id="AF_ILL_UI_API_TEST_ENABLE" text="请先开启生图总开关。" />
+    <string id="AF_ILL_UI_API_TEST_ENDPOINT" text="请先填写有效的 HTTP/HTTPS 生图 API 地址。" />
+    <string id="AF_ILL_UI_API_TEST_CANCELLED" text="测试已取消。" />
+    <string id="AF_ILL_UI_API_TEST_BUSY" text="生图任务正在忙，请稍后重试。" />
+    <string id="AF_ILL_UI_API_TEST_STARTED" text="开始测试，使用当前配置请求一张图片；再次点击可取消。" />
+    <string id="AF_ILL_UI_API_TEST_MODEL" text="请先填写生图模型名称。" />
+    <string id="AF_ILL_UI_API_TEST_CANVAS" text="API测试用空白画布，请在画布上绘制一只苹果。" />
+    <string id="AF_ILL_UI_API_TEST_SUCCESS" text="测试成功（{SECONDS}秒），图片已保存至模组 Cache/Illustrator/ApiTest/last-result.png。" />
+    <string id="AF_ILL_UI_API_TEST_FAILURE" text="{CHANNEL} 测试失败（{SECONDS}秒）：{ERROR}" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_EDIT" text="Player2 /image/edit" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_GENERATE" text="Player2 /image/generate" />
+    <string id="AF_ILL_UI_API_TEST_MODE_IMAGE" text="生图接口" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_CHANGED" text="已显示新设置的默认画卷。" />
+    <string id="AF_ILL_UI_CARD_AUTOSAVE_HINT" text="可关闭面板，完成后自动保存到画廊。" />
+    <string id="AF_ILL_UI_SCENE_TITLE" text="场景画卷" />
+    <string id="AF_ILL_UI_SCENE_PROBE_TITLE" text="【独立场景 · 全景试采】" />
+    <string id="AF_ILL_UI_SCENE_PROBE_COMPLETE" text="全景试采完成：仅预览，未调用模型" />
+    <string id="AF_ILL_UI_PORTRAIT_PREPARING" text="正在整理人物参考…" />
+    <string id="AF_ILL_UI_PORTRAIT_COMPLETE" text="纪事肖像绘制完成" />
+    <string id="AF_ILL_UI_CONVERSATION_COMPLETE" text="会晤插画绘制完成" />
+    <string id="AF_ILL_UI_PORTRAIT_TITLE" text="【纪事肖像 · {HERO}】" />
+    <string id="AF_ILL_UI_CONVERSATION_TITLE" text="【会晤插画 · 与 {HERO}】" />
+    <string id="AF_ILL_UI_GALLERY_TITLE_MARKER" text="{TITLE}{DEFAULT}{FAVORITE}" />
+    <string id="AF_ILL_UI_GALLERY_DELETED" text="已删除：{TITLE}（文件已移入回收区）" />
+    <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text="【默认】" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text="【收藏】" />
   </strings>
 </base>
