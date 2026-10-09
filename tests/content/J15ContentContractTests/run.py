@@ -626,11 +626,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/illustrator_strings.xml": {
         "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/illustrator_strings.xml",
-        "sha256": "3F66C7D475116DB89525A5F7E1D2BB6309F3069FE4CF268C2E242354AFE8AAD0", "revision": "d41cce6ab",
+        "sha256": "7178F913A5CE46D27A967D627DDF54742EF2052EA5ACD892385A9B665B9E6331", "revision": "6c2c03e63",
     },
     "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml": {
         "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
-        "sha256": "4A61B9E1714CCB0A6A0708374B4E7BDED93783224E2690693ACAF5263DA12893", "revision": "d41cce6ab",
+        "sha256": "DEFABD2C6A49890F905221D3DE8D582E5A7DF73CE1AA8927709A207DF81858D4", "revision": "6c2c03e63",
     },
     "ModuleData/Languages/coup_strings.xml": {
         "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
@@ -694,11 +694,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/afworldmap_strings.xml": {
         "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/afworldmap_strings.xml",
-        "sha256": "0F0F19F34DE03B7CD650C56604676765FD04EDD3C017A4A2DE6ED27C1361CB8A", "revision": "6bacfc432",
+        "sha256": "AA75A4D27159A7F03870DD4A157A6E7EB27505A6698E9148795DF667A58CA218", "revision": "e185e3b7a",
     },
     "ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml": {
         "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml",
-        "sha256": "6936722E7194D532564ABD59D1423D3C8540D8F20428E7D083C9C5CB55FD313B", "revision": "6bacfc432",
+        "sha256": "860A93985B9129F554088869C8C06F72A7722EA72BB29E85527ED45CD00D44E3", "revision": "e185e3b7a",
     },
     "ModuleData/Languages/afdip_ui_strings.xml": {
         "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
