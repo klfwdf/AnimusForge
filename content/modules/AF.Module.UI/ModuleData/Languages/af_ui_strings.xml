@@ -240,4 +240,14 @@
   <string id="AF_UI_RpForge_NameRequired" text="Enter an item name first." />
   <string id="AF_UI_RpForge_MinInvestment" text="At least 1 denar is required to craft an item." />
   <string id="AF_UI_RpForge_InsufficientFunds" text="The investment cannot exceed the player's current denars." />
+  <string id="AF_UI_Terminal_Title" text="AnimusForge Terminal" />
+  <string id="AF_UI_Terminal_Subtitle" text="Choose a tool or adjust a mechanism setting. Search, paginate, then press ESC or Close to exit." />
+  <string id="AF_UI_Terminal_All" text="All" />
+  <string id="AF_UI_Terminal_War" text="War" />
+  <string id="AF_UI_Terminal_Diplomacy" text="Diplomacy and kingdoms" />
+  <string id="AF_UI_Terminal_Prompt" text="Prompts and rules" />
+  <string id="AF_UI_Terminal_Ai" text="AI core" />
+  <string id="AF_UI_Terminal_Duel" text="Duels and parties" />
+  <string id="AF_UI_Terminal_Scene" text="Scene interaction" />
+  <string id="AF_UI_Terminal_Characters" text="Characters and companions" />
 </strings>

@@ -240,4 +240,14 @@
   <string id="AF_UI_RpForge_NameRequired" text="请先填写物品名称。" />
   <string id="AF_UI_RpForge_MinInvestment" text="制造物品至少需要投入 1 第纳尔。" />
   <string id="AF_UI_RpForge_InsufficientFunds" text="投入金额不能超过玩家当前持有的第纳尔。" />
+  <string id="AF_UI_Terminal_Title" text="AnimusForge 终端" />
+  <string id="AF_UI_Terminal_Subtitle" text="选择工具或调节机制参数；可搜索、分页。按 ESC 或关闭退出。" />
+  <string id="AF_UI_Terminal_All" text="全部" />
+  <string id="AF_UI_Terminal_War" text="战争" />
+  <string id="AF_UI_Terminal_Diplomacy" text="外交与国家" />
+  <string id="AF_UI_Terminal_Prompt" text="提示词与规则" />
+  <string id="AF_UI_Terminal_Ai" text="AI核心" />
+  <string id="AF_UI_Terminal_Duel" text="决斗与部队" />
+  <string id="AF_UI_Terminal_Scene" text="场景互动" />
+  <string id="AF_UI_Terminal_Characters" text="角色与同伴" />
 </strings>
