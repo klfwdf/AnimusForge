@@ -2835,6 +2835,11 @@ Choose how to proceed:" />
   <string id="AF_WEEKLY_FullGenerationFailed" text="Full weekly-report generation failed: {REASON}" />
   <string id="AF_WEEKLY_UnparsableFullResponse" text="The full weekly-report response could not be parsed." />
   <string id="AF_WEEKLY_FullGenerated" text="The full weekly report has been generated." />
+  <string id="AF_WEEKLY_GenerationPaused" text="{LABEL} generation paused: {FAILURES} weekly report target(s) failed." />
+  <string id="AF_WEEKLY_GenerationCompleted" text="{LABEL} generation completed: success {SUCCESS}, failed {FAILURES}." />
+  <string id="AF_WEEKLY_AutoWeeklyReportLabel" text="{DATE} auto weekly report" />
+  <string id="AF_WEEKLY_TargetChangedDuringRequest" text="Weekly-report target or source materials changed during request; stale response skipped: {ID}" />
+  <string id="AF_WEEKLY_TargetChangedDuringCommit" text="Weekly-report target or source materials changed during commit; stale response skipped: {ID}" />
   </strings>
 </base>
 

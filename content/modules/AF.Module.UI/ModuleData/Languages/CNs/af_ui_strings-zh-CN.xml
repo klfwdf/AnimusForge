@@ -2866,6 +2866,11 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_WEEKLY_FullGenerationFailed" text="完整周报生成失败：{REASON}" />
   <string id="AF_WEEKLY_UnparsableFullResponse" text="完整周报返回内容无法解析。" />
   <string id="AF_WEEKLY_FullGenerated" text="完整周报已生成。" />
+  <string id="AF_WEEKLY_GenerationPaused" text="{LABEL}生成已暂停：{FAILURES} 条周报目标失败。" />
+  <string id="AF_WEEKLY_GenerationCompleted" text="{LABEL}生成完成：成功 {SUCCESS} 条，失败 {FAILURES} 条。" />
+  <string id="AF_WEEKLY_AutoWeeklyReportLabel" text="{DATE}自动周报" />
+  <string id="AF_WEEKLY_TargetChangedDuringRequest" text="周报目标或同周源素材在请求期间已变更，旧回包未覆盖：{ID}" />
+  <string id="AF_WEEKLY_TargetChangedDuringCommit" text="周报目标或同周源素材在提交期间已变更，旧回包未覆盖：{ID}" />
   </strings>
 </base>
 
