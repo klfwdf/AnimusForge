@@ -1585,59 +1585,59 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays { get; set; } = 42;
 
-	[SettingPropertyBool("启用 NPC 主动来信", Order = 0, RequireRestart = false, HintText = "允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。")]
+	[SettingPropertyBool("{=AF_MCM_Letter_Enable}Enable NPC-initiated letters", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Letter_Enable_Hint}Allows NPCs who know the player and have sufficient bond to send a real courier.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public bool EnableNpcInitiatedLetters { get; set; } = true;
 
-	[SettingPropertyBool("主动来信测试模式", Order = 1, RequireRestart = false, HintText = "将触发概率提高到 100%，并取消主动来信冷却；仍要求 NPC 认识玩家、位置有效且动机真实。")]
+	[SettingPropertyBool("{=AF_MCM_Letter_Test}Letter test mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Letter_Test_Hint}Raises chance to 100% and removes letter cooldowns; NPC knowledge, valid location, and a real motive are still required.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public bool NpcInitiatedLetterTestMode { get; set; } = false;
 
-	[SettingPropertyInteger("最低亲密综合分", 0, 100, "0", Order = 2, RequireRestart = false, HintText = "私人关系与写信用信任值平均后的最低候选分。默认 10。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_Bond}Minimum bond score", 0, 100, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Letter_Bond_Hint}Minimum candidate score after averaging private relations and letter trust. Default: 10.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterMinBondScore { get; set; } = 10;
 
-	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。")]
+	[SettingPropertyInteger("{=AF_MCM_Proactive_Interval}Scan interval (hours)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Letter_Interval_Hint}How often to scan unsolicited-letter candidates in game hours. Default: 24.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterScanIntervalHours { get; set; } = 24;
 
-	[SettingPropertyFloatingInteger("写信概率倍率", 0f, 2f, "0.00", Order = 4, RequireRestart = false, HintText = "单次扫描概率=亲密综合分乘以该倍率。默认 0.25，即 100 分为 25%。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_Chance}Letter chance multiplier", 0f, 2f, "0.00", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Letter_Chance_Hint}Per-scan chance equals bond score multiplied by this value. Default 0.25, or 25% at score 100.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public float NpcInitiatedLetterChanceMultiplier { get; set; } = 0.25f;
 
-	[SettingPropertyInteger("全局冷却(天)", 0, 60, "0", Order = 5, RequireRestart = false, HintText = "任意 NPC 主动发信后，多少游戏日内不再启动下一封主动来信。默认 5 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_GlobalCooldown}Global cooldown (days)", 0, 60, "0", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Letter_GlobalCooldown_Hint}After any NPC sends a letter, prevents a new unsolicited letter for this many game days. Default: 5.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterGlobalCooldownDays { get; set; } = 5;
 
-	[SettingPropertyInteger("低分 NPC 冷却(天)", 1, 120, "0", Order = 6, RequireRestart = false, HintText = "最低综合分 NPC 的发送者冷却。默认 45 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_LowCooldown}Low-score NPC cooldown (days)", 1, 120, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Letter_LowCooldown_Hint}Sender cooldown for NPCs with the minimum bond score. Default: 45 days.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterLowScoreCooldownDays { get; set; } = 45;
 
-	[SettingPropertyInteger("高分 NPC 冷却(天)", 1, 60, "0", Order = 7, RequireRestart = false, HintText = "100 综合分 NPC 的发送者冷却。默认 14 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_HighCooldown}High-score NPC cooldown (days)", 1, 60, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Letter_HighCooldown_Hint}Sender cooldown for NPCs with a score of 100. Default: 14 days.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterHighScoreCooldownDays { get; set; } = 14;
 
-	[SettingPropertyInteger("最近交流静默期(天)", 0, 30, "0", Order = 8, RequireRestart = false, HintText = "任意渠道刚与该 NPC 交流后，至少等待多少游戏日再允许主动来信。默认 3 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_Quiet}Recent-contact quiet period (days)", 0, 30, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Letter_Quiet_Hint}After any channel talks with an NPC, wait at least this many game days before allowing an unsolicited letter. Default: 3.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterQuietDays { get; set; } = 3;
 
-	[SettingPropertyInteger("公共信任贡献上限", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "公共信任对写信用信任值的正负贡献上限。默认 ±20。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_TrustCap}Public-trust contribution cap", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Letter_TrustCap_Hint}Cap on positive or negative public-trust contribution to letter trust. Default: ±20.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterPublicTrustCap { get; set; } = 20;
 
-	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 10, RequireRestart = false, HintText = "同一 NPC 重复使用同类写信动机时降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_Fatigue}Motive fatigue (days)", 0, 120, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Letter_Fatigue_Hint}Duration of reduced weight when the same NPC repeats a letter motive. Default: 30 days.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterMotiveFatigueDays { get; set; } = 30;
 
-	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 11, RequireRestart = false, HintText = "处于疲劳期的问候、近况、事件、情感、请求或外交动机权重倍率。默认 0.25。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_FatigueMultiplier}Fatigued-motive weight multiplier", 0f, 1f, "0.00", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Letter_FatigueMultiplier_Hint}Weight multiplier for greeting, status, event, emotional, request, or diplomatic motives during fatigue. Default: 0.25.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public float NpcInitiatedLetterMotiveFatigueMultiplier { get; set; } = 0.25f;
 
-	[SettingPropertyInteger("主动来信目标字数", 80, 1000, "0", Order = 12, RequireRestart = false, HintText = "NPC 主动来信正文的目标字数。默认 220 字。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_TargetChars}Letter target characters", 80, 1000, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Letter_TargetChars_Hint}Target body length for an unsolicited NPC letter. Default: 220 characters.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public int NpcInitiatedLetterTargetChars { get; set; } = 220;
 
-	[SettingPropertyBool("写入主动来信调试日志", Order = 13, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。")]
+	[SettingPropertyBool("{=AF_MCM_Letter_Debug}Write unsolicited-letter debug log", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Letter_Debug_Hint}Logs candidate scores, chance, motives, cooldowns, and skip reasons to Mod_Logic.txt.")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
 	public bool NpcInitiatedLetterDebugLog { get; set; } = false;
 
@@ -1653,7 +1653,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public int CompanionProactiveChatScanIntervalHours { get; set; } = 24;
 
-	[SettingPropertyInteger("全局冷却(天)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_GlobalCooldown}Global cooldown (days)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。")]
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public int CompanionProactiveChatGlobalCooldownDays { get; set; } = 21;
 
@@ -1673,11 +1673,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public float CompanionProactiveChatChanceMultiplier { get; set; } = 1f;
 
-	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyInteger("{=AF_MCM_Letter_Fatigue}Motive fatigue (days)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。")]
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public int CompanionProactiveChatMotiveFatigueDays { get; set; } = 30;
 
-	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "处于疲劳期的动机候选权重倍率。默认 0.25。")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Letter_FatigueMultiplier}Fatigued-motive weight multiplier", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "处于疲劳期的动机候选权重倍率。默认 0.25。")]
 	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
 	public float CompanionProactiveChatMotiveFatigueMultiplier { get; set; } = 0.25f;
 

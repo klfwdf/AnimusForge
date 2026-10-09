@@ -450,5 +450,32 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="When the player is within player sight range times this multiplier of a kingdom settlement, that kingdom lords of a different culture who do not know the player history may proactively question their origins and purpose. Default: 3.0." />
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays" text="Territorial questioning global cooldown (days)" />
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="Shared hard cooldown after territorial questioning is successfully initiated. Default: 42 days." />
+  <string id="AF_MCM_Letter_Enable" text="Enable NPC-initiated letters" />
+  <string id="AF_MCM_Letter_Enable_Hint" text="Allows NPCs who know the player and have sufficient bond to send a real courier." />
+  <string id="AF_MCM_Letter_Test" text="Letter test mode" />
+  <string id="AF_MCM_Letter_Test_Hint" text="Raises chance to 100% and removes letter cooldowns; NPC knowledge, valid location, and a real motive are still required." />
+  <string id="AF_MCM_Letter_Bond" text="Minimum bond score" />
+  <string id="AF_MCM_Letter_Bond_Hint" text="Minimum candidate score after averaging private relations and letter trust. Default: 10." />
+  <string id="AF_MCM_Letter_Interval_Hint" text="How often to scan unsolicited-letter candidates in game hours. Default: 24." />
+  <string id="AF_MCM_Letter_Chance" text="Letter chance multiplier" />
+  <string id="AF_MCM_Letter_Chance_Hint" text="Per-scan chance equals bond score multiplied by this value. Default 0.25, or 25% at score 100." />
+  <string id="AF_MCM_Letter_GlobalCooldown" text="Global cooldown (days)" />
+  <string id="AF_MCM_Letter_GlobalCooldown_Hint" text="After any NPC sends a letter, prevents a new unsolicited letter for this many game days. Default: 5." />
+  <string id="AF_MCM_Letter_LowCooldown" text="Low-score NPC cooldown (days)" />
+  <string id="AF_MCM_Letter_LowCooldown_Hint" text="Sender cooldown for NPCs with the minimum bond score. Default: 45 days." />
+  <string id="AF_MCM_Letter_HighCooldown" text="High-score NPC cooldown (days)" />
+  <string id="AF_MCM_Letter_HighCooldown_Hint" text="Sender cooldown for NPCs with a score of 100. Default: 14 days." />
+  <string id="AF_MCM_Letter_Quiet" text="Recent-contact quiet period (days)" />
+  <string id="AF_MCM_Letter_Quiet_Hint" text="After any channel talks with an NPC, wait at least this many game days before allowing an unsolicited letter. Default: 3." />
+  <string id="AF_MCM_Letter_TrustCap" text="Public-trust contribution cap" />
+  <string id="AF_MCM_Letter_TrustCap_Hint" text="Cap on positive or negative public-trust contribution to letter trust. Default: ±20." />
+  <string id="AF_MCM_Letter_Fatigue" text="Motive fatigue (days)" />
+  <string id="AF_MCM_Letter_Fatigue_Hint" text="Duration of reduced weight when the same NPC repeats a letter motive. Default: 30 days." />
+  <string id="AF_MCM_Letter_FatigueMultiplier" text="Fatigued-motive weight multiplier" />
+  <string id="AF_MCM_Letter_FatigueMultiplier_Hint" text="Weight multiplier for greeting, status, event, emotional, request, or diplomatic motives during fatigue. Default: 0.25." />
+  <string id="AF_MCM_Letter_TargetChars" text="Letter target characters" />
+  <string id="AF_MCM_Letter_TargetChars_Hint" text="Target body length for an unsolicited NPC letter. Default: 220 characters." />
+  <string id="AF_MCM_Letter_Debug" text="Write unsolicited-letter debug log" />
+  <string id="AF_MCM_Letter_Debug_Hint" text="Logs candidate scores, chance, motives, cooldowns, and skip reasons to Mod_Logic.txt." />
   </strings>
 </base>

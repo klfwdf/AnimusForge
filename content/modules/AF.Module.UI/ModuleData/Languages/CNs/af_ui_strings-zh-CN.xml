@@ -448,5 +448,32 @@
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。" />
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays" text="领地盘问全局冷却(天)" />
   <string id="AF_MCM_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="领地盘问成功发起后共享的硬冷却。默认 42 天。" />
+  <string id="AF_MCM_Letter_Enable" text="启用 NPC 主动来信" />
+  <string id="AF_MCM_Letter_Enable_Hint" text="允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。" />
+  <string id="AF_MCM_Letter_Test" text="主动来信测试模式" />
+  <string id="AF_MCM_Letter_Test_Hint" text="将触发概率提高到 100%，并取消主动来信冷却；仍要求 NPC 认识玩家、位置有效且动机真实。" />
+  <string id="AF_MCM_Letter_Bond" text="最低亲密综合分" />
+  <string id="AF_MCM_Letter_Bond_Hint" text="私人关系与写信用信任值平均后的最低候选分。默认 10。" />
+  <string id="AF_MCM_Letter_Interval_Hint" text="每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。" />
+  <string id="AF_MCM_Letter_Chance" text="写信概率倍率" />
+  <string id="AF_MCM_Letter_Chance_Hint" text="单次扫描概率=亲密综合分乘以该倍率。默认 0.25，即 100 分为 25%。" />
+  <string id="AF_MCM_Letter_GlobalCooldown" text="全局冷却(天)" />
+  <string id="AF_MCM_Letter_GlobalCooldown_Hint" text="任意 NPC 主动发信后，多少游戏日内不再启动下一封主动来信。默认 5 天。" />
+  <string id="AF_MCM_Letter_LowCooldown" text="低分 NPC 冷却(天)" />
+  <string id="AF_MCM_Letter_LowCooldown_Hint" text="最低综合分 NPC 的发送者冷却。默认 45 天。" />
+  <string id="AF_MCM_Letter_HighCooldown" text="高分 NPC 冷却(天)" />
+  <string id="AF_MCM_Letter_HighCooldown_Hint" text="100 综合分 NPC 的发送者冷却。默认 14 天。" />
+  <string id="AF_MCM_Letter_Quiet" text="最近交流静默期(天)" />
+  <string id="AF_MCM_Letter_Quiet_Hint" text="任意渠道刚与该 NPC 交流后，至少等待多少游戏日再允许主动来信。默认 3 天。" />
+  <string id="AF_MCM_Letter_TrustCap" text="公共信任贡献上限" />
+  <string id="AF_MCM_Letter_TrustCap_Hint" text="公共信任对写信用信任值的正负贡献上限。默认 ±20。" />
+  <string id="AF_MCM_Letter_Fatigue" text="动机疲劳(天)" />
+  <string id="AF_MCM_Letter_Fatigue_Hint" text="同一 NPC 重复使用同类写信动机时降低权重的持续时间。默认 30 天。" />
+  <string id="AF_MCM_Letter_FatigueMultiplier" text="疲劳动机权重倍率" />
+  <string id="AF_MCM_Letter_FatigueMultiplier_Hint" text="处于疲劳期的问候、近况、事件、情感、请求或外交动机权重倍率。默认 0.25。" />
+  <string id="AF_MCM_Letter_TargetChars" text="主动来信目标字数" />
+  <string id="AF_MCM_Letter_TargetChars_Hint" text="NPC 主动来信正文的目标字数。默认 220 字。" />
+  <string id="AF_MCM_Letter_Debug" text="写入主动来信调试日志" />
+  <string id="AF_MCM_Letter_Debug_Hint" text="在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。" />
   </strings>
 </base>
