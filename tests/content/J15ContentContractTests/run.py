@@ -580,14 +580,14 @@ COMMITTED_CONTENT_ADDITIONS = {
     "ModuleData/Languages/af_ui_strings.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
-        "sha256": "5D53B9F25AAC8BDAB28F23881104F9A2A7E5A0FF65B8A643A218DFDD70BF6600",
-        "revision": "3683ebfc8",
+        "sha256": "59B41C23582861CCB0451F40ED445A5167E650BDEE77AF5984763F629EA82A72",
+        "revision": "81a7ae767",
     },
     "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
         "owner": "AF.Module.UI",
         "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
-        "sha256": "CD987E94C434F8CC2F2E01641C3E97AB06AF6E067AAF4B08C843D5E925DFD26F",
-        "revision": "3683ebfc8",
+        "sha256": "2B30F70A50DAD0ED6F4ECCE5EA89AE82DBA9B692602D71DF56A84B76046B89A1",
+        "revision": "81a7ae767",
     },
     "GUI/Prefabs/MissionPhotoOverlay.xml": {
         "owner": "AnimusForge.Illustrator",
