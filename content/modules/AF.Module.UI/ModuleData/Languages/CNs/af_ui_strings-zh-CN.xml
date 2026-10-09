@@ -218,4 +218,11 @@
   <string id="AF_UI_Timeline_BodyTitle" text="{KIND}正文" />
   <string id="AF_UI_Timeline_Day" text="第{DAY}天" />
   <string id="AF_UI_Timeline_MultiCountry" text="{NAME}等{COUNT}项" />
+  <string id="AF_UI_Weekly_ViewCurrent" text="点击查看当前周报。" />
+  <string id="AF_UI_Courier_ViewReply" text="点击查看{NAME}的回信。" />
+  <string id="AF_UI_Courier_Wrote" text="{NAME}写道：" />
+  <string id="AF_UI_Courier_EscapeClose" text="ESC关闭" />
+  <string id="AF_UI_Courier_Notice" text="信使带回了回信：{BODY}" />
+  <string id="AF_UI_Courier_EmptySender" text="NPC" />
+  <string id="AF_UI_Weekly_Generated" text="周报已生成" />
 </strings>

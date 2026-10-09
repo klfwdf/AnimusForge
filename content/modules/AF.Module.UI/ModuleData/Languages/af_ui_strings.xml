@@ -218,4 +218,11 @@
   <string id="AF_UI_Timeline_BodyTitle" text="{KIND} body" />
   <string id="AF_UI_Timeline_Day" text="Day {DAY}" />
   <string id="AF_UI_Timeline_MultiCountry" text="{NAME} and {COUNT} more" />
+  <string id="AF_UI_Weekly_ViewCurrent" text="Click to view the current weekly report." />
+  <string id="AF_UI_Courier_ViewReply" text="Click to view {NAME}'s reply." />
+  <string id="AF_UI_Courier_Wrote" text="{NAME} wrote:" />
+  <string id="AF_UI_Courier_EscapeClose" text="ESC: close" />
+  <string id="AF_UI_Courier_Notice" text="The courier returned with a reply: {BODY}" />
+  <string id="AF_UI_Courier_EmptySender" text="NPC" />
+  <string id="AF_UI_Weekly_Generated" text="Weekly report generated" />
 </strings>
