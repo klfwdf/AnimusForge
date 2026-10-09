@@ -16999,6 +16999,16 @@
       "owner": "AF.Module.Exercise",
       "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/Languages/afmemory_ui_strings.xml",
+      "target": "ModuleData/Languages/afmemory_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml"
     }
   ]
 }
