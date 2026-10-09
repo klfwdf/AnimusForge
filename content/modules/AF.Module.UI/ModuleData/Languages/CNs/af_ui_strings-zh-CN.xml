@@ -307,5 +307,25 @@
   <string id="AF_UI_Terminal_DescriptionLabel" text="说明：" />
   <string id="AF_UI_Terminal_SourcesLabel" text="来源：" />
   <string id="AF_UI_Terminal_EditValue" text="点击填写 ✎" />
+  <string id="AF_MCM_Duel_RenownTransfer_Hint" text="正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。" />
+  <string id="AF_MCM_Duel_RenownMinimum_Hint" text="败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。" />
+  <string id="AF_MCM_Duel_RenownPercent_Hint" text="按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。" />
+  <string id="AF_MCM_Duel_RenownMaximum_Hint" text="单场决斗最多扣减的家族声望。默认 150；设为 0 表示不设上限。" />
+  <string id="AF_MCM_Items_Restore_Hint" text="开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。" />
+  <string id="AF_MCM_Shout_Key_Hint" text="场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。" />
+  <string id="AF_MCM_Shout_SpecialKey_Hint" text="场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。" />
+  <string id="AF_MCM_Shout_TerminalKey_Hint" text="大地图上按此键打开 AnimusForge 终端。默认 U。" />
+  <string id="AF_MCM_Shout_GoldKey_Hint" text="场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。" />
+  <string id="AF_MCM_Shout_InitialRange_Hint" text="按下 T/Y 时使用的基础喊话范围。默认 4 米。" />
+  <string id="AF_MCM_Shout_MaxRange_Hint" text="按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。" />
+  <string id="AF_MCM_Shout_MinLength_Hint" text="场景喊话回复的最小字数。默认 40。" />
+  <string id="AF_MCM_Shout_MaxLength_Hint" text="场景喊话回复的最大字数。默认 200；若小于最小字数，运行时会按最小字数处理。" />
+  <string id="AF_MCM_Shout_ThoughtLength_Hint" text="场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。" />
+  <string id="AF_MCM_Shout_DisableThought_Hint" text="开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。" />
+  <string id="AF_MCM_Shout_BubbleFont_Hint" text="设置场景喊话气泡中文字的字体大小" />
+  <string id="AF_MCM_Shout_Timeout_Hint" text="场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。" />
+  <string id="AF_MCM_Shout_StareSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。" />
+  <string id="AF_MCM_Shout_DirectAttack_Hint" text="开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。" />
+  <string id="AF_MCM_Shout_InputBackground_Hint" text="只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。" />
   </strings>
 </base>
