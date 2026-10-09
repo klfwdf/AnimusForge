@@ -49,11 +49,11 @@ internal sealed class WeeklyEventImportExportAdapter
 			string text = export.CandidatePath;
 			ExportEventDataToDir(text);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -99,13 +99,13 @@ internal sealed class WeeklyEventImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
 			if (!TryLoadEventDataFromImportDir(importDir, out var payload, out var error))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：" + error));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(error)));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -160,23 +160,23 @@ internal sealed class WeeklyEventImportExportAdapter
 			Action action = delegate
 			{
 				ApplyImportedEventData(payload, overwriteExisting: true);
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 
                 completion?.Finish(OnboardingImportResult.Completed);
 };
 			Action onSkipDuplicates = delegate
 			{
 				ApplyImportedEventData(payload, overwriteExisting: false);
-				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompletedDuplicates(importDir)));
 
                 completion?.Finish(OnboardingImportResult.Completed);
 };
             if (completion != null) { action = completion.Guard(action); onSkipDuplicates = completion.Guard(onSkipDuplicates); }
 			if (flag)
 			{
-				string text3 = "导入数据与当前游戏存在重复。\n世界开局概要：" + num + "/" + num2 + "\n王国开局概要：" + num3 + "/" + num4 + "\n事件记录：" + num5 + "/" + num6 + "\n请选择处理方式：";
+				string text3 = ImportExportUiText.WeeklyEventDuplicateBody(num, num3, num5, num2, num4, num6);
 				completion?.Pending();
-				_showDuplicate("检测到重复 - 事件编辑", text3, action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.WeeklyEventDuplicateTitle(), text3, action, onSkipDuplicates, delegate
 				{
                     if (completion != null && !completion.CanApply()) return;
                     completion?.Finish(OnboardingImportResult.Cancelled);
@@ -191,7 +191,7 @@ internal sealed class WeeklyEventImportExportAdapter
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 

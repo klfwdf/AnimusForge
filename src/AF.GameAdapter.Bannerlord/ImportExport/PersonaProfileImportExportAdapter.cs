@@ -71,11 +71,11 @@ internal sealed class PersonaProfileImportExportAdapter
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, lookup.ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -113,7 +113,7 @@ internal sealed class PersonaProfileImportExportAdapter
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 					return;
 				}
 				text2 = Path.Combine(importDir, "personality_background");
@@ -133,19 +133,19 @@ internal sealed class PersonaProfileImportExportAdapter
 				}
 				if (!Directory.Exists(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 personality_background 目录。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("personality_background")));
 					return;
 				}
 				text3 = NpcDataIdentityFileAdapter.FindNpcJsonByHeroId(text2, heroId);
 			}
 			if (string.IsNullOrEmpty(text3) || !File.Exists(text3))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.NpcExportMissing()));
 				return;
 			}
 			if (!NpcDataIdentityFileAdapter.TryResolveNpcDataFileHeroIdForImport(text3, out var resolvedHeroId, out var warning) || !string.Equals((resolvedHeroId ?? "").Trim(), (heroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：个性/背景文件与当前NPC不匹配。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.NpcFileMismatch()));
 				Logger.Log("NpcPersona", "[WARN] Skipped single persona import file " + Path.GetFileName(text3) + " for hero=" + heroId + ": " + (warning ?? ("resolvedHeroId=" + resolvedHeroId)));
 				return;
 			}
@@ -167,15 +167,15 @@ internal sealed class PersonaProfileImportExportAdapter
 			Action action = delegate
 			{
 				if (!ApplyImportedSinglePersonaProfile(heroId, prof, importGeneration)) return;
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已跳过重复条目：" + heroId));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.DuplicateSkipped(heroId)));
 			};
 			if (flag && flag2)
 			{
-				_showDuplicate("检测到重复 - 个性/背景", "检测到该 NPC 已存在个性/背景：" + heroId + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.PersonaDuplicateTitle(), ImportExportUiText.PersonaDuplicateBody(heroId), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -186,7 +186,7 @@ internal sealed class PersonaProfileImportExportAdapter
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -201,11 +201,11 @@ internal sealed class PersonaProfileImportExportAdapter
 			string text = export.CandidatePath;
 			ExportPersonaToDirectory(text);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -222,14 +222,14 @@ internal sealed class PersonaProfileImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
 			string path = Path.Combine(importDir, "personality_background");
 			if (!Directory.Exists(path))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 personality_background 目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingDirectory("personality_background")));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -274,14 +274,14 @@ internal sealed class PersonaProfileImportExportAdapter
 			Action action = delegate
 			{
 				if (!ApplyImportedPersonaProfiles(dict, true, importGeneration)) { completion?.Finish(OnboardingImportResult.Retired); return; }
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 
                 completion?.Finish(OnboardingImportResult.Completed);
 };
 			Action onSkipDuplicates = delegate
 			{
 				if (!ApplyImportedPersonaProfiles(dict, false, importGeneration)) { completion?.Finish(OnboardingImportResult.Retired); return; }
-				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompletedDuplicates(importDir)));
 
                 completion?.Finish(OnboardingImportResult.Completed);
 };
@@ -289,7 +289,7 @@ internal sealed class PersonaProfileImportExportAdapter
 			if (num > 0)
 			{
 				completion?.Pending();
-				_showDuplicate("检测到重复 - 个性/背景", "导入数据与当前游戏存在重复 HeroId。\n重复：" + num + " / 总计：" + count + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.PersonaDuplicateTitle(), ImportExportUiText.PersonaDuplicateMany(num, count), action, onSkipDuplicates, delegate
 				{
                     if (completion != null && !completion.CanApply()) return;
                     completion?.Finish(OnboardingImportResult.Cancelled);
@@ -303,7 +303,7 @@ internal sealed class PersonaProfileImportExportAdapter
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -449,11 +449,11 @@ internal void ExportUnnamedPersonaData(string folderName)
 			string text = export.CandidatePath;
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 internal void ExportSingleUnnamedPersonaData(string folderName, string key)
@@ -463,7 +463,7 @@ internal void ExportSingleUnnamedPersonaData(string folderName, string key)
 			string text = (key ?? "").Trim().ToLower();
 			if (string.IsNullOrEmpty(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：Key 为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.KeyEmpty()));
 				return;
 			}
 			string personality = "";
@@ -479,7 +479,7 @@ internal void ExportSingleUnnamedPersonaData(string folderName, string key)
 			}
 			if (!flag)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该未命名NPC条目：" + text));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.UnnamedNpcNotFound(text)));
 				return;
 			}
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
@@ -517,11 +517,11 @@ internal void ExportSingleUnnamedPersonaData(string folderName, string key)
 				Background = (background ?? "").Trim()
 			});
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 internal void ImportSingleUnnamedPersonaData(string folderName, string key)
@@ -531,13 +531,13 @@ internal void ImportSingleUnnamedPersonaData(string folderName, string key)
 			string text = (key ?? "").Trim().ToLower();
 			if (string.IsNullOrEmpty(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：Key 为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.KeyEmpty()));
 				return;
 			}
 			string text2 = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				return;
 			}
 			string dir = Path.Combine(text2, "unnamed_persona");
@@ -549,13 +549,13 @@ internal void ImportSingleUnnamedPersonaData(string folderName, string key)
 			}
 			if (string.IsNullOrEmpty(text3) || !File.Exists(text3))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到该未命名NPC条目的导出文件：" + text));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.UnnamedNpcFileMissing(text)));
 				return;
 			}
 			UnnamedPersonaSingleJson unnamedPersonaSingleJson = PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(text3);
 			if (unnamedPersonaSingleJson == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：JSON 解析失败。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.JsonParseFailed()));
 				return;
 			}
 			string text4 = (unnamedPersonaSingleJson.Personality ?? "").Trim();
@@ -572,15 +572,15 @@ internal void ImportSingleUnnamedPersonaData(string folderName, string key)
 			}
 			if (flag && flag2)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：检测到重复 Key（" + text + "），当前游戏已存在该条目，禁止导入覆盖。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.DuplicateKeyBlocked(text)));
 				return;
 			}
 			ShoutUtils.SaveUnnamedPersonaByKey(text, text4, text5);
-			InformationManager.DisplayMessage(new InformationMessage("导入完成：" + text2));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(text)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 internal static string FindUnnamedPersonaJsonByKey(string dir, string key)
@@ -757,7 +757,7 @@ internal void ImportUnnamedPersonaData(string folderName) => ImportUnnamedPerson
 			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -769,13 +769,13 @@ internal void ImportUnnamedPersonaData(string folderName) => ImportUnnamedPerson
 			}
 			if (completion == null) ShoutUtils.ImportUnnamedPersonaFromDir(text);
             else if (!ShoutUtils.TryImportUnnamedPersonaFromDir(text)) { completion.Finish(OnboardingImportResult.Failed); return; }
-			InformationManager.DisplayMessage(new InformationMessage("导入完成：" + text));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(text)));
             completion?.Finish(OnboardingImportResult.Completed);
 		}
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 internal static string ReadUnnamedPersonaImportKey(string file) => PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(file)?.Key;

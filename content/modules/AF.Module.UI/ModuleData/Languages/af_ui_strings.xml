@@ -2311,6 +2311,78 @@ Estimated requests: " />
   <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="A kingdom with that name already exists." />
   <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="Regenerating rebel kingdom name" />
   <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes." />
+
+  <string id="AF_UI_ImportExport_ExportCompleted" text="Export completed: {PATH}" />
+  <string id="AF_UI_ImportExport_ExportFailed" text="Export failed: {ERROR}" />
+  <string id="AF_UI_ImportExport_ImportFailed" text="Import failed: {ERROR}" />
+  <string id="AF_UI_ImportExport_ImportCompleted" text="Import completed: {PATH}" />
+  <string id="AF_UI_ImportExport_ImportCompletedDuplicates" text="Import completed (duplicates skipped): {PATH}" />
+  <string id="AF_UI_ImportExport_ImportCompletedMerged" text="Import completed (merged): {PATH}" />
+  <string id="AF_UI_ImportExport_PartialImport" text="Partial import completed (skipped {COUNT} invalid compressed-memory files): {PATH}" />
+  <string id="AF_UI_ImportExport_PartialImportDuplicates" text="Partial import completed (skipped {COUNT} invalid compressed-memory files; duplicates were skipped): {PATH}" />
+  <string id="AF_UI_ImportExport_MissingExportDirectory" text="Import failed: export directory not found." />
+  <string id="AF_UI_ImportExport_MissingDirectory" text="Import failed: {DIRECTORY} directory not found." />
+  <string id="AF_UI_ImportExport_MissingFile" text="Import failed: {FILE} was not found." />
+  <string id="AF_UI_ImportExport_EmptyFile" text="Import failed: {FILE} is empty." />
+  <string id="AF_UI_ImportExport_InvalidFile" text="Import failed: {FILE} is invalid." />
+  <string id="AF_UI_ImportExport_InvalidData" text="Import failed: {DATA} is invalid." />
+  <string id="AF_UI_ImportExport_BehaviorNotInitialized" text="Import failed: {BEHAVIOR} is not initialized." />
+  <string id="AF_UI_ImportExport_KeyEmpty" text="Export failed: key is empty." />
+  <string id="AF_UI_ImportExport_EntryNotFound" text="Export failed: the entry was not found: {VALUE}" />
+  <string id="AF_UI_ImportExport_NpcExportMissing" text="Import failed: this NPC has no corresponding export file." />
+  <string id="AF_UI_ImportExport_NpcFileMismatch" text="Import failed: the personality/background file does not match the current NPC." />
+  <string id="AF_UI_ImportExport_JsonParseFailed" text="Import failed: JSON parsing failed." />
+  <string id="AF_UI_ImportExport_WriteFailed" text="Import failed: writing the rule failed." />
+  <string id="AF_UI_ImportExport_IdMismatch" text="Import failed: the file Id does not match (file Id={ID})." />
+  <string id="AF_UI_ImportExport_AllInvalid" text="Import failed: all compressed-memory files were invalid (skipped {COUNT})." />
+  <string id="AF_UI_ImportExport_DuplicateTitle" text="Duplicates detected - {KIND}" />
+  <string id="AF_UI_ImportExport_DuplicateExisting" text="This NPC already has {KIND} data: {ID}
+Choose how to proceed:" />
+  <string id="AF_UI_ImportExport_DuplicateMany" text="Imported data contains HeroIds already present in the current game.
+{KIND} duplicates: {COUNT} / total: {TOTAL}
+Choose how to proceed:" />
+  <string id="AF_UI_ImportExport_DuplicateSkipped" text="Duplicate entry skipped: {ID}" />
+  <string id="AF_UI_ImportExport_WarningSkipped" text="Warning: {NAME} import failed and was skipped." />
+  <string id="AF_UI_ImportExport_IdEmpty" text="Operation failed: RuleId/key is empty." />
+  <string id="AF_UI_ImportExport_UnnamedNpcNotFound" text="Export failed: unnamed NPC entry was not found: {VALUE}" />
+  <string id="AF_UI_ImportExport_UnnamedNpcFileMissing" text="Import failed: export file for unnamed NPC entry was not found: {VALUE}" />
+  <string id="AF_UI_ImportExport_DuplicateKeyBlocked" text="Import failed: duplicate key {VALUE} already exists in the current game; overwriting is disabled." />
+  <string id="AF_UI_ImportExport_KnowledgeRulesMissingDetail" text="knowledge\\AIConfig.json, knowledge\\rules\\*.json, or knowledge\\KnowledgeRules.json was not found." />
+  <string id="AF_UI_ImportExport_KeywordValidationDetail" text="keyword validation failed: {ERROR}" />
+  <string id="AF_UI_ImportExport_KnowledgeBehaviorDetail" text="KnowledgeLibraryBehavior is not initialized." />
+  <string id="AF_UI_ImportExport_KnowledgeNoEntriesDetail" text="There are no Knowledge entries to export." />
+  <string id="AF_UI_ImportExport_KnowledgeNoFilesDetail" text="No Knowledge files were written successfully." />
+  <string id="AF_UI_ImportExport_KnowledgeWriteFailedDetail" text="Knowledge rules could not be written." />
+  <string id="AF_UI_ImportExport_KnowledgeImportExceptionDetail" text="An exception occurred during Knowledge import." />
+  <string id="AF_UI_ImportExport_VoiceMappingInvalid" text="Import failed: VoiceMapping JSON is invalid." />
+  <string id="AF_UI_ImportExport_VoiceMappingWarningSkipped" text="Warning: VoiceMapping import failed and was skipped." />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateTitle" text="Duplicates detected - VoiceMapping" />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="Voice mappings already exist.\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_KnowledgeExportCount" text="Export completed: {PATH} (Knowledge entries: {COUNT})" />
+  <string id="AF_UI_ImportExport_KnowledgeNoEntries" text="There are no Knowledge entries to export." />
+  <string id="AF_UI_ImportExport_KnowledgeNoFilesWritten" text="No Knowledge files were written successfully." />
+  <string id="AF_UI_ImportExport_KnowledgeRulesMissing" text="knowledge\\AIConfig.json, knowledge\\rules\\*.json, or knowledge\\KnowledgeRules.json was not found." />
+  <string id="AF_UI_ImportExport_KnowledgeImportFallbackSummary" text="Knowledge import used per-entry fallback: {IMPORTED} succeeded, {FAILED} failed. First failed RuleId={RULEID}{REASON}" />
+  <string id="AF_UI_ImportExport_KnowledgeRulesAllFailed" text="All Knowledge rules failed to import. Failed: {FAILED}. First failed RuleId={RULEID}{REASON}" />
+  <string id="AF_UI_ImportExport_KnowledgeImportException" text="An exception occurred during Knowledge import." />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="Duplicates detected - Knowledge" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="A Knowledge rule with the same RuleId already exists: {ID}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="Imported Knowledge rules contain duplicate RuleIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="Duplicates detected - personality/background" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="This NPC already has personality/background data: {ID}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="Imported data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="Duplicates detected - debt" />
+  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="This NPC already has debt records: {ID}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="Imported debt data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateTitle" text="Duplicates detected - event editor" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="Imported data overlaps the current game.\nWorld opening summaries: {WORLD}/{WORLD_TOTAL}\nKingdom opening summaries: {KINGDOM}/{KINGDOM_TOTAL}\nEvent records: {EVENT}/{EVENT_TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_FilenameFormatMissing" text="The file name is missing the heroId__name format." />
+  <string id="AF_UI_ImportExport_FilenameNameMismatch" text="The file name character name &quot;{FILE}&quot; does not match the current character with the same ID &quot;{CURRENT}&quot;." />
+  <string id="AF_UI_ImportExport_FilenameIdUnreliable" text="Auto-numbered ID {ID} cannot be matched reliably in the current save, and the file name cannot uniquely identify the character." />
+  <string id="AF_UI_Weekly_Notice_OpenHint" text="Click to view: {TEXT}" />
+  <string id="AF_UI_Weekly_Notice_Missing" text="This weekly report no longer exists." />
+  <string id="AF_UI_Weekly_Notice_OpenFailed" text="The weekly report could not be opened." />
+  <string id="AF_UI_Weekly_Notice_XpBatch" text="Weekly-report reading breakthrough: {COUNT} reports read; Charm +{CHARM}, Leadership +{LEADERSHIP}, Steward +{STEWARD}." />
 </strings>
 </base>
 

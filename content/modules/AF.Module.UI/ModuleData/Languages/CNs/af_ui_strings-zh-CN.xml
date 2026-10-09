@@ -2342,6 +2342,78 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="已有同名王国。" />
   <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="正在重新生成叛乱建国命名" />
   <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="系统正在按修正后的事件/叛乱 API 配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。" />
+
+  <string id="AF_UI_ImportExport_ExportCompleted" text="导出完成：{PATH}" />
+  <string id="AF_UI_ImportExport_ExportFailed" text="导出失败：{ERROR}" />
+  <string id="AF_UI_ImportExport_ImportFailed" text="导入失败：{ERROR}" />
+  <string id="AF_UI_ImportExport_ImportCompleted" text="导入完成：{PATH}" />
+  <string id="AF_UI_ImportExport_ImportCompletedDuplicates" text="导入完成（已跳过重复）：{PATH}" />
+  <string id="AF_UI_ImportExport_ImportCompletedMerged" text="导入完成（已合并）：{PATH}" />
+  <string id="AF_UI_ImportExport_PartialImport" text="部分导入完成（跳过 {COUNT} 个无效压缩记忆文件）：{PATH}" />
+  <string id="AF_UI_ImportExport_PartialImportDuplicates" text="部分导入完成（跳过 {COUNT} 个无效压缩记忆文件，已跳过重复）：{PATH}" />
+  <string id="AF_UI_ImportExport_MissingExportDirectory" text="导入失败：找不到导出目录。" />
+  <string id="AF_UI_ImportExport_MissingDirectory" text="导入失败：找不到 {DIRECTORY} 目录。" />
+  <string id="AF_UI_ImportExport_MissingFile" text="导入失败：找不到 {FILE}。" />
+  <string id="AF_UI_ImportExport_EmptyFile" text="导入失败：{FILE}为空。" />
+  <string id="AF_UI_ImportExport_InvalidFile" text="导入失败：{FILE}无效。" />
+  <string id="AF_UI_ImportExport_InvalidData" text="导入失败：{DATA}无效。" />
+  <string id="AF_UI_ImportExport_BehaviorNotInitialized" text="导入失败：{BEHAVIOR}未初始化。" />
+  <string id="AF_UI_ImportExport_KeyEmpty" text="导出失败：Key 为空。" />
+  <string id="AF_UI_ImportExport_EntryNotFound" text="导出失败：找不到该条目：{VALUE}" />
+  <string id="AF_UI_ImportExport_NpcExportMissing" text="导入失败：该 NPC 没有对应的导出文件。" />
+  <string id="AF_UI_ImportExport_NpcFileMismatch" text="导入失败：个性/背景文件与当前 NPC 不匹配。" />
+  <string id="AF_UI_ImportExport_JsonParseFailed" text="导入失败：JSON 解析失败。" />
+  <string id="AF_UI_ImportExport_WriteFailed" text="导入失败：写入规则失败。" />
+  <string id="AF_UI_ImportExport_IdMismatch" text="导入失败：文件中的 Id 不匹配（文件 Id={ID}）。" />
+  <string id="AF_UI_ImportExport_AllInvalid" text="导入失败：压缩记忆文件全部无效（跳过 {COUNT} 个）。" />
+  <string id="AF_UI_ImportExport_DuplicateTitle" text="检测到重复 - {KIND}" />
+  <string id="AF_UI_ImportExport_DuplicateExisting" text="该 NPC 已存在 {KIND} 数据：{ID}
+请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DuplicateMany" text="导入数据与当前游戏存在重复 HeroId。
+{KIND} 重复：{COUNT} / 总计：{TOTAL}
+请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DuplicateSkipped" text="已跳过重复条目：{ID}" />
+  <string id="AF_UI_ImportExport_WarningSkipped" text="警告：{NAME} 导入失败，已跳过。" />
+  <string id="AF_UI_ImportExport_IdEmpty" text="操作失败：RuleId/Key 为空。" />
+  <string id="AF_UI_ImportExport_UnnamedNpcNotFound" text="导出失败：找不到该未命名 NPC 条目：{VALUE}" />
+  <string id="AF_UI_ImportExport_UnnamedNpcFileMissing" text="导入失败：找不到该未命名 NPC 条目的导出文件：{VALUE}" />
+  <string id="AF_UI_ImportExport_DuplicateKeyBlocked" text="导入失败：检测到重复 Key（{VALUE}），当前游戏已存在该条目，禁止导入覆盖。" />
+  <string id="AF_UI_ImportExport_KnowledgeRulesMissingDetail" text="找不到 knowledge\\AIConfig.json、knowledge\\rules\\*.json 或 knowledge\\KnowledgeRules.json。" />
+  <string id="AF_UI_ImportExport_KeywordValidationDetail" text="关键词校验异常：{ERROR}" />
+  <string id="AF_UI_ImportExport_KnowledgeBehaviorDetail" text="KnowledgeLibraryBehavior 未初始化。" />
+  <string id="AF_UI_ImportExport_KnowledgeNoEntriesDetail" text="当前没有可导出的知识条目。" />
+  <string id="AF_UI_ImportExport_KnowledgeNoFilesDetail" text="没有成功写出任何知识文件。" />
+  <string id="AF_UI_ImportExport_KnowledgeWriteFailedDetail" text="知识规则写入失败。" />
+  <string id="AF_UI_ImportExport_KnowledgeImportExceptionDetail" text="知识导入过程发生异常。" />
+  <string id="AF_UI_ImportExport_VoiceMappingInvalid" text="导入失败：VoiceMapping JSON 无效。" />
+  <string id="AF_UI_ImportExport_VoiceMappingWarningSkipped" text="警告：VoiceMapping 导入失败，已跳过。" />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateTitle" text="检测到重复 - VoiceMapping" />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="当前已存在声音映射。\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_KnowledgeExportCount" text="导出完成：{PATH}（Knowledge {COUNT} 条）" />
+  <string id="AF_UI_ImportExport_KnowledgeNoEntries" text="当前没有可导出的知识条目。" />
+  <string id="AF_UI_ImportExport_KnowledgeNoFilesWritten" text="没有成功写出任何知识文件。" />
+  <string id="AF_UI_ImportExport_KnowledgeRulesMissing" text="找不到 knowledge\\AIConfig.json、knowledge\\rules\\*.json 或 knowledge\\KnowledgeRules.json。" />
+  <string id="AF_UI_ImportExport_KnowledgeImportFallbackSummary" text="Knowledge 全量导入已改为逐条回退导入；成功 {IMPORTED} 条，失败 {FAILED} 条。首个失败 RuleId={RULEID}{REASON}" />
+  <string id="AF_UI_ImportExport_KnowledgeRulesAllFailed" text="知识规则全部导入失败。失败 {FAILED} 条。首个失败 RuleId={RULEID}{REASON}" />
+  <string id="AF_UI_ImportExport_KnowledgeImportException" text="知识导入过程发生异常。" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="检测到重复 - Knowledge" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="检测到相同 RuleId：{ID}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="导入的 Knowledge 规则与当前游戏存在重复 RuleId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="检测到重复 - 个性/背景" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="检测到该 NPC 已存在个性/背景：{ID}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="检测到重复 - 欠款" />
+  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="检测到该 NPC 已存在欠款记录：{ID}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateTitle" text="检测到重复 - 事件编辑" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="导入数据与当前游戏存在重复。\n世界开局概要：{WORLD}/{WORLD_TOTAL}\n王国开局概要：{KINGDOM}/{KINGDOM_TOTAL}\n事件记录：{EVENT}/{EVENT_TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_FilenameFormatMissing" text="文件名缺少 heroId__名字 格式。" />
+  <string id="AF_UI_ImportExport_FilenameNameMismatch" text="文件名人物名“{FILE}”与当前同 ID 人物“{CURRENT}”不一致。" />
+  <string id="AF_UI_ImportExport_FilenameIdUnreliable" text="自动编号 {ID} 在当前存档中不可可靠匹配，且文件名人物名不能唯一匹配。" />
+  <string id="AF_UI_Weekly_Notice_OpenHint" text="点击查看：{TEXT}" />
+  <string id="AF_UI_Weekly_Notice_Missing" text="这条周报记录已经不存在。" />
+  <string id="AF_UI_Weekly_Notice_OpenFailed" text="打开周报失败。" />
+  <string id="AF_UI_Weekly_Notice_XpBatch" text="周报研读突破：累计研读 {COUNT} 篇，魅力 +{CHARM}，统御 +{LEADERSHIP}，管理 +{STEWARD}。" />
 </strings>
 </base>
 
