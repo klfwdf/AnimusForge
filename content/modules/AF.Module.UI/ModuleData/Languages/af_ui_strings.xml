@@ -2601,6 +2601,44 @@ Choose how to proceed:" />
   <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="Could not read kingdom opening knowledge: " />
   <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="Kingdom opening knowledge contains an empty kingdom ID." />
   <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="Kingdom opening knowledge contains a duplicate kingdom ID: " />
-</strings>
+
+  <string id="AF_MCM_Letter_Group" text="7. Proactive NPC contact/Unsolicited letters" />
+  <string id="AF_MCM_Companion_Group" text="7. Proactive NPC contact/Companion proactive chat" />
+  <string id="AF_MCM_Notoriety_Group" text="8. Player notoriety" />
+  <string id="AF_MCM_Memory_PreprocessMode" text="Preprocess mode" />
+  <string id="AF_MCM_Memory_PreprocessMode_Hint" text="1 = unified mode: rule codes and memory IDs share one preprocessing JSON request; 2 = parallel mode: rule and memory filtering run concurrently. Default: 1." />
+  <string id="AF_MCM_Memory_OverviewStart" text="Memory overview start block count" />
+  <string id="AF_MCM_Memory_OverviewStart_Hint" text="When a Hero NPC reaches this many compressed memory blocks, generate and update the long-term memory overview. Default: 5." />
+  <string id="AF_MCM_Memory_OverviewTarget" text="Memory overview target characters" />
+  <string id="AF_MCM_Memory_OverviewTarget_Hint" text="Target character count for the long-term memory overview. Default: 200; shorter saves tokens, longer retains more detail." />
+  <string id="AF_MCM_Companion_Enable" text="Enable companion proactive chat" />
+  <string id="AF_MCM_Companion_Enable_Hint" text="Allows companions, family members, and other Heroes in the player party to request a conversation through a campaign-map notification." />
+  <string id="AF_MCM_Companion_Test" text="Companion proactive-chat test mode" />
+  <string id="AF_MCM_Companion_Test_Hint" text="Scans every game hour, uses 100% trigger chance, and ignores cooldowns; valid Hero state, safe player state, and a valid motive are still required." />
+  <string id="AF_MCM_Companion_Interval_Hint" text="How often to scan Heroes in the player party, in game hours. Default: 24." />
+  <string id="AF_MCM_Companion_GlobalCooldown_Hint" text="After a companion proactive-chat notice is created, no new notice is created during this many game days. Default: 21." />
+  <string id="AF_MCM_Companion_HeroCooldown" text="Same-Hero cooldown (days)" />
+  <string id="AF_MCM_Companion_HeroCooldown_Hint" text="After the same Hero requests a conversation, wait this many game days before another request. Default: 48." />
+  <string id="AF_MCM_Companion_Quiet" text="Cross-channel quiet period (days)" />
+  <string id="AF_MCM_Companion_Quiet_Hint" text="After any channel talks with the Hero, wait at least this many game days before allowing proactive chat. Default: 21." />
+  <string id="AF_MCM_Companion_NoticeLifetime" text="Notice lifetime (days)" />
+  <string id="AF_MCM_Companion_NoticeLifetime_Hint" text="How many game days a companion proactive-chat notice remains valid; after expiry it counts as declined. Default: 3." />
+  <string id="AF_MCM_Companion_Chance" text="Trigger chance multiplier" />
+  <string id="AF_MCM_Companion_Chance_Hint" text="Overall multiplier for the daily companion proactive-chat chance. Default: 1.00." />
+  <string id="AF_MCM_Companion_Fatigue_Hint" text="Duration for which a selected motive type receives reduced weight. Default: 30 days." />
+  <string id="AF_MCM_Companion_FatigueMultiplier_Hint" text="Weight multiplier for motive candidates during fatigue. Default: 0.25." />
+  <string id="AF_MCM_Companion_RecentEvent" text="Recent-event window (days)" />
+  <string id="AF_MCM_Companion_RecentEvent_Hint" text="How many recent game days of real Hero or player events can be used as conversation motives. Default: 10." />
+  <string id="AF_MCM_Companion_Debug" text="Write companion proactive-chat debug log" />
+  <string id="AF_MCM_Companion_Debug_Hint" text="Writes candidates, chance, motives, cooldowns, and notice state to Mod_Logic.txt." />
+  <string id="AF_MCM_Notoriety_Interval" text="Player history summary interval (days)" />
+  <string id="AF_MCM_Notoriety_Interval_Hint" text="Every how many game days to roll up the player public-history material. Default: 3." />
+  <string id="AF_MCM_Notoriety_Chars" text="Player history target characters" />
+  <string id="AF_MCM_Notoriety_Chars_Hint" text="Target length and hard cap for the player public major-history summary and its main-chain injection. Default: 300." />
+  <string id="AF_MCM_Notoriety_Distance" text="Courier recent-action distance multiplier" />
+  <string id="AF_MCM_Notoriety_Distance_Hint" text="When the target NPC is within player sight range multiplied by this value at the moment a letter is sent, the courier chain can expose the player recent action. Default: 3.0." />
+  <string id="AF_MCM_Notoriety_Debug" text="Write notoriety debug log" />
+  <string id="AF_MCM_Notoriety_Debug_Hint" text="Writes player notoriety records, knowledge checks, summaries, and injection details to Mod_Logic.txt." />
+  </strings>
 </base>
 
