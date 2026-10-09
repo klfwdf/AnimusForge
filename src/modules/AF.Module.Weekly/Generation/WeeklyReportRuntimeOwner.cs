@@ -60,10 +60,10 @@ internal sealed class WeeklyReportRuntimeOwner
 {
 // Player-facing generation notices only. Report bodies, batch labels, material text and protocol stay verbatim.
 private static string Ui(string id, string fallback) => new TextObject("{" + "=" + id + "}" + fallback).ToString();
-private static string Ui(string id, string fallback, params (string Name, string Value)[] variables)
+private static string Ui(string id, string fallback, params (string Name, object Value)[] variables)
 {
 	TextObject text = new TextObject("{" + "=" + id + "}" + fallback);
-	foreach ((string name, string value) in variables) text.SetTextVariable(name, value ?? "");
+	foreach ((string name, object value) in variables) text.SetTextVariable(name, value?.ToString() ?? "");
 	return text.ToString();
 }
 
@@ -527,7 +527,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标或同周源素材在请求期间已变更，旧回包未覆盖：" + block.ReportId);
+								context.FailureMessages.Add(Ui("AF_WEEKLY_TargetChangedDuringRequest", "Weekly-report target or source materials changed during request; stale response skipped: {ID}", ("ID", block.ReportId)));
 							}
 							context.BlockIndex++;
 							if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -561,7 +561,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标或同周源素材在提交期间已变更，旧回包未覆盖：" + block.ReportId);
+								context.FailureMessages.Add(Ui("AF_WEEKLY_TargetChangedDuringCommit", "Weekly-report target or source materials changed during commit; stale response skipped: {ID}", ("ID", block.ReportId)));
 							}
 						}
 						else
@@ -801,7 +801,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			result.BlockedByFatalFailure = true;
 			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
 			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
-			_port.DisplayMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed.");
+			_port.DisplayMessage(Ui("AF_WEEKLY_GenerationPaused", "{LABEL} generation paused: {FAILURES} weekly report target(s) failed.", ("LABEL", context.DisplayLabel), ("FAILURES", context.FailureCount)));
 			if (context.QueueBlockingPopupOnFatalFailure)
 			{
 				_port.QueueFailurePopup(result.RetryContext, true);
@@ -809,7 +809,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			_weeklyReportCommitQueue.Complete(context, result);
 			return;
 		}
-		_port.DisplayMessage(context.DisplayLabel + " generation completed: success " + context.SuccessCount + ", failed " + context.FailureCount + ".");
+		_port.DisplayMessage(Ui("AF_WEEKLY_GenerationCompleted", "{LABEL} generation completed: success {SUCCESS}, failed {FAILURES}.", ("LABEL", context.DisplayLabel), ("SUCCESS", context.SuccessCount), ("FAILURES", context.FailureCount)));
 		if (context.OpenViewerWhenDone)
 		{
 			_port.OpenViewer();
@@ -1284,7 +1284,8 @@ internal async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPrevi
 		int newsEpoch = _port.NewsEpoch;
 		try
 		{
-			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsMinuteBurstAsyncInternal(groups, weekIndex, startDay, endDay, _port.CalendarDate(endDay) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration, sourceSnapshotOverride: sourceSnapshotOverride);
+			string autoLabel = Ui("AF_WEEKLY_AutoWeeklyReportLabel", "{DATE} auto weekly report", ("DATE", _port.CalendarDate(endDay)));
+			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsMinuteBurstAsyncInternal(groups, weekIndex, startDay, endDay, autoLabel, openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration, sourceSnapshotOverride: sourceSnapshotOverride);
 			if (_port.IsCurrentOwner() && !_port.IsStale(runtimeGeneration, "auto_weekly_report_complete") && weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
 			{
 				_port.QueueMainThreadAction(() => {
