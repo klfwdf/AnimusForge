@@ -1,3 +1,18 @@
+<a id="peace-proposal-admission-20261010"></a>
+### 玩家和平提案逐动作校验
+
+源码 `b28bb5d40`，基线 `75317d47c`，状态/回归/实机限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#peace-proposal-admission-20261010)。范围仅为本包，下列坐标不代表全文件或全仓验收。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs:80–138`，TryValidateOfferedPeaceTerms / TryValidatePeaceTerms | 保留已有原案来源/动作身份校验，分离可复用条款校验；新提案、旧提案接受共同使用相同贡金/割地规则 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:1193–1218, 2406–2451`，ProcessAnalyzedDocument / TryGetPlayerWorldStateIntentViolation | 移除无SourceActionId的临时原案检查，将新提案自身条款接入真实逐动作owner guard |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs:323–329, 415–428`，ExecuteItems | 已有当前动作投影、预检和效果前重验消费该guard；迟到拒绝结果转为具体可读原因 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs:506–517`，DescribeRejectedPlayerMechanic | 公开公文拒绝通知解析和平条款具体原因，原机器码仍在日志 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PeaceProposalReplay.cs:9–167`，Run / Fixture | 实际解析到owner到执行器到pending offer回放：原日志、flat、遗漏/显式条款、多动作排序/双对象、非法条款、执行前归属变化和重复完成；游戏对象为已有detached端口 |
+
+未覆盖真实Campaign、实际provider、实机UI或玩家旧档；旧拒绝宣言不自动重放，修复后重新提交倡议。未改存档身份、三渠道口头外交、默认交互入口、Bootstrap或一键脚本。
+
 <a id="diplomacy-reply-shortcut-20261010"></a>
 ### 外交回应撰写快捷入口
 

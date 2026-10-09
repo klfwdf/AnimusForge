@@ -8,6 +8,7 @@
 - 修复：新增提案直接校验当前动作的 `PeaceTerms`；只有接受已有提案才解析 `SourceDocumentId + SourceActionId`。逐动作执行前和实际效果前都重验条款；多动作按各自 ActionId/条款登记；拒绝消息带具体原因。未绕过战争、领地、统治者或贡金期限规则。
 - 验证：`WorldDiplomacyRoundLifecycle.SmokeTests` **4,209 assertions PASS**；同一故障回放在基线代码于 `artifacts/peace-proposal-admission-20261010/lifecycle-baseline.log` 复现失败，候选在 `lifecycle-final.log` 通过；官方 `build_single_module.ps1` 双实现 + Bootstrap + 双 Coup seam gate PASS（`build.log`）。保留既有编译警告。
 - 性能：只在分析完成/动作登记/动作执行边界运行，按当前有界动作列表处理；不新增 Tick 扫描、反射、轮询或后台游戏对象访问。未验证真实 Campaign、真实 LLM、实机 UI、旧存档和部署；未 Stage/部署/打包/推送。
+- [产品符号/一基范围/真实消费者](architecture/af-framework-code-scope.md#peace-proposal-admission-20261010)。旧拒绝宣言不自动重放；安装修复后需重新提交倡议。回滚只对 `b28bb5d40` 做 focused inverse。期间其他作者的回应入口publication文档提交保持不变。
 
 <a id="diplomacy-reply-shortcut-20261010"></a>
 ## 外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
