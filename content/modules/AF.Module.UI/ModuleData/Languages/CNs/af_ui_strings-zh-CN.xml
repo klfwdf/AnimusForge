@@ -1042,5 +1042,483 @@
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Title" text="喊话输入框底色" />
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Hint" text="只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。" />
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Group" text="3. 场景喊话" />
+
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Title" text="NPC可以邀请总督" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Hint" text="只影响 NPC 自动生成的宾客名单。关闭时 NPC 不会邀请正在治理定居点的总督；玩家举办宴会时仍可自由邀请总督。" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Title" text="允许NPC邀请玩家" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Hint" text="开启后，NPC 宴会可以邀请玩家并派信使送信。关闭后只阻止新邀请，已经发出的玩家邀请仍然有效。" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Title" text="每周自动生成周报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Hint" text="开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Group" text="周报／快报//周报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Title" text="自动发布快报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Hint" text="关闭后停止新的快报生成，仍记录近期事件供 NPC 知情。与周报自动生成独立。" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="周报／快报//快报" />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Title" text="清空 GCCZ_Debug.log" />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Hint" text="只清空当前 GCCZ_Debug.log，不删除上一份轮转日志。" />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Title" text="清空贵族俘虏随行日志" />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Hint" text="只清空当前 NoblePrisonerEscort.log，不删除上一份轮转日志。" />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Title" text="清空 SETS.log" />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Hint" text="只清空当前 SETS.log，不删除上一份轮转日志。" />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Title" text="触发概率倍率" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Hint" text="队内主动聊天每日概率的总体倍率。默认 1.00。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Title" text="写入队内主动聊天调试日志" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Hint" text="在 Mod_Logic.txt 中记录候选、概率、动机、冷却和通知状态。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Title" text="全局冷却(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Hint" text="生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Title" text="同 Hero 冷却(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Hint" text="同一 Hero 主动请求交谈后，多少游戏日内不会再次发起。默认 48 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Title" text="任意交流静默期(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Hint" text="任意渠道刚与该 Hero 交流后，至少等待多少游戏日再允许其主动聊天。默认 21 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Title" text="动机疲劳(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Hint" text="同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Title" text="疲劳动机权重倍率" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Hint" text="处于疲劳期的动机候选权重倍率。默认 0.25。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Title" text="通知有效期(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Hint" text="队内主动聊天通知可保留多少游戏日；过期视为婉拒。默认 3 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Title" text="近期事件窗口(天)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Hint" text="Hero 或玩家近期真实事件可作为聊天动机的时间窗口。默认 10 天。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Title" text="扫描间隔(小时)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Hint" text="每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Title" text="队内主动聊天测试模式" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Hint" text="每游戏小时扫描、触发概率为 100% 且忽略冷却；仍要求 Hero 合法、玩家状态安全且存在有效动机。" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Title" text="固定第纳尔消耗" />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Hint" text="仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。" />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Title" text="民众反馈篇幅" />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Hint" text="设置玩家政策发布后民众反馈的目标篇幅。默认约 900 字，可在 100—1800 字之间调整；实际长度可能随模型输出略有浮动。" />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Title" text="自定义格式：不注入默认场景回复提示词" />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Hint" text="开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。" />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Title" text="声望最高扣减" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Hint" text="单场决斗最多扣减的家族声望。默认 150；设为 0 表示不设上限。" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Title" text="声望最低扣减" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Hint" text="败者家族每次至少扣减的声望。默认 20；若家族剩余声望不足，则最多扣到 0。" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Title" text="按当前声望扣减（%）" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Hint" text="按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 3%。" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Title" text="日结压缩写作要求" />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Hint" text="修改日结压缩的文风和信息取舍。输出标签、公开性判断、AFEF 与身份事实规则不可覆盖。" />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Title" text="王国叛乱系统提示词" />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Hint" text="点击这里使用大文本编辑器保存王国叛乱建国命名的完整 system prompt。默认内容为当前内置系统提示词，可按需要删减或改写。" />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Title" text="重大履历压缩写作要求" />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Hint" text="修改 NPC 重大履历滚动摘要的文风和取舍。输出标签、事实边界和长度范围不可覆盖。" />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Title" text="记忆大压缩写作要求" />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Hint" text="修改记忆大总结的文风和组织方式。输出标签、事实边界和长度范围不可覆盖。" />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Title" text="NPC个性背景生成要求文案" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Hint" text="编辑普通 Hero 与升格同伴共用的完整写作要求。默认文案来自模组内容，保存后使用你的文案替换；留空保存表示不注入写作要求，仅保留 JSON 协议与事实约束。" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Title" text="玩家自定义规则文案" />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Hint" text="点击这里使用大文本编辑器保存完整规则文案。" />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Title" text="政策提示词管理" />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Hint" text="统一编辑玩家AI编写、玩家政策评议、NPC 统治者政策，以及当前可用政策效果的理解与判定要求。" />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Group" text="16. 政策系统" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Title" text="周报写作要求文案" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Hint" text="点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Group" text="周报／快报//周报" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Title" text="快报写作要求" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="单独编辑即时快报写作要求，下次请求生效；清空后保留内置格式和事实约束。" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="周报／快报//快报" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="AI外交与书记官代笔偏好" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="启用队内 Hero 主动聊天" />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。" />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Group" text="7. NPC主动接触/队内同伴主动聊天" />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Title" text="启用决斗家族声望转移" />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Hint" text="正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。" />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Title" text="写入 GCCZ 日志" />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Hint" text="写入独立的 GCCZ_Debug.log。关闭后停止新增日志，但仍可导出或清空已有日志。" />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Title" text="GCCZ 详细日志" />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Hint" text="记录 NPC 回应限额等高频诊断。排查问题时再开启；关闭后仍保留阶段变化、处置结果和异常等关键日志。" />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Title" text="启用王国稳定度与叛乱" />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Hint" text="关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。" />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Title" text="启用宴会功能" />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Hint" text="宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。" />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Title" text="启用NPC自动举办宴会" />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Hint" text="开启后，符合条件的 NPC 会按王国自动举办宴会。关闭后不再自动创建 NPC 宴会，但玩家仍可主动举办。" />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Title" text="NPC 交出装备后自动补回" />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Hint" text="开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。" />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Group" text="10. 物品与交易" />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Title" text="启用 NPC 主动来信" />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Hint" text="允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。" />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Title" text="启用NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Hint" text="开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。" />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Title" text="玩家为国王时免疫稳定度叛乱" />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Hint" text="开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。" />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Title" text="启用 NPC 主动接触" />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Hint" text="开启后，有明确需求的 NPC 队伍可以在大地图主动追上玩家并发起对话。" />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Title" text="写入 SETS 日志" />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Hint" text="写入独立的 SETS.log，用于进城随行与内部暴乱诊断。关闭后停止新增日志，但仍可导出或清空已有日志。" />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Title" text="SETS 详细日志" />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Hint" text="记录逐帧保护、指挥刷新和刷兵进度等高频诊断。排查卡住时再开启；关闭后仍保留冲突开始、波次、胜利和异常等关键日志。" />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Title" text="周报／快报消息提示" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Hint" text="开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Title" text="启用报刊阅读经验奖励" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Hint" text="开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Title" text="启用AI外交" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Title" text="外交宣言送达提示" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Hint" text="已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭不影响交涉、传播、快报素材或王国公告。" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Title" text="导出 GCCZ_Debug.log" />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Hint" text="将当前模块 Logs 文件夹里的 GCCZ_Debug.log 独立复制到桌面，文件名会带时间戳。" />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Title" text="导出贵族俘虏随行日志" />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Hint" text="将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、场景处决与野外会面撤退。" />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Title" text="导出 SETS.log" />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Hint" text="将当前模块 Logs 文件夹里的 SETS.log 独立复制到桌面，文件名会带时间戳。" />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Title" text="GCCZ 日志上限(MB)" />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Hint" text="GCCZ_Debug.log 达到上限后自动轮转，上一份保留为 GCCZ_Debug.previous.log。默认 16 MB。" />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Title" text="NPC Response Limit" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Hint" text="Limits ambient NPC replies per player utterance, semantic action, or player attack event in an active GCCZ town scene." />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Title" text="NPC Response Unlimited" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Hint" text="Removes the configured numeric cap in active GCCZ town scenes while retaining event deduplication and queue safety." />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Title" text="战败血量阈值" />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Hint" text="" />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Title" text="怀孕几率（%）" />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Hint" text="当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。" />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Group" text="15. 亲密行为与怀孕" />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Title" text="政策效果模块管理" />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Hint" text="分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。" />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Group" text="16. 政策系统" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Title" text="可婚配最大年龄" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Hint" text="用于家族可婚配名单过滤。默认 55。" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Group" text="8. 婚姻规则" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Title" text="与玩家最大年龄差" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Hint" text="用于家族可婚配名单过滤。默认 25。" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Group" text="8. 婚姻规则" />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Title" text="婚配名单仅限异性（旧兼容）" />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Hint" text="旧配置项保留用于兼容；当前婚姻机制允许同性婚配。默认关闭。" />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Group" text="8. 婚姻规则" />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Title" text="最小家族等级" />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Hint" text="" />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Group" text="2. 决斗规则" />
+  <string id="AF_TERMINAL_UI_NewsMode_Title" text="主模式" />
+  <string id="AF_TERMINAL_UI_NewsMode_Hint" text="选择周报或快报，两种模式互斥；切换保留历史档案。" />
+  <string id="AF_TERMINAL_UI_NewsMode_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Title" text="宴会举办费用" />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Hint" text="玩家与 NPC 主人共用，费用从实际主人身上扣除。默认 50000 第纳尔；设为 0 表示免费。" />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Title" text="宴会持续天数" />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Hint" text="玩家与 NPC 宴会共用，默认 5 天。修改只影响之后新创建的宴会，已经开始的宴会保持原结束日期。" />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Title" text="每个受邀家族关系奖励" />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Hint" text="玩家与 NPC 宴会共用；主人和每个受邀家族领袖每场只结算一次。默认 5；设为 0 表示不增加关系。修改只影响之后新创建的宴会。" />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Title" text="写信概率倍率" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Hint" text="单次扫描概率=亲密综合分乘以该倍率。默认 0.25，即 100 分为 25%。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Title" text="写入主动来信调试日志" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Hint" text="在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Title" text="全局冷却(天)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Hint" text="任意 NPC 主动发信后，多少游戏日内不再启动下一封主动来信。默认 5 天。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Title" text="高分 NPC 冷却(天)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Hint" text="100 综合分 NPC 的发送者冷却。默认 14 天。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Title" text="低分 NPC 冷却(天)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Hint" text="最低综合分 NPC 的发送者冷却。默认 45 天。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Title" text="最低亲密综合分" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Hint" text="私人关系与写信用信任值平均后的最低候选分。默认 10。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Title" text="动机疲劳(天)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Hint" text="同一 NPC 重复使用同类写信动机时降低权重的持续时间。默认 30 天。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Title" text="疲劳动机权重倍率" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Hint" text="处于疲劳期的问候、近况、事件、情感、请求或外交动机权重倍率。默认 0.25。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Title" text="公共信任贡献上限" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Hint" text="公共信任对写信用信任值的正负贡献上限。默认 ±20。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Title" text="最近交流静默期(天)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Hint" text="任意渠道刚与该 NPC 交流后，至少等待多少游戏日再允许主动来信。默认 3 天。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Title" text="扫描间隔(小时)" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Hint" text="每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Title" text="主动来信目标字数" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Hint" text="NPC 主动来信正文的目标字数。默认 220 字。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Title" text="主动来信测试模式" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Hint" text="将触发概率提高到 100%，并取消主动来信冷却；仍要求 NPC 认识玩家、位置有效且动机真实。" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Group" text="7. NPC主动接触/NPC主动来信" />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Title" text="NPC宴会间隔（天）" />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Hint" text="同一王国两次自动宴会排期之间的游戏天数，默认 21 天。按王国分别计算；修改后用于下一次重新排期。" />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Title" text="API来源" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Hint" text="复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Title" text="政策检查间隔（天）" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Hint" text="每隔多少个游戏日检查一次是否需要生成新的 NPC 政策。默认 7 天，可在 1—30 天之间调整；没有符合条件的王国时，本轮不会生成政策。" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Title" text="自定义最大输出Tokens" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Hint" text="仅在关闭“跟随所选API Token”后使用。只影响 NPC 统治者政策，允许 1000—100000；不修改其他 API 的全局上限。" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Title" text="跟随所选API Token" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Hint" text="开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Title" text="同一王国政策冷却（天）" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Hint" text="同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Group" text="16. 政策系统/2. NPC统治者政策" />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Title" text="自定义提示词JSON文件夹" />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Hint" text="打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。" />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Title" text="信使近期行动距离倍率" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Hint" text="玩家发信瞬间，目标 NPC 与玩家距离小于玩家视野范围乘以该倍率时，信使链路可让 NPC 知道玩家近期行动。默认 3.0。" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Group" text="8. 玩家知名度" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Title" text="写入知名度调试日志" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Hint" text="开启后在 Mod_Logic.txt 中写入玩家知名度记录、知晓判定、总结与注入相关日志。" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Group" text="8. 玩家知名度" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Title" text="玩家履历字数" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Hint" text="玩家公开重大履历总结的目标字数和硬上限，也是NPC已知玩家重大履历时主链路注入的履历字数上限。AI 会整体重写旧摘要，而不是在末尾增量追加；未总结原始素材不会直接注入主链路。默认 300。" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Group" text="8. 玩家知名度" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Title" text="玩家履历总结间隔(天)" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Hint" text="每隔多少游戏日尝试把玩家公开履历素材滚动总结一次。默认 3 天。" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Group" text="8. 玩家知名度" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Title" text="政策评议接口" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Hint" text="复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Title" text="AI编写接口" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Hint" text="只决定AI编写使用主链路、前处理或后处理；默认前处理。所选配置不完整时自动回退主接口，不影响政策评议接口。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Title" text="自定义最大输出Tokens" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Hint" text="仅在关闭“跟随所选API Token”后使用。只影响玩家政策，允许 1000—100000；不修改其他 API 的全局上限。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Title" text="效果模块详规数量" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Hint" text="兼容旧配置，保存值仍可为 1—30，默认 6；最终最多向第二阶段注入 8 个详规，超过 8 的设置按 8 执行。该设置不限制 ONNX 内部候选池。数值越高，提示词和 Token 消耗越大。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Title" text="效果解析最大输出Tokens" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Hint" text="玩家政策第二阶段效果 JSON 的最大输出 Tokens。默认 5000；实际值不会超过上方玩家政策当前生效的 Token 上限。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Title" text="跟随所选API Token" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Hint" text="开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Title" text="本国最近生效政策条数" />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Hint" text="玩家评议和 NPC 生成读取本国最近现行政策的上限，默认2；0关闭，数量不足不补位，不影响对话。" />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Group" text="16. 政策系统" />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Title" text="额外相关生效政策条数" />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Hint" text="从所有国家的其余现行政策中按相关度读取，默认3；去重、不设相似度门槛；0关闭，不影响对话。" />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Group" text="16. 政策系统" />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Title" text="保留星号动作描写" />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Hint" text="开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。" />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Title" text="已知履历需求倍率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Hint" text="NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Title" text="最低需求紧急度" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Hint" text="NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Title" text="知名度触发倍率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Hint" text="玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Title" text="每次扫描触发概率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Hint" text="候选 NPC 的触发概率缩放值。正常游玩默认 35，测试时可拉到 100。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Title" text="家族债务阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Hint" text="NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Title" text="家族金库阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Hint" text="NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Title" text="候选距离倍率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Hint" text="候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。正常游玩默认 1.0。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Title" text="封地驻军阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Title" text="封地忠诚阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Hint" text="NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Title" text="封地治安阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Hint" text="NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Title" text="缺粮阈值(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Hint" text="NPC 队伍剩余粮食天数小于等于该值，或已经饥饿时，可以触发缺粮主动接触。正常游玩默认 2 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Title" text="全局冷却(小时)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Hint" text="任意一次主动接触启动后，多少小时内不再启动下一次。正常游玩默认 24 小时。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Title" text="主动问候全局冷却(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Hint" text="私人关系大于 20 的 NPC 主动追上玩家或主动来信问候后，共享的硬冷却。默认 42 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Title" text="同 NPC 冷却(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Hint" text="同一 NPC 主动接触玩家后，多少天内不会再次以同类需求来找玩家。正常游玩默认 14 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Title" text="孤立影响力阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Hint" text="NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Title" text="孤立友好家族上限" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Hint" text="同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Title" text="低士气阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Hint" text="NPC 领主队伍士气低于或等于该值时，可以触发低士气主动接触；0 表示关闭该需求。正常游玩默认 35。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Title" text="联姻压力成人阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Hint" text="NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Title" text="最低家族等级" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Hint" text="测试模式关闭时生效；玩家家族等级低于该值则不会触发 NPC 主动接触。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Title" text="缺钱现金阈值" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Hint" text="NPC 领主可用现金低于该值时，可以触发缺钱主动接触。运行时不会低于原版队伍现金下限。默认 5000。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Title" text="缺钱军饷阈值(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Hint" text="NPC 领主现金可支付军饷天数小于等于该值时，可以触发缺钱主动接触；0 表示只看现金阈值和未付军饷。正常游玩默认 2 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Title" text="缺马比例阈值(%)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Hint" text="NPC 领主队伍坐骑数量低于队伍人数的该比例时，可以触发缺马/机动不足主动接触；0 表示关闭该需求。正常游玩默认 25。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Title" text="缺马请求权重" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Hint" text="缺马/买马请求在地图主动接触和主动来信中的候选权重与触发概率倍率。默认 0.35；0 表示保留需求判定但不主动发起。测试模式下地图追踪仍按 1.00 计算。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Title" text="负重压力阈值(%)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Hint" text="NPC 领主队伍总负重达到库存容量的该比例时，可以触发负重压力主动接触。正常游玩默认 92。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Title" text="俘虏容量阈值(%)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Hint" text="NPC 领主当前俘虏数量达到俘虏上限的该比例时，可以触发俘虏过载或赎买主动接触。正常游玩默认 90；100 表示接近满员，超过 100 表示只在超载时触发。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Title" text="亲密互动全局冷却(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Hint" text="异性且私人关系大于 30 的亲密互动，在地图追赶、主动来信和队内同伴聊天之间共享的硬冷却。默认 21 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Title" text="扫描间隔(小时)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Hint" text="每隔多少游戏小时扫描一次附近有需求的 NPC 队伍。正常游玩默认 6 小时。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Title" text="领地盘问全局冷却(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="领地盘问成功发起后共享的硬冷却。默认 42 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Title" text="领地盘问范围倍率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Title" text="测试模式" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Hint" text="开启后允许 Tier 0 玩家触发，并建议配合高概率、短冷却测试主动接触。正常游玩默认关闭。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Title" text="缺兵兵力比例阈值(%)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Hint" text="NPC 领主当前人数低于队伍人数上限的该比例时，可以触发缺兵主动接触。正常游玩默认 45；测试时可调到 90 或 100。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Title" text="请求类型疲劳(天)" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Hint" text="玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Title" text="疲劳类型概率倍率" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Group" text="7. NPC主动接触" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="恢复默认外交与代笔偏好" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Title" text="SETS 日志上限(MB)" />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Hint" text="SETS.log 达到上限后自动轮转，上一份保留为 SETS.previous.log。默认 16 MB。" />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Title" text="显示宾客抵达提示" />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Hint" text="控制玩家举办宴会时宾客抵达后的左下角彩色消息。关闭后只隐藏提示，不影响抵达判定、宴会状态或奖励。" />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Group" text="18. 宴会功能" />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Title" text="由AI评估政策消耗" />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Hint" text="开启后，AI 会根据政策规模和执行难度评估所需第纳尔；第纳尔不足时，全部政策效果按实际投入比例折减。关闭后使用下面的固定第纳尔消耗。" />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Group" text="16. 政策系统/1. 玩家政策" />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Title" text="保留场景喊话动作/内心描写" />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Hint" text="关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。" />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Group" text="9. 提示词扩展" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Title" text="周报篇幅档位" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Hint" text="1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="周报／快报//周报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Title" text="报刊弹窗正文字号" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Title" text="报刊每百字经验" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Hint" text="周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Title" text="报刊单技能经验上限" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Hint" text="单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Group" text="周报／快报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Title" text="每分钟最多生成周报数" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Hint" text="限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="周报／快报//周报" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="单场外交参与国规模" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Group" text="17. AI外交（测试中）/2. 事件节奏" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Title" text="宣言传遍大陆（天）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Hint" text="按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Group" text="17. AI外交（测试中）/3. 传播" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="宣言送达最远王庭（天）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI外交（测试中）/3. 传播" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="AI外交宣言最大字数" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="AI外交宣言最小字数" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="外交档案压缩后目标（千估算Tokens）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Group" text="17. AI外交（测试中）/6. 长期档案（高级）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Title" text="外交档案压缩触发值（千估算Tokens）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Hint" text="长期外交档案达到该估算长度时开始分批压缩。默认800，即约800k Tokens，控制档案积压与压缩频率；不代表每次宣言携带这么多历史。宣言全部输入另有32k估算Tokens上限，压缩每批另有128k输入上限。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Group" text="17. AI外交（测试中）/6. 长期档案（高级）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Title" text="同时进行的普通外交事件上限" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Hint" text="普通自动外交与政策触发共用此上限，默认3场。满额时保留政策待办，已有交涉照常回复和收尾；降低上限不会取消已有事件。每天最多补开1场；玩家主动外交和口头承诺事件不占此名额。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Group" text="17. AI外交（测试中）/2. 事件节奏" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Title" text="再次主动开战间隔（天）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Hint" text="一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Title" text="和平保护期（天）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Hint" text="两国议和后，普通外交争端在此期间不能再次引发战争。默认21天；设为0关闭此保护，不影响其他宣战资格限制。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Title" text="单场外交目标时长" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Group" text="17. AI外交（测试中）/2. 事件节奏" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Title" text="新游戏开局全大陆和平" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Title" text="威慑退让国内关系奖励" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Hint" text="对象国明确服从谴责或最后通牒后，发出国正式、非雇佣兵封臣家族的族长与当前国王增加此关系。每次威慑只结算一次。默认10；设为0关闭奖励。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Title" text="贸易/结盟失败冷却（天）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Hint" text="贸易或结盟提议未达成后，同一提出国向同一对象国暂时不能再提出相同类型提议。反向提议与另一类型分别计算。默认168天；设为0关闭。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
 </strings>
 </base>

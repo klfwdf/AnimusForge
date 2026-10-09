@@ -1030,5 +1030,483 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Title" text="Shout Input UI Background Dropdown" />
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Hint" text="Affects only the shout input box. Default is transparent black; transparent white or pink are also available." />
   <string id="AF_TERMINAL_UI_ShoutInputUiBackgroundDropdown_Group" text="3. Scene shout" />
+
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Title" text="Allow NPC Noble Gathering Governor Invitations" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringGovernorInvitations_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Title" text="Allow NPC Noble Gathering Player Invitations" />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Title" text="Auto Generate Weekly Reports" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Title" text="Auto Generate World Bulletins" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="Weekly reports / bulletins//快报" />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Title" text="Clear GCCZ Debug Log" />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Title" text="Clear Noble Prisoner Escort Log" />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ClearNoblePrisonerEscortLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Title" text="Clear SETS Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ClearSetsDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Title" text="Companion Proactive Chat Chance Multiplier" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Hint" text="Configure Companion Proactive Chat Chance Multiplier." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatChanceMultiplier_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Title" text="Companion Proactive Chat Debug Log" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatDebugLog_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Title" text="Companion Proactive Chat Global Cooldown Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Hint" text="Configure Companion Proactive Chat Global Cooldown Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatGlobalCooldownDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Title" text="Companion Proactive Chat Hero Cooldown Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Hint" text="Configure Companion Proactive Chat Hero Cooldown Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatHeroCooldownDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Title" text="Companion Proactive Chat Interaction Quiet Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Hint" text="Configure Companion Proactive Chat Interaction Quiet Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatInteractionQuietDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Title" text="Companion Proactive Chat Motive Fatigue Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Hint" text="Configure Companion Proactive Chat Motive Fatigue Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Title" text="Companion Proactive Chat Motive Fatigue Multiplier" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Hint" text="Configure Companion Proactive Chat Motive Fatigue Multiplier." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatMotiveFatigueMultiplier_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Title" text="Companion Proactive Chat Notice Lifetime Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Hint" text="Configure Companion Proactive Chat Notice Lifetime Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatNoticeLifetimeDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Title" text="Companion Proactive Chat Recent Event Window Days" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Hint" text="Configure Companion Proactive Chat Recent Event Window Days." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatRecentEventWindowDays_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Title" text="Companion Proactive Chat Scan Interval Hours" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Hint" text="Configure Companion Proactive Chat Scan Interval Hours." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatScanIntervalHours_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Title" text="Companion Proactive Chat Test Mode" />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_CompanionProactiveChatTestMode_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Title" text="Custom Policy Gold Cost" />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Hint" text="Configure Custom Policy Gold Cost." />
+  <string id="AF_TERMINAL_UI_CustomPolicyGoldCost_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Title" text="Custom Policy Public Feedback Target Chars" />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Hint" text="Configure Custom Policy Public Feedback Target Chars." />
+  <string id="AF_TERMINAL_UI_CustomPolicyPublicFeedbackTargetChars_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Title" text="Disable Built In Scene Reply Format Prompt" />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_DisableBuiltInSceneReplyFormatPrompt_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Title" text="Duel Loser Clan Renown Penalty Maximum" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Hint" text="Configure Duel Loser Clan Renown Penalty Maximum." />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMaximum_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Title" text="Duel Loser Clan Renown Penalty Minimum" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Hint" text="Configure Duel Loser Clan Renown Penalty Minimum." />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyMinimum_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Title" text="Duel Loser Clan Renown Penalty Percent" />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Hint" text="Configure Duel Loser Clan Renown Penalty Percent." />
+  <string id="AF_TERMINAL_UI_DuelLoserClanRenownPenaltyPercent_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Title" text="Edit Daily Memory Compression Writing Requirements" />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditDailyMemoryCompressionWritingRequirements_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Title" text="Edit Kingdom Rebellion System Prompt" />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditKingdomRebellionSystemPrompt_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Title" text="Edit Major Action Compression Writing Requirements" />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditMajorActionCompressionWritingRequirements_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Title" text="Edit Memory Overview Compression Writing Requirements" />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Title" text="Edit NPC Persona Generation Requirements" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Title" text="Edit Player Custom Prompt Rule" />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Title" text="Edit Policy Prompts" />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditPolicyPrompts_Group" text="16. Policy system" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Title" text="Edit Weekly Report Writing Requirements" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Title" text="Edit World Bulletin Writing Requirements" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="Weekly reports / bulletins//快报" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="Edit World Diplomacy Prompt" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="Enable Companion Proactive Chat" />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Group" text="7. NPC proactive contact/Companion proactive chat" />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Title" text="Enable Duel Loser Clan Renown Penalty" />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableDuelLoserClanRenownPenalty_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Title" text="Enable GCCZ Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableGcczDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Title" text="Enable GCCZ Verbose Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableGcczVerboseDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Title" text="Enable Kingdom Stability And Rebellion" />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableKingdomStabilityAndRebellion_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Title" text="Enable Noble Gathering" />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableNobleGathering_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Title" text="Enable NPC Automatic Noble Gatherings" />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableNpcAutomaticNobleGatherings_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Title" text="Enable NPC Battle Equipment Restore" />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableNpcBattleEquipmentRestore_Group" text="10. Items and trade" />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Title" text="Enable NPC Initiated Letters" />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableNpcInitiatedLetters_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Title" text="Enable NPC Ruler Policy" />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableNpcRulerPolicy_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Title" text="Enable Player Kingdom Rebellion Immunity" />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnablePlayerKingdomRebellionImmunity_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Title" text="Enable Proactive NPC Requests" />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableProactiveNpcRequests_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Title" text="Enable SETS Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableSetsDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Title" text="Enable SETS Verbose Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableSetsVerboseDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Title" text="Enable Weekly Report Map Notifications" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportMapNotifications_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Title" text="Enable Weekly Report Reading XP Reward" />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Title" text="Enable World Diplomacy" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Title" text="Enable World Diplomacy Map Notifications" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Title" text="Export GCCZ Debug Log" />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ExportGcczDebugLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Title" text="Export Noble Prisoner Escort Log" />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ExportNoblePrisonerEscortLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Title" text="Export SETS Diagnostic Log" />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ExportSetsDiagnosticLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Title" text="GCCZ Diagnostic Log Maximum Size Megabytes" />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Hint" text="Configure GCCZ Diagnostic Log Maximum Size Megabytes." />
+  <string id="AF_TERMINAL_UI_GcczDiagnosticLogMaxSizeMegabytes_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Title" text="GCCZ NPC Response Limit" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Hint" text="Configure GCCZ NPC Response Limit." />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseLimit_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Title" text="GCCZ NPC Response Unlimited" />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_GcczNpcResponseUnlimited_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Title" text="Health Threshold" />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Hint" text="Configure Health Threshold." />
+  <string id="AF_TERMINAL_UI_HealthThreshold_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Title" text="Intimacy Pregnancy Chance Percent" />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Hint" text="Configure Intimacy Pregnancy Chance Percent." />
+  <string id="AF_TERMINAL_UI_IntimacyPregnancyChancePercent_Group" text="15. Intimacy and pregnancy" />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Title" text="Manage Policy Effect Modules" />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_ManagePolicyEffectModules_Group" text="16. Policy system" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Title" text="Marriage Candidate Maximum Age" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Hint" text="Configure Marriage Candidate Maximum Age." />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAge_Group" text="8. Marriage rules" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Title" text="Marriage Candidate Maximum Age Gap" />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Hint" text="Configure Marriage Candidate Maximum Age Gap." />
+  <string id="AF_TERMINAL_UI_MarriageCandidateMaxAgeGap_Group" text="8. Marriage rules" />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Title" text="Marriage Require Opposite Gender" />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_MarriageRequireOppositeGender_Group" text="8. Marriage rules" />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Title" text="Minimum Clan Tier" />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Hint" text="Configure Minimum Clan Tier." />
+  <string id="AF_TERMINAL_UI_MinimumClanTier_Group" text="2. Duel rules" />
+  <string id="AF_TERMINAL_UI_NewsMode_Title" text="News Mode" />
+  <string id="AF_TERMINAL_UI_NewsMode_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_NewsMode_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Title" text="Noble Gathering Cost" />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Hint" text="Configure Noble Gathering Cost." />
+  <string id="AF_TERMINAL_UI_NobleGatheringCost_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Title" text="Noble Gathering Duration Days" />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Hint" text="Configure Noble Gathering Duration Days." />
+  <string id="AF_TERMINAL_UI_NobleGatheringDurationDays_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Title" text="Noble Gathering Invited Clan Relation Reward" />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Hint" text="Configure Noble Gathering Invited Clan Relation Reward." />
+  <string id="AF_TERMINAL_UI_NobleGatheringInvitedClanRelationReward_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Title" text="NPC Initiated Letter Chance Multiplier" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Hint" text="Configure NPC Initiated Letter Chance Multiplier." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterChanceMultiplier_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Title" text="NPC Initiated Letter Debug Log" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterDebugLog_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Title" text="NPC Initiated Letter Global Cooldown Days" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Hint" text="Configure NPC Initiated Letter Global Cooldown Days." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterGlobalCooldownDays_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Title" text="NPC Initiated Letter High Score Cooldown Days" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Hint" text="Configure NPC Initiated Letter High Score Cooldown Days." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterHighScoreCooldownDays_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Title" text="NPC Initiated Letter Low Score Cooldown Days" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Hint" text="Configure NPC Initiated Letter Low Score Cooldown Days." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterLowScoreCooldownDays_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Title" text="NPC Initiated Letter Minimum Bond Score" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Hint" text="Configure NPC Initiated Letter Minimum Bond Score." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMinBondScore_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Title" text="NPC Initiated Letter Motive Fatigue Days" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Hint" text="Configure NPC Initiated Letter Motive Fatigue Days." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueDays_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Title" text="NPC Initiated Letter Motive Fatigue Multiplier" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Hint" text="Configure NPC Initiated Letter Motive Fatigue Multiplier." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterMotiveFatigueMultiplier_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Title" text="NPC Initiated Letter Public Trust Cap" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Hint" text="Configure NPC Initiated Letter Public Trust Cap." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterPublicTrustCap_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Title" text="NPC Initiated Letter Quiet Days" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Hint" text="Configure NPC Initiated Letter Quiet Days." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterQuietDays_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Title" text="NPC Initiated Letter Scan Interval Hours" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Hint" text="Configure NPC Initiated Letter Scan Interval Hours." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterScanIntervalHours_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Title" text="NPC Initiated Letter Target Chars" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Hint" text="Configure NPC Initiated Letter Target Chars." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTargetChars_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Title" text="NPC Initiated Letter Test Mode" />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_NpcInitiatedLetterTestMode_Group" text="7. NPC proactive contact/NPC-initiated letters" />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Title" text="NPC Noble Gathering Interval Days" />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Hint" text="Configure NPC Noble Gathering Interval Days." />
+  <string id="AF_TERMINAL_UI_NpcNobleGatheringIntervalDays_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Title" text="NPC Ruler Policy API Source Dropdown" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyApiSourceDropdown_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Title" text="NPC Ruler Policy Check Interval Days" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Hint" text="Configure NPC Ruler Policy Check Interval Days." />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCheckIntervalDays_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Title" text="NPC Ruler Policy Custom Maximum Tokens" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Hint" text="Configure NPC Ruler Policy Custom Maximum Tokens." />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyCustomMaxTokens_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Title" text="NPC Ruler Policy Follow Selected API Tokens" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyFollowSelectedApiTokens_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Title" text="NPC Ruler Policy Interval Days" />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Hint" text="Configure NPC Ruler Policy Interval Days." />
+  <string id="AF_TERMINAL_UI_NpcRulerPolicyIntervalDays_Group" text="16. Policy system/2. NPC ruler policy" />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Title" text="Open Custom Prompt Text Store Folder Action" />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_OpenCustomPromptTextStoreFolderAction_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Title" text="Player Notoriety Courier Recent Distance Multiplier" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Hint" text="Configure Player Notoriety Courier Recent Distance Multiplier." />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyCourierRecentDistanceMultiplier_Group" text="8. Player notoriety" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Title" text="Player Notoriety Debug Logs" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyDebugLogs_Group" text="8. Player notoriety" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Title" text="Player Notoriety Major Prompt Chars" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Hint" text="Configure Player Notoriety Major Prompt Chars." />
+  <string id="AF_TERMINAL_UI_PlayerNotorietyMajorPromptChars_Group" text="8. Player notoriety" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Title" text="Player Notoriety Summary Interval Days" />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Hint" text="Configure Player Notoriety Summary Interval Days." />
+  <string id="AF_TERMINAL_UI_PlayerNotorietySummaryIntervalDays_Group" text="8. Player notoriety" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Title" text="Player Policy API Source Dropdown" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyApiSourceDropdown_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Title" text="Player Policy Auto Draft API Source Dropdown" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyAutoDraftApiSourceDropdown_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Title" text="Player Policy Custom Maximum Tokens" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Hint" text="Configure Player Policy Custom Maximum Tokens." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyCustomMaxTokens_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Title" text="Player Policy Effect Module Detail Count" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Hint" text="Configure Player Policy Effect Module Detail Count." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectModuleDetailCount_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Title" text="Player Policy Effect Postprocess Maximum Tokens" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Hint" text="Configure Player Policy Effect Postprocess Maximum Tokens." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyEffectPostprocessMaxTokens_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Title" text="Player Policy Follow Selected API Tokens" />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_PlayerPolicyFollowSelectedApiTokens_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Title" text="Policy Recent Active Count" />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Hint" text="Configure Policy Recent Active Count." />
+  <string id="AF_TERMINAL_UI_PolicyRecentActiveCount_Group" text="16. Policy system" />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Title" text="Policy Related Active Count" />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Hint" text="Configure Policy Related Active Count." />
+  <string id="AF_TERMINAL_UI_PolicyRelatedActiveCount_Group" text="16. Policy system" />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Title" text="Preserve Scene Asterisk Actions" />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_PreserveSceneAsteriskActions_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Title" text="Proactive NPC Known Major Multiplier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Hint" text="Configure Proactive NPC Known Major Multiplier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcKnownMajorMultiplier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Title" text="Proactive NPC Minimum Need Urgency" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Hint" text="Configure Proactive NPC Minimum Need Urgency." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcMinNeedUrgency_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Title" text="Proactive NPC Notoriety Chance Multiplier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Hint" text="Configure Proactive NPC Notoriety Chance Multiplier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcNotorietyChanceMultiplier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Title" text="Proactive NPC Request Chance Percent" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Hint" text="Configure Proactive NPC Request Chance Percent." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestChancePercent_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Title" text="Proactive NPC Request Clan Debt Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Hint" text="Configure Proactive NPC Request Clan Debt Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanDebtThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Title" text="Proactive NPC Request Clan Gold Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Hint" text="Configure Proactive NPC Request Clan Gold Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Title" text="Proactive NPC Request Distance Multiplier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Hint" text="Configure Proactive NPC Request Distance Multiplier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Title" text="Proactive NPC Request Fief Garrison Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="Configure Proactive NPC Request Fief Garrison Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Title" text="Proactive NPC Request Fief Loyalty Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Hint" text="Configure Proactive NPC Request Fief Loyalty Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefLoyaltyThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Title" text="Proactive NPC Request Fief Security Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Hint" text="Configure Proactive NPC Request Fief Security Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefSecurityThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Title" text="Proactive NPC Request Food Days Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Hint" text="Configure Proactive NPC Request Food Days Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestFoodDaysThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Title" text="Proactive NPC Request Global Cooldown Hours" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Hint" text="Configure Proactive NPC Request Global Cooldown Hours." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGlobalCooldownHours_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Title" text="Proactive NPC Request Greeting Global Cooldown Days" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Hint" text="Configure Proactive NPC Request Greeting Global Cooldown Days." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestGreetingGlobalCooldownDays_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Title" text="Proactive NPC Request Hero Cooldown Days" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Hint" text="Configure Proactive NPC Request Hero Cooldown Days." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestHeroCooldownDays_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Title" text="Proactive NPC Request Isolation Influence Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Hint" text="Configure Proactive NPC Request Isolation Influence Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationInfluenceThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Title" text="Proactive NPC Request Isolation Maximum Friendly Clans" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Hint" text="Configure Proactive NPC Request Isolation Maximum Friendly Clans." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestIsolationMaxFriendlyClans_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Title" text="Proactive NPC Request Low Morale Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Hint" text="Configure Proactive NPC Request Low Morale Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestLowMoraleThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Title" text="Proactive NPC Request Marriage Adult Clan Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Hint" text="Configure Proactive NPC Request Marriage Adult Clan Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMarriageAdultClanThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Title" text="Proactive NPC Request Minimum Clan Tier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Hint" text="Configure Proactive NPC Request Minimum Clan Tier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMinClanTier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Title" text="Proactive NPC Request Money Gold Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Hint" text="Configure Proactive NPC Request Money Gold Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyGoldThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Title" text="Proactive NPC Request Money Wage Days Threshold" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Hint" text="Configure Proactive NPC Request Money Wage Days Threshold." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMoneyWageDaysThreshold_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Title" text="Proactive NPC Request Mount Ratio Threshold Percent" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Hint" text="Configure Proactive NPC Request Mount Ratio Threshold Percent." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountRatioThresholdPercent_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Title" text="Proactive NPC Request Mount Shortage Weight" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Hint" text="Configure Proactive NPC Request Mount Shortage Weight." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestMountShortageWeight_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Title" text="Proactive NPC Request Overburden Ratio Threshold Percent" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Hint" text="Configure Proactive NPC Request Overburden Ratio Threshold Percent." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestOverburdenRatioThresholdPercent_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Title" text="Proactive NPC Request Prisoner Ratio Threshold Percent" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Hint" text="Configure Proactive NPC Request Prisoner Ratio Threshold Percent." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestPrisonerRatioThresholdPercent_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Title" text="Proactive NPC Request Romantic Interaction Global Cooldown Days" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Hint" text="Configure Proactive NPC Request Romantic Interaction Global Cooldown Days." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestRomanticInteractionGlobalCooldownDays_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Title" text="Proactive NPC Request Scan Interval Hours" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Hint" text="Configure Proactive NPC Request Scan Interval Hours." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestScanIntervalHours_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Title" text="Proactive NPC Request Territorial Interrogation Global Cooldown Days" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Hint" text="Configure Proactive NPC Request Territorial Interrogation Global Cooldown Days." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Title" text="Proactive NPC Request Territorial Interrogation Settlement Range Multiplier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Hint" text="Configure Proactive NPC Request Territorial Interrogation Settlement Range Multiplier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Title" text="Proactive NPC Request Test Mode" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTestMode_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Title" text="Proactive NPC Request Troop Ratio Threshold Percent" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Hint" text="Configure Proactive NPC Request Troop Ratio Threshold Percent." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTroopRatioThresholdPercent_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Title" text="Proactive NPC Request Type Fatigue Days" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Hint" text="Configure Proactive NPC Request Type Fatigue Days." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueDays_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Title" text="Proactive NPC Request Type Fatigue Multiplier" />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="Configure Proactive NPC Request Type Fatigue Multiplier." />
+  <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Group" text="7. NPC proactive contact" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="Restore Default World Diplomacy Prompt" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="Open the editor or run this action." />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Title" text="SETS Diagnostic Log Maximum Size Megabytes" />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Hint" text="Configure SETS Diagnostic Log Maximum Size Megabytes." />
+  <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Title" text="Show Noble Gathering Guest Arrival Messages" />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_ShowNobleGatheringGuestArrivalMessages_Group" text="18. Noble gatherings" />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Title" text="Use AI Evaluated Custom Policy Cost" />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_UseAiEvaluatedCustomPolicyCost_Group" text="16. Policy system/1. Player policy" />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Title" text="Use Detailed Scene Speech Prompt" />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Group" text="9. Prompt extensions" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Title" text="Weekly Report Length Preset" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Hint" text="Configure Weekly Report Length Preset." />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Title" text="Weekly Report Popup Body Font Size" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="Configure Weekly Report Popup Body Font Size." />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Title" text="Weekly Report Reading XP Per Hundred Chars" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Hint" text="Configure Weekly Report Reading XP Per Hundred Chars." />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Title" text="Weekly Report Reading XP Skill Cap" />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Hint" text="Configure Weekly Report Reading XP Skill Cap." />
+  <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Group" text="Weekly reports / bulletins" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Title" text="Weekly Report Requests Per Minute" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Hint" text="Configure Weekly Report Requests Per Minute." />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="World Diplomacy Activity Dropdown" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Title" text="World Diplomacy Continent Spread Days" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Hint" text="Configure World Diplomacy Continent Spread Days." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="World Diplomacy Court Maximum Delivery Days" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="Configure World Diplomacy Court Maximum Delivery Days." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="World Diplomacy Declaration Maximum Characters" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Configure World Diplomacy Declaration Maximum Characters." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="World Diplomacy Declaration Minimum Characters" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Configure World Diplomacy Declaration Minimum Characters." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="World Diplomacy History Compression Target Thousands" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="Configure World Diplomacy History Compression Target Thousands." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Group" text="17. AI diplomacy (testing)/6. Long-term archive (advanced)" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Title" text="World Diplomacy History Compression Trigger Thousands" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Hint" text="Configure World Diplomacy History Compression Trigger Thousands." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTriggerThousands_Group" text="17. AI diplomacy (testing)/6. Long-term archive (advanced)" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Title" text="World Diplomacy Maximum Concurrent Ordinary Rounds" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Hint" text="Configure World Diplomacy Maximum Concurrent Ordinary Rounds." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyMaxConcurrentOrdinaryRounds_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Title" text="World Diplomacy Offensive War Cooldown Days" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Hint" text="Configure World Diplomacy Offensive War Cooldown Days." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyOffensiveWarCooldownDays_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Title" text="World Diplomacy Peace Protection Days" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Hint" text="Configure World Diplomacy Peace Protection Days." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyPeaceProtectionDays_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Title" text="World Diplomacy Round Length Dropdown" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Hint" text="Choose a value from the list." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Title" text="World Diplomacy Start New Game At Peace" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="Enable or disable this feature." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Title" text="World Diplomacy Threat Compliance Issuer Relation Reward" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Hint" text="Configure World Diplomacy Threat Compliance Issuer Relation Reward." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Title" text="World Diplomacy Trade Alliance Failed Proposal Cooldown Days" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Hint" text="Configure World Diplomacy Trade Alliance Failed Proposal Cooldown Days." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyTradeAllianceFailedProposalCooldownDays_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
 </strings>
 </base>
