@@ -3660,11 +3660,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 玩家自定义规则文案已保存。" : "[提示词扩展] 玩家自定义规则文案已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
+				? Ui("AF_MCM_Editor_PlayerPrompt_Saved", "[Prompt extension] Player custom rule text saved.")
+				: Ui("AF_MCM_Editor_PlayerPrompt_SessionOnly", "[Prompt extension] Player custom rule text is active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_PlayerPrompt_SaveFailed", "[Prompt extension] Saving failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3688,11 +3690,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 王国叛乱系统提示词已保存。" : "[提示词扩展] 王国叛乱系统提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
+				? Ui("AF_MCM_Editor_KingdomRebellion_Saved", "[Prompt extension] Kingdom rebellion system prompt saved.")
+				: Ui("AF_MCM_Editor_KingdomRebellion_SessionOnly", "[Prompt extension] Kingdom rebellion system prompt is active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存王国叛乱系统提示词失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_KingdomRebellion_SaveFailed", "[Prompt extension] Saving the kingdom rebellion system prompt failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3716,11 +3720,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 周报写作要求文案已保存。" : "[提示词扩展] 周报写作要求文案已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
+				? Ui("AF_MCM_Editor_WeeklyRequirements_Saved", "[Prompt extension] Weekly report writing requirements saved.")
+				: Ui("AF_MCM_Editor_WeeklyRequirements_SessionOnly", "[Prompt extension] Weekly report writing requirements are active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存周报写作要求失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_WeeklyRequirements_SaveFailed", "[Prompt extension] Saving the weekly report writing requirements failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3744,11 +3750,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] NPC个性背景生成要求已保存。" : "[提示词扩展] NPC个性背景生成要求已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
+				? Ui("AF_MCM_Editor_PersonaRequirements_Saved", "[Prompt extension] NPC personality and background generation requirements saved.")
+				: Ui("AF_MCM_Editor_PersonaRequirements_SessionOnly", "[Prompt extension] NPC personality and background generation requirements are active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存NPC个性背景生成要求失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_PersonaRequirements_SaveFailed", "[Prompt extension] Saving the NPC personality and background generation requirements failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3761,7 +3769,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
 			settings.DailyMemoryCompressionWritingRequirements = text;
-		}, "日结压缩写作要求");
+		}, Ui("AF_MCM_Editor_DailyCompression_Name", "daily memory compression writing requirements"));
 	}
 
 	private void SaveMemoryOverviewCompressionWritingRequirementsFromEditor(string input)
@@ -3773,7 +3781,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
 			settings.MemoryOverviewCompressionWritingRequirements = text;
-		}, "记忆大压缩写作要求");
+		}, Ui("AF_MCM_Editor_MemoryOverviewCompression_Name", "memory overview compression writing requirements"));
 	}
 
 	private void SaveMajorActionCompressionWritingRequirementsFromEditor(string input)
@@ -3785,7 +3793,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
 			settings.MajorActionCompressionWritingRequirements = text;
-		}, "重大履历压缩写作要求");
+		}, Ui("AF_MCM_Editor_MajorActionCompression_Name", "major-action compression writing requirements"));
 	}
 
 	private void FinishCompressionWritingRequirementsSave(bool persistedToFile, Action<DuelSettings> applyToSettings, string displayName)
@@ -3805,13 +3813,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
 			string message = persistedToFile
-				? "[提示词扩展] " + displayName + "已保存。"
-				: "[提示词扩展] " + displayName + "已用于本局，但写入本地文件失败，请查看日志。";
+				? UiFormat("AF_MCM_Editor_Compression_Saved", "[Prompt extension] {NAME} saved.", ("NAME", displayName))
+				: UiFormat("AF_MCM_Editor_Compression_SessionOnly", "[Prompt extension] {NAME} is active for this session, but local persistence failed. Check the log.", ("NAME", displayName));
 			InformationManager.DisplayMessage(new InformationMessage(message, persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存" + displayName + "失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Editor_Compression_SaveFailed", "[Prompt extension] Saving {NAME} failed; try again in MCM: ", ("NAME", displayName)) + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3835,11 +3843,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[政策系统] 玩家政策评判提示词已保存。" : "[政策系统] 玩家政策评判提示词已用于本局，但写入本地文件失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
+				? Ui("AF_MCM_Editor_PlayerPolicy_Saved", "[Policy system] Player policy evaluation prompt saved.")
+				: Ui("AF_MCM_Editor_PlayerPolicy_SessionOnly", "[Policy system] Player policy evaluation prompt is active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 保存玩家政策评判提示词失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_PlayerPolicy_SaveFailed", "[Policy system] Saving the player policy evaluation prompt failed; try again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3854,11 +3864,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			DuelSettings settings = GetSettings();
 			if (settings != null) settings.WorldDiplomacyPrompt = text;
 			BaseSettingsProvider.Instance?.SaveSettings(settings ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persisted ? "[AI外交] 自定义偏好已保存。" : "[AI外交] 自定义偏好已用于本局，但写入本地文件失败。", persisted ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persisted
+				? Ui("AF_MCM_Editor_Diplomacy_Saved", "[AI diplomacy] Custom preferences saved.")
+				: Ui("AF_MCM_Editor_Diplomacy_SessionOnly", "[AI diplomacy] Custom preferences are active for this session, but local persistence failed."), persisted ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AI外交] 保存自定义偏好失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_Diplomacy_SaveFailed", "[AI diplomacy] Saving custom preferences failed: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3882,12 +3894,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			string message = persistedToFile ? "[政策系统] NPC统治者政策提示词已保存。" : "[政策系统] NPC统治者政策提示词已用于本局，但写入本地文件失败，请查看日志。";
+			string message = persistedToFile
+				? Ui("AF_MCM_Editor_RulerPolicy_Saved", "[Policy system] NPC ruler policy prompt saved.")
+				: Ui("AF_MCM_Editor_RulerPolicy_SessionOnly", "[Policy system] NPC ruler policy prompt is active for this session, but local persistence failed. Check the log.");
 			InformationManager.DisplayMessage(new InformationMessage(message, persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 保存NPC统治者政策提示词失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_RulerPolicy_SaveFailed", "[Policy system] Saving the NPC ruler policy prompt failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 

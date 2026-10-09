@@ -2552,6 +2552,34 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_NpcFallback" text="该NPC" />
   <string id="AF_UI_Persona_GeneratingHint" text="正在生成{NAME}的个性与背景，请稍等......" />
   <string id="AF_UI_Courier_Button" text="信使与邮递" />
+  <string id="AF_UI_MemoryFailure_Acknowledge" text="知道了" />
+  <string id="AF_MCM_Editor_PlayerPrompt_Saved" text="[提示词扩展] 玩家自定义规则文案已保存。" />
+  <string id="AF_MCM_Editor_PlayerPrompt_SessionOnly" text="[提示词扩展] 玩家自定义规则文案已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
+  <string id="AF_MCM_Editor_PlayerPrompt_SaveFailed" text="[提示词扩展] 保存失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_MCM_Editor_KingdomRebellion_Saved" text="[提示词扩展] 王国叛乱系统提示词已保存。" />
+  <string id="AF_MCM_Editor_KingdomRebellion_SessionOnly" text="[提示词扩展] 王国叛乱系统提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
+  <string id="AF_MCM_Editor_KingdomRebellion_SaveFailed" text="[提示词扩展] 保存王国叛乱系统提示词失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_MCM_Editor_WeeklyRequirements_Saved" text="[提示词扩展] 周报写作要求文案已保存。" />
+  <string id="AF_MCM_Editor_WeeklyRequirements_SessionOnly" text="[提示词扩展] 周报写作要求文案已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
+  <string id="AF_MCM_Editor_WeeklyRequirements_SaveFailed" text="[提示词扩展] 保存周报写作要求失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_MCM_Editor_PersonaRequirements_Saved" text="[提示词扩展] NPC个性背景生成要求已保存。" />
+  <string id="AF_MCM_Editor_PersonaRequirements_SessionOnly" text="[提示词扩展] NPC个性背景生成要求已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
+  <string id="AF_MCM_Editor_PersonaRequirements_SaveFailed" text="[提示词扩展] 保存NPC个性背景生成要求失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_MCM_Editor_DailyCompression_Name" text="日结压缩写作要求" />
+  <string id="AF_MCM_Editor_MemoryOverviewCompression_Name" text="记忆大压缩写作要求" />
+  <string id="AF_MCM_Editor_MajorActionCompression_Name" text="重大履历压缩写作要求" />
+  <string id="AF_MCM_Editor_Compression_Saved" text="[提示词扩展] {NAME}已保存。" />
+  <string id="AF_MCM_Editor_Compression_SessionOnly" text="[提示词扩展] {NAME}已用于本局，但写入本地文件失败，请查看日志。" />
+  <string id="AF_MCM_Editor_Compression_SaveFailed" text="[提示词扩展] 保存{NAME}失败，请在 MCM 中再试一次：" />
+  <string id="AF_MCM_Editor_PlayerPolicy_Saved" text="[政策系统] 玩家政策评判提示词已保存。" />
+  <string id="AF_MCM_Editor_PlayerPolicy_SessionOnly" text="[政策系统] 玩家政策评判提示词已用于本局，但写入本地文件失败，请查看日志。" />
+  <string id="AF_MCM_Editor_PlayerPolicy_SaveFailed" text="[政策系统] 保存玩家政策评判提示词失败，请在 MCM 中再试一次：" />
+  <string id="AF_MCM_Editor_Diplomacy_Saved" text="[AI外交] 自定义偏好已保存。" />
+  <string id="AF_MCM_Editor_Diplomacy_SessionOnly" text="[AI外交] 自定义偏好已用于本局，但写入本地文件失败。" />
+  <string id="AF_MCM_Editor_Diplomacy_SaveFailed" text="[AI外交] 保存自定义偏好失败：" />
+  <string id="AF_MCM_Editor_RulerPolicy_Saved" text="[政策系统] NPC统治者政策提示词已保存。" />
+  <string id="AF_MCM_Editor_RulerPolicy_SessionOnly" text="[政策系统] NPC统治者政策提示词已用于本局，但写入本地文件失败，请查看日志。" />
+  <string id="AF_MCM_Editor_RulerPolicy_SaveFailed" text="[政策系统] 保存NPC统治者政策提示词失败，请在 MCM 中再点一次保存：" />
 </strings>
 </base>
 
