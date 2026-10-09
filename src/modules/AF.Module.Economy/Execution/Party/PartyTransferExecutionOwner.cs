@@ -78,7 +78,7 @@ internal static class PartyTransferExecutionOwner
 					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.HirePriceDenarsPerUnit ?? 0));
 					bool isVolunteer = context.IsVolunteer(entry);
 					AppendPartyTransferFactItem(isVolunteer ? recruitedVolunteerFacts : transferredTroopFacts, entry, applied);
-					notificationResults.Add((isVolunteer ? "已招募 " : "已获得 ") + applied + " 名" + entry.DisplayName);
+					notificationResults.Add(EconomyUiTexts.PartyTransferTroopReceived(applied, entry.DisplayName, isVolunteer));
 				}
 				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
 				{
@@ -103,7 +103,7 @@ internal static class PartyTransferExecutionOwner
 					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
 					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.BuyPriceDenarsPerUnit ?? 0));
 					AppendPartyTransferFactItem(transferredPrisonerFacts, entry, applied);
-					notificationResults.Add("已获得 " + (entry.IsHero ? ("俘虏" + entry.DisplayName) : (applied + " 名" + entry.DisplayName + "俘虏")));
+					notificationResults.Add(EconomyUiTexts.PartyTransferPrisonerReceived(applied, entry.DisplayName, entry.IsHero));
 				}
 				bool troopAll = matchCollection.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
 				if (troopAll)
@@ -183,7 +183,12 @@ internal static class PartyTransferExecutionOwner
 				combinedFact.Append(batchSummary);
                 if (partialEffects.Length > 0) combinedFact.Append(partialEffects);
 				factResults.Add(combinedFact.ToString());
-				notificationResults.Add(batchSummary);
+				notificationResults.Add(EconomyUiTexts.PartyTransferBatchSummary(
+					attemptedEntries,
+					successfulEntries,
+					failedOrPartialEntries,
+					actualUnits,
+					actualValue));
 				Logger.Log("Logic", "[PartyTransfer] batch_done troopAll=" + troopAll + " prisonerAll=" + prisonerAll + " attempted=" + attemptedEntries + " succeeded=" + successfulEntries + " failedOrPartial=" + failedOrPartialEntries + " actualUnits=" + actualUnits + " actualValue=" + actualValue);
 			}
 			text = PartyTransferTagCodec.Strip(text);

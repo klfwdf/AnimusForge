@@ -64,5 +64,36 @@
     <string id="AF_ECO_UI_DebtDueToday" text="还款期限：今日到期（{DATE}）" />
     <string id="AF_ECO_UI_DebtOverdue" text="还款期限：已逾期 {DAYS} 天（截止 {DATE}）" />
     <string id="AF_ECO_UI_DebtNoDeadline" text="未设定期限" />
+    <string id="AF_ECO_UI_RpForgeConfirmInput" text="正在确认输入并整理安全模板候选……（Esc 可取消）" />
+    <string id="AF_ECO_UI_RpForgePreparingCandidates" text="正在整理 Top 50 安全模板……（Esc 可取消）" />
+    <string id="AF_ECO_UI_RpForgeOutcomeGood" text="优良" />
+    <string id="AF_ECO_UI_RpForgeOutcomeNormal" text="正常" />
+    <string id="AF_ECO_UI_RpForgeOutcomeBad" text="劣化" />
+    <string id="AF_ECO_UI_RpForgeOutcomeJunk" text="垃圾物品" />
+    <string id="AF_ECO_UI_RpForgeOutcomeSuccess" text="成功" />
+    <string id="AF_ECO_UI_RpForgeLabelItemName" text="物品名称" />
+    <string id="AF_ECO_UI_RpForgeLabelMatchingTemplate" text="匹配模板" />
+    <string id="AF_ECO_UI_RpForgeLabelTemplateType" text="模板类型" />
+    <string id="AF_ECO_UI_RpForgeLabelBasePrice" text="标准价格" />
+    <string id="AF_ECO_UI_RpForgeLabelInvestment" text="投入金额" />
+    <string id="AF_ECO_UI_RpForgeLabelCraftedValue" text="成品价值" />
+    <string id="AF_ECO_UI_RpForgeConfirmationLine" text="{LABEL}：{VALUE}" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPrice" text="{LABEL}：{AMOUNT} 第纳尔" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPlayerChoice" text="模板选择：玩家手动选择（{COUNT} 候选）" />
+    <string id="AF_ECO_UI_RpForgeConfirmationExactMatch" text="模板选择：游戏数据精确匹配" />
+    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="制造成功率：100%\n结果：成功制造该物品。" />
+    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="制造成功率：{CHANCE}\n未命中时：垃圾物品（投入仍会消耗）。" />
+    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="\n\n确认制造？" />
+    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="\n\n【警告】劣化概率高于 33.33%；建议将锻造从 {CURRENT} 提高至 {RECOMMENDED} 级（模板每 {PRICE} 第纳尔对应 1 级）。" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectRetained" text="{OUTCOME} {PROBABILITY}：有效正属性保留 {RETAINED}；重量增加 {WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectBonus" text="{OUTCOME} {PROBABILITY}：每项有效正属性 +{VALUE}；重量降低 {WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectStable" text="{OUTCOME} {PROBABILITY}：有效正属性与重量不变" />
+    <string id="AF_ECO_UI_RpForgeCompleted" text="制造完成：{NAME}\n结果：{OUTCOME}\n成品价值：{VALUE} 第纳尔\n锻造体力：-{STAMINA}　基础锻造经验：+{EXPERIENCE}{ATTRIBUTES}" />
+    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="\n基础锻造经验通知被其他 Mod 中断；为防止重复经验，本次物品与消耗仍已结算。" />
+    <string id="AF_ECO_UI_PartyTransferVolunteerReceived" text="已招募 {AMOUNT} 名{NAME}" />
+    <string id="AF_ECO_UI_PartyTransferTroopReceived" text="已获得 {AMOUNT} 名{NAME}" />
+    <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="已获得俘虏{NAME}" />
+    <string id="AF_ECO_UI_PartyTransferPrisonerReceived" text="已获得 {AMOUNT} 名{NAME}俘虏" />
+    <string id="AF_ECO_UI_PartyTransferBatchSummary" text="部队与俘虏转移汇总：尝试项{ATTEMPTED}，成功项{SUCCEEDED}，失败或不足项{FAILED}，实际转移{UNITS}人，实际指导总值约{VALUE}第纳尔。" />
   </strings>
 </base>

@@ -590,39 +590,38 @@ public partial class RewardSystemBehavior
 		}
 		else
 		{
-			confirmation.Append("物品名称：").Append(name)
-				.Append("\n匹配模板：").Append(template.Name?.ToString() ?? template.StringId ?? "")
-				.Append(" (").Append(template.StringId ?? "").Append(')')
-				.Append("\n模板类型：").Append(selected.TypeLabel ?? GetPlayerRpTemplateTypeLabel(template))
-				.Append("\n标准价格：").Append(templateBaseValue.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔\n投入金额：").Append(investedDenars.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔\n成品价值：").Append(craftedItemValue.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔");
+			confirmation.Append(EconomyUiTexts.PlayerRpConfirmationLine(EconomyUiTexts.PlayerRpLabelItemName, name))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationLine(
+					EconomyUiTexts.PlayerRpLabelMatchingTemplate,
+					(template.Name?.ToString() ?? template.StringId ?? "") + " (" + (template.StringId ?? "") + ")"))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationLine(
+					EconomyUiTexts.PlayerRpLabelTemplateType,
+					selected.TypeLabel ?? GetPlayerRpTemplateTypeLabel(template)))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelBasePrice, templateBaseValue))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelInvestment, investedDenars))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelCraftedValue, craftedItemValue));
 			if (string.Equals(selectionSource, "player_choice", StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：玩家手动选择（Top ")
-					.Append(candidates.Count.ToString(CultureInfo.InvariantCulture))
-					.Append(" 候选）");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPlayerChoice(candidates.Count));
 			}
 			else if (string.Equals(
 				selectionSource,
 				"exact_game_item",
 				StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：游戏数据精确匹配");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationExactMatch);
 			}
 
 			if (investedDenars >= templateBaseValue)
 			{
-				confirmation.Append("\n制造成功率：100%\n结果：成功制造该物品。");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationGuaranteed);
 			}
 			else
 			{
-				confirmation.Append("\n制造成功率：")
-					.Append(FormatPlayerRpProbability(investedDenars, templateBaseValue))
-					.Append("\n未命中时：垃圾物品（投入仍会消耗）。");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationChance(
+					FormatPlayerRpProbability(investedDenars, templateBaseValue)));
 			}
-			confirmation.Append("\n\n确认制造？");
+			confirmation.Append(EconomyUiTexts.PlayerRpConfirmationQuestion);
 		}
 
 		preview = new PlayerRpCraftPreview
@@ -973,15 +972,13 @@ public partial class RewardSystemBehavior
 				GeneratedStringId = record.GeneratedStringId,
 				DisplayName = generatedDisplayName ?? displayName,
 				Outcome = outcome,
-				Message = "制造完成：" + displayName + "\n结果：" + GetPlayerRpOutcomeLabel(outcome)
-					+ "\n成品价值："
-					+ current.CraftedItemValue.ToString(CultureInfo.InvariantCulture)
-					+ " 第纳尔"
-					+ "\n锻造体力：-"
-					+ staminaCost.ToString(CultureInfo.InvariantCulture)
-					+ "　基础锻造经验：+"
-					+ current.CraftingExperienceBaseAmount.ToString(CultureInfo.InvariantCulture)
-					+ (string.IsNullOrWhiteSpace(statText) ? "" : "\n" + statText)
+				Message = EconomyUiTexts.PlayerRpCraftCompleted(
+					displayName,
+					GetPlayerRpOutcomeLabel(outcome),
+					current.CraftedItemValue,
+					staminaCost,
+					current.CraftingExperienceBaseAmount,
+					string.IsNullOrWhiteSpace(statText) ? "" : "\n" + statText)
 			};
 			if (!TryReadPlayerRpCrafterCraftingResources(
 					staminaCrafter,
@@ -1024,8 +1021,7 @@ public partial class RewardSystemBehavior
 			}
 			catch (Exception experienceException)
 			{
-				result.Message +=
-					"\n基础锻造经验通知被其他 Mod 中断；为防止重复经验，本次物品与消耗仍已结算。";
+				result.Message += EconomyUiTexts.PlayerRpCraftXpInterrupted;
 				try
 				{
 					Logger.Log(
@@ -3533,13 +3529,10 @@ public partial class RewardSystemBehavior
 			int recommendedSmithing =
 				GetPlayerRpEquipmentRecommendedSmithingLevel(
 					templateBaseValue);
-			builder.Append("\n\n【警告】劣化概率高于 33.33%；建议将锻造从 ")
-				.Append(Math.Max(0, smithing).ToString(CultureInfo.InvariantCulture))
-				.Append(" 提高至 ")
-				.Append(recommendedSmithing.ToString(CultureInfo.InvariantCulture))
-				.Append(" 级（模板每 ")
-				.Append(PlayerRpTemplatePricePerSmithingLevel.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔对应 1 级）。");
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentWarning(
+				Math.Max(0, smithing),
+				recommendedSmithing,
+				PlayerRpTemplatePricePerSmithingLevel));
 		}
 	}
 
@@ -3564,33 +3557,33 @@ public partial class RewardSystemBehavior
 		{
 			builder.Append('\n');
 		}
-		builder.Append(GetPlayerRpOutcomeLabel(outcome))
-			.Append(' ')
-			.Append(FormatPlayerRpProbability(probabilityWeight, 30000))
-			.Append("：");
+		string outcomeLabel = GetPlayerRpOutcomeLabel(outcome);
+		string probability = FormatPlayerRpProbability(probabilityWeight, 30000);
 		if (underfunded)
 		{
 			double retainedPercent = Math.Max(0d, multiplier) * 100d;
 			double weightIncreasePercent = Math.Max(
 				0d,
 				(1d / Math.Sqrt(Math.Max(double.Epsilon, multiplier)) - 1d) * 100d);
-			builder.Append("有效正属性保留 ")
-				.Append(FormatPlayerRpEffectPercent(retainedPercent))
-				.Append("；重量增加 ")
-				.Append(FormatPlayerRpEffectPercent(weightIncreasePercent));
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectRetained(
+				outcomeLabel,
+				probability,
+				FormatPlayerRpEffectPercent(retainedPercent),
+				FormatPlayerRpEffectPercent(weightIncreasePercent)));
 		}
 		else if (bonus > 0)
 		{
 			double weightReductionPercent =
 				(1d - Math.Pow(0.98d, bonus)) * 100d;
-			builder.Append("每项有效正属性 +")
-				.Append(bonus.ToString(CultureInfo.InvariantCulture))
-				.Append("；重量降低 ")
-				.Append(FormatPlayerRpEffectPercent(weightReductionPercent));
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectBonus(
+				outcomeLabel,
+				probability,
+				bonus,
+				FormatPlayerRpEffectPercent(weightReductionPercent)));
 		}
 		else
 		{
-			builder.Append("有效正属性与重量不变");
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectStable(outcomeLabel, probability));
 		}
 	}
 
@@ -3612,15 +3605,15 @@ public partial class RewardSystemBehavior
 		switch ((outcome ?? "").Trim().ToLowerInvariant())
 		{
 		case "good":
-			return "优良";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("good");
 		case "normal":
-			return "正常";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("normal");
 		case "bad":
-			return "劣化";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("bad");
 		case "junk":
-			return "垃圾物品";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("junk");
 		default:
-			return "成功";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("success");
 		}
 	}
 
