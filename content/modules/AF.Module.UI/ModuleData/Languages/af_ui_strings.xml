@@ -388,6 +388,24 @@
   <string id="AF_UI_Terminal_DescriptionLabel" text="Description:" />
   <string id="AF_UI_Terminal_SourcesLabel" text="Sources:" />
   <string id="AF_UI_Terminal_EditValue" text="Click to enter ✎" />
+  <string id="AF_UI_Terminal_BreadcrumbRoot" text="Terminal" />
+  <string id="AF_UI_Terminal_ItemsCount" text="{COUNT} items" />
+  <string id="AF_UI_Terminal_UnitSeconds" text=" sec" />
+  <string id="AF_UI_Terminal_UnitDays" text=" days" />
+  <string id="AF_UI_Terminal_UnitHours" text=" hours" />
+  <string id="AF_UI_Terminal_UnitDenars" text=" denars" />
+  <string id="AF_UI_Terminal_NumericTitle" text="Set {TITLE}" />
+  <string id="AF_UI_Terminal_NumericPrompt" text="Enter a value (valid range: {MIN} ~ {MAX}):
+{HINT}" />
+  <string id="AF_UI_Terminal_DropdownTitle" text="Select {TITLE}" />
+  <string id="AF_UI_Terminal_DropdownPrompt" text="Choose from the available options:
+{HINT}" />
+  <string id="AF_UI_Terminal_TextTitle" text="Edit {TITLE}" />
+  <string id="AF_UI_Terminal_Confirm" text="Confirm" />
+  <string id="AF_UI_Terminal_Cancel" text="Cancel" />
+  <string id="AF_UI_Terminal_Back" text="Back" />
+  <string id="AF_UI_Terminal_SettingTriggered" text="Triggered: {TITLE}" />
+  <string id="AF_UI_Terminal_SettingTriggerFailed" text="Trigger failed: {ERROR}" />
   <string id="AF_MCM_Duel_RenownTransfer_Hint" text="After a formal duel, the winner gains the renown lost by the loser clan. No transfer occurs when both sides belong to the same clan or either side has no clan. Loser renown never falls below 0 and clan tier is not forcibly reduced." />
   <string id="AF_MCM_Duel_RenownMinimum_Hint" text="Minimum renown lost by the loser clan each time. Default 20; if the clan has less, loss is capped at 0." />
   <string id="AF_MCM_Duel_RenownPercent_Hint" text="Calculates a percentage from the loser clan renown before settlement and uses the larger value with the minimum loss. Default: 3%." />
