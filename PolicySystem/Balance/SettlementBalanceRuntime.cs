@@ -20,7 +20,7 @@ internal static class SettlementBalanceRuntime
 	private static bool _reportedFoodFailure;
 	private static bool _reportedDailyFailure;
 	private static readonly HashSet<MethodBase> ModelMethods = new HashSet<MethodBase>();
-	private static readonly TextObject CapExplanation = new TextObject("玩家设置的总量瓶颈");
+	private static readonly TextObject CapExplanation = new TextObject("{=AFPOL_UI_CapExplanation}Player-set total cap");
 	[ThreadStatic] private static DailyContext _day;
 	[ThreadStatic] private static bool _readingProsperityFood;
 
@@ -74,7 +74,7 @@ internal static class SettlementBalanceRuntime
 				if (!_reportedDailyFailure)
 				{
 					_reportedDailyFailure = true;
-					try { InformationManager.DisplayMessage(new InformationMessage("总量瓶颈未启用：日结补丁安装失败，详见政策日志。")); } catch { }
+					try { InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_DailyPatchFailed", "Settlement caps disabled: daily patch installation failed; see the policy log."))); } catch { }
 				}
 			}
 		}
@@ -98,13 +98,13 @@ internal static class SettlementBalanceRuntime
 			{
 				PolicySystemLog.Failure("Balance", "prosperity-food-removal-failed", ex.Message, ex.ToString());
 				if (DuelSettings.ShouldDisableProsperityFoodConsumption())
-					ReportFoodFailure("无法取消繁荣耗粮：原版补丁结构不匹配；未应用估算补偿。");
+					ReportFoodFailure(PolicyUiTexts.Get("AFPOL_UI_ProsperityFoodPatchFailed", "Unable to disable prosperity food consumption: the native patch layout did not match; no estimated compensation was applied."));
 			}
 		}
 		if (_foodInstalled && !_reportedFoodFailure && DuelSettings.ShouldDisableProsperityFoodConsumption() && !(models.SettlementFoodModel is DefaultSettlementFoodModel))
 		{
 			PolicySystemLog.Failure("Balance", "custom-food-model", "当前第三方粮食模型不继承原版模型。", "Prosperity food removal is only verified for the vanilla calculation; no guessed compensation applied.");
-			ReportFoodFailure("第三方粮食模型未使用原版计算，无法确认繁荣耗粮已取消。");
+			ReportFoodFailure(PolicyUiTexts.Get("AFPOL_UI_CustomFoodModelUnsupported", "The custom food model does not use the native calculation; prosperity food removal could not be confirmed."));
 		}
 	}
 	private static void ReportFoodFailure(string message)

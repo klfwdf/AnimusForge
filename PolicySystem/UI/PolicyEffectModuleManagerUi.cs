@@ -16,7 +16,7 @@ internal static class PolicyEffectModuleManagerUi
 		if (!PolicyEffectModuleManagerPopup.Show())
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"无法打开政策效果模块管理界面。",
+				PolicyUiTexts.Get("AFPOL_UI_ModuleManagerOpenFailed", "Unable to open the policy effect module manager."),
 				Color.FromUint(4294901760u)));
 		}
 	}
@@ -150,15 +150,15 @@ internal sealed class PolicyEffectModuleManagerPopup
 		}
 		if (!PolicyEffectModuleRetrievalSettings.TrySave(_dataSource.CreateSaveSnapshot(), out string error))
 		{
-			_dataSource.SetSaveFailure("保存失败：" + error);
+			_dataSource.SetSaveFailure(PolicyUiTexts.Format("AFPOL_UI_SaveFailed", "Save failed: {ERROR}", "ERROR", error));
 			InformationManager.DisplayMessage(new InformationMessage(
-				"保存政策效果模块设置失败：" + error,
+				PolicyUiTexts.Format("AFPOL_UI_ModuleManagerSaveFailed", "Failed to save policy effect module settings: {ERROR}", "ERROR", error),
 				Color.FromUint(4294901760u)));
 			return;
 		}
 		Close(silent: true);
 		InformationManager.DisplayMessage(new InformationMessage(
-			"政策效果模块设置已保存，仅影响之后新发起的政策。",
+			PolicyUiTexts.Get("AFPOL_UI_ModuleManagerSaved", "Policy effect module settings saved. They affect newly started policies only."),
 			Color.FromUint(4282569842u)));
 	}
 
@@ -209,17 +209,17 @@ internal sealed class PolicyEffectModuleManagerVM : ViewModel
 	{
 		_onSave = onSave;
 		_onCancel = onCancel;
-		TitleText = "政策效果模块管理";
-		DescriptionText = "分别控制四类新政策能检索到哪些效果。修改只在保存后生效，不会改变已有、待审或正在生成的政策。";
-		ModuleHeaderText = "模块";
-		PlayerHeaderText = "玩家政策";
-		LocalHeaderText = "地方政策";
-		RulerHeaderText = "统治者政策";
-		VassalHeaderText = "附庸国政策";
-		RestoreDefaultsText = "恢复默认";
-		CancelText = "取消";
-		SaveText = "保存并关闭";
-		StatusText = "所有改动都暂存在当前界面；取消或 Esc 会丢弃本次修改。";
+		TitleText = PolicyUiTexts.Get("AFPOL_UI_ModuleManagerTitle", "Policy Effect Module Manager");
+		DescriptionText = PolicyUiTexts.Get("AFPOL_UI_ModuleManagerDescription", "Choose which effects each of the four new policy contexts can retrieve. Changes take effect after saving and do not alter existing, pending, or generating policies.");
+		ModuleHeaderText = PolicyUiTexts.Get("AFPOL_UI_Module", "Module");
+		PlayerHeaderText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicy", "Player Policy");
+		LocalHeaderText = PolicyUiTexts.Get("AFPOL_UI_LocalPolicy", "Local Policy");
+		RulerHeaderText = PolicyUiTexts.Get("AFPOL_UI_RulerPolicy", "Ruler Policy");
+		VassalHeaderText = PolicyUiTexts.Get("AFPOL_UI_VassalPolicy", "Vassal Policy");
+		RestoreDefaultsText = PolicyUiTexts.Get("AFPOL_UI_RestoreDefaults", "Restore Defaults");
+		CancelText = PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel");
+		SaveText = PolicyUiTexts.Get("AFPOL_UI_SaveAndClose", "Save and Close");
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_ModuleManagerInitialStatus", "Changes are kept in this window until saved; Cancel or Esc discards them.");
 		ModuleItems = new MBBindingList<PolicyEffectModuleManagerRowVM>();
 		Dictionary<string, PolicyEffectModuleRetrievalState> states
 			= PolicyEffectModuleRetrievalSettings.CreateEditableStateSnapshot();
@@ -285,7 +285,7 @@ internal sealed class PolicyEffectModuleManagerVM : ViewModel
 			_suppressRowRefresh = false;
 		}
 		RefreshSummary();
-		StatusText = "已把工作副本恢复为所有兼容渠道开启；点击“保存并关闭”后才会写入。";
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_RestoredDefaultsStatus", "The working copy now enables every compatible context; click Save and Close to write the changes.");
 	}
 
 	public void ExecuteCancel()
@@ -308,7 +308,7 @@ internal sealed class PolicyEffectModuleManagerVM : ViewModel
 
 	internal void SetSaveFailure(string message)
 	{
-		StatusText = string.IsNullOrWhiteSpace(message) ? "保存失败。" : message.Trim();
+		StatusText = string.IsNullOrWhiteSpace(message) ? PolicyUiTexts.Get("AFPOL_UI_SaveFailedShort", "Save failed.") : message.Trim();
 	}
 
 	internal static IReadOnlyList<PolicyEffectModuleManagerRowVM> BuildRowsForContractTests(
@@ -338,21 +338,22 @@ internal sealed class PolicyEffectModuleManagerVM : ViewModel
 			return;
 		}
 		RefreshSummary();
-		StatusText = "有未保存的修改。只有新发起的政策会使用保存后的检索范围。";
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_UnsavedStatus", "There are unsaved changes. Only newly started policies use the saved retrieval scope.");
 	}
 
 	private void RefreshSummary()
 	{
-		SummaryText = string.Format(
-			"已启用  玩家 {0}/{1}   地方 {2}/{3}   统治者 {4}/{5}   附庸国 {6}/{7}",
-			ModuleItems.Count(row => row.CanTogglePlayer && row.PlayerPolicyEnabled),
-			ModuleItems.Count(row => row.CanTogglePlayer),
-			ModuleItems.Count(row => row.CanToggleLocal && row.LocalPolicyEnabled),
-			ModuleItems.Count(row => row.CanToggleLocal),
-			ModuleItems.Count(row => row.CanToggleRuler && row.RulerPolicyEnabled),
-			ModuleItems.Count(row => row.CanToggleRuler),
-			ModuleItems.Count(row => row.CanToggleVassal && row.VassalPolicyEnabled),
-			ModuleItems.Count(row => row.CanToggleVassal));
+		SummaryText = PolicyUiTexts.Format(
+			"AFPOL_UI_ModuleManagerSummary",
+			"Enabled  Player {PLAYER_ON}/{PLAYER_TOTAL}   Local {LOCAL_ON}/{LOCAL_TOTAL}   Ruler {RULER_ON}/{RULER_TOTAL}   Vassal {VASSAL_ON}/{VASSAL_TOTAL}",
+			"PLAYER_ON", ModuleItems.Count(row => row.CanTogglePlayer && row.PlayerPolicyEnabled).ToString(),
+			"PLAYER_TOTAL", ModuleItems.Count(row => row.CanTogglePlayer).ToString(),
+			"LOCAL_ON", ModuleItems.Count(row => row.CanToggleLocal && row.LocalPolicyEnabled).ToString(),
+			"LOCAL_TOTAL", ModuleItems.Count(row => row.CanToggleLocal).ToString(),
+			"RULER_ON", ModuleItems.Count(row => row.CanToggleRuler && row.RulerPolicyEnabled).ToString(),
+			"RULER_TOTAL", ModuleItems.Count(row => row.CanToggleRuler).ToString(),
+			"VASSAL_ON", ModuleItems.Count(row => row.CanToggleVassal && row.VassalPolicyEnabled).ToString(),
+			"VASSAL_TOTAL", ModuleItems.Count(row => row.CanToggleVassal).ToString());
 	}
 }
 
@@ -492,6 +493,10 @@ internal sealed class PolicyEffectModuleManagerRowVM : ViewModel
 
 	private static string BuildStatusText(bool supported, bool enabled)
 	{
-		return !supported ? "不可用" : enabled ? "已开启" : "已关闭";
+		return !supported
+			? PolicyUiTexts.Get("AFPOL_UI_Unavailable", "Unavailable")
+			: enabled
+				? PolicyUiTexts.Get("AFPOL_UI_Enabled", "Enabled")
+				: PolicyUiTexts.Get("AFPOL_UI_Disabled", "Disabled");
 	}
 }
