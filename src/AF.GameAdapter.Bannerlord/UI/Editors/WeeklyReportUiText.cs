@@ -1,4 +1,5 @@
 using TaleWorlds.Core;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
