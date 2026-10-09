@@ -169,4 +169,11 @@
   <string id="AF_UI_Courier_EmptyReply" text="(No reply body)" />
   <string id="AF_UI_Courier_Close" text="Close" />
   <string id="AF_UI_Courier_Reply" text="Reply" />
+  <string id="AF_UI_Weekly_BulletinMasthead" text="The States Gazette" />
+  <string id="AF_UI_Weekly_BulletinCaption" text="Illustration: {TITLE}" />
+  <string id="AF_UI_Weekly_Bulletin_NoPrompt" text="There is no prompt to view yet." />
+  <string id="AF_UI_Weekly_Bulletin_PromptCopied" text="Prompt copied to clipboard." />
+  <string id="AF_UI_Weekly_Bulletin_FooterHint" text="Click a person or settlement name to open the encyclopedia" />
+  <string id="AF_UI_Weekly_Bulletin_Close" text="Archive bulletin" />
+  <string id="AF_UI_Weekly_Bulletin_EmptyBody" text="This bulletin has no body text." />
 </strings>
