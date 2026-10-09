@@ -29,6 +29,8 @@ internal static class KnowledgeUiTexts
 	public static string Skip => Ui("AF_KNOWLEDGE_Skip", "Skip");
 	public static string Delete => Ui("AF_KNOWLEDGE_Delete", "Delete");
 	public static string Cancel => Ui("AF_KNOWLEDGE_Cancel", "Cancel");
+	public static string Back => Ui("AF_KNOWLEDGE_Back", "Back");
+	public static string Confirm => Ui("AF_KNOWLEDGE_Confirm", "Confirm");
 	public static string Search => Ui("AF_KNOWLEDGE_Search", "Search");
 	public static string SearchByKeywordId => Ui("AF_KNOWLEDGE_SearchByKeywordId", "Search (keyword/ID)");
 	public static string PreviousPage => Ui("AF_KNOWLEDGE_PreviousPage", "Previous page");
