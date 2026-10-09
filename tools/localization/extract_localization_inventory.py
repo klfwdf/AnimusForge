@@ -15,7 +15,13 @@ from pathlib import Path
 
 HAN = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 STRING = re.compile(r'"(?:\\.|[^"\\])*"')
-EXCLUDED_PARTS = {"bin", "obj", ".git", "NuGet", "原版游戏本体代码1.3.x", "原版游戏本体代码1.4.5", "原版游戏本体代码1.5.4"}
+EXCLUDED_PARTS = {
+    "bin", "obj", ".git", "NuGet",
+    # Historical staging/checkpoint trees are not source of truth and can
+    # otherwise multiply the same literal several times in the inventory.
+    "artifacts", "stage", "deploy-backups", "regen-check",
+    "原版游戏本体代码1.3.x", "原版游戏本体代码1.4.5", "原版游戏本体代码1.5.4",
+}
 ROOTS = (
     "src",
     "extensions",
@@ -25,7 +31,22 @@ ROOTS = (
     "AnimusForge.SiegeAftermathIntervention",
     "WorldEvents",
     "content",
+    "AnimusForge",
 )
+
+
+def owner_for(path: Path, root: Path) -> str:
+    """Return the owning logical module without inferring product behavior."""
+    relative = path.relative_to(root).parts
+    if not relative:
+        return "unknown"
+    if relative[0] == "content" and len(relative) >= 3 and relative[1] in {"modules", "foundation"}:
+        return relative[2]
+    if relative[0] == "extensions" and len(relative) >= 2:
+        return relative[1]
+    if relative[0] == "AnimusForge":
+        return "RichExecutions"
+    return relative[0]
 
 
 def category(path: str, line: str) -> str:
@@ -36,6 +57,8 @@ def category(path: str, line: str) -> str:
         return "prompt_or_internal"
     if any(token in lower for token in ("logger", "log.", "debug", "trace")):
         return "log_or_diagnostic"
+    if "/ModuleData/Languages/" in path.replace("\\", "/"):
+        return "localization_resource"
     if path.endswith((".xml", ".xaml")) or any(
         token in lower
         for token in ("textobject", "settingproperty", "title", "subtitle", "hint", "tooltip", "button", "notification", "message", "status")
@@ -73,6 +96,8 @@ def scan(root: Path) -> list[dict[str, object]]:
                             "file": path.relative_to(root).as_posix(),
                             "line": line_number,
                             "category": category(path.as_posix(), line),
+                            "owner": owner_for(path, root),
+                            "module": owner_for(path, root),
                             "literal": literal,
                             "has_localization_id": "{=" in literal,
                             "status": "existing_id" if "{=" in literal else "needs_review",

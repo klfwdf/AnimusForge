@@ -574,6 +574,27 @@ COURIER_THEME_EXPECTED = {
 # SettlementBalancePopup is loaded by SettlementBalancePopup; the DialogueUI item
 # is referenced by AFDialogueConversation's ItemTemplate (Pen sizing/scrollbars).
 COMMITTED_CONTENT_ADDITIONS = {
+    # Localization resources and the mission photo prefab were already mapped
+    # before this contract entry was added; pin their reviewed source bytes
+    # without changing the runtime projection.
+    "ModuleData/Languages/af_ui_strings.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
+        "sha256": "5D53B9F25AAC8BDAB28F23881104F9A2A7E5A0FF65B8A643A218DFDD70BF6600",
+        "revision": "3683ebfc8",
+    },
+    "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
+        "sha256": "CD987E94C434F8CC2F2E01641C3E97AB06AF6E067AAF4B08C843D5E925DFD26F",
+        "revision": "3683ebfc8",
+    },
+    "GUI/Prefabs/MissionPhotoOverlay.xml": {
+        "owner": "AnimusForge.Illustrator",
+        "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/MissionPhotoOverlay.xml",
+        "sha256": "32A58643A3CDE32B3E7CA89F08BEE06D2027C8B70A7709A046B2CD6D125FBF97",
+        "revision": "f4f7bcf46",
+    },
     # Incoming writing-requirements feature; keep all pre-existing resource pins unchanged.
     "CustomPrompts/WorldBulletinWritingRequirements.json": {
         "owner": "AF.Module.Weekly",
