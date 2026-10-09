@@ -240,6 +240,23 @@ internal static class WorldBulletinPolicy
 
 	private static readonly Regex IndexedMinorTag = new Regex("^\\[M(\\d{1,2})\\]\\s*(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+    private const string BattleQuantity = @"(?:\d+(?:[,，]\d{3})*(?:\.\d+)?|[零〇○一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億廿卅]+|几|数|若干)(?:余|多|来|左右|上下)?";
+    private const string BattlePersonUnit = @"(?:人|名|位|兵|骑|骑兵|步兵|士兵|兵卒|军士|将士|军人|精兵)";
+    private const string BattleCountTerm = @"(?:兵力|兵马|参战|投入战斗|阵亡|战死|负伤|受伤|伤亡|死伤|伤员|伤者|亡者|折损|损失|丧命)";
+    private const string BattleCountGap = @"[^\d零〇○一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億廿卅，,、。.!！?？；;\r\n]{0,10}";
+    private static readonly Regex BattleNumericRecital = new Regex(
+        BattleCountTerm + BattleCountGap + @"(?:百分之)?" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @"|[%％成]|(?=[，,、。.!！?？；;\s]|$))"
+        + "|" + BattleQuantity + @"\s*" + BattlePersonUnit + BattleCountGap + BattleCountTerm
+        + "|" + BattleQuantity + @"\s*(?:名|位)?(?:士兵|兵卒|骑兵|步兵|军士|军人|将士|精兵|兵马|守军)"
+        + @"|(?:率领|领军|领兵|出动|调集|集结|派出|守军|敌军|大军|军团|部队)" + BattleCountGap + BattleQuantity + @"\s*" + BattlePersonUnit
+        + "|" + BattleQuantity + @"\s*" + BattlePersonUnit + @"\s*(?:对|打|迎战|对阵)\s*" + BattleQuantity + @"\s*" + BattlePersonUnit
+        + "|" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @")?\s*(?:对|打|迎战|对阵)\s*" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @")?(?=[，,、。.!！?？；;\s]|$)",
+        RegexOptions.Compiled);
+    private static readonly Regex LegacyBattleTroopSuffix = new Regex(
+        @"[，,]\s*双方\s*(?:约|共|总计)?\s*" + BattleQuantity + @"\s*人\s*参战(?=[。.!！?？]?\s*$)", RegexOptions.Compiled);
+    private static readonly Regex CapturedBattleCountPrefix = new Regex(
+        @"^\s*(?:胜方|败方)\s*" + BattleQuantity + @"\s*" + BattlePersonUnit, RegexOptions.Compiled);
+
 	private const string ChineseNumeralDigits = "零〇○一二两三四五六七八九壹贰叁肆伍陆柒捌玖";
 	private const string ChineseNumeralUnits = "十百千万亿兆拾佰仟萬億";
 	private const string NumericMeasureCharacters = "人名位个队军城座村镇日天月年次起件场战门支艘户";
@@ -456,7 +473,7 @@ internal static class WorldBulletinPolicy
 
 	public static string BuildMinorSentence(IList<WorldBulletinEvent> events)
 	{
-		List<string> parts = (events ?? new List<WorldBulletinEvent>()).Take(MaxMinorGroupSentences).Select(e => TrimSentenceEnd(e.Sentence)).ToList();
+		List<string> parts = (events ?? new List<WorldBulletinEvent>()).Take(MaxMinorGroupSentences).Select(e => TrimSentenceEnd(BuildWriterFactSentence(e))).ToList();
 		int extra = (events?.Count ?? 0) - parts.Count;
 		return string.Join("；", parts) + (extra > 0 ? "，另有" + extra + "起同类事件" : "") + "。";
 	}
@@ -691,11 +708,11 @@ internal static class WorldBulletinPolicy
 		WorldBulletinText text = new WorldBulletinText
 		{
 			Title = TitleForKind(selection?.Major?.Kind),
-			Major = string.Join("", facts.Select(e => TrimSentenceEnd(e.Sentence) + "。"))
+			Major = string.Join("", facts.Select(e => TrimSentenceEnd(BuildWriterFactSentence(e)) + "。"))
 		};
 		foreach (WorldBulletinMinor minor in selection?.Minors ?? new List<WorldBulletinMinor>())
 		{
-			text.Minors.Add(minor.Sentence);
+			text.Minors.Add(BuildWriterMinorSentence(minor));
 		}
 		text.Short = BuildShortFromFacts(text.Major, text.Minors);
 		return text;
@@ -713,10 +730,60 @@ internal static class WorldBulletinPolicy
 			{
 				polished++;
 			}
-			result.Add(value.Length > 0 ? value : selected[i].Sentence);
+			result.Add(value.Length > 0 ? value : BuildWriterMinorSentence(selected[i]));
 		}
 		return result;
 	}
+
+    internal static bool IsBattleKind(string kind)
+        => string.Equals(kind, "battle", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(kind, "siege_battle", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(kind, "sally_out_battle", StringComparison.OrdinalIgnoreCase);
+
+    internal static bool ContainsBattleNumericRecital(string text)
+        => !string.IsNullOrWhiteSpace(text) && BattleNumericRecital.IsMatch(text);
+
+    // Project retained old facts for writing without rewriting their saved numeric evidence.
+    private static string BuildWriterFactSentence(WorldBulletinEvent fact)
+        => IsBattleKind(fact?.Kind) ? LegacyBattleTroopSuffix.Replace(fact.Sentence ?? "", "") : fact?.Sentence ?? "";
+
+    private static string BuildWriterMinorSentence(WorldBulletinMinor minor)
+        => minor?.Events?.Any(f => IsBattleKind(f?.Kind)) == true
+            ? BuildMinorSentence(minor.Events) : minor?.Sentence ?? "";
+
+    private static string BuildWriterFactDetail(WorldBulletinEvent fact)
+    {
+        if (!IsBattleKind(fact?.Kind)) return fact?.Detail ?? "";
+        return string.Join("；", (fact.Detail ?? "").Split(new[] { '；', ';' })
+            .Where(part => !CapturedBattleCountPrefix.IsMatch(part) && !ContainsBattleNumericRecital(part)));
+    }
+
+    // A rejected issue falls back as a whole, so its SHORT cannot retell rejected prose.
+    internal static WorldBulletinText ValidateGeneratedText(WorldBulletinSelection selection, WorldBulletinText generated, out string rejectedSection)
+    {
+        rejectedSection = "";
+        if (generated == null || selection == null) return generated;
+        bool majorBattle = IsBattleKind(selection.Major?.Kind) || selection.MajorFacts.Any(f => IsBattleKind(f?.Kind));
+        bool anyBattle = majorBattle || selection.Minors.Any(m => m?.Events?.Any(f => IsBattleKind(f?.Kind)) == true);
+        if (!anyBattle) return generated;
+        if (ContainsBattleNumericRecital(generated.Title)) rejectedSection = "TITLE";
+        else if (majorBattle && ContainsBattleNumericRecital(generated.Major)) rejectedSection = "MAJOR";
+        else if (ContainsBattleNumericRecital(generated.Short)) rejectedSection = "SHORT";
+        else
+        {
+            for (int i = 0; i < selection.Minors.Count && i < (generated.Minors?.Count ?? 0); i++)
+            {
+                if (selection.Minors[i]?.Events?.Any(f => IsBattleKind(f?.Kind)) == true && ContainsBattleNumericRecital(generated.Minors[i]))
+                {
+                    rejectedSection = "M" + (i + 1);
+                    break;
+                }
+            }
+        }
+        return rejectedSection.Length == 0 ? generated : null;
+    }
+
+    internal const string BattleWritingRequirements = "战事正文禁止兵力、参战、阵亡、负伤或伤亡数字对账，不得写“X人对Y人”“几人打几人”，也不得把这些数字改成中文数量词继续罗列。只叙述交战方、地点、行动、胜负和已确认的后果；此限制不涉及日期、标题序号等非战事数量。";
 
     internal const string LegacyDefaultWritingRequirements = "战斗报道不要写成几人对几人、多少人打多少人的兵力对账，也不要连续罗列双方参战、阵亡和负伤人数。用交战方、地点、行动、胜负及已经确认的后果组织叙述；人数只用于核对事实，不机械照抄。不得仅凭人数自行宣称全歼、惨胜或改变国运。";
     internal const string LegacyNarrativeWritingRequirements = "以事件素材为骨架，写成生动的中世纪报刊报道，不要机械复述数据。\n"
@@ -732,7 +799,7 @@ internal static class WorldBulletinPolicy
         + "允许适度讥讽和粗粝感，可以写怒骂、嘲弄、丢脸与狼狈，也可以写勇气、机智和体面。对白应短，符合中世纪人物身份与当前情境，避免现代段子，避免整篇变成小说对话。\n"
         + "每篇自然选用一到两个有趣细节，变化叙述角度，不要每场都使用同一桥段，不固定照抄示例，也不要每篇都靠打架取乐。\n"
         + "自由选择切入点，可从一个动作、一句短对白、旁观者反应或战后场面开篇，再自然交代主体、地点、经过和结果；不固定按背景、经过、影响的顺序写，没有值得写的局势影响时，不强行补一段宏大评价。\n"
-        + "战事不要写成几人对几人，不连续罗列参战和伤亡人数；重点写交战方、现场交锋、胜负与后续反应。\n"
+        + BattleWritingRequirements + "\n"
         + "宴会、竞技、政策和外交也可以补写相应的现场气氛、言语与反应。\n"
         + "保留素材中的主体、地点和重大结果，不另造死亡、俘虏、领土易主、宣战或结盟。出城战不能扩大成整支军团覆灭；外交宣言中的主张不能直接变成已经执行的结果。\n"
         + "多件事件有关联时串联，无关时自然转场，不为了衔接编造因果。已有明确记录的对白或遗言不得被补写内容替换。";
@@ -750,7 +817,8 @@ internal static class WorldBulletinPolicy
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("你为一个中世纪世界撰写即时快报，以给出的事件与背景为骨架，保持报刊纪实语气。允许合理补写动作、短对白和现场反应，正文自然呈现，无需每句加“据说”或“未经核实”；叙事加工不代表游戏机制实际发生变化。保留素材中的主体、地点和重大结果，不另造死亡、俘虏、领土易主、宣战或结盟，不编造伤亡数字；已有明确记录的对白或遗言不得被补写替换。外交宣言的主张不等于已经执行的结果；推测影响时只能用“或将”“恐怕”这类审慎措辞。");
-		sb.AppendLine("战事不要写成几人对几人，不连续罗列参战和伤亡人数；围绕交战方、现场交锋、胜负与后续反应叙述。各类事件每篇自然选用一到两个有趣细节，变化叙述角度，不固定照抄示例或反复套用同一桥段，也不强制发生人物冲突。");
+        sb.AppendLine(BattleWritingRequirements);
+		sb.AppendLine("各类事件每篇自然选用一到两个有趣细节，变化叙述角度，不固定照抄示例或反复套用同一桥段，也不强制发生人物冲突。");
 		sb.AppendLine("只有素材确认两人确实参与同场交战，且身份与情境合理时，才可以作为报刊轶事补写两人直接交锋；不能把远处君主或其他未参战人物拉到现场，也不能改变胜负、生死或俘虏结果。允许适度讥讽和粗粝感，也可表现勇气、机智和体面；保持中世纪人物口吻，避免现代段子，不要每篇都靠打架取乐。");
 		sb.AppendLine("以“交易/买卖”“王国决议”等方式移交、写明并非攻城的领地，不得写成攻陷或夺城。不要使用原版默认大陆名，需要指代大范围时只写“大陆”或具体王国名。");
 		sb.AppendLine("标记为出城战的事实只涉及本次出城交战的参战部队：只能写该部队被击退、击败或伤亡，不得扩大为围城军、守军或整支军团覆灭；除非事实明确确认整支军团被消灭，否则禁止写“击败全军”“击溃军团”等结论。");
@@ -781,10 +849,11 @@ internal static class WorldBulletinPolicy
 		List<WorldBulletinEvent> facts = selection.MajorFacts.Count > 0 ? selection.MajorFacts : new List<WorldBulletinEvent> { selection.Major };
 		for (int i = 0; i < facts.Count; i++)
 		{
-			sb.Append(i + 1).Append(". ").Append(facts[i].Sentence.Trim());
-			if (!string.IsNullOrWhiteSpace(facts[i].Detail))
+			sb.Append(i + 1).Append(". ").Append(BuildWriterFactSentence(facts[i]).Trim());
+            string detail = BuildWriterFactDetail(facts[i]);
+			if (!string.IsNullOrWhiteSpace(detail))
 			{
-				sb.Append("（细节：").Append(facts[i].Detail.Trim()).Append("）");
+				sb.Append("（细节：").Append(detail.Trim()).Append("）");
 			}
 			sb.AppendLine();
 		}
@@ -803,7 +872,7 @@ internal static class WorldBulletinPolicy
 			{
 				sb.AppendLine("【小消息】");
 			}
-			sb.AppendLine("M" + (i + 1) + ". " + selection.Minors[i].Sentence);
+			sb.AppendLine("M" + (i + 1) + ". " + BuildWriterMinorSentence(selection.Minors[i]));
 		}
 		return sb.ToString().TrimEnd();
 	}

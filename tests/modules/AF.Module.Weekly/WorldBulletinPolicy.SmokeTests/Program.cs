@@ -155,7 +155,7 @@ internal static class Program
 		Check(user.Contains("1. 甲被玩家处决") && user.Contains("M1. ") && user.Contains("【相关王国现状】"), "user prompt lists facts, context and M1");
 		string sys = WorldBulletinPolicy.BuildSystemPrompt(s.MajorFacts.Count, s.Minors.Count);
         Check(sys.Contains("合写成同一篇") && sys.Contains("320到480字") && sys.Contains("[M1]"), "existing length, merged-story and format contract retained");
-        Check(sys.Contains("几人对几人") && sys.Contains("不连续罗列"), "default writing requirements discourage numeric battle recitals");
+        Check(sys.Contains("战事正文禁止兵力、参战、阵亡、负伤或伤亡数字对账") && sys.Contains("X人对Y人") && sys.Contains("中文数量词") && sys.Contains("不涉及日期、标题序号"), "battle numeric recitals are forbidden without banning unrelated numbers");
         var custom = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "测试独立写作风格");
         Check(custom.Contains("测试独立写作风格") && !custom.Contains(WorldBulletinPolicy.DefaultWritingRequirements) && custom.Contains("260到400字"), "custom writing replaces only editable style, retaining existing length");
         var empty = WorldBulletinPolicy.BuildSystemPrompt(1, 2, "");
@@ -180,9 +180,50 @@ internal static class Program
 		string sallySentence = WorldBulletinCampaignMaterialPolicy.BattleSentence("某城", true, true, "甲军", "瓦兰迪亚", "乙军", "南帝国", 120);
 		string sallyDetail = WorldBulletinCampaignMaterialPolicy.BattleDetail(80, "伤亡10人", 40, "伤亡30人", true, true, "瓦兰迪亚伯爵", true, "南帝国伯爵");
 		Check(sallySentence.Contains("出城战") && sallySentence.Contains("本次参战部队"), "sally-out material labels only the engaged troops");
-        Check(sallySentence.Contains("120") && sallyDetail.Contains("80") && sallyDetail.Contains("40"), "original battle fact template and numeric details retained");
+        Check(!sallySentence.Contains("120") && !sallySentence.Contains("双方约") && sallyDetail.Contains("80") && sallyDetail.Contains("40"), "battle sentence omits troop count while raw numeric detail remains canonical evidence");
 		Check(sallyDetail.Contains("仅记录本场交战") && sallyDetail.Contains("不代表围城军或守军整支军团覆灭"), "sally-out detail preserves the force boundary");
 		Check(WorldBulletinPolicy.TitleForKind("sally_out_battle") == "出城战报" && sys.Contains("击败全军"), "sally-out title and anti-exaggeration prompt are explicit");
+        var battle = Ev("sally:1", "sally_out_battle", 100, 65, sallySentence.Replace("。", "，双方约120人参战。"), "sally:city", false, "vlandia", "empire_s");
+        battle.Detail = sallyDetail;
+        var battleSelection = new WorldBulletinSelection { Major = battle, MajorFacts = new() { battle } };
+        string battleUser = WorldBulletinPolicy.BuildUserPrompt("天下大事", "1084年夏季3日", battleSelection, new[] { "瓦兰迪亚：城镇3座" });
+        Check(!battleUser.Contains("120人") && !battleUser.Contains("80人") && !battleUser.Contains("40人") && !battleUser.Contains("伤亡10人") && !battleUser.Contains("伤亡30人"), "writer projection excludes retained battle troop and casualty counts");
+        Check(battleUser.Contains("甲军") && battleUser.Contains("乙军") && battleUser.Contains("瓦兰迪亚伯爵") && battleUser.Contains("南帝国伯爵") && battleUser.Contains("仅记录本场交战") && battleUser.Contains("1084年夏季3日") && battleUser.Contains("城镇3座"), "writer projection retains participants, result, sally boundary and unrelated numeric context");
+        Check(battle.Sentence.Contains("120人") && battle.Detail == sallyDetail, "projection does not mutate saved battle evidence");
+        foreach (string kind in new[] { "battle", "siege_battle", "sally_out_battle" })
+        {
+            var fact = Ev("check:" + kind, kind, 100, 65, battle.Sentence, "check", false);
+            fact.Detail = sallyDetail;
+            var selection = new WorldBulletinSelection { Major = fact, MajorFacts = new() { fact } };
+            Check(!WorldBulletinPolicy.BuildUserPrompt("世界", "今日", selection, null).Contains("人参战") && !WorldBulletinPolicy.BuildTemplate(selection).Major.Contains("120"), "all battle kinds use count-free prompts and fallback: " + kind);
+        }
+        foreach (string prose in new[] { "双方约120人参战。", "阵亡10人，负伤30人。", "伤亡一百二十人。", "十名将士阵亡。", "参战人数达1,200人。", "兵力约八百。", "八百名士兵进城。", "800人对600人。", "一千对八百。", "几人打几人。", "100人迎战200人。", "三百余骑兵冲锋。", "八百人对六百人的交锋。", "阵亡20、负伤30。", "伤亡百分之十。", "死伤达20%。", "阵亡超过两成。", "统帅率领1200人击败守军。", "守军共一千二百人。" })
+        {
+            Check(WorldBulletinPolicy.ContainsBattleNumericRecital(prose), "battle numeral recital rejected: " + prose);
+            var output = new WorldBulletinText { Title = "出城战报", Major = prose, Short = "败军退却。" };
+            var accepted = WorldBulletinPolicy.ValidateGeneratedText(battleSelection, output, out string section);
+            var fallback = accepted ?? WorldBulletinPolicy.BuildTemplate(battleSelection);
+            Check(accepted == null && section == "MAJOR" && fallback.Major.Contains("甲军") && fallback.Major.Contains("乙军") && !fallback.Major.Contains("120") && fallback.Short != output.Short, "rejected prose falls back as a whole without losing factual outcome");
+        }
+        foreach (string prose in new[] { "1084年夏季3日，甲军击败乙军。", "第一场交锋后，守军退回城门。", "两人在门前短暂交锋，败将怒骂退开。", "伤亡惨重，败军退却。", "两军对阵，甲军获胜。", "婚宴来了80人。" })
+            Check(!WorldBulletinPolicy.ContainsBattleNumericRecital(prose), "dates, numbering, qualitative losses and narrative encounters remain valid: " + prose);
+        var validBattle = new WorldBulletinText { Title = "第3日战报", Major = "甲军击败乙军的本次参战部队，守将退回城门。", Short = "败军退却。" };
+        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out string validSection), validBattle) && validSection == "", "valid narrative battle output is retained");
+        var civilFact = Ev("civil", "noble_gathering", 100, 65, "80人参加宴会。", "civil", false);
+        civilFact.Detail = "参战人数在宴席上被讨论：120人。";
+        var civilSelection = new WorldBulletinSelection { Major = civilFact, MajorFacts = new() { civilFact } };
+        var civilOutput = new WorldBulletinText { Title = "宴席", Major = "80人参加宴会，谈论伤亡10人。" };
+        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(civilSelection, civilOutput, out _), civilOutput) && WorldBulletinPolicy.BuildUserPrompt("世界", "今日", civilSelection, null).Contains(civilFact.Detail), "non-battle output and detail are unaffected");
+        civilSelection.Minors.Add(new WorldBulletinMinor { Events = new() { battle }, Sentence = battle.Sentence });
+        civilOutput.Minors.Add("双方120人参战。");
+        Check(WorldBulletinPolicy.ValidateGeneratedText(civilSelection, civilOutput, out string minorSection) == null && minorSection == "M1", "battle minor is validated even under a civil headline");
+        Check(!WorldBulletinPolicy.BuildUserPrompt("世界", "今日", civilSelection, null).Contains("M1. " + battle.Sentence) && !WorldBulletinPolicy.BuildTemplate(civilSelection).Minors[0].Contains("120"), "battle minor prompt and fallback hide legacy count suffix");
+        battleSelection.Minors.Add(new WorldBulletinMinor { Events = new() { civilFact }, Sentence = civilFact.Sentence });
+        validBattle.Minors.Add("80人参加宴会。");
+        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out _), validBattle), "civil minor counts remain accepted under a battle headline");
+        validBattle.Short = "伤亡两百人。";
+        Check(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out string shortSection) == null && shortSection == "SHORT", "numeric battle digest cannot retell rejected casualty figures");
+        Check(custom.Contains(WorldBulletinPolicy.BattleWritingRequirements) && empty.Contains(WorldBulletinPolicy.BattleWritingRequirements), "custom or empty editable style cannot remove numeric battle guard");
 		WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(s);
 		Check(template.Major.Contains("甲被玩家处决") && template.Major.Contains("乙被玩家处决"), "template major keeps all merged facts");
 

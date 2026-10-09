@@ -273,6 +273,8 @@ internal void CompleteWorldBulletin(double windowEndHour, long generation, World
 internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated, WorldBulletinIllustrationPlan illustrationPlan)
 	{
 		if (scope.WindowEndHour < 0 || (selection.WindowEndHour >= 0 && Math.Abs(scope.WindowEndHour - selection.WindowEndHour) > 0.001)) return;
+        generated = WorldBulletinPolicy.ValidateGeneratedText(selection, generated, out string rejectedSection);
+        if (rejectedSection.Length > 0) _port.Log("WorldBulletin", "[WARN] battle numeric recital rejected in " + rejectedSection + "; using factual template");
 		WorldBulletinText text = generated ?? template;
 		string title = string.IsNullOrWhiteSpace(text.Title) ? template.Title : text.Title;
 		int polishedMinors = 0;
