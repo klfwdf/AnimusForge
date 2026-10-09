@@ -445,6 +445,176 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
     internal Func<CancellationToken, Task<YjEndpointProbe.Result>> ProbeYjEndpoints = YjEndpointProbe.SelectAsync;
 	private readonly OnboardingUiDispatchOwner _uiDispatch = new OnboardingUiDispatchOwner();
 
+	// Static labels from the onboarding prefab are resolved through TextObject so the XML remains language-neutral.
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_001Text => Localize("{=AF_UI_Onboarding_Prefab_001}YJ API relay");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_002Text => Localize("{=AF_UI_Onboarding_Prefab_002}Custom API setup");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_003Text => Localize("{=AF_UI_Onboarding_Prefab_003}Use existing API setup");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_004Text => Localize("{=AF_UI_Onboarding_Prefab_004}Direct access through major domestic carriers without a proxy. Enter one key for single-group mode to choose four models, or use the multi-group panel with preset YJ URLs.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_005Text => Localize("{=AF_UI_Onboarding_Prefab_005}1. Single-group mode: enter a key ➔ choose models (recommended)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_006Text => Localize("{=AF_UI_Onboarding_Prefab_006}Enter one key, then choose models for dialogue, preprocessing, postprocessing, and reports in one panel.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_007Text => Localize("{=AF_UI_Onboarding_Prefab_007}Enter key ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_008Text => Localize("{=AF_UI_Onboarding_Prefab_008}2. Multi-group mode: open the multi-API panel (YJ URLs preset)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_009Text => Localize("{=AF_UI_Onboarding_Prefab_009}Open the multi-API panel with the YJ Base URL filled in; enter a different key for each of the four routes.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_010Text => Localize("{=AF_UI_Onboarding_Prefab_010}Open multi-API panel ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_011Text => Localize("{=AF_UI_Onboarding_Prefab_011}3. Get an API key and credits (open website)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_012Text => Localize("{=AF_UI_Onboarding_Prefab_012}Open the YJ API key management and credit pages in your browser, then return and enter the key.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_013Text => Localize("{=AF_UI_Onboarding_Prefab_013}Open website ↗");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_014Text => Localize("{=AF_UI_Onboarding_Prefab_014}4. Copy the YJ player QQ group number");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_015Text => Localize("{=AF_UI_Onboarding_Prefab_015}Group: 1097237977. The group provides credit promotions, answers, and maintenance notices.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_016Text => Localize("{=AF_UI_Onboarding_Prefab_016}Copy group number 📋");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_017Text => Localize("{=AF_UI_Onboarding_Prefab_017}1. Main API (character dialogue)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_018Text => Localize("{=AF_UI_Onboarding_Prefab_018}Model:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_019Text => Localize("{=AF_UI_Onboarding_Prefab_019}Fetch models");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_020Text => Localize("{=AF_UI_Onboarding_Prefab_020}2. Preprocessing API (intent routing)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_021Text => Localize("{=AF_UI_Onboarding_Prefab_021}3. Postprocessing API (action tag extraction)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_022Text => Localize("{=AF_UI_Onboarding_Prefab_022}4. Daily and weekly report API (world overview)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_023Text => Localize("{=AF_UI_Onboarding_Prefab_023}🔑 Bound key:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_024Text => Localize("{=AF_UI_Onboarding_Prefab_024}Refresh all models 🔄");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_025Text => Localize("{=AF_UI_Onboarding_Prefab_025}1. Main API dialogue model (immersive roleplay)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_026Text => Localize("{=AF_UI_Onboarding_Prefab_026}Recommended: deepseek-chat or gpt-4o-mini for dialogue with NPCs.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_027Text => Localize("{=AF_UI_Onboarding_Prefab_027}2. Preprocessing intent model (fast routing)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_028Text => Localize("{=AF_UI_Onboarding_Prefab_028}Recommended fast route: deepseek-chat, for player intent and scene mechanisms.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_029Text => Localize("{=AF_UI_Onboarding_Prefab_029}3. Postprocessing action-tag model (action execution)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_030Text => Localize("{=AF_UI_Onboarding_Prefab_030}Extracts duel, trade, recruitment, and other gameplay tags from replies.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_031Text => Localize("{=AF_UI_Onboarding_Prefab_031}4. Daily and weekly writing model (world events)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_032Text => Localize("{=AF_UI_Onboarding_Prefab_032}Summarizes Calradia wars, settlement development, and rebellion reports.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_033Text => Localize("{=AF_UI_Onboarding_Prefab_033}1. Main API handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_034Text => Localize("{=AF_UI_Onboarding_Prefab_034}2. Preprocessing intent handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_035Text => Localize("{=AF_UI_Onboarding_Prefab_035}3. Postprocessing action-tag handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_036Text => Localize("{=AF_UI_Onboarding_Prefab_036}4. Daily and weekly API handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_037Text => Localize("{=AF_UI_Onboarding_Prefab_037}All four API tests passed; configuration is ready!");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_038Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_038}✔ Main API: {MODEL}"); text.SetTextVariable("MODEL", PrimaryModel); return text.ToString(); } }
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_039Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_039}✔ Preprocessing API: {MODEL}"); text.SetTextVariable("MODEL", AuxiliaryModel); return text.ToString(); } }
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_040Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_040}✔ Postprocessing API: {MODEL}"); text.SetTextVariable("MODEL", PostprocessModel); return text.ToString(); } }
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_041Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_041}✔ Daily and weekly API: {MODEL}"); text.SetTextVariable("MODEL", EventModel); return text.ToString(); } }
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_042Text => Localize("{=AF_UI_Onboarding_Prefab_042}Click below to save. A new save continues with world-book and character setup; completed saves return to the game.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_043Text => Localize("{=AF_UI_Onboarding_Prefab_043}Support the team");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_044Text => Localize("{=AF_UI_Onboarding_Prefab_044}Close and exit");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_045Text => Localize("{=AF_UI_Onboarding_Prefab_045}⇦ Back");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_046Text => Localize("{=AF_UI_Onboarding_Prefab_046}Run connectivity test now ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_047Text => Localize("{=AF_UI_Onboarding_Prefab_047}Finish selection and test connectivity ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_048Text => Localize("{=AF_UI_Onboarding_Prefab_048}Cancel test");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_049Text => Localize("{=AF_UI_Onboarding_Prefab_049}Save and enter Calradia ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_050Text => Localize("{=AF_UI_Onboarding_Prefab_050}Paste");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_051Text => Localize("{=AF_UI_Onboarding_Prefab_051}Cancel");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_052Text => Localize("{=AF_UI_Onboarding_Prefab_052}Confirm ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_053Text => Localize("{=AF_UI_Onboarding_Prefab_053}Support the AnimusForge team");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_054Text => Localize("{=AF_UI_Onboarding_Prefab_054}AnimusForge is free and open source. Your support helps us continue immersive AI gameplay, world-map evolution, and new features. Visit Afdian to support us!");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_055Text => Localize("{=AF_UI_Onboarding_Prefab_055}Close");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_056Text => Localize("{=AF_UI_Onboarding_Prefab_056}Visit Afdian ↗");
+
+
 	public AnimusForgeApiOnboardingVM(bool isApiOnlyFlow, Action onCompleted, Action onCancelled)
 	{
 		_isApiOnlyFlow = isApiOnlyFlow;

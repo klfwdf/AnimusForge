@@ -382,6 +382,73 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	[DataSourceProperty]
 	public bool HasLatestErrorToAnalyze { get => _hasLatestErrorToAnalyze; set { if (value != _hasLatestErrorToAnalyze) { _hasLatestErrorToAnalyze = value; OnPropertyChangedWithValue(value, nameof(HasLatestErrorToAnalyze)); } } }
 
+	// Static labels from the terminal prefab are resolved through TextObject.
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_001Text => new TextObject("{=AF_UI_Terminal_Prefab_001}Search:").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_002Text => new TextObject("{=AF_UI_Terminal_Prefab_002}Enter keywords to search settings or features...").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_003Text => new TextObject("{=AF_UI_Terminal_Prefab_003}Previous page").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_004Text => new TextObject("{=AF_UI_Terminal_Prefab_004}Next page").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_005Text => new TextObject("{=AF_UI_Terminal_Prefab_005}Index information").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_006Text => new TextObject("{=AF_UI_Terminal_Prefab_006}Export as TXT").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_007Text => new TextObject("{=AF_UI_Terminal_Prefab_007}Refresh index").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_008Text => new TextObject("{=AF_UI_Terminal_Prefab_008}All").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_009Text => new TextObject("{=AF_UI_Terminal_Prefab_009}Bulletin").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_010Text => new TextObject("{=AF_UI_Terminal_Prefab_010}Diplomacy").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_011Text => new TextObject("{=AF_UI_Terminal_Prefab_011}Policies").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_012Text => new TextObject("{=AF_UI_Terminal_Prefab_012}Recent events").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_013Text => new TextObject("{=AF_UI_Terminal_Prefab_013}Weekly report").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_014Text => new TextObject("{=AF_UI_Terminal_Prefab_014}Back to list").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_015Text => new TextObject("{=AF_UI_Terminal_Prefab_015}Generate full report").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_016Text => new TextObject("{=AF_UI_Terminal_Prefab_016}Run AI diagnostic analysis").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_017Text => new TextObject("{=AF_UI_Terminal_Prefab_017}Open with hotkey").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_018Text => new TextObject("{=AF_UI_Terminal_Prefab_018}Icon entry").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_019Text => new TextObject("{=AF_UI_Terminal_Prefab_019}Save after editing; press ESC or Close to exit").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_020Text => new TextObject("{=AF_UI_Terminal_Prefab_020}Back to previous level").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_021Text => new TextObject("{=AF_UI_Terminal_Prefab_021}Save settings").ToString();
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_022Text => new TextObject("{=AF_UI_Terminal_Prefab_022}Close").ToString();
+
 	public AnimusForgeTerminalPopupVM(List<AnimusForgeTerminalNode> roots, Func<string, bool> onExecuteLeaf, Action onClose)
 	{
 		_onExecuteLeaf = onExecuteLeaf;
