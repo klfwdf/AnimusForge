@@ -35,5 +35,20 @@
     <string id="AF_COUP_UNIT_TIER" text="0 tier" />
     <string id="AF_COUP_UNIT_TROOPS" text="0 troops" />
     <string id="AF_COUP_UNIT_WAVES" text="0 waves" />
+    <string id="AF_COUP_UI_PREFIX" text="[Coup] " />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_TITLE" text="Generating post-coup rebellion name" />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_BODY" text="AF's existing naming service is generating a kingdom name and description. Clan defection and kingdom creation will run only after it completes." />
+    <string id="AF_COUP_UI_NAMING_FAILURE_TITLE" text="Post-coup rebellion naming failed" />
+    <string id="AF_COUP_UI_NAMING_FAILURE_BODY" text="AF did not return a usable kingdom name and description. No clans have moved or founded a kingdom yet. You can retry the existing naming service or skip this rebellion attempt.{DETAIL}" />
+    <string id="AF_COUP_UI_NAMING_RETRY" text="Generate Again" />
+    <string id="AF_COUP_UI_NAMING_SKIP" text="Skip This Attempt" />
+    <string id="AF_COUP_UI_NAMING_SKIPPED" text="Skipped this post-coup rebellion attempt; clans were not reselected." />
+    <string id="AF_COUP_UI_PASSAGE_BLOCKED" text="[Coup] The other passage cannot be used during the battle; withdraw through the battle exit." />
+    <string id="AF_COUP_UI_GATE_NOT_CLEARED" text="[Coup] The hall guards at the entrance have not been cleared; the hall cannot be entered yet." />
+    <string id="AF_COUP_UI_HALL_OBJECTIVE" text="[Coup] Subdue the ruler and defeat all hall guards. Falling or withdrawing counts as a defeat." />
+    <string id="AF_COUP_UI_STREET_OBJECTIVE" text="[Coup] Defeat the guards at the hall entrance, then press F at the entrance to attack the hall. Falling or withdrawing counts as a defeat." />
+    <string id="AF_COUP_UI_HALL_BREAKTHROUGH" text="[Coup] The hall entrance has been breached. Street reinforcements have stopped; enemies already present will continue fighting. Press F at the entrance to attack the hall." />
+    <string id="AF_COUP_UI_HALL_SELECTION_PROMPT" text="[Coup] The hall entrance has been breached. Press F to select soldiers for the hall assault." />
+    <string id="AF_COUP_UI_KING_SUBDUED" text="[Coup] The ruler has been subdued and the hall is under control. Confirm the former ruler's disposition before leaving and settling the coup." />
   </strings>
 </base>

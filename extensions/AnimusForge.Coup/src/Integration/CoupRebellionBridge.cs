@@ -547,7 +547,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         Campaign campaign = Campaign.Current;
         request.State = RequestState.Naming;
         _runningId = _progressId = request.Id;
-        InformationManager.ShowInquiry(new InquiryData("正在生成政变后叛乱命名", "正在使用 AF 原有命名服务生成国名与简介。完成后才会执行家族反出与建国。", false, false, "", "", null, null), true);
+        InformationManager.ShowInquiry(new InquiryData(CoupUiText.NamingProgressTitle, CoupUiText.NamingProgressBody, false, false, "", "", null, null), true);
         Task.Run(() =>
         {
             var result = new NamingCompletion { Id = requestId, Generation = generation, Owner = owner, Campaign = campaign };
@@ -570,10 +570,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         Campaign campaign = Campaign.Current;
         Func<bool> current = () => ReferenceEquals(Instance, this) && _generation == generation && ReferenceEquals(Campaign.Current, campaign)
             && _requests.TryGetValue(request.Id, out Request live) && ReferenceEquals(live, request) && request.State == RequestState.NamingFailed;
-        InformationManager.ShowInquiry(new InquiryData("政变后叛乱命名未成功", "AF 未返回可用的国名与简介，本次尚未迁移家族或建国。可重试原命名服务，或跳过这一次叛乱。"
-            + (string.IsNullOrEmpty(request.Message) ? "" : "\n" + request.Message), true, true, "重新生成命名", "跳过本次",
+        InformationManager.ShowInquiry(new InquiryData(CoupUiText.NamingFailureTitle, CoupUiText.NamingFailureBody(request.Message), true, true, CoupUiText.NamingRetry, CoupUiText.NamingSkip,
             () => { if (!current()) return; _choiceId = null; request.NamingJson = null; request.State = RequestState.Queued; },
-            () => { if (!current()) return; _choiceId = null; Complete(request, "已跳过这一次政变后叛乱，不重新选择家族。"); }), true);
+            () => { if (!current()) return; _choiceId = null; Complete(request, CoupUiText.NamingSkipped); }), true);
     }
 
     private void HideProgress(string id)
@@ -693,5 +692,5 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 
     private static string MemoryStatus(Outcome receipt) => _af.Memory.GetStatus(receipt.RecoveryId, receipt.HeroId, receipt.RecoveryHash) ?? "Unavailable";
     private static string Error(Exception ex) => (ex is TargetInvocationException && ex.InnerException != null ? ex.InnerException : ex).Message;
-    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】" + message)); }
+    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage(CoupUiText.Prefix + message)); }
 }

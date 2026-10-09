@@ -35,5 +35,20 @@
     <string id="AF_COUP_UNIT_TIER" text="0 级" />
     <string id="AF_COUP_UNIT_TROOPS" text="0 人" />
     <string id="AF_COUP_UNIT_WAVES" text="0 波" />
+    <string id="AF_COUP_UI_PREFIX" text="【宣权篡位】" />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_TITLE" text="正在生成政变后叛乱命名" />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_BODY" text="正在使用 AF 原有命名服务生成国名与简介。完成后才会执行家族反出与建国。" />
+    <string id="AF_COUP_UI_NAMING_FAILURE_TITLE" text="政变后叛乱命名未成功" />
+    <string id="AF_COUP_UI_NAMING_FAILURE_BODY" text="AF 未返回可用的国名与简介，本次尚未迁移家族或建国。可重试原命名服务，或跳过这一次叛乱。{DETAIL}" />
+    <string id="AF_COUP_UI_NAMING_RETRY" text="重新生成命名" />
+    <string id="AF_COUP_UI_NAMING_SKIP" text="跳过本次" />
+    <string id="AF_COUP_UI_NAMING_SKIPPED" text="已跳过这一次政变后叛乱，不重新选择家族。" />
+    <string id="AF_COUP_UI_PASSAGE_BLOCKED" text="【宣权篡位】战斗期间不能通过此门转往其他场景；撤退请使用退出战斗。" />
+    <string id="AF_COUP_UI_GATE_NOT_CLEARED" text="【宣权篡位】大厅门口守卫尚未清除，暂时无法突入大厅。" />
+    <string id="AF_COUP_UI_HALL_OBJECTIVE" text="【宣权篡位】制服国王并击败全部大厅护卫。倒地或撤退即为失败。" />
+    <string id="AF_COUP_UI_STREET_OBJECTIVE" text="【宣权篡位】击溃大厅门口守卫，抵达门口后按 F 攻入大厅。倒地或撤退即为失败。" />
+    <string id="AF_COUP_UI_HALL_BREAKTHROUGH" text="【宣权篡位】大厅入口已突破，后续街道增援已停止；已在场敌兵仍会战斗。抵达门口按 F 攻入大厅。" />
+    <string id="AF_COUP_UI_HALL_SELECTION_PROMPT" text="【宣权篡位】大厅入口已突破，按 F 选择突入大厅的士兵。" />
+    <string id="AF_COUP_UI_KING_SUBDUED" text="【宣权篡位】国王已被制服，大厅已控制。请确认旧王处置，之后离场结算。" />
   </strings>
 </base>
