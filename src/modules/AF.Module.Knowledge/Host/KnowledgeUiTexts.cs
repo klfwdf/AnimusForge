@@ -112,6 +112,65 @@ internal static class KnowledgeUiTexts
 	public static string AddRagPrompt(int max) => Ui("AF_KNOWLEDGE_AddRagPrompt", "Enter one RAG short text (up to {MAX} characters):", ("MAX", max.ToString()));
 	public static string RemoveRagTitle => Ui("AF_KNOWLEDGE_RemoveRagTitle", "Remove RAG short text");
 	public static string RemoveRagPrompt => Ui("AF_KNOWLEDGE_RemoveRagPrompt", "Choose a RAG short text to remove:");
+
+	public static string NoValue => Ui("AF_KNOWLEDGE_NoValue", "(none)");
+	public static string PlayerNameConflictStatus => Ui("AF_KNOWLEDGE_PlayerNameConflictStatus", "(could not be saved because it conflicts with another knowledge entry)");
+	public static string PlayerKeywordSetupTitle => Ui("AF_KNOWLEDGE_PlayerKeywordSetupTitle", "Player name settings");
+	public static string PlayerKeywordSetupBody(string name, string conflict, string optional) => Ui("AF_KNOWLEDGE_PlayerKeywordSetupBody", "Welcome to AnimusForge! Use this screen to add extra names for your character. If you do not need them, continue to appearance and background settings.\n\nCharacter name: {NAME}{CONFLICT}\nExtra names: {OPTIONAL}", ("NAME", name), ("CONFLICT", conflict), ("OPTIONAL", optional));
+	public static string AddOptionalName => Ui("AF_KNOWLEDGE_AddOptionalName", "Add extra name");
+	public static string RemoveOptionalName => Ui("AF_KNOWLEDGE_RemoveOptionalName", "Remove extra name");
+	public static string OpenAppearanceBackground => Ui("AF_KNOWLEDGE_OpenAppearanceBackground", "Write appearance and background");
+	public static string AddOptionalNameTitle => Ui("AF_KNOWLEDGE_AddOptionalNameTitle", "Add extra name");
+	public static string AddOptionalNamePrompt => Ui("AF_KNOWLEDGE_AddOptionalNamePrompt", "Enter an extra name. The player's real name is already kept by the system and does not need to be entered again.");
+	public static string RemoveOptionalNameTitle => Ui("AF_KNOWLEDGE_RemoveOptionalNameTitle", "Remove extra name");
+	public static string RemoveOptionalNamePrompt => Ui("AF_KNOWLEDGE_RemoveOptionalNamePrompt", "The player's system-kept real name cannot be removed. Only extra names you added will be removed.");
+
+	public static string PlayerAppearanceOption => Ui("AF_KNOWLEDGE_PlayerAppearanceOption", "Appearance (always visible)");
+	public static string PlayerBackgroundOption => Ui("AF_KNOWLEDGE_PlayerBackgroundOption", "Background (general)");
+	public static string PlayerDetailedBackgroundOption => Ui("AF_KNOWLEDGE_PlayerDetailedBackgroundOption", "Different views of your background");
+	public static string PlayerAppearanceBackgroundDone => Ui("AF_KNOWLEDGE_PlayerAppearanceBackgroundDone", "Finish and start the game");
+	public static string PlayerAppearanceBackgroundDoneDetail => Ui("AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail", "Save the current settings and leave this screen.");
+	public static string PlayerAppearanceBackgroundTitle => Ui("AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle", "Player appearance and background");
+	public static string PlayerAppearanceBackgroundDescription => Ui("AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription", "Player information is divided into appearance and background information.");
+	public static string PlayerAppearanceBackgroundBody(string appearance, string background, int detailedCount) => Ui("AF_KNOWLEDGE_PlayerAppearanceBackgroundBody", "Player information is divided into appearance and background information.\n\nAppearance (always visible):\n{APPEARANCE}\n\nBackground (general):\n{BACKGROUND}\n\nConditional background details: {COUNT}", ("APPEARANCE", appearance), ("BACKGROUND", background), ("COUNT", detailedCount.ToString()));
+	public static string PlayerOptionUnset => Ui("AF_KNOWLEDGE_PlayerOptionUnset", "Not filled in. Select this option to enter the full text.");
+	public static string PlayerOptionFilled(int length) => Ui("AF_KNOWLEDGE_PlayerOptionFilled", "{COUNT} characters entered. The full text is shown on the left; select this option to edit it.", ("COUNT", length.ToString()));
+	public static string PlayerDetailedBackgroundCount(int count) => Ui("AF_KNOWLEDGE_PlayerDetailedBackgroundCount", "{COUNT} conditional background entries configured.", ("COUNT", count.ToString()));
+	public static string PlayerAppearanceEditorTitle => Ui("AF_KNOWLEDGE_PlayerAppearanceEditorTitle", "Player appearance (always visible)");
+	public static string PlayerAppearanceEditorIntro => Ui("AF_KNOWLEDGE_PlayerAppearanceEditorIntro", "The current appearance information is loaded in the input box below.");
+	public static string PlayerAppearanceEditorHint => Ui("AF_KNOWLEDGE_PlayerAppearanceEditorHint", "Enter appearance traits that NPCs can observe directly. Leave empty to disable this information.");
+	public static string PlayerBackgroundEditorTitle => Ui("AF_KNOWLEDGE_PlayerBackgroundEditorTitle", "Player background (general)");
+	public static string PlayerBackgroundEditorIntro => Ui("AF_KNOWLEDGE_PlayerBackgroundEditorIntro", "The current general background information is loaded in the input box below.");
+	public static string PlayerBackgroundEditorHint => Ui("AF_KNOWLEDGE_PlayerBackgroundEditorHint", "Enter background, origin, identity and similar information. Leave empty to disable this information.");
+	public static string DetailedBackgroundListTitle => Ui("AF_KNOWLEDGE_DetailedBackgroundListTitle", "Detailed player background");
+	public static string DetailedBackgroundListDescription => Ui("AF_KNOWLEDGE_DetailedBackgroundListDescription", "These entries contain conditional background information. Their stored structure is the same as other knowledge prompts.");
+	public static string AddDetailedBackground => Ui("AF_KNOWLEDGE_AddDetailedBackground", "Add a detailed entry");
+	public static string EmptyPreview => Ui("AF_KNOWLEDGE_EmptyPreview", "(empty)");
+	public static string DetailedBackgroundEditorTitle => Ui("AF_KNOWLEDGE_DetailedBackgroundEditorTitle", "Edit detailed background");
+	public static string DetailedBackgroundEditorDescription(string condition, string preview) => Ui("AF_KNOWLEDGE_DetailedBackgroundEditorDescription", "Current condition: {CONDITION}\n\nCurrent content preview:\n{PREVIEW}", ("CONDITION", condition), ("PREVIEW", preview));
+	public static string EditDetailedBackgroundContent => Ui("AF_KNOWLEDGE_EditDetailedBackgroundContent", "Edit entry content");
+	public static string EditDetailedBackgroundCondition => Ui("AF_KNOWLEDGE_EditDetailedBackgroundCondition", "Edit condition");
+	public static string DeleteDetailedBackground => Ui("AF_KNOWLEDGE_DeleteDetailedBackground", "Delete this detailed entry");
+	public static string DetailedBackgroundContentTitle => Ui("AF_KNOWLEDGE_DetailedBackgroundContentTitle", "Edit background content");
+	public static string DetailedBackgroundContentIntro => Ui("AF_KNOWLEDGE_DetailedBackgroundContentIntro", "This conditional player background information is loaded in the input box below.");
+	public static string DetailedBackgroundContentHint => Ui("AF_KNOWLEDGE_DetailedBackgroundContentHint", "Edit the complete text directly.");
+
+	public static string RetrievalSourceMcm => Ui("AF_KNOWLEDGE_RetrievalSourceMcm", "MCM (currently active)");
+	public static string RetrievalSourceFile => Ui("AF_KNOWLEDGE_RetrievalSourceFile", "RuleBehaviorPrompts.json (currently active)");
+	public static string RetrievalMode => Ui("AF_KNOWLEDGE_RetrievalMode", "Per-term retrieval + local reranking");
+	public static string RetrievalOn => Ui("AF_KNOWLEDGE_RetrievalOn", "enabled");
+	public static string RetrievalOff => Ui("AF_KNOWLEDGE_RetrievalOff", "disabled");
+	public static string RetrievalYes => Ui("AF_KNOWLEDGE_RetrievalYes", "yes");
+	public static string RetrievalNoKeywordFirst => Ui("AF_KNOWLEDGE_RetrievalNoKeywordFirst", "no (keyword first)");
+	public static string RetrievalDescription(string source, string mode, string enabled, string first, int topK) => Ui("AF_KNOWLEDGE_RetrievalDescription", "Configuration source: {SOURCE}\nCurrent mode: {MODE}\nSemantic retrieval: {ENABLED}\nSemantic first: {FIRST}\nKnowledge return limit: {TOPK}\nDetails: each mentioned term is retrieved independently in importance order, with one knowledge slot per term. If the highest-scoring knowledge is already used by an earlier term, the next unused knowledge is selected. Additional terms are only filled when the limit is greater than the number of terms.", ("SOURCE", source), ("MODE", mode), ("ENABLED", enabled), ("FIRST", first), ("TOPK", topK.ToString()));
+	public static string RetrievalSwitchSource(string source) => Ui("AF_KNOWLEDGE_RetrievalSwitchSource", "Configuration source: switch to {SOURCE}", ("SOURCE", source));
+	public static string RetrievalToggle(string state) => Ui("AF_KNOWLEDGE_RetrievalToggle", "Semantic retrieval: {STATE}", ("STATE", state));
+	public static string RetrievalTopK(int topK) => Ui("AF_KNOWLEDGE_RetrievalTopK", "Set knowledge return limit (current: {TOPK})", ("TOPK", topK.ToString()));
+	public static string RetrievalReset => Ui("AF_KNOWLEDGE_RetrievalReset", "Restore defaults (MCM)");
+	public static string RetrievalSettingsTitle => Ui("AF_KNOWLEDGE_RetrievalSettingsTitle", "Knowledge retrieval settings");
+	public static string RetrievalSelect => Ui("AF_KNOWLEDGE_RetrievalSelect", "Select");
+	public static string RetrievalTopKTitle => Ui("AF_KNOWLEDGE_RetrievalTopKTitle", "Set knowledge return limit");
+	public static string RetrievalTopKPrompt => Ui("AF_KNOWLEDGE_RetrievalTopKPrompt", "Enter an integer from 1 to 12:");
 	private static string Text(string id, string fallback)
 	{
 		return new TextObject("{=" + id + "}" + fallback).ToString();
