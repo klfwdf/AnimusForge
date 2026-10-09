@@ -2,6 +2,54 @@
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+  <string id="AF_ENC_UI_PlayerFaction" text="你的势力" />
+  <string id="AF_ENC_UI_TauntEscalated" text="挑衅已升级为敌对行动：5 秒后将自动结束对话并攻入敌阵。" />
+  <string id="AF_ENC_UI_ReleaseDenied" text="对方并没有同意放你离开。" />
+  <string id="AF_ENC_UI_HealthTooLowForBattle" text="你的伤势过重，无法投入战斗。" />
+  <string id="AF_ENC_UI_PlayerHealthTooLowForMeeting" text="你的健康状况不允许你与 {TARGET} 会面。" />
+  <string id="AF_ENC_UI_TargetHealthTooLowForMeeting" text="{TARGET} 的血量低于 21%，暂时无法与你会面。" />
+  <string id="AF_ENC_UI_LordFallback" text="领主" />
+  <string id="AF_ENC_UI_NpcFallback" text="该 NPC" />
+  <string id="AF_ENC_UI_EncounterResult" text="遭遇结果" />
+  <string id="AF_ENC_UI_EnteringCaptivitySettlement" text="正在进入原版被俘结算。" />
+  <string id="AF_ENC_UI_EncounterLord" text="遭遇领主" />
+  <string id="AF_ENC_UI_OpponentInitiatedAttack" text="对方试图向你发动进攻。" />
+  <string id="AF_ENC_UI_WildernessEncounter" text="你在荒野中遇到了 {TARGET_NAME}。{ENCOUNTER_INTENT}" />
+  <string id="AF_ENC_UI_MeetLord" text="与 {TARGET_NAME} 会面" />
+  <string id="AF_ENC_UI_TargetUnavailableTooltip" text="无法识别当前遭遇领主，请先离开后重新接触。" />
+  <string id="AF_ENC_UI_TargetUnavailable" text="当前未识别到遭遇领主，请先离开并重新接触。" />
+  <string id="AF_ENC_UI_EnterDialogue" text="进入对话" />
+  <string id="AF_ENC_UI_EnterNativeDialogue" text="进入原版对话" />
+  <string id="AF_ENC_UI_AttackLord" text="攻击 {TARGET_NAME}" />
+  <string id="AF_ENC_UI_Leave" text="离开" />
+  <string id="AF_ENC_UI_SurrenderSettlement" text="对方已投降，正在进入俘虏与战利品结算。" />
+  <string id="AF_ENC_UI_ReleaseAcceptedExit" text="对方同意放你离开，正在退出当前会面。" />
+  <string id="AF_ENC_UI_ReleaseAccepted" text="对方同意放你离开。" />
+  <string id="AF_ENC_UI_ReleaseScheduled" text="对方同意放你离开，10 秒后将自动结束当前对话并回到大地图。" />
+  <string id="AF_ENC_UI_SurrenderAccepted" text="对方已同意投降。请手动离开当前对话，离开后将进入俘虏与战利品结算。" />
+  <string id="AF_ENC_UI_BetrayalUnforgivable" text="背叛是不可饶恕的。" />
+  <string id="AF_ENC_UI_Escort_MapOnly" text="贵族俘虏随行只能在战役地图上配置。" />
+  <string id="AF_ENC_UI_Escort_ConfigTitle" text="贵族俘虏随行配置" />
+  <string id="AF_ENC_UI_Escort_ConfigHint" text="只可选择玩家主队中的英雄单位俘虏：" />
+  <string id="AF_ENC_UI_Configure" text="配置" />
+  <string id="AF_ENC_UI_Close" text="关闭" />
+  <string id="AF_ENC_UI_Escort_ExecutionUnavailable" text="无法处决当前目标。" />
+  <string id="AF_ENC_UI_Escort_PrisonerRosterUnavailable" text="玩家俘虏栏不可用。" />
+  <string id="AF_ENC_UI_Escort_HeroPrisoners" text="玩家主队中的英雄俘虏" />
+  <string id="AF_ENC_UI_Escort_ModeWithLimit" text="{MODE}（上限 {LIMIT}）" />
+  <string id="AF_ENC_UI_Escort_ConfigureMode" text="配置 {MODE}" />
+  <string id="AF_ENC_UI_Escort_Configuring" text="正在配置 {MODE}。" />
+  <string id="AF_ENC_UI_Escort_ConfigOpenFailed" text="打开配置界面失败。" />
+  <string id="AF_ENC_UI_Escort_LimitExceeded" text="贵族俘虏随行不能超过 {LIMIT} 人。" />
+  <string id="AF_ENC_UI_Escort_ProfileSaved" text="{MODE} 已保存 {COUNT}/{LIMIT}。" />
+  <string id="AF_ENC_UI_Escort_AvailableHint" text="当前可用 {COUNT}/{LIMIT} 名" />
+  <string id="AF_ENC_UI_Escort_AvailableWithMissing" text="当前可用 {COUNT}/{LIMIT} 名；另有 {MISSING} 名已不在玩家主队俘虏栏。" />
+  <string id="AF_ENC_UI_Escort_AvailableConfigured" text="{TEXT}。已配置记录：{CONFIGURED}。只允许英雄俘虏。" />
+  <string id="AF_ENC_UI_Escort_ModeTownAftermath" text="城镇攻城处置随行（5 名）" />
+  <string id="AF_ENC_UI_Escort_ModeSettlementEntry" text="正常城镇/城堡场景随行（5 名）" />
+  <string id="AF_ENC_UI_Escort_ModeLordsHall" text="城镇/城堡领主大厅随行（5 名）" />
+  <string id="AF_ENC_UI_Escort_ModeWorldMeeting" text="野外会面场景随行（1 名）" />
+  <string id="AF_ENC_UI_Escort_ModeDefault" text="贵族俘虏随行" />
   <string id="AF_UI_Onboarding_Title" text="AnimusForge - API 快捷配置向导" />
   <string id="AF_UI_Onboarding_CustomMode" text="完全自定义" />
   <string id="AF_UI_Onboarding_ApiPanelNotice" text="在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" />
