@@ -114,7 +114,7 @@
   "kind": "curated-historical-refactor-delivery-evidence",
   "historicalDate": "2026-10-08",
   "curatedDate": "2026-10-09",
-  "reviewedAgainstMain": "819726f573b2d4dd70acf4edc7d293a53fcf3760",
+  "reviewedAgainstMain": "f71490e80e557a352a98fab09096baf7a57888cf",
   "claimBoundary": {
     "currentMainAcceptance": false,
     "historicalTestsRerunDuringCuration": false,
@@ -536,5 +536,14 @@
     "binariesOrSdkIncluded": false,
     "localOnlyDocumentationBodiesOrHistoryIncluded": false,
     "screeningBoundary": "Selected fields checked for common credential patterns; not a full corpus privacy audit. Original logs, private/player data and recovery backups remain local and need separate private backup."
+  },
+  "preparedFromMain": "819726f573b2d4dd70acf4edc7d293a53fcf3760",
+  "publicationConcurrency": {
+    "firstOrdinaryPush": "REJECTED_FETCH_FIRST_NO_REMOTE_OVERWRITE",
+    "handling": "Preserved incoming main by an ordinary merge; no rebase/reset/force.",
+    "integrationCommit": "d70f6486d68a290db86cb7938cffc4e2e767e9e6",
+    "integratedMain": "f71490e80e557a352a98fab09096baf7a57888cf",
+    "productDifferencesAgainstIntegratedMain": 0,
+    "claimBoundary": "Review-base metadata only; no current-main build/game acceptance claim."
   }
 }

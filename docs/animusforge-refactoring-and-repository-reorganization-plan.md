@@ -483,6 +483,7 @@ snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态
 - 公开JSON直接复用既有code-map schema：仓库根运行 `python -B .agents/skills/af-core-framework/scripts/verify_code_map.py --map docs/audits/2026-10-09-refactor-delivery-evidence.json` 可复核12个公开历史坐标；不对后来main使用 `--working-tree` 要求旧哈希。本轮JSON/字段/链接/文档差异检查通过，篡改PASS计数、把非PASS改成PASS、冒称当前main验收、注入绝对路径或凭据形字段的5项负控均被拒绝；原工作区HEAD、信使raw与1641未跟踪逐size/SHA保持。
 - **失败不洗绿**：历史full runner exit1，完整登记门仍非全绿；“当时必要离线门未解决项为0”的分类只属于原批准门图，不能把FAIL/NEEDS_INPUT改为PASS，也不能据此验收当前main。原六构建及每API103存档断言、每API20 managed memory断言/registration、公报183仅作为具名历史有限结果，替身/未验边界随包保留。
 - 公开字段白名单去掉机器绝对路径、执行命令/日志尾、本地分支和私有交接正文；不附DLL/SDK、玩家导出或恢复备份。有限凭据模式筛查不是全目录隐私/许可保证。原件不删除；原SHA只是来源标识，不让未上传原件自动成为可恢复备份。清理前仍须另行保存必要原日志及私有恢复资料。
+- 并发发布保护：首次普通push因远端新增内容被Git拒绝，未覆盖远端；随后普通合并 `d70f6486d68a290db86cb7938cffc4e2e767e9e6` 接纳最新main `f71490e80e557a352a98fab09096baf7a57888cf` 的NPC藏身处清理及人设修复记录。合并后相对该main仍仅上述4份文档/JSON有差异，其余全部Git blob保留；公开包另记初始准备基线与最终复核基线，不拿历史结果验收新功能。
 - 只修改本段、HANDOFF补充链接、代码图历史绑定说明与一个JSON；无运行时接线、Tick/后台扫描或产品行为变化。验证限于JSON/字段一致性、链接、历史坐标、公开边界和精确文档差异；本轮双版本构建、全仓回归、实机/旧档/provider/GPU/帧性能均未重跑。发布结果以实际公开Git提交/独立远端回读为准；回退仅定向inverse本资料提交，不reset/force。
 
 <a id="release-v156-20261008"></a>
