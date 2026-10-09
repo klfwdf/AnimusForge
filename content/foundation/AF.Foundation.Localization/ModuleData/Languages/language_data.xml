@@ -3,6 +3,7 @@
   <LanguageFile xml_path="sceneactions_strings.xml" />
   <LanguageFile xml_path="sets_hostile_meeting_strings.xml" />
   <LanguageFile xml_path="sets_ui_strings.xml" />
+  <LanguageFile xml_path="afexercise_ui_strings.xml" />
   <LanguageFile xml_path="afwarstats_strings.xml" />
   <LanguageFile xml_path="vengeance_strings-en.xml" />
   <LanguageFile xml_path="af_ui_strings.xml" />

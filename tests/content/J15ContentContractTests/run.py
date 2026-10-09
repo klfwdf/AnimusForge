@@ -692,6 +692,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
         "sha256": "619DAD14F48F923A51E47C159F16342CB7F4308A4AFC7AEBF869EE0AF723D441", "revision": "conversation-courier-ui",
     },
+    "ModuleData/Languages/afexercise_ui_strings.xml": {
+        "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/afexercise_ui_strings.xml",
+        "sha256": "75CE4515704C2FE6F4CE22F36F49B140FA74CC1A56A3C212308D9A878DE551F6", "revision": "exercise-ui-localization",
+    },
+    "ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml",
+        "sha256": "071DAAF095E2E95E1065258F14734E8EAEA4ED17B806C518482D32076CCEF856", "revision": "exercise-ui-localization",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
