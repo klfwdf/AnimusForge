@@ -140,7 +140,7 @@ internal sealed class LocalPolicyComposePopup
 		if (_isClosed) return;
 		if (_onAutoDraft == null)
 		{
-			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写入口不可用。"));
+			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUnavailable", "AI drafting is unavailable.")));
 			return;
 		}
 		try
@@ -153,7 +153,7 @@ internal sealed class LocalPolicyComposePopup
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "local-compose-auto-draft-dispatch-failed", ex.Message, ex.ToString());
-			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写遇到界面错误，请查看日志。"));
+			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUiError", "AI drafting encountered a UI error; see the log.")));
 		}
 	}
 
@@ -218,17 +218,17 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		_externalCanPublish = data.CanPublish;
 		_externalBlockReason = data.BlockReason ?? "";
 		_requireExplicitDuration = data.RequireExplicitDuration;
-		TitleText = string.IsNullOrWhiteSpace(data.TitleText) ? "发布地方政策" : data.TitleText;
-		ScopeTitleText = "选择作用封地";
-		SelectAllText = "全选";
-		ClearText = "清空";
-		NameLabelText = "政策名";
-		ContentLabelText = "政策内容 / AI编写原文";
-		DurationLabelText = "效果持续天数（留空为永久）";
-		DateText = string.IsNullOrWhiteSpace(data.DateText) ? "未知日期" : data.DateText;
-		PublishText = string.IsNullOrWhiteSpace(data.PublishText) ? "发布地方政策" : data.PublishText;
-		AutoDraftText = "AI编写";
-		CancelText = "取消";
+		TitleText = string.IsNullOrWhiteSpace(data.TitleText) ? PolicyUiTexts.Get("AFPOL_UI_LocalPublishTitle", "Publish Local Policy") : data.TitleText;
+		ScopeTitleText = PolicyUiTexts.Get("AFPOL_UI_LocalScopeTitle", "Select fiefs in scope");
+		SelectAllText = PolicyUiTexts.Get("AFPOL_UI_SelectAll", "Select All");
+		ClearText = PolicyUiTexts.Get("AFPOL_UI_ClearSelection", "Clear");
+		NameLabelText = PolicyUiTexts.Get("AFPOL_UI_PolicyNameLabel", "Policy Name");
+		ContentLabelText = PolicyUiTexts.Get("AFPOL_UI_LocalPolicyContentLabel", "Policy Content / AI Draft Input");
+		DurationLabelText = PolicyUiTexts.Get("AFPOL_UI_DurationLabel", "Effect duration in days (leave blank for permanent)");
+		DateText = string.IsNullOrWhiteSpace(data.DateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : data.DateText;
+		PublishText = string.IsNullOrWhiteSpace(data.PublishText) ? PolicyUiTexts.Get("AFPOL_UI_LocalPublishTitle", "Publish Local Policy") : data.PublishText;
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDraft", "AI Draft");
+		CancelText = PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel");
 		FiefItems = new MBBindingList<LocalPolicyFiefItemVM>();
 		foreach (LocalPolicyFiefData fief in data.Fiefs ?? new List<LocalPolicyFiefData>())
 		{
@@ -340,7 +340,7 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		RefreshCanPublish();
 		if (!CanAutoDraft)
 		{
-			if (!PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent)) StatusText = "请先填写政策标题或政策内容。";
+			if (!PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent)) StatusText = PolicyUiTexts.Get("AFPOL_UI_FillTitleOrContent", "Enter a policy title or content first.");
 			return;
 		}
 		PlayerPolicyAutoDraftRequest request = new PlayerPolicyAutoDraftRequest
@@ -353,21 +353,21 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 			SelectedFiefIds = FiefItems.Where(item => item.IsSelected).Select(item => item.FiefId).ToList()
 		};
 		_isAutoDrafting = true;
-		AutoDraftText = "AI编写中…";
-		StatusText = "AI正在按照玩家可编辑提示词扩写当前内容；不会读取政策通用提示词、世界上下文或历史政策，也不会自动发布。";
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDrafting", "AI drafting…");
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftStatus", "AI is expanding the current input using the player-editable prompt; it does not read the general policy prompt, world context, or policy history, and it will not publish automatically.");
 		RefreshCanPublish();
 		try { _onAutoDraft?.Invoke(request); }
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "local-compose-auto-draft-start-failed", ex.Message, ex.ToString());
-			ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写遇到界面错误，请查看日志。"));
+			ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUiError", "AI drafting encountered a UI error; see the log.")));
 		}
 	}
 
 	internal void ApplyAutoDraftResult(PlayerPolicyAutoDraftRequest request, PlayerPolicyAutoDraftResult result)
 	{
 		_isAutoDrafting = false;
-		AutoDraftText = "AI编写";
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDraft", "AI Draft");
 		List<string> currentFiefs = FiefItems.Where(item => item.IsSelected).Select(item => item.FiefId).OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> requestedFiefs = (request?.SelectedFiefIds ?? new List<string>()).OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToList();
 		bool formUnchanged = request != null
@@ -378,19 +378,19 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		if (!formUnchanged)
 		{
 			RefreshCanPublish();
-			StatusText = "AI编写期间表单已改变，已丢弃过期结果。";
+			StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftFormChanged", "The form changed while AI drafting was running; the stale result was discarded.");
 			return;
 		}
 		if (result?.Success != true)
 		{
 			RefreshCanPublish();
-			StatusText = string.IsNullOrWhiteSpace(result?.Error) ? "AI编写失败，原输入已保留。" : result.Error;
+			StatusText = string.IsNullOrWhiteSpace(result?.Error) ? PolicyUiTexts.Get("AFPOL_UI_AiDraftFailed", "AI drafting failed; the original input was kept.") : result.Error;
 			return;
 		}
 		PolicyName = result.PolicyName ?? "";
 		PolicyContent = result.PolicyContent ?? "";
 		RefreshCanPublish();
-		StatusText = "AI编写内容已回填；请检查并修改后再发布。";
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftCompleted", "AI draft filled the form; review and edit it before publishing.");
 	}
 
 	public void ExecutePublish()
@@ -410,15 +410,15 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
 		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0
 			&& PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent) && durationValid;
-		if (!_externalCanPublish) StatusText = string.IsNullOrWhiteSpace(_externalBlockReason) ? "当前不能发布地方政策。" : _externalBlockReason;
-		else if (SelectedCount <= 0) StatusText = "请至少选择一个玩家家族拥有的城镇或城堡。";
-		else if (!hasName && !hasContent) StatusText = "请填写政策标题或政策内容后使用AI编写。";
-		else if (!hasName) StatusText = "可点击AI编写补全政策标题和正文。";
-		else if (!hasContent) StatusText = "可点击AI编写，根据政策标题补全正文。";
+		if (!_externalCanPublish) StatusText = string.IsNullOrWhiteSpace(_externalBlockReason) ? PolicyUiTexts.Get("AFPOL_UI_CannotPublishLocalPolicy", "The local policy cannot be published right now.") : _externalBlockReason;
+		else if (SelectedCount <= 0) StatusText = PolicyUiTexts.Get("AFPOL_UI_SelectOwnedFief", "Select at least one town or castle owned by the player clan.");
+		else if (!hasName && !hasContent) StatusText = PolicyUiTexts.Get("AFPOL_UI_FillForAiDraft", "Enter a policy title or content before using AI Draft.");
+		else if (!hasName) StatusText = PolicyUiTexts.Get("AFPOL_UI_AiCompleteTitle", "Click AI Draft to complete the policy title and content.");
+		else if (!hasContent) StatusText = PolicyUiTexts.Get("AFPOL_UI_AiCompleteContent", "Click AI Draft to complete the content from the policy title.");
 		else if (!durationValid) StatusText = _requireExplicitDuration && string.IsNullOrWhiteSpace(DurationText)
-			? "旧记录无法确认原持续时间，请明确填写正整数天数。"
-			: "持续天数必须留空或填写正整数。";
-		else StatusText = "已选择 " + SelectedCount.ToString(CultureInfo.InvariantCulture) + " 个封地；作用范围由所选封地自动确定。";
+			? PolicyUiTexts.Get("AFPOL_UI_DurationRequired", "The old record has no confirmed duration; enter a positive integer number of days.")
+			: PolicyUiTexts.Get("AFPOL_UI_DurationPositive", "Duration must be blank or a positive integer number of days.");
+		else StatusText = PolicyUiTexts.Format("AFPOL_UI_SelectedFiefs", "{COUNT} fiefs selected; scope is determined automatically by the selected fiefs.", "COUNT", SelectedCount.ToString(CultureInfo.InvariantCulture));
 	}
 }
 
@@ -430,8 +430,8 @@ internal sealed class LocalPolicyFiefItemVM : ViewModel
 	{
 		_onChanged = onChanged;
 		FiefId = data?.FiefId ?? "";
-		NameText = data?.NameText ?? "未知封地";
-		TypeText = data?.TypeText ?? "封地";
+		NameText = data?.NameText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownFief", "Unknown Fief");
+		TypeText = data?.TypeText ?? PolicyUiTexts.Get("AFPOL_UI_Fief", "Fief");
 		_isSelected = data?.IsSelected == true;
 	}
 	[DataSourceProperty] public string FiefId { get; set; }
@@ -565,14 +565,14 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		_onDelete = onDelete; _onRenew = onRenew; _onAbolish = onAbolish; _onReReview = onReReview; _onClose = onClose;
 		_allRecords = (data?.Records ?? new List<LocalPolicyHistoryRecordData>()).Where(x => x != null).ToList();
 		RecordItems = new MBBindingList<LocalPolicyHistoryRecordItemVM>();
-		TitleText = "政策记录";
-		SubtitleText = "地方政策与附庸国政策分别管理；有效记录保留，已结束记录只保留最近 100 条。";
-		LocalTabText = "地方政策";
-		VassalTabText = "附庸国政策";
-		RenewText = "延长效果";
-		AbolishText = "停止政策";
-		ReReviewText = "重新评议";
-		CloseText = "返回政策菜单";
+		TitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records");
+		SubtitleText = PolicyUiTexts.Get("AFPOL_UI_LocalHistorySubtitle", "Local and vassal policies are managed separately; active records are retained and only the latest 100 ended records are kept.");
+		LocalTabText = PolicyUiTexts.Get("AFPOL_UI_LocalPolicy", "Local Policy");
+		VassalTabText = PolicyUiTexts.Get("AFPOL_UI_VassalPolicy", "Vassal Policy");
+		RenewText = PolicyUiTexts.Get("AFPOL_UI_RenewEffect", "Extend Effect");
+		AbolishText = PolicyUiTexts.Get("AFPOL_UI_AbolishPolicy", "Stop Policy");
+		ReReviewText = PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review");
+		CloseText = PolicyUiTexts.Get("AFPOL_UI_BackToPolicyMenu", "Back to Policy Menu");
 		bool showVassalFirst = !_allRecords.Any(x => !string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase))
 			&& _allRecords.Any(x => string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase));
 		ShowScope(showVassalFirst);
@@ -582,7 +582,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	[DataSourceProperty] public string EmptyStateText { get => _emptyStateText; set { _emptyStateText = value; OnPropertyChangedWithValue(value, nameof(EmptyStateText)); } }
 	[DataSourceProperty] public string LocalTabText { get; set; }
 	[DataSourceProperty] public string VassalTabText { get; set; }
-	[DataSourceProperty] public string DeleteText => "删除记录";
+	[DataSourceProperty] public string DeleteText => PolicyUiTexts.Get("AFPOL_UI_DeleteRecord", "Delete Record");
 	[DataSourceProperty] public bool CanDelete { get; private set; }
 	[DataSourceProperty] public string RenewText { get; set; }
 	[DataSourceProperty] public string AbolishText { get; set; }
@@ -630,7 +630,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		}
 		HasRecords = RecordItems.Count > 0;
 		ShowEmptyState = !HasRecords;
-		EmptyStateText = showVassal ? "暂无附庸国政策记录。" : "暂无地方政策记录。";
+		EmptyStateText = showVassal ? PolicyUiTexts.Get("AFPOL_UI_EmptyVassalRecords", "No vassal policy records.") : PolicyUiTexts.Get("AFPOL_UI_EmptyLocalRecords", "No local policy records.");
 		if (HasRecords)
 		{
 			Select(RecordItems[0]);
