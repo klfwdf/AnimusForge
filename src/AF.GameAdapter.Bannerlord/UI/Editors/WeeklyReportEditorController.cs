@@ -662,14 +662,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		int batchCount = _port.BuildWeeklyReportBatchRequests(list, weekIndex, startDay, currentGameDayIndexSafe).Count;
 		List<string> list2 = _port.GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
 		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(id => _port.ResolveKingdomDisplay(id)).Where((string x) => !string.IsNullOrWhiteSpace(x))) : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_085","None"));
-		string message = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_086","A development weekly report draft will be generated from this week's materials.
-
-- Targets: world report + reports for each kingdom
-- Result: write event records in the event editor
-- NPCs keep reading the three most recent short kingdom reports; matching rules may load the full report
-- Priority: nearest kingdoms > world events > other kingdoms by distance
-
-Estimated requests: ") + batchCount + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_087","\nLength profile: ") + _port.PromptProfileLabel() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_088","\nRequests per minute: ") + _port.GetWeeklyReportRequestsPerMinute() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_089","\nKingdoms ordered by distance: ") + text + "\nMaxTokens：" + _port.GetEventAndRebellionApiMaxTokens() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_090","\n\nStart now?");
+		string message = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_086", "A development weekly report draft will be generated from this week's materials.\n\n- Targets: world report + reports for each kingdom\n- Result: write event records in the event editor\n- NPCs keep reading the three most recent short kingdom reports; matching rules may load the full report\n- Priority: nearest kingdoms > world events > other kingdoms by distance\n\nEstimated requests: ") + batchCount + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_087", "\nLength profile: ") + _port.PromptProfileLabel() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_088", "\nRequests per minute: ") + _port.GetWeeklyReportRequestsPerMinute() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_089", "\nKingdoms ordered by distance: ") + text + "\nMaxTokens: " + _port.GetEventAndRebellionApiMaxTokens() + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_090", "\n\nStart now?");
 		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_091","Generate this week's report draft"), message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_092","Start generation"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_093","Cancel"), delegate
 		{
 			if (!_port.IsCurrent(editorGeneration) || answered || ticket != _confirmationTicket) return;

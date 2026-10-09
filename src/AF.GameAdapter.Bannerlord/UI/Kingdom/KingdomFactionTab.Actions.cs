@@ -5,6 +5,7 @@ using Bannerlord.UIExtenderEx.Attributes;
 using AnimusForge.Refactor.Modules;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -16,13 +17,13 @@ public sealed partial class KingdomFactionPanelVM
 	private static string L(string id, string fallback, string variable, object value)
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(variable, value);
+		text.SetTextVariable(variable, value?.ToString() ?? string.Empty);
 		return text.ToString();
 	}
 	private static string L(string id, string fallback, params (string Name, object Value)[] variables)
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string name, object value) in variables) text.SetTextVariable(name, value);
+		foreach ((string name, object value) in variables) text.SetTextVariable(name, value?.ToString() ?? string.Empty);
 		return text.ToString();
 	}
 
