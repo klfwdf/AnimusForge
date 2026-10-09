@@ -6728,8 +6728,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山 V{0} 测试中... (场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl), runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
-					instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed);
+					if (instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed, TtsTestFeedback.ReportFailure))
+					{
+						InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山 V{0} 测试中... (场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl), runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后再试。", Color.FromUint(4294901760u)));
+					}
 				}
 			}
 			catch (Exception ex)

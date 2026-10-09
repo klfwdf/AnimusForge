@@ -23,6 +23,9 @@ def main():
  if a.mutation=='late-legacy-event':source=source.replace('if (!job.Request.IsCancellationRequested) { legacyEvent?.Invoke(); }','legacyEvent?.Invoke();',1).replace('InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request)','InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request, allowCancelled: true)')
  (out/'TtsEngine.cs').write_text(source,encoding='utf-8')
  (out/'VolcTtsGateway.cs').write_text((ROOT/'src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ (out/'TtsTestFeedback.cs').write_text((ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ tick=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs').read_text(encoding='utf-8-sig')
+ assert tick.count('TtsTestFeedback.OnApplicationTick()')==2, 'Both application tick paths must drain test feedback'
  settings_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs').read_text(encoding='utf-8-sig')
  button_start=settings_source.index('TestTtsVolcDedicatedVoice = delegate')
  button_end=settings_source.index('\n\t\tFetchMainModelList = delegate',button_start)
