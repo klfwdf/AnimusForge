@@ -7,7 +7,7 @@
 # 当前交接：玩家和平提案误拒绝修复（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品 `b28bb5d40`，检查点 `1a7afc5cb`，工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`。修复新 `propose_peace` 动作误走已有提案来源查找的问题；新提案校验自身条款，接受旧提案仍精确绑定来源动作；统一逐动作预检/执行重验与具体拒绝文案。
-- 4,209 项外交生命周期回放通过；同一日志故障在基线复现、候选通过；官方双 API + Bootstrap + 双 Coup gate 通过。证据 `artifacts/peace-proposal-admission-20261010/`。未实机、未真实模型、未旧档、未部署/打包/推送。
+- 4,209 项外交生命周期回放通过；同一日志故障在基线复现、候选通过；官方双 API + Bootstrap + 双 Coup gate 通过。证据 `artifacts/peace-proposal-admission-20261010/`。未实机、未真实模型、未旧档、未部署/打包；用户后续授权本修复推送 `origin/main`，结果以远端 ref / 本地 publication 收据核验。
 - [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#peace-proposal-admission-20261010)；[源码范围/消费者](docs/architecture/af-framework-code-scope.md#peace-proposal-admission-20261010)。旧拒绝公文不自动重放，安装修复后重新提交倡议；回滚为本包产品提交的 focused inverse。
 
 # 当前交接：测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
