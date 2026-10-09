@@ -18,4 +18,5 @@
   <LanguageFile xml_path="afdip_ui_strings.xml" />
   <LanguageFile xml_path="afconv_ui_strings.xml" />
   <LanguageFile xml_path="afwev_ui_strings.xml" />
+  <LanguageFile xml_path="afonboarding_ui_strings.xml" />
 </LanguageData>

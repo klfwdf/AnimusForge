@@ -137,8 +137,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
         _welcomeInProgress = true;
         _yjEndpointTask = YjEndpointProbe.SelectAsync(_yjEndpointCts.Token);
         var expected = _yjEndpointTask;
-        InformationManager.ShowInquiry(new InquiryData("YJ 线路测速", "正在比较三条 YJ 线路，完成后进入接入方式选择。\n不携带 Key，不调用模型生成。",
-            isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "取消", null, () => {
+        InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_YJ_LATENCY_TITLE", "YJ route latency test"), OnboardingUiText.T("AF_ONBOARDING_YJ_LATENCY_BODY", "Comparing three YJ routes. After the test, choose a connection method.\nNo key is sent and no model generation is performed."),
+            isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", OnboardingUiText.T("AF_COMMON_CANCEL", "Cancel"), null, () => {
                 if (!ReferenceEquals(_yjEndpointTask, expected)) return;
                 CancelYjEndpointSelection(); _welcomeInProgress = false;
                 ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
@@ -157,12 +157,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
         InformationManager.HideInquiry();
         if (result == null)
         {
-            InformationManager.DisplayMessage(new InformationMessage("YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。"));
+            InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_LATENCY_FAILED", "All three YJ routes failed the latency test. Check your network and try again, or use custom settings.")));
             ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
             return;
         }
         YjApiBaseUrl = result.Url; _yjEndpointSelected = true;
-        InformationManager.DisplayMessage(new InformationMessage("YJ 已选线路：" + new Uri(result.Url).Host + "，响应约 " + Math.Round(result.Milliseconds) + " ms。"));
+        InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_SELECTED", "Selected YJ route: ") + new Uri(result.Url).Host + OnboardingUiText.T("AF_ONBOARDING_YJ_RESPONSE_TIME", ", response about ") + Math.Round(result.Milliseconds) + OnboardingUiText.T("AF_ONBOARDING_LATENCY_SUFFIX", " ms.")));
         ShowYjApiSetupMenu();
     }
 
@@ -446,85 +446,85 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		if (IsAuxiliaryApiSetupTarget())
 		{
-			return "前处理API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY", "Preprocessing API");
 		}
 		if (IsActionPostprocessApiSetupTarget())
 		{
-			return "后处理API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS", "Postprocessing API");
 		}
 		if (IsEventAndRebellionApiSetupTarget())
 		{
-			return "事件/叛乱API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS", "Events/rebellion API");
 		}
-		return "主API";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY", "Primary API");
 	}
 
 	private string CurrentApiBaseUrlDisplayName()
 	{
 		if (IsAuxiliaryApiSetupTarget())
 		{
-			return "前处理API Base URL";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY_URL", "Preprocessing API Base URL");
 		}
 		if (IsActionPostprocessApiSetupTarget())
 		{
-			return "后处理API Base URL";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS_URL", "Postprocessing API Base URL");
 		}
 		if (IsEventAndRebellionApiSetupTarget())
 		{
-			return "事件/叛乱API Base URL";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS_URL", "Events/rebellion API Base URL");
 		}
-		return "主API Base URL";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY_URL", "Primary API Base URL");
 	}
 
 	private string CurrentApiKeyDisplayName()
 	{
 		if (IsAuxiliaryApiSetupTarget())
 		{
-			return "前处理API Key";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY_KEY", "Preprocessing API key");
 		}
 		if (IsActionPostprocessApiSetupTarget())
 		{
-			return "后处理API Key";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS_KEY", "Postprocessing API key");
 		}
 		if (IsEventAndRebellionApiSetupTarget())
 		{
-			return "事件/叛乱API Key";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS_KEY", "Events/rebellion API key");
 		}
-		return "主API Key";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY_KEY", "Primary API key");
 	}
 
 	private string CurrentApiModelDisplayName()
 	{
 		if (IsAuxiliaryApiSetupTarget())
 		{
-			return "前处理模型名称";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY_MODEL", "Preprocessing model name");
 		}
 		if (IsActionPostprocessApiSetupTarget())
 		{
-			return "后处理模型名称";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS_MODEL", "Postprocessing model name");
 		}
 		if (IsEventAndRebellionApiSetupTarget())
 		{
-			return "事件/叛乱模型名称";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS_MODEL", "Events/rebellion model name");
 		}
-		return "主模型名称";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY_MODEL", "Primary model name");
 	}
 
 	private string CurrentYjApiModelRecommendation()
 	{
 		if (IsAuxiliaryApiSetupTarget())
 		{
-			return "前处理API：建议优先选择速度快且价格较低的模型。";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY_HINT", "Preprocessing API: choose a fast, lower-cost model.");
 		}
 		if (IsActionPostprocessApiSetupTarget())
 		{
-			return "后处理API：建议选择分析与推理能力较强的模型，例如 GPT。";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS_HINT", "Postprocessing API: choose a model with strong analysis and reasoning, such as GPT.");
 		}
 		if (IsEventAndRebellionApiSetupTarget())
 		{
-			return "周报与叛乱API：周报生成建议选择文采较好的模型，例如 Gemini；叛乱命名也会共用此模型。";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS_HINT", "Weekly reports and rebellion API: choose a model with good writing, such as Gemini. Rebellion naming uses this model too.");
 		}
-		return "主API（NPC 正文）：建议选择文采较好的模型，例如 Gemini。";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY_HINT", "Primary API (NPC dialogue): choose a model with good writing, such as Gemini.");
 	}
 
 	private string CurrentApiBaseUrlExample()
@@ -550,7 +550,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			InformationManager.ShowInquiry(new InquiryData("兼容性提示", DuelSettings.GetContextExtractionCompatibilityWarningMessage() + "\n\n是否继续当前流程？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_COMPAT_WARNING_TITLE", "Compatibility warning"), DuelSettings.GetContextExtractionCompatibilityWarningMessage() + OnboardingUiText.T("AF_ONBOARDING_COMPAT_CONTINUE", "\n\nContinue this process?"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_CONTINUE", "Continue"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate
 			{
 				onContinue?.Invoke();
 			}, delegate
@@ -945,7 +945,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存 Base URL。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_SAVE_URL_FAILED", "MCM settings could not be read; the Base URL cannot be saved right now.")));
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
@@ -993,7 +993,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				NonBlockingErrorReport.Show("模型列表拉取失败", pendingModelFetchMessage);
+				NonBlockingErrorReport.Show(OnboardingUiText.T("AF_ONBOARDING_MODEL_FETCH_FAILED", "Model list fetch failed"), pendingModelFetchMessage);
 			}
 		}
 		ShowModelSelectionPopup();
@@ -1102,10 +1102,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string fullFailureText = pendingApiValidationMessage;
 			if (!string.IsNullOrWhiteSpace(pendingApiValidationFailureHint))
 			{
-				fullFailureText = (fullFailureText + "\n\n排查建议：" + pendingApiValidationFailureHint).Trim();
+				fullFailureText = (fullFailureText + OnboardingUiText.T("AF_ONBOARDING_TROUBLESHOOT", "\n\nTroubleshooting: ") + pendingApiValidationFailureHint).Trim();
 			}
 			// 失败详情可能含完整模型/API 响应；完整且脱敏后的文本直接显示在左下角，并保留给按需 AI 分析。
-			NonBlockingErrorReport.Show("API 连接失败", fullFailureText);
+			NonBlockingErrorReport.Show(OnboardingUiText.T("AF_ONBOARDING_API_CONNECTION_FAILED", "API connection failed"), fullFailureText);
 			if (setupMenuValidation)
 			{
 				_quickPresetFlowActive = false;
@@ -1132,8 +1132,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		try
 		{
 			string moduleVersionText = GetModuleVersionText();
-			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 已启动，版本号：" + moduleVersionText + "。", Colors.Yellow));
-			InformationManager.DisplayMessage(new InformationMessage("当前版本不建议搭配其他功能性 Mod 游玩；若出现崩溃，请先排查你的 Mod 加载清单！", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_STARTED", "AnimusForge started, version: ") + moduleVersionText + OnboardingUiText.T("AF_COMMON_PERIOD", "."), Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MOD_WARNING", "This version is not recommended with other gameplay mods. If a crash occurs, check your mod load order first!"), Colors.Yellow));
 		}
 		catch
 		{
@@ -1182,7 +1182,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("当前已有 AnimusForge 引导或 API 测试正在进行，请先完成或取消当前流程。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_BUSY", "An AnimusForge setup or API test is already running. Complete or cancel it first.")));
 				return false;
 			}
 			ResetYjApiSetup();
@@ -1200,7 +1200,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_apiOnlySetupFlowActive = false;
-			InformationManager.DisplayMessage(new InformationMessage("打开 API 重新配置失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_RECONFIGURE_FAILED", "Failed to open API reconfiguration: ") + ex.Message));
 			return false;
 		}
 	}
@@ -1216,7 +1216,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_activeOnboardingStage = OnboardingUiStage.None;
 		_dismissalOwner.Reset();
 		InformationManager.HideInquiry();
-		InformationManager.DisplayMessage(new InformationMessage("已取消 API 重新配置。"));
+		InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_RECONFIGURED_CANCELLED", "API reconfiguration cancelled.")));
 	}
 
 	private void CompleteApiSetupOnlyFlow()
@@ -1231,7 +1231,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_dismissalOwner.Reset();
 		TryPersistMcmSettings(DuelSettings.GetSettings());
 		InformationManager.HideInquiry();
-		InformationManager.DisplayMessage(new InformationMessage("API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。"));
+		InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_RECONFIGURED_DONE", "API reconfiguration complete: settings were written to MCM and the game was resumed. Database import and first-use setup are skipped.")));
 	}
 
 	public static bool OpenAuxiliaryApiRepairFlow()
@@ -1330,7 +1330,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					_dismissalOwner.Reset();
 					_pendingReturnToWelcome = false;
 					_onboardingSession.CancelWelcome();
-					InformationManager.DisplayMessage(new InformationMessage("已关闭首次配置，可从终端重新打开；AI 功能仍需完成引导。"));
+					InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SETUP_CLOSED", "First-use setup was closed. Reopen it from the terminal; AI features still require setup.")));
 				}
 			}))
 			{
@@ -1339,25 +1339,25 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("support", "支持AnimusForge制作组", null, isEnabled: true, "打开爱发电支持页面。"),
-				new InquiryElement("deepseek_flash", "使用官方deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
-				new InquiryElement("deepseek_pro", "使用官方deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
-				new InquiryElement("custom", "使用完全自定义的API进行游玩", null, isEnabled: true, "进入旧路径，逐项填写 Base URL、API Key 和模型。"),
-				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。")
+				new InquiryElement("support", OnboardingUiText.T("AF_ONBOARDING_SUPPORT", "Support the AnimusForge team"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_SUPPORT_HINT", "Open the Afdian support page.")),
+				new InquiryElement("deepseek_flash", OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_FLASH", "Play with the official DeepSeek Flash API preset"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_FLASH_HINT", "Automatically fill the DeepSeek Flash preset; enter an API key once.")),
+				new InquiryElement("deepseek_pro", OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_PRO", "Play with the official DeepSeek Pro API preset"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_PRO_HINT", "Automatically fill the DeepSeek Pro preset; enter an API key once.")),
+				new InquiryElement("custom", OnboardingUiText.T("AF_ONBOARDING_CUSTOM", "Play with fully custom APIs"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_CUSTOM_HINT", "Use the legacy path and fill in Base URL, API key, and model one by one.")),
+				new InquiryElement("existing_config", OnboardingUiText.T("AF_ONBOARDING_EXISTING", "Play with the existing configuration"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_EXISTING_HINT", "Test the current MCM configuration directly; weekly report and rebellion APIs are skipped when incomplete."))
 			};
 			if (showYjApiSetupOption)
 			{
-				list.Insert(1, new InquiryElement("yj_api", "使用 YJ API 中转站进行游玩", null, isEnabled: true, "先测速选择响应较快的 YJ 线路；可选择单分组或多分组 API Key 配置。"));
+				list.Insert(1, new InquiryElement("yj_api", OnboardingUiText.T("AF_ONBOARDING_YJ_PRESET", "Play through the YJ API relay"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_PRESET_HINT", "Test and choose the fastest YJ route; use one or multiple API key groups.")));
 			}
 			if (!_apiOnlySetupFlowActive)
 			{
-				list.Add(new InquiryElement("save_exit", "保存存档并退出", null, isEnabled: true, "保存当前存档后退出到主界面。"));
+				list.Add(new InquiryElement("save_exit", OnboardingUiText.T("AF_ONBOARDING_SAVE_EXIT", "Save and exit"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_SAVE_EXIT_HINT", "Save the current game and return to the main menu.")));
 			}
 			string text = _apiOnlySetupFlowActive
-				? "你正在从 AnimusForge 终端重新配置 API。\n\n本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。"
-				: "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
+				? OnboardingUiText.T("AF_ONBOARDING_RECONFIGURE_BODY", "You are reconfiguring APIs from the AnimusForge terminal.\n\nThis flow writes and tests the primary, preprocessing, postprocessing, weekly report, and rebellion APIs, then returns to the game without database import or first-use setup.")
+				: OnboardingUiText.T("AF_ONBOARDING_QUICK_SETUP_BODY", "Choose an API setup method for first use.\n\nA recommended preset fills the Base URL, model, reasoning, and temperature for all required APIs; you only need to enter one API key.");
 			// API 失败详情由左下角通知承载，快捷配置菜单始终只显示可操作的配置说明。
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge - API 快捷配置", text, list, isExitShown: false, 0, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(OnboardingUiText.T("AF_ONBOARDING_API_QUICK_SETUP", "AnimusForge - API quick setup"), text, list, isExitShown: false, 0, 1, OnboardingUiText.T("AF_COMMON_CONFIRM", "Confirm"), OnboardingUiText.T("AF_COMMON_CLOSE", "Close"), delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
 				string text2 = selected?.FirstOrDefault()?.Identifier as string;
@@ -1436,22 +1436,22 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
             if (!_yjEndpointSelected) { BeginYjEndpointSelection(); return; }
 			_activeOnboardingStage = OnboardingUiStage.YjApiChoice;
 			_welcomeInProgress = true;
-			string yjBackLabel = _apiOnlySetupFlowActive ? "返回 API 重新配置菜单" : "返回首次引导菜单";
-			string yjBackDescription = _apiOnlySetupFlowActive ? "返回 AnimusForge 的 API 重新配置菜单。" : "返回 AnimusForge 的首次 API 配置菜单。";
+			string yjBackLabel = _apiOnlySetupFlowActive ? OnboardingUiText.T("AF_ONBOARDING_BACK_RECONFIGURE", "Back to API reconfiguration menu") : OnboardingUiText.T("AF_ONBOARDING_BACK_WELCOME", "Back to first-use setup menu");
+			string yjBackDescription = _apiOnlySetupFlowActive ? OnboardingUiText.T("AF_ONBOARDING_BACK_RECONFIGURE_HINT", "Return to the AnimusForge API reconfiguration menu.") : OnboardingUiText.T("AF_ONBOARDING_BACK_WELCOME_HINT", "Return to the AnimusForge first-use API setup menu.");
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("yj_prepare_account", "获取 API Key 并购买额度", null, isEnabled: true, "依次打开 YJ API Key 管理页和额度购买页。"),
-				new InquiryElement("yj_multi_group", "多分组 API Key 输入", null, isEnabled: true, "主API、前处理API、后处理API、周报与叛乱API分别输入一个 Key，并分别拉取该分组的模型。"),
-				new InquiryElement("yj_single_group", "单分组 API Key 输入", null, isEnabled: true, "只输入一次 Key，自动写入四条 API；随后仍会为四条 API 分别拉取模型并选择。"),
+				new InquiryElement("yj_prepare_account", OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT", "Get an API key and buy credits"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT_HINT", "Open the YJ API key management and credit purchase pages.")),
+				new InquiryElement("yj_multi_group", OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI", "Multiple API key groups"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI_HINT", "Enter one key for each API group and fetch models for each group.")),
+				new InquiryElement("yj_single_group", OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE", "Single API key group"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE_HINT", "Enter one key to fill all four APIs; models are still fetched and selected separately.")),
 				new InquiryElement("yj_back", yjBackLabel, null, isEnabled: true, yjBackDescription),
-				new InquiryElement("yj_copy_qq_group", "复制YJ中转站 QQ 群号", null, isEnabled: true, "复制 QQ 群号 " + YjApiPlayerQqGroupNumber + " 到剪贴板。")
+				new InquiryElement("yj_copy_qq_group", OnboardingUiText.T("AF_ONBOARDING_YJ_COPY_QQ", "Copy YJ relay QQ group"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_COPY_QQ_HINT", "Copy QQ group ") + YjApiPlayerQqGroupNumber + OnboardingUiText.T("AF_ONBOARDING_TO_CLIPBOARD", " to the clipboard."))
 			};
-			string text = "【开始游玩前必须完成】\n点击“获取 API Key 并购买额度”会依次打开 Key 管理页和额度购买页；请创建有效 Key 并充值足够额度。\n\n缺少有效 API Key 或可用额度时，无法拉取模型、通过连接测试或使用 AI 进行游玩。\n单分组 Key 只需输入一次；多分组 Key 需要为四条 API 分别输入。";
+			string text = OnboardingUiText.T("AF_ONBOARDING_YJ_BODY", "【Required before playing】\nOpen the key management and credit pages from “Get an API key and buy credits”; create a valid key and add enough credits.\n\nWithout a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.\nA single-group key is entered once; multi-group mode requires one key per API.");
 			if (_apiOnlySetupFlowActive)
 			{
-				text += "\n\n当前为终端 API 重新配置：四条 API 完成连接测试后会直接返回游戏，不会进入数据库导入。";
+				text += OnboardingUiText.T("AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX", "\n\nTerminal API reconfiguration is active: after all four APIs pass, the game resumes without database import.");
 			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("YJ API 中转站", text, list, isExitShown: false, 0, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(OnboardingUiText.T("AF_ONBOARDING_YJ_MENU", "YJ API relay"), text, list, isExitShown: false, 0, 1, OnboardingUiText.T("AF_COMMON_CONFIRM", "Confirm"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
 				string text2 = selected?.FirstOrDefault()?.Identifier as string;
@@ -1489,7 +1489,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_welcomeInProgress = false;
-			InformationManager.DisplayMessage(new InformationMessage("打开 YJ API 中转站菜单失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_MENU_FAILED", "Failed to open the YJ API relay menu: ") + ex.Message));
 			ResetYjApiSetup();
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
@@ -1500,18 +1500,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		try
 		{
 			TaleWorlds.InputSystem.Input.SetClipboardText(YjApiPlayerQqGroupNumber);
-			InformationManager.DisplayMessage(new InformationMessage("YJ 交流 QQ 群号已复制到剪贴板：" + YjApiPlayerQqGroupNumber, new Color(0.35f, 1f, 0.35f)));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_QQ_COPIED", "YJ community QQ group copied to clipboard: ") + YjApiPlayerQqGroupNumber, new Color(0.35f, 1f, 0.35f)));
 		}
 		catch
 		{
-			InformationManager.DisplayMessage(new InformationMessage("复制 QQ 群号失败，请手动复制：" + YjApiPlayerQqGroupNumber, Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_QQ_COPY_FAILED", "Could not copy the QQ group; copy it manually: ") + YjApiPlayerQqGroupNumber, Colors.Yellow));
 		}
 	}
 
 	private static void OpenYjApiPreparationPages()
 	{
-		OpenYjApiExternalPage(YjApiKeysUrl, "API Key 管理");
-		OpenYjApiExternalPage(YjApiPurchaseUrl, "额度购买");
+		OpenYjApiExternalPage(YjApiKeysUrl, OnboardingUiText.T("AF_ONBOARDING_YJ_KEY_PAGE", "API key management"));
+		OpenYjApiExternalPage(YjApiPurchaseUrl, OnboardingUiText.T("AF_ONBOARDING_YJ_CREDIT_PAGE", "Credit purchase"));
 	}
 
 	private static void OpenYjApiExternalPage(string url, string pageName)
@@ -1519,11 +1519,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		// 无默认浏览器时由共享启动器仅在用户点击时执行一次有界本机查找，不影响游戏热路径。
 		if (ExternalBrowserLauncher.TryOpen(url, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
-			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开 YJ API " + pageName + "页面。" : "[系统] 正在打开 YJ API " + pageName + "页面。"));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? OnboardingUiText.T("AF_ONBOARDING_SYSTEM_YJ_FALLBACK", "[System] The default browser could not start; opened the YJ API ") + pageName + OnboardingUiText.T("AF_ONBOARDING_PAGE_SUFFIX", " page.") : OnboardingUiText.T("AF_ONBOARDING_SYSTEM_YJ_OPENING", "[System] Opening the YJ API ") + pageName + OnboardingUiText.T("AF_ONBOARDING_PAGE_SUFFIX", " page.")));
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 YJ API " + pageName + "页面失败：" + failureMessage));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SYSTEM_YJ_FAILED", "[System] Failed to open the YJ API ") + pageName + OnboardingUiText.T("AF_ONBOARDING_PAGE_FAILED_SUFFIX", " page failed: ") + failureMessage));
 		}
 	}
 
@@ -1553,7 +1553,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能配置 " + CurrentApiDisplayName() + "。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_CONFIG_FAILED", "MCM settings could not be read; cannot configure ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 			ShowYjApiSetupMenu();
 			return;
 		}
@@ -1583,23 +1583,23 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiKeyDisplayName() + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_INPUT_FAILED", "MCM settings could not be read; cannot enter ") + CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 				ShowYjApiSetupMenu();
 				return;
 			}
 			_activeOnboardingStage = OnboardingUiStage.YjApiKey;
 			_welcomeInProgress = true;
 			bool singleGroup = _yjApiSetupMode == YjApiSetupMode.SingleGroup;
-			string title = singleGroup ? "填写 YJ API 单分组 Key" : "填写 YJ API " + CurrentApiKeyDisplayName();
+			string title = singleGroup ? OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE_KEY_TITLE", "Enter YJ API single-group key") : OnboardingUiText.T("AF_ONBOARDING_YJ_KEY_TITLE_PREFIX", "Enter YJ API ") + CurrentApiKeyDisplayName();
 			string text = singleGroup
-				? "请输入一个 YJ API Key。确认后会将测速选中的 Base URL 和该 Key 写入主API、前处理API、后处理API、周报与叛乱API；随后会依次拉取四次模型列表并为每条 API 选择模型。"
-				: "请输入当前 " + CurrentApiDisplayName() + " 所属分组的 YJ API Key。确认后只会写入当前 API，并拉取该 Key 可用的模型。";
-			InformationManager.ShowTextInquiry(new TextInquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+				? OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE_KEY_BODY", "Enter one YJ API key. The tested Base URL and key will be written to all four APIs; each API will then fetch and select its model.")
+				: OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI_KEY_BODY_PREFIX", "Enter the YJ API key for ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI_KEY_BODY_SUFFIX", " group. Only the current API is written, and models available to this key are fetched.");
+			InformationManager.ShowTextInquiry(new TextInquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_NEXT", "Next"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_KEY_EMPTY", "API key cannot be empty.")));
 					OpenYjApiKeyInput();
 					return;
 				}
@@ -1616,7 +1616,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				TryPersistMcmSettings(settings);
 				_welcomeInProgress = false;
-				InformationManager.DisplayMessage(new InformationMessage((singleGroup ? "YJ API 单分组 Key" : CurrentApiKeyDisplayName()) + " 已写入 MCM，正在拉取 " + CurrentApiModelDisplayName() + " 可用模型。"));
+				InformationManager.DisplayMessage(new InformationMessage((singleGroup ? OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE_KEY_LABEL", "YJ API single-group key") : CurrentApiKeyDisplayName()) + OnboardingUiText.T("AF_ONBOARDING_WRITTEN_FETCHING", " was saved to MCM; fetching models for ") + CurrentApiModelDisplayName() + OnboardingUiText.T("AF_ONBOARDING_AVAILABLE_MODELS_SUFFIX", ".")));
 				BeginFetchAvailableModelsForSetup();
 			}, delegate
 			{
@@ -1627,7 +1627,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_welcomeInProgress = false;
-			InformationManager.DisplayMessage(new InformationMessage("打开 YJ API Key 输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_INPUT_FAILED", "Failed to open the YJ API key input: ") + ex.Message));
 			ShowYjApiSetupMenu();
 		}
 	}
@@ -1683,7 +1683,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_quickPresetFlowActive = false;
 			_activeOnboardingStage = OnboardingUiStage.DeepSeekApiKeyOwnership;
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("DeepSeek API Key 确认", "你是否拥有 DeepSeek 官方 API Key？\n\n如果没有，请点击“无”，前往 DeepSeek 官方开放平台创建 API Key 并充值。完成后返回游戏，再次选择推荐组合。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "有", "无", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_KEY_TITLE", "DeepSeek API key confirmation"), OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_KEY_BODY", "Do you have an official DeepSeek API key?\n\nIf not, choose “No” to open the DeepSeek platform and create a key with credits. Return to the game and choose the preset again."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_YES", "Yes"), OnboardingUiText.T("AF_COMMON_NO", "No"), delegate
 			{
 				_welcomeInProgress = false;
 				ApplyDeepSeekPresetAndOpenKeyInput(preset);
@@ -1697,7 +1697,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_welcomeInProgress = false;
-			InformationManager.DisplayMessage(new InformationMessage("打开 DeepSeek API Key 确认框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_KEY_FAILED", "Failed to open the DeepSeek API key confirmation: ") + ex.Message));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
@@ -1707,11 +1707,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		// 与 YJ 页面复用同一受限浏览器发现逻辑，避免缺少默认关联时中断引导。
 		if (ExternalBrowserLauncher.TryOpen(DeepSeekApiKeysUrl, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
-			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开 DeepSeek 官方 API Keys 页面。" : "[系统] 正在打开 DeepSeek 官方 API Keys 页面。"));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? OnboardingUiText.T("AF_ONBOARDING_SYSTEM_DEEPSEEK_FALLBACK", "[System] The default browser could not start; opened the official DeepSeek API keys page.") : OnboardingUiText.T("AF_ONBOARDING_SYSTEM_DEEPSEEK_OPENING", "[System] Opening the official DeepSeek API keys page.")));
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 DeepSeek 官方页面失败：" + failureMessage));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SYSTEM_DEEPSEEK_FAILED", "[System] Failed to open the official DeepSeek page: ") + failureMessage));
 		}
 	}
 
@@ -1730,7 +1730,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("写入 DeepSeek 推荐配置失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_APPLY_FAILED", "Failed to apply the DeepSeek preset: ") + ex.Message));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
@@ -1740,7 +1740,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能写入 DeepSeek 推荐配置。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_MCM_FAILED", "MCM settings could not be read; the DeepSeek preset cannot be written right now.")));
 			return false;
 		}
 		string key = (apiKey ?? "").Trim();
@@ -1812,14 +1812,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_quickPresetFlowActive = true;
 			_activeOnboardingStage = OnboardingUiStage.QuickPresetApiKey;
 			string presetName = preset == QuickApiPreset.DeepSeekPro ? "deepseek-pro" : "deepseek-flash";
-			string text = "已写入 " + presetName + " 推荐 API 组合。\n请输入 DeepSeek API Key；该 Key 会同时写入主API、前处理API、后处理API、周报和叛乱API。";
+			string text = OnboardingUiText.T("AF_ONBOARDING_PRESET_WRITTEN_PREFIX", "Saved ") + presetName + OnboardingUiText.T("AF_ONBOARDING_PRESET_KEY_BODY", " preset.\nEnter a DeepSeek API key; it will be written to the primary, preprocessing, postprocessing, weekly report, and rebellion APIs.");
 			// 上次失败已由左下角通知报告；输入框正文保持稳定，避免原始响应挤占输入控件。
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写 DeepSeek API Key", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并测试四条API", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_KEY_INPUT", "Enter DeepSeek API key"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_SAVE_TEST_APIS", "Save and test all four APIs"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_KEY_EMPTY", "API key cannot be empty.")));
 					ShowQuickPresetApiKeyInput(preset);
 					return;
 				}
@@ -1830,7 +1830,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			SetApiSetupTarget(ApiSetupTarget.Primary);
 			SetApiRepairFlowActive(active: false);
-			InformationManager.DisplayMessage(new InformationMessage("DeepSeek 推荐配置已写入 MCM，正在测试四条 API。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_APPLIED", "DeepSeek preset saved to MCM; testing all four APIs.")));
 				BeginValidateQuickPresetApiConfigAndContinue();
 			}, delegate
 			{
@@ -1841,7 +1841,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 DeepSeek API Key 输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_DEEPSEEK_INPUT_FAILED", "Failed to open the DeepSeek API key input: ") + ex.Message));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
@@ -1865,7 +1865,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能测试 API 组合。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_TEST_MCM_FAILED", "MCM settings could not be read; the API preset cannot be tested right now.")));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 			return;
 		}
@@ -1923,18 +1923,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else
 				{
 					failureHint = string.Join("\n", failedResults.Select((ApiValidationTargetResult x) => x?.FailureHint).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct());
-					text = string.Join("\n\n", failedResults.Select((ApiValidationTargetResult x) => x?.Message ?? "API 组合连接测试失败。"));
+					text = string.Join("\n\n", failedResults.Select((ApiValidationTargetResult x) => x?.Message ?? OnboardingUiText.T("AF_ONBOARDING_API_SET_FAILED", "API set connection test failed.")));
 				}
 			}
 			catch (OperationCanceledException)
 			{
-				failureHint = "你已手动取消本次测试，可以回到首次菜单重新选择配置方式。";
-				text = "API 组合测试已取消。";
+				failureHint = OnboardingUiText.T("AF_ONBOARDING_API_SET_CANCEL_HINT", "You cancelled this test. Return to the first-use menu to choose another setup method.");
+				text = OnboardingUiText.T("AF_ONBOARDING_API_SET_CANCELLED", "API set test cancelled.");
 			}
 			catch (Exception ex)
 			{
-				failureHint = "通常是网络异常、证书或代理设置异常，或者某条 API 配置不正确。";
-				text = "API 组合测试异常：" + ex.Message;
+				failureHint = OnboardingUiText.T("AF_ONBOARDING_API_SET_ERROR_HINT", "This is usually a network, certificate, or proxy issue, or an incorrect API setting.");
+				text = OnboardingUiText.T("AF_ONBOARDING_API_SET_EXCEPTION", "API set test error: ") + ex.Message;
 			}
 			finally
 			{
@@ -1967,7 +1967,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			if (required)
 			{
-				missingMessage = displayName + "未配置完整，请检查 Base URL、API Key 和模型名称。";
+				missingMessage = displayName + OnboardingUiText.T("AF_ONBOARDING_API_INCOMPLETE_SUFFIX", " is incomplete; check the Base URL, API key, and model name.");
 				return false;
 			}
 			return false;
@@ -1986,7 +1986,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void ShowApiConfigSetValidationPrecheckFailure(string message)
 	{
 		// 组合预检没有原始响应，直接给出简短左下角提示并返回干净的配置菜单。
-		NonBlockingErrorReport.Show("API 配置不完整", string.IsNullOrWhiteSpace(message) ? "API 配置未填写完整，无法开始组合测试。" : message);
+		NonBlockingErrorReport.Show(OnboardingUiText.T("AF_ONBOARDING_API_INCOMPLETE_TITLE", "Incomplete API configuration"), string.IsNullOrWhiteSpace(message) ? OnboardingUiText.T("AF_ONBOARDING_API_INCOMPLETE_BODY", "The API configuration is incomplete, so the set test cannot start.") : message);
 		ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 	}
 
@@ -1998,8 +1998,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		};
 		if (target == null)
 		{
-			result.Message = "API 组合测试失败：目标配置为空。";
-			result.FailureHint = "请回到首次菜单重新选择配置方式。";
+			result.Message = OnboardingUiText.T("AF_ONBOARDING_API_TARGET_EMPTY", "API set test failed: target configuration is empty.");
+			result.FailureHint = OnboardingUiText.T("AF_ONBOARDING_RETURN_SETUP", "Return to the first-use menu and choose another setup method.");
 			return result;
 		}
 		try
@@ -2038,30 +2038,30 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					string assistantReply = LlmApiCompat.ExtractAssistantText(JObject.Parse(responseBody));
 					if (string.IsNullOrWhiteSpace(assistantReply))
 					{
-						result.FailureHint = "接口返回了 HTTP 成功状态，但响应结构中没有可用的模型回复。";
-						result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + "回复解析失败。", "", responseBody);
+						result.FailureHint = OnboardingUiText.T("AF_ONBOARDING_RESPONSE_NO_MODEL", "The endpoint returned HTTP success, but the response contained no usable model reply.");
+						result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_REPLY_PARSE_FAILED", "Reply parsing failed."), "", responseBody);
 						return result;
 					}
 					result.Success = true;
-					result.Message = target.DisplayName + "连接测试成功。";
+					result.Message = target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_SUCCESS", "Connection test succeeded.");
 					return result;
 				}
 				catch (Exception ex)
 				{
-					result.FailureHint = "接口返回了 HTTP 成功状态，但响应不是可解析的聊天补全格式。";
-					result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + "回复解析失败：" + ex.Message, "", responseBody);
+					result.FailureHint = OnboardingUiText.T("AF_ONBOARDING_RESPONSE_INVALID", "The endpoint returned HTTP success, but the response was not a parseable chat-completion format.");
+					result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_REPLY_PARSE_EXCEPTION", "Reply parsing failed: ") + ex.Message, "", responseBody);
 					return result;
 				}
 			}
 			if (!exchange.HasStatusCode)
 			{
-				result.FailureHint = "通常是网络异常、证书或代理设置异常，或者 " + target.DisplayName + " 的 Base URL 填写不正确。";
-				result.Message = target.DisplayName + "连接测试失败：" + (exchange.ErrorMessage ?? "未知错误");
+				result.FailureHint = OnboardingUiText.T("AF_ONBOARDING_CONNECTION_ERROR_HINT_PREFIX", "This is usually a network, certificate, or proxy issue, or the ") + target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_ERROR_HINT_SUFFIX", " Base URL is incorrect.");
+				result.Message = target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_FAILED", "Connection test failed: ") + (exchange.ErrorMessage ?? OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_ERROR", "Unknown error"));
 				return result;
 			}
 			HttpStatusCode statusCode = (HttpStatusCode)exchange.StatusCode;
 			result.FailureHint = BuildApiValidationFailureHint(statusCode, responseBody);
-			result.Message = target.DisplayName + "连接测试失败。\n" + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, statusCode, responseBody);
+			result.Message = target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_FAILED_NEWLINE", "Connection test failed.\n") + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, statusCode, responseBody);
 			return result;
 		}
 		catch (OperationCanceledException)
@@ -2070,24 +2070,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			result.FailureHint = "通常是网络异常、证书或代理设置异常，或者 " + target.DisplayName + " 的 Base URL 填写不正确。";
-			result.Message = target.DisplayName + "连接测试异常：" + ex.Message;
+			result.FailureHint = OnboardingUiText.T("AF_ONBOARDING_CONNECTION_ERROR_HINT_PREFIX", "This is usually a network, certificate, or proxy issue, or the ") + target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_ERROR_HINT_SUFFIX", " Base URL is incorrect.");
+			result.Message = target.DisplayName + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_EXCEPTION", "Connection test error: ") + ex.Message;
 			return result;
 		}
 	}
 
 	private static string BuildApiConfigSetValidationSuccessMessage(ApiValidationFlow flow, IEnumerable<ApiValidationTargetResult> results, bool eventSkipped)
 	{
-		string label = flow == ApiValidationFlow.ExistingConfigAll ? "现有配置测试通过" : "API 组合测试通过";
+		string label = flow == ApiValidationFlow.ExistingConfigAll ? OnboardingUiText.T("AF_ONBOARDING_EXISTING_TEST_PASSED", "Existing configuration test passed") : OnboardingUiText.T("AF_ONBOARDING_API_SET_PASSED", "API set test passed");
 		string names = string.Join("、", (results ?? Enumerable.Empty<ApiValidationTargetResult>()).Where((ApiValidationTargetResult x) => x?.Target != null).Select((ApiValidationTargetResult x) => x.Target.DisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)));
 		if (string.IsNullOrWhiteSpace(names))
 		{
-			names = "已配置API";
+			names = OnboardingUiText.T("AF_ONBOARDING_CONFIGURED_APIS", "Configured APIs");
 		}
-		string text = label + "：" + names + "。";
+		string text = label + "：" + names + OnboardingUiText.T("AF_COMMON_PERIOD", ".");
 		if (eventSkipped)
 		{
-			text += "周报与叛乱API未配置完整，已跳过该项测试。";
+			text += OnboardingUiText.T("AF_ONBOARDING_EVENTS_SKIPPED", "Weekly report and rebellion APIs are incomplete; that test was skipped.");
 		}
 		return text;
 	}
@@ -2096,17 +2096,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		if (target == ApiSetupTarget.Auxiliary)
 		{
-			return "前处理API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_AUXILIARY", "Preprocessing API");
 		}
 		if (target == ApiSetupTarget.ActionPostprocess)
 		{
-			return "后处理API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_POSTPROCESS", "Postprocessing API");
 		}
 		if (target == ApiSetupTarget.EventAndRebellion)
 		{
-			return "周报与叛乱API";
+			return OnboardingUiText.T("AF_ONBOARDING_API_EVENTS", "Weekly report and rebellion API");
 		}
-		return "主API";
+		return OnboardingUiText.T("AF_ONBOARDING_API_PRIMARY", "Primary API");
 	}
 
 	private void ShowApiRepairPopup()
@@ -2122,9 +2122,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			SetApiRepairFlowActive(active: true);
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			_welcomeInProgress = true;
-			string text = "周事件自动生成失败，请检查你的 Base URL、API Key、模型名或当前网络环境。";
+			string text = OnboardingUiText.T("AF_ONBOARDING_WEEKLY_EVENT_FAILED", "Weekly event generation failed. Check the Base URL, API key, model name, or network.");
 			// 此处只提供修复动作；详细失败内容已在触发时写入左下角消息和日志。
-			InformationManager.ShowInquiry(new InquiryData("调整 API 信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写 API 信息", "测试已有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_ADJUST_API_TITLE", "Adjust API information"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_ENTER_API", "Enter API information"), OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2156,10 +2156,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
 			string text = hasExistingConfig
-				? "前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。前处理API为必填，不提供回退RAG选项。"
-				: "前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。前处理API为必填，不提供回退RAG选项。";
+				? OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_UNAVAILABLE_EXISTING", "The preprocessing API (rule retrieval/routing) is unavailable. Test the existing MCM configuration or re-enter it. This API is required and has no RAG fallback.")
+				: OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_UNAVAILABLE", "The preprocessing API (rule retrieval/routing) is unavailable. Check its Base URL, API key, model, or network. This API is required and has no RAG fallback.");
 			// 此窗口保留填写/测试动作，不再混入可能很长的失败响应。
-			InformationManager.ShowInquiry(new InquiryData("调整前处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API信息", "测试现有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_ADJUST", "Adjust preprocessing API"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_ENTER", "Enter preprocessing API"), OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2191,11 +2191,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
 			string text = hasExistingConfig
-				? "后处理API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写后处理API信息。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。"
-				: "后处理API当前不可用。你可以重新填写后处理API信息，或继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
+				? OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_UNAVAILABLE_EXISTING", "The postprocessing API is unavailable. Test the existing MCM configuration or re-enter it.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model.")
+				: OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_UNAVAILABLE", "The postprocessing API is unavailable. Re-enter it or continue using the primary API.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model.");
 			// 此窗口保留填写/回退动作，不再混入可能很长的失败响应。
-			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
-			InformationManager.ShowInquiry(new InquiryData("调整后处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
+			string negativeText = hasExistingConfig ? OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration") : OnboardingUiText.T("AF_ONBOARDING_FALLBACK_PRIMARY", "Continue with primary API");
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_ADJUST", "Adjust postprocessing API"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_ENTER_SHORT", "Enter postprocessing API"), negativeText, delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2234,10 +2234,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.EventAndRebellion);
 			string text = hasExistingConfig
-				? "事件/叛乱API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写事件/叛乱API信息。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。"
-				: "事件/叛乱API当前不可用。请重新填写事件/叛乱API的 Base URL、API Key、模型名称，或检查当前网络环境。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。";
+				? OnboardingUiText.T("AF_ONBOARDING_EVENTS_UNAVAILABLE_EXISTING", "The events/rebellion API is unavailable. Test the existing MCM configuration or re-enter it.\n\nIt generates weekly reports and rebellion kingdom names; failed naming has no local-name fallback.")
+				: OnboardingUiText.T("AF_ONBOARDING_EVENTS_UNAVAILABLE", "The events/rebellion API is unavailable. Re-enter its Base URL, API key, and model, or check the network.\n\nIt generates weekly reports and rebellion kingdom names; failed naming has no local-name fallback.");
 			// 此窗口保留填写/测试动作，不再混入可能很长的失败响应。
-			InformationManager.ShowInquiry(new InquiryData("调整事件/叛乱API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写事件/叛乱API", "测试现有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_EVENTS_ADJUST", "Adjust events/rebellion API"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_EVENTS_ENTER", "Enter events/rebellion API"), OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2271,11 +2271,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
-			string title = "欢迎使用 AnimusForge";
-			string text = "开始游玩前，请先确认主API信息。主API用于NPC正文生成，如果未正确配置，AI 对话功能将无法使用。";
+			string title = OnboardingUiText.T("AF_ONBOARDING_WELCOME_TITLE", "Welcome to AnimusForge");
+			string text = OnboardingUiText.T("AF_ONBOARDING_WELCOME_BODY", "Before playing, confirm the primary API. It generates NPC dialogue; AI conversations are unavailable until it is configured.");
 			// 欢迎页只负责提供后续动作，失败报告已在测试完成时显示于左下角。
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写主API信息", "测试已有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_PRIMARY_ENTER", "Enter primary API"), OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2310,10 +2310,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(250.0).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.AuxiliaryChoice;
 			_welcomeInProgress = true;
-			string title = "配置前处理API（必填）";
-			string text = "前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成。前处理API为必填，不提供回退RAG选项。";
+			string title = OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_TITLE", "Configure preprocessing API (required)");
+			string text = OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_BODY", "The preprocessing API handles rule retrieval/routing. Rule topics are screened at low cost before primary generation. It is required and has no RAG fallback.");
 			// 配置页正文不复用失败详情，保证输入与操作按钮始终可见。
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API", "测试现有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_AUXILIARY_ENTER_SHORT", "Enter preprocessing API"), OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2350,11 +2350,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
-			string title = "配置后处理API";
-			string text = "后处理API专门用于动作标签/情绪标签判定。配置后可以把后处理链路和前处理、主API正文生成彻底拆开；如果你暂时不想配置，也可以继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
+			string title = OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_TITLE", "Configure postprocessing API");
+			string text = OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_BODY", "The postprocessing API handles action and emotion tags. It separates postprocessing from preprocessing and primary generation; you can continue using the primary API if needed.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model.");
 			// 配置页正文不复用失败详情，保证输入与回退操作始终可见。
-			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
+			string negativeText = hasExistingConfig ? OnboardingUiText.T("AF_ONBOARDING_TEST_EXISTING", "Test existing configuration") : OnboardingUiText.T("AF_ONBOARDING_FALLBACK_PRIMARY", "Continue with primary API");
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_POSTPROCESS_ENTER_SHORT", "Enter postprocessing API"), negativeText, delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -2396,16 +2396,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiBaseUrlDisplayName() + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_INPUT_FAILED", "MCM settings could not be read; cannot enter ") + CurrentApiBaseUrlDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写 Base URL", "请输入 " + CurrentApiBaseUrlDisplayName() + "。\n示例：" + CurrentApiBaseUrlExample(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_TITLE", "Enter Base URL"), OnboardingUiText.T("AF_ONBOARDING_ENTER_PREFIX", "Enter ") + CurrentApiBaseUrlDisplayName() + OnboardingUiText.T("AF_ONBOARDING_EXAMPLE_SUFFIX", ".\nExample: ") + CurrentApiBaseUrlExample(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_NEXT", "Next"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiBaseUrlDisplayName() + " 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiBaseUrlDisplayName() + OnboardingUiText.T("AF_ONBOARDING_EMPTY_SUFFIX", " cannot be empty.")));
 					OpenApiBaseUrlInput();
 				}
 				else
@@ -2419,7 +2419,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 " + CurrentApiBaseUrlDisplayName() + " 输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_OPEN_PREFIX", "Failed to open ") + CurrentApiBaseUrlDisplayName() + OnboardingUiText.T("AF_ONBOARDING_INPUT_FAILED_SUFFIX", " input: ") + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
@@ -2450,7 +2450,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				if (exchange.HasStatusCode && CanUseBaseUrlStatusCode((HttpStatusCode)exchange.StatusCode))
 				{
 					flag = true;
-					message = "Base URL 检查通过，可以继续填写 API Key。";
+					message = OnboardingUiText.T("AF_ONBOARDING_BASE_URL_PASSED", "Base URL check passed; enter the API key next.");
 				}
 				else if (exchange.HasStatusCode)
 				{
@@ -2458,16 +2458,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					message = "Base URL 检查失败：" + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? "未知错误");
+					message = OnboardingUiText.T("AF_ONBOARDING_BASE_URL_FAILED", "Base URL check failed: ") + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_ERROR", "Unknown error"));
 				}
 			}
 			catch (OperationCanceledException)
 			{
-				message = "Base URL 检查已取消。";
+				message = OnboardingUiText.T("AF_ONBOARDING_BASE_URL_CANCELLED", "Base URL check cancelled.");
 			}
 			catch (Exception ex)
 			{
-				message = "Base URL 检查失败：" + ex.Message;
+				message = OnboardingUiText.T("AF_ONBOARDING_BASE_URL_FAILED", "Base URL check failed: ") + ex.Message;
 			}
 			finally
 			{
@@ -2494,13 +2494,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		string text = (rawBaseUrl ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_EMPTY", "Base URL cannot be empty.")));
 			OpenApiBaseUrlInput();
 			return;
 		}
 		if (!Uri.TryCreate(text, UriKind.Absolute, out Uri uriResult) || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("Base URL 格式不正确，请填写完整的 http/https 地址。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_INVALID", "Base URL is invalid; enter a complete http/https address.")));
 			OpenApiBaseUrlInput();
 			return;
 		}
@@ -2523,7 +2523,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.BaseUrlValidation;
-			InformationManager.ShowInquiry(new InquiryData("正在检查base URL", "正在检查你填写的 Base URL 是否可用，请稍候……\n\n只有检查通过后，才可以进入下一步填写 API Key。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelBaseUrlValidationAndReturn), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_CHECKING_TITLE", "Checking Base URL"), OnboardingUiText.T("AF_ONBOARDING_BASE_URL_CHECKING_BODY", "Checking whether the Base URL is available...\n\nYou can enter the API key after the check passes."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_EXIT_SAVE", "Exit current game"), OnboardingUiText.T("AF_ONBOARDING_BACK_PREVIOUS", "Back to previous screen"), ExitCurrentGameFromOnboarding, CancelBaseUrlValidationAndReturn), pauseGameActiveState: true);
 		}
 		catch
 		{
@@ -2534,13 +2534,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = string.IsNullOrWhiteSpace(_lastBaseUrlValidationFailureMessage) ? "你填写的 Base URL 当前不可用，请重新检查后再试。" : _lastBaseUrlValidationFailureMessage;
+			string text = string.IsNullOrWhiteSpace(_lastBaseUrlValidationFailureMessage) ? OnboardingUiText.T("AF_ONBOARDING_BASE_URL_UNAVAILABLE", "The Base URL is unavailable. Check it again and retry.") : _lastBaseUrlValidationFailureMessage;
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.BaseUrlValidationFailure;
 			_lastBaseUrlValidationFailureMessage = "";
 			// 诊断详情改为左下角消息；仅保留紧凑动作窗，以免丢失原有“退出当前存档”出口。
-			NonBlockingErrorReport.Show("base URL 检查失败", text);
-			InformationManager.ShowInquiry(new InquiryData("下一步怎么做？", "Base URL 当前不可用。请选择重新填写，或退出当前存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新填写base URL", "退出当前存档", delegate
+			NonBlockingErrorReport.Show(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_FAILED_LOWER", "Base URL check failed"), text);
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_BASE_URL_NEXT_TITLE", "What should I do next?"), OnboardingUiText.T("AF_ONBOARDING_BASE_URL_NEXT_BODY", "The Base URL is unavailable. Re-enter it or exit the current game."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_BASE_URL_REENTER", "Re-enter Base URL"), OnboardingUiText.T("AF_ONBOARDING_EXIT_SAVE", "Exit current game"), delegate
 			{
 				_welcomeInProgress = false;
 				_activeOnboardingStage = OnboardingUiStage.None;
@@ -2601,23 +2601,23 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiKeyDisplayName() + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_INPUT_FAILED", "MCM settings could not be read; cannot enter ") + CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写 API Key", "请输入 " + CurrentApiKeyDisplayName() + "。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(OnboardingUiText.T("AF_ONBOARDING_API_KEY_TITLE", "Enter API key"), OnboardingUiText.T("AF_ONBOARDING_ENTER_PREFIX", "Enter ") + CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", "."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_NEXT", "Next"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + " 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_ONBOARDING_EMPTY_SUFFIX", " cannot be empty.")));
 					OpenApiKeyInput();
 				}
 				else
 				{
 					SetApiKeyForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + " 已写入 MCM。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_ONBOARDING_MCM_WRITTEN_SUFFIX", " was saved to MCM.")));
 					BeginFetchAvailableModelsForSetup();
 				}
 			}, delegate
@@ -2627,7 +2627,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 " + CurrentApiKeyDisplayName() + " 输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_OPEN_PREFIX", "Failed to open ") + CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_ONBOARDING_INPUT_FAILED_SUFFIX", " input: ") + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
@@ -2641,7 +2641,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能拉取模型列表。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MODEL_FETCH_MCM_FAILED", "MCM settings could not be read; models cannot be fetched right now.")));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
@@ -2649,13 +2649,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		string apiKey = GetApiKeyForTarget(settings, _currentApiSetupTarget).Trim();
 		if (string.IsNullOrWhiteSpace(apiUrl))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("请先填写 Base URL。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_NEED_BASE_URL", "Enter the Base URL first.")));
 			OpenApiBaseUrlInput();
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(apiKey))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("请先填写 API Key。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_NEED_API_KEY", "Enter the API key first.")));
 			OpenApiKeyInput();
 			return;
 		}
@@ -2683,11 +2683,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					if (list.Count > 0)
 					{
 						flag = true;
-						text = "已成功拉取可用模型列表，请选择模型名称。";
+						text = OnboardingUiText.T("AF_ONBOARDING_MODELS_FETCHED", "Available models fetched; choose a model.");
 					}
 					else
 					{
-						text = LlmRetryPrompt.BuildFailureDetail("接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。", "", text2);
+						text = LlmRetryPrompt.BuildFailureDetail(OnboardingUiText.T("AF_ONBOARDING_MODELS_UNRECOGNIZED", "The endpoint returned a response, but no usable model list was recognized. You can enter a model manually."), "", text2);
 					}
 				}
 				else if (exchange.HasStatusCode)
@@ -2696,16 +2696,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					text = "拉取模型列表失败：" + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? "未知错误");
+					text = OnboardingUiText.T("AF_ONBOARDING_MODELS_FAILED", "Failed to fetch models: ") + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_ERROR", "Unknown error"));
 				}
 			}
 			catch (OperationCanceledException)
 			{
-				text = "模型列表拉取已取消。";
+				text = OnboardingUiText.T("AF_ONBOARDING_MODELS_CANCELLED", "Model list fetch cancelled.");
 			}
 			catch (Exception ex)
 			{
-				text = "拉取模型列表失败：" + ex.Message;
+				text = OnboardingUiText.T("AF_ONBOARDING_MODELS_FAILED", "Failed to fetch models: ") + ex.Message;
 			}
 			finally
 			{
@@ -2733,7 +2733,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.ModelFetch;
-			InformationManager.ShowInquiry(new InquiryData("正在拉取模型列表", "正在根据你填写的 Base URL 和 API Key 拉取当前接口可用的模型，请稍候……\n\n拉取完成后将自动进入下一步。\n如果始终无法拉取模型列表，你也可以返回上一界面重新填写，或稍后手动输入模型名称。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelModelFetchAndReturnToApiKey), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_MODELS_FETCHING_TITLE", "Fetching model list"), OnboardingUiText.T("AF_ONBOARDING_MODELS_FETCHING_BODY", "Fetching models available from this endpoint...\n\nThe next step opens automatically when complete.\nIf fetching keeps failing, go back to re-enter the settings or enter a model manually later."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_EXIT_SAVE", "Exit current game"), OnboardingUiText.T("AF_ONBOARDING_BACK_PREVIOUS", "Back to previous screen"), ExitCurrentGameFromOnboarding, CancelModelFetchAndReturnToApiKey), pauseGameActiveState: true);
 		}
 		catch
 		{
@@ -2781,7 +2781,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写" + CurrentApiModelDisplayName() + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MODEL_INPUT_MCM_FAILED", "MCM settings could not be read; cannot enter ") + CurrentApiModelDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
@@ -2789,37 +2789,37 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_activeOnboardingStage = OnboardingUiStage.ModelSelect;
 			bool yjApiSetupActive = IsYjApiSetupActive();
 			List<InquiryElement> list = new List<InquiryElement>();
-			list.Add(new InquiryElement("__manual__", "手动输入模型名称", null));
+			list.Add(new InquiryElement("__manual__", OnboardingUiText.T("AF_ONBOARDING_MODEL_MANUAL_TITLE", "Enter model name manually"), null));
 			if (!yjApiSetupActive)
 			{
-				list.Add(new InquiryElement("__base_url__", "重新填写base URL", null));
+				list.Add(new InquiryElement("__base_url__", OnboardingUiText.T("AF_ONBOARDING_BASE_URL_REENTER", "Re-enter Base URL"), null));
 			}
-			list.Add(new InquiryElement("__api_key__", "重新填写API key", null));
+			list.Add(new InquiryElement("__api_key__", OnboardingUiText.T("AF_ONBOARDING_MODEL_REENTER_KEY", "Re-enter API key"), null));
 			foreach (string item in _lastFetchedModelNames.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase))
 			{
 				list.Add(new InquiryElement(item, item, null));
 			}
-			list.Add(new InquiryElement("__refresh__", "重新拉取模型列表", null));
-			list.Add(new InquiryElement("__exit__", "退出当前存档", null));
-			string text = "请选择一个可用模型名称。";
+			list.Add(new InquiryElement("__refresh__", OnboardingUiText.T("AF_ONBOARDING_MODEL_REFRESH", "Fetch model list again"), null));
+			list.Add(new InquiryElement("__exit__", OnboardingUiText.T("AF_ONBOARDING_EXIT_SAVE", "Exit current game"), null));
+			string text = OnboardingUiText.T("AF_ONBOARDING_MODEL_SELECT_BODY", "Choose an available model.");
 			if (_lastFetchedModelNames.Count > 0)
 			{
 				text += "";
 			}
 			else
 			{
-				text += "\n\n当前没有拉取到模型列表，你可以手动输入模型名称。";
+				text += OnboardingUiText.T("AF_ONBOARDING_MODEL_NO_LIST", "\n\nNo model list was fetched; you can enter a model manually.");
 			}
 			// 网络失败详情已显示在左下角；模型选择窗口保持紧凑，只保留当前可执行的恢复操作。
 			if (yjApiSetupActive)
 			{
-				text = text + "\n\n【本通道模型选择建议（仅供参考）】\n" + CurrentYjApiModelRecommendation() + "\n最终选择由你自行决定。";
+				text = text + OnboardingUiText.T("AF_ONBOARDING_MODEL_RECOMMEND_PREFIX", "\n\n[Channel model suggestion]\n") + CurrentYjApiModelRecommendation() + OnboardingUiText.T("AF_ONBOARDING_MODEL_RECOMMEND_SUFFIX", "\nThe final choice is yours.");
 			}
 			else
 			{
-				text += "\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。";
+				text += OnboardingUiText.T("AF_ONBOARDING_MODEL_RECOVERY_HINT", "\n\nIf the Base URL or API key is wrong, scroll to the bottom to return and enter it again.");
 			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择模型名称", text, list, isExitShown: false, 0, 1, "下一步", "返回", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(OnboardingUiText.T("AF_ONBOARDING_MODEL_SELECT_TITLE", "Choose model name"), text, list, isExitShown: false, 0, 1, OnboardingUiText.T("AF_COMMON_NEXT", "Next"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
 				string text2 = selected?.FirstOrDefault()?.Identifier as string;
@@ -2862,7 +2862,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						ApplyYjGeminiPresetThinkingDefaults(settings, _currentApiSetupTarget, text2);
 					}
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + OnboardingUiText.T("AF_ONBOARDING_MODEL_TESTING_PREFIX", " was saved to MCM; testing the complete connection: ") + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
 				}
 			}, delegate
@@ -2874,7 +2874,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开模型选择界面失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MODEL_SELECT_FAILED", "Failed to open model selection: ") + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
@@ -2886,16 +2886,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写" + CurrentApiModelDisplayName() + "。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MODEL_INPUT_MCM_FAILED", "MCM settings could not be read; cannot enter ") + CurrentApiModelDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入" + CurrentApiModelDisplayName() + "。\n示例：gpt-4o-mini", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(OnboardingUiText.T("AF_ONBOARDING_MODEL_MANUAL_INPUT", "Enter model name"), OnboardingUiText.T("AF_ONBOARDING_ENTER_MODEL_PREFIX", "Enter") + CurrentApiModelDisplayName() + OnboardingUiText.T("AF_ONBOARDING_MODEL_EXAMPLE", ".\nExample: gpt-4o-mini"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_START_TEST", "Start test"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + OnboardingUiText.T("AF_ONBOARDING_EMPTY_SUFFIX", " cannot be empty.")));
 					OpenManualModelNameInput();
 				}
 				else
@@ -2906,7 +2906,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						ApplyYjGeminiPresetThinkingDefaults(settings, _currentApiSetupTarget, text2);
 					}
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + OnboardingUiText.T("AF_ONBOARDING_MODEL_TESTING_PREFIX", " was saved to MCM; testing the complete connection: ") + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
 				}
 			}, delegate
@@ -2916,7 +2916,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开模型名称输入框失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MODEL_INPUT_FAILED", "Failed to open model name input: ") + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
@@ -3020,19 +3020,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						string text3 = LlmApiCompat.ExtractAssistantText(jObject);
 						if (string.IsNullOrWhiteSpace(text3))
 						{
-							failureHint = "接口返回了 HTTP 成功状态，但响应结构中没有可用的模型回复。";
-							text = LlmRetryPrompt.BuildFailureDetail("MCM 中的" + CurrentApiDisplayName() + "回复解析失败。", "", text2);
+							failureHint = OnboardingUiText.T("AF_ONBOARDING_RESPONSE_NO_MODEL", "The endpoint returned HTTP success, but the response contained no usable model reply.");
+							text = LlmRetryPrompt.BuildFailureDetail(OnboardingUiText.T("AF_ONBOARDING_MCM_OF", "MCM ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_REPLY_PARSE_FAILED", "Reply parsing failed."), "", text2);
 						}
 						else
 						{
 							flag = true;
-							text = "MCM 中的" + CurrentApiDisplayName() + "连接测试成功：" + text3.Trim();
+							text = OnboardingUiText.T("AF_ONBOARDING_MCM_OF", "MCM ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_SUCCESS_PREFIX", "connection test succeeded: ") + text3.Trim();
 						}
 					}
 					catch (Exception ex)
 					{
-						failureHint = "接口返回了 HTTP 成功状态，但响应不是可解析的聊天补全格式。";
-						text = LlmRetryPrompt.BuildFailureDetail("MCM 中的" + CurrentApiDisplayName() + "回复解析失败：" + ex.Message, "", text2);
+						failureHint = OnboardingUiText.T("AF_ONBOARDING_RESPONSE_INVALID", "The endpoint returned HTTP success, but the response was not a parseable chat-completion format.");
+						text = LlmRetryPrompt.BuildFailureDetail(OnboardingUiText.T("AF_ONBOARDING_MCM_OF", "MCM ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_REPLY_PARSE_EXCEPTION", "Reply parsing failed: ") + ex.Message, "", text2);
 					}
 				}
 				else if (exchange.HasStatusCode)
@@ -3043,19 +3043,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					failureHint = "通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。";
-					text = "MCM 中的" + CurrentApiDisplayName() + "连接测试失败：" + (exchange.ErrorMessage ?? "未知错误");
+					failureHint = OnboardingUiText.T("AF_ONBOARDING_CONNECTION_HINT", "This is usually a network, certificate, or proxy issue, or an incorrect Base URL.");
+					text = OnboardingUiText.T("AF_ONBOARDING_MCM_OF", "MCM ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_FAILED", "Connection test failed: ") + (exchange.ErrorMessage ?? OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_ERROR", "Unknown error"));
 				}
 			}
 			catch (OperationCanceledException)
 			{
-				failureHint = "你已手动取消本次测试，可以返回上一界面重新测试，或改填 API 信息。";
-				text = "测试已取消，已退回上一界面。";
+				failureHint = OnboardingUiText.T("AF_ONBOARDING_TEST_CANCEL_HINT", "You cancelled this test. Return to retry or change the API settings.");
+				text = OnboardingUiText.T("AF_ONBOARDING_TEST_CANCELLED", "Test cancelled; returned to the previous screen.");
 			}
 			catch (Exception ex)
 			{
-				failureHint = "通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。";
-				text = CurrentApiDisplayName() + "连接测试异常：" + ex.Message;
+				failureHint = OnboardingUiText.T("AF_ONBOARDING_CONNECTION_HINT", "This is usually a network, certificate, or proxy issue, or an incorrect Base URL.");
+				text = CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_CONNECTION_EXCEPTION", "Connection test error: ") + ex.Message;
 			}
 			finally
 			{
@@ -3086,7 +3086,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_READ_FAILED", "Could not read MCM settings.")));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
@@ -3096,19 +3096,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		string modelName = GetModelNameForTarget(settings, _currentApiSetupTarget).Trim();
 		if (string.IsNullOrWhiteSpace(apiUrl))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiBaseUrlDisplayName() + "。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_MISSING_PREFIX", "MCM is missing ") + CurrentApiBaseUrlDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(apiKey))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiKeyDisplayName() + "。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_MISSING_PREFIX", "MCM is missing ") + CurrentApiKeyDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(modelName))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写" + CurrentApiModelDisplayName() + "。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_MCM_MISSING_PREFIX_NO_SPACE", "MCM is missing ") + CurrentApiModelDisplayName() + OnboardingUiText.T("AF_COMMON_PERIOD", ".")));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
@@ -3122,9 +3122,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.ApiValidation;
 			string text = (_apiValidationFlow == ApiValidationFlow.QuickPresetAll || _apiValidationFlow == ApiValidationFlow.ExistingConfigAll)
-				? "正在按当前 MCM 配置并发测试 API 组合，请稍候……\n\n测试完成后将自动进入下一步；任意必测 API 不通过都会返回首次菜单。"
-				: "正在使用 MCM 中的" + CurrentApiDisplayName() + "信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的 API 测试始终未成功，你也可以在此界面直接退出存档。";
-			InformationManager.ShowInquiry(new InquiryData("正在测试现有配置", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
+				? OnboardingUiText.T("AF_ONBOARDING_SET_TESTING_BODY", "Testing the API set in parallel using the current MCM settings...\n\nThe next step opens when complete; any required API failure returns to the first-use menu.")
+				: OnboardingUiText.T("AF_ONBOARDING_SINGLE_TESTING_PREFIX", "Testing ") + CurrentApiDisplayName() + OnboardingUiText.T("AF_ONBOARDING_SINGLE_TESTING_SUFFIX", " using MCM settings...\n\nThe next step opens when complete.\nYou can exit the current game here if the test keeps failing.");
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_TESTING_TITLE", "Testing existing configuration"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_EXIT_SAVE", "Exit current game"), OnboardingUiText.T("AF_ONBOARDING_BACK_PREVIOUS", "Back to previous screen"), ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
 		}
 		catch
 		{
@@ -3233,7 +3233,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_EXIT_FAILED", "Failed to exit the current game: ") + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
@@ -3250,24 +3250,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			if (saveHandler == null)
 			{
 				_saveAndExitStage = SaveAndExitStage.None;
-				InformationManager.DisplayMessage(new InformationMessage("未找到存档保存器，将直接退出当前存档。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_HANDLER_MISSING", "No save handler was found; exiting the current game.")));
 				MBGameManager.EndGame();
 				return;
 			}
 			if (saveHandler.IsSaving)
 			{
 				_saveAndExitStage = SaveAndExitStage.WaitingForCurrentSave;
-				InformationManager.DisplayMessage(new InformationMessage("检测到当前已有保存进行中，完成后将再保存一次并自动退出。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_IN_PROGRESS", "A save is already in progress; another save will run when it completes, then the game exits.")));
 				return;
 			}
 			_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
 			saveHandler.QuickSaveCurrentGame();
-			InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVING_EXIT", "Saving the current game; it will exit when saving completes.")));
 		}
 		catch (Exception ex)
 		{
 			_saveAndExitStage = SaveAndExitStage.None;
-			InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_EXIT_FAILED", "Save and exit failed: ") + ex.Message));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
@@ -3286,13 +3286,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				if (saveHandler == null)
 				{
 					_saveAndExitStage = SaveAndExitStage.None;
-					InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：未找到存档保存器。"));
+					InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_EXIT_NO_HANDLER", "Save and exit failed: no save handler was found.")));
 					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 					return;
 				}
 				_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
 				saveHandler.QuickSaveCurrentGame();
-				InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVING_EXIT", "Saving the current game; it will exit when saving completes.")));
 				return;
 			}
 			_saveAndExitStage = SaveAndExitStage.None;
@@ -3301,13 +3301,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				MBGameManager.EndGame();
 				return;
 			}
-			InformationManager.DisplayMessage(new InformationMessage("保存当前存档失败，已取消退出。"));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_CANCELLED", "Saving the current game failed; exit cancelled.")));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 		catch (Exception ex)
 		{
 			_saveAndExitStage = SaveAndExitStage.None;
-			InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SAVE_EXIT_FAILED", "Save and exit failed: ") + ex.Message));
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
@@ -3332,9 +3332,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string text = "此内容包括世界观、角色信息、各王国开局概括，以及国家性格和长期战略，可以极大提升游戏体验。\n\n但是一些世界观也会加大 CPU 的负担。";
+			string text = OnboardingUiText.T("AF_ONBOARDING_IMPORT_BODY", "This content includes world lore, character information, kingdom openings, personalities, and long-term strategies to improve the experience.\n\nSome lore increases CPU load.");
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("知识库数据导入", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_IMPORT_TITLE", "Knowledge-base import"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_IMPORT_ALL", "Import all"), OnboardingUiText.T("AF_ONBOARDING_SKIP", "Skip"), delegate
 			{
 				_welcomeInProgress = false;
 				OpenImportFolderPicker(delegate
@@ -3368,8 +3368,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string text = "你确定不载入数据库吗？\n不载入数据库，NPC将对您当前世界的设定几乎完全不理解。";
-			InformationManager.ShowInquiry(new InquiryData("跳过数据库导入", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate
+			string text = OnboardingUiText.T("AF_ONBOARDING_SKIP_IMPORT_BODY", "Skip the database import?\nWithout it, NPCs will barely understand your world settings.");
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_SKIP_IMPORT_TITLE", "Skip database import"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_CONFIRM", "Confirm"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate
 			{
 				_welcomeInProgress = false;
 				CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: false);
@@ -3411,8 +3411,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
             KnowledgeLibraryBehavior knowledge = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
             if (knowledge == null) { Finish(); return; }
             InformationManager.DisplayMessage(new InformationMessage(importedDatabase
-                ? "首次导入完成。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"
-                : "已跳过数据库导入。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
+                ? OnboardingUiText.T("AF_ONBOARDING_IMPORT_DONE", "First import complete. Enter the player name, appearance, and background next; these can be skipped.")
+                : OnboardingUiText.T("AF_ONBOARDING_IMPORT_SKIPPED", "Database import skipped. Enter the player name, appearance, and background next; these can be skipped.")));
             knowledge.OpenPlayerPersonaSetup(() =>
             {
                 if (!IsCurrent() || personaSubmitted) return;
@@ -3423,7 +3423,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
         catch (Exception ex)
         {
             if (!IsCurrent()) return;
-            InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex.Message));
+            InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_PERSONA_FAILED", "Failed to open the player persona setup: ") + ex.Message));
             Finish();
         }
     }
@@ -3446,8 +3446,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				return;
 			}
 			_welcomeInProgress = true;
-			string text = "是否允许玩家直接攻击触发场景冲突？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以触发本模组的场景冲突。\n\n关闭后，本模组不会再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。";
-			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 场景冲突", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开启", "关闭", delegate
+			string text = OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_BODY", "Allow direct player attacks to trigger scene conflicts?\n\nWhen enabled, attacking NPCs in peaceful town or lord-meeting scenes can trigger AnimusForge conflicts.\n\nWhen disabled, direct attacks use vanilla damage resolution; arguments and taunts can still escalate conflicts.\n\nThis choice is saved to MCM and can be changed from Scene Shout.");
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_TITLE", "AnimusForge - Scene conflict"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_ONBOARDING_ENABLE", "Enable"), OnboardingUiText.T("AF_COMMON_CLOSE", "Close"), delegate
 			{
 				_welcomeInProgress = false;
 				ApplyPeaceSceneConflictOnboardingChoice(enabled: true);
@@ -3464,7 +3464,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = false;
 			try
 			{
-				Logger.Log("ModOnboarding", "[WARN] 显示和平场景冲突设置失败：" + ex.Message);
+				Logger.Log("ModOnboarding", OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_SHOW_FAILED", "[WARN] Failed to show peaceful-scene conflict settings: ") + ex.Message);
 			}
 			catch
 			{
@@ -3503,7 +3503,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				if (showMessage)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存和平场景冲突选项。"));
+					InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_MCM_FAILED", "MCM settings could not be read; the peaceful-scene conflict option cannot be saved.")));
 				}
 				return;
 			}
@@ -3511,14 +3511,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			TryPersistMcmSettings(settings);
 			if (showMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击触发场景冲突。" : "已关闭直接攻击触发场景冲突；伤害结算回到原版逻辑。"));
+				InformationManager.DisplayMessage(new InformationMessage(enabled ? OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_ENABLED", "Direct attacks can now trigger scene conflicts.") : OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_DISABLED", "Direct attacks no longer trigger scene conflicts; damage uses vanilla logic.")));
 			}
 		}
 		catch (Exception ex)
 		{
 			if (showMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("保存和平场景冲突选项失败：" + ex.Message));
+				InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_SCENE_CONFLICT_SAVE_FAILED", "Failed to save the peaceful-scene conflict option: ") + ex.Message));
 			}
 		}
 	}
@@ -3543,7 +3543,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.Log("ModOnboarding", "[WARN] 持久化 MCM 设置失败：" + ex.Message);
+				Logger.Log("ModOnboarding", OnboardingUiText.T("AF_ONBOARDING_MCM_PERSIST_WARN", "[WARN] Failed to persist MCM settings: ") + ex.Message);
 			}
 			catch
 			{
@@ -3553,28 +3553,28 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static string BuildApiValidationFailureMessage(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
 	{
-		string text = "MCM 中的 API 信息连接测试失败，暂时不能进入下一步。";
+		string text = OnboardingUiText.T("AF_ONBOARDING_API_VALIDATION_FAILED", "The API information in MCM failed its connection test; setup cannot continue yet.");
 		if (!string.IsNullOrWhiteSpace(effectiveApiUrl))
 		{
-			text = text + "\n接口：" + effectiveApiUrl;
+			text = text + OnboardingUiText.T("AF_ONBOARDING_API_ENDPOINT_LABEL", "\nEndpoint: ") + effectiveApiUrl;
 		}
 		if (!string.IsNullOrWhiteSpace(modelName))
 		{
-			text = text + "\n模型：" + modelName;
+			text = text + OnboardingUiText.T("AF_ONBOARDING_API_MODEL_LABEL", "\nModel: ") + modelName;
 		}
-		text = text + "\n状态码：" + statusCode;
+		text = text + OnboardingUiText.T("AF_ONBOARDING_API_STATUS_LABEL", "\nStatus: ") + statusCode;
 		string text2 = responseBody ?? "";
 		if ((int)statusCode == 404)
 		{
-			text += "\n排查建议：请检查 Base URL 尾缀和模型名称是否正确。";
+			text += OnboardingUiText.T("AF_ONBOARDING_API_HINT_URL_MODEL", "\nTroubleshooting: check the Base URL suffix and model name.");
 		}
 		else if ((int)statusCode == 401 || (int)statusCode == 403)
 		{
-			text += "\n排查建议：请检查 API Key 是否有效。";
+			text += OnboardingUiText.T("AF_ONBOARDING_API_HINT_KEY", "\nTroubleshooting: check whether the API key is valid.");
 		}
 		else if ((int)statusCode == 522)
 		{
-			text += "\n排查建议：网关已收到请求，但上游源站不可达。";
+			text += OnboardingUiText.T("AF_ONBOARDING_API_HINT_UPSTREAM", "\nTroubleshooting: the gateway received the request, but the upstream host is unreachable.");
 		}
 		return LlmRetryPrompt.BuildFailureDetail(text, "", text2);
 	}
@@ -3587,32 +3587,32 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		switch (num)
 		{
 		case 400:
-			return "请求格式不符合接口要求，通常是 Base URL 尾缀不对，或当前接口并不兼容聊天补全请求格式。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_400", "The request format is invalid. The Base URL suffix may be wrong or the endpoint may not support chat completions.");
 		case 401:
-			return "API Key 无效、为空，或鉴权格式不正确。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_401", "The API key is invalid, empty, or uses the wrong authentication format.");
 		case 402:
-			return "账号额度不足、套餐受限，或当前渠道要求先充值后才能调用模型。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_402", "Credits are insufficient, the plan is restricted, or this channel requires a top-up before model calls.");
 		case 403:
-			return "当前 Key 没有访问该模型或该接口的权限，也可能被平台风控拦截。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_403", "This key cannot access the model or endpoint, or was blocked by platform risk controls.");
 		case 404:
-			return "Base URL 尾缀错误、接口路径不对，或模型名称在当前服务商侧不存在。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_404", "The Base URL suffix or endpoint path is wrong, or the model does not exist with this provider.");
 		case 408:
-			return "服务端长时间未返回，通常是网络质量较差，或上游响应过慢。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_408", "The server took too long to respond, usually because of poor network quality or a slow upstream.");
 		case 429:
 			if (text2.Contains("quota") || text2.Contains("balance") || text2.Contains("insufficient"))
 			{
-				return "账号额度可能已经用尽，或账户余额不足，导致请求被限流或拒绝。";
+				return OnboardingUiText.T("AF_ONBOARDING_HTTP_429_QUOTA", "Credits may be exhausted or the balance is too low, so the request was throttled or rejected.");
 			}
-			return "请求过于频繁、并发超限，或账号触发了速率限制。稍等片刻后再试。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_429_RATE", "Requests are too frequent, concurrency is too high, or the account hit a rate limit. Try again shortly.");
 		case 500:
-			return "服务端内部处理失败，通常不是本地填写错误，建议稍后重试。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_500", "The server failed internally. This is usually not a local input error; try again later.");
 		case 502:
 		case 503:
 		case 504:
 		case 522:
-			return "网关或上游服务暂时不可用，通常是服务商侧故障，或当前网络到上游链路异常。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_UPSTREAM", "The gateway or upstream service is unavailable, usually due to a provider outage or network path issue.");
 		default:
-			return "请优先检查 Base URL、API Key、模型名称和当前网络环境是否正确。";
+			return OnboardingUiText.T("AF_ONBOARDING_HTTP_UNKNOWN", "First check the Base URL, API key, model name, and network.");
 		}
 	}
 
@@ -3642,24 +3642,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static string BuildBaseUrlValidationFailureMessage(HttpStatusCode statusCode, string responseBody)
 	{
-		string text = "Base URL 检查失败。";
+		string text = OnboardingUiText.T("AF_ONBOARDING_BASE_URL_ERROR", "Base URL check failed.");
 		switch ((int)statusCode)
 		{
 		case 404:
-			text += " 当前地址很可能不正确，常见原因是 Base URL 尾缀或接口路径填写错误。";
+			text += OnboardingUiText.T("AF_ONBOARDING_BASE_URL_ERROR_404", " The address is likely wrong; common causes are an incorrect Base URL suffix or endpoint path.");
 			break;
 		case 400:
-			text += " 当前地址返回了无效请求，说明这个接口大概率不兼容当前的 OpenAI 风格地址。";
+			text += OnboardingUiText.T("AF_ONBOARDING_BASE_URL_ERROR_400", " The address returned an invalid request, so it likely does not support this OpenAI-style endpoint.");
 			break;
 		case 500:
 		case 502:
 		case 503:
 		case 504:
 		case 522:
-			text += " 当前地址暂时不可用，可能是服务端异常，或网络到服务商链路异常。";
+			text += OnboardingUiText.T("AF_ONBOARDING_BASE_URL_ERROR_UPSTREAM", " The address is temporarily unavailable due to a server or network path issue.");
 			break;
 		default:
-			text += " 请检查 Base URL 是否填写正确。";
+			text += OnboardingUiText.T("AF_ONBOARDING_BASE_URL_ERROR_DEFAULT", " Check that the Base URL is correct.");
 			break;
 		}
 		return LlmRetryPrompt.BuildFailureDetail(text, "", responseBody);
@@ -3705,26 +3705,26 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static string BuildModelFetchFailureMessage(HttpStatusCode statusCode, string responseBody)
 	{
-		string text = "拉取模型列表失败。";
+		string text = OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR", "Failed to fetch the model list.");
 		switch ((int)statusCode)
 		{
 		case 401:
-			text += " 当前 API Key 无效，或鉴权未通过。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_KEY", " The API key is invalid or authentication failed.");
 			break;
 		case 402:
-			text += " 当前账号额度不足，或渠道限制了接口调用。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_CREDITS", " Credits are insufficient or the channel restricts endpoint calls.");
 			break;
 		case 403:
-			text += " 当前 Key 没有访问模型列表接口的权限，或被服务商风控拦截。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_ACCESS", " This key cannot access the model-list endpoint or was blocked by provider controls.");
 			break;
 		case 404:
-			text += " 当前 Base URL 很可能不正确，或该服务商不支持 /models 接口。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_URL", " The Base URL is likely wrong or this provider does not support /models.");
 			break;
 		case 429:
-			text += " 当前请求过于频繁，或账户触发了速率限制。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_RATE", " Requests are too frequent or the account hit a rate limit.");
 			break;
 		default:
-			text += " 你可以手动输入模型名称继续。";
+			text += OnboardingUiText.T("AF_ONBOARDING_MODEL_ERROR_MANUAL", " You can enter a model name manually to continue.");
 			break;
 		}
 		return LlmRetryPrompt.BuildFailureDetail(text, "", responseBody);
@@ -3741,11 +3741,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				};
 			}
 			List<InquiryElement> list2 = new List<InquiryElement>();
-			list2.Add(new InquiryElement("__manual__", "手动输入文件夹名/路径", null));
-			list2.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			list2.Add(new InquiryElement("__manual__", OnboardingUiText.T("AF_ONBOARDING_IMPORT_MANUAL_PATH", "Enter folder name/path manually"), null));
+			list2.Add(new InquiryElement("__latest__", OnboardingUiText.T("AF_ONBOARDING_IMPORT_LATEST", "Use latest player export (automatic)"), null));
 			foreach (var folder in PlayerExportsStore.GetImportFolders())
 				list2.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]", null));
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择导入文件夹", "请选择模组目录或玩家导出的世界书：", list2, isExitShown: true, 0, 1, "导入", "返回", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(OnboardingUiText.T("AF_ONBOARDING_IMPORT_PICKER_TITLE", "Choose import folder"), OnboardingUiText.T("AF_ONBOARDING_IMPORT_PICKER_BODY", "Choose a module folder or a player-exported world book:"), list2, isExitShown: true, 0, 1, OnboardingUiText.T("AF_ONBOARDING_IMPORT_BUTTON", "Import"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(List<InquiryElement> selected)
 			{
 				if (selected == null || selected.Count == 0)
 				{
@@ -3756,7 +3756,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					string text = selected[0].Identifier as string;
 					if (text == "__manual__")
 					{
-						InformationManager.ShowTextInquiry(new TextInquiryData("手动输入文件夹名/路径", "名称优先查找模组目录，再查找玩家导出；留空=最新玩家导出。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+						InformationManager.ShowTextInquiry(new TextInquiryData(OnboardingUiText.T("AF_ONBOARDING_IMPORT_MANUAL_PATH", "Enter folder name/path manually"), OnboardingUiText.T("AF_ONBOARDING_IMPORT_MANUAL_HINT", "Names search module folders first, then player exports; leave empty for the latest export."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, OnboardingUiText.T("AF_COMMON_CONFIRM", "Confirm"), OnboardingUiText.T("AF_COMMON_CANCEL", "Cancel"), delegate(string input)
 						{
 							string folderName2 = (input ?? "").Trim();
 							TryImportRequiredSetAndUnlock(folderName2, onReturn);
@@ -3778,7 +3778,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开导入选择失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_IMPORT_PICKER_FAILED", "Failed to open import selection: ") + ex.Message));
 			onReturn?.Invoke();
 		}
 	}
@@ -3804,7 +3804,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
             result.Import = () =>
             {
                 bool accepted = kingdom.ImportAllFromDirectory(directory, overwriteExisting: true, out string detail);
-                if (!accepted) InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行国家战略与性格导入。原因：" + detail));
+                if (!accepted) InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_IMPORT_KINGDOM_FAILED", "Import failed: kingdom strategy and personality import could not run. Reason: ") + detail));
                 return accepted;
             };
             return result;
@@ -3815,7 +3815,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
         }
         catch (Exception ex)
         {
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_IMPORT_FAILED", "Import failed: ") + ex.Message));
 			OpenImportFolderPicker(onReturn);
         }
     }
@@ -3861,7 +3861,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string path = Path.Combine(PlayerExportsStore.GetModuleRootPath(), "SubModule.xml");
 			if (!File.Exists(path))
 			{
-				return "未知版本";
+				return OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_VERSION", "Unknown version");
 			}
 			XDocument xDocument = XDocument.Load(path);
 			string value = xDocument.Root?.Element("Version")?.Attribute("value")?.Value;
@@ -3873,7 +3873,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return "未知版本";
+		return OnboardingUiText.T("AF_ONBOARDING_UNKNOWN_VERSION", "Unknown version");
 	}
 
 	private static string ResolveImportFolderPath(string folderName)
