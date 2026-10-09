@@ -31,7 +31,14 @@ internal static class WorldMapUiText
 		=> Text("AF_WM_Patrol", "{ACTOR} is heading near {SETTLEMENT} and will patrol for {DAYS} days.", ("ACTOR", actor), ("SETTLEMENT", settlement), ("DAYS", days));
 
 	public static string SettlementAttack(string actor, string settlement, string action, int days, string mode)
-		=> Text("AF_WM_SettlementAttack", "{ACTOR} is moving toward {SETTLEMENT} to {ACTION}; limit: {DAYS} days ({MODE}).", ("ACTOR", actor), ("SETTLEMENT", settlement), ("ACTION", action), ("DAYS", days), ("MODE", mode));
+	{
+		string localizedAction = string.Equals(action, "raid", StringComparison.OrdinalIgnoreCase)
+			? Text("AF_WM_ActionRaid", "raid")
+			: string.Equals(action, "besiege", StringComparison.OrdinalIgnoreCase)
+				? Text("AF_WM_ActionBesiege", "besiege")
+				: action;
+		return Text("AF_WM_SettlementAttack", "{ACTOR} is moving toward {SETTLEMENT} to {ACTION}; limit: {DAYS} days ({MODE}).", ("ACTOR", actor), ("SETTLEMENT", settlement), ("ACTION", localizedAction), ("DAYS", days), ("MODE", mode));
+	}
 
 	public static string WaitForHero(string actor, string settlement, string hero)
 		=> Text("AF_WM_WaitForHero", "{ACTOR} is heading outside {SETTLEMENT} and waiting for {HERO} to leave before attacking.", ("ACTOR", actor), ("SETTLEMENT", settlement), ("HERO", hero));
