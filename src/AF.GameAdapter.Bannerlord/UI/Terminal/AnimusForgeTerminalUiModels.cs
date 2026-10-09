@@ -748,7 +748,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		OnPropertyChanged(nameof(TagCatalogStatusText));
 		if (_tagBrowser == null || _path.Count == 0 || !ReferenceEquals(_path.Peek(), _tagBrowser))
 		{
-			_tagBrowser = new AnimusForgeTerminalNode { Title = "指令标签列表" };
+			_tagBrowser = new AnimusForgeTerminalNode { Title = new TextObject("{=AF_UI_Terminal_TagList}Action tag list").ToString() };
 			_path.Push(_tagBrowser);
 			ResetMenuFilter();
 		}
@@ -761,7 +761,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 				Title = BuildTagCatalogEntryTitle(entry),
 				Hint = BuildTagCatalogEntryHint(entry),
 				SearchTerms = (entry.Description ?? "") + " " + string.Join(" ", entry.Sources),
-				OnExecute = () => ShowDetails("标签详情", BuildTagCatalogEntryDetailText(entry))
+				OnExecute = () => ShowDetails(new TextObject("{=AF_UI_Terminal_TagDetails}Tag details").ToString(), BuildTagCatalogEntryDetailText(entry))
 			});
 		}
 		ReturnToMenu();
@@ -769,7 +769,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ExecuteTagCatalogInfo()
 	{
-		if (IsTagCatalogBrowser) ShowDetails("标签索引说明", BuildTagCatalogSummary(_tagCatalogSnapshot));
+		if (IsTagCatalogBrowser) ShowDetails(new TextObject("{=AF_UI_Terminal_TagInfo}Tag index information").ToString(), BuildTagCatalogSummary(_tagCatalogSnapshot));
 	}
 
 	private void ResetMenuFilter()
@@ -807,10 +807,10 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public void ShowDiagnostics(string status, string detail, bool canAnalyze)
 	{
 		_returnToView = ReturnToMenu;
-		DiagnosticsStatusText = status ?? "捕获哨兵状态: 在线";
-		DiagnosticsDetailText = string.IsNullOrWhiteSpace(detail) ? "本局当前未记录到任何致命报错堆栈。" : detail;
+		DiagnosticsStatusText = status ?? new TextObject("{=AF_UI_Terminal_DiagnosticsOnline2}Sentinel status: online").ToString();
+		DiagnosticsDetailText = string.IsNullOrWhiteSpace(detail) ? new TextObject("{=AF_UI_Terminal_NoFatal}No fatal error stack has been recorded this session.").ToString() : detail;
 		HasLatestErrorToAnalyze = canAnalyze;
-		BreadcrumbText = "终端 / " + _selectedTab + " / 系统错误分析与诊断";
+		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_DiagnosticsTitle}System error analysis and diagnostics").ToString();
 		SetViewMode(TerminalViewMode.Diagnostics);
 	}
 
@@ -819,11 +819,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		if (!IsTagCatalogBrowser || _tagCatalogSnapshot == null) return;
 		if (AnimusForgeTagCatalog.TryExportSnapshotToModuleTxt(_tagCatalogSnapshot, out string path, out string error))
 		{
-			ShowDetails("标签列表已导出", "已导出到：\n" + path);
+			var exported = new TextObject("{=AF_UI_Terminal_ExportedTo}Exported to:\n{PATH}");
+			exported.SetTextVariable("PATH", path);
+			ShowDetails(new TextObject("{=AF_UI_Terminal_TagExported}Tag list exported").ToString(), exported.ToString());
 		}
 		else
 		{
-			ShowDetails("标签列表导出失败", string.IsNullOrWhiteSpace(error) ? "未知错误。" : error);
+			ShowDetails(new TextObject("{=AF_UI_Terminal_TagExportFailed}Tag list export failed").ToString(), string.IsNullOrWhiteSpace(error) ? new TextObject("{=AF_UI_Terminal_UnknownError}Unknown error.").ToString() : error);
 		}
 	}
 
@@ -837,7 +839,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		catch (Exception ex)
 		{
 			Logger.Log("Terminal", "[ERROR] refresh tag catalog failed: " + ex);
-			ShowDetails("刷新标签索引失败", ex.Message);
+			ShowDetails(new TextObject("{=AF_UI_Terminal_TagRefreshFailed}Tag index refresh failed").ToString(), ex.Message);
 		}
 	}
 
@@ -850,13 +852,19 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
 		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("从当前 AnimusForge 模块文件、当前程序集和内置运行时规则提取。");
-		stringBuilder.AppendLine("共 " + snapshot.Entries.Count + " 项；正文/历史 " + bodyCount + " 项，后处理 " + postprocessCount + " 项。");
-		stringBuilder.AppendLine("已扫描文件：" + snapshot.ScannedFileCount + " 个。可用上方搜索框按标签、功能名或参数名筛选。");
+		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_TagSummaryA}Extracted from current module files, the current assembly, and built-in runtime rules.").ToString());
+		var summary = new TextObject("{=AF_UI_Terminal_TagSummaryB}Total {TOTAL}; body/history {BODY}, postprocessing {POST}.");
+		summary.SetTextVariable("TOTAL", snapshot.Entries.Count);
+		summary.SetTextVariable("BODY", bodyCount);
+		summary.SetTextVariable("POST", postprocessCount);
+		stringBuilder.AppendLine(summary.ToString());
+		var scanned = new TextObject("{=AF_UI_Terminal_TagSummaryC}Scanned {FILES} files. Use the search box above to filter tags, feature names, or parameters.");
+		scanned.SetTextVariable("FILES", snapshot.ScannedFileCount);
+		stringBuilder.AppendLine(scanned.ToString());
 		if (snapshot.SourceRoots.Count > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("来源根目录：");
+			stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_SourceRoots}Source roots:").ToString());
 			foreach (string root in snapshot.SourceRoots)
 			{
 				stringBuilder.AppendLine(root);
@@ -869,7 +877,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		if (entry == null)
 		{
-			return "标签";
+			return new TextObject("{=AF_UI_Terminal_Tag}Tag").ToString();
 		}
 		return "[" + (entry.Category ?? "标签") + "] " + (entry.Tag ?? "");
 	}
@@ -889,7 +897,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 		if (!string.IsNullOrWhiteSpace(source))
 		{
-			text = string.IsNullOrWhiteSpace(text) ? ("来源：" + source) : (text + " 来源：" + source);
+			string sourceLabel = new TextObject("{=AF_UI_Terminal_Source}Source:").ToString();
+			text = string.IsNullOrWhiteSpace(text) ? (sourceLabel + " " + source) : (text + " " + sourceLabel + " " + source);
 		}
 		return TruncateMenuHint(text, 220);
 	}
@@ -984,16 +993,16 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			if (!AnimusForgeTerminalSettings.IsMapIconEnabled)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("至少需要保留一个终端入口（按键或图标）。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_KeepEntry}At least one terminal entry (key or icon) must remain.").ToString(), Colors.Red));
 				return;
 			}
 			AnimusForgeTerminalSettings.IsHotkeyEnabled = false;
-			InformationManager.DisplayMessage(new InformationMessage("已关闭终端按键呼出（U键）。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_HotkeyOff}Terminal hotkey access disabled (U key).").ToString(), Colors.Yellow));
 		}
 		else
 		{
 			AnimusForgeTerminalSettings.IsHotkeyEnabled = true;
-			InformationManager.DisplayMessage(new InformationMessage("已开启终端按键呼出（U键）。", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_HotkeyOn}Terminal hotkey access enabled (U key).").ToString(), Colors.Green));
 		}
 		OnPropertyChanged(nameof(IsHotkeyEnabled));
 	}
@@ -1004,16 +1013,16 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("至少需要保留一个终端入口（按键或图标）。", Colors.Red));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_KeepEntry}At least one terminal entry (key or icon) must remain.").ToString(), Colors.Red));
 				return;
 			}
 			AnimusForgeTerminalSettings.IsMapIconEnabled = false;
-			InformationManager.DisplayMessage(new InformationMessage("已关闭大地图终端图标入口。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_MapIconOff}World-map terminal icon entry disabled.").ToString(), Colors.Yellow));
 		}
 		else
 		{
 			AnimusForgeTerminalSettings.IsMapIconEnabled = true;
-			InformationManager.DisplayMessage(new InformationMessage("已开启大地图终端图标入口。", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_MapIconOn}World-map terminal icon entry enabled.").ToString(), Colors.Green));
 		}
 		AFWarStatsTerminal.UI.AfWarStatsMapNavigationEntry.SyncVisibility();
 		OnPropertyChanged(nameof(IsMapIconEnabled));
