@@ -720,6 +720,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.WorldEvents", "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml",
         "sha256": "B15D88A071C25DEE59CE5429A9CAD0C07B56D7AD048FD0ABF95B4D165380EAD9", "revision": "56716b473",
     },
+    "ModuleData/Languages/afonboarding_ui_strings.xml": {
+        "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/afonboarding_ui_strings.xml",
+        "sha256": "C5DC3D46C9A1A8B1D1F2FE35A8E562C605274E9A59B505FECB7AE979C8285E5F", "revision": "e40ef03ad",
+    },
+    "ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
+        "sha256": "5541FCB56DC0F633F01A1F56E301DD1A02E16BD12DDDEFFA18FD4D2E428DF7A7", "revision": "e40ef03ad",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
