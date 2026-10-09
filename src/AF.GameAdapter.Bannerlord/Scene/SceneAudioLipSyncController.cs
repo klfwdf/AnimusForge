@@ -1669,7 +1669,9 @@ internal sealed class SceneAudioLipSyncController
 		float typingDuration = output.TypingDuration;
 		bool hasBubble = hasAgent && output.HasBubble;
 		bool suppressUserErrorMessage = (errorMessage ?? "").IndexOf("Scene speech target became unavailable", StringComparison.OrdinalIgnoreCase) >= 0;
-		string failText = string.IsNullOrWhiteSpace(errorMessage) ? "语音合成失败，已切换为文字气泡。" : ("语音合成失败：" + errorMessage);
+		string failText = string.IsNullOrWhiteSpace(errorMessage)
+			? ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsSynthesisFallback", "Speech synthesis failed; switched to a text bubble.")
+			: ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsError", "[TTS error] {ERROR}", "ERROR", errorMessage);
 		Logger.Log("LipSync", $"[OnPlaybackFailed] agentIndex={agentIndex}, error={errorMessage}");
 		Report("PlaybackFailed", agentIndex, $"error={errorMessage};hasInteractionToken={hasInteractionToken};hasBubble={hasBubble};typingDuration={typingDuration:F2}");
 		RunTtsMainThreadEventStep(delegate
@@ -1698,7 +1700,7 @@ internal sealed class SceneAudioLipSyncController
 			{
 				if (!suppressUserErrorMessage)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS错误] " + failText, new Color(1f, 0.35f, 0.35f)));
+					InformationManager.DisplayMessage(new InformationMessage(failText, new Color(1f, 0.35f, 0.35f)));
 				}
 			}
 			catch

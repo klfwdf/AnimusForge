@@ -284,5 +284,16 @@
     <string id="AF_CONV_UI_Native_ConflictUnavailable" text="The conflict could not begin: the current scene target is unavailable." />
     <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} arrived with {TARGET}." />
     <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} was summoned." />
+    <string id="AF_CONV_UI_Ambient_AiReplyFailedUsage" text="[Ambient AI] This request did not produce a reply, but used about {INPUT} input + {OUTPUT} output tokens." />
+    <string id="AF_CONV_UI_Ambient_AiUsage" text="[Ambient AI] {SOURCE}; about {TOTAL} tokens used this session across {REQUESTS} requests." />
+    <string id="AF_CONV_UI_Ambient_CacheSource" text="cache (0 tokens)" />
+    <string id="AF_CONV_UI_Ambient_TokenSource" text="{INPUT} input + {OUTPUT} output tokens" />
+    <string id="AF_CONV_UI_Native_TtsQueueFailed" text="[TTS] Free-conversation speech was not queued; check TTS settings or the queue." />
+    <string id="AF_CONV_UI_Native_TtsSynthesisFallback" text="Speech synthesis failed; switched to a text bubble." />
+    <string id="AF_CONV_UI_Native_TtsError" text="[TTS error] {ERROR}" />
+    <string id="AF_CONV_UI_Shout_KeyHint" text="Hold {KEY} to preview the shout range, then release to speak; hold {SPECIAL} to open advanced interaction." />
+    <string id="AF_CONV_UI_Scene_PostprocessStatus" text="Processing NPC actions..." />
+    <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="Waiting for the previous NPC action processing to finish..." />
+    <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[Scene shout] Previous NPC action processing timed out and was reset." />
   </strings>
 </base>

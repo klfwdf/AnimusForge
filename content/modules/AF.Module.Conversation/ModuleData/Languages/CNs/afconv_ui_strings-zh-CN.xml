@@ -284,5 +284,16 @@
     <string id="AF_CONV_UI_Native_ConflictUnavailable" text="冲突未能爆发：当前场景目标不可用。" />
     <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} 带着{TARGET}过来了。" />
     <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} 被叫过来了。" />
+    <string id="AF_CONV_UI_Ambient_AiReplyFailedUsage" text="[环境 AI] 本次请求未能生成接话，但已计入约 {INPUT} 输入 + {OUTPUT} 输出 Token。" />
+    <string id="AF_CONV_UI_Ambient_AiUsage" text="[环境 AI] {SOURCE}；本次启动累计约 {TOTAL} Token，已请求 {REQUESTS} 次。" />
+    <string id="AF_CONV_UI_Ambient_CacheSource" text="缓存（0 Token）" />
+    <string id="AF_CONV_UI_Ambient_TokenSource" text="输入 {INPUT} + 输出 {OUTPUT} Token" />
+    <string id="AF_CONV_UI_Native_TtsQueueFailed" text="[TTS] 自由对话语音未入队，请检查 TTS 设置或队列。" />
+    <string id="AF_CONV_UI_Native_TtsSynthesisFallback" text="语音合成失败，已切换为文字气泡。" />
+    <string id="AF_CONV_UI_Native_TtsError" text="[TTS错误] {ERROR}" />
+    <string id="AF_CONV_UI_Shout_KeyHint" text="按住 {KEY} 键预览喊话范围，松开后说话；按住 {SPECIAL} 键打开复杂交流。" />
+    <string id="AF_CONV_UI_Scene_PostprocessStatus" text="正在处理 NPC 行为……" />
+    <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="正在等待上一轮 NPC 行为处理完成……" />
+    <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[场景喊话] 上一轮 NPC 行为处理超时，已自动重置。" />
   </strings>
 </base>

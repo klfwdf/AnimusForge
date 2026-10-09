@@ -211,7 +211,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		try
 		{
 			Logger.Log("ShoutBehavior", "[ScenePostprocessGate] waiting reason=" + (reason ?? ""));
-			QueueWaitMessage("正在等待上一轮NPC行为处理完成...", new Color(1f, 0.95f, 0.25f), waitOwner);
+			QueueWaitMessage(ConversationUiLocalization.Text("AF_CONV_UI_Scene_PostprocessWaiting", "Waiting for the previous NPC action processing to finish..."), new Color(1f, 0.95f, 0.25f), waitOwner);
 			Task completedTask = await Task.WhenAny(task, Task.Delay(ScenePostprocessGateWaitTimeoutMilliseconds));
 			if (completedTask == task)
 			{
@@ -236,7 +236,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				}
 				if (timeoutMessageOwner > 0L)
 				{
-					QueueWaitMessage("[场景喊话] 上一轮NPC行为处理超时，已自动重置。", new Color(1f, 0.8f, 0.2f), timeoutMessageOwner);
+					QueueWaitMessage(ConversationUiLocalization.Text("AF_CONV_UI_Scene_PostprocessTimeout", "[Scene shout] Previous NPC action processing timed out and was reset."), new Color(1f, 0.8f, 0.2f), timeoutMessageOwner);
 				}
 			}
 		}
