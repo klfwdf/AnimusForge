@@ -235,17 +235,17 @@ public sealed class PlayerRpForgePopupVM : ViewModel
 		string itemName = (ItemName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(itemName))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("请先填写物品名称。"));
+			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_NameRequired}Enter an item name first."));
 			return;
 		}
 		if (InvestmentDenars <= 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("制造物品至少需要投入 1 第纳尔。"));
+			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_MinInvestment}At least 1 denar is required to craft an item."));
 			return;
 		}
 		if (InvestmentDenars > MaxInvestmentDenars)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("投入金额不能超过玩家当前持有的第纳尔。"));
+			InformationManager.DisplayMessage(new InformationMessage("{=AF_UI_RpForge_InsufficientFunds}The investment cannot exceed the player's current denars."));
 			return;
 		}
 		_onSubmit?.Invoke(itemName, InvestmentDenars, ForgeAsWeapon);

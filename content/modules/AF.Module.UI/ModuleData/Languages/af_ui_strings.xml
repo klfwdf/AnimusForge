@@ -225,4 +225,19 @@
   <string id="AF_UI_Courier_Notice" text="The courier returned with a reply: {BODY}" />
   <string id="AF_UI_Courier_EmptySender" text="NPC" />
   <string id="AF_UI_Weekly_Generated" text="Weekly report generated" />
+  <string id="AF_UI_Notoriety_NoHistory" text="No public history is available." />
+  <string id="AF_UI_Notoriety_Edit" text="Edit history" />
+  <string id="AF_UI_Notoriety_DisableLowProfile" text="Disable low-profile mode" />
+  <string id="AF_UI_Notoriety_EnableLowProfile" text="Enable low-profile mode" />
+  <string id="AF_UI_Notoriety_UnknownCulture" text="Unknown culture" />
+  <string id="AF_UI_Editor_EditDialogueLine" text="Edit dialogue line" />
+  <string id="AF_UI_Editor_Empty" text="(Empty)" />
+  <string id="AF_UI_Editor_EditHint" text="Edit the entire line in the field below; leave it empty to delete the line." />
+  <string id="AF_UI_Common_Cancel" text="Cancel" />
+  <string id="AF_UI_Common_Save" text="Save" />
+  <string id="AF_UI_Common_Back" text="Back" />
+  <string id="AF_UI_Common_NoContent" text="No content to display." />
+  <string id="AF_UI_RpForge_NameRequired" text="Enter an item name first." />
+  <string id="AF_UI_RpForge_MinInvestment" text="At least 1 denar is required to craft an item." />
+  <string id="AF_UI_RpForge_InsufficientFunds" text="The investment cannot exceed the player's current denars." />
 </strings>

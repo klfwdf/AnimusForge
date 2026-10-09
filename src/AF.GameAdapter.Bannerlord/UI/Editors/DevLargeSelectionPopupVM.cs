@@ -177,8 +177,8 @@ public sealed class DevLargeSelectionPopupVM : ViewModel
 		TitleText = string.IsNullOrWhiteSpace(titleText) ? "AnimusForge" : titleText.Trim();
 		SubtitleText = subtitleText ?? "";
 		BodyText = string.IsNullOrWhiteSpace(bodyText) ? "" : bodyText.Trim();
-		CancelText = string.IsNullOrWhiteSpace(cancelText) ? "返回" : cancelText.Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(BodyText) ? "暂无可显示内容。" : BodyText;
+		CancelText = string.IsNullOrWhiteSpace(cancelText) ? "{=AF_UI_Common_Back}Back" : cancelText.Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(BodyText) ? "{=AF_UI_Common_NoContent}No content to display." : BodyText;
 		BodyFontSize = ResolveBodyFontSize(BodyText);
 		Items = new MBBindingList<DevLargeSelectionItemVM>();
 		foreach (DevLargeSelectionPopup.Option option in options ?? Array.Empty<DevLargeSelectionPopup.Option>())

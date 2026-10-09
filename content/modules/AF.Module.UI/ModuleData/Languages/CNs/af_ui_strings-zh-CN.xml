@@ -225,4 +225,19 @@
   <string id="AF_UI_Courier_Notice" text="信使带回了回信：{BODY}" />
   <string id="AF_UI_Courier_EmptySender" text="NPC" />
   <string id="AF_UI_Weekly_Generated" text="周报已生成" />
+  <string id="AF_UI_Notoriety_NoHistory" text="尚无可展示的公开履历。" />
+  <string id="AF_UI_Notoriety_Edit" text="编辑履历" />
+  <string id="AF_UI_Notoriety_DisableLowProfile" text="关闭低调模式" />
+  <string id="AF_UI_Notoriety_EnableLowProfile" text="开启低调模式" />
+  <string id="AF_UI_Notoriety_UnknownCulture" text="未知文化" />
+  <string id="AF_UI_Editor_EditDialogueLine" text="编辑对话行" />
+  <string id="AF_UI_Editor_Empty" text="（空）" />
+  <string id="AF_UI_Editor_EditHint" text="下方输入框可直接修改整条内容，留空则删除该行。" />
+  <string id="AF_UI_Common_Cancel" text="取消" />
+  <string id="AF_UI_Common_Save" text="保存" />
+  <string id="AF_UI_Common_Back" text="返回" />
+  <string id="AF_UI_Common_NoContent" text="暂无可显示内容。" />
+  <string id="AF_UI_RpForge_NameRequired" text="请先填写物品名称。" />
+  <string id="AF_UI_RpForge_MinInvestment" text="制造物品至少需要投入 1 第纳尔。" />
+  <string id="AF_UI_RpForge_InsufficientFunds" text="投入金额不能超过玩家当前持有的第纳尔。" />
 </strings>
