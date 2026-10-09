@@ -634,11 +634,11 @@ COMMITTED_CONTENT_ADDITIONS = {
     },
     "ModuleData/Languages/coup_strings.xml": {
         "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
-        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "6c2c03e63",
+        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "d41cce6ab",
     },
     "ModuleData/Languages/CNs/coup_strings-zh-CN.xml": {
         "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml",
-        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "6c2c03e63",
+        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "d41cce6ab",
     },
     "ModuleData/Languages/afd_ui_strings.xml": {
         "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
