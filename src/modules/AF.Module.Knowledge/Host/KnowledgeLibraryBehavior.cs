@@ -5783,9 +5783,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("edit", "编辑现有知识", null));
-		list.Add(new InquiryElement("create", "创建新知识", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识编辑系统", "请选择操作：", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("edit", KnowledgeUiTexts.EditorExisting, null));
+		list.Add(new InquiryElement("create", KnowledgeUiTexts.EditorCreate, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.EditorTitle, KnowledgeUiTexts.ChooseAction, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6829,33 +6829,33 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			OpenRuleListMenuPaged(onReturn, num5 - 1, query);
 			return;
 		}
-		string text = "编辑现有知识";
-		string titleText = ((num5 > 0) ? $"{text}（{num3} 条，{page + 1}/{num5}）" : (text + "（0 条）"));
-		string text2 = "请选择要编辑的知识：";
+		string text = KnowledgeUiTexts.EditorExisting;
+		string titleText = ((num5 > 0) ? KnowledgeUiTexts.RuleListTitle(num3, page + 1, num5) : KnowledgeUiTexts.RuleListEmptyTitle);
+		string text2 = KnowledgeUiTexts.RuleListChoose;
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			text2 = text2 + "\n当前搜索：" + TrimPreview(q, 80);
+			text2 = text2 + "\n" + KnowledgeUiTexts.RuleListSearch(TrimPreview(q, 80));
 		}
 		if (num3 <= 0)
 		{
-			text2 += "\n\n没有匹配项。可使用“搜索”或“创建新知识”。";
+			text2 += "\n\n" + KnowledgeUiTexts.RuleListNoMatches;
 		}
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索（按关键词/ID）", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.SearchByKeywordId, null));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (num5 > 0 && page + 1 < num5)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
-		list3.Add(new InquiryElement("__create__", "创建新知识", null));
-		list3.Add(new InquiryElement("__bulk_delete__", "批量删除知识", null));
+		list3.Add(new InquiryElement("__create__", KnowledgeUiTexts.EditorCreate, null));
+		list3.Add(new InquiryElement("__bulk_delete__", KnowledgeUiTexts.BulkDelete, null));
 		if (list.Count > 0)
 		{
 			list3.Add(new InquiryElement("__sep__", "----------------", null));
@@ -6869,7 +6869,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list3.Add(new InquiryElement(text3, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, text2, list3, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, text2, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6884,7 +6884,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenRuleListMenuPaged(onReturn, page, query);
 					break;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索知识", "输入关键词或 RuleId（可用空格分隔多个词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SearchKnowledgeTitle, KnowledgeUiTexts.SearchKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenRuleListMenuPaged(onReturn, 0, input);
 					}, delegate
@@ -6950,7 +6950,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			_file.Rules = new List<LoreRule>();
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData("创建新知识", "请输入该知识的“第一个关键词”（将用于该知识条目的ID与导出文件命名，不可重复；后续仍可继续添加更多关键词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "创建", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.CreateKnowledgeTitle, KnowledgeUiTexts.CreateKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Create, KnowledgeUiTexts.Back, delegate(string input)
 		{
 			string text = (input ?? "").Trim();
 			string text2 = BuildRuleIdFromKeyword(text);
@@ -7064,18 +7064,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			return;
 		}
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索（按关键词/ID）", null));
+	list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.SearchByKeywordId, null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (num4 > 0 && page + 1 < num4)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		if (list.Count > 0)
 		{
@@ -7090,17 +7090,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				}
 			}
 		}
-		string text3 = (num4 > 0) ? $"批量删除知识（{num3} 条，{page + 1}/{num4}）" : "批量删除知识（0 条）";
-		string text4 = "可多选当前页的知识后一起删除。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text4 = text4 + "\n当前搜索：" + TrimPreview(text, 80);
-		}
-		if (num3 <= 0)
-		{
-			text4 += "\n\n没有匹配项。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text3, text4, list3, isExitShown: true, 0, Math.Max(1, list3.Count), "删除选中", "返回", delegate(List<InquiryElement> selected)
+	string text3 = (num4 > 0) ? KnowledgeUiTexts.BulkDeleteTitle(num3, page + 1, num4) : KnowledgeUiTexts.BulkDeleteEmptyTitle;
+	string text4 = KnowledgeUiTexts.BulkDeleteDescription(TrimPreview(text, 80), num3 <= 0);
+	MultiSelectionInquiryData data = new MultiSelectionInquiryData(text3, text4, list3, isExitShown: true, 0, Math.Max(1, list3.Count), KnowledgeUiTexts.DeleteSelected, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7133,7 +7125,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (list5[0])
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索知识", "输入关键词或 RuleId（可用空格分隔多个词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SearchKnowledgeTitle, KnowledgeUiTexts.SearchKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenRuleBulkDeleteMenuPaged(onReturn, 0, input);
 					}, delegate
@@ -7214,15 +7206,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text = ((rule.Keywords != null && rule.Keywords.Count > 0) ? rule.Keywords[0] : (rule.Id ?? "知识"));
 		EnsureRagShortTexts(rule);
 		EnsureTextMappings(rule);
-		string descriptionText = $"关键词：{rule.Keywords?.Count ?? 0} 条\nRAG专用短句：{rule.RagShortTexts?.Count ?? 0} 条\n提示词：{rule.Variants?.Count ?? 0} 条\n词汇映射：{rule.TextMappings?.Count ?? 0} 条";
+		string descriptionText = KnowledgeUiTexts.RuleMenuDescription(rule.Keywords?.Count ?? 0, rule.RagShortTexts?.Count ?? 0, rule.Variants?.Count ?? 0, rule.TextMappings?.Count ?? 0);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("keywords", "编辑关键词", null));
-		list.Add(new InquiryElement("rag_short_texts", "编辑RAG专用短句", null));
-		list.Add(new InquiryElement("generate_rag_short_texts", "一键生成RAG专用短句", null));
-		list.Add(new InquiryElement("variants", "编辑提示词（条件组合）", null));
-		list.Add(new InquiryElement("text_mappings", "编辑词汇映射", null));
-		list.Add(new InquiryElement("delete", "删除此知识", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识 - " + text, descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("keywords", KnowledgeUiTexts.EditKeywords, null));
+		list.Add(new InquiryElement("rag_short_texts", KnowledgeUiTexts.EditRag, null));
+		list.Add(new InquiryElement("generate_rag_short_texts", KnowledgeUiTexts.GenerateRag, null));
+		list.Add(new InquiryElement("variants", KnowledgeUiTexts.EditVariants, null));
+		list.Add(new InquiryElement("text_mappings", KnowledgeUiTexts.EditMappings, null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteKnowledge, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RuleMenuTitle(text), descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7295,7 +7287,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		EnsureTextMappings(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "新增词汇映射", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddMapping, null));
 		if (rule.TextMappings != null)
 		{
 			for (int i = 0; i < rule.TextMappings.Count; i++)
@@ -7307,8 +7299,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				}
 			}
 		}
-		string descriptionText = "这里只会替换当前知识条目下的所有提示词内容，不会影响其他知识。";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑词汇映射", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = KnowledgeUiTexts.MappingListDescription;
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.EditMappings, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7355,7 +7347,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		EnsureTextMappings(rule);
-		InformationManager.ShowTextInquiry(new TextInquiryData("新增词汇映射", "请输入要被替换的原文本。命中这条知识后，会把它替换成你选择的动态对象值。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "取消", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddMappingTitle, KnowledgeUiTexts.AddMappingPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.NextStep, KnowledgeUiTexts.Cancel, delegate(string input)
 		{
 			string text = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
@@ -7428,20 +7420,20 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			descriptionText = descriptionText + $"\n年龄范围：{num}-{num2} 岁";
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("source", "编辑原文本", null));
-		list.Add(new InquiryElement("target", "编辑映射目标", null));
+		list.Add(new InquiryElement("source", KnowledgeUiTexts.EditSource, null));
+		list.Add(new InquiryElement("target", KnowledgeUiTexts.EditTarget, null));
 		if (IsStatusMappingKind(loreTextMapping.Kind))
 		{
-			list.Add(new InquiryElement("true_text", "编辑状态为真文案", null));
-			list.Add(new InquiryElement("false_text", "编辑状态为假文案", null));
+			list.Add(new InquiryElement("true_text", KnowledgeUiTexts.EditTrueText, null));
+			list.Add(new InquiryElement("false_text", KnowledgeUiTexts.EditFalseText, null));
 		}
-		list.Add(new InquiryElement("empty_value", "编辑空值返回文案", null));
+		list.Add(new InquiryElement("empty_value", KnowledgeUiTexts.EditEmptyText, null));
 		if (IsTextMappingAgeRangeKind(loreTextMapping.Kind))
 		{
-			list.Add(new InquiryElement("age_range", "编辑年龄范围", null));
+			list.Add(new InquiryElement("age_range", KnowledgeUiTexts.EditAgeRange, null));
 		}
-		list.Add(new InquiryElement("delete", "删除此映射", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("词汇映射编辑", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteMapping, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingEditorTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7452,7 +7444,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "source":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑原文本", "请输入新的原文本：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditSource, KnowledgeUiTexts.EditSourcePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text = (input ?? "").Trim();
 						if (!string.IsNullOrWhiteSpace(text))
@@ -7483,7 +7475,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					});
 					break;
 				case "true_text":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑状态为真文案", "当状态判断结果为真时，使用这段文案替换原文本。留空表示真时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditTrueText, KnowledgeUiTexts.TrueTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.TrueText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7494,7 +7486,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, shouldInputBeObfuscated: false, null, loreTextMapping.TrueText ?? ""));
 					break;
 				case "false_text":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑状态为假文案", "当状态判断结果为假时，使用这段文案替换原文本。留空表示假时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditFalseText, KnowledgeUiTexts.FalseTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.FalseText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7505,7 +7497,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, shouldInputBeObfuscated: false, null, loreTextMapping.FalseText ?? ""));
 					break;
 				case "empty_value":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑空值返回文案", "当这条映射当前取不到值时，会改用这段文案替换原文本。留空表示空时保留原词。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditEmptyText, KnowledgeUiTexts.EmptyTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.EmptyValueText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7620,10 +7612,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		LoreTextMapping loreTextMapping = CloneTextMapping(mapping);
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置状态为真文案", "请输入当状态判断结果为真时要替换成的文本。留空表示真时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SetTrueTextTitle, KnowledgeUiTexts.SetTrueTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.NextStep, KnowledgeUiTexts.Back, delegate(string input)
 		{
 			loreTextMapping.TrueText = (input ?? "").Trim();
-			InformationManager.ShowTextInquiry(new TextInquiryData("设置状态为假文案", "请输入当状态判断结果为假时要替换成的文本。留空表示假时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "完成", "返回", delegate(string input2)
+			InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SetFalseTextTitle, KnowledgeUiTexts.SetFalseTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Finish, KnowledgeUiTexts.Back, delegate(string input2)
 			{
 				loreTextMapping.FalseText = (input2 ?? "").Trim();
 				onConfigured(loreTextMapping);
@@ -7706,15 +7698,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		return (categoryKey ?? "").Trim() switch
 		{
-			"status" => "状态判断",
-			"current_npc" => "当前NPC的什么？",
-			"player" => "玩家的什么？",
-			"bound" => "本知识绑定对象的什么？",
-			"kingdom" => "王国的什么？",
-			"settlement" => "定居点的什么？",
-			"clan" => "家族的什么？",
-			"hero" => "英雄的什么？",
-			_ => "其他"
+			"status" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryStatus", "Status checks"),
+			"current_npc" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryCurrentNpc", "What about the current NPC?"),
+			"player" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryPlayer", "What about the player?"),
+			"bound" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryBound", "What about the object bound to this knowledge?"),
+			"kingdom" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryKingdom", "What about the kingdom?"),
+			"settlement" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategorySettlement", "What about the settlement?"),
+			"clan" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryClan", "What about the clan?"),
+			"hero" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryHero", "What about the hero?"),
+			_ => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryOther", "Other")
 		};
 	}
 
@@ -7722,15 +7714,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		return (categoryKey ?? "").Trim() switch
 		{
-			"status" => "这些映射会先判断一个状态，再根据结果输出你自己写的真/假文案。真文案和假文案里也可以继续写其他映射词。",
-			"current_npc" => "这些映射会自动从当前互动的 NPC 身上取值，你只需要决定要取它的哪一项信息。",
-			"player" => "这些映射会自动从玩家角色身上取值，你只需要决定要取玩家的哪一项信息。",
-			"bound" => "这些映射会从当前知识条目在条件组合里唯一绑定的王国 / 定居点 / 英雄身上取值。",
-			"kingdom" => "先选一个王国，再决定想取它的什么信息。",
-			"settlement" => "先选一个定居点，再决定想取它的什么信息。",
-			"clan" => "先选一个家族，再决定想取它的什么信息。",
-			"hero" => "先选一个英雄，再决定想取它的什么信息。",
-			_ => "选择一个具体映射项。"
+			"status" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryStatusDescription", "These mappings check a status first, then output your true/false text. Other mapping tokens can also be used in those texts."),
+			"current_npc" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryCurrentNpcDescription", "These mappings read values from the NPC in the current interaction; choose which value to retrieve."),
+			"player" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryPlayerDescription", "These mappings read values from the player character; choose which value to retrieve."),
+			"bound" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryBoundDescription", "These mappings read from the kingdom, settlement or hero uniquely bound by this knowledge entry's conditions."),
+			"kingdom" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryKingdomDescription", "Choose a kingdom, then choose which value to retrieve."),
+			"settlement" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategorySettlementDescription", "Choose a settlement, then choose which value to retrieve."),
+			"clan" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryClanDescription", "Choose a clan, then choose which value to retrieve."),
+			"hero" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryHeroDescription", "Choose a hero, then choose which value to retrieve."),
+			_ => KnowledgeUiTexts.MappingChooseType
 		};
 	}
 
@@ -8097,18 +8089,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		List<TextMappingKindOption> list2 = list.Skip(page * pageSize).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "重新搜索", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Search, null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "返回分类列表", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.Back, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (TextMappingKindOption item in list2)
@@ -8116,17 +8108,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text2 = "【" + GetTextMappingKindCategoryLabel(item.CategoryKey) + "】" + (item.Label ?? GetTextMappingKindLabel(item.Kind));
 			list3.Add(new InquiryElement(item.Kind, text2, null));
 		}
-		string text3 = "输入关键词搜索具体映射项，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡 / 定居点 围攻";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text3 = text3 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		text3 += $"\n匹配结果：{list.Count} 项";
-		if (list.Count == 0)
-		{
-			text3 += "\n\n没有匹配项，可以换个关键词继续搜。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("搜索映射类型", text3, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text3 = KnowledgeUiTexts.MappingSearchResults(TrimPreview(text, 60), list.Count, list.Count == 0);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingSearchTitle, text3, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8137,7 +8120,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			switch (text4)
 			{
 			case "__search__":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索映射类型", "输入关键词，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.MappingSearchTitle, KnowledgeUiTexts.MappingSearchPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 				{
 					OpenTextMappingKindSearchResults(input, onPickKind, onCancel, 0);
 				}, delegate
@@ -8189,13 +8172,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__search__", "搜索映射类型", null));
+		list.Add(new InquiryElement("__search__", KnowledgeUiTexts.MappingSearchTitle, null));
 		list.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (string text in GetTextMappingKindCategoryKeys())
 		{
 			list.Add(new InquiryElement(text, GetTextMappingKindCategoryLabel(text), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你想取谁的什么？", "先选一个方向，或者直接搜索具体映射项。除了普通映射，现在也支持状态判断。组合很多时，优先用搜索会更快。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingSearchMenuTitle, KnowledgeUiTexts.MappingSearchMenuDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8206,7 +8189,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			switch (text2)
 			{
 			case "__search__":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索映射类型", "输入关键词，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.MappingSearchTitle, KnowledgeUiTexts.MappingSearchPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 				{
 					OpenTextMappingKindSearchResults(input, onPickKind, onCancel, 0);
 				}, delegate
@@ -8260,7 +8243,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			list2.Add(new InquiryElement(item.Kind, item.Label, null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择映射类型", GetTextMappingKindCategoryDescription(text), list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingChooseTypeTitle, GetTextMappingKindCategoryDescription(text), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8303,19 +8286,19 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			rule.Keywords = new List<string>();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "添加关键词（一次一个）", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddKeyword, null));
 		if (rule.Keywords.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除关键词", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.RemoveKeyword, null));
 		}
 		foreach (string keyword in rule.Keywords)
 		{
 			if (!string.IsNullOrWhiteSpace(keyword))
 			{
-				list.Add(new InquiryElement("__k__" + keyword, "关键词：" + keyword, null));
+				list.Add(new InquiryElement("__k__" + keyword, KnowledgeUiTexts.KeywordLabel(keyword), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑关键词", "一次输入一个关键词，确定后会加入列表。", list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.KeywordMenuTitle, KnowledgeUiTexts.KeywordMenuDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8326,7 +8309,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text = selected[0].Identifier as string;
 				if (text == "__add__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加关键词", "请输入一个关键词：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddKeywordTitle, KnowledgeUiTexts.AddKeywordPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
 						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
@@ -8409,7 +8392,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(keyword, keyword, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除关键词", "选择要删除的关键词：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveKeywordTitle, KnowledgeUiTexts.RemoveKeywordPrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8447,22 +8430,22 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		EnsureRagShortTexts(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "添加RAG专用短句（一次一条）", null));
-		list.Add(new InquiryElement("__generate__", "一键生成RAG专用短句", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddRag, null));
+		list.Add(new InquiryElement("__generate__", KnowledgeUiTexts.GenerateRag, null));
 		if (rule.RagShortTexts.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除RAG专用短句", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.RemoveRag, null));
 		}
 		foreach (string ragShortText in rule.RagShortTexts)
 		{
 			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(ragShortText);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				list.Add(new InquiryElement("__r__" + text, "RAG短句：" + text, null));
+				list.Add(new InquiryElement("__r__" + text, KnowledgeUiTexts.RagLabel(text), null));
 			}
 		}
-		string descriptionText = "用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；手动填写每条最多 " + RagShortTextMaxLength + " 字符，AI 自动生成会限制在 " + RagShortTextGeneratedMaxLength + " 字符内，max_tokens 上限为 " + RagShortTextGenerationMaxTokens + "。";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑RAG专用短句", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = KnowledgeUiTexts.RagMenuDescription(RagShortTextMaxLength, RagShortTextGeneratedMaxLength, RagShortTextGenerationMaxTokens);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RagMenuTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8473,7 +8456,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text2 = selected[0].Identifier as string;
 				if (text2 == "__add__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加RAG专用短句", "请输入一条RAG专用短句（最多 " + RagShortTextMaxLength + " 字符）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddRagTitle, KnowledgeUiTexts.AddRagPrompt(RagShortTextMaxLength), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(input);
 						if (string.IsNullOrEmpty(text3))
@@ -8558,7 +8541,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(text, text, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除RAG专用短句", "选择要删除的RAG专用短句：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveRagTitle, KnowledgeUiTexts.RemoveRagPrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
