@@ -28,10 +28,10 @@ internal sealed class CompanionProactiveChatMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public CompanionProactiveChatMapNotification(string sessionId, string titleText, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "一名队内 Hero 想与你交谈。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "{=AF_CONV_UI_Companion_DefaultDescription}A hero in your party would like to talk to you." : descriptionText))
 	{
 		SessionId = (sessionId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "队内 Hero 想与你交谈" : titleText);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "{=AF_CONV_UI_Companion_DefaultTitle}A party hero would like to talk to you" : titleText);
 	}
 
 	public override bool IsValid()
@@ -210,7 +210,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		}
 		if (TryGetUnsafePlayerState(out string busyReason))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前不便交谈；通知会暂时保留。"));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Companion_ChatDelayed", "You cannot talk right now; the notification will remain available.")));
 			LogDebug("click delayed hero=" + HeroId(hero) + " reason=" + busyReason);
 			return false;
 		}
@@ -236,7 +236,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			pending.State = StatePending;
 			pending.OpeningAttemptUtcTicks = 0L;
-			InformationManager.DisplayMessage(new InformationMessage("打开交谈失败，通知会保留。"));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Companion_OpenFailed", "Could not open the conversation; the notification will remain available.")));
 			Logger.Log("CompanionProactiveChat", "open conversation failed hero=" + HeroId(hero) + " error=" + ex);
 			return false;
 		}
@@ -892,14 +892,14 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string heroName = HeroName(hero);
+		string heroName = hero.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Companion_Hero", "this party member");
 		try
 		{
 			_publishedSessionIds.Add(pending.Id);
 			MBInformationManager.AddNotice(new CompanionProactiveChatMapNotification(
 				pending.Id,
-				heroName + "想与你交谈",
-				heroName + "就在你的队伍中，想在你方便时与你谈谈。"));
+				ConversationUiLocalization.Text("AF_CONV_UI_Companion_Title", "{HERO} would like to talk to you", ("HERO", heroName)),
+				ConversationUiLocalization.Text("AF_CONV_UI_Companion_Description", "{HERO} is in your party and would like to talk when you have time.", ("HERO", heroName))));
 			LogDebug("notification published session=" + pending.Id + " hero=" + pending.HeroId);
 		}
 		catch (Exception ex)
