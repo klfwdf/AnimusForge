@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -3727,7 +3728,7 @@ namespace AnimusForge
 			}
 
 			[DataSourceProperty]
-			public string ItemCountText => HasItems ? AgendaItems.Count + " 项活跃" : "无";
+			public string ItemCountText => HasItems ? DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_ActiveCount", "{COUNT} active", ("COUNT", AgendaItems.Count.ToString(CultureInfo.InvariantCulture))) : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_None", "None");
 
 			[DataSourceProperty]
 			public ImageIdentifierVM SealBanner => _sealBanner;
@@ -3744,22 +3745,22 @@ namespace AnimusForge
 				KingdomAgendaItemVM item = SelectedItem;
 				Kingdom kingdom = item?.Decision?.Kingdom ?? TargetKingdom;
 				Clan player = Clan.PlayerClan;
-				string title = item == null ? "" : "议程《" + KingdomAgendaItemVM.Clip(item.TitleText, 20) + "》";
+				string title = item == null ? "" : DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_AgendaQuotedTitle", "Agenda “{TITLE}”", ("TITLE", KingdomAgendaItemVM.Clip(item.TitleText, 20)));
 				if (item == null) { ActionTitle = ""; ActionHint = ""; }
 				else if (kingdom != null && kingdom == player?.Kingdom && kingdom.RulingClan == player)
 				{
-					ActionTitle = "国王裁决  ·  " + title;
-					ActionHint = "逆多数意见强推宣战、议和或政策会加深全体封臣不满；封地表决的落选申领家族不满也会上升。";
+					ActionTitle = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_RulerDecision", "Ruler decision") + "  ·  " + title;
+					ActionHint = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_RulerHint", "Forcing a war, peace, or policy against the majority can deepen discontent among all vassals; losing fief claimants also grow dissatisfied.");
 				}
 				else if (kingdom != null && kingdom == player?.Kingdom)
 				{
-					ActionTitle = "议会成员  ·  " + title;
-					ActionHint = "投票会议开始后表态支持；也可在对话中与其他家族商议拉票。";
+					ActionTitle = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_CouncilMember", "Council member") + "  ·  " + title;
+					ActionHint = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_CouncilHint", "State your support after the vote meeting begins; you can also negotiate support with other clans in conversation.");
 				}
 				else
 				{
-					ActionTitle = "旁观  ·  " + (kingdom?.Name?.ToString() ?? "他国") + " " + title;
-					ActionHint = "他国议程仅供查看，无法参与投票。";
+					ActionTitle = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Spectate", "Spectate") + "  ·  " + (kingdom?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OtherKingdom", "another kingdom")) + " " + title;
+					ActionHint = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_SpectateHint", "Agendas in other kingdoms are view-only; you cannot vote.");
 				}
 				string key = kingdom?.StringId ?? "";
 				if (_sealBanner == null || _sealBannerKey != key)
@@ -3784,7 +3785,7 @@ namespace AnimusForge
 			{
 				_targetKingdom = kingdom;
 				Kingdom active = TargetKingdom;
-				CurrentKingdomName = (active?.Name?.ToString() ?? "未知王国") + " 议程";
+				CurrentKingdomName = DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_CurrentKingdomAgenda", "{KINGDOM} agenda", ("KINGDOM", active?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnknownKingdom", "Unknown kingdom")));
 				IsPlayerKingdom = active == Clan.PlayerClan?.Kingdom;
 				UpdateKingdomSelector();
 				ClearSelection();
@@ -3812,13 +3813,13 @@ namespace AnimusForge
 			{
 				if (_activeKingdoms == null || _activeKingdoms.Count == 0)
 				{
-					KingdomSelectorName = "无王国"; HasPrevKingdom = false; HasNextKingdom = false;
+					KingdomSelectorName = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_NoKingdom", "No kingdom"); HasPrevKingdom = false; HasNextKingdom = false;
 					return;
 				}
 				HasPrevKingdom = _activeKingdoms.Count > 1; HasNextKingdom = _activeKingdoms.Count > 1;
 				if (_currentKingdomIndex < 0) _currentKingdomIndex = 0;
 				if (_currentKingdomIndex >= _activeKingdoms.Count) _currentKingdomIndex = _activeKingdoms.Count - 1;
-				KingdomSelectorName = _activeKingdoms[_currentKingdomIndex]?.Name?.ToString() ?? "未知";
+				KingdomSelectorName = _activeKingdoms[_currentKingdomIndex]?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Unknown", "Unknown");
 			}
 
 			[DataSourceMethod]
@@ -4088,7 +4089,7 @@ namespace AnimusForge
 		}
 
 		[DataSourceProperty] public string CatalogTitleText => Clip(TitleText, 12);
-		[DataSourceProperty] public string MeetingButtonText { get; private set; } = "召开投票会议";
+		[DataSourceProperty] public string MeetingButtonText { get; private set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_MeetingButton", "Open vote meeting");
 
 		// ---- 内政 tab display (catalog row, dossier header, deadline block, footer)
 
@@ -4126,16 +4127,16 @@ namespace AnimusForge
 		{
 			if (_decision == null)
 			{
-				DaysRemainingText = "提案人: 未知";
+				DaysRemainingText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_ProposerUnknown", "Proposer: unknown");
 				CanCallVoteMeeting = false;
 				return;
 			}
 
 			float remainingDays = _decision.TriggerTime.RemainingDaysFromNow;
-			string proposerText = VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(_decision) ?? _decision.ProposerClan?.Name?.ToString() ?? "未知";
+			string proposerText = VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(_decision) ?? _decision.ProposerClan?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Unknown", "Unknown");
 			DaysRemainingText = (remainingDays > 0)
-				? $"提案人: {proposerText} · 剩余 {remainingDays:F1} 天"
-				: $"提案人: {proposerText} · 可以投票";
+				? DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_ProposerDaysRemaining", "Proposer: {PROPOSER} · {DAYS} days remaining", ("PROPOSER", proposerText), ("DAYS", remainingDays.ToString("F1", CultureInfo.InvariantCulture)))
+				: DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_ProposerCanVote", "Proposer: {PROPOSER} · Voting open", ("PROPOSER", proposerText));
 			IsUrgent = remainingDays <= 1f;
 			CanCallVoteMeeting = _decision.Kingdom == Clan.PlayerClan?.Kingdom &&
 				_decision.IsPlayerParticipant &&
@@ -4147,28 +4148,28 @@ namespace AnimusForge
 			bool solo = VoteDealBehavior.IsSingleClanRulerAgenda(_decision);
 			if (solo) IsUrgent = false;
 			IsVoteOpen = open || solo;
-			InfoText = Clip(DecisionTypeText + " · 提案人 " + proposerText, 14);
-			BadgeText = solo ? "可裁决" : open ? "可以投票" : $"剩余 {remainingDays:F1} 天";
-			MetaText = "提案人  " + proposerText + "   ·   " + (solo ? "仅你的家族有表决权" : open ? "可以投票" : $"剩余 {remainingDays:F1} 天") + (_options != null && _options.Count > 0 ? "   ·   " + _options.Count + " 个选项" : "");
-			MeetingButtonText = solo ? "立即裁决" : "召开投票会议";
+			InfoText = Clip(DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_Info", "{TYPE} · Proposer {PROPOSER}", ("TYPE", DecisionTypeText), ("PROPOSER", proposerText)), 14);
+			BadgeText = solo ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BadgeDecide", "Decision") : open ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BadgeVoting", "Voting") : DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BadgeDays", "{DAYS} days", ("DAYS", remainingDays.ToString("F1", CultureInfo.InvariantCulture)));
+			MetaText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_Meta", "Proposer  {PROPOSER}   ·   {STATUS}{OPTIONS}", ("PROPOSER", proposerText), ("STATUS", solo ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OnlyClanCanDecide", "Only your clan can decide") : open ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_VotingOpen", "Voting open") : DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_DaysRemaining", "{DAYS} days remaining", ("DAYS", remainingDays.ToString("F1", CultureInfo.InvariantCulture)))), ("OPTIONS", _options != null && _options.Count > 0 ? "   ·   " + DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_OptionCount", "{COUNT} options", ("COUNT", _options.Count.ToString(CultureInfo.InvariantCulture))) : ""));
+			MeetingButtonText = solo ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DecideNow", "Decide now") : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_MeetingButton", "Open vote meeting");
 			if (solo)
 			{
-				BlockLabel = "单家族王国";
-				BlockValue = "随时";
+				BlockLabel = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_SingleClanKingdom", "Single-clan kingdom");
+				BlockValue = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Anytime", "Anytime");
 				BlockUnit = "";
-				BlockNote = "无需等待，可立即裁决";
-				FooterText = "本国仅你的家族有表决权，点击「立即裁决」决定是否通过";
+				BlockNote = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DecideImmediatelyHint", "No waiting required; decide immediately.");
+				FooterText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_SingleClanFooter", "Only your clan can decide in this kingdom. Click “Decide now” to approve or reject.");
 			}
 			else
 			{
-				BlockLabel = open ? "投票" : "距离开始投票";
-				BlockValue = open ? "已开始" : remainingDays.ToString("F1");
-				BlockUnit = open ? "" : "天";
-				BlockNote = open ? "可召开投票会议" : IsUrgent ? "不足 1 天 · 紧急" : "到期后进入表决";
-				FooterText = open ? "提案「" + Clip(TitleText, 16) + "」已可投票" : $"提案「{Clip(TitleText, 16)}」将在 {remainingDays:F1} 天后开始投票";
+				BlockLabel = open ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Voting", "Voting") : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UntilVoting", "Until voting starts");
+				BlockValue = open ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Started", "Started") : remainingDays.ToString("F1", CultureInfo.InvariantCulture);
+				BlockUnit = open ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DaysUnit", "days");
+				BlockNote = open ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OpenMeetingHint", "A vote meeting can be opened.") : IsUrgent ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UrgentHint", "Less than 1 day · urgent") : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AfterDeadlineHint", "Voting begins after the deadline.");
+				FooterText = open ? DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_FooterOpen", "Agenda “{TITLE}” is open for voting", ("TITLE", Clip(TitleText, 16))) : DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_FooterFuture", "Agenda “{TITLE}” opens for voting in {DAYS} days", ("TITLE", Clip(TitleText, 16)), ("DAYS", remainingDays.ToString("F1", CultureInfo.InvariantCulture)));
 			}
 			int deals = VoteDealBehavior.CountActiveVoteDeals(_decision);
-			DealText = deals > 0 ? "已谈妥拉票 " + deals + " 家" : "";
+			DealText = deals > 0 ? DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_Deals", "Vote deals agreed with {COUNT} clans", ("COUNT", deals.ToString(CultureInfo.InvariantCulture))) : "";
 			foreach (string name in TimingBound) OnPropertyChanged(name);
 		}
 
@@ -4188,10 +4189,10 @@ namespace AnimusForge
 		{
 			switch (weight)
 			{
-				case Supporter.SupportWeights.SlightlyFavor: return "略微支持";
-				case Supporter.SupportWeights.StronglyFavor: return "强力支持";
-				case Supporter.SupportWeights.FullyPush: return "全力推动";
-				default: return "中立";
+				case Supporter.SupportWeights.SlightlyFavor: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_SlightlyFavor", "Slightly favor");
+				case Supporter.SupportWeights.StronglyFavor: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_StronglyFavor", "Strongly favor");
+				case Supporter.SupportWeights.FullyPush: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_FullyPush", "Push fully");
+				default: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Neutral", "Neutral");
 			}
 		}
 
@@ -4318,11 +4319,11 @@ namespace AnimusForge
 					opt.Description = VoteDealBehavior.GetDecisionOutcomeDisplayDescriptionForAgenda(_decision, outcome);
 					Clan sponsor = outcome.SponsorClan;
 					opt.HasSponsor = sponsor != null;
-					opt.SponsorName = sponsor == null ? "无人牵头" : sponsor == Clan.PlayerClan ? (sponsor.Name?.ToString() ?? "") + "（你）" : sponsor.Name?.ToString() ?? "";
+					opt.SponsorName = sponsor == null ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_NoSponsor", "No sponsor") : sponsor == Clan.PlayerClan ? (sponsor.Name?.ToString() ?? "") + " (" + DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_You", "you") + ")" : sponsor.Name?.ToString() ?? "";
 					opt.SupportPercentage = totalWeight > 0 ? (int)Math.Round(outcomeWeights[outcome] * 100.0 / totalWeight) : 0;
 					// Shares only mean something when other clans actually lean one way.
 					opt.ShowSupport = voters > 0 && totalWeight > 0;
-					opt.SupportCaption = solo ? "仅你的家族有表决权 · 由你裁决" : voters == 0 ? "无其他家族参与表决" : "议会尚无倾向（不含你）";
+					opt.SupportCaption = solo ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OnlyClanDecides", "Only your clan can decide · You decide") : voters == 0 ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_NoOtherVoters", "No other clans are voting") : DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_NoCouncilTrend", "The council has no trend yet (excluding you)");
 
 					// Sponsor portrait
 					try
@@ -4346,7 +4347,7 @@ namespace AnimusForge
 					{
 						var supporterVM = new AgendaSupporterVM
 						{
-							Name = supporter.Name?.ToString() ?? "未知",
+							Name = supporter.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Unknown", "Unknown"),
 							WeightText = GetWeightText(weight),
 							SupportWeightImagePath = VoteDealBehavior.GetSupportWeightImagePath(weight),
 							IsStrong = weight == Supporter.SupportWeights.FullyPush
@@ -4570,9 +4571,9 @@ namespace AnimusForge
 		[DataSourceProperty] public Color BarColor => Color.ConvertStringToColor(_isLeading ? "#5E6A3EFF" : "#8C7456FF");
 		[DataSourceProperty] public Color CardColor => Color.ConvertStringToColor(_isFirst ? "#E6D9BCFF" : "#D3C3A1FF");
 		[DataSourceProperty] public bool IsLeading => _isLeading;
-		[DataSourceProperty] public string SupporterCountText => SupporterCount + " 家";
+		[DataSourceProperty] public string SupporterCountText => DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_SupporterCount", "{COUNT} clans", ("COUNT", SupporterCount.ToString(CultureInfo.InvariantCulture)));
 		[DataSourceProperty] public bool HasMoreSupporters => SupporterCount > Supporters.Count;
-		[DataSourceProperty] public string MoreSupportersText => "另有 " + Math.Max(0, SupporterCount - Supporters.Count) + " 家支持";
+		[DataSourceProperty] public string MoreSupportersText => DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_MoreSupporters", "{COUNT} more clans support this", ("COUNT", Math.Max(0, SupporterCount - Supporters.Count).ToString(CultureInfo.InvariantCulture)));
 
 		internal void SetRank(bool leading, bool first)
 		{
@@ -4682,7 +4683,7 @@ namespace AnimusForge
 
 			public KingdomAgendaVMMixin(KingdomManagementVM vm) : base(vm)
 			{
-				AgendaTabText = "内政";
+				AgendaTabText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AgendaTab", "Kingdom agenda");
 				Agenda = new KingdomAgendaVM();
 				Agenda.CallVoteMeetingRequested = StartVoteMeeting;
 				IsAgendaSelected = false;
