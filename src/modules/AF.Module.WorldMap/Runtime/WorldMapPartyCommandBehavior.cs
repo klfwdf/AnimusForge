@@ -3344,11 +3344,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string BuildGoToSettlementStartMessage(PartyCommandQueueState state, Hero hero, MobileParty party, Settlement settlement, PartyCommandEntry command)
 	{
 		double holdUntilDay = GetCommandHoldUntilDay(command);
-		if (holdUntilDay > 0.0)
-		{
-			return GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留至指定期限。";
-		}
-		return GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command?.Days ?? 1) + "天。";
+		return WorldMapUiText.GoToSettlement(
+			GetActorName(state, hero, party),
+			GetSettlementName(settlement),
+			Math.Max(1, command?.Days ?? 1),
+			holdUntilDay > 0.0);
 	}
 
 	private static double GetCommandHoldUntilDay(PartyCommandEntry command)
@@ -8054,21 +8054,21 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string BuildAttackTrackingStatusMessage(PartyCommandQueueState state, Hero actorHero, MobileParty party, string targetName, string reason)
 	{
 		string actorName = GetActorName(state, actorHero, party);
-		string safeTargetName = string.IsNullOrWhiteSpace(targetName) ? "目标" : targetName.Trim();
+		string safeTargetName = string.IsNullOrWhiteSpace(targetName) ? WorldMapUiText.Result("AF_WM_Target", "target") : targetName.Trim();
 		string safeReason = (reason ?? "").Trim();
 		if (safeReason.IndexOf("ai_commit_waiting", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return actorName + "已经接近" + safeTargetName + "，但战力评估认为当前风险过高，正在等待更好的进攻窗口。";
+			return WorldMapUiText.Result("AF_WM_TrackRisk", "{ACTOR} is near {TARGET}, but the strength assessment considers the risk too high; waiting for a better attack window.", ("ACTOR", actorName), ("TARGET", safeTargetName));
 		}
 		if (safeReason.IndexOf("force_commit_blocked", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return actorName + "已经接近" + safeTargetName + "，但攻击硬条件暂不满足，正在继续跟踪目标。";
+			return WorldMapUiText.Result("AF_WM_TrackBlocked", "{ACTOR} is near {TARGET}, but the attack requirements are not met; continuing to track the target.", ("ACTOR", actorName), ("TARGET", safeTargetName));
 		}
 		if (safeReason.IndexOf("conditions_lost", StringComparison.OrdinalIgnoreCase) >= 0 || safeReason.IndexOf("target_left", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return actorName + "与" + safeTargetName + "的接战条件暂时丢失，正在重新追击。";
+			return WorldMapUiText.Result("AF_WM_TrackLost", "The engagement conditions between {ACTOR} and {TARGET} were temporarily lost; pursuing again.", ("ACTOR", actorName), ("TARGET", safeTargetName));
 		}
-		return actorName + "正在追踪" + safeTargetName + "，准备执行攻击命令。";
+		return WorldMapUiText.Result("AF_WM_Tracking", "{ACTOR} is tracking {TARGET} and preparing to execute the attack command.", ("ACTOR", actorName), ("TARGET", safeTargetName));
 	}
 
 	private static void DisplayCommandMessage(string message, bool isFailure)

@@ -182,7 +182,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SynchronizeArmyObjectiveForCommand(party, command);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "patrol:" + settlement.StringId;
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "附近，抵达后巡逻" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			DisplayCommandMessage(WorldMapUiText.Patrol(GetActorName(state, hero, party), GetSettlementName(settlement), Math.Max(1, command.Days)), CommandMessageTone.Progress);
 			Log("start patrol actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " days=" + command.Days);
 			return;
 		}
@@ -222,7 +222,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				MoveTowardSettlementAttackPoint(party, settlement);
 				state.Stage = CommandStage.Tracking.ToString();
 				state.LastIssuedActionKey = "track_settlement_attack:" + settlement.StringId;
-				DisplayCommandMessage(GetActorName(state, hero, party) + "开始向" + GetSettlementName(settlement) + "机动，准备" + (settlement.IsVillage ? "烧掠" : "围攻") + "，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+				DisplayCommandMessage(WorldMapUiText.SettlementAttack(GetActorName(state, hero, party), GetSettlementName(settlement), settlement.IsVillage ? "raid" : "besiege", Math.Max(1, command.Days), NormalizeAttackMode(command.Mode)), CommandMessageTone.Progress);
 				Log("start settlement_attack_track actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 				return;
 			}
@@ -235,7 +235,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					state.Stage = CommandStage.Tracking.ToString();
 					state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
-					DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(shelter) + "外侧，等待" + GetHeroName(targetHero) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
+					DisplayCommandMessage(WorldMapUiText.WaitForHero(GetActorName(state, hero, party), GetSettlementName(shelter), GetHeroName(targetHero)), CommandMessageTone.Progress);
 					MaintainAttackShelterWaiting(hero, party, targetHero, shelter, state, command, "start_target_inside_settlement_without_party");
 					Log("start attack_shelter_wait actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " settlement=" + shelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 					return;
@@ -248,7 +248,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				state.Stage = CommandStage.Tracking.ToString();
 				state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
-				DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(targetShelter) + "外侧，等待" + GetHeroName(ResolveHeroById(command.TargetId)) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
+				DisplayCommandMessage(WorldMapUiText.WaitForHero(GetActorName(state, hero, party), GetSettlementName(targetShelter), GetHeroName(ResolveHeroById(command.TargetId))), CommandMessageTone.Progress);
 				MaintainAttackShelterWaiting(hero, party, ResolveHeroById(command.TargetId), targetShelter, state, command, "start_target_inside_settlement");
 				Log("start attack_shelter_wait actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " settlement=" + targetShelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 				return;
@@ -259,7 +259,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
 			state.LastIssuedActionKey = "track_attack:" + command.TargetId;
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始追踪" + GetHeroName(ResolveHeroById(command.TargetId)) + "的部队，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+			DisplayCommandMessage(WorldMapUiText.TrackHero(GetActorName(state, hero, party), GetHeroName(ResolveHeroById(command.TargetId)), Math.Max(1, command.Days), NormalizeAttackMode(command.Mode)), CommandMessageTone.Progress);
 			Log("start attack_track actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 			return;
 		}
@@ -277,7 +277,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
 			state.LastIssuedActionKey = "track_party_attack:" + command.TargetId;
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始追踪" + GetPartyName(targetParty) + "，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+			DisplayCommandMessage(WorldMapUiText.TrackParty(GetActorName(state, hero, party), GetPartyName(targetParty), Math.Max(1, command.Days), NormalizeAttackMode(command.Mode)), CommandMessageTone.Progress);
 			Log("start party_attack_track actor=" + GetActorLogId(state, hero, party) + " targetParty=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 			return;
 		}
@@ -294,9 +294,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			IssueMergeApproachAction(party, MobileParty.MainParty);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "merge_to_player";
-			DisplayCommandMessage(IsForeignClanGuestHero(hero)
-				? (GetHeroName(hero) + "开始率部前往玩家主队，准备在保留原家族身份的情况下以客军形式整队并入。")
-				: (GetHeroName(hero) + "开始返回玩家部队，准备会合并转入兵力。"), CommandMessageTone.Progress);
+			DisplayCommandMessage(WorldMapUiText.Merge(GetHeroName(hero), IsForeignClanGuestHero(hero)), CommandMessageTone.Progress);
 			Log("start merge actor=" + GetActorLogId(state, hero, party));
 			return;
 		}
