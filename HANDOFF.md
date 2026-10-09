@@ -1,4 +1,13 @@
-# 当前交接：共享文本输入、群体接力与主动邀请接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+# 当前交接：场景接力续聊上下文修复（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+- 产品与构建源码 `3022b12717878d246ce5b3068a78b2db235c45e1`，检查点 `81a1f2ea3`，修前 `fb0c4e46f`。正文请求在真实历史后接入原始话题、上一位发言、轮次和已发言名单，后处理独立获得同一上下文；第二跳玩家动作资格仍关闭。保持八轮上限和合法自选结束，不保证模型必然接满。
+- 同源专项49断言、15停止案例双归一化、修前真实调用点负控通过验收；最终双DLL各12调用/边界检查与26源码坐标双模式通过。官方1.3.15/1.4.6、Bootstrap、双Coup gate和Stage原命令exit0；全仓代码图仍有既有ModuleFrameworkRuntime过期项，未改绿。
+- 原脚本部署exit0更新9程序文件；3381 Stage/安装SHA一致，2465清单外文件before/after一致。Recovery `deploy-8fb4572d8cee4a0f8929730b34032325` complete、9旧备份通过。用户已授权本轮部署/提交/普通推送，并明确本次由主代理执行；最终远端ref由本地push-receipt记录核实。
+- [唯一主台账、证据及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-natural-flow-20261009)、[真实代码导航](docs/architecture/af-framework-code-scope.md#scene-relay-natural-flow-20261009)。本地证据 `artifacts/scene-relay-natural-flow-20261009/`；尚未实机验证真实provider是否自然接到第三轮及之后、两版本UI、玩家存档或全仓回归。产品定向revert `3022b1271`，安装按上述Recovery逐文件恢复；保留两处既有NuGet目录。
+
+## 历史交接：共享文本输入、群体接力与主动邀请接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+场景接力的当前状态由[本轮续聊修复](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-natural-flow-20261009)接续；以下保留当时输入/邀请交付证据，不代表本轮实机验收。
 
 - 冻结构建源码33e136a392b431346525bb5a06baf4715a67bca6，保留Native raw/elapsed/外交合并。UI cab974619/65397fb08、原生Inquiry回放f505c6bf0、群体接力25c40cf22、邀请33e136a39、来源诊断c739cb8ab同候选；公共编辑器签名和业务保存语义保留。
 - 共享41路由/59输入断言、Illustrator8/21、prefab focus/按钮通过；原生62入口独立只读补审，不称全UI实机绿。邀请153、relay33+15和修前负控为受控证据；07:06–07:07 lord_3_17原现场未证实，新规则下真实provider接力选择未验。
