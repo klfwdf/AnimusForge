@@ -1,11 +1,14 @@
 using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
 	private string _chatItemTime;
 
 	private string _chatSpeaker;
@@ -77,7 +80,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	{
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		ChatItemTime = time ?? "";
-		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "\u8bb0\u5f55" : speaker.Trim();
+		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
 		// Build only a disposable RichText copy; the persisted dialogue entry stays plain for memory and LLM reuse.
 		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
 		ChatText = linkDisplaySession?.Format(rawDisplayText, conversationTargetHero, conversationTargetCharacter) ?? EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawDisplayText);
@@ -89,7 +92,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	{
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		ChatItemTime = time ?? "";
-		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker.Trim();
+		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
 		ChatText = formattedText ?? "";
 		FontColor = string.IsNullOrWhiteSpace(fontColor) ? "#D6D6D6FF" : fontColor;
 	}
@@ -114,7 +117,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	public bool IsDeleteArmed => _isDeleteArmed;
 
 	[DataSourceProperty]
-	public string DeleteText => _isDeleteArmed ? "确认删除" : "删除";
+	public string DeleteText => _isDeleteArmed ? Localize("AF_UI_ConversationHistory_ConfirmDelete", "Confirm delete") : Localize("AF_UI_ConversationHistory_Delete", "Delete");
 
 	internal void EnableDelete(Action<AnimusForgeConversationHistoryLogItemVM> onArmed, Action onConfirmed)
 	{
@@ -194,7 +197,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	public int EditFocusRequestId { get; private set; }
 
 	[DataSourceProperty]
-	public string EditButtonText => _isEditing ? "保存" : "编辑";
+	public string EditButtonText => _isEditing ? Localize("AF_UI_ConversationHistory_Save", "Save") : Localize("AF_UI_ConversationHistory_Edit", "Edit");
 
 	[DataSourceProperty]
 	public string EditText
@@ -245,7 +248,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	// Called by the owner after a successful save so the row shows the stored text without rebuilding the page.
 	internal void ApplyEdit(string speaker, string formattedText, string fontColor, string sourceText)
 	{
-		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker.Trim();
+		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
 		ChatText = formattedText ?? "";
 		FontColor = string.IsNullOrWhiteSpace(fontColor) ? "#D6D6D6FF" : fontColor;
 		_editSourceText = sourceText ?? "";

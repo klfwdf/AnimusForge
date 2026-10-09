@@ -4,11 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
+
+	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + fallback);
+		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
+		{
+			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
+		}
+		return text.ToString();
+	}
+
 	private readonly Action _onClose;
 
 	private readonly List<MyBehavior.WeeklyReportBrowserCountryData> _countries;
@@ -239,13 +253,13 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_countries = (countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null).ToList();
 		_selectedCountryId = (selectedCountryId ?? "").Trim();
-		TitleText = "王国近况";
+		TitleText = Localize("AF_UI_Weekly_Browser_Title", "Kingdom news");
 		SubtitleText = "";
-		CountryPanelTitleText = "王国";
-		SelectedCountryNameText = "未选择";
+		CountryPanelTitleText = Localize("AF_UI_Weekly_Browser_Country", "Kingdom");
+		SelectedCountryNameText = Localize("AF_UI_Weekly_Browser_NoSelection", "No kingdom selected");
 		SelectedCountryMetaText = "";
-		EmptyStateText = "暂无王国近况。";
-		CloseText = "关闭";
+		EmptyStateText = Localize("AF_UI_Weekly_Browser_Empty", "No kingdom news is available.");
+		CloseText = Localize("AF_UI_Weekly_Browser_Close", "Close");
 		HasReportItems = false;
 		ShowEmptyState = true;
 		CountryItems = new MBBindingList<TerminalWeeklyReportCountryItemVM>();
@@ -287,12 +301,12 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
         try
         {
             if (MyBehavior.Instance?.OpenArchivedWeeklyReport(eventId) != true)
-                SelectedCountryMetaText = "打开档案失败，请查看日志。";
+				SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_ArchiveOpenFailed", "Could not open the archive. Check the log.");
         }
         catch (Exception ex)
         {
             Logger.Log("TerminalWeeklyReports", "[ERROR] archive open failed id=" + eventId + ": " + ex);
-            SelectedCountryMetaText = "打开档案失败，请查看日志。";
+			SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_ArchiveOpenFailed", "Could not open the archive. Check the log.");
         }
     }
 
@@ -305,13 +319,13 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		MyBehavior owner = MyBehavior.Instance;
 		if (owner == null)
 		{
-			SelectedCountryMetaText = "周报功能尚未初始化，请关闭后重试。";
+			SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_NotInitialized", "The weekly-report system is not initialized. Close and try again.");
 			return;
 		}
 		_requestOwner = owner;
 		_requestItem = item;
 		item.ShowViewFullReport = false;
-		SelectedCountryMetaText = "正在生成完整周报，请稍候。";
+		SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_Generating", "Generating the full weekly report...");
 		try
 		{
 			_pendingFullReport = owner.GenerateWeeklyReportFullByEventIdAsync(id);
@@ -322,7 +336,7 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 			_requestOwner = null;
 			_requestItem = null;
 			Logger.Log("TerminalWeeklyReports", "[ERROR] full report request failed: " + ex);
-			SelectedCountryMetaText = "完整周报生成失败，原有内容已保留，请重试。";
+			SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_GenerationFailed", "Full report generation failed; existing content was kept. Try again.");
 		}
 	}
 
@@ -345,12 +359,12 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 			{
 				ReloadFromGameState(_selectedCountryId);
 			}
-			else SelectedCountryMetaText = "完整周报未生成，原有内容已保留，可再次尝试。";
+			else SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_GenerationNotProduced", "No full report was generated; existing content was kept. You can try again.");
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("TerminalWeeklyReports", "[ERROR] full report completion failed: " + ex);
-			SelectedCountryMetaText = "完整周报生成失败，原有内容已保留，请重试。";
+			SelectedCountryMetaText = Localize("AF_UI_Weekly_Browser_GenerationFailed", "Full report generation failed; existing content was kept. Try again.");
 		}
 		finally
 		{
@@ -383,9 +397,9 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		}
 		if (weeklyReportBrowserCountryData == null)
 		{
-			SelectedCountryNameText = "未选择";
+			SelectedCountryNameText = Localize("AF_UI_Weekly_Browser_NoSelection", "No kingdom selected");
 			SelectedCountryMetaText = "";
-			EmptyStateText = "暂无王国近况。";
+			EmptyStateText = Localize("AF_UI_Weekly_Browser_Empty", "No kingdom news is available.");
 			ReportItems = new MBBindingList<TerminalWeeklyReportEntryItemVM>();
 			HasReportItems = false;
 			ShowEmptyState = true;
@@ -519,7 +533,7 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 		CountryId = (country?.CountryId ?? "").Trim();
 		DisplayName = (country?.DisplayName ?? "").Trim();
 		int num = country?.Reports?.Count(report => report != null) ?? 0;
-		ReportCountText = num + " 条";
+		ReportCountText = Localize("AF_UI_Weekly_Browser_ReportCount", "{COUNT} entries", ("COUNT", num.ToString()));
 	}
 
 	public void ExecuteSelect()
@@ -797,7 +811,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 		ShowViewFullReport = entry != null && EntryKind == "weekly" && !entry.HasFullReport && !string.IsNullOrWhiteSpace(entry.EventId);
         EventId = (entry?.EventId ?? "").Trim();
         ShowOpenReport = EventId.Length > 0;
-        OpenReportText = EntryKind == "bulletin" ? "打开快报" : EntryKind == "recent" ? "阅读近况" : EntryKind == "diplomacy" ? "阅读宣言" : EntryKind == "policy" ? "阅读政策" : "阅读周报";
+		OpenReportText = EntryKind == "bulletin" ? Localize("AF_UI_Weekly_Browser_OpenBulletin", "Open bulletin") : EntryKind == "recent" ? Localize("AF_UI_Weekly_Browser_OpenRecent", "Read current news") : EntryKind == "diplomacy" ? Localize("AF_UI_Weekly_Browser_OpenDiplomacy", "Read declaration") : EntryKind == "policy" ? Localize("AF_UI_Weekly_Browser_OpenPolicy", "Read policy") : Localize("AF_UI_Weekly_Browser_OpenWeekly", "Read weekly report");
 		BodyFontSize = Math.Max(13, Math.Min(26, (DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18) - 2));
 	}
 
@@ -840,17 +854,17 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 			if (text3.StartsWith("STAB_UP_", StringComparison.Ordinal))
 			{
 				tagKind = 1;
-				return "稳定度上升！";
+				return Localize("AF_UI_Weekly_Browser_StabilityUp", "Stability increased!");
 			}
 			if (text3.StartsWith("STAB_DOWN_", StringComparison.Ordinal))
 			{
 				tagKind = -1;
-				return "稳定度下降！";
+				return Localize("AF_UI_Weekly_Browser_StabilityDown", "Stability decreased!");
 			}
 			if (string.Equals(text3, "STAB_FLAT", StringComparison.Ordinal))
 			{
 				tagKind = 0;
-				return "稳定度持平。";
+				return Localize("AF_UI_Weekly_Browser_StabilityFlat", "Stability unchanged.");
 			}
 		}
 		return string.Join(" / ", array.Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)));
@@ -861,7 +875,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 		string text = (bodyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "当前这期周报还没有正文。";
+			return Localize("AF_UI_Weekly_Browser_BodyEmpty", "This weekly report has no body text.");
 		}
 		StringBuilder stringBuilder = new StringBuilder(text.Length + 64);
 		bool flag = false;

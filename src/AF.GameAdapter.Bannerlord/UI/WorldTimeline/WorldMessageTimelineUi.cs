@@ -922,6 +922,12 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private MBBindingList<WorldMessageTimelineRecordItemVM> _recordItems;
 	private string _generateFullWeeklyReportText;
 	private string _pauseGameText;
+	private string _continueGameAtDeveloperSpeedText;
+	private string _categoryFilterTitleText;
+	private string _countryFilterTitleText;
+	private string _selectedMarkerText;
+	private string _filteredEmptyText;
+	private string _selectionHintText;
 	private bool _canToggleGamePause;
 	// This bound visibility state adds the optional 10x control without changing the normal 3x pause button.
 	private bool _showDeveloperFastForwardButton;
@@ -954,6 +960,12 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		EmptyStateText = FirstNonEmpty(source.EmptyStateText, new TextObject("{=AF_UI_Timeline_NoRumors}No rumors.").ToString());
 		CloseText = FirstNonEmpty(source.CloseText, new TextObject("{=AF_UI_Common_Close}Close").ToString());
 		GenerateFullWeeklyReportText = new TextObject("{=AF_UI_Timeline_GenerateWeekly}Generate full weekly report").ToString();
+		ContinueGameAtDeveloperSpeedText = new TextObject("{=AF_UI_Weekly_Timeline_ContinueDeveloper}Continue game (10x)").ToString();
+		CategoryFilterTitleText = new TextObject("{=AF_UI_Weekly_Timeline_CategoryTitle}Categories (multiple selection)").ToString();
+		CountryFilterTitleText = new TextObject("{=AF_UI_Weekly_Timeline_CountryTitle}Kingdoms (multiple selection)").ToString();
+		SelectedMarkerText = new TextObject("{=AF_UI_Weekly_Timeline_Selected}Selected").ToString();
+		FilteredEmptyText = new TextObject("{=AF_UI_Weekly_Timeline_FilteredEmpty}No messages match the current filters").ToString();
+		SelectionHintText = new TextObject("{=AF_UI_Weekly_Timeline_SelectionHint}Select a category or kingdom on the left to view messages").ToString();
 		// The initial label is replaced immediately with the campaign's real time-control state below.
 		PauseGameText = new TextObject("{=AF_UI_Timeline_Pause}Pause game").ToString();
 		ReplaceSourceData(source);
@@ -1009,6 +1021,18 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	public string GenerateFullWeeklyReportText { get => _generateFullWeeklyReportText; set { if (value != _generateFullWeeklyReportText) { _generateFullWeeklyReportText = value; OnPropertyChangedWithValue(value, nameof(GenerateFullWeeklyReportText)); } } }
 	[DataSourceProperty]
 	public string PauseGameText { get => _pauseGameText; set { if (value != _pauseGameText) { _pauseGameText = value; OnPropertyChangedWithValue(value, nameof(PauseGameText)); } } }
+	[DataSourceProperty]
+	public string ContinueGameAtDeveloperSpeedText { get => _continueGameAtDeveloperSpeedText; set { if (value != _continueGameAtDeveloperSpeedText) { _continueGameAtDeveloperSpeedText = value; OnPropertyChangedWithValue(value, nameof(ContinueGameAtDeveloperSpeedText)); } } }
+	[DataSourceProperty]
+	public string CategoryFilterTitleText { get => _categoryFilterTitleText; set { if (value != _categoryFilterTitleText) { _categoryFilterTitleText = value; OnPropertyChangedWithValue(value, nameof(CategoryFilterTitleText)); } } }
+	[DataSourceProperty]
+	public string CountryFilterTitleText { get => _countryFilterTitleText; set { if (value != _countryFilterTitleText) { _countryFilterTitleText = value; OnPropertyChangedWithValue(value, nameof(CountryFilterTitleText)); } } }
+	[DataSourceProperty]
+	public string SelectedMarkerText { get => _selectedMarkerText; set { if (value != _selectedMarkerText) { _selectedMarkerText = value; OnPropertyChangedWithValue(value, nameof(SelectedMarkerText)); } } }
+	[DataSourceProperty]
+	public string FilteredEmptyText { get => _filteredEmptyText; set { if (value != _filteredEmptyText) { _filteredEmptyText = value; OnPropertyChangedWithValue(value, nameof(FilteredEmptyText)); } } }
+	[DataSourceProperty]
+	public string SelectionHintText { get => _selectionHintText; set { if (value != _selectionHintText) { _selectionHintText = value; OnPropertyChangedWithValue(value, nameof(SelectionHintText)); } } }
 	[DataSourceProperty]
 	public bool CanToggleGamePause { get => _canToggleGamePause; set { if (value != _canToggleGamePause) { _canToggleGamePause = value; OnPropertyChangedWithValue(value, nameof(CanToggleGamePause)); } } }
 	[DataSourceProperty]

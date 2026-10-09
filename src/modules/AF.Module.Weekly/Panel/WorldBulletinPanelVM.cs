@@ -92,6 +92,21 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
+	[DataSourceProperty]
+	public string CopyPromptText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_CopyPrompt}Copy prompt").ToString();
+
+	[DataSourceProperty]
+	public string RedrawText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Redraw}Redraw").ToString();
+
+	[DataSourceProperty]
+	public string RedrawPromptText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_RedrawPrompt}Redraw with prompt").ToString();
+
+	[DataSourceProperty]
+	public string GalleryText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Gallery}Gallery").ToString();
+
+	[DataSourceProperty]
+	public string DeleteText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Delete}Delete").ToString();
+
 	private bool _isAvailable;
 
 	private string _spriteName = "";
@@ -282,6 +297,12 @@ public sealed class WorldBulletinPanelVM : ViewModel
 
 	[DataSourceProperty]
 	public string MastheadText { get; }
+
+	[DataSourceProperty]
+	public string SubtitleText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Subtitle}Chronica Regnorum").ToString();
+
+	[DataSourceProperty]
+	public string OtherMessagesText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_OtherMessages}Other messages").ToString();
 
 	[DataSourceProperty]
 	public string TitleText { get; }

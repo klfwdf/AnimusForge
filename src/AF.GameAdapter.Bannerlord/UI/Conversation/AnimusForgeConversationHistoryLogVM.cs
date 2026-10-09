@@ -3,11 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
+
+	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + fallback);
+		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
+		{
+			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
+		}
+		return text.ToString();
+	}
+
 	// Keeping the Gauntlet tree at this bounded size prevents large linked histories from updating hundreds of RichText widgets every frame.
 	private const int HistoryPageSize = 50;
 
@@ -38,6 +52,12 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 	private string _subtitleText;
 
 	private string _pageStatusText;
+
+	private string _closeText;
+
+	private string _olderPageText;
+
+	private string _newerPageText;
 
 	private bool _canLoadOlderPage;
 
@@ -180,6 +200,48 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public string CloseText
+	{
+		get => _closeText;
+		set
+		{
+			if (value != _closeText)
+			{
+				_closeText = value;
+				OnPropertyChangedWithValue(value, nameof(CloseText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string OlderPageText
+	{
+		get => _olderPageText;
+		set
+		{
+			if (value != _olderPageText)
+			{
+				_olderPageText = value;
+				OnPropertyChangedWithValue(value, nameof(OlderPageText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string NewerPageText
+	{
+		get => _newerPageText;
+		set
+		{
+			if (value != _newerPageText)
+			{
+				_newerPageText = value;
+				OnPropertyChangedWithValue(value, nameof(NewerPageText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public bool CanLoadOlderPage
 	{
 		get => _canLoadOlderPage;
@@ -263,8 +325,11 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		_historyEntries = CopyDisplayableEntries(entries);
 		// A single catalog remains valid for this popup lifetime and prevents a repeated campaign-entity scan for every page.
 		_linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
-		TitleText = "AnimusForge 对话历史";
-		SubtitleText = string.IsNullOrWhiteSpace(targetName) ? "当前对话对象" : targetName.Trim();
+		TitleText = Localize("AF_UI_ConversationHistory_Title", "AnimusForge conversation history");
+		SubtitleText = string.IsNullOrWhiteSpace(targetName) ? Localize("AF_UI_ConversationHistory_CurrentTarget", "Current conversation target") : targetName.Trim();
+		CloseText = Localize("AF_UI_ConversationHistory_Close", "Close");
+		OlderPageText = Localize("AF_UI_ConversationHistory_Older", "Older records");
+		NewerPageText = Localize("AF_UI_ConversationHistory_Newer", "Newer records");
 		Items = new MBBindingList<AnimusForgeConversationHistoryLogItemVM>();
 		// Open at the newest page, matching the former panel's automatic scroll-to-bottom behavior.
 		_currentPageIndex = Math.Max(0, GetPageCount() - 1);
@@ -359,8 +424,8 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		if (_historyEntries.Count == 0)
 		{
 			// The empty state deliberately remains a plain, non-link record and has no paging controls.
-			Items.Add(new AnimusForgeConversationHistoryLogItemVM("", "AnimusForge", "(AnimusForge)当前对象还没有可显示的 AnimusForge 对话历史。", "#D6D6D6FF", _onOpenEncyclopediaLink));
-			PageStatusText = "暂无记录";
+			Items.Add(new AnimusForgeConversationHistoryLogItemVM("", "AnimusForge", Localize("AF_UI_ConversationHistory_Empty", "(AnimusForge) This target has no AnimusForge conversation history to display."), "#D6D6D6FF", _onOpenEncyclopediaLink));
+			PageStatusText = Localize("AF_UI_ConversationHistory_NoRecords", "No records");
 			CanLoadOlderPage = false;
 			CanLoadNewerPage = false;
 			return;
@@ -385,7 +450,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			Items.Add(item);
 		}
 
-		PageStatusText = "第 " + (_currentPageIndex + 1) + " / " + pageCount + " 页（" + _historyEntries.Count + " 条）";
+		PageStatusText = Localize("AF_UI_ConversationHistory_PageStatus", "Page {CURRENT} / {TOTAL} ({COUNT} entries)", ("CURRENT", (_currentPageIndex + 1).ToString()), ("TOTAL", pageCount.ToString()), ("COUNT", _historyEntries.Count.ToString()));
 		CanLoadOlderPage = _currentPageIndex > 0;
 		CanLoadNewerPage = _currentPageIndex + 1 < pageCount;
 		if (requestBottomScroll)
@@ -407,7 +472,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			return cachedEntry;
 		}
 		AnimusForgeDialogueHistoryEntry entry = _historyEntries[entryIndex];
-		string speaker = string.IsNullOrWhiteSpace(entry.Speaker) ? "记录" : entry.Speaker.Trim();
+		string speaker = string.IsNullOrWhiteSpace(entry.Speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : entry.Speaker.Trim();
 		// Only the disposable UI copy contains native RichText links; persisted dialogue stays untouched for memory and LLM reuse.
 		string rawDisplayText = "(" + speaker + ")" + (entry.Text ?? string.Empty);
 		string formattedText;

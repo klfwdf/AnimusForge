@@ -3,12 +3,25 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using static AnimusForge.MyBehavior;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 // Detached archive projection; original legacy records remain intact on disk.
 internal static class WeeklyReportArchivePolicy
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
+
+	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + fallback);
+		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
+		{
+			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
+		}
+		return text.ToString();
+	}
     internal const string RegionalMaterialType = "bulletin_regional_news";
     internal const string RecentMaterialType = "bulletin_residual_fact";
     internal const string ReportedMaterialType = "bulletin_reported_fact";
@@ -22,7 +35,7 @@ internal static class WeeklyReportArchivePolicy
 
     internal static EventMaterialReference FactMaterial(WorldBulletinEvent fact, string nation, string type = RecentMaterialType)
         => new EventMaterialReference {
-            MaterialType=type, KingdomId=nation, SnapshotText=fact.Sentence + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n补充事实：" + fact.Detail), Label=fact.GameDate,
+            MaterialType=type, KingdomId=nation, SnapshotText=fact.Sentence + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": " + fact.Detail), Label=fact.GameDate,
             ActionDay=fact.Day, ActionKind=fact.Kind, SourceStableKeys=new List<string> { fact.Key }
         };
     internal static EventMaterialReference RegionalMaterial(EventRecordEntry entry) => new EventMaterialReference {
@@ -96,11 +109,13 @@ internal static class WeeklyReportArchivePolicy
     {
         var materials=entry.Materials.Where(m => m != null).OrderBy(m => m.ActionDay ?? 0).ToList();
         if (materials.Count == 0) return;
-        string Date(EventMaterialReference m) => string.IsNullOrWhiteSpace(m.Label) ? "第 " + (m.ActionDay ?? 0) + " 日" : m.Label.Trim();
+        string Date(EventMaterialReference m) => string.IsNullOrWhiteSpace(m.Label)
+            ? Localize("AF_UI_Weekly_Browser_DayNumber", "Day {DAY}", ("DAY", (m.ActionDay ?? 0).ToString(CultureInfo.InvariantCulture)))
+            : m.Label.Trim();
         string first=Date(materials[0]), last=Date(materials[materials.Count-1]);
         entry.CreatedDate=first == last ? first : first + " — " + last;
         entry.CreatedDay=materials.Max(m => m.ActionDay ?? 0);
-        entry.Summary=string.Join("\n\n", materials.Select(m => Date(m) + (m.MaterialType == RegionalMaterialType ? " · 历史近况（原档保留）" : "")
+        entry.Summary=string.Join("\n\n", materials.Select(m => Date(m) + (m.MaterialType == RegionalMaterialType ? " · " + Localize("AF_UI_Weekly_Browser_HistoricalNews", "Historical news (archive retained)") : "")
             + "\n" + (m.SnapshotText ?? "").Trim()));
         entry.ShortSummary=WorldBulletinPolicy.Truncate(materials[materials.Count-1].SnapshotText ?? "", 120);
     }
@@ -122,7 +137,7 @@ internal static class WeeklyReportArchivePolicy
             if (!recent.TryGetValue(id, out var entry))
             {
                 entry=new EventRecordEntry { EventId=id, EventKind="kingdom", ScopeKingdomId=nation,
-                    WeekIndex=Math.Max(0,week), Title=string.IsNullOrWhiteSpace(title) ? (nation == OtherKingdomId ? "其他近况" : nation + "近况") : title, Materials=new List<EventMaterialReference>() };
+                    WeekIndex=Math.Max(0,week), Title=string.IsNullOrWhiteSpace(title) ? (nation == OtherKingdomId ? Localize("AF_UI_Weekly_Browser_OtherNews", "Other news") : nation + " " + Localize("AF_UI_Weekly_Browser_NewsSuffix", "news")) : title, Materials=new List<EventMaterialReference>() };
                 recent.Add(id,entry);
                 sourceKeys.Add(id,new HashSet<string>(StringComparer.Ordinal));
             }
@@ -211,7 +226,7 @@ internal static class WeeklyReportArchivePolicy
             && RelatedKingdomIds(entry,legacyAssociations).Any(id => string.Equals(id?.Trim(),nation,StringComparison.OrdinalIgnoreCase));
     }
     internal static string EntryKind(string id) => IsBulletin(id) ? "bulletin" : IsRecent(id) ? "recent" : "weekly";
-    internal static string KindLabel(string id) => IsBulletin(id) ? "即时快报" : IsRecent(id) ? "王国近况" : "周报档案";
+    internal static string KindLabel(string id) => IsBulletin(id) ? Localize("AF_UI_Weekly_Browser_KindBulletin", "Bulletin") : IsRecent(id) ? Localize("AF_UI_Weekly_Browser_KindRecent", "Kingdom news") : Localize("AF_UI_Weekly_Browser_KindWeekly", "Weekly archive");
     internal static long IssueNumber(string id)
     {
         id ??= "";
@@ -220,13 +235,14 @@ internal static class WeeklyReportArchivePolicy
         int start=marker+":bulletin:".Length, end=id.IndexOf(':',start);
         return long.TryParse(end < 0 ? id.Substring(start) : id.Substring(start,end-start), NumberStyles.None,CultureInfo.InvariantCulture,out long issue) ? Math.Max(0,issue) : 0;
     }
-    internal static string PeriodLabel(string id, int week) => IsRecent(id) ? "王国近况" : IsBulletin(id)
-        ? "即时快报" + (IssueNumber(id)>0 ? " · 第 " + IssueNumber(id) + " 期" : "") : "周报档案";
+    internal static string PeriodLabel(string id, int week) => IsRecent(id) ? Localize("AF_UI_Weekly_Browser_KindRecent", "Kingdom news") : IsBulletin(id)
+        ? Localize("AF_UI_Weekly_Browser_KindBulletin", "Bulletin") + (IssueNumber(id)>0 ? " · " + Localize("AF_UI_Weekly_Browser_Issue", "Issue {NUMBER}", ("NUMBER", IssueNumber(id).ToString(CultureInfo.InvariantCulture))) : "") : Localize("AF_UI_Weekly_Browser_KindWeekly", "Weekly archive");
 
     internal static string CalendarDate(string gameFormattedDate)
     {
         string date = (gameFormattedDate ?? "").Trim();
-        if (date.Length == 0) return "日期未知";
-        return date.StartsWith("卡拉迪亚", StringComparison.Ordinal) ? date : "卡拉迪亚" + date;
+        if (date.Length == 0) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
+        if (date.StartsWith("卡拉迪亚", StringComparison.Ordinal) || date.StartsWith("Calradia", StringComparison.OrdinalIgnoreCase)) return date;
+        return Localize("AF_UI_Weekly_Browser_CalradiaDate", "Calradia {DATE}", ("DATE", date));
     }
 }
