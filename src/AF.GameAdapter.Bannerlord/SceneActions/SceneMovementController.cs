@@ -5279,7 +5279,7 @@ internal sealed class SceneMovementController
 			TryRecordSceneSummonBatchCompletionFact(request);
 			LogSceneSummonState("target_to_player_arrived_pair", request, agent2, agent, null, force: true);
 			string text = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
-			AnimusForgeQuickInfo.Show(request.SpeakerName + " 带着" + text + "过来了。", request.SpeakerLocationCharacter?.Character);
+			AnimusForgeQuickInfo.Show(ConversationUiLocalization.Text("AF_CONV_UI_Scene_SummonGroupArrived", "{SPEAKER} arrived with {TARGET}.", ("SPEAKER", request.SpeakerName), ("TARGET", text)), request.SpeakerLocationCharacter?.Character);
 		}
 		else
 		{
@@ -5288,7 +5288,7 @@ internal sealed class SceneMovementController
 			TryRecordSceneSummonBatchCompletionFact(request);
 			LogSceneSummonState("target_to_player_arrived_single", request, agent2, agent, null, force: true);
 			string text2 = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
-			AnimusForgeQuickInfo.Show(text2 + " 被叫过来了。", request.TargetLocationCharacter?.Character);
+			AnimusForgeQuickInfo.Show(ConversationUiLocalization.Text("AF_CONV_UI_Scene_SummonTargetArrived", "{TARGET} was summoned.", ("TARGET", text2)), request.TargetLocationCharacter?.Character);
 		}
 		return true;
 	}

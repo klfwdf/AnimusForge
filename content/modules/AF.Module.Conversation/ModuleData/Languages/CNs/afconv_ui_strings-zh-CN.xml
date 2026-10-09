@@ -176,5 +176,113 @@
     <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge 动作处理未完成" />
     <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC主动开口失败" />
     <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge 自由对话提交失败" />
+    <string id="AF_CONV_UI_Trade_TargetFallback" text="对方" />
+    <string id="AF_CONV_UI_Trade_GiveItems" text="给予物品" />
+    <string id="AF_CONV_UI_Trade_ShowItems" text="展示物品" />
+    <string id="AF_CONV_UI_Trade_GiveTroops" text="给予部队" />
+    <string id="AF_CONV_UI_Trade_GivePrisoners" text="给予俘虏" />
+    <string id="AF_CONV_UI_Trade_GiveAssets" text="转移固定资产" />
+    <string id="AF_CONV_UI_Trade_MenuTitle" text="给予/展示 - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_MenuDescription" text="当前目标：{TARGET}&#10;只执行给予或展示动作，不触发 AI 回复。动作会写入 AnimusForge 对话历史，供后续 AI 交流读取。" />
+    <string id="AF_CONV_UI_Trade_AvailableAmount" text="可用数量：{AMOUNT}" />
+    <string id="AF_CONV_UI_Trade_TroopHint" text="可用数量：{AMOUNT} | 日薪：{WAGE} 第纳尔/天 | 雇佣价：{PRICE} 第纳尔/人" />
+    <string id="AF_CONV_UI_Trade_PrisonerHint" text="可用数量：{AMOUNT} | 购买价：{PRICE} 第纳尔/人" />
+    <string id="AF_CONV_UI_Trade_SourceHint" text=" | 来源：{SOURCE}" />
+    <string id="AF_CONV_UI_Trade_SourceSuffix" text="（来源：{SOURCE}）" />
+    <string id="AF_CONV_UI_Trade_AssetHint" text="每日收益：{INCOME} 第纳尔 | 一次结清指导价：{PRICE} 第纳尔 | 类型：{TYPE}" />
+    <string id="AF_CONV_UI_Trade_Town" text="城市" />
+    <string id="AF_CONV_UI_Trade_Castle" text="城堡" />
+    <string id="AF_CONV_UI_Trade_Denars" text="第纳尔" />
+    <string id="AF_CONV_UI_Trade_Currency" text="货币" />
+    <string id="AF_CONV_UI_Trade_Item" text="物品" />
+    <string id="AF_CONV_UI_Trade_Troops" text="部队" />
+    <string id="AF_CONV_UI_Trade_Prisoners" text="俘虏" />
+    <string id="AF_CONV_UI_Trade_TargetTitle" text="{MODE}{SUFFIX} - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_ActionOnlyNote" text="&#10;该动作只记录到对话历史，不触发 AI 回复。" />
+    <string id="AF_CONV_UI_Trade_CurrentTarget" text="当前目标：{TARGET}" />
+    <string id="AF_CONV_UI_Trade_SelectTroops" text="选择要转入对方麾下的部队（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectPrisoners" text="选择要交给对方的俘虏（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectAssets" text="选择要转给对方的固定资产（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectItems" text="选择要使用的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Trade_PrepareTroops" text="你准备将以下部队转入对方麾下：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PreparePrisoners" text="你准备将以下俘虏交给对方：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareAssets" text="你准备将以下固定资产转给对方：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareGive" text="你准备给予对方以下物品：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareShow" text="你准备向对方展示以下物品：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_TransferTroopLine" text="  · 转入 {AMOUNT} 名 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerHeroLine" text="  · 交付俘虏 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerLine" text="  · 交付 {AMOUNT} 名 {ITEM} 俘虏" />
+    <string id="AF_CONV_UI_Trade_TransferAssetLine" text="  · 转移 {TYPE} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_GiveGoldLine" text="  · 给予 {AMOUNT} 第纳尔" />
+    <string id="AF_CONV_UI_Trade_ShowGoldLine" text="  · 展示 {AMOUNT} 第纳尔" />
+    <string id="AF_CONV_UI_Trade_GiveItemLine" text="  · 给予 {AMOUNT} 个 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_ShowItemLine" text="  · 展示 {AMOUNT} 个 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_AmountTitleGive" text="给予数量" />
+    <string id="AF_CONV_UI_Trade_AmountTitleShow" text="展示数量" />
+    <string id="AF_CONV_UI_Trade_AmountTitleTransfer" text="转移数量" />
+    <string id="AF_CONV_UI_Trade_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM} 最多可填 {MAX}。&#10;请输入 1 到 {MAX} 的整数：" />
+    <string id="AF_CONV_UI_Trade_InvalidAmount" text="请输入合法的数量。" />
+    <string id="AF_CONV_UI_Trade_Interrupted" text="给予/展示流程执行中断，资源与目标结果未确认；本次确认已消费，不应重复执行。" />
+    <string id="AF_CONV_UI_Trade_Recorded" text="已记录给予/展示动作，NPC 会在后续 AI 交流中知道这件事。" />
+    <string id="AF_CONV_UI_Trade_CommitInterrupted" text="给予/展示执行中断，结果未确认；请勿重复交付。" />
+    <string id="AF_CONV_UI_Trade_TargetInvalid" text="交易目标已经离场或失效，本次给予/展示没有执行。" />
+    <string id="AF_CONV_UI_Trade_ListExpired" text="给予列表已失效，请重新打开。" />
+    <string id="AF_CONV_UI_Trade_SelectResource" text="请先选择要给予的资源。" />
+    <string id="AF_CONV_UI_Trade_AmountOutOfRange" text="数量超出可用范围：{RESOURCE}" />
+    <string id="AF_CONV_UI_Trade_NoDelivery" text="给予对象已离开或给予已失效，本次没有交付，话也没有发出。" />
+    <string id="AF_CONV_UI_Trade_ResourcesChanged" text="资源或数量已变化，本次没有交付。" />
+    <string id="AF_CONV_UI_Trade_DisplayValue" text="【展示估值】你向 {TARGET} 展示了总值为 {VALUE} 第纳尔的财物。" />
+    <string id="AF_CONV_UI_Trade_AssetDelivered" text="已将 {ITEM} 转交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_GoldDeliveredToParty" text="已将 {AMOUNT} 第纳尔交给 {TARGET} 所在部队。" />
+    <string id="AF_CONV_UI_Trade_TroopsDelivered" text="已将 {AMOUNT} 名 {ITEM} 转入 {TARGET} 的麾下。" />
+    <string id="AF_CONV_UI_Trade_HeroPrisonerDelivered" text="已将俘虏 {ITEM} 交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_PrisonersDelivered" text="已将 {AMOUNT} 名 {ITEM} 俘虏交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_IneligibleSelf" text="不能把资源给予自己。" />
+    <string id="AF_CONV_UI_Trade_IneligibleLord" text="只有领主才能谈部队与俘虏转移。" />
+    <string id="AF_CONV_UI_Trade_NoCounterpartyParty" text="当前目标没有可接收部队或俘虏的队伍。" />
+    <string id="AF_CONV_UI_Trade_NoTargetAssets" text="当前目标没有可转移的固定资产。" />
+    <string id="AF_CONV_UI_Trade_NoTroops" text="你当前没有可转移给对方的部队。" />
+    <string id="AF_CONV_UI_Trade_NoPrisoners" text="你当前没有可转移给对方的俘虏。" />
+    <string id="AF_CONV_UI_Trade_NoAssets" text="你当前没有可转移给对方的固定资产。" />
+    <string id="AF_CONV_UI_Trade_NoItems" text="你没有可用的物品或第纳尔。" />
+    <string id="AF_CONV_UI_Trade_SessionEnded" text="场景会话已结束。" />
+    <string id="AF_CONV_UI_Trade_OtherFlow" text="另一个给予流程正在进行，请先完成它。" />
+    <string id="AF_CONV_UI_Trade_NoConversationTarget" text="当前没有可以给予的对话对象。" />
+    <string id="AF_CONV_UI_Shout_TargetFallback" text="附近的人" />
+    <string id="AF_CONV_UI_Shout_ModeNormal" text="交流" />
+    <string id="AF_CONV_UI_Shout_ModeGive" text="给予其物品并交流" />
+    <string id="AF_CONV_UI_Shout_ModeShow" text="向其展示物品并交流" />
+    <string id="AF_CONV_UI_Shout_ModeTroops" text="给予部队并交流" />
+    <string id="AF_CONV_UI_Shout_ModePrisoners" text="给予俘虏并交流" />
+    <string id="AF_CONV_UI_Shout_ModeAssets" text="转移固定资产并交流" />
+    <string id="AF_CONV_UI_Shout_TagTest" text="标签测试" />
+    <string id="AF_CONV_UI_Shout_TagTestDescription" text="输入 NPC 可见正文和后处理标签，不调用 API，按当前目标立即执行。" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayer" text="演讲" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayerDescription" text="你亲自面向己方士兵发表演讲。" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpc" text="他人演讲" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpcDescription" text="让当前框选的己方主目标发表演讲。" />
+    <string id="AF_CONV_UI_Shout_ModeDescription" text="当前目标：{TARGET}&#10;此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。&#10;请选择交流方式：" />
+    <string id="AF_CONV_UI_Shout_SpeechInputFailed" text="演讲输入框无法打开，已返回普通场景状态。" />
+    <string id="AF_CONV_UI_Shout_Processing" text="正在处理中..." />
+    <string id="AF_CONV_UI_Shout_TagTitle" text="标签输入 - {TARGET}" />
+    <string id="AF_CONV_UI_Shout_TagSubtitle" text="当前目标：{TARGET}&#10;输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前目标立即执行。" />
+    <string id="AF_CONV_UI_Shout_OpenFailed" text="[场景喊话] 打开喊话界面失败，已重置状态。" />
+    <string id="AF_CONV_UI_Scene_RoleLord" text="领主" />
+    <string id="AF_CONV_UI_Scene_RoleNotable" text="显要" />
+    <string id="AF_CONV_UI_Scene_RoleWanderer" text="流浪者" />
+    <string id="AF_CONV_UI_Scene_Attacked" text="[场景会话] 你受到了攻击，会话面板已收起（按 T 展开）。" />
+    <string id="AF_CONV_UI_Scene_NoParticipants" text="[场景会话] 周围已经没有可交谈的人，会话结束。" />
+    <string id="AF_CONV_UI_Scene_SessionEnded" text="场景会话已结束。" />
+    <string id="AF_CONV_UI_Scene_RoundActive" text="上一轮回应还没结束；想插话请点「打断」。" />
+    <string id="AF_CONV_UI_Scene_Processing" text="上一句还在处理中，请稍候。" />
+    <string id="AF_CONV_UI_Scene_PlayerSpeaker" text="你" />
+    <string id="AF_CONV_UI_Scene_FactSpeaker" text="记录" />
+    <string id="AF_CONV_UI_Native_SceneMoveReady" text="SCENE_MOVE已准备。请手动退出对话框，退出后将执行NPC场景动作。{SUFFIX}" />
+    <string id="AF_CONV_UI_Native_PendingActionsSuffix" text=" 当前待执行 {COUNT} 个。" />
+    <string id="AF_CONV_UI_Native_TauntFightTriggered" text="SCENE_TAUNT_FIGHT已触发：10秒后将自动退出对话并爆发冲突。" />
+    <string id="AF_CONV_UI_Native_ConflictStarted" text="冲突爆发！" />
+    <string id="AF_CONV_UI_Native_ConflictUnavailable" text="冲突未能爆发：当前场景目标不可用。" />
+    <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} 带着{TARGET}过来了。" />
+    <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} 被叫过来了。" />
   </strings>
 </base>

@@ -136,16 +136,19 @@ internal sealed class SceneTradeController
 		_shoutTradeActionOnlyFinished = onFinished;
 		_shoutTradeTargetNpc = targetNpc;
 		PauseGame();
-		string targetName = (targetNpc?.Name ?? targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "对方").Trim();
+		string targetName = (targetNpc?.Name ?? targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Trade_TargetFallback", "the other party")).Trim();
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
-			new InquiryElement("give", "给予物品", null, isEnabled: true, ""),
-			new InquiryElement("show", "展示物品", null, isEnabled: true, ""),
-			new InquiryElement("give_troops", "给予部队", null, isEnabled: true, ""),
-			new InquiryElement("give_prisoners", "给予俘虏", null, isEnabled: true, ""),
-			new InquiryElement("give_settlements", "转移固定资产", null, isEnabled: true, "")
+			new InquiryElement("give", ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveItems", "Give items"), null, isEnabled: true, ""),
+			new InquiryElement("show", ConversationUiLocalization.Text("AF_CONV_UI_Trade_ShowItems", "Show items"), null, isEnabled: true, ""),
+			new InquiryElement("give_troops", ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveTroops", "Give troops"), null, isEnabled: true, ""),
+			new InquiryElement("give_prisoners", ConversationUiLocalization.Text("AF_CONV_UI_Trade_GivePrisoners", "Give prisoners"), null, isEnabled: true, ""),
+			new InquiryElement("give_settlements", ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveAssets", "Transfer fixed assets"), null, isEnabled: true, "")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("给予/展示 - " + targetName, "当前目标：" + targetName + "\n只执行给予或展示动作，不触发 AI 回复。动作会写入 AnimusForge 对话历史，供后续 AI 交流读取。", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+			ConversationUiLocalization.Text("AF_CONV_UI_Trade_MenuTitle", "Give/Show - {TARGET}", ("TARGET", targetName)),
+			ConversationUiLocalization.Text("AF_CONV_UI_Trade_MenuDescription", "Current target: {TARGET}\nThis performs only a give or show action and does not request an AI reply. The action is written to AnimusForge conversation history for later AI conversations.", ("TARGET", targetName)), inquiryElements, isExitShown: true, 1, 1,
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"), delegate(List<InquiryElement> selected)
 		{
             if (!IsUiCurrent(uiRevision, uiStepRevision)) return;
 			if (selected == null || selected.Count == 0)
@@ -271,36 +274,40 @@ internal sealed class SceneTradeController
 			ShoutTradeResourceOption shoutTradeResourceOption = _shoutTradeOptions[i];
 			string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutTradeResourceOption.Name);
 			string text2 = $"{transferDisplayName} (×{shoutTradeResourceOption.AvailableAmount})";
-			string text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount}";
+			string text3 = ConversationUiLocalization.Text("AF_CONV_UI_Trade_AvailableAmount", "Available: {AMOUNT}", ("AMOUNT", shoutTradeResourceOption.AvailableAmount));
 			if (shoutTradeResourceOption.PartyEntry != null)
 			{
 				if (IsShoutTroopTransferMode(_shoutTradeMode))
 				{
-					text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount} | 日薪: {shoutTradeResourceOption.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {shoutTradeResourceOption.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人";
+					text3 = ConversationUiLocalization.Text("AF_CONV_UI_Trade_TroopHint", "Available: {AMOUNT} | Daily wage: {WAGE} denars/day | Hire price: {PRICE} denars/person", ("AMOUNT", shoutTradeResourceOption.AvailableAmount), ("WAGE", shoutTradeResourceOption.PartyEntry.WageDenarsPerDay), ("PRICE", shoutTradeResourceOption.PartyEntry.HirePriceDenarsPerUnit));
 				}
 				else if (IsShoutPrisonerTransferMode(_shoutTradeMode))
 				{
-					text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount} | 购买价: {shoutTradeResourceOption.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+					text3 = ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrisonerHint", "Available: {AMOUNT} | Purchase price: {PRICE} denars/person", ("AMOUNT", shoutTradeResourceOption.AvailableAmount), ("PRICE", shoutTradeResourceOption.PartyEntry.BuyPriceDenarsPerUnit));
 					string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(shoutTradeResourceOption.PartyEntry);
 					if (!string.IsNullOrWhiteSpace(sourceLabel))
 					{
-						text2 += "（来源：" + sourceLabel + "）";
-						text3 += " | 来源: " + sourceLabel;
+						text2 += ConversationUiLocalization.Text("AF_CONV_UI_Trade_SourceSuffix", " (Source: {SOURCE})", ("SOURCE", sourceLabel));
+						text3 += ConversationUiLocalization.Text("AF_CONV_UI_Trade_SourceHint", " | Source: {SOURCE}", ("SOURCE", sourceLabel));
 					}
 				}
 			}
 			else if (shoutTradeResourceOption.SettlementEntry != null)
 			{
-				text3 = $"每日收益: {Math.Max(0, shoutTradeResourceOption.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, shoutTradeResourceOption.SettlementEntry.GuidePriceDenars)} 第纳尔 | 类型: {(string.IsNullOrWhiteSpace(shoutTradeResourceOption.SettlementEntry.TypeLabel) ? (shoutTradeResourceOption.SettlementEntry.Settlement?.IsTown ?? false ? "城市" : "城堡") : shoutTradeResourceOption.SettlementEntry.TypeLabel)}";
+				string typeLabel = string.IsNullOrWhiteSpace(shoutTradeResourceOption.SettlementEntry.TypeLabel)
+					? ((shoutTradeResourceOption.SettlementEntry.Settlement?.IsTown ?? false) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_Town", "Town") : ConversationUiLocalization.Text("AF_CONV_UI_Trade_Castle", "Castle"))
+					: shoutTradeResourceOption.SettlementEntry.TypeLabel;
+				text3 = ConversationUiLocalization.Text("AF_CONV_UI_Trade_AssetHint", "Daily income: {INCOME} denars | One-time settlement guide price: {PRICE} denars | Type: {TYPE}", ("INCOME", Math.Max(0, shoutTradeResourceOption.SettlementEntry.DailyIncomeDenars)), ("PRICE", Math.Max(0, shoutTradeResourceOption.SettlementEntry.GuidePriceDenars)), ("TYPE", typeLabel));
 			}
 			list.Add(new InquiryElement(i, text2, null, isEnabled: true, text3));
 		}
-		string text = targetNpc?.Name ?? "附近的人";
-		string suffix = _shoutTradeActionOnly ? "" : "并交流";
-		string titleText = ((mode == ShoutChatMode.Give) ? ("给予其物品" + suffix + " - " + text) : ((mode == ShoutChatMode.Show) ? ("向其展示物品" + suffix + " - " + text) : ((mode == ShoutChatMode.GiveTroops) ? ("给予部队" + suffix + " - " + text) : ((mode == ShoutChatMode.GivePrisoners) ? ("给予俘虏" + suffix + " - " + text) : ("转移固定资产" + suffix + " - " + text)))));
-		string actionOnlyNote = _shoutTradeActionOnly ? "\n该动作只记录到对话历史，不触发 AI 回复。" : "";
-		string descriptionText = (IsShoutPartyTransferMode(mode) ? ((mode == ShoutChatMode.GiveTroops) ? ("当前目标：" + text + "\n选择要转入对方麾下的部队（可多选）：" + actionOnlyNote) : ("当前目标：" + text + "\n选择要交给对方的俘虏（可多选）：" + actionOnlyNote)) : (IsShoutSettlementTransferMode(mode) ? ("当前目标：" + text + "\n选择要转给对方的固定资产（可多选）：" + actionOnlyNote) : ("当前目标：" + text + "\n选择要使用的物品或第纳尔（可多选）：" + actionOnlyNote)));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 1, list.Count, "确定", "取消", selected => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeResourcesSelected(selected); }, delegate
+		string text = targetNpc?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetFallback", "nearby person");
+		string suffix = _shoutTradeActionOnly ? "" : ConversationUiLocalization.Text("AF_CONV_UI_Trade_ActionOnlyNote", "\nThis action is recorded in conversation history only; it does not request an AI reply.");
+		string modeLabel = mode == ShoutChatMode.Give ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveItems", "Give items") : mode == ShoutChatMode.Show ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_ShowItems", "Show items") : mode == ShoutChatMode.GiveTroops ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveTroops", "Give troops") : mode == ShoutChatMode.GivePrisoners ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GivePrisoners", "Give prisoners") : ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveAssets", "Transfer fixed assets");
+		string titleText = ConversationUiLocalization.Text("AF_CONV_UI_Trade_TargetTitle", "{MODE}{SUFFIX} - {TARGET}", ("MODE", modeLabel), ("SUFFIX", _shoutTradeActionOnly ? "" : " and talk"), ("TARGET", text));
+		string selectText = IsShoutTroopTransferMode(mode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectTroops", "Select troops to transfer to the other party (multiple selection):") : IsShoutPrisonerTransferMode(mode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectPrisoners", "Select prisoners to give to the other party (multiple selection):") : IsShoutSettlementTransferMode(mode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectAssets", "Select fixed assets to transfer to the other party (multiple selection):") : ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectItems", "Select items or denars to use (multiple selection):");
+		string descriptionText = ConversationUiLocalization.Text("AF_CONV_UI_Trade_CurrentTarget", "Current target: {TARGET}", ("TARGET", text)) + "\n" + selectText + suffix;
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 1, list.Count, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"), selected => { if (IsUiCurrent(uiRevision, uiStepRevision)) OnShoutTradeResourcesSelected(selected); }, delegate
 		{
             if (!IsUiCurrent(uiRevision, uiStepRevision)) return;
 			ResetShoutTradeState();
@@ -409,15 +416,15 @@ internal sealed class SceneTradeController
 			ShowShoutTradeAmountInquiry();
 			return;
 		}
-		string titleText = (IsShoutTradeShowMode(_shoutTradeMode) ? "展示数量" : (IsShoutPartyTransferMode(_shoutTradeMode) ? "转移数量" : "给予数量"));
+		string titleText = IsShoutTradeShowMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_AmountTitleShow", "Amount to show") : IsShoutPartyTransferMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_AmountTitleTransfer", "Amount to transfer") : ConversationUiLocalization.Text("AF_CONV_UI_Trade_AmountTitleGive", "Amount to give");
 		string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
-		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {transferDisplayName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
-		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		string text = ConversationUiLocalization.Text("AF_CONV_UI_Trade_AmountDescription", "[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.\nEnter an integer from 1 to {MAX}:", ("INDEX", _shoutPendingTradeItemIndex + 1), ("COUNT", _shoutPendingTradeItems.Count), ("ITEM", transferDisplayName), ("MAX", availableAmount));
+		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Back", "Back"), delegate(string input)
 		{
             if (!IsUiCurrent(uiRevision, uiStepRevision) || _shoutPendingTradeItemIndex != itemIndex) return;
 			if (!int.TryParse(input, out var result) || result <= 0 || result > availableAmount)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入合法的数量。"));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_InvalidAmount", "Enter a valid amount.")));
 				ShowShoutTradeAmountInquiry();
 			}
 			else
@@ -437,7 +444,7 @@ internal sealed class SceneTradeController
 	{
         long uiRevision = _flowRevision;
         long uiStepRevision = ++_uiStepRevision;
-		string text = _shoutTradeTargetNpc?.Name ?? "附近的人";
+		string text = _shoutTradeTargetNpc?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetFallback", "nearby person");
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
@@ -448,29 +455,30 @@ internal sealed class SceneTradeController
 				{
 					if (IsShoutTroopTransferMode(_shoutTradeMode))
 					{
-						stringBuilder.AppendLine($"  · 转入 {shoutPendingTradeItem.Amount} 名 {shoutPendingTradeItem.ItemName}");
+						stringBuilder.AppendLine(ConversationUiLocalization.Text("AF_CONV_UI_Trade_TransferTroopLine", "  · Transfer {AMOUNT} {ITEM}", ("AMOUNT", shoutPendingTradeItem.Amount), ("ITEM", shoutPendingTradeItem.ItemName)));
 					}
 					else
 					{
-						stringBuilder.AppendLine(shoutPendingTradeItem.PartyEntry.IsHero ? $"  · 交付俘虏 {shoutPendingTradeItem.ItemName}" : $"  · 交付 {shoutPendingTradeItem.Amount} 名 {shoutPendingTradeItem.ItemName} 俘虏");
+						stringBuilder.AppendLine(shoutPendingTradeItem.PartyEntry.IsHero ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_DeliverPrisonerHeroLine", "  · Deliver prisoner {ITEM}", ("ITEM", shoutPendingTradeItem.ItemName)) : ConversationUiLocalization.Text("AF_CONV_UI_Trade_DeliverPrisonerLine", "  · Deliver {AMOUNT} {ITEM} prisoners", ("AMOUNT", shoutPendingTradeItem.Amount), ("ITEM", shoutPendingTradeItem.ItemName)));
 					}
 				}
 				else if (shoutPendingTradeItem.SettlementEntry != null)
 				{
-					stringBuilder.AppendLine($"  · 转移 {(shoutPendingTradeItem.SettlementEntry.TypeLabel ?? "固定资产")} {shoutPendingTradeItem.ItemName}");
+					stringBuilder.AppendLine(ConversationUiLocalization.Text("AF_CONV_UI_Trade_TransferAssetLine", "  · Transfer {TYPE} {ITEM}", ("TYPE", shoutPendingTradeItem.SettlementEntry.TypeLabel ?? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveAssets", "fixed assets")), ("ITEM", shoutPendingTradeItem.ItemName)));
 				}
 				else if (shoutPendingTradeItem.IsGold)
 				{
-					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 第纳尔" : $"  · 展示 {shoutPendingTradeItem.Amount} 第纳尔");
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveGoldLine", "  · Give {AMOUNT} denars", ("AMOUNT", shoutPendingTradeItem.Amount)) : ConversationUiLocalization.Text("AF_CONV_UI_Trade_ShowGoldLine", "  · Show {AMOUNT} denars", ("AMOUNT", shoutPendingTradeItem.Amount)));
 				}
 				else
 				{
 					string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
-					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}");
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_GiveItemLine", "  · Give {AMOUNT} {ITEM}", ("AMOUNT", shoutPendingTradeItem.Amount), ("ITEM", transferDisplayName)) : ConversationUiLocalization.Text("AF_CONV_UI_Trade_ShowItemLine", "  · Show {AMOUNT} {ITEM}", ("AMOUNT", shoutPendingTradeItem.Amount), ("ITEM", transferDisplayName)));
 				}
 			}
 		}
-		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下固定资产转给对方：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
+		string itemList = stringBuilder.ToString();
+		string text2 = IsShoutTroopTransferMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrepareTroops", "You are preparing to transfer these troops to the other party:\n{LIST}", ("LIST", itemList)) : IsShoutPrisonerTransferMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_PreparePrisoners", "You are preparing to give these prisoners to the other party:\n{LIST}", ("LIST", itemList)) : IsShoutSettlementTransferMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrepareAssets", "You are preparing to transfer these fixed assets to the other party:\n{LIST}", ("LIST", itemList)) : IsShoutTradeGiveMode(_shoutTradeMode) ? ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrepareGive", "You are preparing to give the other party these items:\n{LIST}", ("LIST", itemList)) : ConversationUiLocalization.Text("AF_CONV_UI_Trade_PrepareShow", "You are preparing to show the other party these items:\n{LIST}", ("LIST", itemList));
 		string titleText = text;
 		PauseGame();
 		string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_InputHint", "Tell them something:");
@@ -528,7 +536,7 @@ internal sealed class SceneTradeController
         catch (Exception ex)
         {
             // Confirmation is irreversible even if a reporting or show-record leaf fails.
-            if (string.IsNullOrWhiteSpace(text)) text = "给予/展示流程执行中断，资源与目标结果未确认；本次确认已消费，不应重复执行。";
+			if (string.IsNullOrWhiteSpace(text)) text = ConversationUiLocalization.Text("AF_CONV_UI_Trade_Interrupted", "The give/show flow was interrupted; the resource and target outcome could not be confirmed. This confirmation was consumed and must not be repeated.");
             Logger.Log("ShoutBehavior", "[Trade] consumed confirmation reporting failed: " + ex);
             ResumeGame();
         }
@@ -563,7 +571,7 @@ internal sealed class SceneTradeController
 			RecordNativeConversationTradeActionFact(fact);
 			if (!string.IsNullOrWhiteSpace(fact))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已记录给予/展示动作，NPC 会在后续 AI 交流中知道这件事。", new Color(0.4f, 1f, 0.4f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_Recorded", "The give/show action was recorded. The NPC will know about it in later AI conversations."), new Color(0.4f, 1f, 0.4f)));
 			}
 		}
 		catch (Exception ex)
@@ -574,7 +582,7 @@ internal sealed class SceneTradeController
                 try { RecordNativeConversationTradeActionFact("给予/展示执行中断，来源与目标结果未确认；确认已消费，不应重复交付。"); }
                 catch (Exception reportError) { Logger.Log("ShoutBehavior", "[Trade] unknown outcome fact recording failed: " + reportError); }
             }
-            InformationManager.DisplayMessage(new InformationMessage("给予/展示执行中断，结果未确认；请勿重复交付。", new Color(1f, 0.35f, 0.25f)));
+            InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_CommitInterrupted", "The give/show action was interrupted and its outcome could not be confirmed. Do not repeat the delivery."), new Color(1f, 0.35f, 0.25f)));
 		}
 		finally
 		{
@@ -684,7 +692,7 @@ internal sealed class SceneTradeController
     {
         SceneTradeController owner = CurrentInstance?._j17SceneTradeController;
         if (owner == null || !IsBannerlordMainThreadForNativeActions() || !owner.IsFlowCurrent(flowRevision))
-        { status = "给予列表已失效，请重新打开。"; return false; }
+        { status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_ListExpired", "The give list is no longer valid. Open it again."); return false; }
         return StageScenePresentationTradeForExternal(indices, amounts, out status);
     }
     internal static void CancelScenePresentationTradeForExternal(long flowRevision)
@@ -695,7 +703,7 @@ internal sealed class SceneTradeController
 	internal static bool StageScenePresentationTradeForExternal(IReadOnlyList<int> indices, IReadOnlyList<int> amounts, out string status)
  {
   SceneTradeController owner=CurrentInstance?._j17SceneTradeController;
-  if (owner==null) { status="给予列表已失效，请重新打开。"; return false; }
+  if (owner==null) { status=ConversationUiLocalization.Text("AF_CONV_UI_Trade_ListExpired", "The give list is no longer valid. Open it again."); return false; }
   List<ScenePresentationTradeOption> options=owner._shoutTradeOptions?.Select(option => new ScenePresentationTradeOption {
    Name=CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(option.Name), ValidationName=option.Name, Available=option.AvailableAmount,
    IsSettlement=option.SettlementEntry!=null }).ToList();
@@ -777,18 +785,18 @@ internal sealed class SceneTradeController
   IReadOnlyList<int> amounts, string verb, string targetName, Action clearItems, Action<int,int> stageItem, Action finishItems, out string status)
  {
   status = "";
-  if (!IsFlowCurrent(_flowRevision) || !TradeOwnsState || options == null || options.Count == 0) { status = "给予列表已失效，请重新打开。"; return false; }
-  if (indices == null || amounts == null || indices.Count == 0 || indices.Count != amounts.Count) { status = "请先选择要给予的资源。"; return false; }
+  if (!IsFlowCurrent(_flowRevision) || !TradeOwnsState || options == null || options.Count == 0) { status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_ListExpired", "The give list is no longer valid. Open it again."); return false; }
+  if (indices == null || amounts == null || indices.Count == 0 || indices.Count != amounts.Count) { status = ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectResource", "Select at least one resource to give."); return false; }
   clearItems();
   HashSet<int> seen = new HashSet<int>(); List<string> labels = new List<string>();
   for (int i=0; i<indices.Count; i++)
   {
    int index=indices[i]; if (index < 0 || index >= options.Count || !seen.Add(index)) continue;
    ScenePresentationTradeOption option=options[index]; int amount=option.IsSettlement ? 1 : amounts[i];
-   if (amount < 1 || amount > option.Available) { clearItems(); status="数量超出可用范围："+(option.ValidationName ?? option.Name ?? "资源"); return false; }
+   if (amount < 1 || amount > option.Available) { clearItems(); status=ConversationUiLocalization.Text("AF_CONV_UI_Trade_AmountOutOfRange", "The amount exceeds the available range: {RESOURCE}", ("RESOURCE", option.ValidationName ?? option.Name ?? "resource")); return false; }
    stageItem(index,amount); labels.Add(option.Name+" ×"+amount);
   }
-  if (labels.Count==0) { status="请先选择要给予的资源。"; return false; }
+  if (labels.Count==0) { status=ConversationUiLocalization.Text("AF_CONV_UI_Trade_SelectResource", "Select at least one resource to give."); return false; }
   finishItems(); TradeStaged=true; TradeSummary=verb+" "+(targetName ?? "对方")+"："+string.Join("、",labels);
   BumpPresentation(); return true;
  }
@@ -796,7 +804,7 @@ internal sealed class SceneTradeController
  {
   status="";
   if (TradeOwnsState && hasTargetAndItems && targetInAudience) return true;
-  ReleaseTrade(resetTransfer); BumpPresentation(); status="给予对象已离开或给予已失效，本次没有交付，话也没有发出。"; return false;
+  ReleaseTrade(resetTransfer); BumpPresentation(); status=ConversationUiLocalization.Text("AF_CONV_UI_Trade_NoDelivery", "The target left or the give action expired; nothing was delivered and no line was sent."); return false;
  }
  internal void ConsumeStagedTrade() { TradeOwnsState=false; TradeStaged=false; TradeSummary=""; }
 
@@ -820,7 +828,7 @@ internal sealed class SceneTradeController
             if (item.Amount <= 0) continue;
             ShoutTradeResourceOption option = fresh?.FirstOrDefault(value => MatchesPendingSource(value, item));
             if (option == null || item.Amount > option.AvailableAmount)
-            { InformationManager.DisplayMessage(new InformationMessage("资源或数量已变化，本次没有交付。")); return false; }
+            { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Trade_ResourcesChanged", "The resource or amount changed; nothing was delivered."))); return false; }
         }
         _commitConsumed = true; TradeStaged = false; TradeSummary = "";
         return true;
