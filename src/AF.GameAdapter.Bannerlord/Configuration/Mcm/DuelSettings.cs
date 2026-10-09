@@ -2051,7 +2051,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	}
 
 	[SettingPropertyButton("周报写作要求文案", -1, true, "", Content = "打开编辑器", Order = 2, RequireRestart = false, HintText = "点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。")]
-	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
+	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public Action EditWeeklyReportWritingRequirements { get; set; }
 
 	private string _npcPersonaGenerationRequirements = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
@@ -2350,79 +2350,79 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyBool("启用宴会功能", Order = 0, RequireRestart = false, HintText = "宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyBool("{=AF_MCM_Gathering_Enable}Enable noble gatherings", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Gathering_Enable_Hint}Master switch for the gathering system. Disabling stops new gatherings; active gatherings are cancelled at the next safe campaign hour and hosts and guests are sent home. No restart required.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public bool EnableNobleGathering { get; set; } = true;
 
-	[SettingPropertyBool("启用NPC自动举办宴会", Order = 1, RequireRestart = false, HintText = "开启后，符合条件的 NPC 会按王国自动举办宴会。关闭后不再自动创建 NPC 宴会，但玩家仍可主动举办。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyBool("{=AF_MCM_Gathering_AutoNpc}Enable automatic NPC gatherings", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Gathering_AutoNpc_Hint}When enabled, eligible NPCs schedule gatherings by kingdom. Disabling stops new NPC gatherings, while players can still host gatherings manually.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public bool EnableNpcAutomaticNobleGatherings { get; set; } = true;
 
-	[SettingPropertyBool("允许NPC邀请玩家", Order = 2, RequireRestart = false, HintText = "开启后，NPC 宴会可以邀请玩家并派信使送信。关闭后只阻止新邀请，已经发出的玩家邀请仍然有效。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyBool("{=AF_MCM_Gathering_PlayerInvite}Allow NPC invitations to the player", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Gathering_PlayerInvite_Hint}When enabled, NPC gatherings may invite the player and send a courier. Disabling prevents new invitations only; invitations already sent remain valid.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public bool AllowNpcNobleGatheringPlayerInvitations { get; set; } = true;
 
-	[SettingPropertyBool("显示宾客抵达提示", Order = 3, RequireRestart = false, HintText = "控制玩家举办宴会时宾客抵达后的左下角彩色消息。关闭后只隐藏提示，不影响抵达判定、宴会状态或奖励。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyBool("{=AF_MCM_Gathering_ArrivalNotice}Show guest-arrival notices", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Gathering_ArrivalNotice_Hint}Controls the lower-left colored message when guests arrive at a player gathering. Hiding it does not affect arrival checks, gathering state, or rewards.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public bool ShowNobleGatheringGuestArrivalMessages { get; set; } = true;
 
-	[SettingPropertyInteger("NPC宴会间隔（天）", NobleGatheringNpcIntervalMinDays, NobleGatheringNpcIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一王国两次自动宴会排期之间的游戏天数，默认 21 天。按王国分别计算；修改后用于下一次重新排期。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyInteger("{=AF_MCM_Gathering_NpcInterval}NPC gathering interval (days)", NobleGatheringNpcIntervalMinDays, NobleGatheringNpcIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Gathering_NpcInterval_Hint}Game days between automatic gathering schedules in the same kingdom. Default: 21; calculated per kingdom and used for the next schedule after editing.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public int NpcNobleGatheringIntervalDays { get; set; } = DefaultNobleGatheringNpcIntervalDays;
 
-	[SettingPropertyBool("NPC可以邀请总督", Order = 5, RequireRestart = false, HintText = "只影响 NPC 自动生成的宾客名单。关闭时 NPC 不会邀请正在治理定居点的总督；玩家举办宴会时仍可自由邀请总督。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyBool("{=AF_MCM_Gathering_GovernorInvite}Allow NPC invitations to governors", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Gathering_GovernorInvite_Hint}Affects only automatically generated NPC guest lists. When disabled, NPCs do not invite governors governing settlements; players may still invite governors manually.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public bool AllowNpcNobleGatheringGovernorInvitations { get; set; } = false;
 
-	[SettingPropertyInteger("宴会持续天数", NobleGatheringDurationMinDays, NobleGatheringDurationMaxDays, "0", Order = 6, RequireRestart = false, HintText = "玩家与 NPC 宴会共用，默认 5 天。修改只影响之后新创建的宴会，已经开始的宴会保持原结束日期。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyInteger("{=AF_MCM_Gathering_Duration}Gathering duration (days)", NobleGatheringDurationMinDays, NobleGatheringDurationMaxDays, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Gathering_Duration_Hint}Shared by player and NPC gatherings. Default: 5 days. Editing affects newly created gatherings only; active gatherings keep their original end date.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public int NobleGatheringDurationDays { get; set; } = DefaultNobleGatheringDurationDays;
 
-	[SettingPropertyInteger("宴会举办费用", NobleGatheringCostMinimum, NobleGatheringCostMaximum, "0", Order = 7, RequireRestart = false, HintText = "玩家与 NPC 主人共用，费用从实际主人身上扣除。默认 50000 第纳尔；设为 0 表示免费。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyInteger("{=AF_MCM_Gathering_Cost}Gathering cost", NobleGatheringCostMinimum, NobleGatheringCostMaximum, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Gathering_Cost_Hint}Shared by player and NPC hosts; deducted from the actual host. Default: 50000 denars; 0 means free.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public int NobleGatheringCost { get; set; } = DefaultNobleGatheringCost;
 
-	[SettingPropertyInteger("每个受邀家族关系奖励", NobleGatheringInvitedClanRelationRewardMinimum, NobleGatheringInvitedClanRelationRewardMaximum, "0", Order = 8, RequireRestart = false, HintText = "玩家与 NPC 宴会共用；主人和每个受邀家族领袖每场只结算一次。默认 5；设为 0 表示不增加关系。修改只影响之后新创建的宴会。")]
-	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	[SettingPropertyInteger("{=AF_MCM_Gathering_RelationReward}Relation reward per invited clan", NobleGatheringInvitedClanRelationRewardMinimum, NobleGatheringInvitedClanRelationRewardMaximum, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Gathering_RelationReward_Hint}Shared by player and NPC gatherings; the host and each invited clan leader are settled once per gathering. Default: 5; 0 gives no relation. Affects newly created gatherings only.")]
+	[SettingPropertyGroup("{=AF_MCM_Gathering_Group}18. Noble gatherings", GroupOrder = 180)]
 	public int NobleGatheringInvitedClanRelationReward { get; set; } = DefaultNobleGatheringInvitedClanRelationReward;
 
-	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。")]
-	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
+	[SettingPropertyInteger("{=AF_MCM_News_WeeklyLength}Weekly report length preset", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_News_WeeklyLength_Hint}1 = 200–400 characters; 2 = 200–800; 3 = 200–1200; 4 = 200–1500. Shared by world and kingdom weekly reports. Default: 2.")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public int WeeklyReportLengthPreset { get; set; } = 2;
 
-	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
-	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
+	[SettingPropertyInteger("{=AF_MCM_News_WeeklyRpm}Maximum weekly reports per minute", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_News_WeeklyRpm_Hint}Limits request rate for development-mode weekly reports. Default: 5; maximum 20. Helps with API RPM or concurrency limits.")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public int WeeklyReportRequestsPerMinute { get; set; } = 5;
 
-	[SettingPropertyBool("每周自动生成周报", Order = 2, RequireRestart = false, HintText = "开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。")]
-	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
+	[SettingPropertyBool("{=AF_MCM_News_AutoWeekly}Generate weekly reports automatically", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_News_AutoWeekly_Hint}At the start of each new week, settle the previous week and generate the world and kingdom weekly reports. Day 0 writes the opening summary as week 0.")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public bool AutoGenerateWeeklyReports { get; set; } = true;
 
-	[SettingPropertyInteger("报刊弹窗正文字号", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。")]
+	[SettingPropertyInteger("{=AF_MCM_News_PopupFont}Report popup body font size", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_News_PopupFont_Hint}Affects only the large popup body for the latest kingdom weekly report. Default: 18.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
-	[SettingPropertyBool("周报／快报消息提示", Order = 4, RequireRestart = false, HintText = "开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。")]
+	[SettingPropertyBool("{=AF_MCM_News_MapNotice}Weekly/bulletin map notice", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_News_MapNotice_Hint}When enabled, a clickable notice appears at the lower right of the campaign map after a report is generated. Disabled reports do not queue notices.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableWeeklyReportMapNotifications { get; set; } = true;
 
-	[SettingPropertyBool("启用报刊阅读经验奖励", Order = 5, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
+	[SettingPropertyBool("{=AF_MCM_News_ReadingXp}Enable report-reading experience", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_News_ReadingXp_Hint}Opening a report from a map notice and staying for 10 seconds accumulates experience by the three-column character count; every 20 reports grant Charm, Leadership, and Steward experience.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableWeeklyReportReadingXpReward { get; set; } = true;
 
-	[SettingPropertyInteger("报刊每百字经验", 0, 100, "0", Order = 6, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
+	[SettingPropertyInteger("{=AF_MCM_News_XpPerHundred}Experience per hundred report characters", 0, 100, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_News_XpPerHundred_Hint}Character multiplier for report-reading rewards. Default: 20; each 100 valid characters/words in a column gives 20 points of the corresponding skill experience.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportReadingXpPerHundredChars { get; set; } = 20;
 
-	[SettingPropertyInteger("报刊单技能经验上限", 0, 500, "0", Order = 7, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
+	[SettingPropertyInteger("{=AF_MCM_News_XpCap}Per-skill report experience cap", 0, 500, "0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_News_XpCap_Hint}Maximum experience each skill gains from one report. Default: 100; 0 disables report-reading experience.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportReadingXpSkillCap { get; set; } = 100;
 
-	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 8, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
+	[SettingPropertyBool("{=AF_MCM_News_StabilityRebellion}Enable kingdom stability and rebellion", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_News_StabilityRebellion_Hint}When disabled, this mod no longer triggers kingdom rebellions; kingdom stability no longer affects ruler fief loyalty or applies stability relation modifiers.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 
-	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 9, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
+	[SettingPropertyBool("{=AF_MCM_News_PlayerImmunity}Player-as-ruler stability rebellion immunity", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_News_PlayerImmunity_Hint}When enabled, if the player clan rules a kingdom or the player is its leader, this mod stops applying stability relation, ruler-fief loyalty, and kingdom-rebellion checks to that kingdom. Native low-loyalty settlement rebellions still follow native rules.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 
@@ -2440,60 +2440,60 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
-	[SettingPropertyBool("写入 GCCZ 日志", Order = 2, RequireRestart = false, HintText = "写入独立的 GCCZ_Debug.log。关闭后停止新增日志，但仍可导出或清空已有日志。")]
+	[SettingPropertyBool("{=AF_MCM_Gccz_EnableLog}Write GCCZ log", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Gccz_EnableLog_Hint}Writes the separate GCCZ_Debug.log. Disabling stops new log entries but still allows exporting or clearing the existing log.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public bool EnableGcczDiagnosticLog { get; set; } = true;
 
-	[SettingPropertyBool("GCCZ 详细日志", Order = 3, RequireRestart = false, HintText = "记录 NPC 回应限额等高频诊断。排查问题时再开启；关闭后仍保留阶段变化、处置结果和异常等关键日志。")]
+	[SettingPropertyBool("{=AF_MCM_Gccz_VerboseLog}GCCZ verbose log", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Gccz_VerboseLog_Hint}Records high-frequency diagnostics such as NPC response limits. Enable while troubleshooting; phase changes, outcomes, and exceptions remain logged when disabled.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public bool EnableGcczVerboseDiagnosticLog { get; set; } = false;
 
-	[SettingPropertyInteger("GCCZ 日志上限(MB)", FeatureDiagnosticLogMinSizeMegabytes, FeatureDiagnosticLogMaxSizeMegabytes, "0", Order = 4, RequireRestart = false, HintText = "GCCZ_Debug.log 达到上限后自动轮转，上一份保留为 GCCZ_Debug.previous.log。默认 16 MB。")]
+	[SettingPropertyInteger("{=AF_MCM_Gccz_LogLimit}GCCZ log size limit (MB)", FeatureDiagnosticLogMinSizeMegabytes, FeatureDiagnosticLogMaxSizeMegabytes, "0", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Gccz_LogLimit_Hint}When GCCZ_Debug.log reaches the limit it rotates automatically and keeps GCCZ_Debug.previous.log. Default: 16 MB.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public int GcczDiagnosticLogMaxSizeMegabytes { get; set; } = FeatureDiagnosticLogDefaultSizeMegabytes;
 
-	[SettingPropertyButton("导出 GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 5, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 独立复制到桌面，文件名会带时间戳。")]
+	[SettingPropertyButton("{=AF_MCM_Gccz_Export}Export GCCZ_Debug.log", -1, true, "", Content = "{=AF_MCM_Gccz_Export_Content}Export to desktop", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Gccz_Export_Hint}Copies GCCZ_Debug.log from the module Logs folder to the desktop with a timestamped file name.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ExportGcczDebugLog { get; set; }
 
-	[SettingPropertyButton("清空 GCCZ_Debug.log", -1, true, "", Content = "立即清空", Order = 6, RequireRestart = false, HintText = "只清空当前 GCCZ_Debug.log，不删除上一份轮转日志。")]
+	[SettingPropertyButton("{=AF_MCM_Gccz_Clear}Clear GCCZ_Debug.log", -1, true, "", Content = "{=AF_MCM_Gccz_Clear_Content}Clear now", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Gccz_Clear_Hint}Clears only the current GCCZ_Debug.log and does not delete the previous rotated log.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearGcczDebugLog { get; set; }
 
-	[SettingPropertyBool("写入 SETS 日志", Order = 7, RequireRestart = false, HintText = "写入独立的 SETS.log，用于进城随行与内部暴乱诊断。关闭后停止新增日志，但仍可导出或清空已有日志。")]
+	[SettingPropertyBool("{=AF_MCM_Sets_EnableLog}Write SETS log", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Sets_EnableLog_Hint}Writes the separate SETS.log for settlement-entry escort and internal riot diagnostics. Disabling stops new entries but still allows exporting or clearing the existing log.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public bool EnableSetsDiagnosticLog { get; set; } = true;
 
-	[SettingPropertyBool("SETS 详细日志", Order = 8, RequireRestart = false, HintText = "记录逐帧保护、指挥刷新和刷兵进度等高频诊断。排查卡住时再开启；关闭后仍保留冲突开始、波次、胜利和异常等关键日志。")]
+	[SettingPropertyBool("{=AF_MCM_Sets_VerboseLog}SETS verbose log", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Sets_VerboseLog_Hint}Records high-frequency diagnostics such as per-frame guards, command refreshes, and spawn progress. Enable while troubleshooting; conflict start, waves, victory, and exceptions remain logged when disabled.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public bool EnableSetsVerboseDiagnosticLog { get; set; } = false;
 
-	[SettingPropertyInteger("SETS 日志上限(MB)", FeatureDiagnosticLogMinSizeMegabytes, FeatureDiagnosticLogMaxSizeMegabytes, "0", Order = 9, RequireRestart = false, HintText = "SETS.log 达到上限后自动轮转，上一份保留为 SETS.previous.log。默认 16 MB。")]
+	[SettingPropertyInteger("{=AF_MCM_Sets_LogLimit}SETS log size limit (MB)", FeatureDiagnosticLogMinSizeMegabytes, FeatureDiagnosticLogMaxSizeMegabytes, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Sets_LogLimit_Hint}When SETS.log reaches the limit it rotates automatically and keeps SETS.previous.log. Default: 16 MB.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public int SetsDiagnosticLogMaxSizeMegabytes { get; set; } = FeatureDiagnosticLogDefaultSizeMegabytes;
 
-	[SettingPropertyButton("导出 SETS.log", -1, true, "", Content = "导出到桌面", Order = 10, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 SETS.log 独立复制到桌面，文件名会带时间戳。")]
+	[SettingPropertyButton("{=AF_MCM_Sets_Export}Export SETS.log", -1, true, "", Content = "{=AF_MCM_Sets_Export_Content}Export to desktop", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Sets_Export_Hint}Copies SETS.log from the module Logs folder to the desktop with a timestamped file name.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ExportSetsDiagnosticLog { get; set; }
 
-	[SettingPropertyButton("清空 SETS.log", -1, true, "", Content = "立即清空", Order = 11, RequireRestart = false, HintText = "只清空当前 SETS.log，不删除上一份轮转日志。")]
+	[SettingPropertyButton("{=AF_MCM_Sets_Clear}Clear SETS.log", -1, true, "", Content = "{=AF_MCM_Sets_Clear_Content}Clear now", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Sets_Clear_Hint}Clears only the current SETS.log and does not delete the previous rotated log.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearSetsDiagnosticLog { get; set; }
 
-	[SettingPropertyButton("导出贵族俘虏随行日志", -1, true, "", Content = "导出到桌面", Order = 12, RequireRestart = false, HintText = "将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、场景处决与野外会面撤退。")]
+	[SettingPropertyButton("{=AF_MCM_Escort_Export}Export noble-prisoner escort log", -1, true, "", Content = "{=AF_MCM_Escort_Export_Content}Export to desktop", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Escort_Export_Hint}Copies NoblePrisonerEscort.log to the desktop for troubleshooting prisoner spawning, scene executions, and wilderness-meeting retreats.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ExportNoblePrisonerEscortLog { get; set; }
 
-	[SettingPropertyButton("清空贵族俘虏随行日志", -1, true, "", Content = "立即清空", Order = 13, RequireRestart = false, HintText = "只清空当前 NoblePrisonerEscort.log，不删除上一份轮转日志。")]
+	[SettingPropertyButton("{=AF_MCM_Escort_Clear}Clear noble-prisoner escort log", -1, true, "", Content = "{=AF_MCM_Escort_Clear_Content}Clear now", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Escort_Clear_Hint}Clears only the current NoblePrisonerEscort.log and does not delete the previous rotated log.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearNoblePrisonerEscortLog { get; set; }
 
-	[SettingPropertyInteger("SETS 他方定居点随行上限", SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMinLimit, SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMaxLimit, "0", Order = 14, RequireRestart = false, HintText = "进入非自有城镇/城堡/村庄时，可配置并带入的普通士兵人数上限。默认 10。调低后，已保存配置中超出的部分会被截掉。")]
+	[SettingPropertyInteger("{=AF_MCM_Sets_OtherFollowerLimit}Other-settlement escort limit", SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMinLimit, SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMaxLimit, "0", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Sets_OtherFollowerLimit_Hint}Maximum ordinary soldiers configured and brought when entering a town, castle, or village not owned by the player. Default: 10; lowering it trims excess saved configuration.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public int SetsOtherSettlementFollowerLimit { get; set; } = SetsSettlementEntryProfile.OtherSettlementSelectedFollowerDefaultLimit;
 
-	[SettingPropertyInteger("怀孕几率（%）", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。")]
-	[SettingPropertyGroup("15. 亲密行为与怀孕")]
+	[SettingPropertyInteger("{=AF_MCM_Intimacy_PregnancyChance}Pregnancy chance (%)", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Intimacy_PregnancyChance_Hint}After the intimacy action tag confirms intercourse and ejaculation occurred this round, the female partner pregnancy chance is applied. 0 means never; 100 means certain. Default: 50%.")]
+	[SettingPropertyGroup("{{=AF_MCM_Intimacy_Group}}15. Intimacy and pregnancy")]
 	public int IntimacyPregnancyChancePercent { get; set; } = 50;
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;

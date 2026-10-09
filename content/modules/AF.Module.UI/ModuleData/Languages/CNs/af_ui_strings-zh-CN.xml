@@ -2755,6 +2755,83 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Diplomacy_Restore" text="恢复默认外交与代笔偏好" />
   <string id="AF_MCM_Diplomacy_Restore_Hint" text="确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。" />
   <string id="AF_MCM_Diplomacy_Restore_Content" text="恢复默认" />
+  
+  <string id="AF_MCM_Gathering_Enable" text="启用宴会功能" />
+  <string id="AF_MCM_Gathering_Enable_Hint" text="宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。" />
+  <string id="AF_MCM_Gathering_AutoNpc" text="启用NPC自动举办宴会" />
+  <string id="AF_MCM_Gathering_AutoNpc_Hint" text="开启后，符合条件的 NPC 会按王国自动举办宴会。关闭后不再自动创建 NPC 宴会，但玩家仍可主动举办。" />
+  <string id="AF_MCM_Gathering_PlayerInvite" text="允许NPC邀请玩家" />
+  <string id="AF_MCM_Gathering_PlayerInvite_Hint" text="开启后，NPC 宴会可以邀请玩家并派信使送信。关闭后只阻止新邀请，已经发出的玩家邀请仍然有效。" />
+  <string id="AF_MCM_Gathering_ArrivalNotice" text="显示宾客抵达提示" />
+  <string id="AF_MCM_Gathering_ArrivalNotice_Hint" text="控制玩家举办宴会时宾客抵达后的左下角彩色消息。关闭后只隐藏提示，不影响抵达判定、宴会状态或奖励。" />
+  <string id="AF_MCM_Gathering_NpcInterval" text="NPC宴会间隔（天）" />
+  <string id="AF_MCM_Gathering_NpcInterval_Hint" text="同一王国两次自动宴会排期之间的游戏天数，默认 21 天。按王国分别计算；修改后用于下一次重新排期。" />
+  <string id="AF_MCM_Gathering_GovernorInvite" text="NPC可以邀请总督" />
+  <string id="AF_MCM_Gathering_GovernorInvite_Hint" text="只影响 NPC 自动生成的宾客名单。关闭时 NPC 不会邀请正在治理定居点的总督；玩家举办宴会时仍可自由邀请总督。" />
+  <string id="AF_MCM_Gathering_Duration" text="宴会持续天数" />
+  <string id="AF_MCM_Gathering_Duration_Hint" text="玩家与 NPC 宴会共用，默认 5 天。修改只影响之后新创建的宴会，已经开始的宴会保持原结束日期。" />
+  <string id="AF_MCM_Gathering_Cost" text="宴会举办费用" />
+  <string id="AF_MCM_Gathering_Cost_Hint" text="玩家与 NPC 主人共用，费用从实际主人身上扣除。默认 50000 第纳尔；设为 0 表示免费。" />
+  <string id="AF_MCM_Gathering_RelationReward" text="每个受邀家族关系奖励" />
+  <string id="AF_MCM_Gathering_RelationReward_Hint" text="玩家与 NPC 宴会共用；主人和每个受邀家族领袖每场只结算一次。默认 5；设为 0 表示不增加关系。修改只影响之后新创建的宴会。" />
+  <string id="AF_MCM_News_WeeklyLength" text="周报篇幅档位" />
+  <string id="AF_MCM_News_WeeklyLength_Hint" text="1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。" />
+  <string id="AF_MCM_News_WeeklyRpm" text="每分钟最多生成周报数" />
+  <string id="AF_MCM_News_WeeklyRpm_Hint" text="限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。" />
+  <string id="AF_MCM_News_AutoWeekly" text="每周自动生成周报" />
+  <string id="AF_MCM_News_AutoWeekly_Hint" text="开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。" />
+  <string id="AF_MCM_News_PopupFont" text="报刊弹窗正文字号" />
+  <string id="AF_MCM_News_PopupFont_Hint" text="仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。" />
+  <string id="AF_MCM_News_MapNotice" text="周报／快报消息提示" />
+  <string id="AF_MCM_News_MapNotice_Hint" text="开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。" />
+  <string id="AF_MCM_News_ReadingXp" text="启用报刊阅读经验奖励" />
+  <string id="AF_MCM_News_ReadingXp_Hint" text="开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。" />
+  <string id="AF_MCM_News_XpPerHundred" text="报刊每百字经验" />
+  <string id="AF_MCM_News_XpPerHundred_Hint" text="周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。" />
+  <string id="AF_MCM_News_XpCap" text="报刊单技能经验上限" />
+  <string id="AF_MCM_News_XpCap_Hint" text="单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。" />
+  <string id="AF_MCM_News_StabilityRebellion" text="启用王国稳定度与叛乱" />
+  <string id="AF_MCM_News_StabilityRebellion_Hint" text="关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。" />
+  <string id="AF_MCM_News_PlayerImmunity" text="玩家为国王时免疫稳定度叛乱" />
+  <string id="AF_MCM_News_PlayerImmunity_Hint" text="开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。" />
+  <string id="AF_MCM_Gccz_EnableLog" text="写入 GCCZ 日志" />
+  <string id="AF_MCM_Gccz_EnableLog_Hint" text="写入独立的 GCCZ_Debug.log。关闭后停止新增日志，但仍可导出或清空已有日志。" />
+  <string id="AF_MCM_Gccz_VerboseLog" text="GCCZ 详细日志" />
+  <string id="AF_MCM_Gccz_VerboseLog_Hint" text="记录 NPC 回应限额等高频诊断。排查问题时再开启；关闭后仍保留阶段变化、处置结果和异常等关键日志。" />
+  <string id="AF_MCM_Gccz_LogLimit" text="GCCZ 日志上限(MB)" />
+  <string id="AF_MCM_Gccz_LogLimit_Hint" text="GCCZ_Debug.log 达到上限后自动轮转，上一份保留为 GCCZ_Debug.previous.log。默认 16 MB。" />
+  <string id="AF_MCM_Gccz_Export" text="导出 GCCZ_Debug.log" />
+  <string id="AF_MCM_Gccz_Export_Hint" text="将当前模块 Logs 文件夹里的 GCCZ_Debug.log 独立复制到桌面，文件名会带时间戳。" />
+  <string id="AF_MCM_Gccz_Export_Content" text="导出到桌面" />
+  <string id="AF_MCM_Gccz_Clear" text="清空 GCCZ_Debug.log" />
+  <string id="AF_MCM_Gccz_Clear_Hint" text="只清空当前 GCCZ_Debug.log，不删除上一份轮转日志。" />
+  <string id="AF_MCM_Gccz_Clear_Content" text="立即清空" />
+  <string id="AF_MCM_Sets_EnableLog" text="写入 SETS 日志" />
+  <string id="AF_MCM_Sets_EnableLog_Hint" text="写入独立的 SETS.log，用于进城随行与内部暴乱诊断。关闭后停止新增日志，但仍可导出或清空已有日志。" />
+  <string id="AF_MCM_Sets_VerboseLog" text="SETS 详细日志" />
+  <string id="AF_MCM_Sets_VerboseLog_Hint" text="记录逐帧保护、指挥刷新和刷兵进度等高频诊断。排查卡住时再开启；关闭后仍保留冲突开始、波次、胜利和异常等关键日志。" />
+  <string id="AF_MCM_Sets_LogLimit" text="SETS 日志上限(MB)" />
+  <string id="AF_MCM_Sets_LogLimit_Hint" text="SETS.log 达到上限后自动轮转，上一份保留为 SETS.previous.log。默认 16 MB。" />
+  <string id="AF_MCM_Sets_Export" text="导出 SETS.log" />
+  <string id="AF_MCM_Sets_Export_Hint" text="将当前模块 Logs 文件夹里的 SETS.log 独立复制到桌面，文件名会带时间戳。" />
+  <string id="AF_MCM_Sets_Export_Content" text="导出到桌面" />
+  <string id="AF_MCM_Sets_Clear" text="清空 SETS.log" />
+  <string id="AF_MCM_Sets_Clear_Hint" text="只清空当前 SETS.log，不删除上一份轮转日志。" />
+  <string id="AF_MCM_Sets_Clear_Content" text="立即清空" />
+  <string id="AF_MCM_Escort_Export" text="导出贵族俘虏随行日志" />
+  <string id="AF_MCM_Escort_Export_Hint" text="将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、场景处决与野外会面撤退。" />
+  <string id="AF_MCM_Escort_Export_Content" text="导出到桌面" />
+  <string id="AF_MCM_Escort_Clear" text="清空贵族俘虏随行日志" />
+  <string id="AF_MCM_Escort_Clear_Hint" text="只清空当前 NoblePrisonerEscort.log，不删除上一份轮转日志。" />
+  <string id="AF_MCM_Escort_Clear_Content" text="立即清空" />
+  <string id="AF_MCM_Sets_OtherFollowerLimit" text="SETS 他方定居点随行上限" />
+  <string id="AF_MCM_Sets_OtherFollowerLimit_Hint" text="进入非自有城镇/城堡/村庄时，可配置并带入的普通士兵人数上限。默认 10。调低后，已保存配置中超出的部分会被截掉。" />
+  
+  <string id="AF_MCM_Gathering_Group" text="18. 宴会功能" />
+  
+  <string id="AF_MCM_Intimacy_PregnancyChance" text="怀孕几率（%）" />
+  <string id="AF_MCM_Intimacy_PregnancyChance_Hint" text="当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。" />
+  <string id="AF_MCM_Intimacy_Group" text="15. 亲密行为与怀孕" />
   </strings>
 </base>
 
