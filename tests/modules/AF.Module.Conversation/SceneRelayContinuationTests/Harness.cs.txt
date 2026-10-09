@@ -1,6 +1,18 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using AnimusForge.SiegeAftermathIntervention;
+using AnimusForge;
+
+namespace AnimusForge {
+    internal static class MainPromptMessageAssemblyOwner { @@MAIN_MESSAGE@@ @@MAIN_COMPOSITE@@ @@MAIN_PREFIX@@ }
+    internal static class ScenePromptMessageProjectionComposer { @@CONTINUATION_INSTRUCTION@@ }
+    internal static class ShoutUtils { public static string StripConversationMetadataPrefix(string text) => text; public static string StripNamePrefixedLineSafely(string text, int max = 30) => text; }
+    internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text) => text; }
+    internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text) => text; }
+    internal static class SceneAgentIdentityPromptCaptureAdapter { internal static string GetSceneNpcHistoryNameForPrompt(global::NpcDataPacket npc) => npc?.Name; }
+}
+class DuelSettings { public bool EnableTokenStatsLog = true; public string ApiKey = "fixture-private-credential"; public static DuelSettings GetSettings() { F.SettingsReads++; return F.Settings; } }
+static class ShoutNetwork { public static void RecordPrimaryRequestBodyForTokenStats(List<object> messages, int max, string mode) { F.PreflightRecords++; F.PreflightMax = max; F.PreflightMode = mode; F.PreflightBody = System.Text.Json.JsonSerializer.Serialize(messages); } }
 
 class NpcDataPacket { public int AgentIndex; public string Name; public bool IsHero; }
 class Hero { }
@@ -21,11 +33,12 @@ class Dispatcher {
     }
 }
 class Ports {
+    public List<object> BuildStrictSceneMessagesForNpc(int id, string system, IEnumerable<string> prefix, IEnumerable<string> suffixUserSections = null, IEnumerable<ConversationMessage> persistentHistoryMessages = null) => SceneHistoryMessageAssemblyOwner.Build(new SceneHistoryMessageAssemblyInput { SystemPrompt = system, PrefixUserSections = prefix, SuffixUserSections = suffixUserSections, SceneHistory = F.SceneHistory, PersistentHistory = persistentHistoryMessages, Context = new SceneHistoryMessageContext { ViewerAgentIndex = id, PlayerName = "Player", SpeechTextOptions = new ConversationSpeechTextOptions(true, true) } });
     public void QueueSceneInfoMessage(string text, Color color, int epoch, string sound = null) {
         F.Messages.Add(text);
     }
 }
-static class Logger { public static void Log(string owner, string text) { F.Logs.Add(text); } }
+static class Logger { public static bool IsVerboseModLogicEnabled => F.Verbose; public static void Log(string owner, string text) { F.Logs.Add(text); } }
 class PostprocessRuleEntry { public string Tag, Description, SingleFramedNpcDescription; }
 static class AIConfigHandler {
     public static List<PostprocessRuleEntry> Rules;
@@ -43,6 +56,13 @@ static class F {
     public static List<NpcDataPacket> People;
     public static List<int> Speakers = new(), Claims = new();
     public static List<int[]> CandidateSets = new();
+    public static List<List<object>> MainRequests = new();
+    public static List<string> PostRuntimes = new();
+    public static List<bool> DirectFlags = new();
+    public static List<ConversationMessage> SceneHistory = new();
+    public static string OriginInput = "你们对于目前的局势怎么看";
+    public static DuelSettings Settings; public static bool Verbose; public static int PreflightRecords, PreflightMax, SettingsReads; public static string PreflightMode, PreflightBody;
+    public static string Reply(int agent) => "unique-contribution-" + agent;
     public static List<string> Messages = new(), Logs = new();
     public static SiegeNpcResponseEventBudget Budget;
     public static bool Town, Current, End, Suppressed, EmptyHistory;
@@ -50,7 +70,9 @@ static class F {
     public static int Step;
     public static void Reset(int count = 2, bool town = false, string mode = "alternate") {
         People = Enumerable.Range(0, count).Select(i => new NpcDataPacket { AgentIndex = 17 + i * 10, Name = "npc" + i }).ToList();
-        Speakers.Clear(); Claims.Clear(); CandidateSets.Clear(); Messages.Clear(); Logs.Clear();
+        Speakers.Clear(); Claims.Clear(); CandidateSets.Clear(); Messages.Clear(); Logs.Clear(); MainRequests.Clear(); PostRuntimes.Clear(); DirectFlags.Clear(); SceneHistory.Clear();
+        SceneHistory.Add(new ConversationMessage { Role = "user", Content = OriginInput, SpeakerName = "Player", TargetAgentIndex = 17, EventSequence = 1 });
+        Settings = new(); Verbose = false; PreflightRecords = PreflightMax = SettingsReads = 0; PreflightMode = PreflightBody = null;
         Budget = new(); Budget.BeginScene(); Town = town; Current = true;
         End = Suppressed = EmptyHistory = false; StaleAt = UnavailableAt = ""; Mode = mode; Step = 0;
         AIConfigHandler.Rules = null;
@@ -58,6 +80,7 @@ static class F {
     public static string Raw(int current, List<NpcDataPacket> candidates) => Mode switch {
         "self" => "[RELAY:" + current + "]", "missing" => "", "invalid" => "[RELAY:999]",
         "third" => "[RELAY:" + (Step == 1 ? 27 : Step == 2 ? 17 : 37) + "]",
+        "three" => "[RELAY:" + (Step == 1 ? 27 : Step == 2 ? 37 : current) + "]",
         _ => "[RELAY:" + (current == 17 ? 27 : 17) + "]"
     };
     public static Task<ScenePostprocessOutcome> Postprocess(int current, List<NpcDataPacket> candidates) {
@@ -81,6 +104,27 @@ class Relay {
     @@NORMALIZER@@
     @@PROMPT@@
     @@RULES@@
+    @@TURN_CONTEXT@@
+    @@TURN_USER@@
+    @@RUNTIME_APPEND@@
+    static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket npc) => npc?.Name;
+    static string BuildSceneCompositeUserBlock(string first, params string[] blocks) => MainPromptMessageAssemblyOwner.BuildSceneCompositeUserBlock(first, blocks);
+    internal List<object> BuildProductionMainRequest(bool firstTurn, int remainingTurns, NpcDataPacket currentSpeaker, NpcDataPacket previousSpeaker, string previousSpeakerReply, HashSet<int> roundNpcSpeakerIndices) {
+        string playerText = F.OriginInput; NpcDataPacket primaryNpc = F.People[0]; bool multiNpcScene = F.People.Count > 1;
+        var engagedParticipants = F.People.Where(n => roundNpcSpeakerIndices.Contains(n.AgentIndex) || n.AgentIndex == currentSpeaker.AgentIndex).ToList();
+        string layeredPrompt = "fixture identity and task", privateRecentWindowSection = "", persistedWithoutRecentWindow = "", sceneDynamicUserBlock = "captured runtime", knowledgeExtrasSection = "knowledge", systemRuleBlock = "rules";
+        List<ConversationMessage> persistentMemoryRoleMessages = null;
+        @@MAIN_CONTEXT_BINDINGS@@
+        @@MAIN_REQUEST_CALL@@
+        @@PRIMARY_RECORD_GATE@@
+        return messages;
+    }
+    string BuildProductionRelayRuntime(bool firstTurn, int remainingTurns, NpcDataPacket currentSpeaker, NpcDataPacket previousSpeaker, string previousSpeakerReply, HashSet<int> roundNpcSpeakerIndices, List<NpcDataPacket> relayCandidates) {
+        string relayConversationContext = BuildSceneRelayTurnContextForPrompt(F.OriginInput, F.People[0], currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns);
+        string runtimeContext = "existing entity facts"; bool relayRuleInjected = true; int targetAgentIndex = currentSpeaker.AgentIndex, relayPrimaryTargetAgentIndex = F.People[0].AgentIndex;
+        @@POST_CONTEXT_BLOCK@@
+        return runtimeContext;
+    }
     public async Task Run() {
         var speakableCandidates = F.People;
         var primaryNpc = F.People[0];
@@ -94,15 +138,20 @@ class Relay {
         @@SETUP@@
             if (!IsCurrentModuleGroup()) return;
             @@ADMISSION@@
+            F.MainRequests.Add(BuildProductionMainRequest(firstTurn, remainingTurns, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices));
             F.Speakers.Add(currentSpeaker.AgentIndex); F.Step++;
+            @@DIRECT_REPLY_FLAG@@
+            F.DirectFlags.Add(replyIsDirectPlayerResponse);
             if (!F.EmptyHistory) roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
             bool suppressBattleSpeechFollowups = F.Suppressed, endRequested = F.End;
             bool relayPostprocessSelected = false, relayRequested = false;
             int relayTargetAgentIndex = -1, resolvedRelayTargetAgentIndex = -1;
-            string cleaned = "visible reply";
+            string cleaned = F.Reply(currentSpeaker.AgentIndex);
+            F.SceneHistory.Add(new ConversationMessage { Role = "assistant", Content = cleaned, SpeakerAgentIndex = currentSpeaker.AgentIndex, SpeakerName = currentSpeaker.Name, TargetAgentIndex = primaryNpc.AgentIndex, EventSequence = F.SceneHistory.Count + 1 });
             var relayCandidatesForNextTurn = new List<NpcDataPacket>(); NpcDataPacket nextSpeaker = null;
             @@CANDIDATES@@
             F.CandidateSets.Add(relayCandidatesForNextTurn.Select(n => n.AgentIndex).ToArray());
+            if (relayPostprocessSelected) F.PostRuntimes.Add(BuildProductionRelayRuntime(firstTurn, remainingTurns, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, relayCandidatesForNextTurn));
             Task<ScenePostprocessOutcome> postprocessTask = F.Postprocess(currentSpeaker.AgentIndex, relayCandidatesForNextTurn);
             @@SELECTION@@
             @@TAIL@@
@@ -113,6 +162,7 @@ class Program {
     static int tests;
     static void Check(bool ok, string name) { if (!ok) throw new Exception("FAIL " + name); tests++; Console.WriteLine("PASS " + name); }
     static async Task Play() => await new Relay().Run();
+    static string Field(object value, string name) => (string)value.GetType().GetProperty(name).GetValue(value);
     static int Stops => F.Messages.Count(m => !m.StartsWith("thinking:"));
     static async Task Main() {
         F.Reset(); await Play();
@@ -161,6 +211,28 @@ class Program {
         Check(configuredGroup.Contains("明确告别") && configuredGroup.Contains("没有合适接话者") && configuredGroup.Contains("当前发言者自己的编号"), "configured prompt retains legal self-stop and unsuitable-audience boundary");
         AIConfigHandler.Rules = new() { new() { Tag="[RELAY:接力编号]", Description="custom", SingleFramedNpcDescription="single-custom" } };
         Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description == "custom" && Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description == "single-custom", "existing custom rules retained");
+        F.Reset(3, mode:"three"); await Play();
+        File.WriteAllText("three-turn-request-assembly.json", System.Text.Json.JsonSerializer.Serialize(new { speakers = F.Speakers, directPlayerResponse = F.DirectFlags, mainMessages = F.MainRequests, relayPostprocessRuntime = F.PostRuntimes, note = "Real production main callsite/history/role/assembly owners; detached NPC/network leaves. This is not a paid-provider or game acceptance." }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        Check(F.Speakers.SequenceEqual(new[] {17,27,37}), "three speakers run under the real continuation controller before voluntary self stop");
+        Check(F.DirectFlags.SequenceEqual(new[] {true,false,false}), "relayed turns retain first-turn-only direct action qualification");
+        Check(F.MainRequests.Count == 3 && F.PostRuntimes.Count == 3, "every executed turn builds actual main messages and independent relay runtime");
+        string firstMain = Field(F.MainRequests[0].Last(), "content"), secondMain = Field(F.MainRequests[1].Last(), "content"), thirdMain = Field(F.MainRequests[2].Last(), "content");
+        Check(!firstMain.Contains("玩家暂时没有插话"), "first response keeps direct reply semantics");
+        Check(secondMain.Contains("【本轮接力话题】") && secondMain.Contains(F.OriginInput) && secondMain.Contains("玩家暂时没有插话"), "second actual assembled request ends with original topic and continuation task");
+        Check(Field(F.MainRequests[1].Last(), "role") == "user" && secondMain.Contains("上一位发言者: npc0 | 接力编号: 17") && secondMain.Contains(F.Reply(17)), "second final user message identifies actual predecessor and contribution");
+        Check(F.MainRequests[1].Any(m => Field(m,"role") == "user" && Field(m,"content").Contains(F.Reply(17)) && !Field(m,"content").Contains("【本轮接力话题】")), "real history owner also preserves predecessor as overheard NPC speech");
+        Check(thirdMain.Contains("当前发言轮次: 3") && thirdMain.Contains("上一位发言者: npc1 | 接力编号: 27") && thirdMain.Contains(F.Reply(27)), "third actual request updates predecessor instead of copying first speaker");
+        Check(thirdMain.Contains("本轮已发言编号: 17, 27"), "third main request uses this-round spoken state before current speech");
+        Check(F.PostRuntimes[1].Contains(F.OriginInput) && F.PostRuntimes[1].Contains(F.Reply(17)) && F.PostRuntimes[1].Contains("本轮已发言编号: 17, 27"), "second post runtime retains topic and predecessor independently of latest player input");
+        Check(F.PostRuntimes[2].Contains("本轮已发言编号: 17, 27, 37") && F.PostRuntimes[2].Contains("[RELAY:37]"), "third post runtime includes accepted spoken state and preserves self-end protocol");
+        Check(F.PreflightRecords == 0 && F.SettingsReads == 0, "verbose false completely skips request recorder and settings lookup");
+        F.Reset(mode:"self"); F.Verbose = true; F.Settings.EnableTokenStatsLog = false; await Play();
+        Check(F.PreflightRecords == 0, "token log false completely skips recorder");
+        F.Reset(mode:"self"); F.Verbose = true; F.Settings = null; await Play();
+        Check(F.PreflightRecords == 0, "missing settings skip recorder");
+        F.Reset(mode:"self"); F.Verbose = true; await Play();
+        Check(F.PreflightRecords == 1 && F.PreflightMax == 5000 && F.PreflightMode == "scene_relay_turn_preflight", "opt-in records prepared request once with existing mode and max metadata");
+        Check(!F.PreflightBody.Contains(F.Settings.ApiKey), "request recorder arguments contain no provider credential");
         Console.WriteLine("PASS " + tests + " production relay boundary assertions; no live game or network");
     }
 }

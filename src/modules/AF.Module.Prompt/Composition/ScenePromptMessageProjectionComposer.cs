@@ -835,7 +835,7 @@ internal static string BuildAutoGroupChatReplyInstruction(string npcName, List<N
 		{
 			text2 = "周围的人";
 		}
-		return text + "现在正在和" + text2 + "继续聊天，玩家暂时没有插话。请只以" + text + "的身份，自然接续【当前场景公共对话与互动】里最新的内容，尽量不要附和别人，要像一个独立的人";
+		return text + "现在正在和" + text2 + "继续聊天，玩家暂时没有插话。请只以" + text + "的身份，接续上面的对话历史和【本轮接力话题】中上一位的发言，可以回应在场的人或补充自己的看法，不必重新向玩家回答同一个问题。可以认同、质疑或追问，但不要重复相同的问候、奉承或照抄别人的结论，也不要代替任何人说话。";
 	}
 internal static string NormalizeSceneHistoryLineForLoreQuery(string line)
 	{
