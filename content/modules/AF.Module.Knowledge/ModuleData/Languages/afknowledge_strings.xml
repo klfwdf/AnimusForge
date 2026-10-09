@@ -34,5 +34,115 @@
     <string id="AF_KNOWLEDGE_RagGenerated" text="[Knowledge] Generated and added {COUNT} RAG short texts." />
     <string id="AF_KNOWLEDGE_RagNoNew" text="[Knowledge] No new RAG short texts were generated; they may duplicate existing content." />
     <string id="AF_KNOWLEDGE_PrototypeDisabled" text="[Knowledge] Prototype sentences are disabled. Maintain keywords, RAG short texts and prompts directly." />
+
+    <string id="AF_KNOWLEDGE_EditorExisting" text="Edit existing knowledge" />
+    <string id="AF_KNOWLEDGE_EditorCreate" text="Create new knowledge" />
+    <string id="AF_KNOWLEDGE_EditorTitle" text="Knowledge editor" />
+    <string id="AF_KNOWLEDGE_ChooseAction" text="Choose an action:" />
+    <string id="AF_KNOWLEDGE_Enter" text="Enter" />
+    <string id="AF_KNOWLEDGE_Select" text="Select" />
+    <string id="AF_KNOWLEDGE_Continue" text="Continue" />
+    <string id="AF_KNOWLEDGE_Skip" text="Skip" />
+    <string id="AF_KNOWLEDGE_Delete" text="Delete" />
+    <string id="AF_KNOWLEDGE_Cancel" text="Cancel" />
+    <string id="AF_KNOWLEDGE_Search" text="Search" />
+    <string id="AF_KNOWLEDGE_PreviousPage" text="Previous page" />
+    <string id="AF_KNOWLEDGE_NextPage" text="Next page" />
+    <string id="AF_KNOWLEDGE_ClearSearch" text="Clear search" />
+    <string id="AF_KNOWLEDGE_Create" text="Create" />
+    <string id="AF_KNOWLEDGE_RuleListTitle" text="Edit existing knowledge ({COUNT} entries, page {PAGE}/{PAGES})" />
+    <string id="AF_KNOWLEDGE_RuleListEmptyTitle" text="Edit existing knowledge (0 entries)" />
+    <string id="AF_KNOWLEDGE_RuleListChoose" text="Choose a knowledge entry to edit:" />
+    <string id="AF_KNOWLEDGE_RuleListSearch" text="Current search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_RuleListNoMatches" text="No matches. Use &quot;Search&quot; or &quot;Create new knowledge&quot;." />
+    <string id="AF_KNOWLEDGE_BulkDeleteTitle" text="Bulk delete knowledge ({COUNT} entries, page {PAGE}/{PAGES})" />
+    <string id="AF_KNOWLEDGE_BulkDeleteEmptyTitle" text="Bulk delete knowledge (0 entries)" />
+    <string id="AF_KNOWLEDGE_BulkDeleteDescription" text="Select knowledge entries on the current page to delete them together.{QUERY}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_DeleteSelected" text="Delete selected" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgeTitle" text="Search knowledge" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgePrompt" text="Enter keywords or a RuleId (separate multiple terms with spaces):" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgeTitle" text="Create new knowledge" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgePrompt" text="Enter the first keyword for this knowledge entry. It becomes the entry ID and export filename, must be unique, and more keywords can be added later:" />
+    <string id="AF_KNOWLEDGE_RuleMenuTitle" text="Knowledge - {LABEL}" />
+    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="Keywords: {KEYWORDS}
+RAG short texts: {RAG}
+Prompts: {VARIANTS}
+Text mappings: {MAPPINGS}" />
+    <string id="AF_KNOWLEDGE_EditKeywords" text="Edit keywords" />
+    <string id="AF_KNOWLEDGE_EditRag" text="Edit RAG short texts" />
+    <string id="AF_KNOWLEDGE_GenerateRag" text="Generate RAG short texts" />
+    <string id="AF_KNOWLEDGE_EditVariants" text="Edit prompts (conditional variants)" />
+    <string id="AF_KNOWLEDGE_EditMappings" text="Edit text mappings" />
+    <string id="AF_KNOWLEDGE_DeleteKnowledge" text="Delete this knowledge" />
+    <string id="AF_KNOWLEDGE_AddMapping" text="Add text mapping" />
+    <string id="AF_KNOWLEDGE_MappingListDescription" text="Only mappings belonging to this knowledge entry are shown; other knowledge entries are unaffected." />
+    <string id="AF_KNOWLEDGE_MappingEditorTitle" text="Edit text mapping" />
+    <string id="AF_KNOWLEDGE_AddMappingTitle" text="Add text mapping" />
+    <string id="AF_KNOWLEDGE_AddMappingPrompt" text="Enter the source text to replace. When this knowledge is matched, it will be replaced with the selected dynamic value." />
+    <string id="AF_KNOWLEDGE_NextStep" text="Next" />
+    <string id="AF_KNOWLEDGE_EditSource" text="Edit source text" />
+    <string id="AF_KNOWLEDGE_EditTarget" text="Edit mapping target" />
+    <string id="AF_KNOWLEDGE_EditTrueText" text="Edit true-state text" />
+    <string id="AF_KNOWLEDGE_EditFalseText" text="Edit false-state text" />
+    <string id="AF_KNOWLEDGE_EditEmptyText" text="Edit empty-value text" />
+    <string id="AF_KNOWLEDGE_EditAgeRange" text="Edit age range" />
+    <string id="AF_KNOWLEDGE_DeleteMapping" text="Delete mapping" />
+    <string id="AF_KNOWLEDGE_EditSourcePrompt" text="Enter the new source text:" />
+    <string id="AF_KNOWLEDGE_TrueTextPrompt" text="When the status is true, use this text to replace the source. Leave empty to keep the source unchanged." />
+    <string id="AF_KNOWLEDGE_FalseTextPrompt" text="When the status is false, use this text to replace the source. Leave empty to keep the source unchanged." />
+    <string id="AF_KNOWLEDGE_EmptyTextPrompt" text="When this mapping has no value, use this text to replace the source. Leave empty to keep the source unchanged." />
+    <string id="AF_KNOWLEDGE_SetTrueTextTitle" text="Set true-state text" />
+    <string id="AF_KNOWLEDGE_SetFalseTextTitle" text="Set false-state text" />
+    <string id="AF_KNOWLEDGE_SetTrueTextPrompt" text="Enter the text to use when the status is true. Leave empty to keep the source unchanged." />
+    <string id="AF_KNOWLEDGE_SetFalseTextPrompt" text="Enter the text to use when the status is false. Leave empty to keep the source unchanged." />
+    <string id="AF_KNOWLEDGE_Finish" text="Finish" />
+    <string id="AF_KNOWLEDGE_MappingSearchTitle" text="Search mapping types" />
+    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="Enter keywords separated by spaces.
+Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuTitle" text="Who and what do you want to retrieve?" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuDescription" text="Choose a category, or search for a specific mapping. Status checks are supported as well. When there are many options, searching is faster." />
+    <string id="AF_KNOWLEDGE_MappingChooseTypeTitle" text="Choose mapping type" />
+    <string id="AF_KNOWLEDGE_MappingChooseType" text="Choose a mapping type." />
+    <string id="AF_KNOWLEDGE_MappingSearchResults" text="Enter keywords to search mapping types.
+Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated{QUERY}
+Matches: {COUNT}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_KeywordMenuTitle" text="Edit keywords" />
+    <string id="AF_KNOWLEDGE_KeywordMenuDescription" text="Enter one keyword at a time; it is added after confirmation." />
+    <string id="AF_KNOWLEDGE_AddKeyword" text="Add keyword (one at a time)" />
+    <string id="AF_KNOWLEDGE_RemoveKeyword" text="Remove keyword" />
+    <string id="AF_KNOWLEDGE_KeywordLabel" text="Keyword: {KEYWORD}" />
+    <string id="AF_KNOWLEDGE_AddKeywordTitle" text="Add keyword" />
+    <string id="AF_KNOWLEDGE_AddKeywordPrompt" text="Enter a keyword:" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordTitle" text="Remove keyword" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordPrompt" text="Choose a keyword to remove:" />
+    <string id="AF_KNOWLEDGE_AddRag" text="Add RAG short text (one at a time)" />
+    <string id="AF_KNOWLEDGE_RemoveRag" text="Remove RAG short text" />
+    <string id="AF_KNOWLEDGE_RagLabel" text="RAG short text: {TEXT}" />
+    <string id="AF_KNOWLEDGE_RagMenuTitle" text="Edit RAG short texts" />
+    <string id="AF_KNOWLEDGE_RagMenuDescription" text="Short texts used for knowledge retrieval and reranking. Write concise descriptions that match likely questions; do not copy the full prompt. Manual entries allow up to {MAX} characters, AI generation is limited to {GENERATED_MAX} characters, and max_tokens is {MAX_TOKENS}." />
+    <string id="AF_KNOWLEDGE_AddRagTitle" text="Add RAG short text" />
+    <string id="AF_KNOWLEDGE_AddRagPrompt" text="Enter one RAG short text (up to {MAX} characters):" />
+    <string id="AF_KNOWLEDGE_RemoveRagTitle" text="Remove RAG short text" />
+    <string id="AF_KNOWLEDGE_RemoveRagPrompt" text="Choose a RAG short text to remove:" />
+
+    <string id="AF_KNOWLEDGE_MapCategoryStatus" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpc" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayer" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryBound" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdom" text="" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlement" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryClan" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryHero" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryOther" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryStatusDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpcDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayerDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryBoundDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdomDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="" />
+    <string id="AF_KNOWLEDGE_SearchByKeywordId" text="Search (keyword/ID)" />
+    <string id="AF_KNOWLEDGE_BulkDelete" text="Bulk delete knowledge" />
   </strings>
 </base>

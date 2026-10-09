@@ -34,5 +34,115 @@
     <string id="AF_KNOWLEDGE_RagGenerated" text="[知识] 已生成并添加 {COUNT} 条 RAG专用短句。" />
     <string id="AF_KNOWLEDGE_RagNoNew" text="[知识] 未生成新的 RAG专用短句，可能与现有内容重复。" />
     <string id="AF_KNOWLEDGE_PrototypeDisabled" text="[知识] 原型句功能已停用。请直接维护“关键词 + RAG专用短句 + 提示词”。" />
+
+    <string id="AF_KNOWLEDGE_EditorExisting" text="编辑现有知识" />
+    <string id="AF_KNOWLEDGE_EditorCreate" text="创建新知识" />
+    <string id="AF_KNOWLEDGE_EditorTitle" text="知识编辑系统" />
+    <string id="AF_KNOWLEDGE_ChooseAction" text="请选择操作：" />
+    <string id="AF_KNOWLEDGE_Enter" text="进入" />
+    <string id="AF_KNOWLEDGE_Select" text="选择" />
+    <string id="AF_KNOWLEDGE_Continue" text="继续" />
+    <string id="AF_KNOWLEDGE_Skip" text="跳过" />
+    <string id="AF_KNOWLEDGE_Delete" text="删除" />
+    <string id="AF_KNOWLEDGE_Cancel" text="取消" />
+    <string id="AF_KNOWLEDGE_Search" text="搜索" />
+    <string id="AF_KNOWLEDGE_PreviousPage" text="上一页" />
+    <string id="AF_KNOWLEDGE_NextPage" text="下一页" />
+    <string id="AF_KNOWLEDGE_ClearSearch" text="清空搜索" />
+    <string id="AF_KNOWLEDGE_Create" text="创建" />
+    <string id="AF_KNOWLEDGE_RuleListTitle" text="编辑现有知识（{COUNT} 条，第 {PAGE}/{PAGES} 页）" />
+    <string id="AF_KNOWLEDGE_RuleListEmptyTitle" text="编辑现有知识（0 条）" />
+    <string id="AF_KNOWLEDGE_RuleListChoose" text="请选择要编辑的知识：" />
+    <string id="AF_KNOWLEDGE_RuleListSearch" text="当前搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_RuleListNoMatches" text="没有匹配项。可使用“搜索”或“创建新知识”。" />
+    <string id="AF_KNOWLEDGE_BulkDeleteTitle" text="批量删除知识（{COUNT} 条，第 {PAGE}/{PAGES} 页）" />
+    <string id="AF_KNOWLEDGE_BulkDeleteEmptyTitle" text="批量删除知识（0 条）" />
+    <string id="AF_KNOWLEDGE_BulkDeleteDescription" text="可多选当前页的知识后一起删除。{QUERY}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_DeleteSelected" text="删除选中" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgeTitle" text="搜索知识" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgePrompt" text="输入关键词或 RuleId（可用空格分隔多个词）：" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgeTitle" text="创建新知识" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgePrompt" text="请输入该知识的“第一个关键词”（将用于该知识条目的 ID 与导出文件命名，不可重复；后续仍可继续添加更多关键词）：" />
+    <string id="AF_KNOWLEDGE_RuleMenuTitle" text="知识 - {LABEL}" />
+    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="关键词：{KEYWORDS} 条
+RAG 专用短句：{RAG} 条
+提示词：{VARIANTS} 条
+词汇映射：{MAPPINGS} 条" />
+    <string id="AF_KNOWLEDGE_EditKeywords" text="编辑关键词" />
+    <string id="AF_KNOWLEDGE_EditRag" text="编辑 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_GenerateRag" text="一键生成 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_EditVariants" text="编辑提示词（条件组合）" />
+    <string id="AF_KNOWLEDGE_EditMappings" text="编辑词汇映射" />
+    <string id="AF_KNOWLEDGE_DeleteKnowledge" text="删除此知识" />
+    <string id="AF_KNOWLEDGE_AddMapping" text="新增词汇映射" />
+    <string id="AF_KNOWLEDGE_MappingListDescription" text="这里只会替换当前知识条目下的所有提示词内容，不会影响其他知识。" />
+    <string id="AF_KNOWLEDGE_MappingEditorTitle" text="词汇映射编辑" />
+    <string id="AF_KNOWLEDGE_AddMappingTitle" text="新增词汇映射" />
+    <string id="AF_KNOWLEDGE_AddMappingPrompt" text="请输入要被替换的原文本。命中这条知识后，会把它替换成你选择的动态对象值。" />
+    <string id="AF_KNOWLEDGE_NextStep" text="下一步" />
+    <string id="AF_KNOWLEDGE_EditSource" text="编辑原文本" />
+    <string id="AF_KNOWLEDGE_EditTarget" text="编辑映射目标" />
+    <string id="AF_KNOWLEDGE_EditTrueText" text="编辑状态为真文案" />
+    <string id="AF_KNOWLEDGE_EditFalseText" text="编辑状态为假文案" />
+    <string id="AF_KNOWLEDGE_EditEmptyText" text="编辑空值返回文案" />
+    <string id="AF_KNOWLEDGE_EditAgeRange" text="编辑年龄范围" />
+    <string id="AF_KNOWLEDGE_DeleteMapping" text="删除此映射" />
+    <string id="AF_KNOWLEDGE_EditSourcePrompt" text="请输入新的原文本：" />
+    <string id="AF_KNOWLEDGE_TrueTextPrompt" text="当状态判断结果为真时，使用这段文案替换原文本。留空表示真时不替换。" />
+    <string id="AF_KNOWLEDGE_FalseTextPrompt" text="当状态判断结果为假时，使用这段文案替换原文本。留空表示假时不替换。" />
+    <string id="AF_KNOWLEDGE_EmptyTextPrompt" text="当这条映射当前取不到值时，会改用这段文案替换原文本。留空表示空时保留原词。" />
+    <string id="AF_KNOWLEDGE_SetTrueTextTitle" text="设置状态为真文案" />
+    <string id="AF_KNOWLEDGE_SetFalseTextTitle" text="设置状态为假文案" />
+    <string id="AF_KNOWLEDGE_SetTrueTextPrompt" text="请输入当状态判断结果为真时要替换成的文本。留空表示真时不替换。" />
+    <string id="AF_KNOWLEDGE_SetFalseTextPrompt" text="请输入当状态判断结果为假时要替换成的文本。留空表示假时不替换。" />
+    <string id="AF_KNOWLEDGE_Finish" text="完成" />
+    <string id="AF_KNOWLEDGE_MappingSearchTitle" text="搜索映射类型" />
+    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="输入关键词，可用空格分隔多个词。
+例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuTitle" text="你想取谁的什么？" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuDescription" text="先选一个方向，或者直接搜索具体映射项。除了普通映射，现在也支持状态判断。组合很多时，优先用搜索会更快。" />
+    <string id="AF_KNOWLEDGE_MappingChooseTypeTitle" text="选择映射类型" />
+    <string id="AF_KNOWLEDGE_MappingChooseType" text="选择一个具体映射项。" />
+    <string id="AF_KNOWLEDGE_MappingSearchResults" text="输入关键词搜索具体映射项，可用空格分隔多个词。
+例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡{QUERY}
+匹配结果：{COUNT} 项{EMPTY}" />
+    <string id="AF_KNOWLEDGE_KeywordMenuTitle" text="编辑关键词" />
+    <string id="AF_KNOWLEDGE_KeywordMenuDescription" text="一次输入一个关键词，确定后会加入列表。" />
+    <string id="AF_KNOWLEDGE_AddKeyword" text="添加关键词（一次一个）" />
+    <string id="AF_KNOWLEDGE_RemoveKeyword" text="删除关键词" />
+    <string id="AF_KNOWLEDGE_KeywordLabel" text="关键词：{KEYWORD}" />
+    <string id="AF_KNOWLEDGE_AddKeywordTitle" text="添加关键词" />
+    <string id="AF_KNOWLEDGE_AddKeywordPrompt" text="请输入一个关键词：" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordTitle" text="删除关键词" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordPrompt" text="选择要删除的关键词：" />
+    <string id="AF_KNOWLEDGE_AddRag" text="添加 RAG 专用短句（一次一条）" />
+    <string id="AF_KNOWLEDGE_RemoveRag" text="删除 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RagLabel" text="RAG 短句：{TEXT}" />
+    <string id="AF_KNOWLEDGE_RagMenuTitle" text="编辑 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RagMenuDescription" text="用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；手动填写每条最多 {MAX} 字符，AI 自动生成会限制在 {GENERATED_MAX} 字符内，max_tokens 上限为 {MAX_TOKENS}。" />
+    <string id="AF_KNOWLEDGE_AddRagTitle" text="添加 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_AddRagPrompt" text="请输入一条 RAG 专用短句（最多 {MAX} 字符）：" />
+    <string id="AF_KNOWLEDGE_RemoveRagTitle" text="删除 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RemoveRagPrompt" text="选择要删除的 RAG 专用短句：" />
+    <string id="AF_KNOWLEDGE_SearchByKeywordId" text="搜索（按关键词/ID）" />
+    <string id="AF_KNOWLEDGE_BulkDelete" text="批量删除知识" />
+
+    <string id="AF_KNOWLEDGE_MapCategoryStatus" text="状态判断" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpc" text="当前 NPC 的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayer" text="玩家的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryBound" text="本知识绑定对象的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdom" text="王国的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlement" text="定居点的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryClan" text="家族的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryHero" text="英雄的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryOther" text="其他" />
+    <string id="AF_KNOWLEDGE_MapCategoryStatusDescription" text="这些映射会先判断一个状态，再根据结果输出你自己写的真/假文案；真文案和假文案里也可以继续写其他映射词。" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpcDescription" text="这些映射会自动从当前互动的 NPC 身上取值，你只需要决定要取它的哪一项信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayerDescription" text="这些映射会自动从玩家角色身上取值，你只需要决定要取玩家的哪一项信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryBoundDescription" text="这些映射会从当前知识条目的条件组合里唯一绑定的王国、定居点或英雄身上取值。" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdomDescription" text="先选一个王国，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="先选一个定居点，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="先选一个家族，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="先选一个英雄，再决定想取它的什么信息。" />
   </strings>
 </base>
