@@ -73,6 +73,7 @@ internal sealed class TtsEngine : IDisposable
 		public PlaybackRequest Request;
 		public CancellationTokenSource Cancellation;
 		public bool BypassEnabledCheck;
+		public Action<PlaybackRequest, string> TestFailure;
 		public bool Cancelled;
 		public bool TerminalPublished;
 		public bool HoldsQueueSlot;
@@ -304,7 +305,9 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	public void SpeakTestAsync(string text, float speed)
+	public void SpeakTestAsync(string text, float speed) => SpeakTestAsync(text, speed, null);
+
+	public bool SpeakTestAsync(string text, float speed, Action<PlaybackRequest, string> onFailure)
 	{
 		if (IsReady && !string.IsNullOrWhiteSpace(text))
 		{
@@ -314,13 +317,13 @@ internal sealed class TtsEngine : IDisposable
 				SpeakerId = 0,
 				Speed = ((speed > 0f) ? speed : 1f),
 				AgentIndex = -1,
-				BypassEnabledCheck = true
+				BypassEnabledCheck = true,
+				TestFailure = onFailure
 			};
-			if (!TryEnqueueJob(item, null))
-			{
-				Logger.Log("TtsEngine", "[WARN] TTS 队列已满，测试播放丢弃");
-			}
+			if (TryEnqueueJob(item, null)) { return true; }
+			Logger.Log("TtsEngine", "[WARN] 测试语音未入队（队列已满或引擎已停止）");
 		}
+		return false;
 	}
 
 	private bool TryEnqueueJob(TtsJob job, Action<PlaybackRequest> onAccepted)
@@ -635,7 +638,12 @@ internal sealed class TtsEngine : IDisposable
 	{
 		string text = string.IsNullOrWhiteSpace(reason) ? "TTS failed." : reason.Trim();
 		LogTtsReport("NotifyPlaybackFailed", job?.AgentIndex ?? -1, "reason=" + text);
-		PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestPlaybackFailed, handler => handler(job.Request, text), job.Request), () => InvokePlaybackSubscribers(OnPlaybackFailed, handler => handler(job.AgentIndex, text), job.Request), terminal: true);
+		PublishJobEvent(job, () =>
+		{
+			InvokePlaybackSubscribers(OnRequestPlaybackFailed, handler => handler(job.Request, text), job.Request);
+			// A settings test has no Scene owner; its own callback shares this request's terminal/cancel guard.
+			InvokePlaybackSubscribers(job.TestFailure, handler => handler(job.Request, text), job.Request);
+		}, () => InvokePlaybackSubscribers(OnPlaybackFailed, handler => handler(job.AgentIndex, text), job.Request), terminal: true);
 	}
 
 	private void NotifyPlaybackFinished(TtsJob job)

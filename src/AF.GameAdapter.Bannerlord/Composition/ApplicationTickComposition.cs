@@ -54,6 +54,7 @@ internal static class ApplicationTickComposition
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
 		AnimusForgeNativeConversationOverlay.OnApplicationTick();
 		AiErrorAnalysisInquiry.OnApplicationTick();
+		TtsTestFeedback.OnApplicationTick();
 		ShoutBehavior.OnApplicationTickForMainThreadActionsExternal();
 		NativeConversationAnswerAreaController.OnApplicationTick();
 		ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal();
@@ -97,6 +98,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AiErrorAnalysisInquiry.OnApplicationTick", () => AiErrorAnalysisInquiry.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.TtsTestFeedback.OnApplicationTick", () => TtsTestFeedback.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.ShoutBehavior.MainThreadActions.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForMainThreadActionsExternal());
 			RunWatchedTickPhase("SubModule.NativeConversationAnswerAreaController.OnApplicationTick", () => NativeConversationAnswerAreaController.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal());
