@@ -1935,5 +1935,63 @@ Estimated requests: " />
   <string id="AF_UI_Weekly_Editor_095" text="Weekly report" />
   <string id="AF_UI_Weekly_Editor_099" text="Save and exit" />
   <string id="AF_UI_Weekly_Editor_RelatedSeparator" text=", " />
+
+
+  <!-- Terminal behavior UI -->
+  <string id="AF_TERMINAL_UI_DailyHotkeyHint" text="Press {KEY} to open the AnimusForge terminal." />
+  <string id="AF_TERMINAL_UI_DailyMapIconHint" text="Click the terminal icon in the lower-left campaign map navigation bar to open the AnimusForge terminal." />
+  <string id="AF_TERMINAL_UI_OpenFailed" text="Failed to open the AnimusForge terminal." />
+  <string id="AF_TERMINAL_UI_CategoryAll" text="All" />
+  <string id="AF_TERMINAL_UI_CategoryDiplomacy" text="Diplomacy and state" />
+  <string id="AF_TERMINAL_UI_CategoryPrompts" text="Prompts and rules" />
+  <string id="AF_TERMINAL_UI_CategoryAiCore" text="AI core" />
+  <string id="AF_TERMINAL_UI_CategoryDuelTroops" text="Duel and troops" />
+  <string id="AF_TERMINAL_UI_CategoryCharacters" text="Characters and companions" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="Kingdom notices" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="Open the subpanel for notices and local policies." />
+  <string id="AF_TERMINAL_UI_Root_ComposeNotice" text="Compose kingdom notice" />
+  <string id="AF_TERMINAL_UI_Root_ComposeNotice_Hint" text="Continue to custom policy or diplomatic declaration." />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="Compose custom policy" />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy_Hint" text="Open the custom policy editor." />
+  <string id="AF_TERMINAL_UI_Root_DiplomaticDocument" text="Compose diplomatic declaration" />
+  <string id="AF_TERMINAL_UI_Root_DiplomaticDocument_Hint" text="Publish a diplomatic declaration." />
+  <string id="AF_TERMINAL_UI_Root_LocalPolicies" text="Local policies" />
+  <string id="AF_TERMINAL_UI_Root_LocalPolicies_Hint" text="Publish policies that affect only the player&#x27;s clan fiefs." />
+  <string id="AF_TERMINAL_UI_Root_Vassalage" text="Vassalage management" />
+  <string id="AF_TERMINAL_UI_Root_Vassalage_Hint" text="View existing vassal states; use LLM dialogue for termination, amendment, or annexation." />
+  <string id="AF_TERMINAL_UI_Root_KingdomNews" text="Kingdom news" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNews_Hint" text="View recent diplomatic declarations, policies, bulletins, and news from each kingdom." />
+  <string id="AF_TERMINAL_UI_Root_TagCatalog" text="Tag catalog" />
+  <string id="AF_TERMINAL_UI_Root_TagCatalog_Hint" text="View and refresh the body/postprocess tag index or export it to TXT." />
+  <string id="AF_TERMINAL_UI_Root_ReloadDatabase" text="Reload database" />
+  <string id="AF_TERMINAL_UI_Root_ReloadDatabase_Hint" text="Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices." />
+  <string id="AF_TERMINAL_UI_Root_ApiOnboarding" text="Run API setup again" />
+  <string id="AF_TERMINAL_UI_Root_ApiOnboarding_Hint" text="Select and test API configuration again." />
+  <string id="AF_TERMINAL_UI_Root_AnalyzeError" text="Analyze latest error" />
+  <string id="AF_TERMINAL_UI_Root_AnalyzeError_Hint" text="Use the preprocessing API to analyze the latest AnimusForge error in this campaign." />
+  <string id="AF_TERMINAL_UI_Root_SettlementEntryTroops" text="Settlement entry escort" />
+  <string id="AF_TERMINAL_UI_Root_SettlementEntryTroops_Hint" text="Configure companions and troops automatically brought into towns, castles, and villages by SETS." />
+  <string id="AF_TERMINAL_UI_Root_NoblePrisonerEscort" text="Noble prisoner escort" />
+  <string id="AF_TERMINAL_UI_Root_NoblePrisonerEscort_Hint" text="Configure hero prisoners brought into sieges, settlements, lord halls, and wilderness meetings." />
+  <string id="AF_TERMINAL_UI_Root_TroopInspection" text="Inspect troops" />
+  <string id="AF_TERMINAL_UI_Root_TroopInspection_Hint" text="Open the troop inspection flow." />
+  <string id="AF_TERMINAL_UI_Root_MilitaryExercise" text="Military exercise" />
+  <string id="AF_TERMINAL_UI_Root_MilitaryExercise_Hint" text="Open the military exercise flow." />
+  <string id="AF_TERMINAL_UI_Root_PlayerPersona" text="Edit player appearance and background" />
+  <string id="AF_TERMINAL_UI_Root_PlayerPersona_Hint" text="Edit the player&#x27;s RP appearance and background." />
+  <string id="AF_TERMINAL_UI_Root_PlayerRpForge" text="Craft RP item" />
+  <string id="AF_TERMINAL_UI_Root_PlayerRpForge_Hint" text="Spend denars to craft a personal RP item or weapon/equipment." />
+  <string id="AF_TERMINAL_UI_Root_TrustQuery" text="Trust query" />
+  <string id="AF_TERMINAL_UI_Root_TrustQuery_Hint" text="Query trust sources for heroes, settlements, and merchants." />
+  <string id="AF_TERMINAL_UI_DiagnosticsOnline" text="Sentinel status: online" />
+  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="Latest error: {TITLE}\n{DETAIL}" />
+  <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="No fatal error stack has been recorded in this campaign." />
+  <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="Failed to open the diplomatic declaration editor." />
+  <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="Unable to open the database reload flow." />
+  <string id="AF_TERMINAL_UI_ApiOnboardingFailed" text="Unable to open API setup." />
+  <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="Unable to open the player appearance and background editor: the Knowledge behavior is not initialized." />
+  <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="Returned to player appearance and background settings." />
+  <string id="AF_TERMINAL_UI_PlayerPersonaOpenFailed" text="Failed to open the player appearance and background editor." />
 </strings>
 </base>
+
