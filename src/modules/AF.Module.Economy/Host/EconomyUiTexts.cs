@@ -24,6 +24,13 @@ internal static class EconomyUiTexts
 		return text.ToString();
 	}
 
+	/// <summary>
+	/// Shared resolution entry for other presentation helpers in this module so
+	/// that every player-visible string goes through the same keyed pipeline.
+	/// </summary>
+	internal static string Localized(string id, string fallback, params (string Name, object Value)[] variables)
+		=> Text(id, fallback, variables);
+
 	public static string CompanionReturnedToClan(string hero, string clan)
 		=> Text("AF_ECO_UI_CompanionReturnedClan", "[Companion departed] {HERO} returned to {CLAN}.", ("HERO", hero), ("CLAN", clan));
 
@@ -620,11 +627,16 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_KingdomTransferJoinFailed", "The player's clan failed to join {KINGDOM}; the crown was not transferred.", ("KINGDOM", mJoinFailed.Groups[1].Value));
 		}
 
-		Match mSuccess = Regex.Match(value, @"^执行成功：(.+) 已将 (.+) 的王位让给(.+)，(.+) 成为新的执政家族.*。$");
+		// The producer appends an optional transition summary after the ruling
+		// clan sentence, so the tail must be captured rather than swallowed by a
+		// greedy ".*": dropping it would hide old-kingdom repair, dissolution and
+		// election details from the player.
+		Match mSuccess = Regex.Match(value, @"^执行成功：(.+) 已将 (.+) 的王位让给(.+)，(.+) 成为新的执政家族(?<tail>[\s\S]*)。$");
 		if (mSuccess.Success)
 		{
-			return Text("AF_ECO_UI_KingdomTransferSuccess", "{GIVER} has abdicated the throne of {KINGDOM} to {PLAYER}; {CLAN} is now the ruling clan.",
+			string rulingClanText = Text("AF_ECO_UI_KingdomTransferSuccess", "{GIVER} has abdicated the throne of {KINGDOM} to {PLAYER}; {CLAN} is now the ruling clan.",
 				("GIVER", mSuccess.Groups[1].Value), ("KINGDOM", mSuccess.Groups[2].Value), ("PLAYER", mSuccess.Groups[3].Value), ("CLAN", mSuccess.Groups[4].Value));
+			return rulingClanText + EconomyRecruitmentDetailTexts.Describe(mSuccess.Groups["tail"].Value);
 		}
 
 		const string exPrefix = "执行失败（异常）：";
@@ -692,6 +704,60 @@ internal static class EconomyUiTexts
 		{
 			return Text("AF_ECO_UI_FactionOnlyKingGrantsVassalage", "Only the king of the target kingdom can grant official vassalage.");
 		}
+		if (string.Equals(value, "执行失败：未找到玩家家族。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionPlayerClanNotFound", "The player's clan could not be found.");
+		}
+
+		// The leave-authorization failure embeds both the partner's kingdom and the
+		// kingdom the player is being asked to leave; both must survive projection.
+		const string leaveMismatchPrefix = "执行失败：当前对话对象属于 ";
+		if (value.StartsWith(leaveMismatchPrefix, StringComparison.Ordinal))
+		{
+			Match mLeaveMismatch = Regex.Match(value, @"^执行失败：当前对话对象属于 (.+?)，不能代表 (.+?) 批准玩家退出当前效力。$");
+			if (mLeaveMismatch.Success)
+			{
+				return Text("AF_ECO_UI_FactionLeavePartyMismatch",
+					"The conversation partner belongs to {PARTY} and cannot approve on behalf of {KINGDOM} the player's departure from the current service.",
+					("PARTY", mLeaveMismatch.Groups[1].Value), ("KINGDOM", mLeaveMismatch.Groups[2].Value));
+			}
+		}
+
+		// These three failures embed a raw id/token produced by the caller rather
+		// than a localized name, so the token is passed through as-is.
+		Match mTargetKingdomIdInvalid = Regex.Match(value, @"^执行失败：目标王国ID无效（(.+)）。$");
+		if (mTargetKingdomIdInvalid.Success)
+		{
+			return Text("AF_ECO_UI_FactionTargetKingdomIdInvalid", "The target kingdom id is invalid ({TOKEN}).",
+				("TOKEN", mTargetKingdomIdInvalid.Groups[1].Value));
+		}
+
+		Match mTargetFactionInvalid = Regex.Match(value, @"^执行失败：目标势力无效（(.+)）。$");
+		if (mTargetFactionInvalid.Success)
+		{
+			return Text("AF_ECO_UI_FactionTargetFactionInvalid", "The target faction is invalid ({TOKEN}).",
+				("TOKEN", mTargetFactionInvalid.Groups[1].Value));
+		}
+
+		const string unknownServicePrefix = "执行失败：未知势力效力类型 ";
+		if (value.StartsWith(unknownServicePrefix, StringComparison.Ordinal))
+		{
+			string serviceType = value.Substring(unknownServicePrefix.Length).TrimEnd('。');
+			if (serviceType.Length > 0)
+			{
+				return Text("AF_ECO_UI_FactionUnknownServiceType", "Unknown faction service type {SERVICE_TYPE}.",
+					("SERVICE_TYPE", serviceType));
+			}
+		}
+
+		// The clan-leader branch wraps an arbitrary exception message; it must be
+		// recognized before the generic clan-join failure pattern can claim it.
+		const string clanLeaderExceptionPrefix = "执行失败（族长归附异常）：";
+		if (value.StartsWith(clanLeaderExceptionPrefix, StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionClanLeaderException", "Clan leader allegiance failed with an error: {ERROR}",
+				("ERROR", value.Substring(clanLeaderExceptionPrefix.Length)));
+		}
 
 		Match mSkipPledge = Regex.Match(value, @"^执行跳过：(.+) 已经效力于 (.+?)[。]?$");
 		if (mSkipPledge.Success)
@@ -711,22 +777,30 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FactionClanJoinFailed", "{CLAN} failed to join {KINGDOM}.", ("CLAN", mClanJoinFail.Groups[1].Value), ("KINGDOM", mClanJoinFail.Groups[2].Value));
 		}
 
-		Match mMercToLord = Regex.Match(value, @"^执行成功：(.+) 已结束旧雇佣关系，并作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		// Each of the following producers appends two independent optional detail
+		// blocks after the "（KingdomId=…）" marker: a carried-fief summary and a
+		// transition summary.  Both are captured into "tail" and re-rendered by
+		// EconomyRecruitmentDetailTexts, which returns anything it does not
+		// recognise verbatim, so no detail is silently dropped.
+		Match mMercToLord = Regex.Match(value, @"^执行成功：(.+) 已结束旧雇佣关系，并作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
 		if (mMercToLord.Success)
 		{
-			return Text("AF_ECO_UI_FactionMercToLordSuccess", "{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord.", ("CLAN", mMercToLord.Groups[1].Value), ("KINGDOM", mMercToLord.Groups[2].Value));
+			return Text("AF_ECO_UI_FactionMercToLordSuccess", "{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord.", ("CLAN", mMercToLord.Groups[1].Value), ("KINGDOM", mMercToLord.Groups[2].Value))
+				+ EconomyRecruitmentDetailTexts.Describe(mMercToLord.Groups["tail"].Value);
 		}
 
-		Match mDefectToLord = Regex.Match(value, @"^执行成功：(.+) 已脱离 (.+?)，并作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		Match mDefectToLord = Regex.Match(value, @"^执行成功：(.+) 已脱离 (.+?)，并作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
 		if (mDefectToLord.Success)
 		{
-			return Text("AF_ECO_UI_FactionDefectToLordSuccess", "{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord.", ("CLAN", mDefectToLord.Groups[1].Value), ("OLD_KINGDOM", mDefectToLord.Groups[2].Value), ("KINGDOM", mDefectToLord.Groups[3].Value));
+			return Text("AF_ECO_UI_FactionDefectToLordSuccess", "{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord.", ("CLAN", mDefectToLord.Groups[1].Value), ("OLD_KINGDOM", mDefectToLord.Groups[2].Value), ("KINGDOM", mDefectToLord.Groups[3].Value))
+				+ EconomyRecruitmentDetailTexts.Describe(mDefectToLord.Groups["tail"].Value);
 		}
 
-		Match mJoinAsLord = Regex.Match(value, @"^执行成功：(.+) 已作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		Match mJoinAsLord = Regex.Match(value, @"^执行成功：(.+) 已作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
 		if (mJoinAsLord.Success)
 		{
-			return Text("AF_ECO_UI_FactionJoinAsLordSuccess", "{CLAN} joined {KINGDOM} as a lord.", ("CLAN", mJoinAsLord.Groups[1].Value), ("KINGDOM", mJoinAsLord.Groups[2].Value));
+			return Text("AF_ECO_UI_FactionJoinAsLordSuccess", "{CLAN} joined {KINGDOM} as a lord.", ("CLAN", mJoinAsLord.Groups[1].Value), ("KINGDOM", mJoinAsLord.Groups[2].Value))
+				+ EconomyRecruitmentDetailTexts.Describe(mJoinAsLord.Groups["tail"].Value);
 		}
 
 		Match mEndMerc = Regex.Match(value, @"^执行成功：玩家已结束与 (.+) 的雇佣兵契约。$");
@@ -741,10 +815,11 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FactionPlayerLeaveVassalSuccess", "The player left {KINGDOM} and is no longer an official vassal.", ("KINGDOM", mLeaveVassal.Groups[1].Value));
 		}
 
-		Match mJoinMerc = Regex.Match(value, @"^执行成功：玩家已作为雇佣兵加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		Match mJoinMerc = Regex.Match(value, @"^执行成功：玩家已作为雇佣兵加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
 		if (mJoinMerc.Success)
 		{
-			return Text("AF_ECO_UI_FactionPlayerJoinMercSuccess", "The player joined {KINGDOM} as a mercenary.", ("KINGDOM", mJoinMerc.Groups[1].Value));
+			return Text("AF_ECO_UI_FactionPlayerJoinMercSuccess", "The player joined {KINGDOM} as a mercenary.", ("KINGDOM", mJoinMerc.Groups[1].Value))
+				+ EconomyRecruitmentDetailTexts.Describe(mJoinMerc.Groups["tail"].Value);
 		}
 
 		Match mAlreadyVassal = Regex.Match(value, @"^执行跳过：玩家已是 (.+) 的正式封臣。$");
@@ -759,10 +834,11 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FactionPlayerFailVassal", "The player failed to become an official vassal of {KINGDOM}.", ("KINGDOM", mFailVassal.Groups[1].Value));
 		}
 
-		Match mJoinVassal = Regex.Match(value, @"^执行成功：玩家已加入 (.+?) 成为正式封臣(?:（KingdomId=.*）.*|。)$");
+		Match mJoinVassal = Regex.Match(value, @"^执行成功：玩家已加入 ([^（]+) 成为正式封臣（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
 		if (mJoinVassal.Success)
 		{
-			return Text("AF_ECO_UI_FactionPlayerJoinVassalSuccess", "The player joined {KINGDOM} as an official vassal.", ("KINGDOM", mJoinVassal.Groups[1].Value));
+			return Text("AF_ECO_UI_FactionPlayerJoinVassalSuccess", "The player joined {KINGDOM} as an official vassal.", ("KINGDOM", mJoinVassal.Groups[1].Value))
+				+ EconomyRecruitmentDetailTexts.Describe(mJoinVassal.Groups["tail"].Value);
 		}
 
 		const string exPrefix = "执行失败（异常）：";
