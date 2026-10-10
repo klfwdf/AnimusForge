@@ -155,3 +155,13 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - DiplomacyCommonContractLocalizationTests：4资源、完整设置源码不变、单一主机接线、原中文组合/自定义保留模拟PASS。LegacySettingsPromptContractTests117、LocalizationResourceContractTests29对PASS；既有1.3/1.4 DLL各5108资源解析及6JSON字面括号解析PASS。新C#产品编译/调用回放/游戏/旧档未运行。
 - Jev work/localization-decisions-20261011-03先offline后一次3题，全部preserved；共同契约0.92、guard0.95、默认偏好0.73触发needs_review。人工复核默认偏好的强弱应对、尊严、多国交战求盟、生存优先与长期战略顺序保持。2136输入/136输出，返回cost0.0012816，底层版本未固定；不当作编译或实机证据。
 - 未覆盖：WorldDiplomacyPromptContractRules固定MODE合同仍含中文与中文字符要求；外部政策/战争/历史事实仍可能中文。此片实际增加共同前缀的双语覆盖，未声称源码中文净减少或整个外交链路英文完成。回滚使用本片精确提交的focused inverse；未推送、部署或打包。
+
+## 包内提示词选版与共享双语界面（2026-10-11）
+
+- 用户明确CN/EN差异应为提示词/世界书选版，并追问中文输入、输出限制、编码和标签。源码中文运行时文本必须移出而非Unicode转义隐藏；UTF-8资源允许中文；机器标签/JSON字段/稳定ID/存档键不翻译，中文历史识别语料保留原字节。包内资料语言与模型输出语言不是同一个开关。
+- 外交216对资源从afdip_ui_strings移到ModuleData/DiplomacyPromptTexts.json及平行.en.json，content-map只登记同一个目标。原XML提示词条目移除，普通UI未变。实际PromptWorld及共同契约转接DiplomacyPromptTexts.Get，首次读取包内JSON后缓存；不读UI语言/不走TextObject，因此JSON花括号保留原字符，去掉过渡括号标记。缺键用已有英文fallback，文件读取不吞异常、不新增通用框架。
+- 源代码/英文fallback、中文原文、协议字段与JSON样例迁移通过；新DiplomacyPackagedPromptContractTests验证216对精确迁移、唯一目标、实际消费者不再依赖UI。原Composer与CommonContract契约更新读取权威JSON后PASS；C#PromptWorldFixture改为嵌入该JSON，旧中文断言保留，但C#未编译运行。
+- package_localization.ps1不再删除EN包CNs。只对内容映射和language_data显式注册的语言文件作为共享UI保留（不是任意目录豁免）；其他缺失英文内容/中文源码/嵌入资源门禁没有全盘放宽。LocalizedPackageContractTests新增ProjectionOnly入口，35项映射/schema/双语UI字节/双版本DLL同字节/输入未改变检查PASS，无ZIP、产品Stage或编译。真实外交JSON的现有英文资源选择函数与216项契约单独PASS。首次手工调用缺少content_layout函数依赖，补齐加载并以Stop模式重跑通过，不采用报错后的假PASS输出。
+- 全语言资源29对、Package D（外交1061对/王国114对）和BattleSpeech131项静态/模拟PASS。按用户输出语言澄清，撤去本会话新增的两处英文演讲强制措辞；原中文演讲强制简体中文仍存在，未伪称历史上没有语言要求。固定MODE新英文草稿也不再新增强制英文回复。
+- C计划已附加包内选版/UTF-8/协议原值要求，未冒称向未知外部会话发送。C正在修改的IssueDisplayTexts和其他作者dirty未纳入提交。
+- 未验证/未完成：新C#实际加载、产品1.3/1.4编译/回放、游戏/旧档、正式双ZIP均未跑；场景演讲等其他Prompt仍有旧UI选语言路径；固定MODE合同、世界书全覆盖和具名嵌入资源门禁仍待落实。此片不是全模组验收。回滚用本片精确提交focused inverse。

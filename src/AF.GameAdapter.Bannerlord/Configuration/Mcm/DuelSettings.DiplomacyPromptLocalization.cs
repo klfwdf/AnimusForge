@@ -22,14 +22,14 @@ public partial class DuelSettings
     // contract API retain their established bytes; custom preference text is opaque.
     internal static string LocalizeWorldDiplomacyContractForPrompt(string contract)
     {
-        string core = DiplomacyUiLocalization.Text("AF_DIP_Prompt_CommonCore", EnglishWorldDiplomacyContractCore);
+        string core = DiplomacyPromptTexts.Get("AF_DIP_Prompt_CommonCore", EnglishWorldDiplomacyContractCore);
         if (string.Equals(contract, DefaultWorldDiplomacyContractCore, StringComparison.Ordinal)) return core;
         if (!TryExtractWorldDiplomacyPreference(contract, out string preference)) return contract;
         if (string.Equals(preference, DefaultWorldDiplomacyPreference, StringComparison.Ordinal))
-            preference = DiplomacyUiLocalization.Text("AF_DIP_Prompt_DefaultPreference", EnglishWorldDiplomacyPreference);
+            preference = DiplomacyPromptTexts.Get("AF_DIP_Prompt_DefaultPreference", EnglishWorldDiplomacyPreference);
         return core + "\n"
-            + DiplomacyUiLocalization.Text("AF_DIP_Prompt_PreferenceSection", "[Player-defined AI diplomacy preferences]") + "\n"
+            + DiplomacyPromptTexts.Get("AF_DIP_Prompt_PreferenceSection", "[Player-defined AI diplomacy preferences]") + "\n"
             + preference + "\n"
-            + DiplomacyUiLocalization.Text("AF_DIP_Prompt_PreferenceGuard", EnglishWorldDiplomacyPreferenceGuard);
+            + DiplomacyPromptTexts.Get("AF_DIP_Prompt_PreferenceGuard", EnglishWorldDiplomacyPreferenceGuard);
     }
 }

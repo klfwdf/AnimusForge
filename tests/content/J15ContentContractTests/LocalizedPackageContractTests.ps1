@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$ProjectRoot,
-    [Parameter(Mandatory = $true)][string]$RunRoot
+    [Parameter(Mandatory = $true)][string]$RunRoot,
+    [switch]$ProjectionOnly
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $ProjectRoot 'scripts/build/content_layout.ps1')
@@ -72,13 +73,21 @@ $en = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $sta
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt", "LostContract":true}'
 Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'English schema drift must fail closed.' 'JSON field set changed:'
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
-Check ($cn.Count -eq $en.Count + 2) 'EN must remove the complete CN language branch.'
+Check ($cn.Count -eq $en.Count) 'CN and EN must retain the same registered bilingual UI files.'
+foreach ($target in @('ModuleData/Languages/CNs/zh.xml', 'ModuleData/Languages/CNs/language_data.xml')) {
+    Check (@($en | Where-Object Target -eq $target)[0].Hash -eq @($cn | Where-Object Target -eq $target)[0].Hash) "Both editions retain identical UI bytes: $target"
+}
 Check (@($en | Where-Object { $_.Target -match '\.en(?:-US)?\.json$' }).Count -eq 0) 'Parallel English filenames must not leak into the package.'
 Check (@($en | Where-Object { $_.Target -eq $entries[5].target }).Count -eq 1) 'Worldbook original filename and directory must remain intact.'
 Check (@($en | Where-Object { $_.Target -eq 'ModuleData/Prompt.json' })[0].SourcePath.EndsWith('Prompt.en.json')) 'English body must replace the original JSON filename.'
 foreach ($api in @('1.3', '1.4')) {
     $target = "bin/Win64_Shipping_Client/versions/$api/AnimusForge.dll"
     Check (@($en | Where-Object Target -eq $target)[0].Hash -eq @($cn | Where-Object Target -eq $target)[0].Hash) "CN and EN must share API $api bytes."
+}
+if ($ProjectionOnly) {
+    foreach ($path in $snapshots.Keys) { Check ((Get-FileHash -LiteralPath $path).Hash -eq $snapshots[$path]) "Projection preserves source/fixture bytes: $path" }
+    Write-Output "PASS localized projection checks=$checks; shared bilingual UI, translated assets and identical implementation bytes; no ZIP or compilation"
+    return
 }
 foreach ($language in @('CN', 'EN')) {
     $plan = if ($language -eq 'CN') { $cn } else { $en }

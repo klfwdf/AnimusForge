@@ -125,14 +125,24 @@ function Get-AnimusForgePackageProjection {
     $layout = @(Get-AnimusForgeContentLayout -ProjectRoot $ProjectRoot)
     $byTarget = @{}
     foreach ($entry in $layout) { $byTarget[$entry.Target] = $entry }
+    # Both editions retain the registered bilingual interface. Only package
+    # prompt/worldbook assets select an English counterpart below.
+    $sharedLocalizationTargets = @{}
+    foreach ($entry in $layout | Where-Object { $_.Target -match '^ModuleData/Languages/(?:CNs/)?language_data\.xml$' }) {
+        $sharedLocalizationTargets[$entry.Target] = $true
+        [xml]$registration = Get-Content -LiteralPath $entry.SourcePath -Raw -Encoding UTF8
+        foreach ($languageFile in $registration.LanguageData.LanguageFile) {
+            $target = 'ModuleData/Languages/' + [string]$languageFile.xml_path
+            if (-not $byTarget.ContainsKey($target)) { throw "Registered localization is not mapped: $target" }
+            $sharedLocalizationTargets[$target] = $true
+        }
+    }
     $worldbook = Get-AnimusForgeWorldbookEnglishIndex -ProjectRoot $ProjectRoot
     $stage = (Get-AnimusForgeContentFullPath -Path $StageModuleDir).TrimEnd('\', '/')
     $projection = [Collections.Generic.List[object]]::new()
     $failures = [Collections.Generic.List[string]]::new()
     foreach ($file in Get-ChildItem -LiteralPath $stage -Recurse -File -Force | Sort-Object FullName) {
         $relative = $file.FullName.Substring($stage.Length).TrimStart('\', '/').Replace('\', '/')
-        # Remove the entire Chinese registration branch, including language_data.xml.
-        if ($Language -eq 'EN' -and $relative.StartsWith('ModuleData/Languages/CNs/', [StringComparison]::OrdinalIgnoreCase)) { continue }
         $source = $file.FullName
         $bytes = $null
         if ($relative -ceq 'SubModule.xml') {
@@ -147,7 +157,7 @@ function Get-AnimusForgePackageProjection {
             }
             catch { $failures.Add("JSON contract failed: $relative ($($_.Exception.Message))"); continue }
         }
-        if ($Language -eq 'EN' -and $relative -match '\.(json|xml|txt|md|csv|yml|yaml)$') {
+        if ($Language -eq 'EN' -and -not $sharedLocalizationTargets.ContainsKey($relative) -and $relative -match '\.(json|xml|txt|md|csv|yml|yaml)$') {
             $text = if ($null -ne $bytes) { [Text.Encoding]::UTF8.GetString($bytes) } else { [IO.File]::ReadAllText($source, [Text.Encoding]::UTF8) }
             if (Test-AnimusForgeChineseText -Text $text) {
                 $failures.Add("Chinese text remains or English asset is missing: $relative")
