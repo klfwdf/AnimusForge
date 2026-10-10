@@ -765,7 +765,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     try
                     {
                         source.EnsureCurrent(System.Threading.CancellationToken.None);
-                        const string probeNote = "【独立场景试采预览】从附近30米的静态副本采集前后左右上下六个90度方向，投影为360×180度全景。中央为前方，左右边缘在后方相接，顶部/底部是上方/下方。展开拉伸不是建筑变形；人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。";
+                        string probeNote = IllustratorUiText.SceneProbeNote;
                         if (imageBytes == null || imageBytes.Length == 0 || !PublishImage(null, imageBytes, probeNote))
                         {
                             SetSceneProbeFailure(IllustratorUiText.SceneProbeDisplayFailed);

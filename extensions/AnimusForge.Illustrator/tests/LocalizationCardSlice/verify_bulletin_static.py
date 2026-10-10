@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+from verify_gallery_defaults_static import restore_probe_catalog
 
 ROOT = Path(__file__).resolve().parents[4]
 PREFIX = "extensions/AnimusForge.Illustrator/src/"
@@ -52,7 +53,7 @@ def restore_catalog(source):
     assert len(lines) == 11, len(lines)
     for line in lines:
         source = source.replace(line, "", 1)
-    return source
+    return restore_probe_catalog(source)
 
 
 def main():

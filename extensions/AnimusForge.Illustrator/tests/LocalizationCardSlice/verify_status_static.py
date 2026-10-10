@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 from verify_bulletin_static import restore_catalog as restore_bulletin_catalog
+from verify_gallery_defaults_static import restore_probe
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
@@ -26,7 +27,7 @@ edits = [
     ('+ " · " + direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing', '+ " · " + IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing'),
 ]
 def restore_popup(source):
-    restored = source
+    restored = restore_probe(source)
     for before, after in edits:
         assert restored.count(after) == baseline.count(before) > 0, after
         restored = restored.replace(after, before)

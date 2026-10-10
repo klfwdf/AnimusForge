@@ -26,14 +26,14 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         internal static string BuildIntroduction(CachedIllustrationItem item)
         {
-            var text = new StringBuilder("这是一幅名为" + ItemName(item) + "的画作。\n");
+            var text = new StringBuilder(IllustratorRemainingUiText.GalleryIntroductionName(DisplayItemName(item))).Append('\n');
             string theme = Clean(item?.Theme, 600);
             string action = Clean(item?.ActionSummary, 900);
-            if (theme.Length > 0) text.Append("画面主题：").Append(theme).Append('\n');
-            if (action.Length > 0) text.Append("画面描绘：").Append(action).Append('\n');
+            if (theme.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionTheme(theme)).Append('\n');
+            if (action.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionAction(action)).Append('\n');
             if (theme.Length == 0 && action.Length == 0)
-                text.Append("画面内容尚未注明。\n");
-            text.Append("画中的内容属于艺术描绘，不代表其中的事件已经真实发生。");
+                text.Append(IllustratorRemainingUiText.GalleryIntroductionUnannotated).Append('\n');
+            text.Append(IllustratorRemainingUiText.GalleryIntroductionFiction);
             return text.ToString();
         }
 
@@ -98,7 +98,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             return added > 0;
         }
 
-        private static string DisplayItemName(CachedIllustrationItem item)
+        internal static string DisplayItemName(CachedIllustrationItem item)
         {
             string title = AnimusForgeTextInputSanitizer.SanitizeSingleLine(item?.Title ?? "", 100).Trim();
             return IllustratorRemainingUiText.GalleryConversionItemName(title.Length == 0 ? IllustratorRemainingUiText.GalleryConversionDefaultTitle : title);
