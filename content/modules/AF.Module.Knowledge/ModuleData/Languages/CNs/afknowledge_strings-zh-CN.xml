@@ -3,7 +3,7 @@
   <tags><tag language="简体中文" /></tags>
   <strings>
     <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="条件重复" />
-    <string id="AF_KNOWLEDGE_DuplicateCondition" text="不允许存在多个条件完全相同的提示词。\n\n重复对象：{ITEM} 条提示词\n\n重复条件：\n{CONDITION}" />
+    <string id="AF_KNOWLEDGE_DuplicateCondition" text="不允许存在多个条件完全相同的提示词。&#10;&#10;重复对象：{ITEM} 条提示词&#10;&#10;重复条件：&#10;{CONDITION}" />
     <string id="AF_KNOWLEDGE_Back" text="返回" />
     <string id="AF_KNOWLEDGE_PlayerPersonaCreateFailed" text="打开玩家角色介绍失败：无法创建知识条目。" />
     <string id="AF_KNOWLEDGE_PlayerAppearanceCreateFailed" text="打开玩家外貌与背景编辑器失败：无法创建知识条目。" />
@@ -19,11 +19,11 @@
     <string id="AF_KNOWLEDGE_BulkActionsCannotMix" text="批量删除页里，操作按钮不能和知识条目一起多选。" />
     <string id="AF_KNOWLEDGE_NoRulesSelected" text="没有选中可删除的知识。" />
     <string id="AF_KNOWLEDGE_ConfirmBulkDeleteTitle" text="确认批量删除" />
-    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="将要删除以下知识：\n\n{PREVIEW}\n\n共 {COUNT} 条。此操作不可撤销。" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="将要删除以下知识：&#10;&#10;{PREVIEW}&#10;&#10;共 {COUNT} 条。此操作不可撤销。" />
     <string id="AF_KNOWLEDGE_ConfirmDelete" text="确认删除" />
     <string id="AF_KNOWLEDGE_Deleted" text="已删除知识 {COUNT} 条。" />
     <string id="AF_KNOWLEDGE_AgeRangeTitle" text="设置年龄范围" />
-    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="请输入年龄范围，格式为 最小-最大。\n例如：18-35\n当前值：{MIN}-{MAX}" />
+    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="请输入年龄范围，格式为 最小-最大。&#10;例如：18-35&#10;当前值：{MIN}-{MAX}" />
     <string id="AF_KNOWLEDGE_InvalidAgeRange" text="请输入合法范围，例如 18-35。" />
     <string id="AF_KNOWLEDGE_Confirm" text="确定" />
     <string id="AF_KNOWLEDGE_KeywordInRuleAlreadyExists" text="添加失败：该关键词已存在于本知识条目中。" />
@@ -147,7 +147,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_NoValue" text="（无）" />
     <string id="AF_KNOWLEDGE_PlayerNameConflictStatus" text="（当前未能写入，因为与其他知识条目冲突）" />
     <string id="AF_KNOWLEDGE_PlayerKeywordSetupTitle" text="玩家称呼设置" />
-    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="欢迎游玩 AnimusForge！你可以在此界面为角色添加额外称呼；如果不需要，可以继续填写外貌与背景信息。\n\n角色姓名：{NAME}{CONFLICT}\n额外称呼：{OPTIONAL}" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="欢迎游玩 AnimusForge！你可以在此界面为角色添加额外称呼；如果不需要，可以继续填写外貌与背景信息。&#10;&#10;角色姓名：{NAME}{CONFLICT}&#10;额外称呼：{OPTIONAL}" />
     <string id="AF_KNOWLEDGE_AddOptionalName" text="添加额外称呼" />
     <string id="AF_KNOWLEDGE_RemoveOptionalName" text="删除额外称呼" />
     <string id="AF_KNOWLEDGE_OpenAppearanceBackground" text="编写外貌与背景" />
@@ -162,7 +162,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail" text="保存当前设置并离开该界面。" />
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle" text="玩家外貌与背景" />
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription" text="玩家信息分为外貌信息和背景信息。" />
-    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="玩家信息分为外貌信息和背景信息。\n\n外貌信息（常驻）：\n{APPEARANCE}\n\n背景信息（通用）：\n{BACKGROUND}\n\n细化背景（有条件）：{COUNT} 条" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="玩家信息分为外貌信息和背景信息。&#10;&#10;外貌信息（常驻）：&#10;{APPEARANCE}&#10;&#10;背景信息（通用）：&#10;{BACKGROUND}&#10;&#10;细化背景（有条件）：{COUNT} 条" />
     <string id="AF_KNOWLEDGE_PlayerOptionUnset" text="当前未填写；点击后可输入完整内容。" />
     <string id="AF_KNOWLEDGE_PlayerOptionFilled" text="已填写 {COUNT} 字；完整内容显示在左侧，可点击继续编辑。" />
     <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundCount" text="已设置 {COUNT} 条带条件背景。" />
@@ -177,7 +177,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_AddDetailedBackground" text="新增一条细化介绍" />
     <string id="AF_KNOWLEDGE_EmptyPreview" text="（空）" />
     <string id="AF_KNOWLEDGE_DetailedBackgroundEditorTitle" text="细化介绍编辑" />
-    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="当前条件：{CONDITION}\n\n当前内容预览：\n{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="当前条件：{CONDITION}&#10;&#10;当前内容预览：&#10;{PREVIEW}" />
     <string id="AF_KNOWLEDGE_EditDetailedBackgroundContent" text="编辑介绍内容" />
     <string id="AF_KNOWLEDGE_EditDetailedBackgroundCondition" text="编辑条件" />
     <string id="AF_KNOWLEDGE_DeleteDetailedBackground" text="删除此条细化介绍" />
@@ -191,7 +191,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_RetrievalOff" text="关闭" />
     <string id="AF_KNOWLEDGE_RetrievalYes" text="是" />
     <string id="AF_KNOWLEDGE_RetrievalNoKeywordFirst" text="否（关键词优先）" />
-    <string id="AF_KNOWLEDGE_RetrievalDescription" text="当前配置来源：{SOURCE}\n当前模式：{MODE}\n语义检索：{ENABLED}\n语义优先：{FIRST}\n知识返回上限：{TOPK}\n说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。" />
+    <string id="AF_KNOWLEDGE_RetrievalDescription" text="当前配置来源：{SOURCE}&#10;当前模式：{MODE}&#10;语义检索：{ENABLED}&#10;语义优先：{FIRST}&#10;知识返回上限：{TOPK}&#10;说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。" />
     <string id="AF_KNOWLEDGE_RetrievalSwitchSource" text="配置来源：切到 {SOURCE}" />
     <string id="AF_KNOWLEDGE_RetrievalToggle" text="语义检索：{STATE}" />
     <string id="AF_KNOWLEDGE_RetrievalTopK" text="设置知识返回上限（当前 {TOPK}）" />
@@ -622,10 +622,10 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_MappingSummaryStatus" text="{BASE}（真：{TRUE}/假：{FALSE}）" />
     <string id="AF_KNOWLEDGE_MappingSummaryEmptyFallback" text=" [空=&gt;{TEXT}]" />
     <string id="AF_KNOWLEDGE_MappingSummary" text="{SOURCE} -&gt; {KIND}（{TARGET}） =&gt; {VALUE}" />
-    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="\n状态为真文案：{TRUE}\n状态为假文案：{FALSE}" />
-    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="\n空值返回文案：{TEXT}" />
-    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="\n年龄范围：{RANGE} 岁" />
-    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="原文本：{SOURCE}\n映射类型：{KIND}\n目标{TARGET_TYPE}：{TARGET}{STATUS}{EMPTY}{AGE}\n当前预览：{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="&#10;状态为真文案：{TRUE}&#10;状态为假文案：{FALSE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="&#10;空值返回文案：{TEXT}" />
+    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="&#10;年龄范围：{RANGE} 岁" />
+    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="原文本：{SOURCE}&#10;映射类型：{KIND}&#10;目标{TARGET_TYPE}：{TARGET}{STATUS}{EMPTY}{AGE}&#10;当前预览：{PREVIEW}" />
     <string id="AF_KNOWLEDGE_ExportRuleEmpty" text="知识条目为空。" />
     <string id="AF_KNOWLEDGE_ExportRagTooLong" text="知识条目“{NAME}”{ID}存在超过 {MAX} 字符的 RAG 专用短句，请先缩短后再继续。" />
     <string id="AF_KNOWLEDGE_ExportRagMissing" text="知识条目“{NAME}”{ID}缺少 RAG 专用短句，请先填写后再导出。" />
@@ -665,5 +665,11 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_DatabaseReloadEmptyEntry" text="资料包包含空知识条目。" />
     <string id="AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty" text="知识条目“{SOURCE}”的 RuleId 为空。" />
     <string id="AF_KNOWLEDGE_DatabaseReloadDuplicateId" text="无法为重复知识 RuleId 生成稳定 ID：{ID}" />
-  </strings>
+      <string id="AF_KNOWLEDGE_RoleDetailTitle" text="具体身份 - {ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleSearchTitle" text="搜索{ROLE}" />
+    <string id="AF_KNOWLEDGE_VariantEditorDescription" text="当前条件：{CONDITION}&#10;&#10;当前内容预览：&#10;{PREVIEW}{TRUNCATED}" />
+    <string id="AF_KNOWLEDGE_RagParseFailureTitle" text="RAG 专用短句解析失败" />
+    <string id="AF_KNOWLEDGE_RagParseFailureReason" text="模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。" />
+    <string id="AF_KNOWLEDGE_RagGenerationFailureTitle" text="生成RAG专用短句失败" />
+</strings>
 </base>
