@@ -272,5 +272,25 @@
     <string id="AF_MEMORY_UI_JsonParseFailed" text="JSON parsing failed." />
     <string id="AF_MEMORY_UI_JsonObjectMissing" text="No JSON object could be found." />
     <string id="AF_MEMORY_UI_JsonRequiredFieldsMissing" text="No JSON object contained the required fields: {FIELDS}." />
+    <string id="AF_MEMORY_UI_HourSingle" text="{HOUR}h" />
+    <string id="AF_MEMORY_UI_HourRange" text="{START}-{END}h" />
+    <string id="AF_MEMORY_UI_TagConfirmedGold" text="Confirmed gold payment" />
+    <string id="AF_MEMORY_UI_TagConfirmedAsset" text="Confirmed asset transfer" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtCreate" text="Confirmed debt creation" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtResolve" text="Confirmed debt repayment" />
+    <string id="AF_MEMORY_UI_TagConfirmedSettlement" text="Confirmed settlement asset transfer" />
+    <string id="AF_MEMORY_UI_TagDuel" text="Duel" />
+    <string id="AF_MEMORY_UI_TagGold" text="Gold payment" />
+    <string id="AF_MEMORY_UI_TagDebtCreate" text="New debt" />
+    <string id="AF_MEMORY_UI_TagDebtResolve" text="Debt repayment" />
+    <string id="AF_MEMORY_UI_TagTroops" text="Troop transfer" />
+    <string id="AF_MEMORY_UI_TagPrisoners" text="Prisoner transfer" />
+    <string id="AF_MEMORY_UI_TagAsset" text="Asset transfer" />
+    <string id="AF_MEMORY_UI_TagService" text="Kingdom service change" />
+    <string id="AF_MEMORY_UI_TagMarriage" text="Formal marriage" />
+    <string id="AF_MEMORY_UI_TagElopement" text="Marriage by elopement" />
+    <string id="AF_MEMORY_UI_TagDivorce" text="Divorce" />
+    <string id="AF_MEMORY_UI_TagAgenda" text="Kingdom agenda commitment" />
+    <string id="AF_MEMORY_UI_TagSiege" text="Siege aftermath: {ACTION}" />
   </strings>
 </base>

@@ -272,5 +272,25 @@
     <string id="AF_MEMORY_UI_JsonParseFailed" text="JSON 解析失败。" />
     <string id="AF_MEMORY_UI_JsonObjectMissing" text="找不到 JSON 对象。" />
     <string id="AF_MEMORY_UI_JsonRequiredFieldsMissing" text="未找到包含必需字段的 JSON 对象：{FIELDS}。" />
+    <string id="AF_MEMORY_UI_HourSingle" text="{HOUR}时" />
+    <string id="AF_MEMORY_UI_HourRange" text="{START}-{END}时" />
+    <string id="AF_MEMORY_UI_TagConfirmedGold" text="已确认的金币给付" />
+    <string id="AF_MEMORY_UI_TagConfirmedAsset" text="已确认的资产给付" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtCreate" text="已确认的债务建立" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtResolve" text="已确认的债务清偿" />
+    <string id="AF_MEMORY_UI_TagConfirmedSettlement" text="已确认的定居点资产转移" />
+    <string id="AF_MEMORY_UI_TagDuel" text="决斗" />
+    <string id="AF_MEMORY_UI_TagGold" text="给付金币" />
+    <string id="AF_MEMORY_UI_TagDebtCreate" text="新增债务" />
+    <string id="AF_MEMORY_UI_TagDebtResolve" text="债务清偿" />
+    <string id="AF_MEMORY_UI_TagTroops" text="部队转移" />
+    <string id="AF_MEMORY_UI_TagPrisoners" text="俘虏转移" />
+    <string id="AF_MEMORY_UI_TagAsset" text="给付资产" />
+    <string id="AF_MEMORY_UI_TagService" text="王国服役变更" />
+    <string id="AF_MEMORY_UI_TagMarriage" text="正式婚姻" />
+    <string id="AF_MEMORY_UI_TagElopement" text="私奔婚姻" />
+    <string id="AF_MEMORY_UI_TagDivorce" text="离婚" />
+    <string id="AF_MEMORY_UI_TagAgenda" text="王国议程承诺" />
+    <string id="AF_MEMORY_UI_TagSiege" text="攻城处置：{ACTION}" />
   </strings>
 </base>
