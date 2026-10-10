@@ -1,4 +1,12 @@
-# 当前交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+# 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+
+- 最新用户目标替代早期仅 UI 的范围：全部默认运行时文本与内容英文可用，完整保留中文原版；ZIP 名区分 `_CN` / `_EN`，包内原文件名、单模块及双 API 实现身份不变。
+- B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
+- 当前并行：主线下拉/错误 UI，B 审查修世界地图显示缺口，C 修 Memory 显示边界，打包 agent 实现双 ZIP 投影与英文残留门禁。既有中文共享事实不得直接替换为英文。
+- EN 世界书完整性待核实；现有英文资产不能替代中文全部文件的覆盖证明。未构建、Stage、部署、push 或正式打包；不接入 C# 语言探测。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[B 原报告](docs/handoffs/2026-10-10-localization-wave2-b-delivery.md)，[C 原报告](docs/handoffs/2026-10-10-localization-wave2-c-delivery.md)。回滚逐项 focused inverse，不覆盖其他作者或未跟踪原始英文资产。
+
+# 历史交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 接续指定会话，MCM产品 `854e8559d` 修新增预设模型回默认/跨列表索引错配，覆盖五模型与终端；快报产品 `2ee1708aa` 验收原dirty切片并增加真实发布回归，数字战报拒收后回退事实模板。
 - MCM两快照各47 PASS（同版核心），修前16/47；快报policy141、generation95、新闻切换27通过。最终原统一1.3/1.4/Bootstrap/双Coup门禁通过。旧存储测试入口缺方法的CS0103保留；未验实机/玩家配置/真实模型/全仓。后续获准提交推送部署，重跑双构建后原脚本更新12文件，3381安装SHA和12旧备份通过；不启动游戏、不打包。远端以本地publication-receipt核验。
