@@ -638,6 +638,119 @@ Test.True(rewardSystem.Contains("GeneratedRpFoodKind.Water", StringComparison.Or
     && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)", StringComparison.Ordinal)
     && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)", StringComparison.Ordinal), "water and medicine templates must remain consumable");
 
+// ---------------------------------------------------------------------------
+// Package E display localisation (economy / RP crafting).
+//
+// Assertions below are appended only. They cover the *player-visible* bilingual
+// display surface added by the localization work: the economy UI projection
+// sources, the RP-forge display projector, the recruitment detail projector and
+// the afeconomy resource pair. They are source/resource contract checks, not a
+// runtime measure of "full English coverage": unrecognised legacy receipts,
+// raw exceptions and machine-facing markers legitimately stay verbatim.
+// ---------------------------------------------------------------------------
+string economyUiTexts = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Host", "EconomyUiTexts.cs"));
+string rpForgeDisplay = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Presentation", "PlayerRpForgeDisplayTexts.cs"));
+string recruitmentDetail = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Presentation", "EconomyRecruitmentDetailTexts.cs"));
+string economyEnXml = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Economy", "ModuleData", "Languages", "afeconomy_strings.xml"));
+string economyCnXml = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Economy", "ModuleData", "Languages", "CNs", "afeconomy_strings-zh-CN.xml"));
+
+MatchCollection economyEnMatches = Regex.Matches(economyEnXml, "<string\\s+id=\"([^\"]+)\"\\s+text=\"([^\"]*)\"\\s*/>");
+MatchCollection economyCnMatches = Regex.Matches(economyCnXml, "<string\\s+id=\"([^\"]+)\"\\s+text=\"([^\"]*)\"\\s*/>");
+var economyEnKeys = new HashSet<string>(StringComparer.Ordinal);
+var economyCnKeys = new HashSet<string>(StringComparer.Ordinal);
+var economyEnText = new Dictionary<string, string>(StringComparer.Ordinal);
+var economyCnText = new Dictionary<string, string>(StringComparer.Ordinal);
+foreach (Match m in economyEnMatches)
+{
+    economyEnKeys.Add(m.Groups[1].Value);
+    economyEnText[m.Groups[1].Value] = m.Groups[2].Value;
+}
+foreach (Match m in economyCnMatches)
+{
+    economyCnKeys.Add(m.Groups[1].Value);
+    economyCnText[m.Groups[1].Value] = m.Groups[2].Value;
+}
+Test.True(economyEnKeys.Count == economyEnMatches.Count && economyCnKeys.Count == economyCnMatches.Count,
+    "economy resource pair must not contain duplicate string ids");
+Test.Equal(economyEnKeys.Count, economyCnKeys.Count, "economy resource pair key counts must match");
+Test.True(economyEnKeys.SetEquals(economyCnKeys), "economy resource pair key sets must be identical");
+Test.True(economyEnKeys.Count >= 350, "economy resource pair unexpectedly small: " + economyEnKeys.Count);
+
+// Every id referenced by a display projector must resolve in both languages.
+var displaySourceNames = new[] { "EconomyUiTexts.cs", "PlayerRpForgeDisplayTexts.cs", "EconomyRecruitmentDetailTexts.cs" };
+var displaySourceText = new[] { economyUiTexts, rpForgeDisplay, recruitmentDetail };
+var displayKeys = new SortedSet<string>(StringComparer.Ordinal);
+for (int sourceIndex = 0; sourceIndex < displaySourceText.Length; sourceIndex++)
+{
+    foreach (Match reference in Regex.Matches(displaySourceText[sourceIndex], "\"(AF_ECO_UI_[A-Za-z0-9_]+)\""))
+    {
+        displayKeys.Add(reference.Groups[1].Value);
+    }
+}
+Test.True(displayKeys.Count >= 270, "economy display key reference set unexpectedly small: " + displayKeys.Count);
+string[] missingInEnglish = displayKeys.Where(key => !economyEnKeys.Contains(key)).ToArray();
+string[] missingInChinese = displayKeys.Where(key => !economyCnKeys.Contains(key)).ToArray();
+Test.True(missingInEnglish.Length == 0, "economy display ids missing from the English resource: " + string.Join(", ", missingInEnglish));
+Test.True(missingInChinese.Length == 0, "economy display ids missing from the Chinese resource: " + string.Join(", ", missingInChinese));
+
+// Display text must actually be bilingual: the English side carries no CJK,
+// the Chinese side is not an English passthrough, and neither side is blank.
+var cjkRanges = new Regex("[\\u3000-\\u303f\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff\\uff00-\\uffef]", RegexOptions.CultureInvariant);
+string[] englishSideWithCjk = displayKeys.Where(key => cjkRanges.IsMatch(economyEnText[key])).ToArray();
+string[] chineseSideUntranslated = displayKeys.Where(key => !cjkRanges.IsMatch(economyCnText[key])).ToArray();
+string[] blankEnglishText = displayKeys.Where(key => economyEnText[key].Trim().Length == 0).ToArray();
+string[] blankChineseText = displayKeys.Where(key => economyCnText[key].Trim().Length == 0).ToArray();
+Test.True(englishSideWithCjk.Length == 0, "economy English display text still contains Chinese characters: " + string.Join(", ", englishSideWithCjk));
+Test.True(chineseSideUntranslated.Length == 0, "economy Chinese display text is missing for: " + string.Join(", ", chineseSideUntranslated));
+Test.True(blankEnglishText.Length == 0, "economy English display text is blank for: " + string.Join(", ", blankEnglishText));
+Test.True(blankChineseText.Length == 0, "economy Chinese display text is blank for: " + string.Join(", ", blankChineseText));
+
+// Placeholders are a display contract: both sides must carry the same set.
+string[] placeholderDrift = displayKeys.Where(key =>
+{
+    string[] englishSlots = Regex.Matches(economyEnText[key], "\\{([A-Za-z0-9_]+)\\}").Select(match => match.Groups[1].Value).OrderBy(name => name, StringComparer.Ordinal).ToArray();
+    string[] chineseSlots = Regex.Matches(economyCnText[key], "\\{([A-Za-z0-9_]+)\\}").Select(match => match.Groups[1].Value).OrderBy(name => name, StringComparer.Ordinal).ToArray();
+    return !englishSlots.SequenceEqual(chineseSlots, StringComparer.Ordinal);
+}).ToArray();
+Test.True(placeholderDrift.Length == 0, "economy resource pair placeholder drift: " + string.Join(", ", placeholderDrift));
+
+// Newlines inside a text attribute must stay escaped; a literal newline would
+// silently truncate the localised string in game. This is checked on the parsed
+// attribute values, not on the file, whose markup legitimately spans lines.
+for (int sourceIndex = 0; sourceIndex < displaySourceText.Length; sourceIndex++)
+{
+    Test.True(displaySourceText[sourceIndex].IndexOf("\\u", StringComparison.Ordinal) < 0,
+        "display projection source must not encode text as Unicode escapes: " + displaySourceNames[sourceIndex]);
+}
+string[] embeddedNewlineText = displayKeys.Where(key =>
+    economyEnText[key].IndexOf('\n') >= 0 || economyEnText[key].IndexOf('\r') >= 0
+    || economyCnText[key].IndexOf('\n') >= 0 || economyCnText[key].IndexOf('\r') >= 0).ToArray();
+Test.True(embeddedNewlineText.Length == 0,
+    "localised economy text must escape newlines rather than embed them: " + string.Join(", ", embeddedNewlineText));
+
+// The projectors must be total: unrecognised input is returned verbatim rather
+// than blanked, truncated or replaced with an error placeholder.
+Test.True(economyUiTexts.Contains("return status ?? string.Empty;", StringComparison.Ordinal),
+    "faction identity projection must fall back to the original status text");
+Test.True(rpForgeDisplay.Contains("internal static string ForDisplay(string", StringComparison.Ordinal),
+    "RP forge projection must expose a ForDisplay entry point");
+Test.True(rpForgeDisplay.Contains("ProjectLine(", StringComparison.Ordinal)
+    && rpForgeDisplay.Contains("ProjectKnown(", StringComparison.Ordinal)
+    && rpForgeDisplay.Contains("ProjectIssueList(", StringComparison.Ordinal),
+    "RP forge projection must keep its line, known-message and list projections");
+Test.True(recruitmentDetail.Contains("CarriedFiefPrefix", StringComparison.Ordinal)
+    && recruitmentDetail.Contains("TakeCarriedFiefBlock", StringComparison.Ordinal)
+    && recruitmentDetail.Contains("TakeTransitionNoteBlock", StringComparison.Ordinal),
+    "recruitment detail projection must preserve carried fiefs and transition notes");
+
+// The RP crafting safety gates themselves must stay byte-identical Chinese:
+// translation happens at display time, never by weakening the game rule.
+Test.True(playerRpCrafting.Contains("锻造等级或三档概率已经变化，请重新确认", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("current.SmithingSkill != preview.SmithingSkill", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("current.GoodWeight != preview.GoodWeight", StringComparison.Ordinal),
+    "RP crafting probability-change refusal must remain intact after localisation");
+Test.True(terminalBehavior.Contains("PlayerRpForgeDisplayTexts.ForDisplay(", StringComparison.Ordinal),
+    "every player-visible RP forge error/receipt must pass through the bilingual projector");
 Console.WriteLine("PASS assertions=" + Test.Assertions + " fuzz=20000 pressureTags=25000 elapsedMs=" + stopwatch.Elapsed.TotalMilliseconds.ToString("F2"));
 return 0;
 }
