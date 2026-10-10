@@ -33,6 +33,7 @@ SINKS = {
     "InquiryData": None, "TextInquiryData": None,
     "MultiSelectionInquiryData": None, "InquiryElement": {1},
     "InformationMessage": {0}, "TextObject": {0},
+    "AnimusForgeQuickInfo.Show": {0},
     "ShowFailurePopup": {0, 1}, "ShowRetryPrompt": {0},
     "ShowLocalizedFailurePopup": {0, 3},
     "NonBlockingErrorReport.Show": {0, 1},
@@ -49,6 +50,8 @@ TRACED_UI_METHODS = {
     "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs": (
         "BuildPlayerNotorietyDisplayText", "BuildPlayerNotorietyHistoryText",
         "BuildNotorietyActionLineForDisplay", "GetLevelText"),
+    "src/AF.GameAdapter.Bannerlord/SceneActions/SceneMovementController.cs": (
+        "BuildSceneSummonBatchTargetSummary",),
 }
 # Saved previews are not the editor display path; tracked separately for runtime extraction.
 DIAGNOSTIC_SOURCES = {"src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs"}
