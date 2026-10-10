@@ -644,6 +644,9 @@ internal static partial class Program
 		{
 			if (args.Contains("--policy-production-onnx-only"))
 			{
+				MethodInfo logsPrefix = typeof(Program).GetMethod(nameof(OverrideProductionOnnxContractLogs), All);
+				patch.Invoke(harmony, new[] { (object)assembly.GetType("AnimusForge.AnimusForgeModulePaths", true).GetMethod("GetLogsDirectory", All),
+					Activator.CreateInstance(harmonyMethodType, logsPrefix), null, null, null });
 				VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveEmbedding", "ONNX", true);
 				InitializeOnnxContractEmbedding(assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true), moduleRoot);
 				continue;
@@ -878,6 +881,12 @@ internal static partial class Program
 			return true;
 		}
 		__result = moduleRoot;
+		return false;
+	}
+
+	private static bool OverrideProductionOnnxContractLogs(ref string __result)
+	{
+		__result = Path.Combine(Path.GetTempPath(), "af-policy-onnx-contract-logs");
 		return false;
 	}
 

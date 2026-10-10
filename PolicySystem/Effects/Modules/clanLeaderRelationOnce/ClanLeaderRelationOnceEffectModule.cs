@@ -21,7 +21,7 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
 		cueTerms: new[] { "关系", "好感", "领主态度", "贵族支持", "得罪领主", "赢得拥护" },
-		retrievalText: "政策发布者与除发布者所属家族外的目标家族领袖之间的关系、好感、态度、支持或敌意；在政策通过后的下一个游戏日对每位唯一家族领袖结算一次。",
+		retrievalText: "其他家族领袖、领主或封臣对政策发布者、颁令者的人际关系、好感、支持、反感、怨恨或感谢。受益受损、剥夺特权、荣誉肯定、政治冒犯与压迫引发的态度变化；不改变家族的政治影响力数值。发布者所属家族不计入，下一个游戏日对每位唯一家族领袖一次性结算关系点。",
 		catalogSummary: "发布者与其他家族领袖的一次性关系变化",
 		mainInstruction: "政策若会让受影响地区或目标王国中除发布者所属家族外的领主更支持或更反感政策发布者，请给出一次性关系变化。正数改善关系，负数恶化关系；效果在政策通过后的下一个游戏日结算一次。玩家政策的发布者固定为发布时玩家，统治者政策固定为通过政策的统治者。",
 		postprocessRule: "value 必须是有限数字，最终按整数关系点结算。目标按家族去重，每个当前家族领袖只结算一次；发布者所属家族整体、已灭亡家族及无有效领袖目标跳过。正向变化保留原版外交模型加成和随机取整，关系仍受原版 -100～100 限制。",
