@@ -115,6 +115,7 @@ public static class McmDropdownRuntimeRefresh
 		if (source.SelectedIndex < 0 || source.SelectedIndex >= source.Count
 			|| !(__0.Value is Dropdown<string> target)) return;
 		string name = source[source.SelectedIndex];
+		if (name == "*手动填写*") name = "{=AF_MCM_Option_ModelManual}*manual entry*";
 		int index = target.FindIndex(x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase));
 		if (index < 0) { target.Add(name); index = target.Count - 1; }
 		__1 = new Dropdown<string>(target, index);

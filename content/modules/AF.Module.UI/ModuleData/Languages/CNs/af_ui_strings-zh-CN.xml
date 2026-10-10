@@ -3004,5 +3004,39 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Prompt_KeepAsteriskActions_Hint" text="开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。" />
   <string id="AF_MCM_Prompt_CustomSceneFormat" text="自定义格式：不注入默认场景回复提示词" />
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。" />
+  <string id="AF_MCM_Option_ModelManual" text="*手动填写*" />
+  <string id="AF_MCM_Option_ModelEmpty" text="(空)" />
+  <string id="AF_MCM_Option_DeviceCpu" text="CPU（默认）" />
+  <string id="AF_MCM_Option_DeviceGpu" text="GPU（CUDA / NVIDIA）" />
+  <string id="AF_MCM_Option_DiplomacySmall" text="少量" />
+  <string id="AF_MCM_Option_DiplomacyMedium" text="适中" />
+  <string id="AF_MCM_Option_DiplomacyLarge" text="较多" />
+  <string id="AF_MCM_Option_DiplomacyCompact" text="紧凑（约15天）" />
+  <string id="AF_MCM_Option_DiplomacyStandard" text="标准（约21天）" />
+  <string id="AF_MCM_Option_DiplomacyRelaxed" text="从容（约28天）" />
+  <string id="AF_MCM_Option_ApiMain" text="主链路" />
+  <string id="AF_MCM_Option_ApiPreprocess" text="前处理" />
+  <string id="AF_MCM_Option_ApiPostprocess" text="后处理" />
+  <string id="AF_MCM_Option_ApiWeekly" text="周报" />
+  <string id="AF_MCM_Option_BackgroundBlack" text="黑色透明" />
+  <string id="AF_MCM_Option_BackgroundWhite" text="白色透明" />
+  <string id="AF_MCM_Option_BackgroundPink" text="粉色透明" />
+  <string id="AF_MCM_Option_CleanupOff" text="关闭" />
+  <string id="AF_MCM_Option_CleanupStartup" text="每次启动" />
+  <string id="AF_MCM_Option_Cleanup30Minutes" text="每30分钟" />
+  <string id="AF_MCM_Option_CleanupHour" text="每1小时" />
+  <string id="AF_MCM_Option_Cleanup6Hours" text="每6小时" />
+  <string id="AF_MCM_Option_CleanupDay" text="每天" />
+  <string id="AF_MCM_Option_Cleanup3Days" text="每3天" />
+  <string id="AF_MCM_Option_CleanupWeek" text="每1星期" />
+  <string id="AF_MCM_Option_StationeryVlandia" text="瓦兰迪亚" />
+  <string id="AF_MCM_Option_StationeryNorthEmpire" text="北帝国" />
+  <string id="AF_MCM_Option_StationeryWestEmpire" text="西帝国" />
+  <string id="AF_MCM_Option_StationerySouthEmpire" text="南帝国" />
+  <string id="AF_MCM_Option_StationerySturgia" text="斯特吉亚" />
+  <string id="AF_MCM_Option_StationeryBattania" text="巴旦尼亚" />
+  <string id="AF_MCM_Option_StationeryKhuzait" text="库塞特" />
+  <string id="AF_MCM_Option_StationeryAserai" text="阿塞莱" />
+  <string id="AF_MCM_Option_StationeryNord" text="诺德" />
   </strings>
 </base>
