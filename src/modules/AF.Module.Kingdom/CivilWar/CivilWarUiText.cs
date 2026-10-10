@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using AnimusForge.Refactor.Modules;
 using TaleWorlds.Localization;
 
@@ -147,6 +149,95 @@ internal static class CivilWarUiText
         "ReceiptInterrupted" => "A previous operation was interrupted; its state is kept for review and cannot be executed again.",
         "RetrySafeSteps" => "The agreement is not complete; safe confirmed steps will be retried: {A}",
         "IncompleteReview" => "The operation was not fully confirmed; the faction is kept for review: {A}",
+        _ => null
+    };
+
+    /// <summary>
+    /// Renders a structured effect-failure code for a notice tail. Returns null when this build cannot
+    /// describe the code (an effect outside the registry, a throw from an older build, or any other raw
+    /// reason string), so the caller keeps the raw stored Message instead of a generic English sentence.
+    /// </summary>
+    internal static string FailureText(string code, string arg, string arg2)
+    {
+        string fallback = FailureFallback(code);
+        if (fallback == null) return null;
+        return T("AF_KINGDOM_CW_Failure_" + code, fallback, ("A", arg ?? ""), ("B", arg2 ?? ""));
+    }
+
+    private static string FailureFallback(string code) => code switch
+    {
+        "UnknownEffect" => "This build does not recognize the effect: {A}",
+        "PeaceTargetNotAtWar" => "The peace target is no longer at war.",
+        "WarTargetGone" => "The war target no longer exists.",
+        "PolicyNotInEffect" => "That policy is no longer in effect.",
+        "RedressPartiesGone" => "The two sides of the compensation no longer exist.",
+        "KingGone" => "The king no longer exists.",
+        "HeirNotInKingdom" => "The heir is not in this kingdom.",
+        "RebelLeaderGone" => "The rebel leader is gone.",
+        "RebelKingdomGone" => "The rebel kingdom no longer exists.",
+        "KingdomGone" => "The kingdom has been destroyed.",
+        "HomeKingdomGone" => "The original kingdom no longer exists, so the clans cannot return home.",
+        "RebelClansNotHome" => "Some rebel clans have not yet been confirmed back home.",
+        "RebelKingdomNotDissolved" => "The rebel kingdom has not been dissolved yet.",
+        "RebelKingdomDissolveUnconfirmed" => "The dissolution of the rebel kingdom is not yet confirmed.",
+        "PeaceNotInEffect" => "The peace has not taken effect yet.",
+        "ThroneTransferNotInEffect" => "The transfer of the throne has not taken effect yet.",
+        "RebelLeaderNotHome" => "The rebel leader could not return home, so the usurpation is not complete.",
+        "RebelLeaderNotExiled" => "The rebel leader has not been exiled from the kingdom yet.",
+        "RestorationNotAuthorized" => "The restoration has not been authorized by a rebel victory outcome.",
+        "RestorationRecordsUnavailable" => "The original dynasty, the old-king record or the original kingdom name is unavailable.",
+        "RestorationDynastyElsewhere" => "The old royal clan has left both sides, so it cannot replace another kingdom's ruler.",
+        "RestorationClaimantInvalid" => "The claimant must be alive, adult and not a prisoner; if the old king is alive he must still lead the clan.",
+        "RestorationDynastyNotHome" => "The old royal clan has not returned home yet, so the restoration cannot proceed.",
+        "RestorationNotConfirmed" => "The restoration of the old dynasty is not yet confirmed.",
+        "RestorationNameNotConfirmed" => "The restoration of the original kingdom name is not yet confirmed.",
+        _ => null
+    };
+
+    /// <summary>
+    /// Renders the notes an applied effect recorded. Every note keeps its position and its real text: a note
+    /// this build cannot describe is shown verbatim, so no note is dropped or replaced by a guessed summary.
+    /// </summary>
+    internal static string NoteText(IReadOnlyList<string> rawNotes, IReadOnlyList<CivilWarNoteProjection> projections)
+    {
+        if (rawNotes == null || rawNotes.Count == 0) return "";
+        var builder = new StringBuilder();
+        for (int i = 0; i < rawNotes.Count; i++)
+        {
+            if (i > 0) builder.Append(T("AF_KINGDOM_CW_NoteSeparator", "; "));
+            string raw = rawNotes[i] ?? "";
+            CivilWarNoteProjection projection = projections != null && i < projections.Count ? projections[i] : default;
+            builder.Append(NoteDisplay(projection, raw));
+        }
+        return builder.ToString();
+    }
+
+    private static string NoteDisplay(CivilWarNoteProjection projection, string raw)
+    {
+        // Alignment guard: a raw note added outside the effect registry shifts the projection list, and the
+        // mismatched entry must show its own real text rather than another note's description.
+        string fallback = projection.Text == raw ? NoteFallback(projection.Code) : null;
+        return fallback == null ? raw
+            : T("AF_KINGDOM_CW_Note_" + projection.Code, fallback, ("A", projection.Arg ?? ""), ("B", projection.Arg2 ?? ""));
+    }
+
+    private static string NoteFallback(string code) => code switch
+    {
+        "RebelKingdomDissolved" => "{A} is dissolved as the rebels return home.",
+        "PeaceMade" => "{A} makes peace with {B}.",
+        "PledgeNoPeace" => "The king pledges not to make peace with {B} for {A} weeks.",
+        "PolicyRevoked" => "Policy revoked: {A}.",
+        "RedressPaid" => "The king pays {A} {B} denars in redress.",
+        "PrivilegesGranted" => "The king recognizes the fief privileges of {A} and its peer clans.",
+        "Abdicated" => "The king abdicates; {A} succeeds.",
+        "ThroneSeized" => "{A} seizes the throne.",
+        "Seceded" => "{A} is recognized and secedes from {B}.",
+        "WarAlreadyEnded" => "The war of the original demand has already ended.",
+        "PolicyAlreadyRevoked" => "The policy of the original demand has already been revoked.",
+        "LeaderExiled" => "{A} is driven out of the kingdom and its fiefs revert to the crown.",
+        "CrownSuppressed" => "The crown suppresses the rebellion.",
+        "RestorationKingdomRestored" => "The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the old king resumes rule.",
+        "RestorationKingdomHeir" => "The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the clan's current leader succeeds the deceased old king.",
         _ => null
     };
 

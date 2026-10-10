@@ -63,12 +63,16 @@ internal sealed partial class KingdomCivilWarOwner
         }
         _openWarKingdoms.Add(home.StringId); IndexOppositionSettlements(state, faction);
         faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebel) / (float)Math.Max(1, CivilWarWorld.FortificationCount(home));
-        // Deliberately not localized: this same string is the saved receipt replayed on load (line 32), the panel
-        // chronicle entry, and the LLM/AFEF material published below, so it must stay a stable rule string.
+        // `message` must stay a stable rule string: it is the saved receipt replayed on load (line 32) and the
+        // LLM/AFEF material published below. `display` is its panel-only projection, so the saved receipt and
+        // the published facts keep the raw value while the chronicle entry renders English.
         message = request.RestoreDynasty ? "复位内战已登记：仅叛军战胜才恢复旧王朝与原国名，和平谈判不会复位。" : "政变后内战已登记：被扣押旧王及其家族不加入本次叛军。";
+        string display = request.RestoreDynasty
+            ? CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleRestoration", "Restoration civil war registered: only a rebel victory restores the old dynasty and the original kingdom name; a negotiated peace will not restore them.")
+            : CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleCoup", "Civil war registered after the coup: the deposed king and his clan do not join this rebellion.");
         _storage.Operations[id] = new CivilWarOperation { Fingerprint = home.StringId + "|" + rebel.StringId, FactionId = id, Status = (int)CivilWarActionStatus.Applied, Message = message };
-        AddHistory(state, week, message); SaveSummary(state); Revision++;
-        PublishPoliticalResult(home, state, faction, leader, id + ":war:outbreak", message);
+        AddHistory(state, week, display); SaveSummary(state); Revision++;
+        PublishPoliticalResult(home, state, faction, leader, id + ":war:outbreak", message, displayText: display);
         NotifyPoliticalChange(home, "coup_war_registered");
         return true;
     }
