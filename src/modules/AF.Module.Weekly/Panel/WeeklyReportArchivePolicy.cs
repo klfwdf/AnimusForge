@@ -105,6 +105,41 @@ internal static class WeeklyReportArchivePolicy
         entry.Materials.Add(material);
     }
 
+    internal static string ProjectDateForDisplay(string rawDate)
+    {
+        if (string.IsNullOrWhiteSpace(rawDate)) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
+        string value = rawDate.Trim();
+        if (string.Equals(value, "Unknown date", StringComparison.Ordinal) || string.Equals(value, "未知日期", StringComparison.Ordinal))
+            return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
+        if (TryProjectKnownDay(value, out string display)) return display;
+        const string separator = " — ";
+        int separatorIndex = value.IndexOf(separator, StringComparison.Ordinal);
+        if (separatorIndex >= 0 && value.IndexOf(separator, separatorIndex + separator.Length, StringComparison.Ordinal) < 0
+            && TryProjectKnownDay(value.Substring(0, separatorIndex), out string first)
+            && TryProjectKnownDay(value.Substring(separatorIndex + separator.Length), out string last))
+            return first + separator + last;
+        return rawDate;
+    }
+
+    private static bool TryProjectKnownDay(string value, out string display)
+    {
+        display = "";
+        string number;
+        if (value.StartsWith("Day ", StringComparison.Ordinal))
+            number = value.Substring(4);
+        else if (value.Length >= 4 && value.StartsWith("第 ", StringComparison.Ordinal) && value.EndsWith(" 日", StringComparison.Ordinal))
+            number = value.Substring(2, value.Length - 4);
+        else if (value.Length >= 2 && value.StartsWith("第", StringComparison.Ordinal) && value.EndsWith("天", StringComparison.Ordinal))
+            number = value.Substring(1, value.Length - 2);
+        else
+            return false;
+        if (!int.TryParse(number, NumberStyles.None, CultureInfo.InvariantCulture, out int day)
+            || !string.Equals(number, day.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal))
+            return false;
+        display = Localize("AF_UI_Timeline_Day", "Day {DAY}", ("DAY", day.ToString(CultureInfo.InvariantCulture)));
+        return true;
+    }
+
     internal static void RefreshRecentText(EventRecordEntry entry)
     {
         var materials=entry.Materials.Where(m => m != null).OrderBy(m => m.ActionDay ?? 0).ToList();
