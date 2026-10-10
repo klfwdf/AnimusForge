@@ -4779,7 +4779,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			+ " 人未分配，所有暂定组在离场前仍留在场景和俘虏名册。"
 			+ (resetPlan ? "玩家本轮明确推翻了先前对幸存者的安排。" : string.Empty));
 		InformationManager.DisplayMessage(new InformationMessage(
-			CastleAftermathUiText.Staged(SiegeCastleRegularDispositionStagingProfile.Describe(action), stagedCount, unassigned),
+			CastleAftermathUiText.Staged(action, stagedCount, unassigned),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 		RegisterCastleSoldierConcern(
 			action,
@@ -4847,8 +4847,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("CastleAftermath", "Deferred castle group affected nobody. Action=" + action
 					+ ", Requested=" + allocation.Roster.TotalManCount + ", Reason=" + result.ReasonCode);
 				InformationManager.DisplayMessage(new InformationMessage(
-					CastleAftermathUiText.DeferredFailed(SiegeCastleRegularDispositionStagingProfile.Describe(action),
-						allocation.Roster.TotalManCount, SiegeCastlePrisonerDispositionProfile.DescribeDeferredFailureReason(result.ReasonCode)),
+					CastleAftermathUiText.DeferredFailed(action,
+						allocation.Roster.TotalManCount, result.ReasonCode),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				continue;
 			}
@@ -4911,7 +4911,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildLordSaleFailedMessage(
+					CastleAftermathUiText.LordSaleFailed(
 						targetHero.Name?.ToString(),
 						result.ReasonCode),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
@@ -4931,7 +4931,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				"城堡贩卖领主",
 				conciseOutcome + "；该领主已经通过原版赎卖链解除俘虏并离开现场。");
 			InformationManager.DisplayMessage(new InformationMessage(
-				CastleAftermathUiText.LordSale(lordName, result.Gold),
+				CastleAftermathUiText.LordSale(targetHero.Name?.ToString(), result.Gold),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			string outcome = "hero=" + (targetHero.StringId ?? "N/A")
 				+ ", gold=" + result.Gold + ", expectedGold=" + result.ExpectedGold
@@ -5017,7 +5017,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CastleAftermathDispositionSessionBridge.RecordLordOutcome(conciseOutcome);
 			RecordInterventionMemory("城堡收编领主", conciseOutcome + "。" + result.StatusText);
 			InformationManager.DisplayMessage(new InformationMessage(
-				CastleAftermathUiText.LordRecruitment(branch, lordName, result.StatusText),
+				CastleAftermathUiText.LordRecruitment(branch, targetHero.Name?.ToString(), result.StatusText),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			string outcome = "hero=" + (targetHero.StringId ?? "N/A")
 				+ ", branch=" + branch + ", released=" + result.TargetReleased
@@ -5090,7 +5090,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			conciseOutcome + sceneResult + "；原版角色死亡、关系与家族后果已经立即结算。");
 		InformationManager.DisplayMessage(new InformationMessage(
 			CastleAftermathUiText.ExecutionCompleted(
-				lordName,
+				targetHero?.Name?.ToString(),
 				sceneDeathApplied),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 		Logger.Log("CastleAftermath", "Recorded castle lord execution outcome. Hero="

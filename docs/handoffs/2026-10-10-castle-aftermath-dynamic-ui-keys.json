@@ -1,0 +1,245 @@
+{
+  "englishFallbackSource": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathUiText.cs",
+  "strings": [
+    {
+      "id": "AF_CASTLE_UI_LETTER_SENDER",
+      "en": "a clan member",
+      "zh": "一名家族成员"
+    },
+    {
+      "id": "AF_CASTLE_UI_LETTER_RECIPIENT",
+      "en": "the clan leader",
+      "zh": "族长"
+    },
+    {
+      "id": "AF_CASTLE_UI_LORD_SALE_FAILED",
+      "en": "[Castle aftermath] Could not sell {LORD}; no gold or final disposition was applied. {REASON}",
+      "zh": "【城堡处置】未能贩卖 {LORD}；未结算金币或最终处置。{REASON}"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_RELEASE",
+      "en": "Release regular prisoners",
+      "zh": "释放普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_SELL",
+      "en": "Sell regular prisoners at native tavern prices",
+      "zh": "按原版酒馆价格贩卖普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_RECRUIT_VOLUNTARY",
+      "en": "Voluntarily recruit regular prisoners",
+      "zh": "自愿收编普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_RECRUIT_FORCED",
+      "en": "Forcibly recruit regular prisoners",
+      "zh": "强制收编普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_LABOR_VOLUNTARY",
+      "en": "Voluntary penal labor",
+      "zh": "自愿劳役服刑"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_LABOR_FORCED",
+      "en": "Forced penal labor",
+      "zh": "强制劳役服刑"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_REPAIR_VOLUNTARY",
+      "en": "Voluntary castle repair labor",
+      "zh": "自愿劳役修缮城堡"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_REPAIR_FORCED",
+      "en": "Forced castle repair labor",
+      "zh": "强制劳役修缮城堡"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_INSTRUCTOR_VOLUNTARY",
+      "en": "Voluntary instructor service",
+      "zh": "自愿担任教官"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_INSTRUCTOR_FORCED",
+      "en": "Forced instructor service",
+      "zh": "强制担任教官"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_SLAUGHTER",
+      "en": "Slaughter regular prisoners in the scene",
+      "zh": "现场屠戮普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_ACTION_UNKNOWN",
+      "en": "No disposition specified",
+      "zh": "未指定处置"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_KINGDOM",
+      "en": "The clan leader brings the entire clan into the player's kingdom",
+      "zh": "族长率全族加入玩家统治的王国"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_AUDIENCE",
+      "en": "The clan leader asks the player for an audience with their ruler",
+      "zh": "族长请求玩家引见本国统治者"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_CLAIM",
+      "en": "The clan leader expresses support for crowning the independent player",
+      "zh": "族长表达拥立独立玩家为王的政治意向"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_LETTER",
+      "en": "A clan member writes an introduction letter to their clan leader",
+      "zh": "非族长写信引见本族族长"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_COMPANION",
+      "en": "A clan member leaves their former clan and becomes the player's companion",
+      "zh": "非族长背叛原家族并成为玩家同伴"
+    },
+    {
+      "id": "AF_CASTLE_UI_BRANCH_UNKNOWN",
+      "en": "Lord recruitment branch is not yet determined",
+      "zh": "尚未明确领主收编分支"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_CAPACITY",
+      "en": "The main party is full",
+      "zh": "主队编制已满"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_ROSTER",
+      "en": "The prisoner or troop roster is unavailable",
+      "zh": "俘虏或部队名册不可用"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_NO_MATCH",
+      "en": "The roster has no remaining regular prisoners belonging to this group",
+      "zh": "名册中已无该分组可处理的普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_NO_SELLABLE",
+      "en": "The roster has no remaining sellable regular prisoners belonging to this group",
+      "zh": "名册中已无该分组可出售的普通战俘"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_UNSUPPORTED",
+      "en": "This staged disposition cannot currently be resolved on departure",
+      "zh": "该暂存处置当前不受离场结算支持"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_EXCEPTION",
+      "en": "An exception occurred during resolution; details were logged",
+      "zh": "结算执行时发生异常，详情已写入日志"
+    },
+    {
+      "id": "AF_CASTLE_UI_DEFERRED_OTHER",
+      "en": "The disposition did not take effect; details were logged",
+      "zh": "结算未生效，详情已写入日志"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_ROSTER",
+      "en": "The main party's prisoner roster is unavailable.",
+      "zh": "主队俘虏名册当前不可用。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_INVALID",
+      "en": "The target is dead or cannot be ransomed.",
+      "zh": "目标已死亡或不具备可赎卖身份。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_NOT_SELECTED",
+      "en": "The target is no longer a selected lord held by the player's main party.",
+      "zh": "目标不再是本次带入且由玩家主队扣押的领主。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_LOCKED",
+      "en": "A native quest or roster lock prevents this lord from being ransomed, including at a tavern.",
+      "zh": "该领主被原版任务或名册锁定，酒馆同样不能赎卖。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_MODEL",
+      "en": "The native ransom valuation model is unavailable.",
+      "zh": "原版赎金计价模型当前不可用。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_NOT_RELEASED",
+      "en": "The native ransom action did not release this lord from captivity.",
+      "zh": "原版赎卖动作未能解除该领主的俘虏状态。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_UNAVAILABLE",
+      "en": "The target cannot currently be ransomed.",
+      "zh": "目标当前不可赎卖。"
+    },
+    {
+      "id": "AF_CASTLE_UI_SALE_OTHER",
+      "en": "The native ransom action failed; details were logged.",
+      "zh": "原版赎卖动作失败，详情已写入日志。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_INVALID",
+      "en": "The target lord is invalid or can no longer be handled.",
+      "zh": "目标领主无效或已经无法处置。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_NOT_SELECTED",
+      "en": "This lord is not among the prisoners selected for this castle aftermath.",
+      "zh": "该领主不在本次带入城堡处置的俘虏名单中。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_UNKNOWN",
+      "en": "The lord recruitment branch is not yet determined.",
+      "zh": "领主收编分支尚未明确。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_REWARD_UNAVAILABLE",
+      "en": "The AF reward system is unavailable.",
+      "zh": "AF奖励系统当前不可用。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_NO_LEADER",
+      "en": "No living clan leader is available to receive the introduction letter.",
+      "zh": "未找到可接收引见信的在世族长。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_NO_ID",
+      "en": "The lord or clan leader has no stable character identifier.",
+      "zh": "领主或族长缺少稳定角色标识。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_AUDIENCE",
+      "en": "Asked the player to take them to meet the ruler of the player's kingdom; clan allegiance and captivity remain unchanged.",
+      "zh": "请求玩家将自己带去面见玩家所属王国的统治者；家族归属和俘虏状态暂未改变。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_CLAIM",
+      "en": "Expressed support for crowning the player; no kingdom is created or clan transferred while the player has no kingdom.",
+      "zh": "表达了支持玩家称王的政治意向；不会在玩家尚无王国时凭空创建国家或转移家族。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_KINGDOM_CLEANUP",
+      "en": "{STATUS} Political allegiance changed, but prisoner or scene cleanup was incomplete; details were logged.",
+      "zh": "{STATUS} 政治转投已经完成，但俘虏或场景清理未完全完成，详情已写入日志。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_COMPANION_CLEANUP",
+      "en": "{STATUS} Companion recruitment completed, but scene cleanup was incomplete; details were logged.",
+      "zh": "{STATUS} 同伴加入已经完成，但场景清理未完全完成，详情已写入日志。"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_EXCEPTION",
+      "en": "An exception occurred while applying lord recruitment: {ERROR}",
+      "zh": "执行领主收编分支时发生异常：{ERROR}"
+    },
+    {
+      "id": "AF_CASTLE_UI_STATUS_LETTER_QUEUED",
+      "en": "The introduction letter is ready and will reach clan leader {RECIPIENT} in {DAYS} days; no AF courier party is created, and the current lord remains a prisoner.",
+      "zh": "引见信已写好，将在 {DAYS} 天后直接送达族长 {RECIPIENT}；不会生成AF信使部队，当前领主仍保持俘虏身份。"
+    }
+  ]
+}

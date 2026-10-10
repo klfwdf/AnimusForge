@@ -3118,8 +3118,56 @@ Choose how to proceed:" />
   <string id="AF_CASTLE_UI_EXECUTION_COMPLETED_NO_SCENE" text="[Castle aftermath] You confirmed the execution of {LORD}; the scene death animation failed, but the death has been persisted. Relationships and clan consequences are handled by the native campaign system." />
   <string id="AF_CASTLE_UI_CAPACITY_NONE" text="[Castle aftermath] No main-party slots are available for recruitment ({FREE} free, reserved by earlier recruitment groups). This recruitment was not staged; free slots or choose another disposition." />
   <string id="AF_CASTLE_UI_CAPACITY_TRIM" text="[Castle aftermath] The main party has insufficient free slots. This recruitment was reduced from {REQUESTED} to {STAGED}; the other prisoners remain unassigned and can be handled separately." />
+  <string id="AF_CASTLE_UI_LETTER_SENDER" text="a clan member" />
+  <string id="AF_CASTLE_UI_LETTER_RECIPIENT" text="the clan leader" />
+  <string id="AF_CASTLE_UI_LORD_SALE_FAILED" text="[Castle aftermath] Could not sell {LORD}; no gold or final disposition was applied. {REASON}" />
+  <string id="AF_CASTLE_UI_ACTION_RELEASE" text="Release regular prisoners" />
+  <string id="AF_CASTLE_UI_ACTION_SELL" text="Sell regular prisoners at native tavern prices" />
+  <string id="AF_CASTLE_UI_ACTION_RECRUIT_VOLUNTARY" text="Voluntarily recruit regular prisoners" />
+  <string id="AF_CASTLE_UI_ACTION_RECRUIT_FORCED" text="Forcibly recruit regular prisoners" />
+  <string id="AF_CASTLE_UI_ACTION_LABOR_VOLUNTARY" text="Voluntary penal labor" />
+  <string id="AF_CASTLE_UI_ACTION_LABOR_FORCED" text="Forced penal labor" />
+  <string id="AF_CASTLE_UI_ACTION_REPAIR_VOLUNTARY" text="Voluntary castle repair labor" />
+  <string id="AF_CASTLE_UI_ACTION_REPAIR_FORCED" text="Forced castle repair labor" />
+  <string id="AF_CASTLE_UI_ACTION_INSTRUCTOR_VOLUNTARY" text="Voluntary instructor service" />
+  <string id="AF_CASTLE_UI_ACTION_INSTRUCTOR_FORCED" text="Forced instructor service" />
+  <string id="AF_CASTLE_UI_ACTION_SLAUGHTER" text="Slaughter regular prisoners in the scene" />
+  <string id="AF_CASTLE_UI_ACTION_UNKNOWN" text="No disposition specified" />
+  <string id="AF_CASTLE_UI_BRANCH_KINGDOM" text="The clan leader brings the entire clan into the player's kingdom" />
+  <string id="AF_CASTLE_UI_BRANCH_AUDIENCE" text="The clan leader asks the player for an audience with their ruler" />
+  <string id="AF_CASTLE_UI_BRANCH_CLAIM" text="The clan leader expresses support for crowning the independent player" />
+  <string id="AF_CASTLE_UI_BRANCH_LETTER" text="A clan member writes an introduction letter to their clan leader" />
+  <string id="AF_CASTLE_UI_BRANCH_COMPANION" text="A clan member leaves their former clan and becomes the player's companion" />
+  <string id="AF_CASTLE_UI_BRANCH_UNKNOWN" text="Lord recruitment branch is not yet determined" />
+  <string id="AF_CASTLE_UI_DEFERRED_CAPACITY" text="The main party is full" />
+  <string id="AF_CASTLE_UI_DEFERRED_ROSTER" text="The prisoner or troop roster is unavailable" />
+  <string id="AF_CASTLE_UI_DEFERRED_NO_MATCH" text="The roster has no remaining regular prisoners belonging to this group" />
+  <string id="AF_CASTLE_UI_DEFERRED_NO_SELLABLE" text="The roster has no remaining sellable regular prisoners belonging to this group" />
+  <string id="AF_CASTLE_UI_DEFERRED_UNSUPPORTED" text="This staged disposition cannot currently be resolved on departure" />
+  <string id="AF_CASTLE_UI_DEFERRED_EXCEPTION" text="An exception occurred during resolution; details were logged" />
+  <string id="AF_CASTLE_UI_DEFERRED_OTHER" text="The disposition did not take effect; details were logged" />
+  <string id="AF_CASTLE_UI_SALE_ROSTER" text="The main party's prisoner roster is unavailable." />
+  <string id="AF_CASTLE_UI_SALE_INVALID" text="The target is dead or cannot be ransomed." />
+  <string id="AF_CASTLE_UI_SALE_NOT_SELECTED" text="The target is no longer a selected lord held by the player's main party." />
+  <string id="AF_CASTLE_UI_SALE_LOCKED" text="A native quest or roster lock prevents this lord from being ransomed, including at a tavern." />
+  <string id="AF_CASTLE_UI_SALE_MODEL" text="The native ransom valuation model is unavailable." />
+  <string id="AF_CASTLE_UI_SALE_NOT_RELEASED" text="The native ransom action did not release this lord from captivity." />
+  <string id="AF_CASTLE_UI_SALE_UNAVAILABLE" text="The target cannot currently be ransomed." />
+  <string id="AF_CASTLE_UI_SALE_OTHER" text="The native ransom action failed; details were logged." />
+  <string id="AF_CASTLE_UI_STATUS_INVALID" text="The target lord is invalid or can no longer be handled." />
+  <string id="AF_CASTLE_UI_STATUS_NOT_SELECTED" text="This lord is not among the prisoners selected for this castle aftermath." />
+  <string id="AF_CASTLE_UI_STATUS_UNKNOWN" text="The lord recruitment branch is not yet determined." />
+  <string id="AF_CASTLE_UI_STATUS_REWARD_UNAVAILABLE" text="The AF reward system is unavailable." />
+  <string id="AF_CASTLE_UI_STATUS_NO_LEADER" text="No living clan leader is available to receive the introduction letter." />
+  <string id="AF_CASTLE_UI_STATUS_NO_ID" text="The lord or clan leader has no stable character identifier." />
+  <string id="AF_CASTLE_UI_STATUS_AUDIENCE" text="Asked the player to take them to meet the ruler of the player's kingdom; clan allegiance and captivity remain unchanged." />
+  <string id="AF_CASTLE_UI_STATUS_CLAIM" text="Expressed support for crowning the player; no kingdom is created or clan transferred while the player has no kingdom." />
+  <string id="AF_CASTLE_UI_STATUS_KINGDOM_CLEANUP" text="{STATUS} Political allegiance changed, but prisoner or scene cleanup was incomplete; details were logged." />
+  <string id="AF_CASTLE_UI_STATUS_COMPANION_CLEANUP" text="{STATUS} Companion recruitment completed, but scene cleanup was incomplete; details were logged." />
+  <string id="AF_CASTLE_UI_STATUS_EXCEPTION" text="An exception occurred while applying lord recruitment: {ERROR}" />
+  <string id="AF_CASTLE_UI_STATUS_LETTER_QUEUED" text="The introduction letter is ready and will reach clan leader {RECIPIENT} in {DAYS} days; no AF courier party is created, and the current lord remains a prisoner." />
   <string id="AF_UI_KingdomRebellion_ReasonTargetChanged" text="the target kingdom or clan changed" />
   <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="player-kingdom stability rebellion immunity is enabled" />
   <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="the rebel kingdom naming was skipped" />
-  </strings>
+</strings>
 </base>
