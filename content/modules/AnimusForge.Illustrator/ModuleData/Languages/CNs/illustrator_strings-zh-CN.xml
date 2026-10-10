@@ -313,5 +313,16 @@
     <string id="AF_ILL_UI_PHOTO_GENERATE" text="生成" />
     <string id="AF_ILL_UI_PHOTO_CONTINUE" text="继续截取" />
     <string id="AF_ILL_UI_PHOTO_RESTART" text="重新截取" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARING" text="本期配图正在提前生成…" />
+    <string id="AF_ILL_UI_BULLETIN_DISCARDED" text="本期事件已作废。" />
+    <string id="AF_ILL_UI_BULLETIN_CANCELLED" text="本期配图已取消，可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_MISSING" text="暂无已生成插画，可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_CANCELLED" text="本图重绘已取消。" />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_COMPLETE" text="重绘完成，已保存为新版本。" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARE_FAILED" text="配图准备失败：{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_IMAGE_FAILED" text="配图失败：{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="未能保存图片" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="无法保存" />
   </strings>
 </base>

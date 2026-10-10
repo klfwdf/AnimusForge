@@ -420,7 +420,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             var job = BulletinIllustrationPreloader.Find(key);
             if (job == null) return;
             _sink.IsLoading = job.Pending;
-            _sink.StatusText = job.Status;
+            _sink.StatusText = IllustrationStatusUiText.Bulletin(job);
             if (job.Pending) { if (!job.EditingCurrentImage) _sink.HasIllustration = false; return; }
             if (!job.Ready) return;
             if (result != null)
@@ -684,7 +684,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke((bulletin ? direction.StatusText : IllustrationStatusUiText.Direction(direction)) + " · " + IllustratorUiText.WeeklyDrawing); });
+                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke(IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing); });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;

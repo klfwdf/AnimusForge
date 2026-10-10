@@ -167,6 +167,17 @@ namespace AnimusForge.Illustrator.UI
         internal static string StatusDirectorValidated => Resolve("AF_ILL_UI_STATUS_DIRECTOR_VALIDATED", "The director output was validated; the API did not return a finish marker");
         internal static string StatusDirectorComplete => Resolve("AF_ILL_UI_STATUS_DIRECTOR_COMPLETE", "The director finished planning");
         internal static string GalleryMenu => Resolve("AF_ILL_MENU_GALLERY", "Calradia Visual Chronicle Gallery (AI illustrations)");
+        internal static string BulletinPreparing => Resolve("AF_ILL_UI_BULLETIN_PREPARING", "This bulletin's illustration is being prepared...");
+        internal static string BulletinDiscarded => Resolve("AF_ILL_UI_BULLETIN_DISCARDED", "This bulletin event has been discarded.");
+        internal static string BulletinCancelled => Resolve("AF_ILL_UI_BULLETIN_CANCELLED", "This bulletin's illustration was cancelled. Click Redraw to try again.");
+        internal static string BulletinMissing => Resolve("AF_ILL_UI_BULLETIN_MISSING", "No generated illustration is available. Click Redraw to create one.");
+        internal static string BulletinRedrawCancelled => Resolve("AF_ILL_UI_BULLETIN_REDRAW_CANCELLED", "Redrawing this image was cancelled.");
+        internal static string BulletinRedrawComplete => Resolve("AF_ILL_UI_BULLETIN_REDRAW_COMPLETE", "Redraw complete; a new version was saved.");
+        internal static string BulletinPrepareFailed(string error) => Format("AF_ILL_UI_BULLETIN_PREPARE_FAILED", "Illustration preparation failed: {ERROR}. Click Redraw to try again.", "ERROR", error);
+        internal static string BulletinImageFailed(string error) => Format("AF_ILL_UI_BULLETIN_IMAGE_FAILED", "Illustration failed: {ERROR}. Click Redraw to try again.", "ERROR", error);
+        internal static string BulletinRetry(string error) => Format("AF_ILL_UI_BULLETIN_RETRY", "{ERROR}; click Redraw to try again.", "ERROR", error);
+        internal static string BulletinSaveImageFailed => Resolve("AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED", "The image could not be saved");
+        internal static string BulletinSaveUnavailable => Resolve("AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE", "Could not save");
         internal static string GenerationComplete(string title) => Format("AF_ILL_NOTIFY_GENERATION_COMPLETE", "[AI Illustration] {TITLE} is complete and the gallery has been updated.", "TITLE", title);
         internal static string GenerationFailed(string error) => Format("AF_ILL_NOTIFY_GENERATION_FAILED", "[AI Illustration] Generation failed: {ERROR}", "ERROR", error);
         internal static string MissionNotice(string status) => Format("AF_ILL_MISSION_NOTICE", "[AI Illustration] {STATUS}", "STATUS", status);

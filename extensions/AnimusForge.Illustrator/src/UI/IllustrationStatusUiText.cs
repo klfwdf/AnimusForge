@@ -10,6 +10,27 @@ namespace AnimusForge.Illustrator.UI
     {
         private static readonly Regex SceneBudget = new Regex(@"^环境物件超过([0-9]+)个预算，已跳过环境采集，继续绘制$", RegexOptions.CultureInvariant);
 
+        internal static string Bulletin(BulletinIllustrationPreloader.Job job)
+        {
+            if (job == null) return string.Empty;
+            switch (job.DisplayCode)
+            {
+                case "preparing": return IllustratorUiText.BulletinPreparing;
+                case "discarded": return IllustratorUiText.BulletinDiscarded;
+                case "cancelled": return IllustratorUiText.BulletinCancelled;
+                case "missing": return IllustratorUiText.BulletinMissing;
+                case "redraw_cancelled": return IllustratorUiText.BulletinRedrawCancelled;
+                case "redraw_complete": return IllustratorUiText.BulletinRedrawComplete;
+                case "deleted": return IllustratorUiText.WeeklyDeleted;
+                case "prepare_failed": return IllustratorUiText.BulletinPrepareFailed(job.DisplayDetail);
+                case "redraw_failed": return IllustratorUiText.WeeklyRedrawFailed(job.DisplayDetail ?? IllustratorUiText.BulletinSaveImageFailed);
+                case "image_failed": return IllustratorUiText.BulletinImageFailed(job.DisplayDetail ?? IllustratorUiText.BulletinSaveUnavailable);
+                case "retry": return IllustratorUiText.BulletinRetry(job.DisplayDetail);
+                case "cached": return job.DisplayItem != null ? Cached(job.DisplayItem) : job.Status;
+                default: return job.Status;
+            }
+        }
+
         internal static string Direction(IllustrationDirection direction)
         {
             if (direction == null) return string.Empty;

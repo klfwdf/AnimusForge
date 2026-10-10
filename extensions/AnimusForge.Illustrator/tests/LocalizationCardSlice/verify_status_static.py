@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import re
 import subprocess
+from verify_bulletin_static import restore_catalog as restore_bulletin_catalog
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
@@ -40,6 +41,7 @@ for line in source.splitlines():
 catalog_path = PREFIX + "UI/IllustratorUiText.cs"
 catalog = (ROOT / catalog_path).read_text(encoding="utf-8-sig")
 def restore_catalog(source):
+    source = restore_bulletin_catalog(source)
     for key in PACKET["newKeys"]:
         candidates = [line for line in source.splitlines(keepends=True) if '"' + key["id"] + '"' in line]
         assert len(candidates) == 1, key["id"]

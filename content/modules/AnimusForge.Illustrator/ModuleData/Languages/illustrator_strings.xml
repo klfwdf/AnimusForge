@@ -313,5 +313,16 @@
     <string id="AF_ILL_UI_PHOTO_GENERATE" text="Generate" />
     <string id="AF_ILL_UI_PHOTO_CONTINUE" text="Capture another" />
     <string id="AF_ILL_UI_PHOTO_RESTART" text="Capture again" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARING" text="This bulletin's illustration is being prepared..." />
+    <string id="AF_ILL_UI_BULLETIN_DISCARDED" text="This bulletin event has been discarded." />
+    <string id="AF_ILL_UI_BULLETIN_CANCELLED" text="This bulletin's illustration was cancelled. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_MISSING" text="No generated illustration is available. Click Redraw to create one." />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_CANCELLED" text="Redrawing this image was cancelled." />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_COMPLETE" text="Redraw complete; a new version was saved." />
+    <string id="AF_ILL_UI_BULLETIN_PREPARE_FAILED" text="Illustration preparation failed: {ERROR}. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_IMAGE_FAILED" text="Illustration failed: {ERROR}. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}; click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="The image could not be saved" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="Could not save" />
   </strings>
 </base>
