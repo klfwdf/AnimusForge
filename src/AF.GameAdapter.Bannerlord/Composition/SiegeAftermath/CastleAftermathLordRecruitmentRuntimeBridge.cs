@@ -195,7 +195,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 						locationText: location,
 						won: true);
 					InformationManager.DisplayMessage(new InformationMessage(
-						"【城堡处置来信】" + senderName + " 的引见信已在 " + recipientName + " 处送达；没有生成信使部队。",
+						CastleAftermathUiText.LetterDelivered(senderName, recipientName),
 						Color.FromUint(SuccessColor)));
 					Logger.Log("CastleAftermath", "Delivered castle lord introduction letter. Sender=" + senderId
 						+ ", Recipient=" + recipientId + ", DueDay=" + dueDay);
