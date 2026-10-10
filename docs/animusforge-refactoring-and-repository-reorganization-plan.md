@@ -14,6 +14,11 @@ B/C 交付按两份仓库报告验证。B 3 产品提交253对新键、C 9产品
 1.3/1.4各39,992次真实TextObject解析通过，资源契约25对通过。
 
 当前切片：[下拉显示](handoffs/2026-10-10-localization-dropdown-display.md)。
+最新分工按用户明确纠正：世界书已交B；[C/D/E总计划](handoffs/2026-10-10-localization-cde-plan.md)
+中的C负责政策，D负责外交/内战，E负责经济/RP制造/任务。旧E英文资产计划
+已标历史替代，不再授权接管B世界书；默认Prompt资产仍由主线协调。
+主线保留共享错误UI、Memory集成、共享端口/注册/门禁与双包装配；D提供CivilWar
+显示端口，主线协调E在RewardSystemBehavior接线，避免并发抢文件。
 WorldMap/Issue/Economy仍有实际通知中文泄漏；CivilWar/Diplomacy/Policy/Memory
 同样未全量闭环。共享事实的中文不得通过修改存档值消除，需独立显示投影。
 部分原测试锁中文文案，必须保持线程、发布、生命周期断言并补双语显示断言，
