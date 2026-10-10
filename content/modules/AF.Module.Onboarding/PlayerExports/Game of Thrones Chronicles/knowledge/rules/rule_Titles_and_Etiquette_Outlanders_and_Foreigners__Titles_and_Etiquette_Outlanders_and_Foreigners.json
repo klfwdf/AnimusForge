@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Outlanders_and_Foreigners",
+  "Keywords": [
+    "Outlanders and Foreigners"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Foreigners' accents, skin colors, clothes, and gods often make them seen first as strangers and then as threats or opportunities. Trade routes make cities dependent on foreigners, but wars make them the easiest scapegoats; the first etiquette travelers learn is often how not to let themselves be"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners Foreigners' accents, skin colors, clothes, and gods often make them seen first as strangers and then as threats or opportunities. Trade routes make cities dependent on foreigners, but wars make them the easiest scapegoats; the first etiquette travelers learn is often how not to let themselves be Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners Foreigners' accents, skin colors, clothes, and gods often make them seen first as strangers and then as threats or opportunities. Trade routes make cities dependent on foreigners, but wars make them the easiest scapegoats; the first etiquette travelers learn is often how not to let themselves be If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outlanders and Foreigners Foreigners' accents, skin colors, clothes, and gods often make them seen first as strangers and then as threats or opportunities. Trade routes make cities dependent on foreigners, but wars make them the easiest scapegoats; the first etiquette travelers learn is often how not to let themselves be They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Outlanders and Foreigners: Foreigners' accents, skin colors, clothes, and gods often make them seen first as strangers and then as threats or opportunities. Trade routes make cities dependent on foreigners, but wars make them the easiest scapegoats; the first etiquette travelers learn is often how not to let themselves be"
+  ]
+}

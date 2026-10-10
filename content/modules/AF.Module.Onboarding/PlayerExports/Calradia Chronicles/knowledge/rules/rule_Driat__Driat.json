@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Driat",
+  "Keywords": [
+    "Dryat",
+    "Seal"
+  ],
+  "RagShortTexts": [
+    "The village of Dryat, located in the Bay of Walceg, produces fur oil."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dryat is a village near Kaliusborg, between the Walceg Bay and the ridge of the Ebo Peninsula. Local villagers catch beaver and mink in the mountains, and sometimes seals in the bay waters. Fur and oil are their main sources of output."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The village of Dryatna is close to the mountains and the sea. They can catch beavers and minks in the mountains and seals in the sea. They live in a variety of ways. The sealskin from the Valchego Bay area is very valuable, thick and slippery, and can be used as a waterproof cloak. Some of the materials for the fur coats worn by the garrison of Karius Castle in winter were collected from Dryat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The seal skins of Dryat are considered unique in the Walceg Bay area. There is also mink fur, which has good color and is suitable for ladies’ scarves. However, the road there is not easy to navigate. It is between the ridge and the bay, so it takes a lot of effort to get in."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The hunters of Dryat lived a really wild life. Catching minks and beavers in the mountains, chasing seals in the bay, relying on traps and harpoons all year round. I've seen them drying seal skins in the village, and you can smell the salty smell from afar. The seal oil there is particularly good for lighting lamps, with less smoke and bright flames."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dryat",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Karius Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

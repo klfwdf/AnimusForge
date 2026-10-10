@@ -1,0 +1,95 @@
+{
+  "Id": "rule_merok",
+  "Keywords": [
+    "Merok",
+    "Fishing Village"
+  ],
+  "RagShortTexts": [
+    "Merok fishermen are good at catching tuna and sardines and are famous for pickling sardines."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Meroc is a small fishing village under the jurisdiction of Galen overlooking a calm bay on the Biscayne Coast. Villagers often go out to sea to fish. There are mullet and seabass offshore, and tuna and sardines can be caught near the islands to the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merok is an inconspicuous little fishing village, but many of the best tuna in the fish market on the Gallen side come from here. The fishermen of Merok are brave enough to chase big fish near the southern islands. Not everyone can go there because of strong waves and strong winds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sardines in Merok are particularly well marinated and the price is reasonable. At Galen's market, fish from Merok never had to be sold. That small bay is a natural harbor. It is easy for fishing boats to enter and exit, and wind and waves cannot get in."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merrock's little bay is a good anchorage, not large, but sheltered from the wind. Local fishermen know which reefs hide schools of bass and which currents can bring tuna here. If you want to get good fish off the Biscayne Coast, look no further than the Meroc."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Merok",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Galen",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

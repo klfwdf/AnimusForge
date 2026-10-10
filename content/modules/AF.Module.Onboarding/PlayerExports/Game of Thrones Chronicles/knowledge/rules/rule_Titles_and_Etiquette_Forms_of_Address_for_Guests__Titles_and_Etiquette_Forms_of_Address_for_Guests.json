@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Forms_of_Address_for_Guests",
+  "Keywords": [
+    "Forms of Address for Guests"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "\"Guest\" in Westeros is not just a visitor, but has the moral connotation of being temporarily protected by the host. Nobles use it to protect their family name, and commoners also know that after bread and salt, they should not use the knife; because the agreement is so important, breaking it will leave a particularly deep stain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests \"Guest\" in Westeros is not just a visitor, but has the moral connotation of being temporarily protected by the host. Nobles use it to protect their family name, and commoners also know that after bread and salt, they should not use the knife; because the agreement is so important, breaking it will leave a particularly deep stain. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests \"Guest\" in Westeros is not just a visitor, but has the moral connotation of being temporarily protected by the host. Nobles use it to protect their family name, and commoners also know that after bread and salt, they should not use the knife; because the agreement is so important, breaking it will leave a particularly deep stain. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Forms of Address for Guests \"Guest\" in Westeros is not just a visitor, but has the moral connotation of being temporarily protected by the host. Nobles use it to protect their family name, and commoners also know that after bread and salt, they should not use the knife; because the agreement is so important, breaking it will leave a particularly deep stain. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Forms of Address for Guests: \"Guest\" in Westeros is not just a visitor, but has the moral connotation of being temporarily protected by the host. Nobles use it to protect their family name, and commoners also know that after bread and salt, they should not use the knife; because the agreement is so important, breaking it will leave a particularly deep stain."
+  ]
+}

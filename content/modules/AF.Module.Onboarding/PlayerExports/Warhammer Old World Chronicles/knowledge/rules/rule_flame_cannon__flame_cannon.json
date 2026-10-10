@@ -1,0 +1,213 @@
+{
+  "Id": "rule_flame_cannon",
+  "Keywords": [
+    "flame cannon",
+    "Alchemical Fuel",
+    "Destruction at close range",
+    "Armored Nemesis",
+    "Dwarves breathe fire",
+    "ash making",
+    "artillery",
+    "Dwarven Cannon",
+    "combustion",
+    "siege weapons",
+    "flame",
+    "Forge Cannon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The flame cannon is the most violent artillery weapon in dwarven engineering - it throws a cannonball filled with dwarven alchemical fuel at the target, which explodes into a sticky and burning hell of fire after it hits the ground. It is the most direct nemesis of the hoplite phalanx: iron armor cannot protect it and will only become a personal oven."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The flame cannon - that's not a little iron dragon hand canister for children to play house with! This is a serious copper tube cannon. The shell contains much more Rakul alchemical fuel than the iron dragon can. Do you know how refreshing it is to see a shell blooming in the middle of a group of heavy armored soldiers? There was a bang, and then it was not an ordinary explosion of fire - it was oil! The oil will stick to wherever it is sprayed and continue to burn! Those Chaos warriors wearing thick armor usually held their heads high and thought that their plate armor given by the Dark God was invincible. When the flame cannon exploded, their armor turned into pots, and the people inside became the meat being stewed. The most cruel thing is that when the flame cannon shell explodes, it will splash out a large amount of fire mist - a mushroom cloud will be launched into the mid-air, which is neither high nor low, and will instantly burn out all the surrounding air. No matter what kind of tin can you are wearing, everyone within a 40-foot radius will fall to the ground and roll around. Dwarf commanders like to use flame cannons when attacking cities or guarding city gates: you don't need to aim at anyone - shoot in that direction to ensure that nothing can survive on that land for a while. The only problem is that the cannonballs are so expensive that it would make a bearded man cry - the cost of a flame cannonball is equal to the income of forty dwarf miners digging for meteorite for three years. So every time the flame cannon goes off, it means that the dwarves have put their grudge on the account."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Flame cannons are specialized artillery that carry out area destruction on dense heavy armor formations. Its core killing mechanism is not the penetration of the projectile - in fact, the explosive cover of the flame cannon is extremely thin - but the two secondary effects of Lakour fuel: suffocation caused by the consumption of oxygen in the air and inescapable burning caused by the heat conduction of the armor. The most effective way to fight flame cannons on a plain battlefield is to deploy a loose formation - but this is a dilemma for heavy armored infantry who need dense defense: if you are densely packed, you will be a good target for the artillery, but if you let go, the enemy's ordinary infantry can eat you. In addition, the range of the flame cannon is about two-thirds of that of the ordinary stone cannon - this requires the flame cannon to be further forward than the conventional artillery, providing a window for the enemy light cavalry to attack. If your opponent is a dwarf and deploys a flame cannon, your first countermeasure is to send cavalry around to destroy their ammunition carts first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The internal ballistics of the flame cannon are completely different from traditional stone/iron cannons. The flame cannon shell - known as 'Rakul-Kazadum' in dwarven ordnance terms - is a sealed container of liquid fuel encapsulated by a thin copper shell, with a refined graphite delayed combustion fuse embedded in the center. When the cannon is fired, the black powder propellant loaded at the bottom of the tube ignites and then ejects the projectile, without simultaneously igniting the internal fuel. (This is a key design), and when the projectile reaches about fifteen to twenty feet above the target, the delayed fuse ignites the fuel. The high-temperature gas pressure tears open the thin copper shell and spreads the fuel in an atomized state. It is then ignited by the open flame of the surrounding air during the descent - forming a sticky burning zone that cannot be protected by any known insulation material. The effective burning radius of a single cannonball is about twenty feet, and the temperature gradient gradually weakens outward from 1,800 degrees at the center of the impact point. There are three shortcomings of the flame cannon: range (the maximum range is about 450 feet, only one and a half of the imperial cannon), cost (the Rakul fuel content of a single shell is approximately equivalent to two iron dragon cans, plus the rune sealing process of the copper shell, the cost is extremely high (very expensive), and the safety of ammunition (flame cannonballs are extremely sensitive under high-speed vibrations. Historically, there have been at least fourteen self-destruction accidents of artillery teams caused by ammunition truck accidents recorded in the dwarf ordnance archives, each of which resulted in the total destruction of the gun and the artillery team)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My territory was lucky enough to have dwarven flame cannons to help defend the city against the greenskin invasion. Standing on the city wall and looking down, the way the fire burned at the foot of the city wall turned into a red river—greasy, shiny, and slowly flowing—very close to my imagination of the \"river of death.\" But I also noticed that the flame cannon crew members had no smiles on their faces during the whole process, which was completely different from the human artillerymen who cheered when they reached the opposite side. Later I learned: Each fire cannonball was the equivalent of a red line under the bill to the dwarves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When my family united with the dwarves to guard a pass, the dwarves brought two flame cannons. They buried a delay fuse at the bottom of the pass, and when the greenskin forwards rushed through the pass, they set it off, and the flames cut off the enemy from the rear. But there was something wrong with the fuse and the fire was delayed by twelve beats - our front line lost about seventy swordsmen in those twelve beats. Afterwards, the dwarf craftsman came to apologize to me. He did not say any sweet words, and crossed out the amount of compensation corresponding to the loss in the ledger - accurate to the pension expenditure of each soldier. Flame cannons are dangerous tools - the dwarves never deny it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We saw two flame cannons on the walls of Barak Vaal. They are not polished and polished like the Empire's cannons - the dwarf's cannon barrels are dark green bronze, with runes engraved on the surface. From a distance, they look like two old chimneys. But the sound when they launch - not an imperial \"bang\", but a low \"buzz\", and then all the moisture in the air disappears, and a heat wave falls from the sky like you were punched in the nose. Not long after landing, the entire green-skinned phalanx outside the city wall turned into a mass of writhing burning men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial Artillery Engineers Guild always wants to get the alchemical fuel formula for the flame cannon from the dwarves. After several rounds of negotiations, the dwarves only replied with one sentence: \"Your gunpowder is gunpowder, and our oil is native product - the soil is not dug by you.\" The human engineers retreated and imitated the Imperial version of the coagulated flame bomb - a mixture of pitch, sulfur and whale blubber at high temperatures. The range was only 40% of the dwarven original version, and it often spontaneously ignited in the barrel. The last record of an imitation flame cannon in the Imperial Ordnance Memorandum was in 1983 in the Imperial Calendar: \"Test failed. Cannon destroyed. Three killed. Project stopped.\""
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dwarf special incendiary artillery filled with Rakul alchemical fuel, the direct nemesis of the heavy armor phalanx",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Flame cannon alchemy fuel close range destruction"
+  ]
+}

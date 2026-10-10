@@ -1,0 +1,210 @@
+{
+  "Id": "rule_dwarf_history",
+  "Keywords": [
+    "dwarven history",
+    "David's origin",
+    "golden age of dwarven history",
+    "Decline of the Dwarves",
+    "Dwarven History Longbeard's War",
+    "Fall of Karak",
+    "third era",
+    "Ancestel",
+    "Sigmar Covenant"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarf civilization once covered the entire underground of the World's Edge Mountains - from Karak Dragon Rock in the north to Karak Eight Peaks in the south - but during thousands of years of continuous war, more than half of the strongholds have fallen or lost contact. The history of the dwarves is a tragic epic that continues to shrink after a glorious beginning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our history is dug into the stone by our own hands. The Golden Age - A time when we were at our most powerful, when the forges of Kharak burned on every mountain, a network of underground roads stretched from north to south, and dwarven caravans traded goods between humans and elves. Then - due to the treachery of the elves - the War of Longbeard broke out. We won that war, but the cost was too great and too many people were lost. While we were still licking our wounds, greenskins emerged from the ground, Skaven bit out from deeper, and volcanoes and earthquakes blocked our path. Our fortress is now a shadow of its former self, but we are still here, still forging, still guarding the Book of Hatred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Battle of Longbeard is the primal wound of all dwarven diplomatic decision-making. When the high elf envoy shaved off the dwarf envoy's beard - an insult of declaration of war to the dwarves - the elves refused to hand over the perpetrators, and the dwarven High King declared war. This war lasted for hundreds of years and ended with the dwarves occupying some of the elven colonies. But the price the dwarves paid for this—an entire generation of dwarves died in battle, the domestic economy was stagnant, and foreign defenses were ignored—created the conditions for the subsequent massive invasion of greenskins and ratmen. Starting from the Battle of Longbeard, the Dwarf Empire entered a phase of defensive attrition that continues to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The timeline of dwarven history is divided into three eras. The First Age (Golden Age): Beginning with the ancestor of the dwarves Ancestel led his people to settle in the World's Edge Mountains. During this period, the dwarves established a complete network of underground fortresses, invented rune forging technology, and signed the initial trade and mutual aid covenant with the high elves. The Second Age (The War of the Longbeard and the Period of Decline): It began with the humiliation of the high elf envoys against the dwarf envoys and lasted for about five hundred years. It ended with the apparent victory of the dwarves but actually started the decline that continues to this day. The Third Age (Isolation and Defense Period): The area of ​​the dwarf empire continued to shrink, and Karak Eight Peaks, Vann, etc. fell one after another. The Treaty of Mutual Defense against Chaos with the Imperium is one of the few dwarven foreign commitments still in effect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "An overlooked aspect of dwarf history is the central response role of women in the demographic crisis. The collapse of the dwarf population after the Longbeard War was not only due to battlefield casualties - but also because after the war took away an entire generation of men, a large number of clan trade, covenant management and cross-fortress liaison work in Karak society fell on the shoulders of women. Imperial scholars love to tell dwarf male war stories, but let's face it: without dwarf women maintaining inter-clan marriage networks to maximize reproductive efficiency, managing food reserves in remnant territories, and establishing alternative foreign trade relationships with human merchants in the hundreds of years after the war—the dwarf race would have died silently from isolation and internal strife before entering the Third Age."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My family has preserved a 3,700-year-old clan chronicle - not written on parchment, but engraved on twelve granite slabs, stored in the deepest underground archives of the family. These tablets record every greenskin Waaagh! , every invasion of the Skaven tribe, every renewal of the trade alliance with the Human Empire. One of the tablets makes me feel heavy every time I read it: It records that in three consecutive generations after the Longbeard War, no male baby in my family lived past the age of fifty - not because of the curse, but because the death rate of dwarf male babies increased sharply after the war due to insufficient maternal nutrition. The 'decline' of dwarven history is not an abstract concept - it is found on every page of family genealogy with precise records of age of death and cause of death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While traveling through the old abandoned underground roads of the dwarves, I found the most visual evidence of the dwarven history - the scales on the walls. Whenever a dwarf clan evacuates a section of the mine due to war or famine, they will carve the date and reason for their evacuation on the stone wall at the exit. I traced an abandoned trading mine tunnel in the World's Edge Mountains and worked backwards along the numbers on the wall. I saw the wide mine tunnel in the Golden Age gradually narrowing, the illuminating runes on the wall gradually decreasing until they disappeared completely, and the last section of the record read, 'The second year after the fall of Karak Varn, the Skaven were helpless. 'The tragedy of dwarven history needs no epic description - it suffices in these walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impact of the fall of the Dwarven Golden Age on the Old World's trading system was structural rather than temporary. In the Golden Age, the underground dwarven trade routes that ran through the World's Edge Mountains were the main artery of north-south trade in the Old World - from the snowfields of Kislev in the north to the edge of the Badlands in the south, goods could travel in safe, lighted dwarven tunnels. The successive failures of these tunnels forced long-distance trade in the Old World to shift to more dangerous surface routes, leading to a surge in transportation costs and the decline of many inland trading centers. The Imperial Reik River water transport system grew in importance after the closure of the Dwarven Tunnels - not because water transport was cheaper, but because it became the only north-south route unaffected by Greenskin attacks. Anyone who studies the economic history of the old world will find a clear pattern: every fall of a dwarf city corresponds to the economic collapse of an inland trading city in the empire."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Golden Age - the first era of dwarf civilization, with full coverage of the city fortress network and the invention of rune forging technology",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "More than half of the fortresses have fallen or lost contact"
+  ]
+}

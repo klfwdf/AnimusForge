@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Stane",
+  "Keywords": [
+    "Stane",
+    "House Stane"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stang family is a noble family of Skagos Island, living on the cold and rugged island outside Seal Bay. The Skagos people have few contacts with the northern mainland, retaining the belief in the old gods and a strong identity as islanders. The mountains, rocky shores and dangerous currents on the island make livestock raising, fishing and local guides particularly important. Outsiders often summarize the entire island with rumors of cannibals and unicorns, but Stan's actual rule still has to deal with relatives, winter food, ships and mountain roads. Isolation protects old traditions and deepens fear of the outside world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Skagos look at Stan first to see if they respect the old gods, kin, and the distribution rules of the island. The continental title is of little use on a rocky shore. Being able to lead the ship through the reef and prevent winter food from being monopolized by the strong is the real skill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people in the northern mainland know little about Stan and often regard the rumors of Skaggs as fact. A prudent lord will not despise them for this: a family that can establish itself on Cold Island for a long time must have access to roads, food and loyalty that foreign armies do not have."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign sailors are most concerned about Stan's ability to provide reliable navigation and safe anchorage. Stories about unicorns and cannibal feasts are suitable for taverns, and when it comes to actual shore, the tides and rocks are more likely to kill than hearsay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stane The Stang family is one of the nobility of Skagos, and their family fortune has been shaped by the stone shores, cold seas, Old God traditions and long-term isolation from the island. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stane The Stang family is one of the nobility of Skagos, and their family fortune has been shaped by the stone shores, cold seas, Old God traditions and long-term isolation from the island. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stane The Stang family is one of the nobility of Skagos, and their family fortune has been shaped by the stone shores, cold seas, Old God traditions and long-term isolation from the island. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stane The Stang family is one of the nobility of Skagos, and their family fortune has been shaped by the stone shores, cold seas, Old God traditions and long-term isolation from the island. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stane: The Stang family is one of the nobility of Skagos, and their family fortune has been shaped by the stone shores, cold seas, Old God traditions and long-term isolation from the island."
+  ]
+}

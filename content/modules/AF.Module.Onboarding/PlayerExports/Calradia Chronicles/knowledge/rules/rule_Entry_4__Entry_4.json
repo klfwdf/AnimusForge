@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Entry_4",
+  "Keywords": [
+    "Xilandak",
+    "Ebo Peninsula"
+  ],
+  "RagShortTexts": [
+    "The village of West Landak is located at the foot of the high mountains of the Ebo Peninsula"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Western Landak is a village near Tilby Castle. It is located at the foot of the high mountains of the Ebo Peninsula. The mountains slightly block the biting cold wind blowing from the northwest. This was originally a place where silver miners searched for silver in cave streams, but the silver resources have long since been exhausted and clay is now mainly exported for use by local potters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Silver was produced in Xilandak in the past, and silver sand could be found in the caves and streams, and it was a prosperous place for a while. Later, all the silver was mined, and the silver diggers left, leaving behind mountains of mines. Nowadays, people in the village dig up clay and sell it for money, which is used by potters to burn pots and tiles. More than half of the pottery used by miners and fishermen on the Ebo Peninsula has the Silandak mark printed on the bottom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The clay of Xilandak has good viscosity and the pottery pots produced will not crack. That place used to rely on silver mines, but now it relies on clay. Although the profit is much less, it is better than being safe. Many of the tiles used to build the houses in Tilby Castle were also fired from Westlandak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen those old mines in Xilandak. They were so dark that no one dared to enter. The children in the village said there was a ghost inside - the ghost left behind by the silver miners. Now that there are no silver diggers left, the clay diggers carry shovels into the mountains every morning and haul out truckloads of good mud. Life is not as glorious as before, but it is solid."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Xilandak",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Tilby Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

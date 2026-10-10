@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Crown_of_Aragon_and_James_the_Conqueror",
+  "Keywords": [
+    "Crown of Aragon",
+    "James I",
+    "Jaime the Conqueror",
+    "Kingdom of Valencia",
+    "Balearic Islands",
+    "Mediterranean Expansion"
+  ],
+  "RagShortTexts": [
+    "King James I the Conqueror transformed the Crown of Aragon into a premier maritime and peninsular power through the conquest of Valencia and the Balearics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Crown of Aragon under King James I (reigned 1213–1276) evolved into a composite maritime monarchy that bridged the Iberian Reconquista and Mediterranean expansionism. Through personal military generalship, James conquered the Balearic Islands (1229–1235) and the Muslim Kingdom of Valencia (1238), vastly expanding the territory and commercial revenue of his realm.\n\nBy 1259, having concluded the Treaty of Corbeil with Louis IX to renounce Aragonese claims in southern France, James turned his attention toward maritime power. He granted the Consolat de Mar to codify Mediterranean maritime law, protected Jewish and Catalan merchant finance in Barcelona, and set the stage for subsequent Aragonese expansion into Sicily, Sardinia, and Greece."
+    }
+  ],
+  "TextMappings": []
+}

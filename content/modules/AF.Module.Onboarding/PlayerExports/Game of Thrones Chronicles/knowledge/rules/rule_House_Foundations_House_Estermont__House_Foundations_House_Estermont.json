@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_House_Estermont",
+  "Keywords": [
+    "House Estermont",
+    "Estermont Island",
+    "Sea Turtle",
+    "Baratheon Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Ismond is based on the Greenstone Castle on Esmond Island. It is a stormland island family under the command of Baratheon. The family emblem is a dark green turtle on a light green background. The island is close to Shipbreaker Bay and the Dorne Sea, and life is inseparable from fishing, boats, tides and storms; the slow turtle coat of arms does not mean that the whole family is slow. Foreign lords have little reason to be familiar with Ismon, but Stormland sailors will take Greenstone Castle's experience of harbor and sea conditions seriously in bad weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Stormlands nobles viewed Yismon as a reliable but not noisy island vassal on Greenstone. The turtle crest is not as powerful as the stag or the lightning bolt, but it is very suitable for a family that must survive among the rocks, pirates and the bad weather of Shipbreaker Bay: carapace, patience and knowing when to retreat to safe water are all strengths."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the islanders evaluate Ismon, they first look at whether the port can be sheltered from the wind, who will organize the shore guard when pirates come, and whether there are ships to bring back food when the harvest fails. The nobles on land may joke about turtles, but the people on Greenstone Island know that living long is more important than rushing fast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Estermont The Stormlands island vassal of Greenstone Castle on Esmond Island, whose family crest is a dark green turtle on a light green background. Fishing, ships, storms, and Baratheon marriage connections form its foundation; proverbs unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Estermont The Stormlands island vassal of Greenstone Castle on Esmond Island, whose family crest is a dark green turtle on a light green background. Fishing, ships, storms, and Baratheon marriage connections form its foundation; proverbs unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Estermont The Stormlands island vassal of Greenstone Castle on Esmond Island, whose family crest is a dark green turtle on a light green background. Fishing, ships, storms, and Baratheon marriage connections form its foundation; proverbs unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Estermont The Stormlands island vassal of Greenstone Castle on Esmond Island, whose family crest is a dark green turtle on a light green background. Fishing, ships, storms, and Baratheon marriage connections form its foundation; proverbs unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Estermont: The Stormlands island vassal of Greenstone Castle on Esmond Island, whose family crest is a dark green turtle on a light green background. Fishing, ships, storms, and Baratheon marriage connections form its foundation; proverbs unknown."
+  ]
+}

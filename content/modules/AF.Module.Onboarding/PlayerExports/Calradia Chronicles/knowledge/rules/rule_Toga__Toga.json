@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Toga",
+  "Keywords": [
+    "toga"
+  ],
+  "RagShortTexts": [
+    "Toga is the clothing of imperial nobles"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Toga is the clothing of the imperial nobles and cannot be worn by civilians"
+    }
+  ],
+  "TextMappings": []
+}

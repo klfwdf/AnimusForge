@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Velaryon",
+  "Keywords": [
+    "Velaryon",
+    "House Velaryon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Velaryon, with its roots in Driftwood Hall on the Isle of Tides, hails from ancient Valyria like the Targaryen, but has never been known for harnessing dragons. Their silver seahorses, silver-gold color and generations of marriage to the Dragonstone royal family make them one of the most striking old Valyrian races in the Narrow Sea. The family's wealth has long come from sailing, trade and fleets. The voyage of Corlys Velaryon's \"Sea Serpent\" once pushed Tidehead Island to the pinnacle of wealth and power; the Dance of the Blood Dragon proved that the glory of the sea can also be swallowed up by the war of dynastic succession. The tides have risen and fallen, and Velaryon's lands, ships, and influence have waxed and waned, but the sea has always been the family name's surest path."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dragonstone nobles consider Velaryon to be their closest sea kin to the Dragon King's bloodline. Marriage connects the two families with honor and disgrace, and Chaotou Island is often involved in disputes over the throne and succession. Kaiba doesn't have dragon flames, but it can use its fleet to determine whether the dragon gets food, sea crossings, and allies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When sailors and merchants talk about Velaryon, they first talk about tides, ship materials, far harbors, and the routes traveled by sea serpents. A voyage can fill the halls with exotic wealth, and a storm can cause an entire page to be lost in the family ledger. Maritime fame must be earned anew each generation, and the ships of ancestors will not sail for future generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maesters and nobles of the crown remember Velaryon as a man who stood close to him in dynastic marriages and the Dance with Dragons. The ancient bloodline gives them tickets to enter the center of power, and also puts them in a position where the flames are most likely to be burned. Onlookers therefore not only envied the glory of Chaotou Island, but also regarded it as a warning to get too close to the dragon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Velaryon Entry Velaryon The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Velaryon Entry Velaryon Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Velaryon Entry Velaryon The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Velaryon Entry Velaryon They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Velaryon: Entry Velaryon"
+  ]
+}

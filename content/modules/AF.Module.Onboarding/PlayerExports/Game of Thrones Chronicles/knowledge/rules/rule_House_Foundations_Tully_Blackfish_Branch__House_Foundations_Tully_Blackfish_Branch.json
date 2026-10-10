@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Tully_Blackfish_Branch",
+  "Keywords": [
+    "Tully (Blackfish Branch)",
+    "House Tully (Blackfish Branch)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Brynden Tully is the younger brother of Lord Hoster Tully, Duke of Riverrun. He has been quarreling with Hoster for many years because he refused to accept the marriage arranged by his brother. He changed the \"family black goat\" that his brother scolded him to \"black fish\", and from then on took the black trout leaping out of the red and blue water as his personal coat of arms. Brynden did not establish an independent family; he left Riverrun to serve his nephew Jon Arryn in the Vale as a knight of the Blood Gate, and returned to the Riverlands when the family needed it. He is good at reconnaissance, cavalry warfare, city defense and outspokenness, and is unwilling to obey arrangements that he thinks are wrong for the sake of dignity. Blackfish's name is both self-mockery and his unique loyalty to his family: he can refuse their orders, but rarely stands by when their family is in real danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river nobles view Blackfish both as the rebellious uncle of the Tully family and as more trustworthy than many of their obedient kin. Refusal to marry hurt Horst's authority but did not sever his responsibility to Riverrun. Brynden proves that family loyalty does not always equal obedience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers respect Heiyu mostly because he knows about scouting, crossings, camps and when to withdraw. He does not rely on fancy words to win trust, but often personally confirms the roads that others have only pointed out on a map. You may get scolded when working with him, but you will rarely die in vain because of the general's vanity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the Vale remember Brynden's days guarding the Blood Gate. To them, he was both a foreign river noble and a knight who made a personal reputation out of dangerous duties. Blackfish did not lose his roots when he left his hometown, but instead let both regions know where he would stand in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tully (Blackfish Branch) Brynden Tully uses the black fish as his personal coat of arms and refuses the marriage arranged by his brother. However, he always assumes the responsibilities of reconnaissance, guarding and combat when the family is in real danger. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tully (Blackfish Branch) Brynden Tully uses the black fish as his personal coat of arms and refuses the marriage arranged by his brother. However, he always assumes the responsibilities of reconnaissance, guarding and combat when the family is in real danger. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tully (Blackfish Branch) Brynden Tully uses the black fish as his personal coat of arms and refuses the marriage arranged by his brother. However, he always assumes the responsibilities of reconnaissance, guarding and combat when the family is in real danger. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tully (Blackfish Branch) Brynden Tully uses the black fish as his personal coat of arms and refuses the marriage arranged by his brother. However, he always assumes the responsibilities of reconnaissance, guarding and combat when the family is in real danger. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Brynden Tully uses the black fish as his personal coat of arms and refuses the marriage arranged by his brother. However, he always assumes the responsibilities of reconnaissance, guarding and combat when the family is in real danger."
+  ]
+}

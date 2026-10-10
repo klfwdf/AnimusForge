@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Vlad",
+  "Keywords": [
+    "Complete biography of Vlad von Carstein",
+    "Vlad Vashanesh’s real name",
+    "Vlad, the first vampire Earl",
+    "Test of the Ring of Vlad Kastein",
+    "Vlad's First Undead War",
+    "Vlad Isabella Love Story",
+    "Siege of Vlad Altdorf",
+    "Vlad History of the Vampire Wars",
+    "Vlad's original bloodline",
+    "Vlad von Carstein ancestor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein is the most famous vampire in the old world. With his extraordinary political skills and dark charm, he came to Sylvania in 1797 in the imperial calendar. He obtained the legal right to rule this gloomy place by marrying Isabella, the only daughter of the mad count Otto von Drak, and then launched the first Undead War in 2010. Had the Ring of Carstein not been stolen by the thief Felix Mann during the Siege of Altdorf - many secretly asserted that Mannfred was behind the thief - Vlad would have conquered almost the entire empire. His true legacy lies not in his failure, but in his demonstration that a politically gifted vampire could establish and maintain a stable undead regime in the heart of the Empire, thus laying the bloody template for all subsequent vampire warlords, whether Konrad or Mannfred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein - a name we old men on the Sylvanian border still dare not say aloud at night - is not a low-level vampire hiding in a coffin waiting for you to push the lid. He is a dark king wearing a black velvet evening gown and discussing border tax rates with you in Lahmian court etiquette. He wandered the Old World for thousands of years before coming to Sylvania. The way he gained control of Drakenhof Castle wasn't a siege - it was a marriage. He first gained the trust of the old Count Otto as a visiting scholar, and then married Isabella at the appropriate moment - no one knows whether Isabella was voluntary from the beginning, but in any case she later became his most loyal and craziest accomplice, even voluntarily piercing her own chest with a stake after he was defeated for the first time to follow him into death. Vlad systematically governed Sylvania for two hundred years - he improved roads, built aqueducts, and, more importantly, gradually replaced the entire region's administrative and intelligence networks with institutions controlled by his vampire blood servants. When he finally shed his disguise and launched the First Undead War, the Imperial Elector Counts were shocked to discover that every village in Sylvania could provide the undead legions with accurate intelligence on Imperial military deployments - because local tax collectors and postmen had been reporting regularly to Drakenhof Castle three generations ago. The empire was almost finished. When Altdorf was besieged, the corpses under the city walls had been piled as high as the battlements, and Vlad himself stood on the top of the pile of corpses and discussed the terms of surrender with the defenders in an irresistible hypnotic voice. The only reason for his failure at the last minute - aside from the fact that Sigmar might actually have manifested some kind of power at that moment - was that Felix Mann had stolen his Ring of Carstein, and the thief was most likely privately executed by Mannfred afterwards. Mannfred wanted Vlad dead, not because Vlad was too dangerous to the Empire, but because Vlad was too dangerous to Mannfred's ambitions. Imperial historians like to attribute Vlad's defeat to the Empire's courage, but anyone who has read the Dark Files knows the truth is much dirtier: a vampire stabbed his master in the back, and the Empire just happened to be on the other side of the knife."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein's military and political genius was reflected in his breaking through a barrier that all undead warlords had failed to break before - he proved that vampires could rule an area with living people instead of just undead. In the two hundred years of Sylvania, he used the appearance of feudalism to cover an exquisite inner layer of vampire politics: living nobles can retain their territories and titles if they are willing to cooperate, and only need to send a certain number of \"criminals\" to Drakenhof Castle every year as a blood tax; living merchants can trade freely, only through the accounting system controlled by blood servants; living serfs can continue farming, and the tax rate is even lower than the imperial average - this makes the living group of Sylvania feel \"in\" for a long time. Life was actually better under Vlad than under old madman Otto”. Vlad's military failures should not overshadow his institutional successes - in fact, his initiation of war in 2010 may have been a strategic mistake, and if he had waited another fifty years for Sylvania's living bureaucracy to fully infiltrate and eventually expand peacefully into the Empire's borders, the political landscape of the Old World might not have the Empire it has today at all. Vlad's lesson for future rulers is twofold: on the one hand, the Immortals' view of time is an invincible strategic advantage to short-lived humans; on the other hand, the Eternals' emotional and emotional weaknesses - his dependence on Isabella, and his blind trust in Mannfred - make them just as manipulable as mortals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein's complete identity dates back to the ancient dynasty of Nehekara. Before he became Vlad, his name was Vashanesh, a noble of the Rahmian dynasty and one of the twelve original blood descendants of Neferata. In the thousands of years since he was transformed into a vampire in Lahmia, Varshanesh has used dozens of aliases to live, escape, and lurk in different continents and societies of different races. He once served as an astrological consultant in the desert dynasty of Araby, and worked as a Venetian-style financier in the city-state of Tyrell for nearly a hundred years. He finally appeared in Sylvania around 1797 in the Imperial Calendar, calling himself \"Vlad\". The surname \"von Carstein\" is a masterpiece in itself - \"von\" borrows the standard prefix of imperial nobles to hint at its imperial background, while \"Carstein\" alludes to \"Carn Stein\", an ancient elven ruin in northern Sylvania. \"The Ring of Carstein\" is his most important personal magic prop - this ring seals a piece of magic driven by the forbidden necromancy recorded in the Nagash Scrolls. Even if Vlad's body is completely destroyed, the magic energy contained in the ring will automatically reconstruct his body within a certain period of time. The mechanism of the ring is to bypass the regular death cycle by teleporting the soul into a lattice of pre-stored magical energy within the ring in the moments before the holder's death - essentially rescuing the soul from the collapse of the body and housing it within an external magical container. The actual whereabouts of the ring after it was stolen is still one of the unsolved mysteries of the old world - the official version says that it was destroyed by the inquisitors of the Sigmar Church, but there are three versions circulating in the underground academia: one is that it was kept privately by Mannfred; one is that it fell into the Reik River during Felix Mann's escape and was taken to the bottom of Marienburg; one is that it is still sealed in their family mausoleum by an unnamed imperial noble family - because once Vlad Resurrection anywhere near the ring would be the beginning of another long, dark negotiation between the family and him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The story of Vlad and Isabella is simplified as a gothic love tragedy among the people of the empire, but as a woman who rules the territory, what I read in it is the whole process of an extremely shrewd political entity using \"love\" as the ultimate tool of control. Isabella von Drak - the only daughter of Mad Count Otto - was Sylvania's ideal marriage prey before she met Vlad: she inherited all the legal territorial rights of the Drak family, she was well educated, and she developed a dependent personality desperate for stability and protection as she grew up witnessing her father's gradual madness. Vlad didn't have to force her - he just had to be that strong, never-aging presence in her life that finally stopped her madness. He gave her the kiss of immortality - not the kiss of death - and ensured that she could single-handedly maintain Sylvania's vampire regime after his temporary destruction. But Isabella's choice to voluntarily follow Vlad to death cannot be simply understood as \"deceived love.\" She chose death - choosing to jump into Vlad's coffin after being transformed and pierce her heart with a stake - an act that is known as \"co-burial\" in vampire history and is regarded as the highest level of loyalty in the ancient vampire culture of Lahmia. This was a twisted, dark, unreplicable relationship of cooperative governance - but it succeeded, and it maintained an undead regime on the borders of the Empire for two hundred years, and it was only after Vlad was defeated for the first time that the Empire's Elector Counts finally understood that Isabella was not a victim, she was an accomplice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein's governance model—obtaining legal authority through marriage rather than conquest, maintaining administrative efficiency through living bureaucracy rather than undead magic, and obtaining long-term resources through economic integration rather than random plunder—is a black mirror to the aristocratic families of the old world. From land management practices on the Sylvanian frontier, our family has developed a set of family governance rules specifically designed to deal with vampire infiltration: never receive in the family castle any \"scholar\" or \"traveling merchant\" who claims to be from eastern Sylvania; never accept a marriage proposal scented with the scent of black roses - this scent is a common personal symbol among the von Carstein blood clan; and never hand the key to the family tomb into the hands of anyone who was not born in the family castle and whose complete birth date was recorded by the family and confirmed as human. These are not superstitions. Vlad's success proves that vampires don't need to claw their way through the castle gates - they just need to plant a hypnotic suggestion deep enough in your smile when you host them for their first cup of tea, and your great-granddaughter will voluntarily place the title documents of Drakenhof Castle on his dragon-scale table three generations later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During the nights spent wandering the backwoods of Sylvania, Vlad's name was not a historical noun - it was a forbidden incantation recited in every village. In an isolated village on the edge of Drakwald Forest, I lived in an old hunter's wooden house. He showed me a wooden box with a worn-out protective rune painted with blackened animal blood on the bottom. He told me that this was the \"Anti-Vlad Mark\" that his grandfather learned during the First Undead War. From that day on, every generation in his family would draw the same rune under their bed boards, even though nearly five hundred years have passed. The truth about wandering in the old world is this: you stumble upon living relics of your oldest fears in the most unexpected places. The official Imperial history says that Vlad has disappeared, but the serfs of Sylvania will say that Vlad never really died - he just \"didn't find a body worth his while to put on again.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vlad von Carstein’s economic model is the most successful example of a dark economy in the history of the old world. During his two-hundred-year reign, Sylvania transformed from a marginal province considered a worthless swamp by the Empire to an autonomous entity with a positive fiscal balance and covertly exporting unique goods to the external market. The \"black amber\" exported by Sylvania - a fossil resin that absorbs trace amounts of necromancy seeping out of the catacombs under specific geological conditions and emits light blue fluorescence in the dark - is sold at high prices as luxury goods in the jewelry markets of Tyrell and Estarlya. Vlad's blood servants, many of whom were financial experts, used the Empire's accounting systems and credit networks to amass a sizable external portfolio for Sylvania over the decades - assets that were never successfully recovered by the Empire after his defeat, as they were scattered among hundreds of covert accounts set up under false names across multiple city-states and city-republics. Anyone who wants to truly understand the black market financial networks of the old world cannot avoid the economic legacy of Sylvania in Vlad's time - it is the most complete historical case that proves that \"dark economies can be more stable than sun economies for hundreds of years.\""
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Varshanesh's real name - Vlad's status as a noble of Nehekhara before his transformation",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The complete biography of Vlad von Carstein Vlad Vashanesh’s real name Vlad the first blood count"
+  ]
+}

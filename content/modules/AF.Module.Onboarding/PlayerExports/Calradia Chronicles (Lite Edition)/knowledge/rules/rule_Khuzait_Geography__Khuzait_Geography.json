@@ -1,0 +1,124 @@
+{
+  "Id": "rule_Khuzait_geography",
+  "Keywords": [
+    "Khuzait Geography"
+  ],
+  "RagShortTexts": [
+    "The southern grassland of Khuzait is rich in water and grass, suitable for nomadic herding."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait? The territory of those horseback barbarians to the east."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The geographical formation of Khuzait is a nightmare for the defense of the eastern part of our empire. Lake Tanesis was the only natural barrier between us and Khuzait, but its military value fluctuated wildly with the seasons. When the lake is open in summer, our fleet can block it; when it freezes in winter, the lake becomes a smooth path for the Khuzait cavalry. Generations of governors of Cylonia have been fortifying the city, but no matter how thick the city walls are, they cannot stop the Khuzait from bypassing the city and reaching into the hinterland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am a Khuzait. The grass here in the south is good, the horses are fat, and the sheep are strong. In the summer, we pitch our tents by the river, and in the winter, we hide at the foot of the south mountain. This is how our ancestors have lived for generations. The Karakulgit people live in the semi-desert to the north. They are miserable, with sparse grass and water, and tough people. They don't even want the land given to them by the Khan, so they are nomadic. People in the south have less contact with them, but they all recognize them as Khuzait people. Those in the west live in adobe houses and don’t sleep in tents, just like the Imperials. We also rely on the wheat we grow in winter, so we don’t mess with each other. Those to the east are rocky mountains. The old man said that they are part of the Devsagar Plateau, and over there is the boundary of the Darcy Empire. The Dasi people are called Padishah, which sounds further than the empire. We Khuzait people can go anywhere. The grassland is big enough, the horses are fast enough, and several large rivers surround us. Outsiders cannot easily get in, and it is difficult to get out after entering. This place is a blessing given by God, and we cherish the blessing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The geography of Khuzait is a God-given fortress. To the north is the Karakaz River, which separates us from Nord. The Nords can row boats, but it is useless to go ashore. To the south is the Diageus River, which faces the Aserai. Aserai's camel soldiers will have weak legs when they enter our grasslands. To the west is Lake Taneses. Our cavalry can pass by in the winter, but their boats cannot in the summer. The Iletan Mountains in the northwest block the road between Sturgia and the Northern Empire. If they want to attack us, they have to climb over the mountain, and supplies will be cut off. The Devseg Plateau in the east is our back wall. The Darcy Empire is temporarily quiet, but if something happens, the stone mountain will be our line of defense. Our weaknesses lie in the two lines of transport - the Line of Iletan and the Line of Thiagos. These two lines are our windows to the outside world and the channels for outsiders to come in. The Khan sent heavy troops to guard these two lines. Once the pass was closed, no one could enter the hinterland of the grassland. Shipping at Lake Tanesis was another route, and we traded with the Empire, exchanging iron and sometimes prisoners. With constant trade routes on the lake, our lives will not be bad. Pasture is our greatest wealth, and the Karakhan horses raised in the southern grasslands are the best mounts on the continent. Where there is pasture, there are horses; where there are horses, Khuzait will always be Khuzait."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "We are not familiar with Khuzait, we just know it is in the east"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khuzait Khanate geographically enjoyed the most superior strategic depth in the eastern part of the continent. The semi-desert in the north and the grassland in the south provide a double buffer, while the stone mountain area of ​​the Devsaeg Plateau in the east forms a natural fortress facing threats from the east. From a military perspective, the biggest obstacle to attacking the Khuzait was not their army, but their terrain itself: the desert lacked water, the grasslands lacked fixed targets, and the stone mountains lacked passable roads. Any expeditionary force entering the hinterland of Khuzait must face the triple pressure of supply difficulties, erratic targets, and terrain obstacles. The presence of Lake Taneses gave the border between Khuzait and the Empire a seasonal fluctuating character - summer was a period of naval dominance for the Empire and winter was a period of dominance for Khuzait's cavalry. This seasonal military cycle has been repeated over the past few hundred years, and neither side has been able to break it. The northwest Iletan transportation line and the southern Tiagos transportation line are the two main external channels of Khuzait, and they are also the two doors for outsiders to enter Khuzait. The Khuzait opened these two gates for trade in times of peace, but kept them closed in times of war. Overall, Khuzait's geographical pattern is suitable for defense and guerrilla warfare, not for conquest by outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 40
+        }
+      },
+      "Content": "The geographical structure of the Khuzait Khanate is a sophisticated defensive map of rivers, lakes, mountains and steppes. It is bounded by the Karakazi River to the north, the Diagos River as a screen to the south, Lake Tanasis to the west, the Iletan Mountains to the northwest, and the Devseg Plateau to the east. This pattern of being surrounded by natural barriers makes Khuzait form a relatively closed unit geographically. From the perspective of landform differentiation, Khuzait presents a gradient distribution of semi-desert-steppe-cultivated land from north to south. The northern semi-desert is sparsely populated and is the marginal habitat of nomadic tribes. It is also the natural shock absorption zone in the northern border of the Khanate. The southern grasslands are the core area of ​​Khuzait. The quality of pastures is directly linked to the number of horses, and the number of horses is directly proportional to military strength. The cultivated land on the western coast provided a supplement to settled agriculture, so that the Khanate was not completely dependent on animal husbandry. The rocky mountain area of ​​the Devsagar Plateau in the east is a natural fortress for defense against the east. The terrain is broken and easy to defend but difficult to attack. In terms of external transportation, the Iletan Transport Line and the Diagos Transport Line are two major land arteries, connecting Sturgia in the north and Aserai in the south respectively. Lake Tanesis provides a third channel - water routes. The lake is vast in area and has excellent shipping conditions. It can be used by commercial ships in summer, but becomes a land bridge when it freezes in winter. Its strategic value changes with the seasons. Silonia on the other side of the lake is the last stronghold of the empire in the east. It has been at odds with Khuzait across the lake for hundreds of years, and the two sides have been at odds here repeatedly. Overall, Khuzait's geographical conditions provide it with long-term strategic initiative: it can attack outward along transportation lines and frozen lakes, and retreat into the grassland hinterland and stone mountain fortress to recuperate. In this land, geography itself is the strongest shield and sharpest spear of the Khanate."
+    }
+  ],
+  "TextMappings": []
+}

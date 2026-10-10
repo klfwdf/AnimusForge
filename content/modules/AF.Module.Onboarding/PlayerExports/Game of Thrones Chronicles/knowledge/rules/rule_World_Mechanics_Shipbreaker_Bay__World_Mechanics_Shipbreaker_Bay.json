@@ -1,0 +1,154 @@
+{
+  "Id": "rule_World_Mechanics_Shipbreaker_Bay",
+  "Keywords": [
+    "Shipbreaker Bay",
+    "Storm's End Coast",
+    "Stormlands Shipwrecks",
+    "Reefs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shipbreaker Bay lies along the eastern coast of the Stormlands, its treacherous waters overlooked by Storm's End. Fierce gales, driving rain, hidden reefs, and tangled shore currents drive vessels onto the rocks, giving the bay its name from countless wrecks; legend holds that the first lord of Storm's End built his walls ever thicker to defy the wrathful winds of the gods. Coastal folk live by fishing, salvage, signal lights, and knowledge of sheltered coves, while captains would rather give the shore a wide berth than make light of the weather. The bay gives Storm's End a commanding view of the coast, while forcing any fleet that gathers there to ask first whether it can ride at anchor safely. Much of the hardness of Stormlanders comes from long endurance of this sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Coastal fisherfolk judge whether to put out by the color under the clouds and the roar of the surf. Outsiders praise their courage; they themselves prefer to call a safe return not having offended Shipbreaker Bay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords of the Stormlands look to beacons, rescue boats, and coastal watches. The bay can wear down an enemy fleet for the castle, and swallow one's own supply ships just as readily; the storm knows no banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign merchants write the cost of sailing around into their prices, while travelers write tales of shipwrecks into ballads. When septons pray for the dead along the shore, few argue over which god raised the waves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbreaker Bay The perilous bay off Storm's End famed for gales, hidden reefs, and shipwrecks, shaping the watches, salvage, and seafaring traditions of the Stormlands coast. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbreaker Bay The perilous bay off Storm's End famed for gales, hidden reefs, and shipwrecks, shaping the watches, salvage, and seafaring traditions of the Stormlands coast. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbreaker Bay The perilous bay off Storm's End famed for gales, hidden reefs, and shipwrecks, shaping the watches, salvage, and seafaring traditions of the Stormlands coast. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbreaker Bay The perilous bay off Storm's End famed for gales, hidden reefs, and shipwrecks, shaping the watches, salvage, and seafaring traditions of the Stormlands coast. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shipbreaker Bay: The perilous bay off Storm's End famed for gales, hidden reefs, and shipwrecks, shaping the watches, salvage, and seafaring traditions of the Stormlands coast."
+  ]
+}

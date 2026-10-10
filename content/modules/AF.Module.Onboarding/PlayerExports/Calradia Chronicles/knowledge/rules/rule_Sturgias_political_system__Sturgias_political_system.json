@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Sturgias_political_system",
+  "Keywords": [
+    "Political system of Sturgia"
+  ],
+  "RagShortTexts": [
+    "The loose political alliance and hereditary power structure composed of the Grand Duke of Sturgia and the Boyer nobles"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ruler of the Grand Duchy of Sturgia is called a Grand Duke, and under the Grand Duke there are princes, who are served by the nobles of Sturgia - that is, Boyer. Sturgia is essentially a loose political alliance, the power of the Grand Dukes is not absolute, and the Boyers retain a great deal of autonomy. In his own territory, Boyer has almost independent authority from the Grand Duke. If the Grand Duke wants to succeed, he must obtain the support of Boyers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our power structure in Sturgia is simple: the Grand Duke sits in the capital, and the boyars each manage their own territories. Not just anyone can be Boyer - it's a hereditary title, and it's an old family that has shed blood for Sturgia for several generations. We northerners recognize Boye, not the Grand Duke far away. Boyer manages our taxes, settles our cases, and leads us in our wars. The relationship between the Grand Duke and Boyer is like the eldest brother and younger brothers in a big family - the eldest brother talks and the younger brothers listen, but the older brother cannot enter the younger brothers' own yard at will. If the Grand Duke wants to fight, he must first persuade the Boyers to send troops. If he cannot be persuaded, the Grand Duke's army will not be able to gather together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Boye, my father is Boye, and my grandfather is Boye. The title is hereditary, but being hereditary does not mean that you can lie down and eat - you have to defend the territory, lead the soldiers, and prove that you are worthy of the title on the battlefield. The Grand Duke needs Boyer's support, and Boyer also needs the Grand Duke to coordinate foreign wars. This is an interdependent relationship, and no one is superior to the other. In Sturgia, the Archduke's orders were not imperial edicts, and Boyer could refuse, delay, or even openly oppose them. Our power was not given by the Grand Duke, it was chopped out by our ancestors with axes. The Imperials like to laugh at us for our loose politics, but when the Empire split into three pieces and started killing each other, we Sturgia were at least still standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Master Boye is our real master, and the Grand Duke is too far away from us. The rules in each Boye territory are different, and the tax collected by this Boye may be quite different from the tax collected by the Boye next door. It is common for the boyars to have conflicts among themselves, and sometimes they will resort to knives. But once a foreign enemy comes, they immediately stand together, like a group of wolves that usually bite each other, and suddenly form a group to bite the foreign bear. We in Sturgia don’t have the layers of officials in the empire. Boyer is in charge of everything—he collects taxes, settles cases, and recruits troops. Simple and direct, no need to look at a bunch of people’s faces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia's political system is simply a remnant of tribalism. The Grand Duke, the Maharaja, the Boyer—to put it bluntly, the big chief is in charge of the little chief. Their grand duke is nominally the supreme ruler, but the boyars below are all local emperors, and the grand duke's orders cannot be implemented outside the capital. In the Empire, the power relationship between the Senate and the Emperor was clearly written in legal terms; in Sturgia, the relationship between the Grand Duke and Boyer was based entirely on personal prestige and personal relationships. When Vadinslav was alive, the boys all obeyed him, but now Langwald may not have that ability. But then again, their loose alliance managed to last for a century, and they even chopped off Nereitses' head in Pandrak. Maybe they have their own reasons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Boyer of Sturgia and our Baron of Vlandia sound similar, but at heart they are two different things. Our baron's allegiance to the king is bound by oath, and the king has the right to reclaim the territory of the disloyal. Boyer of Sturgia disobeyed the Archduke, and the Archduke could only endure it, and at most he would not look good at the next meeting. This system is easy to use in defensive warfare - every Boyer desperately defends his own territory, and it is difficult for the Imperials to invade. But in an offensive war, it would be difficult for the Boyes to lead troops out of their own territory and go on an expedition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Boyer of Sturgia is somewhat like our Count of Battania, both being chiefs of their respective clans. But our count is elected by the clan, and their boyer is hereditary. The High King of Battania and the Grand Duke of Sturgia faced the same dilemma - to unite a group of proud lords to fight a common enemy, but none of these lords submitted to the other. The difference is that our High King has almost no power in peacetime, while the Grand Duke of Sturgia is at least nominally the supreme ruler, and can also chair the Council of Boyes and mediate internal disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Boya system of Sturgia is somewhat similar to the tribal chieftaincy system on our steppe, but their Boya is hereditary, and our Nayan can be challenged and replaced. Boyer on Tiar's side has been married to us for several generations, and their power game is very similar to ours - the Grand Duke has the final say on the surface, but secretly it all depends on who has the stronger fist. The khan on the steppe was the absolute authority and all tribes must obey; the boyars could disobey the grand duke without being stripped of their titles. This is why Sturgia could never amass an army as quickly as Khuzait could."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The political system of Sturgia is a loose feudal alliance, with the Grand Duke as the supreme military leader, the Boyer as the hereditary local lord, and the Prince as the intermediate level between them. The power of the Grand Duke mainly comes from the collective authorization of the boyars rather than institutionalized centralized power, which makes the Grand Duke's authority highly dependent on personal prestige. The Poye have independent tax, judicial and military powers within their territory, a high degree of autonomy that is a continuation of the Sturgia tribal tradition. Compared to the imperial bureaucracy, Sturgia's system was more flexible and better adapted to the geographical and climatic conditions of the north, but was also more prone to crises over succession issues and internal conflicts. Judging from historical performance, Sturgia's loose structure performed well in defensive warfare, and the boyars were able to quickly unite in the face of common threats; however, in external expansion, this structure often led to command confusion and dispersion of troops."
+    }
+  ],
+  "TextMappings": []
+}

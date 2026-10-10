@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Folk_Customs_Sea_Burial_and_the_Drowned_God",
+  "Keywords": [
+    "Sea Burial and the Drowned God"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ironborn returned the dead to the sea, thinking that the Drowned God would hear them deeper down. Islanders find comfort in the sound of waves, while greenlanders often feel cold and unfamiliar; for sailors, burial at sea also means that they must sail forward quickly and cannot always leave the deceased on the deck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God The ironborn returned the dead to the sea, thinking that the Drowned God would hear them deeper down. Islanders find comfort in the sound of waves, while greenlanders often feel cold and unfamiliar; for sailors, burial at sea also means that they must sail forward quickly and cannot always leave the deceased on the deck. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God The ironborn returned the dead to the sea, thinking that the Drowned God would hear them deeper down. Islanders find comfort in the sound of waves, while greenlanders often feel cold and unfamiliar; for sailors, burial at sea also means that they must sail forward quickly and cannot always leave the deceased on the deck. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sea Burial and the Drowned God The ironborn returned the dead to the sea, thinking that the Drowned God would hear them deeper down. Islanders find comfort in the sound of waves, while greenlanders often feel cold and unfamiliar; for sailors, burial at sea also means that they must sail forward quickly and cannot always leave the deceased on the deck. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sea Burial and the Drowned God: The ironborn returned the dead to the sea, thinking that the Drowned God would hear them deeper down. Islanders find comfort in the sound of waves, while greenlanders often feel cold and unfamiliar; for sailors, burial at sea also means that they must sail forward quickly and cannot always leave the deceased on the deck."
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Faith_and_Myth_Black_Goat_of_Qohor",
+  "Keywords": [
+    "Black Goat of Qohor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The part that The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm is afraid of."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Black Goat of Qohor The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Black Goat of Qohor: The Black Goat belief in Qohor is colored by forests, sacrifices and rituals that are difficult for outsiders to understand. City residents may oscillate between their protection and fear. Outsiders often describe everything as barbaric; unfamiliar beliefs are most easily misunderstood, because bystanders only see their own harm."
+  ]
+}

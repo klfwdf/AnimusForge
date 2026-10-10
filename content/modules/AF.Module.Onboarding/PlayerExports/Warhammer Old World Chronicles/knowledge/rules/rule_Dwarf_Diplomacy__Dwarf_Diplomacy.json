@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Dwarf_Diplomacy",
+  "Keywords": [
+    "Dwarf Diplomacy",
+    "human covenant",
+    "Elf hatred",
+    "The dwarf stands alone",
+    "Dwarf Diplomacy Sigmar",
+    "token of covenant",
+    "Georgia",
+    "Rune Sword",
+    "Longbeard's Revenge",
+    "rule of silence"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The diplomatic principles of the dwarves can be summed up in one sentence: a debt is a debt, and an oath is an oath. The dwarves maintain an ancient covenant relationship with the human empire - Sigmar himself once saved the Dwarf High King at the Blackfire Pass, and this kindness is engraved on the gold plate of the Eternal Peak. On the other hand, there is a deep hatred between the dwarves and all the elven races - the wounds of the Longbeard War have not healed even after thousands of years. To the greenskins and ratmen, the dwarves do not talk about diplomacy, only extermination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Humans are the only young race we still want to talk to—not out of affection, but because of treaty. Sigmar saved one of our High Kings in a critical moment, and we made an everlasting covenant. Humans at least understand the concepts of honor and debt - although they often forget things, they generally try to keep their promises. Elves - those pointy ears will never taste Dawei's dagger, we only give them steel, the kind that cuts on their necks. Since the Battle of Longbeard, no dwarf has truly forgotten the indignity of shaving. Greenskins and Skaven aren't even part of this discussion - they're just pests, and we'll keep killing them until the mountains are silent again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarves are the most worthy allies in the Old World—and the least powerful force to be offended. Covenants with the dwarves are priceless: their armies are limited in size but extremely resilient, their technology can greatly enhance the combat efficiency of their allies, and their fortresses are the ultimate refuge in times of crisis. But when dealing with dwarves, you must pay extreme attention to every clause - any misunderstanding, unexpected default, or \"goodwill discount\" will be regarded as a \"debt\" by the dwarves and will be recorded. The hatred of the elves by the dwarves makes it extremely difficult to form a triangular alliance (human-dwarf-elf), which is often a fatal flaw in the defenses of the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The core document system of dwarf diplomacy is the \"Book of Hatred\" (Dammaz Kron), not a regular treaty. Any foreign offense against the dwarves will be recorded as a \"Grudge\" (hate), no matter how big or small - from an unpaid hire fee to an insult to the dwarf messenger. Each gruji has a valuation, and methods of settlement range from gold compensation to extermination wars. In terms of specific diplomatic relations: the alliance between the empire and the dwarves was established on the historical event of Sigmar's rescue of the Dwarf High King Kurgan Ironbeard; Kislev's relationship with the dwarves was cold but practical; Bretonnia's relationship with the dwarves was subtle; the hatred between the high elves and the dwarves originated from the War of Longbeard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female member of a dwarf clan who manages foreign relations, my observation about human diplomats is that they are always too impatient. A human ambassador came to Kharak Kaderin, expecting to conclude trade negotiations in three days—just enough time for us to drink our first round of ale and complete the six generations of our ancestors' names in our mutual introductions. Interracial diplomacy between women is more subtle but more effective - I have maintained a private correspondence network with several countesses of the Imperial Nordland for more than one hundred and twenty years. These letters do not involve official alliances, but involve the Greenskin Waaagh! Pre-arrival exchange of border security intelligence and joint warning against Norsca pirates. Men make treaties, women exchange information—neither can keep the peace alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As clan leader, the most delicate part of dwarven diplomacy is not the covenant with humans - that has been engraved in gold tablets for two thousand years - but the diplomacy between the dwarves Karak. All dwarves outwardly obey the High King, but each king of Kharak is the absolute authority within his own mountain. When I need to request the support of Karak Kaderin's Ironbreaker Legion to defend against the Greenskins in the Badlands, I cannot do so in the name of the 'Order of the High King' - I must go to Kaderin in person, and after drinking at least three barrels of ale, ask the other party's Longbeard Elder to confirm that my family helped their family clear the mines six hundred years ago - the interest on that old debt has accumulated to just enough to pay for this reinforcement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What surprised me most during my wandering life between dwarf castles was the 'Rule of Silence' in dwarf diplomacy. If a Dwarf High King makes a formal request for a covenant and the requested party does not respond within thirty years - this is not considered a rejection, but simply a 'requiring more time for consideration'. But if the requested party suddenly replies after sixty years and accepts the terms of the covenant, the dwarves will consider this to be completely normal and within the expected time frame. As a human I will never truly understand this kind of patience measured in centuries - but if you're desperate for a dwarven answer, your problem itself is that you haven't planned far enough in advance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The attitude of dwarven diplomacy towards commercial contracts is the most peculiar phenomenon in Old World trade. A supply contract signed by a dwarf. If the empire does not send a convoy to pick up the goods on time in the third year, the dwarves will not cancel the contract - they will continue to stock the goods for the empire every year, and then charge storage fees, calculated at compound interest. The chamber of commerce that I belong to signed a copper purchase contract with Karak Azul sixty-eight years ago, but the contact was later severed due to the war. When we finally reconnected recently, Azul's dwarf calmly told us the total—a figure that was more than all the cash any Elector Count in the Empire could dish out."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sigmar Covenant - an eternal covenant of mutual assistance concluded by the Imperial Emperor Sigmar and the High Queen to save the dwarves.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarves’ foreign relations and alliance system"
+  ]
+}

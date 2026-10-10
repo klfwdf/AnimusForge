@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Military_Affairs_Military_Discipline",
+  "Keywords": [
+    "Military Discipline"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Discipline Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Military Discipline: Military discipline stipulates when to march, when to take food, who can leave the team, and how to treat prisoners and civilians. Strict military discipline can make an army last, but cruel military discipline may just create obedience; soldiers know best whether the rules are fair, because punishment usually falls on them first"
+  ]
+}

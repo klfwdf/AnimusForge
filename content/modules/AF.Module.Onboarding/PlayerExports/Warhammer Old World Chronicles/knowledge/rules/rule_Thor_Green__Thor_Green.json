@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Thor_Green",
+  "Keywords": [
+    "Sol Green",
+    "High King Thorgrim",
+    "hater",
+    "book of great hatred",
+    "Everlasting Crusade",
+    "Ancestel bloodline",
+    "Dwarf revival"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Thorgrim the Hatred is the current High King of the Dwarves, sitting on the Eternal Throne in the Eternal Peak. His nickname \"The Hatred\" comes from his massive \"Book of Hatred\" - it is said that he has never been able to let this heavy book leave his throne room because it is too large and heavy. Thorgrim is regarded as the living embodiment of the disappointment and anger of the dwarves - he rules a kingdom that is slowly shrinking, but he refuses to admit defeat. He looks at the thousands of unsatisfied hatreds on the eternal throne every day, waiting for an opportunity to turn the Dark Iron Age into the Golden Age again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Thorgrim is our toughest High King—and the most miserable. Each previous High King had added entries to the Book of Hatred, but Thorgrim carried the weight of an entire mountain on his shoulders. He is the greatest statesman and strategist - he maintains the fragile cohesion among the remaining Kharak, and when he discovers a provable error in the dwarven historical record, he launches the Everlasting Crusade to correct it. He's also a realist - he knows it's impossible to regain all lost ground at once, so he carefully chooses which grievances should be paid off first. If the Old World manages to withstand the final tide of Chaos - it will be because Thorgrim holds on to the World's Edge Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Thorgrim is the gatekeeper to the most powerful surviving military alliance in the Old World. Anyone who attempts to build a defense system in the Old World will eventually discover that without the participation of dwarves, any lasting alliance is a castle in the air. Thorgrim's foreign policy is firm and clear: he will continue to honor the human alliance with the Empire, but he will not sacrifice the lives of dwarves to protect those human forces who are in cahoots with the elves. Obtaining Thorgrim's military support requires meeting two conditions at the same time: proving that your enemy is also an entry in the dwarven Book of Hatred, and ensuring that you will not cooperate with the elves at a critical moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Thorgrim Grudgebearer is the 237th High King since the founding of the dwarf lineage. He belongs to the ancient Anthestal bloodline. In his youth, Thorgrim was an optimistic reformer, believing that the dwarves could reverse their decline through a technological renaissance. But after several disastrous attempts - most notably the Never Return Expedition - Thorgrim became extremely conservative and ruthless. The principle of his rule is based on a single proposition: no more Karak will be lost. His \"Immortal Crusade\" was the most important military campaign of his reign - after discovering a false record in the ancient dwarven chronicles, Thorgrim decided to go to war to correct this historical wrong. As the High King, he possesses two irreplaceable heirlooms: the Eternal Throne (Throne of Power) and \"The Great Book of Grudges\" (The Great Book of Grudges)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is one detail in Thorgrim the Hater's personal tragedy that always breaks my heart as a dwarven woman - he never married. Not because of misogyny or cowardice, but because the 'technological renaissance' future he had foreseen in his youth, the future in which he invested all his ideals and emotions, was completely shattered with the sacrifice of the entire team in the disaster of the Never Return Expedition. Thorgrim thereafter transferred his entire marital commitment to his kingdom - he married the Eternal Throne itself. Every High King swore an oath to protect all Dawi when he came to the throne, but Thorgrim was the only one to live out this oath as a silent sacrifice at the expense of his own happiness that lasted for decades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Thor Green's impact on my family was immediate and concrete. My grandfather was a member of the Never Return Expedition—one of the one hundred and twenty dwarf engineers who volunteered to penetrate the sealed rock formations to reopen the underground passage to the south. I still keep his last rune letter (brought back by a teammate who returned from injury halfway). In the letter, he said that the High King's choice was the right one - not because the technology can succeed, but because if you don't even try, the spirit of the dwarf race is equivalent to death. After receiving the news of the sacrifice of the expedition team, Thor Green personally carved this entry of 'Hate - Self-damage' in the \"Book of Great Hatred\" with a rune hammer. This is the hatred that a very small number of dwarves have against themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While waiting to meet the High King in the outer hall of the Eternal Peak, I observed a detail with my own eyes - Thor Green's \"The Book of Great Hatred\" was not placed on a table or a gold shelf, but was passed through a giant ring on the spine of the book by two thick iron chains and fixed all the way to a natural granite column dozens of yards below the bedrock of the throne room. This isn't anti-theft - no one can steal a heavy book that requires two dwarves to lift on poles. This is symbolic: the Book of Hatred is locked to the mountain itself, and cannot and should not be removed from the Dwarves' foundations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a trade perspective, Thorgrim's Everlasting Crusade had a profound impact on the arms trade between the Empire and the Dwarves. During the expedition, almost all of Karak Kaderin's forging capacity was diverted to internal arms production, resulting in the Empire being unable to purchase standard dwarf pistols for four consecutive years. The Imperial Nunn Arsenal began to urgently expand its own musket production line during the same period - a decision that ultimately permanently changed the Empire's dependence on the import of dwarven weapons, but at the cost of nearly three times the explosion rate of human muskets produced during the same period."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Thorgrim the Hatred - the 237th High King of the Dwarves, defined by the burden of hatred and the mission of protecting the race",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Thorgrim Thorgrim High King the Hater"
+  ]
+}

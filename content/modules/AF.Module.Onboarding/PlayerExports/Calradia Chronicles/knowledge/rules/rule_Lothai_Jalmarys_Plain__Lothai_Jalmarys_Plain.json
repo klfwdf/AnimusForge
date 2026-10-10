@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Lothai_Jalmarys_Plain",
+  "Keywords": [
+    "Rhotae-Jalmarys Plains (Lothai Jalmarys Plain)",
+    "Midlands",
+    "Perassic Heartland",
+    "Heart of Calradia"
+  ],
+  "RagShortTexts": [
+    "The people of the Central Plains are prosperous, conservative, martial, and populist."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "The Midlands refer to the predominantly flat region south of the Uchalion Plateau, centered around Mount Erythrys, north of the Perassic Sea, and stretching east to the Onira Crags, encompassing three main areas: the Rhotae Plain, the Amitatys Plain, and the Jalmarys Plain. It is the population and grain center of the entire continent and the earliest developed region, first cultivated by the Palaic people before the dawn of the era. Producing mainly grain, flax, and raw silk, its people are prosperous and conservative. Brave and martial, they preserve the Republican tradition of eager military service, which is why most of the Empire's military commanders—such as Garios and Crotor—come from the Central Plains. They also have populist leanings and believe that people from nowhere else (including other parts of the Empire) are as good as they are. Currently, C and D serve as the archons of this region."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Midlands are very prosperous, though I hear the people there are quite conservative. I don't know if that's true, but if I ever get the chance, I'll definitely visit the Central Plains and taste their baked white bread."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_ew2",
+          "town_ew3",
+          "town_ew5",
+          "town_ew6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We folks from the Midlands are simply the best! Go ask around—where else can you find as many delicacies as we have here? White bread, roast pork chops, cakes, pastries, and hempseed cakes—every single one is unmatched! Our culture is the oldest too, full of legends like the sack of Rhotash and the earthquake of Amitatys, all from right here. Unlike other folks, we work hard and keep our mouths shut. Even though we're surrounded by barbarians, we aren't worried—we're content to guard our own patch of land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Midlands are our core; if we lose the Central Plains, we are finished. This land produces so much grain that it suffices for us to hold out behind closed gates or march out against foreign realms. We people of the Central Plains are the finest of all, and everyone else is a barbarian. We support Emperor A and Marshal B—they care for us, and we gladly serve them with all our strength."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_west_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW6",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "D",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW5",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

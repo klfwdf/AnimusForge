@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Baratheon_Joffrey_Branch",
+  "Keywords": [
+    "Baratheon (Joffrey Branch)",
+    "Joffrey Branch",
+    "Joffrey Baratheon",
+    "Baratheon of King's Landing",
+    "Royal House Baratheon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The royal family of King's Landing has Joffrey Baratheon as the public core of succession, using the crowned stag and the name of the Baratheon dynasty. Joffrey is recognized as the eldest son of King Robert and Queen Cersei, and the Order of the Red Keep, the Kingsguard, and the Rite of the Crown all revolve around this identity; at the same time, his blond hair, Lannister parentage, and wealth in the West keep the lion's shadow behind the antlers. Whispers about his lineage spread along taverns, halls and sanctuaries, but they appeared as code words, pauses and suddenly lowered voices because speaking them might bring death. For most people in the Seven Kingdoms, legitimacy is not the genealogy on the maester's desk, but who can stamp the seals, collect taxes, preside over judgments and make the city gates obey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal nobles must see both the stag and the lion in Joffrey's court. Public etiquette required them to recognize Robert's son, but private judgment would fall on the queen's relatives, the orders of the Golden Robe, and who really controlled the council. Smart people rarely discuss bloodlines in public. They only observe who will draw the sword first with every question."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King's Landing The people may not know the law of inheritance, but they know the price of bread, the city gates and the executioner. To them, Joffrey's kingship first manifests itself in who the golden robes knock down doors for, whose wars the market prices rise, and whether anyone is watching when they cheer openly. The more dazzling the crown is, the more the people know that it is best not to look up for too long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Westerlanders tend to view Joffrey's royal family as an extension of Lannister blood and wealth across the Iron Throne. Some people are proud of this, while others are worried that the lion has to pay money and blood, but the stag must occupy the center of the flag. The protection of the mother clan is both the backbone of the throne and makes it possible for every royal fault to be brought to Casterly Rock's account."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon (Joffrey Branch) King's Landing The royal family operates around Joffrey's public heritage, the Crowned Stag, and the Lannister line; whispers of blood circulate in secret among edicts, fears, and court interests. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon (Joffrey Branch) King's Landing The royal family operates around Joffrey's public heritage, the Crowned Stag, and the Lannister line; whispers of blood circulate in secret among edicts, fears, and court interests. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon (Joffrey Branch) King's Landing The royal family operates around Joffrey's public heritage, the Crowned Stag, and the Lannister line; whispers of blood circulate in secret among edicts, fears, and court interests. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon (Joffrey Branch) King's Landing The royal family operates around Joffrey's public heritage, the Crowned Stag, and the Lannister line; whispers of blood circulate in secret among edicts, fears, and court interests. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "King's Landing The royal family operates around Joffrey's public heritage, the Crowned Stag, and the Lannister line; whispers of blood circulate in secret among edicts, fears, and court interests."
+  ]
+}

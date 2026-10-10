@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Waynwood",
+  "Keywords": [
+    "House Waynwood",
+    "Broken Wheel",
+    "Arryn Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Waynwood has its seat at Ironoaks and is one of the stronger ancient vassal houses of the Vale, bearing a black broken wheel on a green field at the heart of its sigil. Through land, marriage, fosterage, and networks of knights, the family is bound to the houses of the Vale, becoming especially important when heirs are scarce or politics turn inward. A coat of arms is only a family mark. The lords of the Vale pay close attention to House Waynwood's stance on betrothals and succession, while those living around Ironoaks care more about whether the roads, autumn harvest, and mountain passes remain open before winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Vale regard House Waynwood as a steady house skilled in cultivating kinship ties. The strength of Ironoaks rests not on a single legend, but on layers woven from land, marriages, wards, and knightly bonds. The broken wheel sigil invites guesses about old tales, yet in reality House Waynwood is more like a wheel that still turns, with many houses occupying a spoke within it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The smallfolk of Ironoaks care more about oak woods, mills, and foothill fields. Their lord's marriage alliances seem distant to them, yet decide who patrols the roads next, who presides over the court, and to which hall young knights are sent. If House Waynwood keeps such ties free of strife, the common folk call it steady; if kinship turns into a quarrel over inheritance, more than the wheel on the banner will be broken."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Waynwood Entry Broken Wheel Its influence came from networks of land, marriage, foster care and knighthood. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Waynwood Entry Broken Wheel Its influence came from networks of land, marriage, foster care and knighthood. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Waynwood Entry Broken Wheel Its influence came from networks of land, marriage, foster care and knighthood. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Waynwood Entry Broken Wheel Its influence came from networks of land, marriage, foster care and knighthood. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Waynwood: Entry Broken Wheel Its influence comes from land, marriages, fosterage, and networks of knights;"
+  ]
+}

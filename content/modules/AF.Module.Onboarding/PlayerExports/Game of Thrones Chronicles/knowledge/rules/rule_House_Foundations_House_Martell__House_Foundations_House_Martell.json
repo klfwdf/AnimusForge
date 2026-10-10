@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_House_Martell",
+  "Keywords": [
+    "House Martell",
+    "Prince of Dorne",
+    "Red Sun Pierced by a Golden Spear",
+    "Unbowed, Unbent, Unbroken"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Martell has its seat at Sunspear, and its family name is inseparable from the union of the Rhoynish warrior queen Nymeria and her husband Mors Martell. Its sigil of an orange-red sun pierced by a golden spear represents Nymeria's sun and Mors's spear, while 'Unbowed, Unbent, Unbroken' is the language by which Dorne preserved itself through conquest, war, and drought. The Martells style themselves Princes rather than Lords, recognize succession by the eldest daughter as well as the eldest son, and live alongside the differences among salty, sandy, and stony Dornishmen, the Rhoynish heritage of the Greenblood, and old border hatreds. Dorne ultimately entered the Seven Kingdoms through marriage alliance, yet never understood that act as bending the knee; Martell politics therefore often appear patient, forbearing, and deeply mindful of memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of Dorne honor the Martells as Princes, yet salty, sandy, and stony Dornishmen each understand Sunspear in their own way. House Yronwood remembers its old royal power, while Fowler and Dayne guard their own ancient glories; the skill of House Martell lies not in erasing differences, but in keeping such proud houses willing to dwell together beneath the sun and spear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Orphan boatmen of the Greenblood, desert herders, and Sunspear merchants have different needs from House Martell, yet all know that water is more practical than a crown. If the Prince protects the wells, the trade routes, and Dornish customs, 'Unbowed, Unbent, Unbroken' belongs to the whole realm; if he cares only for old courtly grudges, those words become an echo inside palace walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When marcher houses of the Reach and the Stormlands speak of House Martell, respect often sits at the same table as resentment. They remember mountain passes, raids, and a Dorne that could not be burned into submission, and must also admit that Sunspear preserved through patience and terrain a dignity that blades could not take elsewhere. The sun may seem far away, yet the spear always points north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Martell The princely house of Dorne at Sunspear, born of the union of Mors Martell and Nymeria. The sun pierced by a spear and the words 'Unbowed, Unbent, Unbroken' embody the Rhoynish legacy, succession by the eldest child regardless of sex, and the Dornish tradition that a marriage alliance does not equal submission. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Martell The princely house of Dorne at Sunspear, born of the union of Mors Martell and Nymeria. The sun pierced by a spear and the words 'Unbowed, Unbent, Unbroken' embody the Rhoynish legacy, succession by the eldest child regardless of sex, and the Dornish tradition that a marriage alliance does not equal submission. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Martell The princely house of Dorne at Sunspear, born of the union of Mors Martell and Nymeria. The sun pierced by a spear and the words 'Unbowed, Unbent, Unbroken' embody the Rhoynish legacy, succession by the eldest child regardless of sex, and the Dornish tradition that a marriage alliance does not equal submission. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Martell The princely house of Dorne at Sunspear, born of the union of Mors Martell and Nymeria. The sun pierced by a spear and the words 'Unbowed, Unbent, Unbroken' embody the Rhoynish legacy, succession by the eldest child regardless of sex, and the Dornish tradition that a marriage alliance does not equal submission. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Martell: The princely house of Dorne at Sunspear, born of the union of Mors Martell and Nymeria. The sun pierced by a spear and the words 'Unbowed, Unbent, Unbroken' embody the Rhoynish legacy, succession by the eldest child regardless of sex, and the Dornish tradition that a marriage alliance does not equal submission."
+  ]
+}

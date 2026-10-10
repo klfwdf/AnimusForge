@@ -1,0 +1,61 @@
+{
+  "Id": "rule_Kanni_Kingdom",
+  "Keywords": [
+    "The country of the Kan people",
+    "Republic of Cannae",
+    "The country of the Canni"
+  ],
+  "RagShortTexts": [
+    "The Canni people once established a commercial republic at the border of the Western Empire and Aserai, but it was later divided between the two sides. Although they lived in their homeland, they lost their right to speak and govern."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "The Canni people once established a very powerful commercial republic at the junction of the Western Empire and Aserai. However, due to the development of the Empire and Aserai, the Canni people's country was eventually divided up by the lords of the Empire and Aserai merchants. Although the Canni people continued to live in their native land, they no longer had a say."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Canni people seem to have established a nation at one time, but it later disappeared."
+    }
+  ],
+  "TextMappings": []
+}

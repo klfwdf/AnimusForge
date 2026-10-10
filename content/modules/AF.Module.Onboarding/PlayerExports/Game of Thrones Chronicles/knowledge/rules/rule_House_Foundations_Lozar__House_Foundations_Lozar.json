@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Lozar",
+  "Keywords": [
+    "Lozar",
+    "House Lozar",
+    "River City Nobility"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lozar belongs to the noble and merchant class of Salol. Power in the Sarn Basin has always been inseparable from river transport, ferries, granaries and loans: chariots and cavalry can win a field, only accounts and embankments can keep the population of the city through the next season. The memories of ruined cities left behind by the Dothraki conquests made the Thalor especially wary of prosperity - they knew that a thriving trade route might also bring raiders. The foundation of Lozar lies in this contradiction: it is necessary to gather capital and population, but at the same time, warehouses, escorts, and evacuation routes must keep pace with expansion. Who is in power can change, but River City’s need for prudent business operations does not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants and young kings of Salol regard Lozar as a gateway that can mobilize food and credit, and therefore guard against it. Borrowing food can save a city, but a debt deed can also take away a street in peacetime."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The roadkeepers and warriors were more concerned with Lozar's willingness to pay real money for the caravan's safety than with pursuing who lost the goods after the attack. Without scouts and backup horses, the most beautiful ledger cannot reach the edge of the sea of ​​grass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers along the river hope that the granary will serve as a reserve in disaster years, not a prison for raising prices. If Lozar only buys cheaply during good harvests and sells expensively during famines, people will remember that account longer than the family itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lozar Salol's river city family participates in local power through warehousing, lending, ferrying, and the ability to rebuild old settlements. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lozar Salol's river city family participates in local power through warehousing, lending, ferrying, and the ability to rebuild old settlements. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lozar Salol's river city family participates in local power through warehousing, lending, ferrying, and the ability to rebuild old settlements. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lozar Salol's river city family participates in local power through warehousing, lending, ferrying, and the ability to rebuild old settlements. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lozar: Salol's river city family participates in local power through warehousing, lending, ferrying, and the ability to rebuild old settlements."
+  ]
+}

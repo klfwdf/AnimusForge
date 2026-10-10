@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Riverlands_Waterways_Castle_Darry",
+  "Keywords": [
+    "Castle Darry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Darry City is located in the eastern part of the Riverlands, close to the King's Road and the Trident Valley. It is the traditional territory of the Darry family. It's not too far from King's Landing and the heart of the Riverlands, so it's always subject to the dual effects of roads: merchants, maesters, and weddings arrive faster, as do royal armies, deserters, tax collectors, and raiders. The Darry name was tied to memories of loyalty during the Targaryen dynasty, making the family's history particularly sensitive under the new dynasty; but the land itself still required farming, shipping, and local order. Darry City is not the embodiment of a single political stance, but a riverland castle that has been repeatedly pushed to the wind by the road and old history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry Local families also relied on river transportation, ferries, wheat fields, mills, and hiding places when war came; if any road, well, spring, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry Entry Castle Darry"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry They also recognize the accents, laws, and credentials of the Riverlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry Entry Castle Darry"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen saw boats, bridges, millstones, fishing nets and riverside churches in Darui City. The priests guarded the memory of the seven gods, the legend of the ancient river king and the land that changed hands repeatedly. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Darry They care about river transportation, ferries, wheat fields, mills, and hiding places when war comes. They also care about whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Castle Darry: Darry City is located in the eastern part of the Riverlands, close to the King's Road and the Trident Valley. It is the traditional territory of the Darry family. It's not too far from King's Landing and the heart of the Riverlands, so it's always subject to the dual effects of roads: merchants, maesters, and weddings arrive faster, as do royal armies, deserters, tax collectors, and raiders. The Darry name was tied to memories of loyalty during the Targaryen dynasty, making the family's history particularly sensitive under the new dynasty; but the land itself still required farming, shipping, and local order. Darry City is not the embodiment of a single political stance, but a riverland castle that has been repeatedly pushed to the wind by the road and old history."
+  ]
+}

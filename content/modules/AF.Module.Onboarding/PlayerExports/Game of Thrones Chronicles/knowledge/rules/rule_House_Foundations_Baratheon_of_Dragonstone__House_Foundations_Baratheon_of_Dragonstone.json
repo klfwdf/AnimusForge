@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Baratheon_of_Dragonstone",
+  "Keywords": [
+    "Baratheon of Dragonstone",
+    "Stannis Baratheon",
+    "Dragonstone Baratheon",
+    "Crowned Stag"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Baratheon Banners of Dragonstone rally around Stannis Baratheon, his claim to succession, and the island's court. Stannis does not insist on rights because he loves the crown; in his eyes, the order of succession after Robert is a law that must be enforced, just as guarding the city, judging, and paying old debts are all responsibilities. Dragonstone was once the land of the Targaryen crown princes. The black volcanic rocks, narrow sea channels and dragon-shaped stone carvings make this claim naturally have the shadow of the old kingship. Followers may approach him out of law, loyalty, belief in the Lord of Light, or practical interests, but they all must face the same serious question: how much justice can a person have left when duty demands a dishonorable price?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dragonstone nobles knew that Stannis would not trade a smile for loyalty. He remembers merit and transgression; rewards and punishments are as hard as the black stone on the island. Some people believe that this is the justice needed in troubled times, while others worry that a monarch who never bends will eventually break everyone around him first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Islanders and soldiers know Stannis from supplies, ships and orders. He will starve with the defenders, and will ask others to bear whatever he thinks they should bear. Such a lord is not easy to love, but he may be believed when the storm is at its worst, and he will not find a warm house for himself first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stannis ： Storm's End ， Storm's End 。 The law supports his order, but human feelings may not necessarily act in accordance with the law. Many people respect this piece of iron, but do not want to be ruled by it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Dragonstone Stannis asserts kingship based on the order of succession, law and responsibility; Dragonstone's old crown prince tradition, strict justice and the belief in the Lord of Light jointly shape his followers' understanding of him. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Dragonstone Stannis asserts kingship based on the order of succession, law and responsibility; Dragonstone's old crown prince tradition, strict justice and the belief in the Lord of Light jointly shape his followers' understanding of him. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Dragonstone Stannis asserts kingship based on the order of succession, law and responsibility; Dragonstone's old crown prince tradition, strict justice and the belief in the Lord of Light jointly shape his followers' understanding of him. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Dragonstone Stannis asserts kingship based on the order of succession, law and responsibility; Dragonstone's old crown prince tradition, strict justice and the belief in the Lord of Light jointly shape his followers' understanding of him. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stannis asserts kingship based on the order of succession, law and responsibility; Dragonstone's old crown prince tradition, strict justice and the belief in the Lord of Light jointly shape his followers' understanding of him."
+  ]
+}

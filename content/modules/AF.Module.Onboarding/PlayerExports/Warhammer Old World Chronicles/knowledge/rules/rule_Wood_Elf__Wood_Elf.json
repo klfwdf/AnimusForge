@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Wood_Elf",
+  "Keywords": [
+    "Wood Elf",
+    "Aslay",
+    "Wood Elf Athel Loren",
+    "forest elf",
+    "Elf race",
+    "Wood Elf Kurnos",
+    "Isa",
+    "wild hunt (Wood Elf)",
+    "forest symbiosis",
+    "Elf Split"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elves - or Asrai - are an ancient and mysterious race of elves who live in Athel Loren, the elusive enchanted forest in the heart of the Old World. They have the same origin as the high elves and dark elves but have already parted ways, choosing to live in symbiosis with the forest instead of conquering nature. Anyone who enters Athel Loren without permission is shot mercilessly, and these forest guardians are known for their cruelty towards intruders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are Asrai - children of the forest, chosen people of the ancient gods, flesh and blood of Athel Loren. Those stupid little races call us 'wood elves', as if the forest is just a hat that can be taken off. We don't live in this forest; we are this forest. Every piece of bark, every branch, every leaf that sparkles in the morning light is connected to our souls. We were once part of the high elves - across the seas with our Ulthuan cousins ​​on the haughty island of Ulthuan. But we chose to stay, we chose to live in symbiosis, and we chose to be a more eternal force than any empire built of rock and hubris. Outsiders fear us, and rightfully so: our arrows are faster than their eyes, our rage is deeper than their courage, and our forests are older than their memories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wood elves are the most troublesome opponents in military affairs - they cannot fight you in an upright battle like humans or orcs. Athel Loren itself is an unparalleled defense system: forests move and paths disappear, and intruders are unknowingly led astray until supplies are depleted and morale collapses. Wood Elf woodland scouts can wipe out scouting parties and supply convoys without entire armies noticing. Any military attempt to invade Athel Loren would be inherently disastrous - no outside army has ever successfully conquered the forest in history. Defending against wood elf attacks requires a stronghold rather than a field battle, as they are accustomed to launching raids at the edge of the forest and then quickly retreating to the dense forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Asrai - or Wood Elves - date back to the Great Schism. When the Phoenix King Callandor II recalled the elves from all colonies to return to Ulthuan to defend against the Dark Elf invasion, Athel Loren's elven colonists chose to stay. They severed their direct worship of the elven gods and formed an unprecedented symbiotic relationship with the spirits of the forest and the ancient forces of nature. This choice profoundly changed their physiology and souls: the elves who have lived in Athel Loren for generations gradually developed a keener sense of the forest than the high elves, and also acquired the unique, capricious and ruthless character of the forest itself. Although they still live far longer than humans, they are said to be less nearly immortal than the high elves - Athel Loren somehow 'absorbs' parts of them, but also protects them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the female lord of Athel Loren, I know that the most fundamental difference between us and other elven races is not the blood but the ownership of the soul. High elven women study magic and manage family political marriages in the towers of Ulthuan, but what I learned from my childhood in the embrace of the forest is another kind of power - not to dominate, but to listen. Ariel is our role model, proving that the women of Asrai are far from mere appendages of men: we are both the guardians of the forest and the executors of its will. The arrogant generals from the outside world thought that the wood elves were just wild men hiding behind the trees, but they had never seen an angry Asrai huntress drawing her longbow in the moonlight - it was not just the art of killing, it was the forest itself executing its judgment through our hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the patriarch of one of the twelve families of the Woodland Council, I bear not only the honor of my family, but also the contract with a specific forest spirit that has lasted for thousands of years. Each Asrai family maintains a symbiotic bond with a certain type of spirit in Athel Loren—perhaps the spirit of the stream, perhaps the spirit of the ancient tree, perhaps the spirit of the moonlight—that is passed down from generation to generation. This bond is older and heavier than the oldest noble bloodline of mankind. My duty is not to expand territory or amass wealth—these are base pursuits of men and dwarves—but to maintain the balance between my family and the forest. When the wills of Orion and Ariel conflict, the Twelve Families must make difficult choices. Any misjudgment may trigger a political storm within the Woodland Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a wanderer who once lived on the fringes of Athel Loren, I can tell you truths that will never be recorded in books. Wood Elf arrows are not a legend - I have seen an entire squad of Imperial patrols armed to the teeth in the Black Forest all fall to the ground after the sound of a bowstring, and their crossbowmen didn't even have time to raise their weapons. But the wood elves are not without their weaknesses: their operations rely heavily on the cover of the forest, and their advantage will be greatly reduced on the open plains. If you must travel near Athel Loren, it's better to take a guide who knows the ancient elven border markings than twenty mercenary swordsmen - these markings are often displayed in specific tree carvings or stone formations that are completely incomprehensible to the uninitiated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a commercial perspective, the Wood Elves are one of the most frustrating and fascinating black holes in the Old World's trade networks. They engage in little overt trade of any kind - you won't find Wood Elf traders in the markets of Altdorf or Marienburg - but that doesn't mean the Asrai economy doesn't exist. In fact, there is an extremely secretive 'silent trade' in some border towns in Bretonia: humans place iron tools, cloth and salt under designated ancient trees, and the goods disappear early the next morning, leaving behind perfectly cut rough gemstones, forest herbs or elven bowstrings whose craftsmanship is so exquisite that they cannot be imitated. These items are worth a fortune on the black market in the Old World - a true Asrai bow can be purchased for the price of a small town on the black market, while a dose of healing poultice prepared by a wood elf can restore a dying knight to fighting strength overnight. Any merchant who tries to circumvent the rules and force his way into the forest in search of trading opportunities ends up becoming a recent entry on the missing persons list."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Asrai - the Elvish self-proclaimed name of the wood elves, meaning 'son of the forest'",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Wood Elf Asrai Wood Elf Athel Loren"
+  ]
+}

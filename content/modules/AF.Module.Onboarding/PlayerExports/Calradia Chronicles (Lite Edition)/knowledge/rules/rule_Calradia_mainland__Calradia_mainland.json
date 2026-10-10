@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Calradia_mainland",
+  "Keywords": [
+    "Calradia continent"
+  ],
+  "RagShortTexts": [
+    "Calradia continent is the main part of Calradia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Calradia is where we live, the Calradia continent is its main part, and we all live in Calradia"
+    }
+  ],
+  "TextMappings": []
+}

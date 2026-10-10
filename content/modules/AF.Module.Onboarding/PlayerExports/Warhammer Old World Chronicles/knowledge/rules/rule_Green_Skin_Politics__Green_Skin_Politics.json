@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Green_Skin_Politics",
+  "Keywords": [
+    "green politics",
+    "green political warrior",
+    "green political leader",
+    "duel",
+    "Greenskin politics: The strongest is the king",
+    "green skin politics green skin tribe",
+    "Waaagh unification",
+    "beheading effect",
+    "Shamans intervene in politics",
+    "Black Orc Rule",
+    "Loot distribution",
+    "Prelude to silence"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins' political system is based entirely on pure competition for strength. The most capable orcs automatically become the war generals of the tribe. War generals and war generals use duels to unify multiple tribes. The formation of a large-scale Waaagh! requires a super boss who is strong enough to defeat all other war generals. Greenskins have no elections, no hereditary succession, no laws - only the results of fights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our politics are very simple - whoever is the greenest, the strongest, and the most capable has the final say! The reason why the boss is the boss is not because his father is the boss - his father has been beaten by him long ago - but because he can tear off the heads of all the stupid people who challenge his position and use them as balls. If the boss of another tribe feels that he is stronger, he will bring his boys to beat our boss - if the boss is beaten down, the new boss will be the boss of all of us. The best thing is when a big boss can call all the tribes in Badlands to rush in one direction - that is Waaagh! - At that time, the whole old world is ours!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The fundamental law of green politics: no hereditary rule, no rule of law, and no lasting alliance. The political unity of the greenskin tribe depends on the individual combat effectiveness of a specific warrior - when he is strong, the tribe is unified, and when he is injured or old, the tribe immediately falls into internal strife. If warlords are defeated in a public display on the battlefield, Waaagh! will instantly collapse into killing each other. This is the most important strategic intelligence when fighting greenskins. Civilized nations should not attempt to dismantle Waaagh! by assassinating the Greenskin Warlord - if the Warlord is assassinated rather than openly defeated, his successor can take over seamlessly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Greenskin political system is the purest violent hierarchy of all the political systems in the Old World. There is no form of blood inheritance or wealth transfer in orc society - the only path for an orc from birth to becoming a warrior is to constantly challenge and defeat orcs who are stronger than themselves. Goblins at the bottom of the hierarchy make up for their lack of individual strength with cunning and group attacks. Black Orcs are an anomaly in the Greenskin hierarchy - their discipline and organizational skills are unmatched by other Greenskins. The formation of Waaagh! requires two conditions: a powerful enough war general and an attractive enough target direction - the latter is usually provided by the shaman's divine inspiration. When both conditions are met at the same time, dozens or even hundreds of greenskin tribes will complete the transition from division to assembly within a few weeks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The gender dimension of Ork politics is completely absent - it's the only less intimidating aspect of Orks to the female rulers of the Empire's frontiers. Greenskins are not involved in any form of gender violence because they simply do not understand the concept of gender. In the political spectrum of greenskins, enemies are only divided into those who can be beaten, those who are not easy to beat, and those who can be broken at a touch. This purity makes their threat model fundamentally different from that of Chaos Warbands - you don't need to prepare for any psychological tactics or political infiltration from the Greenskins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding greenskin politics is crucial to my family's defense strategy. When the greenskin hordes gather at the borders of my fiefdom, the strategy our family has followed for generations is not to mobilize all our forces at once - that would consume resources that should be used to defend against vampires and Chaos. We observe the frequency of fights between greenskins: if the fights are decreasing, it means that a unified boss is emerging - which requires full mobilization. If fighting is increasing - we just need to increase our patrols."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I was once captured by a group of orcs while wandering the Badlands - they didn't kill me because they were arguing over who could eat me. The argument escalated into a fight, which lasted about the length of an incense stick, before the victorious orc walked up to me—and walked away. Because during the argument he completely forgot why he was fighting. This is the epitome of Greenskin politics: violence is the decision-making mechanism but the violence itself provides enough satisfaction that the original decision-making goals are forgotten in the process of violence. The result is that I survived."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Green politics Most important to Old World trade was the issue of the predictability of the Green Wave. Scholars have tried to predict the direction and timing of the next Green Tide through astrological interpretations by orc shamans, the seasonal patterns of the Gao Mao Shenqi, and the population cycles of the Greenskin tribes in the Badlands. But the accuracy of these predictions is no more than 40%. For merchants, this meant that trade across the Badlands was risky at any time, and the insurance industry simply refused to provide war cover for caravans traveling around the Badlands."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Warlord politics - a violent hierarchy in which the Greenskins use dueling as the only way to transfer power.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Greenskin power structure and decision-making mechanism"
+  ]
+}

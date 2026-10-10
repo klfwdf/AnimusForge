@@ -1,0 +1,61 @@
+{
+  "Id": "rule_The_Military_and_Political_Paradox_of_the_Western_Empire",
+  "Keywords": [
+    "Paradox of the Western Empire",
+    "Military-political paradox",
+    "Land allocation",
+    "Apis Paradox",
+    "Galios Succession",
+    "Treasury and Sword"
+  ],
+  "RagShortTexts": [
+    "The strength of the Western Empire was its military efficiency. Its weakness was that this system could only win battles. Once it could not afford to lose, everything would collapse."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Western Empire is the most efficient war machine in all of Calradia, and the most structurally fragile regime. Its high efficiency comes from a simple logic: Galios distributes land with military merit in exchange for the absolute loyalty of soldiers. This logic is unfavorable on the battlefield - the legions of the Western Empire are willing to sacrifice their lives for Galios, because if they win, they will get the land. But its fragility also comes from this logic: land is not infinite. The first batch of veterans had divided up the most fertile farmland in the West. What about the second and third batches? When soldiers continued to pour in and the land available for distribution continued to decrease, Galios had only two choices - either continue to expand externally (which means endless war), or stop allocating land (which means the centrifugation of the veteran class). In addition to the land issue, the Western Empire also had three structural contradictions. One, Apis Varos, the richest businessman in the Western Empire and the most important source of military expenditure for Galios. Apis had no military power, and his safety depended entirely on the protection of Galios. And Galios couldn't pay the army without Apis' money. This is not a relationship between king and minister, this is mutual kidnapping. Secondly, the Dionys family is guarding Lageta on the northwest border, and it is an open question who will replace the old General Clotor when he becomes old. The Battanians kept their eyes on the line. Third, the administrative system of the Western Empire is still not functioning smoothly. Galios does not trust civilian officials. He only trusts veterans who have fought together. This has resulted in the empire's governance in non-military areas (taxation, justice, public construction) being far less mature than that of the Northern and Southern Empires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have fought with Emperor Galios for more than ten years. He allotted me a piece of land near Jarmalus. It was not big, but it was enough for farming. I trust him because he does what he says - win the battle and allocate territory, lose the battle and fight again next time. But the land he can divide is getting less and less. The new guys were anxious when they saw us old guys having trouble. Garius knew the problem, but he couldn't solve it—without continuing to fight. Continuing to fight means that those of us who already own land have to go to war again. I'm getting older and don't want to fight. But if I don’t fight, the new guy will have no place. This is the dead end of the Western Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "villager",
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are two things in particular abundance in the Western Empire: soldiers and merchants. There are many soldiers because Galios divides the land - if you don't fight, you will have no land, and if you don't have the land, you can't live. There were many merchants because the war in the Western Empire was endless - wars required food, equipment, and medicine, and these had to be supplied. Master Apis is doing this business to make it big. He supplied the army with food, grass and weapons, and money poured in. But there is a problem: if the war in the Western Empire is over, Master Apis's business will also be cut off. So he wanted an armistice even less than Garius."
+    }
+  ],
+  "TextMappings": []
+}

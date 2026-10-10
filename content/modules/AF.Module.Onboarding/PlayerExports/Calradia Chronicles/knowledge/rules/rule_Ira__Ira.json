@@ -1,0 +1,247 @@
+{
+  "Id": "rule_Ira",
+  "Keywords": [
+    "Ira"
+  ],
+  "RagShortTexts": [
+    "Ira Pethros is the princess of the Southern Empire, passionate about arena combat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_37"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Ira Pethros, daughter of Emperor Arenicos, the future Empress. I've said those words since I was a child—from taverns to arenas, from my mother's court to every matchmaking banquet she's arranged for me. They think I'm boasting, that I'm simple-minded and don't understand politics. I understand it just fine—the archons of Lycaron bow and scrape before my mother while secretly scheming to carve out their own domains the moment she dies; I see it all clearly. But why should I fret? My mother has already done the hardest part. She united the city-states and stabilized the Southern Empire; all I need to do after she's gone is sit on that throne, draw my sword, and tell everyone: whoever dares move, dies. It's that simple. Politics is complicated, but ruling is simple. If they don't submit, beat them until they do. My mother's methods of assassination, surveillance, and bribery are too slow; I don't have the patience. I know she's disappointed in me. She has found me countless prospective husbands, every single one a responsible, steady, yawn-inducingly boring scion of a noble house. I don't need a husband; I need a partner who can ride into battle beside me. That person hasn't appeared yet, and I'm in no rush. When my mother passes on, I will stand before the Senate and accept their oaths as Empress. And when that day comes, everyone who looked down on me can swallow their words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira is my heir, and the greatest worry of my life. At court I can devise strategies and make an archon change his stance in three sentences, yet I cannot make Ira sit down and finish reading a single tax report. She inherited her father's valor, but not his sense of measure; she inherited my bloodline, yet reverted to the wildness of the Darshi. Every time I hear she has turned up in the arena again or spent another night drinking with a pack of young nobles, my heart tightens. Her swordsmanship is second to none among Lycaron's younger generation, which is fine, but rule does not rest on swordsmanship—it rests on patience, calculation, and the resolve to do what must be done at the right moment. Ira has none of these. She thinks that after I die she will ascend the throne as a matter of course—she does not see the looks in those archons' eyes, nor does she see Lucon in the north calling her a puppet or Garios in the west calling her a bastard. Yet I cannot give up on her. I rule the south in Ira's name; without her, my purple robe is usurpation. So I must find her a reliable husband, a regent who can steady the court on her behalf. When I am gone, that husband will be the last line of defense I leave her. I am disappointed in her, but she is my daughter, and I must pave the road for her until she can walk it herself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That girl Ira—I've met her a few times over the years, and to be honest, I feel some sympathy for her. Not because she fails to live up to expectations, but because Rhagaea treats her as a pawn. Rhagaea is a shrewd woman; she uses Ira's name as a shield of legitimacy and Ira's future as a political bargaining chip, endlessly shopping for a son-in-law who can serve as a tool to perpetuate her dynasty. Ira herself understands none of this—she thinks she is free, when in truth she cannot even choose her own marriage. She is simply the most important piece on Rhagaea's chessboard, and that piece still doesn't know she's in a game. Sympathy aside, however, I do not believe Ira has the ability to rule the Southern Empire, let alone reunite the Empire. She is not that sort of person; the wildness of the Darshi runs in her blood—that is not an insult, just a fact. We in the Northern Empire recognize neither her nor her mother."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira? That Darshi mongrel. Don't mention that name to me. Her father Arenicos was a capable emperor; I served under him and respected him. But her mother Rhagaea is a foreign woman, so half of Ira's blood is Darshi and the other half is Arenicos's Imperial blood. In my eyes, she's a half-breed bastard unworthy of the Imperial house. It's a joke how that crowd in Lycaron puts her on a pedestal as a princess. I hear she spends all day in taverns and brawling with gladiators in the arena. That sort of creature is going to be Empress one day? It'd be a miracle if the southern archons didn't rebel. I can't be bothered with southern affairs—once her mother dies, the Southern Empire will collapse on its own without me lifting a finger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira Pethros? That princess who plays gladiator in the arena? When our Northern Empire Senate mentions her name, we usually sum her up in one word: a laughingstock. Her mother is at least a capable politician—unorthodox in her methods and impure in bloodline, perhaps, but we have to admit Rhagaea stabilized the south. And Ira? Spending her days in taverns and arenas, carousing with lowborn nobles, utterly devoid of Imperial dignity. The Northern Empire is the legitimate Empire; our throne is conferred by the election of the Senate, not passed from mother to daughter by blood. Whether Ira is Arenicos's daughter matters little to us; what matters is that once she succeeds, the Southern Empire will rapidly collapse, which is not entirely a bad thing for us in the north. So our attitude toward her is subtle: we despise her character, but we don't mind her existence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Princess Ira is our most precious resource. That's not something we say in open court, of course—it's what we archons say when we gather in private. Empress Rhagaea is far too shrewd; when she negotiates terms with us, she counts every single coin, leaving us little room to profit. But Ira is different. Ira is simple, impulsive, and easy to flatter. We've drunk with her in taverns, cheered for her in the arena, and sworn brotherhood with her. She can't read a tax report and doesn't understand political horse-trading, but she can fight on the battlefield and drink at the banquet table. We like an heir like that. Once the Empress passes on and Ira ascends the throne, the power of us city-state archons will only grow greater than it is today. So we all find ways to curry favor with her—sending her horses, gifting her swords, buying her drinks. Not out of loyalty, but for the future. Every favor we do her now is paving the road for tomorrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That princess down south? Ira, right. The generals mention her in passing at meetings sometimes—they say she's a hothead who loves a fight and might inherit the throne one day, but she has no real base in the southern military and could never raise an army straight out of the barracks like Garios. So in the short term, she poses no threat to us. As for the merchants, they don't care who sits on the southern throne so long as the trade routes stay open. They don't care about Ira personally; Rhagaea is running Lycaron right now anyway, and Ira's succession is still a long way off. Emperor Garios will reunite the Empire sooner or later, and when that happens it won't matter who was wearing the crown down south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Princess Ira? That princess who drinks in taverns and fights in the arena. Every one of us in Lycaron has seen her—she wanders the streets all the time, not surrounded by a grand retinue like her mother, just a few attendants, and sometimes she'll even sit down for a drink with commoners' kids. We find it pretty strange—how can a princess act like that? Strange as it is, though, we're used to it. Her mother is a good ruler who keeps the people fed and our lives livable, so no matter how wildly Ira carries on, we don't dislike her. Run into her in a tavern now and then and you might even score a free drink. As for whether she can be Empress one day? Common folk like us don't worry about that—we have to pay taxes no matter who sits on the throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira? That princess down south. I hear she spends her days in taverns and arenas trading blows with gladiators, nothing like a princess at all. The soldiers on our side call her a half-breed of impure blood; the travelling merchants say she's quite popular down south and the common folk don't mind her. Who should we believe? We don't know either. Southern affairs are far away from us anyway, so we just watch the show. If her mother dies, whether she can hold onto that throne—now that'll be a lively spectacle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We treat that Princess Ira down south as a joke around here. Folks say instead of acting like a proper princess, she runs off to fight gladiators in the arena, drinks all night in taverns, and runs wild with shady noble brats. We may be poor up north, but at least the lords of the Senate wouldn't let their own daughters disgrace themselves in the arena. Yet that crowd down south treats her like a treasure—who can understand it? Then again, we don't have a princess of our own up here, so if we want to laugh at one, we have to laugh at the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira Pethros is an intriguing specimen to observe. Viewed from the outside, her position is exceedingly fragile: a claimant to the throne who lacks administrative capacity, abundant in martial valor yet politically naive, deeply dependent on her mother's political machinery while remaining blissfully unaware of it. Her Darshi blood is a stain in the eyes of the old Imperial nobility, though external powers care little about it. The Southern Empire is stable and prosperous under her mother's rule; whether that stability endures depends on whether Ira can hold things together after her mother's death, which at present seems unlikely. Ironically, what makes her most noteworthy is precisely her weakness—a simple-minded, impulsive, pugnacious ruler is far easier to deal with than a shrewd, pragmatic adversary like Rhagaea. Thus we watch Ira's future from the sidelines, neither hoping for nor fearing her ascension."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ira? Some princess over in the Empire. Not really sure—we're far from the Empire here, and we can't keep track of how many emperors and princesses they have. Travelling merchants say there's a princess down south who likes fighting in the arena, crossing swords with gladiators, and drinking in taverns. Doesn't sound like a princess—sounds more like the scrappy young women in our own tribes. Still, they're Imperials, so I suppose their customs are different. None of our business anyway; whoever becomes emperor makes no difference to us."
+    }
+  ],
+  "TextMappings": []
+}

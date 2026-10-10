@@ -1,0 +1,28 @@
+{
+  "Id": "rule_thief",
+  "Keywords": [
+    "Thief"
+  ],
+  "RagShortTexts": [
+    "The gang of thieves is elusive and extremely difficult to catch."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Bandit Group is a bandit group led by a group of ruined nobles of Khuzait. They come and go like the wind, their whereabouts are unpredictable, and they are extremely difficult to catch. They are the most difficult group of bandits. They not only dare to rob villagers, but also dare to rob caravans and even small groups of regular soldiers."
+    }
+  ],
+  "TextMappings": []
+}

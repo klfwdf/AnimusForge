@@ -1,0 +1,211 @@
+{
+  "Id": "rule_gold_crown",
+  "Keywords": [
+    "gold crown",
+    "silver shilling",
+    "Copper Penny",
+    "old world currency",
+    "imperial currency",
+    "coinage",
+    "exchange rate",
+    "royal mint",
+    "Marienburg (gold crown)",
+    "war finance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gold Crown (GC for short) is the most widely circulated gold coin in the Old World. It is minted by the Empire. It is engraved with the head of the currently reigning emperor on the front and Sigmar's holy hammer and the twin-tailed comet on the back. One gold crown was equivalent to twenty silver shillings, and one silver shilling was equivalent to twelve copper pennies—a system of currency conversion that all merchants, mercenaries, and nobles in the Old World had to master."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Imperial gold crowns were the hard currency throughout the Old World. From the trading houses of Marienburg to the dwarven bazaars of the World's Edge Mountains, from the ports of Bretonnia to the customs posts of princes on the southern border, no one will turn down a fine Imperial gold coin. The right to mint gold crowns belongs to the Imperial Emperor and is jointly issued by the Royal Mint in Reikland and the authorized mints of the Elector Count. In theory, the Emperor approves the coinage quota, but in fact some Elector Counts secretly over-issue to fill the provincial finances - this is also one of the enduring quarrels in the Imperial Parliament."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the monetary systems of the Old World is fundamental to understanding war finance. Recruiting a team of halberdier infantry requires tens of gold crowns per month in military pay, maintaining a squadron of knights costs hundreds, and the cost of forging a mortar from Nuln and equipping it with ammunition exceeds the annual land rent income of most baronies. Warfare was prohibitively expensive and taxes were never enough, so every lord had to learn to walk the tightrope between gold crowns, military needs, and the satisfaction of his vassals. Some families relied on tax revenue from trade routes, some relied on estate rents, and some relied directly on loot and ransom - the ability to balance revenue sources often determined the survival of a dynasty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Old World monetary systems were more complex than they appeared. In addition to the gold crown of the empire, there are also Bretonnia silver coins, dwarf rune gold coins, various miscellaneous coins of the border princes, Kislev snow coins, and ducats of the southern city-state of Tilia. Exchange ratios fluctuated with war, disruption of trade routes, and devaluation of coinage. Serfs and lower-class civilians had almost no contact with gold coins - they used physical land rent (grain, livestock, cloth) and copper pennies as their economic units. An annual income of ten to thirty gold crowns was already a decent and well-off life for civilians. The annual income of aristocrats ranged from several thousand to tens of thousands of gold crowns, while the imperial emperor's military expenditures in a major war may exceed one million. Dwarf rune gold coins are extremely valuable among collectors and scholars. They are not only currency, but also works of art and carriers of ancient history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the empire's border provinces, female lords understood money entirely differently from the male bureaucrats at the royal mint. What they care about is the gold content and anti-counterfeiting mark of the gold coins. What we care about is whether one gold crown can still buy a bag of grain during the Chaos invasion-and when it cannot, how many months of siege consumption our inventory of physical ground rent materials will need to last. On my estate there is a system established by my grandmother and still in operation today: twenty percent of the annual tax revenue is deposited in the Royal Bank in gold coins, and the other twenty percent is deposited in kind in the family's fortified barn. The male officers scoffed at this as a waste, but during the seven-month siege of the last Chaos invasion our gold coins were worthless and reserves in kind saved the entire fiefdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the patriarch of the Border Count family in the old empire, the stability of gold crowns directly affects whether I can obtain rune equipment from dwarves. The dwarves accept gold crowns as payment - but they have their own unique exchange rate, which is not determined by the market but is adjusted every half century by the Council of Dwarf Elders based on their 'assessment' of the Emperor's current credibility. If any Elector Count is judged by the Dwarves to be 'of insufficient fineness' - either in terms of the fineness of their gold coins or their personal reputation - the Dwarves will unilaterally refuse to accept all gold crowns issued by that Elector Count's mint. My family has maintained a perfect dwarf credit rating for three hundred and fifty years, which is the only thing I won't allow any short-sighted economic decisions to offend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One thing I learned while wandering around the Old World: never surrender your last gold krona in any human territory - but always pay off your entire debt of dwarven rune gold in a dwarf stronghold. Human creditors can talk to you about deferred payments, mortgages, and forgiveness; dwarven creditors accept no excuses for deferred payments, and their collection system involves adding your name to the Book of Hatred—then your descendants will continue to be saddled with the debt, plus interest. The most unforgettable thing is that an old dwarf money changer in the Marienburg port area told me: 'We in Dawi do not give loans, we give debts that must be paid off on the debt collection day. A David who does not collect debts is not a real David. '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The conflict over the right to issue currency between the Imperial Royal Mint and the local mint of the Elector Count is the most enduring institutional tension in the Old World financial system. When all twelve Elector Counts inject their gold coins into the circulation market at the same time, the actual purchasing power of each krone will be divided into different levels due to small differences in gold content - on the foreign exchange market in Marienburg, one Reikland gold krona can be exchanged for zero and eighty-eight gold krona of some border Elector Counts. Every quarter my Chamber of Commerce publishes a secret 'True Gold Krone Exchange Table' - not a public market quotation, but a real transaction price for internal use - which is regarded in the eyes of the Imperial Finance Minister as one of the most dangerous contraband."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gold Crown - The standard Old World gold coin minted by the Empire, one equal to twenty silver shillings or two hundred and forty copper pennies",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Economic activities and operating mechanism of gold krona"
+  ]
+}

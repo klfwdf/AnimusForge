@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Stout",
+  "Keywords": [
+    "Stout",
+    "House Stout"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stowe family is based on Jinmang Castle near Barren Tomb Village and assumes vassal obligations to the Dustin family. The power here does not come from the grand palace, but from the fields, warehouses, roads and men who can wear armor at the summons. Local lords like Heywood Stow had to juggle between their superior families, neighboring manors, and local livelihoods; tribesmen such as Rona Staw traveled with the northern army, which also allowed this small family name to enter the broader war memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles in the Barren Tomb area regard Stowe as a rivet in the order of Dustin's territory. Jinmangbao is not prominent, but it can guard the roads, collect food and grass, and send out tribes when called upon. The reliability of a small lord is often more practical than a loud genealogy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Shi Tao that local farmers know is not the coat of arms at the banquet, but the steward who collects rent, the order to repair the bridge, and the granary that is opened or closed before winter. If the lord can keep taxes within an affordable limit, Golden Castle will be worthy of respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stout The Stowe family occupies Jinmang Castle near Barren Tomb and is a small lord under the Dustin family who maintains fields, roads and military services. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stout The Stowe family occupies Jinmang Castle near Barren Tomb and is a small lord under the Dustin family who maintains fields, roads and military services. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stout The Stowe family occupies Jinmang Castle near Barren Tomb and is a small lord under the Dustin family who maintains fields, roads and military services. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stout The Stowe family occupies Jinmang Castle near Barren Tomb and is a small lord under the Dustin family who maintains fields, roads and military services. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stout: The Stowe family occupies Jinmang Castle near Barren Tomb and is a small lord under the Dustin family who maintains fields, roads and military services."
+  ]
+}

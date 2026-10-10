@@ -1,0 +1,82 @@
+{
+  "Id": "rule_Guekka_Half_Ear",
+  "Keywords": [
+    "Guekka Half-Ear"
+  ],
+  "RagShortTexts": [
+    "Why is Haldar wary of Guekka Half-Ear?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guekka? I heard he only has half an ear. He is quite famous, and passing Nords mention him often. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guekka Half-Ear came from an impoverished branch of the Skjoldr family and was largely overlooked until the night his uncle the jarl and his retinue were trapped in their mead hall by unidentified warriors who set fire to the roof. The old king Volbjorn hastily confirmed his status as jarl, which led almost everyone to conclude that he was the culprit and had been bought off by the cunning and ruthless unifiers of Nordvyg. Even so, or perhaps because of it, Volbjorn's son and heir Haldar has always been wary of him. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guekka? He had it rough—his uncle was burned alive, and word is the king did it. He is still looking to settle the score with the king. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_7_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "He has already passed away",
+      "FalseText": "He is the chieftain of the Skjoldr clan, and his glory is known throughout the world"
+    }
+  ]
+}

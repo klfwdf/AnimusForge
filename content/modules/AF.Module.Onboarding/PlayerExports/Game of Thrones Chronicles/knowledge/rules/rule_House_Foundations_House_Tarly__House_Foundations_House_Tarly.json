@@ -1,0 +1,150 @@
+{
+  "Id": "rule_House_Foundations_House_Tarly",
+  "Keywords": [
+    "House Tarly",
+    "First in Battle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Tarly, with its roots at Hornhill near the Dorne Marches, is one of the most famous martial sects under Tyrell. The family emblem is a hunter in red on a green background, the motto is \"The First Front\", and the family's Valyrian steel greatsword \"Heartbreak\" adds weight to his reputation as a knight. Horn Hill is close to the border of Dorne, and the long-term war memory makes Tarly value military discipline, hunting, physical fitness and command ability; these standards can create reliable generals, and it is easy to regard family members who do not meet the ideals of warriors as shame. The Lords of the Reach need Tarly's soldiers, while the border people care more about whether this martial arts can protect their farmland, rather than just bringing new wars for the glory of the nobility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Reach nobles are in awe of Tarly, mostly because Hornhill values ​​frontier responsibilities over court elegance. \"The first front\" is both a motto and the position that this family demands for themselves. The hunter's crest, military discipline, and the Heartbreaker Sword make Tarly look like a tightened bowstring in a river bend filled with flowers and songs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The first thing soldiers feel under the Tarly banner is the rules: queues, sentries, quivers, and provisions. Any negligence may result in severe punishment. Some people resent this, and some people believe that this harshness will allow them to return home alive. Tarly generals were not necessarily gentle, but they rarely allowed the frontier to become a free-for-all based on courage alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Dornish March regard Hornhill as one of their most dangerous old enemies on the other side of the Crimson Mountains. The martial name of the Tarly family is glorious in the Reach, and in Dorne songs it is often associated with invasions, mountain passes, and bloodshed. Mutual respect is rarely spoken, but it is hidden in the sentry that neither party will relax."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarly The Martial Gate of the River in Horn Hill has a family emblem of a hunter in red on a green background, a motto of \"The First Front\", and a Valyrian steel sword called Heartbreaker. Frontier wars shaped their military discipline, martial arts and strict family traditions. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarly The Martial Gate of the River in Horn Hill has a family emblem of a hunter in red on a green background, a motto of \"The First Front\", and a Valyrian steel sword called Heartbreaker. Frontier wars shaped their military discipline, martial arts and strict family traditions. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarly The Martial Gate of the River in Horn Hill has a family emblem of a hunter in red on a green background, a motto of \"The First Front\", and a Valyrian steel sword called Heartbreaker. Frontier wars shaped their military discipline, martial arts and strict family traditions. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarly The Martial Gate of the River in Horn Hill has a family emblem of a hunter in red on a green background, a motto of \"The First Front\", and a Valyrian steel sword called Heartbreaker. Frontier wars shaped their military discipline, martial arts and strict family traditions. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Tarly: The Martial Gate of the River in Horn Hill has a family emblem of a hunter in red on a green background, a motto of \"The First Front\", and a Valyrian steel sword called Heartbreaker. Frontier wars shaped their military discipline, martial arts and strict family traditions."
+  ]
+}

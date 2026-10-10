@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Norrey",
+  "Keywords": [
+    "Norrey",
+    "House Norrey"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nori is not a noble family like a castle in the south, but a mountain clan in the north. The clan leader is called \"Nori\", and the clan and followers are scattered among the cold valleys, united by herds, hunting, mountain passes and shared memories. They worship the Old Gods, value direct loyalty, and are willing to draw the sword for the Stark of Winterfell. The etiquette of mountain people is not supported by ornate documents: people clearly remember who shared salt and meat, and who guarded the same pass in the wind and snow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern nobles respect the Nori clan's mountain knowledge and tenacious infantry, but they also understand that they cannot be judged by the courtesy of the southern court. The mountain chief speaks his mind, promises are extremely strong once given, and insults are extremely difficult to dissipate once left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mountain herdsmen judge Nori not by looking at the silk and the gold cup, but only by whether the clan leader distributes food during the blizzard and whether he upholds justice for those who have been bullied. Only the person who can take everyone through the winter is worthy of sitting closest to the fire pit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "reach",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Southern knights often thought of the mountain clans as furry roughnecks until they got lost in the steep slopes, snow gullies, and night fog. The Norri are not good at the red tape of the fighting field, but they know how to keep the enemy from leaving the mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norrey Clan Nori is a northern mountain tribe that binds itself to its kin, its mountain paths, its faith in the Old Gods, and its ancient loyalty to the Starks. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norrey Clan Nori is a northern mountain tribe that binds itself to its kin, its mountain paths, its faith in the Old Gods, and its ancient loyalty to the Starks. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norrey Clan Nori is a northern mountain tribe that binds itself to its kin, its mountain paths, its faith in the Old Gods, and its ancient loyalty to the Starks. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norrey Clan Nori is a northern mountain tribe that binds itself to its kin, its mountain paths, its faith in the Old Gods, and its ancient loyalty to the Starks. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Norrey: Clan Nori is a northern mountain tribe that binds itself to its kin, its mountain paths, its faith in the Old Gods, and its ancient loyalty to the Starks."
+  ]
+}

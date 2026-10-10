@@ -1,0 +1,63 @@
+{
+  "Id": "rule_Vlandia_customs",
+  "Keywords": [
+    "Vlandia customs and customs",
+    "Vlandia temperament"
+  ],
+  "RagShortTexts": [
+    "Are the people of Vlandia considered barbarians and dishonest?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in Vlandia are barbarians and they don’t care about credibility at all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Vlandians are polite, powerful, and skilled in martial arts. We are the greatest nation in the entire continent!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "Although the Vlandia people who are mercenaries are martial, they are not barbaric. On the contrary, they have the most cumbersome and unbearable red tape in the entire continent. The first is etiquette, which has strict class-discriminatory regulations, such as: civilians must bow and salute after seeing nobles, civilians are not allowed to wear swords, wear wide belts, wear silk and linen clothes, and are not allowed to wear bright clothes, etc. Vlandia also has great restrictions on women and the relationship between the sexes. Women are not allowed to expose the skin except the head and hands. Women must remain chaste, otherwise they will be punished with ink (branding). Women are not allowed to walk on the streets at will (we can notice that there are the fewest women on the streets in Vlandia. Vlandia People do not pay attention to credibility. They made their fortune through deception, rebellion, and robbery. For them, credibility and contracts are just pieces of paper that can be thrown away. They tear up agreements and betray covenants at will, and are not ashamed of it. For Vlandia people, although they often talk about honor, what they care about most is profit, and it is short-term profit. The barons of Vlandia can even directly surrender to the enemy."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Restoration_of_the_Roman_Empire_Nicaea",
+  "Keywords": [
+    "Empire of Nicaea",
+    "Michael VIII Palaiologos",
+    "Byzantine Empire",
+    "Battle of Pelagonia",
+    "Latin Empire",
+    "Constantinople"
+  ],
+  "RagShortTexts": [
+    "The Empire of Nicaea, having crushed the Latin coalition at Pelagonia in 1259, completed military preparations to liberate Constantinople and restore Byzantium."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the disastrous sack of Constantinople by the Fourth Crusade in 1204, the exiled Byzantine Greeks established the Empire of Nicaea in northwestern Anatolia. Governed with agrarian frugality and military vigilance by the Laskaris dynasty, Nicaea expanded steadily into the southern Balkans, presenting itself as the sole legitimate continuation of the Roman Empire.\n\nIn 1259, the usurper Michael VIII Palaiologos won a crushing victory over a combined host of the Latin Principality of Achaea, the Despotate of Epirus, and King Manfred of Sicily at the Battle of Pelagonia. With the Latin Empire reduced to an isolated, bankrupt garrison inside Constantinople's walls, Michael VIII secured Genoese naval backing via the Treaty of Nymphaeum to orchestrate the final recapture of the imperial city in 1261."
+    }
+  ],
+  "TextMappings": []
+}

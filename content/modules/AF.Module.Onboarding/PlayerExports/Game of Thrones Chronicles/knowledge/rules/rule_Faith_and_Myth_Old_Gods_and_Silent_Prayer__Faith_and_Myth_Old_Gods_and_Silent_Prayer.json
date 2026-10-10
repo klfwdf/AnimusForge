@@ -1,0 +1,160 @@
+{
+  "Id": "rule_Faith_and_Myth_Old_Gods_and_Silent_Prayer",
+  "Keywords": [
+    "Weirwood",
+    "Silent Prayer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The old gods did not have unified scriptures, fixed names, and clerical hierarchies all over the place. Believers walk into the sacred forest and sit quietly, pray, get married or make vows in front of the weirwood heart tree with white stems and red leaves; the faces carved on the tree make people feel that the forest is watching. The faith originated from the children of the forest and was inherited by the ancestors. It still has deep roots in the North, the Neck, some ancient homes and beyond the Great Wall. Silence does not mean there are no rules: guest rights, oaths and words spoken in front of the Heart Tree are considered extremely serious. The Andals went south and cut down many weirwoods, but failed to make the old gods disappear from life in the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "freefolk",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Believers of the Old Gods do not need priests to interpret for themselves. When a person kneels in front of the heart tree, he is often just silent for a long time; no one can confirm whether the tree answers, but the person who swears the oath knows that he has been seen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "crownlands",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Some believers of the Seven Southern Gods regard the old gods as crude relics, while others respect their antiquity and sworn power. People who have actually been to the godswood of Winterfell tend to laugh less than those who only hear rumors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners and some ancient Hejian tribes believe that breaking an oath in front of the Heart Tree is heavier than lying in a deserted place. War can burn down the woods, but it also makes the survivors more persistent in remembering who cut down the trees and who broke the oath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants think of both Faith and Order when they look at the Old Gods. Old Gods and Silent Prayer: The natural faith in the northern border and ancient ancestor traditions has no scriptures or clergy. People pray silently and make oaths in front of the red leaves and carvings of the heart tree. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and travelers most often speak of the Old Gods in times of crisis. Old Gods and Silent Prayer: The natural faith in the northern border and ancient ancestor traditions has no scriptures or clergy. People pray silently and make oaths in front of the red leaves and carvings of the heart tree. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and priests are more concerned about the rituals, taboos and inheritance of the old gods. Old Gods and Silent Prayer: The natural faith in the northern border and ancient ancestor traditions has no scriptures or clergy. People pray silently and make oaths in front of the red leaves and carvings of the heart tree. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and villagers put old gods into seasons and household chores. Old Gods and Silent Prayer: The natural faith in the northern border and ancient ancestor traditions has no scriptures or clergy. People pray silently and make oaths in front of the red leaves and carvings of the heart tree. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Old Gods and Silent Prayer: The natural faith in the northern border and ancient ancestor traditions has no scriptures or clergy. People pray silently and make oaths in front of the red leaves and carvings of the heart tree."
+  ]
+}

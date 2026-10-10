@@ -1,0 +1,216 @@
+{
+  "Id": "rule_vampire_military_vampire_military",
+  "Keywords": [
+    "Vampire Military",
+    "Army of the Undead (vampire military vampire military)",
+    "zombie",
+    "skeleton",
+    "black knight",
+    "Vampire Army Tomb Guard",
+    "Vampire Army Horror",
+    "Vampire Army Blood Knight",
+    "Vampire Army Bloodthirsty Bat Wolf",
+    "Vampire Army Spirit Gathering Carriage",
+    "Vampire Army Necromancer",
+    "Vampire Army Night Kiss",
+    "Undead Legion",
+    "Legacy of Nagash",
+    "Vampire Army Dark Magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The army of vampires is completely different from that of mortals - they do not recruit living soldiers, but instead raise the corpses of the dead from battlefields and cemeteries to form armies of the walking dead. Skeleton warriors form an endless battle line, zombies stagger as flesh and blood shields, and the most elite dead will ride nightmare horses and transform into black knights to charge into battle. It is said that in every battle with vampires, the number of enemies will only increase."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The armies of the dead are extensions of our will - they never complain, never need supplies, and never retreat in the face of fear. The skeleton army is the most basic weapon. Those poor souls who died on the land of Sylvania will never rest in peace. Their bones are the white carpet under our feet. Although zombies are slow, they are endless in number, and corpses are always the cheapest resource. What truly embodies our military art are the black knights - the souls of those who were elite warriors when they were alive are summoned back by us, riding the same dead horses, like a torrent of black iron in the night. There are also wraiths, tomb-haunts, and those giant tethered bats that form the razor-sharp fangs of our armies. Remember, the true power of the Army of the Dead lies not in the fighting prowess of its individuals, but in their absolute, eternal obedience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Fighting an army of the undead requires a radical change in tactical thinking. Traditional armies rely on morale - fear, flanking attacks, rout pursuits - which are completely ineffective against the dead. Skeletons and zombies feel no fear and will fight until they are physically destroyed or the magic holding them is dispelled. Therefore, priority should be given to eliminating the necromancers and vampire commanders in the enemy army. They are the soul thread that maintains the entire army. The Black Knight is the most threatening impact force in the vampire army. The hoofbeats of its nightmare horses will make mortal horses panic and lose control. They must be suppressed with spear formations or sacred objects. Additionally, the armies of the dead are most active during the night, and any campaign planning must take time into consideration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The core of the undead military power lies in the manipulation of death through dark magic - necromancy. The Army of the Undead is not a simple resurrection technique, but an evil twist on Shaya's Wind. Necromancers use spells to inject free death energy into corpses, giving them unclean movement capabilities; maintaining these dead requires a continuous supply of magic power. Once the caster is killed or his attention is broken, the summoned dead will quickly disintegrate. High-level undead such as vampires and wraiths are different - they contain the power of death independent of external magic, and can continue to act even if the summoner dies. The Black Knight's mount is specifically chosen as a warhorse that died of violence, because the souls of those who died are the most susceptible to being bound by necromantic magic. The most terrifying thing is that vampire armies require no logistics - the dead in each battle will rise again as new soldiers in the next battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a countess ruling a border region of Sylvania, undead armies mean something entirely different to me than they do to male lords. My family graveyard—the bones of my ancestors—is not a historical monument, but a potential reservoir of enemy troops. Every year I pay exorbitant graveyard consecration fees to the Cult of Morr, not out of religious piety, but to ensure that my grandfather and great-grandmother will not be awakened by some passing necromancer to join their skeletal ranks. Female nobles ruling near Sylvania must consider something men rarely face: if we are defeated, it is not simply death—it is being turned into a Banshee or worse, our consciousness imprisoned within an undying husk to serve the very one who defeated us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The armies of our von Carstein family are completely different from the armies of mortals. Mortal lords must recruit, train, and equip soldiers anew every generation—whereas we accumulate soldiers. A third of the skeletal legions my father left to me were inherited from my grandfather, and my grandfather inherited them from even earlier von Carstein ancestors. Every war against the Empire—regardless of victory or defeat—increases our troop strength in the final tally, because all the dead lying on the battlefield are raised anew. Internal family competition for military strength is likewise measured in centuries: if a von Carstein scion can prove in an Undead War that his legions have greater fighting prowess than his brother's legions, he will gain a greater voice at the next council of the bloodline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Being a mercenary in Sylvania is completely different from anywhere else—here you cannot boast about surviving on experience. The fastest thing you learn in Sylvania is this: undead armies do not sleep. They march faster at night than by day, they do not need to pitch camp, they do not need to light fires to cook, and they do not need medical care. If you are targeted by an undead patrol, your only option is to ride at full gallop and flee—not to the nearest town, where the graveyard may already be empty, but across the Sylvanian border. The only job I ever took in Sylvania was escorting a Cult of Sigmar funerary urn convoy—it is said those ashes are consecrated, and if you scatter them over reanimating skeletons, they burn right through dark magic like acid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As Chairman of the Stirland Border Trade Guild, the problems undead armies pose to our merchant class are utterly unique. First is route blockade—undead patrols do not demand road tolls; they kill you outright—and the three most convenient trade routes between Stirland and Sylvania have been permanently abandoned over the past two centuries. Second is commodity depreciation—any agricultural produce flowing out of Sylvania is automatically discounted by thirty percent in the markets of other Imperial provinces, because no one can be certain that grain was not grown in soil enchanted by the undead. What gives merchants the worst headache is insurance—not a single sane Imperial merchant house will underwrite cargo insurance for a caravan crossing the Sylvanian border, so every transaction along this trade route is a gamble."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Necromancy - that is, dark magic, an evil twist on the winds of Shayar, a forbidden spell that manipulates the energy of death",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Vampire armies are distinct from those of mortals - they do not recruit living soldiers"
+  ]
+}

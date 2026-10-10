@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Geographical_Dossier_Panosos_Keep",
+  "Keywords": [
+    "Panosos Keep"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Panosos is located on the western edge of Tyrosh, the Stepstone Islands and the Disputed Land, and is politically located within the sea area that is repeatedly contested by the Tyrosh city-state and pirate forces. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep Local families also rely on water, roads, arable land, herds, and markets where goods can be exchanged; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep Entry Panosos Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep They also recognize the accents, laws, and credentials of the known world; reputations can travel great distances from taverns, but real distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep Entry Panosos Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen use their hands to measure the stone walls, wooden beams, iron doors, tombs, and seams left by generations of repairs in Panosos Castle. Priests use rituals to continue the local gods, ancestral tombs, and taboos passed down from generation to generation. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Panosos Keep They care about water sources, roads, cultivated land, herds, and markets where goods can be exchanged. They also look at whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Panosos Keep: Panosos is located on the western edge of Tyrosh, the Stepstone Islands and the Disputed Land, and is politically located within the sea area that is repeatedly contested by the Tyrosh city-state and pirate forces. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

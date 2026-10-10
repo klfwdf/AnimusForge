@@ -1,0 +1,38 @@
+{
+  "Id": "rule_svadia",
+  "Keywords": [
+    "Swadia",
+    "Northern Vlandia"
+  ],
+  "RagShortTexts": [
+    "Vlandia The hawk baron's fiefdoms are mostly in Svadia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Swadia was the collective name for the newly conquered lands in northern Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia Most of the hawk baron fiefdoms are in Swadia (except Ingatell)"
+    }
+  ],
+  "TextMappings": []
+}

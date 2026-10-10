@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Order_of_War_Memory_of_War",
+  "Keywords": [
+    "Memory of War",
+    "War"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom. Victory or defeat on the battlefield matters, yet who can keep an army supplied with fodder and silver in its second month often does more to decide the length of a war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom. They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom. The smith must heat broken blades red again, and the priest must keep vigil for the dead; after war leaves the battlefield, it continues upon the anvil, in the graveyard, and in emptied seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Memory of War Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom. The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Memory of War: Entry Memory of War When orders are passed from the hall to the cottage, they always pass through human choice and local custom."
+  ]
+}

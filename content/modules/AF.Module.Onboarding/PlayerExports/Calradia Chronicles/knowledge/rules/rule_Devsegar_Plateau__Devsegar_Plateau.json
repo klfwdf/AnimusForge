@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Devsegar_Plateau",
+  "Keywords": [
+    "Devsagar Plateau"
+  ],
+  "RagShortTexts": [
+    "Devsagar Plateau is located at the boundary between Calradia and Darcy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Devsaig Plateau is the boundary between Calradia and Darsi. It is currently jointly ruled by Khuzait and Darsi Shah. It has good grassland and is a good place for raising horses, but it is definitely not a good place for farming."
+    }
+  ],
+  "TextMappings": []
+}

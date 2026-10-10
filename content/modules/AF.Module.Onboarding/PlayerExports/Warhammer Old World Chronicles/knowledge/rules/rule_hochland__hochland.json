@@ -1,0 +1,169 @@
+{
+  "Id": "rule_hochland",
+  "Keywords": [
+    "Hochland",
+    "Province of Hochland_HL",
+    "Elector Count of Hochland_HL",
+    "Hochland Long Rifle_HL",
+    "Aldebrand Ludenhof_HL",
+    "Hergig_HL",
+    "Forest of Hochland_HL",
+    "Middle Mountains_HL"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hochland is one of the smallest provinces by area in the central Empire, tucked away deep between the dense woods of the Forest of Hochland and the hills of the Middle Mountains. Its capital, Hergig, is a modest mountain-fortress town famed for producing the most precise long rifles in the Old World—the craftsmanship of Hochland's gunsmiths is so exquisite that even the Imperial Gunnery School in Nuln in Wissenland dispatches apprentices here to study the art of crafting finely calibrated sights. It is a low-key, reserved province of deep forests and rolling hills whose transport links to the outside world rely chiefly on winding mountain trails—neither wealthy nor impoverished, the people of Hochland make silence and pinpoint marksmanship their way of survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hochland is the most easily forgotten province in the Empire—small in size, sparse in population, lacking famous holy sites or battlefields, without a single decent navigable river. When Imperials mention Hochland in casual conversation, they usually fall silent for a few seconds and then change the subject—not out of dislike, but because they genuinely do not know what to say. Yet officers of the Imperial army dare not forget Hochland: the Hochland Long Rifle regiments are the deadliest units in the Imperial light infantry order of battle, their jaegers capable of putting a lead ball precisely through the eye-slit of a Chaos Warrior's helm from three hundred paces away. In the eyes of the Reiksguard or Averland cavalry, Hochlanders are nothing more than a bunch of country bumpkins clad in deerskin—though Beastmen chieftains who have taken a Hochland jaeger's shot through the shoulder from a treetop clearly hold a different opinion. The Elector Count of Hochland, Aldebrand Ludenhof, is a tall, taciturn old man who can sit through an entire session of the Imperial Diet without opening his mouth and feel not the slightest discomfort—yet when he does speak, it usually means someone has stepped across Hochland's bottom line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The military value of Hochland is severely underestimated on the strategic maps of the Empire—for a simple reason: Hochland produces no cannons, provides no cavalry charges, and lies along no major invasion route. Its strategic value lies in providing the Empire with an irreplaceable tactical asset: precision marksmen. A detachment of jaegers equipped with Hochland Long Rifles can dismantle a Beastmen warherd five times its own size in any forested terrain at the cost of zero casualties—provided the commander knows how to use them. Aldebrand Ludenhof never actively competes for political advantage in the Imperial Diet, yet he is known across diplomatic circles for a famous remark: 'I do not need the Emperor to remember where Hochland is; I only need the Emperor to remember whom to call for help when his army gets lost in the woods.' Anyone seeking to win Hochland as a political ally must understand: you cannot tempt Hochland with gold or office—you can only prove that the enemy you fight also threatens the forests of Hochland. Ludenhof is a man who judges loyalty by instinct rather than calculation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The economic structure of Hochland is the closest specimen to the ideal of 'self-sufficiency' among the provinces of the Empire. The province has virtually no large-scale export industries—although Hochland Long Rifles are of peerless quality, their annual output is minuscule (the finest gunsmith in Hergig can complete at most twelve custom-made rifles a year), far too small to form a province-level pillar of trade. Hochland's economic foundation consists of scattered forest villages and hillside pastures, with internal trade centered on seasonal markets between villages. The fiscal health of the province rests upon an exceedingly fragile balance: if the Empire remains at peace, Hochland's tax revenues suffice to support basic administrative operations; if a large-scale war breaks out, however, Hochland can neither profit from Imperial military procurement contracts (having no heavy industry) nor avoid paying wartime surtaxes higher than peacetime rates as mandated by the Imperial Diet—leading directly to a provincial fiscal deficit. House Ludenhof's strategy for coping with this dilemma is to maintain Hochland's low profile in Imperial politics, abstaining from any maneuvering in the Imperial Diet that would require heavy diplomatic expenditure—a pragmatist strategy that trades away political clout in exchange for fiscal stability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Life in Hochland is a quiet trial for noblewomen—the social circle here is tiny, with no glittering courts like Altdorf's and no commercial fairs like Nuln's, only the small town of Hergig ringed by forest and minor estates scattered among the hills. Yet this quietude also affords women a degree of autonomy hard to imagine in other Imperial provinces: because male heirs are often away on campaign, the day-to-day affairs of Hochland's smaller noble estates are frequently managed by women, and local hunters and gunsmiths care far more about whether you respect their craft than about your gender. The women of Hochland are famed for their mastery of herbalism and animal husbandry—medicinal herbs gathered in the forest serve as the most important non-monetary medium of exchange within the province. If the rule of noblewomen in Wissenland relies on cold commercial acumen, the rule of noblewomen in Hochland relies on silent patience and a deep understanding of the rhythms of the forest—in Hochland, the tempo of power is as slow and precise as the breathing of a hunter waiting for prey among the trees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The rule of House Ludenhof in Hochland is a rare case study in Imperial political science: taking 'staying so low-profile that people forget you exist' as the core strategy for family survival. House Ludenhof has never produced an Emperor or a legendary war hero in Imperial history, yet the length of their rule over Hochland exceeds the combined tenure of at least three Electoral dynasties of Reikland. They do not expand, they do not marry out into other provinces (every major marriage record between Hochland and the rest of the Empire involves spouses marrying into Hochland rather than out of it), and they do not partake in the factional strife of the Imperial Diet. Instead, House Ludenhof controls the sole strategically vital resource in Hochland—the hereditary right of certification over the Gunsmiths' Guild. Imperial law authorizes Elector Counts to certify professional guilds within their provinces, and over the past two hundred years House Ludenhof has certified no more than fifteen Long Rifle gunsmith families; this deliberate strategy of maintaining scarcity keeps the Hochland Long Rifle commanding a disproportionately high prestige premium on the Imperial weapons market. Any upstart family wishing to establish a foothold in Hochland must understand: you cannot challenge House Ludenhof; you can only become part of their silent ecosystem."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hochland is the quietest of all the provinces I have traveled across in the Empire—so quiet it makes your skin crawl. Every alley in Hergig is steeped in the scent of pine woods, and the loudest sound in town is the first hammer-strike against a rifle barrel in a gunsmith's shop at dawn, not the neighing of warhorses or the chants of dockworkers. The mercenary market in Hochland is exceedingly narrow: there are basically only two kinds of work—Beastmen patrols in the forest and caravan escort duty across the Middle Mountains. The former pays poorly but is relatively safe (the density of Beastmen in Hochland is far lower than in Talabecland), while the latter pays decently enough but follows grueling routes that require experience surviving in high-altitude cold zones. Yet Hochland offers one benefit no other province can give: if you have the patience to stay in Hergig long enough and save up the coin to commission a custom Hochland Long Rifle from a gunsmith you trust—that rifle will become your single most valuable asset for the rest of your mercenary career, its sights specially calibrated to your eyesight by a Hochland master, offering a precision you could not buy in Nuln for five times the price."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Though small in commercial scale, Hochland's profit structure is surprisingly healthy. The status of the Hochland Long Rifle in the high-end weapons market of the Empire is akin to that of purebred Bretonnian warhorses—minuscule output yields astronomical prices, and a handmade rifle signed by a certified Hergig gunsmith can fetch enough at an Altdorf auction to equip an entire company of Reiksguard infantry. Yet the Gunsmiths' Guild accepts no outside capital—they serve only generational long-term clients and buyers personally recommended by the Elector Count himself. A more realistic entry point for small-scale commerce lies in Hochland's forestry by-products and medicinal herbs: the Forest of Hochland yields an exceptionally supple pine-resin fiber used for high-grade bowstrings and surgical sutures, for which the Surgeons' Guild of Nuln and the luthiers of Altdorf are steady buyers. Regardless of what line of business you pursue, however, the paramount principle of trading in Hochland is respecting the local tempo—you cannot operate here on Altdorf's 'sign the contract today, ship the goods tomorrow' model; Hochland's artisans and hunters work by the seasons rather than the calendar, and trying to rush them will only ensure your order stays permanently at the very bottom of the pile."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hochland—the smallest forested province in the central Empire, renowned throughout the world for its dead-eye Long Rifle jaegers",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hochland Imperial Province Long Rifle Jaegers Forest"
+  ]
+}

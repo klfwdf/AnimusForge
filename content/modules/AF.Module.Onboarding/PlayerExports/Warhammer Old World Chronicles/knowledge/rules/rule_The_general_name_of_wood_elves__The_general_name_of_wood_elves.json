@@ -1,0 +1,206 @@
+{
+  "Id": "rule_The_general_name_of_wood_elves",
+  "Keywords": [
+    "enchanted forest",
+    "Aslay Territory",
+    "Wang Ting in the Forest",
+    "era oak realm",
+    "Wood Elf Kingdom"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The land of the Wood Elves isn't defined by walls and roads - it's an entire living, self-aware magical forest called Athel Loren. On human maps, Athel Loren is just a forest area marked \"inaccessible\", but in Asrai's language it means the entire world - a living land centered on the Oak of Ages and connected by world roots to ancient forests across the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our land is called Athel Loren - it's not a land we own, it's the beings who share our souls. The kings of men foolishly drew their borders on rivers and mountains - they did not understand that true kingdom borders were measured in breaths. The borders of Athel Loren shift with the seasons, with the ebb and flow of the winds of magic—a grove of oak trees may be wild outside the forest's borders today, but by the next equinox it has been accepted as part of the realm by the forest spirits. The Oak of Ages is at our heart—and as long as its roots remain in the soil of the Old World, Athel Loren will be a kingdom that will never fall. No one can siege Athel Loren like Altdorf, because when you siege it you find yourself in it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is the most unique political entity in the Old World in a diplomatic and military sense - it has no fixed borders, no stable central power, and no ruler with whom to sign treaties. Orion and Ariel have the highest authority as co-rulers, but the spirits of the forest - especially the will of the Age Oak and the tree people - have veto power that cannot be ignored in their decision-making process. Any diplomatic contact with Athel Loren must go through an unwritten rule: you are never invited into Athel Loren, you can only wait at its borders while it decides whether to talk to you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The closest translation of Athel Loren's name in the ancient elven language is \"forest of gold\" - but this \"gold\" does not refer to wealth but to the glory of the original magical forest that covered the old world continent before the great division of elven civilization in ancient times. Athel Loren is the last remnant of that era - the only ancient forest west of the World's Edge Mountains that has never been tainted by human axes, greenskin fire, or the wholesale taint of Chaos mutation. The political structure of the wood elves is academically described as a forest soul consultation system where two kings rule together - Orion (the Oak King) is in charge of external wars and wild hunting, Ariel (the Eternal Queen) is in charge of the internal magic balance and elven social affairs, while the Age Oak and the oldest tree people group headed by Durthu have de facto veto power in decisions involving the fundamental survival of the forest. Athel Loren is connected to other forests in the Old World by worldroots, an underground network of magical roots that allow wood elves to appear in another forest across hundreds of miles in days if necessary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is the only political entity in the Old World where women and men share supreme power completely equally. Ariel is not Orion's wife or advisor - she is his co-ruler with equal governance rights. The symbolism of this extends far beyond the internal politics of the Wood Elves - Athel Loren's very existence is a silent political argument for the women who operate within the patriarchal systems of the Empire and Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What makes Athel Loren unique in the family's strategic thinking is its unpredictability. Unlike Chaos or Greenskins—whose path of invasion is at least predictable in the general direction—the Wood Elves' wild hunts can break out in any direction, at any season, and with any intensity. Our family has held lands on the southern edge of Athel Loren for three centuries, and the most important lesson we've learned is this: don't build anything at the edge of the forest that you can't completely abandon and retreat without loss in a morning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Spending the night on the edge of Athel Loren is a rite of passage common to all wanderers—those who haven't done it just repeat what's in the books when talking about wood elves. The forest is not quiet at night - but unlike the chirping of insects and birds you hear in the Imperial Forest, Athel Loren's voice is a deeper, constant hum that comes from deep in the soil beneath your feet, as if the entire forest is the deep breathing of a giant beast in its sleep. You'll have trouble sleeping the first night. The second night you won't be sure you're still awake. On the third morning you will find that you are no longer where you camped last night—not because you moved, but because the ground beneath you moved slowly in your sleep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren's value to Old World commerce cannot be measured in traditional trade terms—for the Wood Elves do not engage in trade. But the yew seeds blown by the wind in specific seasons on the borders of Athel Loren, the special moss with natural antiseptic properties floating in the streams at the edge of the forest, and the eagle feathers blown off by the wind that are occasionally found outside the forest boundaries - the circulation value of these in the empire's market for high-end alchemical materials and rare medicinal herbs is an informal but extremely stable source of income."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Athel Loren - an enchanted forest kingdom ruled by wood elves, the last primitive enchanted forest in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The formal title and political status of the wood elves"
+  ]
+}

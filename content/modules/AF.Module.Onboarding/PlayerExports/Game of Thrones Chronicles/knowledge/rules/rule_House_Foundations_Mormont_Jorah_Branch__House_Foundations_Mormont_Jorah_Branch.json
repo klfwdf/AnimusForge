@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Mormont_Jorah_Branch",
+  "Keywords": [
+    "Mormont (Jorah Branch)",
+    "Mormont - Jorah Branch",
+    "Jorah Mormont",
+    "House Mormont of Bear Island",
+    "Exiled Knight"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jorah Mormont is the son of Jeor Mormont and once inherited the barren Bear Island. A dazzling jousting victory and a marriage far beyond the financial resources of Bear Island made him desperately pursue a life he could not support; when debts loomed, he sold poachers to slave traders, violated the laws of the North, and fled to Essos before Ned Stark came to judge. Exile made him a hedge knight, a guide, and a man seeking his place in a strange court. He later becomes close to Daenerys Targaryen, and his loyalty to her, his love for her, and his desire to be forgiven are all intertwined with his concealment. Jorah carries the weight of Bear Island, his father, and his lost honor, but these choices belong only to him and do not mean that the Mormont family has left the North."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It's hard for Northerners to forget Jorah's sin of selling poachers. The poverty of Bear Island can explain his plight, but love and debt cannot change what the slave trade violated. Some people still remember his bravery, while others only remember that he escaped Ned's sword; both memories left a scar on the Black Bear family name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Essos looked at Jorah more like an exiled knight familiar with many languages, roads, and employers. He understands Westeros and how to survive without belonging. Such guides are useful, but they always make people wonder how much a person who desperately wants to be needed by someone will hide the truth about not wanting to lose the other person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If slaves and freedmen knew that Jorah had sold people into slavery, it would be difficult to see him only as a loyal knight at the Queen's side. A person can regret and save others, but he still has to bear the burden of what he has done. For them, the real atonement is not to say who they love, but to face the people they once regarded as goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Jorah Branch) Jorah Mormont was exiled for selling poachers into slavery and became a knight, guide and follower of Daenerys in Essos; loyalty, love, concealment and atonement are intertwined in him. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Jorah Branch) Jorah Mormont was exiled for selling poachers into slavery and became a knight, guide and follower of Daenerys in Essos; loyalty, love, concealment and atonement are intertwined in him. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Jorah Branch) Jorah Mormont was exiled for selling poachers into slavery and became a knight, guide and follower of Daenerys in Essos; loyalty, love, concealment and atonement are intertwined in him. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Jorah Branch) Jorah Mormont was exiled for selling poachers into slavery and became a knight, guide and follower of Daenerys in Essos; loyalty, love, concealment and atonement are intertwined in him. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jorah Mormont was exiled for selling poachers into slavery and became a knight, guide and follower of Daenerys in Essos; loyalty, love, concealment and atonement are intertwined in him."
+  ]
+}

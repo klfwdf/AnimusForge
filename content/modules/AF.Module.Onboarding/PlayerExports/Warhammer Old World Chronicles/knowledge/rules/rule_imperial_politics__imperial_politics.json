@@ -1,0 +1,213 @@
+{
+  "Id": "rule_imperial_politics",
+  "Keywords": [
+    "imperial politics",
+    "Imperial Politics Elector Count",
+    "imperial politics imperial parliament",
+    "imperial emperor",
+    "elective monarchy",
+    "Sigmar Church",
+    "imperial law",
+    "Provincial autonomy",
+    "Imperial Finance",
+    "imperial bureaucracy",
+    "Imperial power and religious power",
+    "imperial constitution"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire's political system was the most complex electoral monarchy in the Old World - the emperor was elected by ten Elector Counts (and their three ecclesiastical equivalents) in a vote in the Imperial Assembly, and once elected he reigned for life. This system was created by Sigmar himself to balance the central imperial power and the local aristocratic power. Although it often fell into deadlocks and internal strife, it miraculously maintained the country for two thousand and five hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of empire is something we are both proud of and deeply troubled by. Fifteen Electors - the ten secular Elector Counts plus the Archbishops Sigmar, Ulric, and Al-Urik - gathered in the Imperial Council Hall in Altdorf after the Emperor's death to decide by vote who would succeed the Emperor. On paper it was a fair election, but in reality money, in-laws, military threats and church endorsements influenced the outcome of the vote more than a person's character. The Elector Count had near-kingly power over his province: levying taxes, promulgating laws, and maintaining an army, with few constraints beyond an oath of allegiance to the emperor. The Sigmar Church has huge spiritual authority. A single word from the Archbishop can make an emperor despised by the people, or make an unknown person be hailed as the real one. The system was clumsy, slow, and riddled with corruption, but it ensured that no single province could control the Empire alone, and that the Empire would eventually unite in the face of real crises—albeit sometimes when it was too late."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To survive in imperial politics, you must understand that power is about more than troops and money—power is about information, about relationships, about timing. The Imperial Diet meets annually in Altdorf, where the Elector Counts debate taxation, trade, military maneuvers, and diplomatic treaties—ostensibly to protect the Empire, but in reality plotting against each other. The Emperor's true power derives from three sources: the financial support of Reikland, the military might of the Reik Guard, and the investiture rituals of the Sigmar Church. An emperor who loses the support of the Church will be unable to push any resolutions in parliament; an emperor who loses Reikland is nothing more than a beggar. A wise Elector Count will not challenge the Emperor head-on, but rather expand his influence through marriage, monopolizing a certain trade resource, or forming a voting alliance in Parliament. A wiser emperor would create subtle antagonisms between the Elector Counts, ensuring that no one province was powerful enough to threaten imperial power on its own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Empire's elective monarchy is one of the most brilliant constitutional designs in the history of Old World political thought. Among the fifteen electors, ten secular Elector Counts respectively represent Reikland, Middenland, Talabekland, Stirland, Nordland, Osterland, Ostermarkland, Ivyland, Wesenland and Nunnland, and three church electors represent the supreme authority of the Sigmar Church, the Ulric Church and the Morr Church. When the emperor dies, an election meeting must be convened within three months, otherwise it is regarded as a political crisis according to ancient tradition - the separation of the three emperors evolved from the electoral deadlock. The operation of the Imperial Parliament is far more sophisticated than it appears on the surface: every imperial law needs to be passed by the House, but in fact there is an unspoken rule of the 'golden vote' - the votes of certain Elector Counts have unwritten influence on specific issues, such as Nordland on naval issues, Nunland on military industry issues, and Archbishop Sigmar on religious issues. The political stability of the empire depended on a delicate balance: Electoral monarchy provided a legal path to the transfer of power and avoided the rigidity of bloodline inheritance, but also introduced the risk of foreign interference during elections and long-term antagonism between the Elector Counts. Scholars generally believe that the reason why the empire's system has survived for two thousand and five hundred years is not because of its perfection, but because of its flexibility-when the rules failed, the empire would find new rules."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of the Empire are gender-neutral on paper - nothing in the Royal Succession Act or the Elector Count Regulations explicitly prohibits women from serving as Elector Count or Regent, but when a woman actually sits on a seat in the Imperial Parliament, you find that equality on paper is a flimsy thin layer in real politics. I once attended the Imperial Parliament as regent on behalf of my young son. At the meeting, my proposal to allocate additional defense funds to the Ostermark border was impeccable in terms of wording, data, and logic. However, before the vote, the old Elector Count of Midden publicly said, \"This suggestion makes sense, but are you sure that you want a lady who has not fully recovered from the loss of her husband to decide the military budget for us?\" '——The plan was shelved by two votes. The politics of the empire is a labyrinth that is always changing for women: you need to control the details more accurately than any male opponent to silence gender questioning, and you need to use gender stereotypes at critical moments to make your opponents relax their vigilance. My final response strategy is not to fight back head-on, but to use an 'accidental leak' at the next parliamentary reception to make the son of the old Elector Count of Midden be suspected of selling noble intelligence to a vampire spy. Two weeks later, the old Elector Count He took the initiative to come to me and said, 'The last defense plan was very reasonable and we should discuss it again.' Women's greatest weapon in imperial politics is that those who underestimate your intelligence will leave you with a bigger blind spot than elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a family perspective, the politics of the empire is an intergenerational strategy - any vote you make in the Imperial Parliament is not for current interests, but foreshadowing the political capital of your grandchildren. Our family has developed a 'three-step cycle' parliamentary strategy over the last six generations of business: the first step is debt bonding - borrowing to make another Elector Count The family is financially dependent on you, but the contract terms of this loan must be mild enough that the other party will not immediately notice that it is a trap; the second step is alliance consumption - actively support some innocuous but expensive bills of your debt ally in parliament, allowing him to divert energy and funds into these minor matters; the third step is crisis harvesting - when the family is in trouble due to a broken capital chain, propose a marriage and resource integration plan that they cannot refuse in the name of 'family friendship'. The parliamentary politics of the empire has never been about the issue itself, but about who has owed whom a debt before the vote - it can be a debt of gold coins, a debt of favor, or a debt of blood. Our family's greatest political asset is not our seats in Parliament, but our carefully maintained reputation for not making enemies - in imperial politics, the most powerful attacks often come from those directions least noticed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of the empire looked something else entirely from the streets outside the parliament halls. I worked as a hired guard in Altdorf for two years, responsible for 'policing' the perimeter of the Reichstag when it was in session - what the word really means is ensuring that the Elector Count agents who owed money and didn't want to pay it back couldn't leave the city safely, that civilian journalists carrying pinhole records couldn't get within earshot of the Parliament, and that people in the streets protesting against the rise in the price of bread were gently but firmly dispersed before Parliament adjourned. The real operational level of the empire's politics is not at the parliament table, but under the three floors surrounding the parliament: in the basement tavern, the Elector Counts' servants are exchanging information; in the corridor on the first floor, the stewards of each Elector Count are testing each other's bottom line; and we mercenaries in the square outside the hall are ensuring those who may disrupt the situation - including heretics trying to break into the Parliament, street gangs who want to extort money by causing chaos, and a certain Elector Count The civilian mistresses who wanted to be summoned secretly were all kept at a suitable distance for the right reasons. All major political decisions in the empire were made outside parliament, and parliamentary votes were just the final layer of gold paint that framed these private deals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of the Empire reveal another dimension in the accounting books: every power play between the Elector Counts ultimately leaves a quantifiable trace on the Empire's financial balance. The gray difference between the Imperial taxes levied by the Emperor and the 'voluntary tribute' paid in by the Elector Count provinces is the most sensitive accounting subject in all of Imperial politics - I know this because my Chamber of Commerce is responsible for auditing the accounts of three different Elector Count families. An Elector Count’s real motivation for high-profile support of the emperor’s military expansion bill in parliament can often be found in his forward orders for the purchase of iron ore and grain in the next three months—he was not just patriotic, he was making a fortune from the war by monopolizing military supplies in advance. Another Elector Count opposes the expansion of the Nordland fleet, publicly citing insufficient budget, but our audit revealed that he holds a hidden stake in a large privateer fleet on the Nordland route. The weaker the Imperial fleet, the more profitable his privateer fleet will be. The political morality of the Empire lay bare before the merchants' ledgers - the ugliest part of the elective monarchy is not that it occasionally paralyzes, but that it turns every political position into an investment item that can be priced, and the people who really know the price are never the Elector Counts themselves who vote, but us merchants who manage their wealth for them."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Electoral College – fifteen secular and ecclesiastical electors with the right to vote in the election of the emperor",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The power structure and decision-making mechanism of the empire"
+  ]
+}

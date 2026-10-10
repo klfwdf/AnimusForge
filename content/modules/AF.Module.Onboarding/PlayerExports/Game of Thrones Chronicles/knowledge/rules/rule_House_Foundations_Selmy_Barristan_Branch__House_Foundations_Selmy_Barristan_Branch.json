@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Selmy_Barristan_Branch",
+  "Keywords": [
+    "Selmy (Barristan Branch)",
+    "Selmy - Barristan Branch",
+    "Barristan Selmy",
+    "Ser Barristan Selmy",
+    "Barristan the Bold"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Barristan Selmy was born into a minor aristocratic family in the Stormlands. He wore borrowed armor to participate in competitions in Blackport at the age of ten. He was named \"Fearless Barristan\" because of his fearlessness in challenging adult knights. He later became the Kingsguard, and accumulated a rare reputation as a knight in the Seven Kingdoms on the battlefield, in the tournament field, and in the change of dynasties. The white robe once asked him to serve a king who was not worthy of respect, and forced him to distinguish again and again whether his loyalty should be dedicated to the throne, the oath, or the innocent. After being publicly deposed in old age, he crossed the sea to find Daenerys Targaryen, and dedicated his sword and experience to the Lord of Slaver's Bay; this was not a change in the alignment of the Selmy family, but the personal choice of an old knight who still tried to find someone worthy of his protection after losing his white robe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The knights of Westeros rarely deny Barristan's prowess, and even to the contrary regard his name as the measure of white glory. Beyond admiration there remain questions: to what extent a true knight should obey his oath, and when should he reject an unworthy monarch. Barristan’s life makes this question impossible to answer easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the people of Slaver's Bay saw was an old knight from the Land of the Sunset. His old reputation may not be important to the locals. What is important is whether he is willing to put his sword between the queen and danger, and whether he can teach the young warriors discipline instead of arrogance. The legend of White Robe has arrived in a strange land and must be re-translated with today’s actions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Targaryen followers tend to view Barristan's return as a sign of the old dynasty's unexhausted loyalty. He has served many monarchs and seen firsthand how royal authority can corrupt; so his allegiance is both a gift and a silent mirror. Being recognized by such a person increases prestige, and being disappointed by him is equally dangerous."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selmy (Barristan Branch) Barristan Selmy is an old knight and former Kingsguard who is famous in the Seven Kingdoms. After leaving the White Robes, he followed Daenerys across the sea and spent the rest of his life answering the question to whom the knights should be loyal. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selmy (Barristan Branch) Barristan Selmy is an old knight and former Kingsguard who is famous in the Seven Kingdoms. After leaving the White Robes, he followed Daenerys across the sea and spent the rest of his life answering the question to whom the knights should be loyal. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selmy (Barristan Branch) Barristan Selmy is an old knight and former Kingsguard who is famous in the Seven Kingdoms. After leaving the White Robes, he followed Daenerys across the sea and spent the rest of his life answering the question to whom the knights should be loyal. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selmy (Barristan Branch) Barristan Selmy is an old knight and former Kingsguard who is famous in the Seven Kingdoms. After leaving the White Robes, he followed Daenerys across the sea and spent the rest of his life answering the question to whom the knights should be loyal. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Barristan Selmy is an old knight and former Kingsguard who is famous in the Seven Kingdoms. After leaving the White Robes, he followed Daenerys across the sea and spent the rest of his life answering the question to whom the knights should be loyal."
+  ]
+}

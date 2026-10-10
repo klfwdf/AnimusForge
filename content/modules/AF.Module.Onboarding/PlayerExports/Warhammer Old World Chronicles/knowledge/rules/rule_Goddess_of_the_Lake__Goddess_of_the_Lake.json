@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Goddess_of_the_Lake",
+  "Keywords": [
+    "goddess of the lake",
+    "Lake God",
+    "holy grail",
+    "goddess",
+    "Faye Witch, Lady of the Lake",
+    "silver pagoda",
+    "Lake of the Holy Grail",
+    "Lilith",
+    "lost son",
+    "Manifestation of the Holy Grail of the Lady of the Lake"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lady of the Lake is the chief deity and protector of Bretonnia. She appears to the world in the form of the Lady of the Lake, holding the Golden Grail in her hand, granting the chosen knight superhuman power. The Holy Grail is the highest symbol of the goddess's gift - only knights who have experienced a long journey, passed countless tests and witnessed the goddess's manifestation in the lake can take the Holy Grail from her and drink it in one gulp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lady of the Lake is our Holy Mother and the only reason for Bretonnia's existence. She appeared in the light of the holy lake - never some distant and vague miracle, but a clear, complete and holy appearance that would make anyone fall to their knees at the sight of it. The goddess will never disclose her true name - it is a voice that only the most sacred Grail Knight can hear on rare occasions - but her requirements for us are simple and strict: protect the weak, do not abuse force, do not betray oaths, and do not fear death. The Holy Grail is her most precious gift to mortals: it is more than just a golden vessel, it is a trial and a gift. Those knights who long for the Holy Grail must abandon everything - their fiefs, titles, wealth, and even their own names - and travel alone in the wilderness, slaying chaos monsters, protecting helpless villages, and proving their purity with spears on the contest field. Until one night, when he kneels exhausted by an unknown lake, the light he has been waiting for all his life will rise on the lake. The goddess tests not the knight's strength but his soul - a man who pursues the Holy Grail with selfish desires will never find it. We never explain this to the Imperials, because they wouldn't understand - someone who believes in a war god can't understand why our god is a gentle mother and their god is a hammer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The belief in the Lady of the Lake is an integral part of Bretonnia's power system. The Sisters of the Holy Grail are the spokespeople of the Goddess on earth - they are not ordinary nuns, many of them are themselves the widows or daughters of Grail Knights, and have the unique secret of interpreting the Holy Grail prophecies. If you wanted to start a holy war in Bretonnia but the dukes were hesitant, you would need the Sisters of the Grail to publicly declare the goddess's support for the war - this would mobilize the blood of the knights more than the king's orders. But be sure to use this religious influence with caution: should the Sisters later discover that you were deceiving or exaggerating about the sanctity of war, their curse will allow you to enter Mousilon alive. The goddess has the final arbiter over the king's coronation - even if a king receives unanimous support from the Council of Dukes, he will never be able to sit on the throne if the Sisters of the Grail in the Holy Grail Cathedral refuse to perform a coronation ceremony for him. This divine check on royal power was the most exquisite design of Bretonnian politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theological nature of the Lake Lady's faith is one of the most fascinating and dangerous subjects in Old World religion. Unlike the Sigmar faith, an explicit hero cult based on a historical figure, the cult of the Lake Goddess belongs to an older mythological type—what scholars call site-manifestation faiths, in which a deity is closely tied to a specific natural location (a lake) through which divine power manifests itself to selected people. There are several mysteries about the goddess's theological attributes that need to be explored: first, the goddess is never described as a creator or ruler of the universe - her functions focus on protection, purification and selection of heroes; second, the divine origin of the Holy Grail itself is unknown - in the church version the Holy Grail was created by the goddess, but some ancient Bretonnia Folklore suggests that the Holy Grail has an older source in the pre-Giles era, possibly from elves or earlier civilizations; third, the connection between the goddess and elven mythology is the most sensitive taboo of the church - comparative religious research has revealed that the Lady of the Lake and the elven goddess of Aethel Loren have unignorable similarities in attributes, rituals and even the style of the gods, but any scholar who publicly proposes this connection may be accused of heresy and expelled from Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lady of the Lake is the ultimate mirror image of all Bretonnian women - in a land where human laws relegate women to a lesser status, the kingdom's supreme deity is a woman. This is no coincidence, it is a silent but unfathomable theological paradox. When I prayed to the goddess in my private chapel, I never prayed for victory in battle or to be crowned with honor, as men do—I prayed for wisdom, patience, and the strength to breathe calmly in the face of men who responded to my proposals with smiles in the Council of Dukes but turned around and smeared me in private. The goddess as a female deity has a meaning for the female nobility of Bretonnia that men cannot fully understand - she does not need to wield a war hammer to prove her authority, she shapes the world through mercy and the selection of heroes, and her most powerful tool is never force but grace. As the goddess's only mortal spokesperson, the Fay Witch exists in Bretonnia in a way of intimidation rather than intervention - she will silently appear at a certain crisis point, say something ambiguous but enough to change the political direction of the entire kingdom, and then disappear. Her silence was power in itself, and the female nobles understood this earlier than the male dukes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The practice of the Lake Goddess faith at the family level was very different from how it manifested itself in public sacrifices. Our family retains a private ritual that has been uninterrupted since the time of the Twelve Apostles: on the seventh night after the canonization, each new generation of dukes must keep vigil alone by the holy lake in the family territory - without weapons, without riding horses, without talking to any attendants - this night's vigil will never be mentioned in the public ceremony of the cathedral, because it is private. The public image of the goddess remains unified and pure under the protection of the Sisters of the Holy Grail, but each ancient family has its own family version of the goddess narrative - in our version, when the goddess granted the Holy Grail to the ancestors, she also bestowed a secret word that was only passed down orally by successive dukes in the direct bloodline of the family. This private contractual relationship between the family and the goddess formed an invisible spiritual thread in Bretonnia's feudal network - the king and the church could order the behavior of the knights, but they could not replace the unique inner connection that each family established with the goddess in their own private prayers, uncensored by any external authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of wanderers, the Lady of the Lake is the most mysterious god in the old world - her existence is not presented through the magnificent cathedral, but appears in a very personal way beside countless inconspicuous ponds and nameless mountain springs. I once discovered a forgotten Holy Grail site deep in the Palavon Forest - an unknown knight a hundred years ago erected a rough hand-hewn stone tablet there, with only a cup and two words carved on it: 'She came. 'The monument is surrounded by piles of dried wild flowers, all of which are constantly contributed by passing serfs and pilgrims - no one manages this place, no one collects taxes, and no nuns supervise it, but the texture of the air around this nameless stone monument is different from other places, and there is an extremely strong sense of presence in the tranquility. The Lady of the Lake is not a doctrine or a cult to the common people of Bretonnia - she is an extremely specific being who occasionally appears to a nameless serf woman or a shepherd boy who has lost his flock in moments of extreme loneliness or danger. The appearance of the goddess never speaks to the powerful - the serfs she chooses to cry alone by the lake, the wanderers lost in the mountains, the desperate knights kneeling in front of abandoned stone monuments - and what these people get from the goddess is not an oracle, but a feeling of being seen that is deeper than any language."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The belief in the Lady of the Lake is Bretonnia's largest intangible economic asset - the Holy Grail Pilgrimage Route and the Holy Lake Site attract far more pilgrims each year than the Empire's Sigmar Cathedral, and the food and lodging consumed by these pilgrims throughout Bretonnia constitutes the most important seasonal cash income for serf families. The Sisters of the Holy Grail manage numerous monasteries and holy lake estates scattered throughout the territory, and according to my chamber's conservative estimate, the Sisters' total real estate area is comparable to that of two medium-sized duchies - but these properties legally belong to the goddess, not the Sisters, and therefore cannot be taxed by the king. The Sisters receive a large inflow of cash from the sale of water from the Holy Lake, certified commemorative medallions of the Holy Grail, and accommodation services for pilgrims, all of which is nominally used for the Goddess's ministries—including the maintenance of the Grail Church, the funding of wandering knights, and emergency relief for starved villages. Bretonnia's Holy Grail economic circle is a wonderful spiritual-material double cycle: the goddess bestows grace, pilgrims repay with gold coins, the nuns use gold coins to maintain the sanctuary and distribute alms, and the act of distributing alms strengthens the serfs' faith in the goddess."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Silver Tower - the goddess's residence in another world, located in an incredible realm beneath the surface of a certain holy lake",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief system of the Lady of the Lake"
+  ]
+}

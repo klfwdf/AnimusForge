@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Brotherhood_Without_Banners",
+  "Keywords": [
+    "Brotherhood Without Banners"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Brotherhood Without Banners originated from a group of men sent by Eddard Stark in the name of Hand of the King. They were originally ordered to hunt down Gregor Clegane who burned and killed the Riverlands. After the collapse of the royal power and the death of the sender, they lost the legal army to rely on, but they did not give up their oath to protect the people. Beric Dondarrion, Thoros of Myr, as well as nobles, soldiers, hunters and commoners, formed this mobile army; they hid in caves and woods, attacked marauders, tried criminals, and also relied on the villagers to provide food and news. Not having a flag means not fighting for the throne for a particular family, and it also means they have to prove time and time again that they are not just another band of bandits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverlanders whispered the Brotherhood's name around the firepit. If the lord's army only takes grain, he who is willing to hang the robbers and return the cattle seems like justice; but the people also know that anyone with a sword may change when hungry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Riverlands have complicated attitudes towards the Brotherhood Without Banners. Their original order had a legitimate origin, but later they acted outside the control of the lord; if an order of knights protecting the people was not controlled by the castle, it would also make everyone who owned the land uneasy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and rangers value the Brotherhood's ability to familiarize itself with woodlands, spread out its operations, and rely on the eyes and ears of villagers. Hunting them is not just about fighting a battle, it is about fighting the memory of the natives at every mill and on every turn of the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brotherhood Without Banners The Brotherhood Without Banners was ordered by Eddard Stark to hunt down Gregor Clegane. After the war, it became a mobile force to protect the people of the Riverlands. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brotherhood Without Banners The Brotherhood Without Banners was ordered by Eddard Stark to hunt down Gregor Clegane. After the war, it became a mobile force to protect the people of the Riverlands. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brotherhood Without Banners The Brotherhood Without Banners was ordered by Eddard Stark to hunt down Gregor Clegane. After the war, it became a mobile force to protect the people of the Riverlands. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brotherhood Without Banners The Brotherhood Without Banners was ordered by Eddard Stark to hunt down Gregor Clegane. After the war, it became a mobile force to protect the people of the Riverlands. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Brotherhood Without Banners: The Brotherhood Without Banners was ordered by Eddard Stark to hunt down Gregor Clegane. After the war, it became a mobile force to protect the people of the Riverlands."
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "Id": "rule_huaiya",
+  "Keywords": [
+    "Huaiya"
+  ],
+  "RagShortTexts": [
+    "Huaiya is the daughter of General Clotor and guards the northwest border on behalf of her father."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_11"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya is my daughter and my eyes on the border. Her two younger brothers and I have been away in the military all year round, leaving the entire family to her and her mother. To be honest, putting a girl who has not yet fully completed her duties on the northwest defense line makes me, a father, feel uneasy. But her mother is here, and Lucica has taught her for more than ten years and is better than me. Amennon and Meritor wrote to me, always asking how their sister was doing. The two boys didn't say anything, but they admired her in their hearts - not because of her martial arts skills, but because they admired her ability to stay at home. Huaiya is not like me, not like her mother, and not like her two younger brothers. She doesn't fight with anger or control others with her voice, she relies on stability. The patrol team she led was the most disciplined on the entire defense line, with the fewest deserters and almost no disturbance to the people. I have been a soldier my entire life and know how difficult it is. But I'm also worried that she's too stable. The battlefield occasionally requires impulsiveness and a need to rush forward regardless of the consequences. She is too restrained, too kind, and too unwilling to use soldiers to their death. This temperament is good for defensive generals, but not for offensive generals. But she is still young and is not in a hurry. When I couldn't fight anymore, she and her brothers carried the Dionys family together, which reassured me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_12"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya was taught by me, but she is not me. When I was young, I was a shield maiden, and I relied on my ruthlessness and intuition in fighting. Huaiya was different. She never charged based on intuition. Before every thrust, she thought about where to stab, where to retreat, and whether her men would follow. I taught her tactics, and she learned them seriously; I taught her how to deal with veterans, and she was better than me - her baby face and red cheeks were natural weapons. The veterans looked at her blushing and stood there giving orders, and were embarrassed not to listen. She is the most honest young noble I have ever seen. She never lies, never shirks responsibilities, and never talks about others behind their backs. This character is worth more than swordsmanship on the border. But she is still too young. She needs me to stand by her side for a few more years and help her fend off a few big battles that she can't handle on her own. When she can take charge of her own business, I will hang the sword on the wall and watch her patrol the border with her troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_26",
+          "hero:lord_1_35"
+        ],
+        "IsFemale": false,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our sister Huaiya is the most stable person in the family. My father is the handsome man and my mother is the shield. We brothers followed our father in the charge outside, while Huaiya was at home guarding the rear. The division of labor is just like this. There has never been any dispute about who is stronger and who is weaker - our family does not like this. But to be honest, Huaiya's spear riding skills are better than the two of us. We practiced together when we were young, and she could stab the hanging vine armor while running. We both missed the target sometimes, but she didn't laugh at us. After dismounting, she showed us privately how to twist her waist to exert strength. That's how she is, she won't embarrass you, but she will definitely let you learn. We brothers are fighting outside. Every time we receive a letter from home, I feel reassured when I see Huaiya writing, \"Nothing happens at home, my mother is fine.\" These four words work better than anything else. Some people outside say that Huaiya is not as strong as the two of us. That's because they have never seen her lead a patrol. Her team is the most disciplined in the entire defensive line, and no one deserts. Those veterans were obedient under her hands, not because they were afraid of her, but because they didn't want to disappoint her. We brothers lead the troops by roaring, while she relies on blushing. I stood there with a red face. No need to yell, the people below would form a team by themselves. We cannot learn this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya Dionykos is the daughter of the old general Clotor, and she is also the most reassuring among the next generation of generals in our Western Empire. She is not as famous as her father, nor is she as famous as her two brothers who went to war with Emperor Galios, but she can keep her home. The veterans on the border mentioned her with a rare conviction in their tone - it was not easy for a young girl to manage the patrol team obediently by relying on honesty and fairness. What's even more rare is that she is neither arrogant nor impetuous, knows that she is young, and never makes decisions without asking her mother. She listens carefully to every military discussion and asks questions after listening. This kind of temperament is almost extinct among the younger generation of nobles. Her only shortcoming is that she has not been tested in large-scale battles. The size of the patrol is completely different from that of the legion. But with her current foundation and attitude, she will be fully qualified to take over from her father in a few years. By then, the Dionys family will have a man who can defend and attack, and a daughter who can be stable and manage, and the northwest defense line will be stronger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya Dionyikos, not many people in the south know her, but those who know her compare her with our Princess Ila. These two people are simply two sides of a mirror - Ila spends the night in Lycaron's tavern, Huaiya patrols the border pass until dawn; Ila is impulsive, cruel, and easy to kill, while Huaiya is honest, trustworthy, calm and gentle. Meeting Ila on the battlefield was a nightmare, meeting Huaiya was probably a hot meal after being captured. She heard that at such a young age, she already had considerable ability to lead troops, and was good at riding horses and spears, but she was not yet experienced enough, and she was still polishing it under the guidance of her mother Lucica. Some of us down south feel this type is too soft and not ferocious enough to fight a tough fight. But I don't see it that way. The empire does not lack people who can kill, but it lacks people who do not kill indiscriminately when fighting a war, do not disturb the people when defending a city, and do not rely on terror to maintain discipline when leading troops. Chaya Dionys might be that kind of person. If she grows up in the future, the northwest defense line of the Western Empire will be more difficult to chew."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya, the daughter of the Dionys family, is the last remnant of the empire’s old military aristocratic tradition. She is honest, trustworthy, and fulfills her duties. She does not participate in any political struggles, speculate, or take sides. She just quietly guards the northwest border, blocking the Battania people for her father, her family, and the entire empire. This kind of pure military character can no longer be found in the Senate of the Northern Empire. We also have generals guarding the border in the north, but who doesn't bargain with the Senate? Who doesn’t use their garrison area as a political bargaining chip? Huaiya did not bargain or complain, and she stayed on the cold pass for several years. This made the elders of the Northern Empire speak with a hint of complicated respect when they occasionally mentioned her in debates. But some people say that she is too young and it is unclear whether she will be able to take over the responsibility of the Dionys family in the future. The border cannot be guarded by honesty. It still needs time and tough battles. But for now at least, she is the purest remnant of the Imperial military tradition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chaia Dionykos is a noteworthy young generation among the military nobles on the border of the empire. Her family is the pillar of the northwest defense line of the Western Empire. She herself is the inheritor of the family's female military tradition. She has solid martial arts skills but is still young and has not yet experienced the independent test of large-scale battles. She still relies on the guidance of her mother Lysica in tactical decision-making. Judging from her current performance, in small-scale patrols and pass defenses, she has demonstrated steadiness, fairness and disciplinary management capabilities far beyond those of her peers. She is a typical defensive general Miaozi. What can be compared is Yi La from the Southern Empire - the latter is impulsive and easy to kill but lacks tactical literacy. Huaiya is just the opposite, calm in tactics but lacking in actual combat temper. The two represent two development paths for the empire's next generation of female military leaders. The upper limit of Huaiya's growth depends on whether she can face the pressure independently in the next battle, and whether she can continue to maintain her current judgment and restraint after her mother lets go. She will not become a variable at the strategic level in the short term, but in the long term, she is one of the key figures in the stability of the empire's northwest defense line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The youngest daughter of the Dionys family, Phaya? She is the daughter of the old general Clottor. People on the border called her a \"red-faced girl\" - not to demean her, but to say that her face was round and red, and she didn't look like a warrior. But she can definitely fight. My cousin served as a garrison on the border and said that when Miss Huaiya led the patrol, she walked at the front, riding a gray horse, and her appearance of holding a spear was unambiguous. She doesn't speak loudly to you, but every word counts. She never lies or deducts food rations. Veterans on the border admired her and said she was a \"silent commander.\" This kind of evaluation is worth more than any praise in the barracks. Her brothers were fighting outside with the old general, while she and Lady Lucica stayed at home. The family had a clear division of labor and lived in harmony. This kind of family is rare in today's empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Huaiya? There is a noble lady guarding the border in the empire. I heard that she has a round face and does not look like a soldier, but she is quite good at leading troops. The soldiers under her command do not attack people or rob people of their belongings, which is a rare thing in the empire. Occasionally, we have patrols passing by here, and it is common for them to walk away with chickens and rice. But the businessman said that it is most worry-free to go to the Dionys family's territory, the soldiers will not harass people, and the tolls will be whatever they are, and there will be no temporary increase in fares. The businessman said that the daughter of that family was very honest, her face was red, and she kept her word. In today's world, it is rarer for a nobleman to receive such an evaluation than to win a war. But the businessman also said that the girl was still young and her mother had to make the final decision on important matters. When her mother gets old, it's hard to say whether she will be able to handle it."
+    }
+  ],
+  "TextMappings": []
+}

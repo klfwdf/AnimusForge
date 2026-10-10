@@ -1,0 +1,146 @@
+{
+  "Id": "rule_Knowledge_and_Lore_Noble_Education",
+  "Keywords": [
+    "Noble Education",
+    "Education"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary peopleMultiple choices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary people. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary people. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary people. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Noble Education The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary people. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Noble Education: The education of noble children includes etiquette, genealogy, riding, reading and writing, politics and managing territory. Parents hope that they will learn to bear the family name, and their children will also learn that power does not rely solely on swords; the purpose of education is often to prevent heirs from having too much power like ordinary people."
+  ]
+}

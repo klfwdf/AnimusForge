@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Norn",
+  "Keywords": [
+    "Karak Norn_KN",
+    "Norn Fortress_KN",
+    "Pickaxe Fortress_KN",
+    "Norn Iron Ore_KN",
+    "Norn Dwarf Territory_KN",
+    "Norn King_KN"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Norn is one of the oldest dwarven strongholds in the Gray Mountains, ruled by King Brok Ironpick. The history of this place dates back to the beginning of the Dwarven Golden Age and is famous for its iron mining and traditional blacksmithing crafts. The dwarves of Norn are known for their conservatism and adherence to tradition, but the quality of their forged iron remains a benchmark in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Norn—my people’s ancient roots in the Gray Mountains! King Brok's iron pickaxe is no ordinary mining pickaxe. The complete lineage of the Norn's founding ancestors is engraved on its handle. Norn's iron ore has a unique blue-gray texture, and sword blades forged with this iron will glow an icy blue in the moonlight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Norn enjoys a high political status among the dwarf states with its long history. King Brok Ironpick has a decisive veto power in major dwarf decisions - a privilege that continues to this day in the Golden Age. Norn also provides iron ore and technical advisory assistance to the Duchy of Montfort in Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Kharak Norn's economy is built on the two pillars of iron mining and iron forging. The unique feature of Norn iron veins is that the ore contains trace amounts of titanium - a property that gives Norn iron a rare balance between hardness and toughness. The annual output of refined iron is about 5,000 tons, mainly supplying the Bretonnia weapons market and the eastern states of the empire. Norn's blacksmith guild is one of the oldest trade associations among the dwarf states. New blacksmiths must undergo an apprenticeship examination of up to fifty years before being allowed to open a furnace independently. In addition, Norn has also established a close economic alliance with the Principality of Montfort - Montfort provides defensive protection, and Norn provides high-quality iron tools and mining technical support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Norn's traditional concepts are the most deeply rooted. Female dwarves are seen as central to the continuation of family traditions - we are the chroniclers of the clan. I taught myself ancient dwarven literature and was responsible for engraving the important events of the city on the clan stone tablets every year. King Brock once said: History carved in stone will stand the test of time better than swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family is the embodiment of the old school in Norn - each generation of patriarchs has a voice in the Norn Chamber, which is a right granted by the ancestors in the Golden Age. King Brok trusts us not because of wealth or military strength, but because the family has never betrayed the interests of Norn Castle in seven hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ale hall of Karak Norn is the most solemn dwarven hall I have ever seen. The walls are covered with dwarf runes, and each stone slab records the fort's one-hundred-year history. The entire process of the Longbeard War is engraved on the deepest wall of the hall - the century-old battle between the dwarf ancestors and the elves was solidified into an eternal picture on the stone wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although the scale of the Norn ironware trade is not as large as that of Zufuba, its quality advantage is obvious. Weapons forged from Norn's unique blue-gray iron material are highly valued in the noble collection market. But the Norn dwarves are extremely conservative, and they only maintain trade relationships with companies that have a history of cooperation for decades. New traders need to find an intermediary recognized by the Norn dwarves for introduction."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Norn is one of the oldest traditional dwarven strongholds in the Gray Mountains. It is famous for its high-quality iron ore and conservative culture. It is ruled by King Brok Ironpick.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The oldest dwarven iron fortress in the Gray Mountains of Karaknorn"
+  ]
+}

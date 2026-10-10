@@ -1,0 +1,24 @@
+{
+  "Id": "rule_The_Mongol_Westward_Expansion",
+  "Keywords": [
+    "Mongol Empire",
+    "Hulagu Khan (The Mongol Westward Expansion)",
+    "Ilkhanate",
+    "Golden Horde (The Mongol Westward Expansion)",
+    "Berke Khan",
+    "Möngke Khan",
+    "Mongol Invasions"
+  ],
+  "RagShortTexts": [
+    "The Mongol westward expansion under Hulagu subjugated the Middle East, while dynastic fissures between the Ilkhanate and the Golden Horde fractured imperial unity."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The westward campaign decreed by Great Khan Möngke in 1253 and commanded by his brother Hulagu represented the supreme military juggernaut of the thirteenth century. Marshaling tens of thousands of horse archers alongside Chinese siege engineers, Hulagu crushed the Nizari Ismaili fortresses of Alamut in 1256 and sacked Baghdad in 1258. By 1259, Ilkhanate vanguards were poised to sweep across Syria and northern Palestine.\n\nSimultaneously, the vast Mongol realm experienced its first major internal schism. Berke Khan, Muslim ruler of the Golden Horde along the Volga, condemned Hulagu’s execution of the Abbasid Caliph and contested pastures in the Transcaucasus. This fracture initiated the first Mongol civil war, fracturing nomadic solidarity and shielding Cairo from a united imperial onslaught."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,210 @@
+{
+  "Id": "rule_bad_land",
+  "Keywords": [
+    "Badlands",
+    "arid wasteland",
+    "greenskin territory",
+    "southern wasteland",
+    "river of blood",
+    "death pass",
+    "Longbei Mountains",
+    "Badlands Blackfire Pass",
+    "greenskin breeding farm"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badlands is a large, arid wasteland located east of the World's Edge Mountains and immediately adjacent to the Empire's southern border. There is almost no civilized order in this barren land - it is the largest natural gathering place of greenskin tribes in the old world. Countless tribes of orcs and goblins wandered here, fighting each other, and were occasionally united by a powerful war general to form a green tide sweeping the north. For the surrounding humans and dwarves, the Badlands is a dangerous frontier that can never be completely cleared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badlands are our place! It's dry and hot here, and humans and dwarfs find it difficult to live here, but we greenskins like it best - spores grow very fast here! There are good places to fight everywhere, there may be a tribe hiding on every mountain, and there is a good battle waiting for you in every valley. The best thing is that it is very close to the soft belly of the empire and the squat mountain gate - when you want to fight, you can blow the war horn and go over the mountain to their house to have a good fight! Night is the most beautiful in the Badlands, with bonfires and war cries everywhere under the stars - this is true freedom!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badlands is the most unstable strategic area on the Southern Front of the Old World. It borders the Imperial realm of Iverland and the dwarven World's Edge Mountains to the south, which makes any greenskin Waaagh formed in the Badlands! can quickly invade civilized territory. The Badlands itself lacks resources worth occupying - which is why it has never been conquered - but as a breeding ground for greenskins, its very existence is a constant threat to the surrounding areas. The border princes must maintain a high degree of alert and regularly send troops to clear out the greenskin tribes that cross the border. Otherwise, once the number of tribes accumulates to a critical point, a devastating Waaagh! Almost inevitable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Badlands is a semi-arid wasteland covering the southeastern part of the Old World, an area roughly equivalent to the entire Empire. Its geological structure is dominated by wind-eroded rocks, dry river valleys and low hills, with sparse vegetation and unsuitable for traditional agriculture - which is why civilized countries have never settled here on a large scale. But for the Greenskins, the environment of the Badlands is almost perfect: underground caves provide a dark and moist environment for goblins and spores to grow, the open plains on the surface make large-scale tribal gatherings possible, and the borders of neighboring civilized countries provide the Greenskins with continuous plundering and fighting opportunities. The greenskin political geography within the Badlands is fragmented—hundreds of tribes control their own territories, and their borders are constantly shifting through war. Important geographical landmarks include: Blood River, Death Pass, and the Dragonback Mountains in the northern Badlands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badlands isn't a distant concept to the female lords of the Empire's southern frontier—it's a concrete threat each fall during the harvest season. The southerly wind brings the heat and dust of the badlands, along with the sweet rancid odor of greenskin spores - a smell known in southern Iverland as the 'green breath'. Every border lord knows that when the smell begins to become strong in August when the crops are ripe, it means that greenskin activities in the Badlands are intensifying, and this year's autumn harvest may need to be arranged under the cover of armed harvesting teams. My manor retains a set of 'quick harvesting-quick storage' process improved by three generations of female ancestors, which can complete the harvesting work that usually takes two weeks within 48 hours after receiving the warning from the scouts in the direction of the bad place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the head of a noble family on the southern border of the Empire, my attitude towards the Badlands is completely different from the bureaucrats in the Imperial Court. They talk about 'the frontier situation in the South' at drinks parties in Altdorf, while we have been on the frontier itself for generations. My family's territory is crossed by a geographical line known as the 'Green Scar' - the land north of this line can be farmed in normal years, while the land south of it is in the 'Greenskin Tolerance Zone' and can only be used for sheep grazing and seasonal mining. Family archives record the swing of this green streak over the past six hundred years - it has never been a fixed line, but has fluctuated between north and south from year to year based on the overall numbers and activity of the Greenskin tribes in the Badlands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Traveling through the Badlands is one of the deadliest routes in the Old World, but I survived by relying on a self-taught regimen of goblin behavior. The most critical rule: don't cross the open rocky beach at noon - that's when the greenskin tribe takes their lunch break and fights; they fight all day long, but the heat at noon makes it particularly violent. The best time to travel is from early morning to dawn, when the greenskins are sleeping in their camps. Another fatal mistake is to chase the water source in the badlands - every river and spring is regarded as the core of the territory by several greenskin tribes, and the probability of encountering an greenskin there is ten times that of the open wasteland. I would rather carry water for three more days."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badlands are marked on the Imperial Mining Map as a 'Permanent High Hazard Area'. But that doesn't stop underground mining companies from secretly exploring on the edge of the Badlands - especially in the northern foothills of the Longbei Mountains, where geological reports indicate the presence of high-quality iron ore and copper. My guild once evaluated the cost of an elite, heavily armed mining expedition into the badlands—and concluded that before the first year of mining was over, the cost of security would exceed the market value of the ore itself. The only exception is if a vein of gold is discovered - the weight-to-weight ratio of gold makes it worth airlifting with mercenaries. But so far, no exploration team has come back with positive reports of gold deposits—what they have usually returned are arrow wounds and the early symptoms of green-skin spore infection."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Badlands - the semi-arid wasteland outside the southern border of the empire, the largest natural gathering place of the greenskin tribes",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Badlands location and strategic significance"
+  ]
+}

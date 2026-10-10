@@ -1,0 +1,30 @@
+{
+  "Id": "rule_gru",
+  "Keywords": [
+    "Gru"
+  ],
+  "RagShortTexts": [
+    "Gru is a squire warrior of Yaar Agar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gru was a squire-warrior of Yar Agar, who established an outpost on the east bank of the Zumne River, named after the mysterious ancient tombs along its banks. The village that bears his name is now home to sheep grazing as far east as the cold steppes."
+    }
+  ],
+  "TextMappings": []
+}

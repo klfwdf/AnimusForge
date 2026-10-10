@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Doomsday_Glider",
+  "Keywords": [
+    "doomsday glider",
+    "Goblin Slingshot",
+    "Flying Goblin",
+    "suicide glide",
+    "Doomsday Gliding Goblin Project",
+    "aerial bombs",
+    "Crazy catapult"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The doomsday glider is the craziest and most comical weapon in goblin engineering - a giant catapult that launches goblins with simple wings into the sky. During the glide process, these flying goblins swoop down on the enemy with sharp spears, turning themselves into living bombs. Live or die, these crazy little greenskins are having fun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Doomsday Glider is the most genius invention of our Green Skins! You see, other races have to build dragons, pegasus, etc. to hit the sky. We greenskins just shoot the goblins up! Pull and release the slingshot - whoosh - the little madman screams and flies into the sky! Sometimes they can fly far and wide and stick their spears right next to the enemy's cannon. Sometimes they break their wings mid-flight and fall into a piece of green pie! But it’s hilarious no matter what! And you have to admit that this thing is much cheaper than humans flying around with birds - there are already many goblins, so it doesn't matter how many of them fall to death, but goblins falling from the sky will scare all humans half to death! We're still working on how to bounce Jumping into the sky - that's the real big scene!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Although the doomsday glider may seem absurd, it is an effective psychological warfare and tactical harassment tool on the actual battlefield. Its lethality lies not so much in the physical hits - the gliding goblin's accuracy is extremely poor - but in the constant mental torment its unpredictability imposes on the soldier. Ejected into the sky, goblins will scream and glide through the air, crashing where you least expect them, and the uncertainty is enough to disrupt the formation of any poorly trained militia unit. Recommended tactical countermeasures: Send hounds to bark to warn of the incoming direction, and deploy skirmishers to intercept falling flyers with flexible light infantry. In addition, if the doomsday glider's mother catapult is within range, it should be destroyed immediately with long-range fire priority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Doom Glider works based on goblin engineering, a chaotic technological system that mixes madness, coincidence, and primitive mechanics. The main structure of the catapult is a giant bow made of extremely elastic storm ash wood and a twisted rope ejection arm. The rope is woven from the thick sinew fibers of the manic jumper - the choice of materials itself is the best embodiment of the goblin's concept of \"the whole body is a treasure\" for the jumper. The maximum tension the ejection arm bears is about four hundred stones, which is enough to eject a goblin weighing about four stones to a height of about three hundred feet at an elevation angle of forty degrees. After that, the goblin will open its simple glider made of wooden bones and rags, which can theoretically glide for a distance of about six hundred to eight hundred feet. In actual combat, the success rate is only about 10%, but this has not affected the goblins' enthusiasm for this technology - because for the goblins, every ejection is a gamble that 'may become a legend'. The most hilarious doomsday glider incident in Imperial intelligence records occurred at the Talabek River crossing in 2283 Imperial Calendar: an ejected gliding goblin accidentally hit the ground—or rather, because of a sudden southerly wind—glided. Xiang arrived at the imperial military camp about three miles away on the other side, and happened to fall into the officers' dinner tent. The spear he held pierced a whole roasted pig. He shouted, \"I've hit a big-toothed beast\" and was stabbed into pieces by guards from all directions on the spot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once visited a Goblin Doom Glider operation - please don't ask me how I ended up in a place like that. The most unforgettable thing is not the goblins who were ejected into the sky, but the little green skins lining up on the ground waiting to be ejected - they scrambled forward, seemingly vying for the chance to be ejected next. The goblin engineer next to him was testing the tension of the bullet cable. From time to time, he would fly a 'test goblin' and then adjust the rope according to its flight distance. This kind of no mercy for one's own life is something that no human commander can understand or copy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My engineering advisor—a half-mad old man who defected from Altdorf—had tried to get a doomsday glider into our family's army. His reasoning was 'if the goblins can make air troops from catapults, so can we, and our soldiers are at least trained'. I rejected this proposal outright. Not because the idea isn't feasible, but because I can't view my soldiers the way goblins do - firing living humans as cannonballs doesn't fit with my understanding of family honor, nor with any human ethics. But before he left, the lunatic said something that still makes my spine shiver when I think about it: 'The goblins are willing to die for their own kind in a way that we can't even understand.' '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the mountain pass trade road in the Gray Mountains, we encountered a goblin warband who was assembling a doomsday glider. The big guy in charge of launching - a big goblin engineer - first hit the ejector with a hammer and then shouted some green slogan, and then the first 'volunteer' was placed on the ejection support. Pull the cable - stretch it to the limit - let it go! The little greenskin screamed across the sky, his wings suddenly opening at the highest point, and then - miraculously - he actually glided about half a mile, crashing headlong into a freight wagon full of hay. The carriage exploded, and so did the gliding goblins, but the remaining goblins cheered collectively as if it was the greatest victory in the world. I later learned that this glide only works once in ten."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once salvaged the remains of a set of Doomsday gliders - ejection arms, winches and some 'used' wing frames - from an old battlefield on the edge of the Gray Mountains. I took these fragments to Altdorf and tried to sell them to experimenters of artificial flying machines. Officials from the Imperial Academy of Engineering confiscated all the fragments but gave me an 'intelligence fee' of ten gold crowns. He said that they had long been studying how to make imperial soldiers fly, but they had never been able to solve the problem of landing to save their lives - goblins didn't care about landing, so they succeeded, but humans cared too much about landing, so they always failed. This sentence sums up a lot of things."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A crazy catapult that catapults goblins wearing simple wings into the sky",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "doom glider goblin slingshot flying goblin"
+  ]
+}

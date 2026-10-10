@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Chaos_Lord",
+  "Keywords": [
+    "Chaos Lord",
+    "Chapter Master",
+    "ultimate champion",
+    "Melee combat skills",
+    "mortal peak",
+    "Chaos Commander",
+    "Chaos Lord Chaos Champion",
+    "war leader",
+    "High Lord of Chaos",
+    "battlefield death",
+    "Great Northern Warlord",
+    "Dark Commander"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos Lords are the supreme commanders of the Chaos Army. They have reached the limit of their mortal form on the road to glory. They possess terrifying melee combat skills, profound Chaos gifts, and the prestige of commanding thousands of armies. They are the closest thing to demons among mortals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos Lords are not born by inheritance or election - they rise from mountains of corpses and seas of blood. To become a Chaos Lord, you must kill the current Chaos Lord - this is the unwritten rule. Every Chaos Lord is a walking legend: every scar on their body tells a story, and every mutation corresponds to a battle victory worth remembering. When you see the Chaos Lord riding his mount on the battlefield, even the Chaos Warriors behind him will involuntarily lower their breaths. A Chaos Lord is answerable only to his gods - he has no earthly masters, for there is no one on earth worthy of being his master. This is our highest ideal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the Chaos Lord, you are at the heart of the campaign. Your presence itself provides a morale boost to all friendly forces, and your combat performance directly affects the direction of the entire battle. At the strategic level, you need to constantly challenge stronger enemies to gain higher glory - stagnation is retreat, and retreat is death. Your equipment choices are crucial: Lords of Khorne should focus on high-damage weapons, Lords of Nurgle should choose survival gear, Lords of Slaanesh should prioritize speed, and Lords of Tzeentch should focus on magic items."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the research in \"The Theory of Chaos Power Structure\", the status of a Chaos Lord is not just based on personal force, but also involves three key factors: the number of followers, the area of ​​territory occupied, and most importantly - the visible degree of divine favor (i.e. the number of gifts). The most powerful Chaos Lord in history is Archaon, the \"Eternal Chosen One\" - he is the only existence unanimously recognized by the four evil gods at the same time, and is considered a harbinger of the end. The average reign of a Chaos Lord is estimated to be only six point three years - during this time he either succeeds in becoming a demon or is killed. Most Chaos Lords build a personal fortress—usually located in a strategic location that serves as both a fortress and a place of worship; the style of these fortresses varies depending on the deity they serve: Khorne's Fortress is a blood-red rectangle with angular towers, while Tzeentch's Fortress is full of impossible architectural geometries and shape-shifting corridors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I am a Chaos Lord - for a woman to get this far, I must be ten times more powerful than any male. They have laughed at me, betrayed me, and tried to kill me, but they have all become dead souls under my sword. No one cares about my gender now, they only care about the sword in my hand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Your dual roles as clan leader and Chaos Lord bring you great authority, but also greater dangers. Each of your lieutenants is waiting for the opportunity to replace you. Never show weakness, and always carry a weapon with you—even when talking to your most trusted advisors. Your death will be a festival for the entire tribe because it means a new distribution of power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You are brought to meet a Chaos Lord. His fortresses were built of steel and bone, hung with flags and skewered heads of their enemies. He sits on a throne made of lava and iron, looking down at you, and you can feel him assessing your worth—whether it's worth killing you with his own hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Lord's position is fluid - it is a system of power that is always changing. One day you are a Chaos Lord, tomorrow some younger, hungrier warrior might be stepping on your head to take the throne. This extreme instability is the essence of chaos and the source of its power - never-ending competition drives the strong to become stronger."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Lord - the pinnacle commander of the Chaos army in mortal form, the crown stage of the path to glory.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos Lords Chapter Commander Ultimate Champion"
+  ]
+}

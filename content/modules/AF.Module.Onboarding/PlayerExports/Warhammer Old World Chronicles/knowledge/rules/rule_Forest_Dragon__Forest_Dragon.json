@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Forest_Dragon",
+  "Keywords": [
+    "forest dragon",
+    "Emerald Dragon",
+    "natural breath",
+    "vines twining",
+    "ancient flying beast",
+    "Athel Loren",
+    "Poisonous mist breath",
+    "Dragon scale armor",
+    "dragon tree crown",
+    "king of the forest",
+    "Everlasting Dragon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The forest dragons are the most powerful ancient guardians of Athel Loren. They have emerald green scales and huge wings. They can spit magical breath containing the power of nature from their mouths, causing all enemies who offend the forest to be entangled in vines until they are suffocated to death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The forest dragons and Athel Loren have existed together for countless millennia. They are one of the oldest branches of dragonkind, having inhabited the Old World long before the elves set foot on it. We never \"tamed\" the forest dragon - that's impossible. We are allied with them, with the common goal of the survival of our forests. When a forest dragon spreads its wings from a tree, it's a sight that would make any wood elf's blood boil. Their breath is not fire, but the embodiment of the \"wind of life\" - vines and thorns will instantly grow on the enemy's body, mincing their flesh and blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The forest dragon is the ultimate weapon on the battlefield. It can fly over enemy lines and directly use its breath to destroy the enemy's core strength. But the dragon is lethargic - you can't expect it to be on call at all times. When deploying the dragon, choose an open area to avoid dense forests blocking its wingspan. The best tactic: Use the dragon to clean up the enemy's ranged units, and then deal with the enemy's main force. Watch out for enemy crossbows and demons - these are the few weapons that can truly threaten a dragon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the \"Dragon Genealogy\", there are seven forest dragons existing in Athel Loren, each with its own name: the oldest \"Frost Leaf\" has guarded the forest for more than eight thousand years; the youngest \"Sprout\" is only two thousand years old. The breath weapon of the forest dragon is called \"Natural Devour\" in academia - it is a unique attack that mixes the wind of life and wood magic, which can cause dual damage of physical entanglement and magical erosion at the same time. Their dragon scales have unique properties and change color with the seasons: emerald green in spring, dark green in summer, golden in autumn, and gray in winter. Due to living in Athel Loren's highly concentrated magical environment for a long time, the forest dragon's bloodline has mutated, and it cannot leave Athel Loren for too long, otherwise its magic power will gradually be lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Only a few elven lords are able to form a bond with the forest dragon, and I am one of them. As I look down on Athel Loren from the back of a dragon, the world is under my wing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If there is a dragon's lair in your clan's territory, it is a great honor and a great responsibility. You need to provide enough tribute - mainly pure life essence - to maintain the dragon's will to protect. Remember, dragons' patience is limited, so don't disturb their slumber with trivial matters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There was a low roar in the distance, which you assumed was thunder. Then you look up and see an emerald green dragon sticking its long neck out from the clouds. Its eyes are like two green suns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The forest dragon is considered the highest-ranking guardian of Athel Loren. Their status is higher than that of all elven nobles, and they are even called the \"Kings of the Forest\". Only a few forest dragons wake up from their slumber every century to join the battle, but each time they wake up, history is rewritten."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Forest Dragon - Athel Loren's most powerful ancient flying guardian, with emerald scales.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The geographical location and strategic significance of the Forest Dragon"
+  ]
+}

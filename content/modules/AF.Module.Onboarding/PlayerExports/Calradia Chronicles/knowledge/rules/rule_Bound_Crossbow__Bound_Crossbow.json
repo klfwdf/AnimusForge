@@ -1,0 +1,70 @@
+{
+  "Id": "rule_Bound_Crossbow",
+  "Keywords": [
+    "Bound Crossbow"
+  ],
+  "RagShortTexts": [
+    "Is the Bound Crossbow standard issue for Sharpshooters?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "empire",
+          "nord",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bound Crossbow? You can bind a crossbow with iron? That must make it really strong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "darshi",
+          "khuzait",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What's a crossbow?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Bound Crossbow is an extremely powerful crossbow produced around Jaculan in our lands. Bound with iron on the outside, it has an extremely high draw weight and is standard issue for our Sharpshooters. A single one is quite expensive, selling for around 8,000 denars."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "Id": "rule_Battania_political_system",
+  "Keywords": [
+    "Battania political system"
+  ],
+  "RagShortTexts": [
+    "The High King of Battania is the nominal supreme ruler.",
+    "Historically, the High King of Battania lacked sufficient authority to rally the clans.",
+    "High King Caladog attempts to strengthen royal authority in Battania."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Since ancient times, Battania has maintained the custom of recognizing a 'High King' as the leader of all Battanians. Crowned in ceremonies held among the sacred mountains, the High King is the nominal supreme ruler of Battania.\nHistorically, however, the High King held little more than symbolic value among the chieftains and lacked the authority to rally them to act in concert. Right up until Caladog's reign, Battania remained a loose patchwork in which each chieftain long governed his own domain independently.\nAfter becoming High King, Caladog sought to strengthen royal authority, channeling the hatreds of the Battanian people and turning them into loyalty toward himself and Battania. Yet this effort still faces resistance from traditional tribal powers.\nBattania is composed of eight tribes, each led by its own chieftain. The prefix 'fen' before each clan name means 'clan,' a naming convention observed by all Battanians. The High King is elected by the assembled chieftains.\nEach tribal chieftain enjoys broad autonomy. Chieftains maintain their own personal retinues, the 'Hearthguards,' who protect the chieftain and his household while handling security and ceremonial duties within the tribe. In times of war, chieftains dispatch warriors to answer the High King's summons in accordance with ancient pacts, though old feuds or diverging interests among the tribes often make their response slow.\nIn Battanian society, healers—who oversee both medicine and the preservation of tradition—hold a uniquely exalted status. Their calling is passed down hereditarily; not only are they versed in the healing arts, they also pass on ancient lore and customs, and are even called upon to arbitrate disputes between clans, their wisdom and learning held in the highest esteem.\nAs priests, judges, and keepers of lore, the Druids likewise occupy a lofty place in Battanian society. They are the guardians of Battanian religion and tradition, wielding both arbitral authority and political influence."
+    }
+  ],
+  "TextMappings": []
+}

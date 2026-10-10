@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Road_to_Glory",
+  "Keywords": [
+    "path to glory",
+    "Chaos Warriors Quest",
+    "God's gaze",
+    "Path to promotion",
+    "The Evil God's Test",
+    "journey of life",
+    "Way of the Warrior",
+    "Traces of Chaos",
+    "The road to becoming a demon",
+    "dark glory",
+    "road to championship",
+    "Demon promotion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The road to glory is the journey that every Chaos Warrior pursues throughout his life - from being an ordinary warrior to accumulating merits and mutation gifts step by step, and finally gaining the promotion of the Evil God, becoming the Demon Prince or the God's Chosen Champion. This is the ultimate road paved with blood and sacrifices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is no turning back from the road to glory. From the moment you sacrifice the head of your first enemy to the evil god, your soul is marked. We prove ourselves in every battle, and every drop of blood splashed on your face increases your weight in the eyes of the gods. The path is divided into several stages: starting as a Reaver, then advancing to Chaos Champion, then becoming the Chosen One, and finally - if you're lucky and tough - becoming a Chaos Lord or a higher form. Many fail halfway—their bodies cannot bear the weight of the gift, and their souls are torn apart. But those who complete the journey are no longer mortals. Do you understand? This road is our life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The path of glory is your strategic main line. Each battle victory accrues Chaos Boon points - use these points to unlock your army's mutation, magic, and amplification abilities. It's important to focus on the favor of one evil god, as getting distracted between four gods will cause them all to lose interest in you. Choose a god and specialize in a specific path: Khorne rewards melee killing; Nurgle rewards tenacity and durability; Slaanesh rewards speed and skill; Tzeentch rewards magic and cunning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the \"Book of Glory\", an oral epic passed down by the shamans of the northern tribes, the concept of the Path of Glory was first proposed by the first demon ascender, \"Bloodborn\" Mokar - he successfully completed the entire Path of Glory 13,000 years ago and became the first mortal demon prince under Khorne. The official stages of the path to glory are as follows: the first step \"Blood Oath\" - kill someone and sacrifice in battle for the first time; the second step \"Brand\" - the evil god bestows the first mutation gift; the third step \"Chosen\" - be officially recognized as a subject by an evil god; the fourth step \"Crown\" - become the Lord of Chaos; the fifth step \"Ascension\" - obtain the body of a demon prince. According to statistics, about ninety-eight percent of Chaos Warriors die in the first three steps. The fastest record in history to complete all five steps is \"Bloodwind\" Karanak - it only took seven years, but he was killed by another Chaos Lord only three days after becoming a demon, proving that the road to glory never stops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My path to glory was filled with doubtful glances, but I answered every doubt with the head of my enemy. As a woman, it is more difficult to take this path, but the evil god values ​​the results, not gender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the leader of the tribe, you lead the path to glory for your tribe. Young warriors regard you as a role model, and every step you take is paving the way for the whole clan. Encourage your people to forge their own paths to glory, but remember - too many warriors fight each other for glory, and this is the norm rather than the exception in Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You meet a Chaos Warrior on the path to glory. His armor was covered with strange marks, but his eyes were still sharp and hungry. There's no pride in his voice as he tells you how far he's come in the Great Game, only a deeper hunger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Path of Glory is the only driving force behind the functioning of northern society. Everyone climbs the ladder, from the lowest Raider to the highest Chaos Lord. Without glory, you are a walking corpse in the north. The road has no end—even the Demon Prince continues to seek higher levels of power."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Path of Glory - the lifelong journey pursued by the Chaos Warriors, the long step from mortal to godly prince.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Path to Glory Chaos Warriors Pursue God's Gaze"
+  ]
+}

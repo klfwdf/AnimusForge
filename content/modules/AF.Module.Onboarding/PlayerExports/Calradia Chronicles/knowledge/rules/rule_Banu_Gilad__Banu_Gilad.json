@@ -1,0 +1,60 @@
+{
+  "Id": "rule_Banu_Gilad",
+  "Keywords": [
+    "Banu Gilad"
+  ],
+  "RagShortTexts": [
+    "The origin and ferocious style of the Banu Gilad tribe."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gilad tribe is based on the city of Hubia. The city was built on the site of the hunting lodge of the brutal King Turan, who was said to have enslaved the Aserai chief's family and was eventually killed in revenge - a history that shaped the Gilad tribe's ruthless and harsh lifestyle, and their aversion to frivolity. In the Battle of Pandrak, hundreds of young men from the Gilad tribe went out with Nimr of the Salan tribe, but suffered heavy casualties, and the tribe believed that the operation achieved nothing. The Gilad tribe was disgusted when Nimr was hailed as a hero by the outside world. Afterwards, Nimr had an affair with a Gilad girl in the city of Hubia, and was executed by the tribe in the way passed down from generation to generation - locked in an iron cage in the market. The Gilad tribe said that this move was to erase the stain, and the hatred between the two tribes has been irresolvable since then. A settlement ruled by a family is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gilad tribe is based on the city of Hubia. The city was built on the site of the hunting lodge of King Turan, who was said to have enslaved the Aserai chief's family before being killed in revenge. Most outsiders regard this period of history as the reason why the Gilad tribe acts harshly and does not like frivolity. In the Battle of Pandrak, hundreds of young men from this tribe accompanied Nimr of the Salan tribe on the expedition, and suffered heavy casualties. After the war, Nimr was regarded as a hero by many people, but the Gilad tribe disagreed. Afterwards, Nimr was captured in the city of Hubia for interacting with a woman from the Gilad tribe, and eventually died in an iron cage in the market. The two families have been feuding ever since. The settlement this family rules is a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

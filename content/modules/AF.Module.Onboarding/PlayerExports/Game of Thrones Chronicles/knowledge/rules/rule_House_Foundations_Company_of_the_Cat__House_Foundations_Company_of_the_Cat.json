@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Company_of_the_Cat",
+  "Keywords": [
+    "Company of the Cat"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Cats are one of Essos' many mercenary companies, whose members live on pay and booty and find employers during the wars in the cities of Slaver's Bay. The burly mercenary known as \"Bloodbeard\" has a close relationship with this team, and his fierce image also shapes the outside world's impression of the Cat Group. The cat will settle down at a favorable location or jump away before the trap closes; the choice of a mercenary group also depends on the salary owed, the chance of winning, the retreat route, and the prestige of the group leader. The so-called loyalty does not mean that there are no boundaries, but that the boundaries are clearly written on money and common interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dignitaries of Slaver's Bay regard the group of cats as claws that can be purchased. They hope that they will claw at the enemy, but they are worried that the claws will turn around. It is more practical to pay on time, provide rations, and give the legion a way out than to demand loyalty at a banquet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mercenaries feared the strongman like Bloodbeard, but they would not die just because of his loud voice. Only the leader who can judge the battle situation, distribute the spoils and protect the team in defeat is truly worthy of being followed by the Cat Group."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "How freed people and citizens view the Cats depends on whose side it is on. When guarding the city gate, it is a reinforcement, but when it breaks into the streets, it is a disaster; the same sword of a mercenary can get completely opposite names due to different contracts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Company of the Cat The Cats are the Essos mercenary company, known for their powerful leaders such as Bloodbeard, their flexibility, and their ferocious fighting prowess. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Company of the Cat The Cats are the Essos mercenary company, known for their powerful leaders such as Bloodbeard, their flexibility, and their ferocious fighting prowess. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Company of the Cat The Cats are the Essos mercenary company, known for their powerful leaders such as Bloodbeard, their flexibility, and their ferocious fighting prowess. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Company of the Cat: The Cats are the Essos mercenary company, known for their powerful leaders such as Bloodbeard, their flexibility, and their ferocious fighting prowess."
+  ]
+}

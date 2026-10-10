@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Aserai_customs",
+  "Keywords": [
+    "Aserai customs"
+  ],
+  "RagShortTexts": [
+    "Aserai customs and customs: commerce is prosperous due to the scarcity of arable land."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have been driving a camel for half my life, from oasis to oasis, carrying dates out and copper utensils back. Not many people here farm, and the sand is too thin to grow anything. The people along the Damar River are lucky. Every year when the river overflows, the mud is so black and oily that you can just stand and watch while the seeds are sown. But that blessing is by the river and has nothing to do with us people in the sand. We rely on camels, trade routes, words and the soles of our feet to make a living. I can't read, but I can tell whether the person speaking on the other side is Imperial or Khuzait, and I can feel whether the weave of a piece of cloth is southern or northern. Bargaining is the best skill I have learned in my life, better than horseback riding and archery. The elders say that Aserai people can either be soldiers or merchants. Soldiers tend to die early, but merchants live longer, so there are more merchants. I think so too. If the camel driver doesn't have some calculations, the goods will be stolen on the road. But calculations are calculations. When we arrive at the oasis, we should share the water and the water, the cake should be divided, and the seat should be given up to the guests. If anyone urinates in the well, the entire clan will not agree."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a6"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sanaratites are different from our compatriots in the desert. We lived on a harbor where the salty wind blew and merchant ship masts were thicker than palm trees. Outsiders say that Sanara is the richest city in Calradia. We don’t extrapolate this, but we don’t take the initiative to say it either. Wealth is rich, rich on the pier, in the market, and in the mud under our feet - the Damal River floods once a year, and after it is flooded, the ground is black, and oil will come out when you poke it with your fingers. The vegetable leaves put out in the vegetable market in the morning are still wet with dew, which is rarer than gold in the desert. The greatest skill of the Sanara people is not farming but doing business. Silks from the empire, leathers from Khuzait, and ironware from the north all change hands with us. For our local bronze armor, the caravan lowered the price by 30% when they first came. We laughed and added 20% back. In the end, we won. But we also know in our hearts that the wealth of Sanara is given by the river, the sea, and the road. One day the river changed its course, the port was silted up, and the trade routes were cut off. The gold all over the street disappeared overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of Aserai are, in the final analysis, a distribution map of water and money. The settlements along the Damal River have such sophisticated horticulture that they can be used as villa gardens for imperial nobles; twenty miles away from the river bank, there are camel thorns and sand dunes, and the nomadic tribes are still living in the way of our ancestors. This structure determines the economic logic of Aserai: settlements produce food and handicrafts, nomadic tribes provide livestock and guards, trade routes connect the two, and Sanara monetizes it all. Without any link, Aserai would not be Aserai today. The strong commercial atmosphere is not because we are naturally fond of doing business, but because there is too little arable land. Noble families did not have large estates to collect rent, so they could only invest their money in caravans or Mamluks. Therefore, the status of merchants is not low. Good caravan leaders and emirs of various tribes can eat at the same table. This is unimaginable in the empire. However, the metallurgical technology is really not available. The imperial sword left by my grandfather is still three times more expensive than a newly made sword made locally. But the Aserai are never short of weapons - just buy them. In the desert, money and swords are the same thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "jawwal"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What does Sanara’s wealth have to do with us? No matter how many masts the merchant ships have, they are not as good as the stars on the top of our tent. The traditions of the Aserai are not in stone houses, but in black tents. We were nomadic among the sand dunes, living in woolen tents and walking on the same path our ancestors had walked. The farmers on the Damal River regard their land as their destiny, while the Sanara businessmen regard their money as their destiny. We are different. We regard our freedom as our destiny. Those who settled down always laughed at us for being poor, laughing at us for living in tents, drinking camel milk, and not being able to write. But they forget that the earliest Aserai looked like us. We remember the festival rituals best, we sing the poems of our ancestors the longest, we set the rules for who should collect how much tolls on the trade roads. We don't go to the river not because we are not hungry for the black mud, but because camels don't eat mud, they only eat grass. The path of the camel is our path. Outsiders regard Aserai as a trade hub, and we regard Aserai as our home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai? Those in the desert to the south. I have a cousin who sells goods on a merchant ship and said that he has been to Sanara. The dock there is busier than Luccaron, and the streets are filled with the smell of goldware and spices. He said that water is more expensive than oil there, and in an oasis in the desert, you have to dig a well very deep to get water. The people in that place are very good at doing business. They give you the same price every time, and they can spend a long time bargaining with you. I heard that they can only grow things by the river. The rest of the land is nomadic, riding camels and herding horses, which is different from farming here. He also said that the Aserai people have strange rules. If you urinate in a well, you will be chased and beaten by the whole clan. When a guest comes in, he is given a bowl of dates and treats you as one of his own. I won’t go there anyway, it’s too hot and I’ll burn myself to death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is one thing about the customs and customs of Aserai that I always think is worth studying in detail: an area with such harsh farming conditions maintains the most active commercial network in the entire Calradia. The efficiency of the horticulture industry in the Damar River Delta and the entrepot trade capacity of the Sanara Port were a perfect match, but the backwardness of the metallurgical industry made it a stable market for the empire's iron exports. This complementarity is good news for our empire commercially, but means nothing on the military ledger - more Aserai buy swords than plows. Their social organization revolves around water resources, and the division of labor between settled agriculture and nomadic pastoralism evolved spontaneously and was not planned by the government. The weakness of the Sudanese regime is directly related to this: a tribe does not need a sultan to dig wells and herd camels. The Empire doesn't have to try to conquer the Aserai, it's enough that Sanara's trade routes are open."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People from Aserai are rare here. It is said that their side is completely desert, and there is only one river where things can be grown. They don't know how to blacksmith, so they have to buy all their swords, but they have many boats and camels, and they are good at doing business. They have a place called Sanara, which is extremely rich, and the port is full of merchant ships. The people there are pretty good at bargaining. But it's cold here and it's hot over there. They're too far apart and there's no boundary anyway."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The first keyword that Aserai’s customs gave me was contrast. The level of agricultural development along the Damal River and in the interior of the desert differed by at least several hundred years. The second key word is adaptability. If they had no iron, they would use copper; if they had no fields, they would do business. Aserai's business atmosphere is not a cultural preference, but a survival strategy forced by geography. Sanarat and Jawwal people, one is a stone house, the other is a black tent, the other is an account book, and the other is a poem. Two worlds connected by one trade route. One day the trade route is closed, they may disperse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "village_a6_1",
+          "village_a6_2",
+          "village_a6_4",
+          "village_a7_3",
+          "village_a7_4"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I live by the Damar River, a long boat ride away from Sanara. Our village is small, and the wharf is only bustling for a while when goods are being loaded. The only sound left is the sound of water and the rustling of date palm leaves after the boat leaves. The river overflows once a year, and the ground is black when it is overflowing. The seeds are sown without plowing, waiting to be harvested. The elders say that this is mud sent by the river god, and it is given every year so that there is food to eat every year. We are different from the people in the sand. They drive camels and we farm. They walk everywhere, but we don't go anywhere. The river is here, the land is here, the house is here. The rich people in Sanara eat the vegetables we grow and wear the cloth we weave. They are rich, and we are not bad either. At least the bowl is full. When merchants pass by, they will lean on the pier to exchange things with us, exchanging iron from the north for our dates. We are not very good at bargaining, but they don't dare to press too hard - we are not the only village along the river, and this family will not sell to you if they press hard. Don't try to bully anyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a7"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Askel is the other eye of the Aserai. Sanara's other eye looked at the sea, and Askel's other eye looked at the desert. We are not in the delta, we are at the throat of the oasis chain. Regardless of whether the caravan is coming from the east or the north, it must pass through our city before entering the hinterland of Aserai. Sanara people do sea transportation, and Askel does land transportation. They use boats, we use camels. They are all doing business. They wear silk and we wear coarse cloth. They think we are vulgar and we think they are vain. Askel's bazaar is not as beautiful as Sanara's, but the goods are not less than theirs - imperial ironware, Khuzait leather, local copperware and dates, everything is available. We don't compare ourselves with Sanara's wealth, we compare ourselves with reality. The Askel people dislike it most when the Sanara people show off their money. We kept the money we made and bought two more camels the next time the camel team set off. Camels are the real thing, silk is not."
+    }
+  ],
+  "TextMappings": []
+}

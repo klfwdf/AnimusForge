@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Medieval_Trade_Routes_Silk_Road_and_Mediterranean",
+  "Keywords": [
+    "Silk Road",
+    "Pax Mongolica",
+    "Mediterranean Trade Routes",
+    "Spice Trade",
+    "Champagne Fairs",
+    "Caravan Routes"
+  ],
+  "RagShortTexts": [
+    "The Pax Mongolica and Italian maritime lanes connected the Silk Road to Europe, generating unprecedented continental commercial exchange."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The mid-thirteenth century witnessed an unprecedented integration of global trade routes under the umbrella of the 'Pax Mongolica.' The unification of Central Asia, Persia, and China under the Mongol Empire allowed merchant caravans, envoys, and friars to travel the overland Silk Road from the Black Sea ports of Caffa and Trebizond to Karakorum and Khanbaliq with unmatched speed and security.\n\nAt the Mediterranean nexus, Italian merchant galleys linked overland spice, silk, and porcelain flows to European markets. High-value commodities arrived via Alexandria, Acre, and Ayas, transshipped to Genoa and Venice, and were then transported across the Alps to the famous Champagne Fairs in northern France, where Flemish cloth, Baltic furs, and German metals were exchanged using international letters of credit."
+    }
+  ],
+  "TextMappings": []
+}

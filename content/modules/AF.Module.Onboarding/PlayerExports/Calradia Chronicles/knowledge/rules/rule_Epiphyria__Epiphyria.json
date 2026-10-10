@@ -1,0 +1,56 @@
+{
+  "Id": "rule_Epiphyria",
+  "Keywords": [
+    "Epiphilia"
+  ],
+  "RagShortTexts": [
+    "Epiphilia is a conservative female general in the Northern Empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Epiphilia was a conservative female general in the Northern Empire with a heroic appearance. She was dissatisfied with the dictatorship of the military, so she organized her own troops and gave the Senate its own arms. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Epiphyria was a female noble of the Impostorres family. The family is known for its fanatical loyalty to the aristocratic oligarchic camp and its unsociable character. Yet unlike most conservative women in the oligarchy, she was trained as a warrior. When the civil war broke out, she took away part of her family property and recruited a warband herself to fight against the \"tyrant\" Rhagaea and the \"upstart\" Galios, trying to maintain the supremacy of the Senate. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1_12",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "She is dead",
+      "FalseText": "She is still fighting today"
+    }
+  ]
+}

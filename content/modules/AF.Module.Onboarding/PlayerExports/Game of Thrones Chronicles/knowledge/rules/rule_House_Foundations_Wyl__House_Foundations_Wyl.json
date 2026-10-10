@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Wyl",
+  "Keywords": [
+    "Wyl",
+    "House Wyl"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "With its seat at Wyl on the Boneway, House Wyl is a major border house sworn to House Martell, and the black adder is commonly seen as its emblem. The Boneway separates Dorne from the Stormlands, and draws countless invasions, reprisals, and old hatreds right to the gates of Wyl. In the family's history there is both stubborn defense of the pass and ruthless methods that enemies remember for generations. To House Wyl, the mountain pass is not a line on a map, but a way of survival made of toll roads, beacons, captives, and ancestral graves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dornish lords regard Wyl as a bolt across the door of the Boneway. A marcher border house must be more vigilant than houses of the interior, and more easily grows hard and cold through generational blood feuds; whenever northern banners approach, the beacons of Wyl concern all of Dorne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guides and herders along the Boneway know that Wyl's protection and its inspections are equally harsh. In peacetime they hope the pass will not choke the trade road to death, while in wartime they can only count on that black adder to hold back the blades pouring through the mountain gap."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When stormlanders speak of House Wyl, generational border hatreds usually come to mind first. Old men can recite the atrocities committed by both sides, while young knights easily mistake vengeance for glory; those who have truly walked the Boneway understand better that mountain stone never distinguishes whose blood is spilled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl House Wyl holds the castle of Wyl at the northern end of the Boneway, takes the black adder as its emblem, and has a family history bound to the bloody defense and contested passes of Dorne. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl House Wyl holds the castle of Wyl at the northern end of the Boneway, takes the black adder as its emblem, and has a family history bound to the bloody defense and contested passes of Dorne. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl House Wyl holds the castle of Wyl at the northern end of the Boneway, takes the black adder as its emblem, and has a family history bound to the bloody defense and contested passes of Dorne. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl House Wyl holds the castle of Wyl at the northern end of the Boneway, takes the black adder as its emblem, and has a family history bound to the bloody defense and contested passes of Dorne. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wyl: House Wyl holds the castle of Wyl at the northern end of the Boneway, takes the black adder as its emblem, and has a family history bound to the bloody defense and contested passes of Dorne."
+  ]
+}

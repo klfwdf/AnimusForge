@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Adori",
+  "Keywords": [
+    "Adori",
+    "House Adori"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Adori lives between the forest of Qohor and its workshop economy. Whether its family fortune lies in timber, ironware, or long-distance trade, none of it can do without safe roads, skilled artisans, and religious order. The people of Qohor prize the secrets of coloring metal and reworking Valyrian steel; if House Adori is tied to the craft, its greatest asset may not be coin, but knowledge that must never leak out. Located on the edge of the Great Forest, Qohor is known for its blacksmiths who can reforge Valyrian steel, color metal, and the faith of the Black Goat. The city's wealth comes from forests, workshops, caravans and slave labor, while religious sacrifices and industry secrets combine to shape its dark reputation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori If a family offends industry secrets or religious authorities, no matter how much money they spend, they may lose their foothold in the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori When outsiders admire colored steel, they rarely think of how many people around the fire inhale smoke and dust all year round."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori House Adori is a patrician house of Qohor whose influence rests on workshops, timber and forest trade, caravan protection, and respect for the Temple of the Black Goat. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori House Adori is a patrician house of Qohor whose influence rests on workshops, timber and forest trade, caravan protection, and respect for the Temple of the Black Goat. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori House Adori is a patrician house of Qohor whose influence rests on workshops, timber and forest trade, caravan protection, and respect for the Temple of the Black Goat. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Adori House Adori is a patrician house of Qohor whose influence rests on workshops, timber and forest trade, caravan protection, and respect for the Temple of the Black Goat. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Adori: House Adori is a patrician house of Qohor whose influence rests on workshops, timber and forest trade, caravan protection, and respect for the Temple of the Black Goat."
+  ]
+}

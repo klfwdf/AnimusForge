@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Allyrion",
+  "Keywords": [
+    "Allyrion",
+    "House Allyrion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Elion family uses Divine Grace City as their seat, and the castle is located where the tributaries of the Green Blood River converge. The family emblem is a golden palm, and the family motto \"No one can cross it\" is both pride and a commitment to the river gateway. With a family of Rhoynar blood and Dornish heritage, the lord must coordinate shipping, irrigation, taxation, and settlement along the river. Whether the City of Divine Grace can maintain order depends on who is allowed to pass, who gets water, and whether the law is recognized among different groups of people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles valued Arion's control of the confluence of the Greenblood River. If the City of Divine Grace is stable, news, food, and ships will be able to flow; the \"no passage\" in family words must be supported by judgment and cannot become a willful road closure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river boat people regard Charity City as a joint on the waterway. They respected the lords who could settle disputes and protect the docks, but they also resented the repeated tariffs; for shippers, a seal may end their life faster than a sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Allyrion The Elion family rules the City of Divine Grace, guarding the confluence of the Green Blood River, emphasizing the responsibility of waterways and gateways with the family saying \"no one can cross it\". The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Allyrion The Elion family rules the City of Divine Grace, guarding the confluence of the Green Blood River, emphasizing the responsibility of waterways and gateways with the family saying \"no one can cross it\". Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Allyrion The Elion family rules the City of Divine Grace, guarding the confluence of the Green Blood River, emphasizing the responsibility of waterways and gateways with the family saying \"no one can cross it\". The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Allyrion The Elion family rules the City of Divine Grace, guarding the confluence of the Green Blood River, emphasizing the responsibility of waterways and gateways with the family saying \"no one can cross it\". They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Allyrion: The Elion family rules the City of Divine Grace, guarding the confluence of the Green Blood River, emphasizing the responsibility of waterways and gateways with the family saying \"no one can cross it\"."
+  ]
+}

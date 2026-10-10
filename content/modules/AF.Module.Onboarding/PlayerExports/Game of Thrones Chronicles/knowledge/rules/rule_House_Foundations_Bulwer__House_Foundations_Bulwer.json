@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Bulwer",
+  "Keywords": [
+    "Bulwer",
+    "House Bulwer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bulwer family uses Blackcrown City as its seat, and is located in the land where Oldtown and various forces in the southern part of the river bend. The family was once connected to the Tyrell branch through marriage, and inheritance may also fall into the hands of daughters; this reminds people that the continuation of a feudal family depends not only on the sword of the eldest son, but also on marriage contracts, maternal lineage, and recognized legal inheritance. Blackcrown City's responsibilities include guarding the manor, roads, and providing military service to superior lords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the River Bend were concerned about the marriage contract and inheritance of Bulwe, because a marriage in a small family may also change the ownership of the land. As long as the inheritance is recognized and the vassal obligations are fulfilled as usual, the female lord can also stabilize the order of Black Crown City."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those around Blackcrown have limited patience for genealogical debates. They wanted to see if the new lord could keep the mills running, the roads free of bandits, and the levies restrained from taking away all their livestock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bulwer The Bulwer family held Blackcrown City, had marriage connections with the Tyrell branch, and were part of the River Order around Oldtown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bulwer The Bulwer family held Blackcrown City, had marriage connections with the Tyrell branch, and were part of the River Order around Oldtown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bulwer The Bulwer family held Blackcrown City, had marriage connections with the Tyrell branch, and were part of the River Order around Oldtown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bulwer The Bulwer family held Blackcrown City, had marriage connections with the Tyrell branch, and were part of the River Order around Oldtown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bulwer: The Bulwer family held Blackcrown City, had marriage connections with the Tyrell branch, and were part of the River Order around Oldtown."
+  ]
+}

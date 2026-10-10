@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Vlandias_diplomatic_relations",
+  "Keywords": [
+    "Diplomatic relations of Vlandia",
+    "Vlandia’s international status",
+    "Varan’s Diplomacy",
+    "Varan’s status"
+  ],
+  "RagShortTexts": [
+    "Vlandia has a territorial dispute with Battania and wants to annex the Ukarion Plateau.",
+    "The Northern Empire Peng Tong is not friendly to Vlandia, but will not go to war.",
+    "Vlandia wants to restart its plan to annex the Western Empire and may form an alliance with the Southern Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "battania",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia has had several territorial disputes with Battania in history. Vlandia has seized the land west of Battania's Ukarion Plateau. Battania has always wanted to regain its homeland, especially the area along Lake Oaks, while Vlandia hopes to continue to expand and annex the entire Ukarion Plateau."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_empire_north_3",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia does not border the Northern Empire, and the two countries have no direct intersection. But Peng Tong of the Northern Empire hated Vlandia deeply for rebelling, so after the death of the gentle Lucon, Peng Tong would maintain unfriendly relations with Vlandia, but would not go to war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After Vlandia became independent, it drove the Sturgia/Nords northward from the Loval Plateau and controlled the entire south coast of Walceg Bay. After Sturgia and Nord unified one after another, they have been looking for opportunities to fight back to Loval, while Vlandia focuses on the defense of the Loval region."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the Battle of Pandrak, the hawkish barons of Vlandia tried to move eastward and annex the entire western part of the empire, but were forcibly stopped by Detel. Now, Vlandia is trying to restart the plan to annex the western part of the empire. The western frontier of the empire defended by Clotor is mainly defensive. Galios's main direction of attack is Battania and will not take the initiative to attack Vlandia. But Galios has always had a grudge against Detel, so there is no possibility of an alliance between the two countries, and there may be a conflict at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia is far away from the Southern Empire, and the southern city-states have no hatred for Vlandia. Rhagaea was not a witness to the Battle of Pandrak. She only wanted to consolidate the throne and ensure the longevity of the Petlos family, so she was not interested in Vlandia, and Vlandia was not interested in the Southern Empire. The two countries had almost no intersection. However, after Valan launches a war against the Western Empire, he will ally with the Southern Empire as appropriate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "tactics": 40
+        }
+      },
+      "Content": "Vlandia and Aserai face each other across the sea and have neither more nor less communication. But after Vlandia annexes the Western Empire Ordysia and Garonto Castle, there will be more interactions with the Aserai. The Aserai will not take the initiative to start a war, but Vlandia will not necessarily. After pacifying the Western Empire, Vlandia may ally with the Southern Empire to attack Aserai"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia’s foreign policy is known for its offensive nature. Everyone knows that Vlandia is keen on expansion, but they have no idea where they will expand."
+    }
+  ],
+  "TextMappings": []
+}

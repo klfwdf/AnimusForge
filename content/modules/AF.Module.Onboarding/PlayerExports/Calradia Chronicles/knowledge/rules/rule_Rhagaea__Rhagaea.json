@@ -1,0 +1,311 @@
+{
+  "Id": "rule_Rhagaea",
+  "Keywords": [
+    "Rhagaea",
+    "Queen (Rhagaea)"
+  ],
+  "RagShortTexts": [
+    "After the death of Arenicos, Rhagaea raised the bloody robe and ascended the throne, expelling the Senate."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Rhagaea. They say I poisoned Arenicus, and Lycaron's nursery rhyme has been sung for decades, from the streets to the palace walls. I don’t explain it, and I don’t stop singing it. Let them sing. A nursery rhyme can help me remember who my enemy is better than ten slogans. While I, Arenicus, lived, I was his wife; after his death, I was his inheritance. I raised his blood-stained purple robe and declared to the world that the empire does not need a crying widow, but a man to hold the sword. I held it. My blood is Darcy, my purple robe is imperial, my methods are realistic. Lucon says I am a foreigner, Galios says I am a foreigner. They're both right. I'm not from the Empire, so I won't be bound by the old rules of the Empire. I use consuls to buy city-states, assassins to scare dissidents, and Ila's name to unite the south. Ila didn't understand politics, but she was my only legitimacy. Without her, I am a tyrant; with her, I am a regent. I have to pave the way for her, even if she can't walk on this road at all. My daughter squandered her youth in the tavern, and I squandered the rest of my life in the court. We all splurge, just in different ways. The Southern Empire is relatively stable now, but stability is not unity. I don’t know what will happen to the Empire and what will happen to Ila after I die. What I know is that I am still alive, and as long as I live one day, the blue flag of Lucalon will not fall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_37"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My mother was the Queen of Rhagaea. She is the most powerful person I have ever met and the most breathless person. She could make a consul kneel down to thank him in court, and she could use a joke to tease out the opponent's trump card at a banquet. What about me? I sat down and listened to their twists and turns, and within one stick of incense I felt sleepy. I would rather go to a tavern to arm-wrestle or swordfight with others - at least if I lose, I can fight again and won't be hated for the rest of my life. I know my mother is disappointed in me. She didn't say it, but I could tell it from the way she looked at me. She looked at me like I was looking at a project that would never be completed. I also want to make her proud, but I really can't. She asked me to learn to read tax statements, and I started to feel sleepy after reading three lines; she took me to listen to the debates of the consuls, and I listened for a long time without knowing what they were arguing about. I love my mother, and I am even more afraid of her, but I firmly believe that I can become the queen, and those elders will come to worship me sooner or later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea is an opportunist, but she is a capable opportunist. I don't deny her ability, I deny her bloodline. She is not an Imperial, she is a Dasi, the daughter of Padishah. During the Lycaron Incident, she took advantage of the chaos after Arenicos' sudden death, raised her bloody robe, proclaimed herself queen, expelled the Senate, and gathered the lords of the southern city-states around her, using typical Eastern court methods. She made them consuls, exchanging titles and autonomy for support, which was a smart move. But being smart is not orthodoxy. I took the Senate to move north and established the Northern Empire, because we old bones believed that the power of the Empire should belong to the Imperial people, not a foreign woman and her daughter. In her eyes, the tradition of the Senate was just a stumbling block, so she kicked it away and sat on it herself. She is a usurper, just a usurper better than most. I am too old to recapture the South, but the Senate's fire still burns in the North. We are the orthodoxy of the Empire, Rhagaea is just an episode of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea? That Darcy woman. I don't care how smart or capable she is, I just know that she is not from the Empire. A Padishah's daughter sat on Lycaron's purple robe, made her city-state friends consuls, and allowed foreigners to enter the court as officials. What's this? This is selling the empire to foreigners. When I was leading troops to fight in the west, she relied on assassination, surveillance, bribery and negotiation. I don't deny that her methods are effective - the Southern Empire is relatively peaceful under her hands, and people's livelihood is doing well. But the empire cannot be unified in peace. The empire needs swords, not ledgers. I admit that she has a knack for winning people over. The people in the south are grateful to her, because the people in the west are scolding me. I don't know how to deal with people's livelihood like her. I spend all my money on military expenses. I don't regret it. If military expenditures are not spent, who will unify the empire? There are no foreigners in my barracks, and all my legions are Imperials. This is what an empire should be like. Her concept of \"foreigners entering the dynasty as officials\" is a betrayal of the empire. Sooner or later, I will take my veterans south and let her know what the real empire is."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea? Speculator, speculator through and through. As soon as Arenicos died, she contacted the princes of the southern city-states overnight, using the title of consul and autonomy to win over people's hearts, and at the same time kicked out the Senate. Lucon took us north and established the Northern Empire, which is where the orthodoxy lies. She controls the richest south of the empire and relies on this wealth to stabilize the situation, but this does not change her essence: a careerist who took advantage of her husband's death to ascend to power, and a regent who uses her daughter's name as a cover. We people in the Northern Empire look down on her, and we look down on the southern princes who took refuge in her - those people are just dogs that run away after smelling money. But we can’t ignore her entirely. Her methods are indeed effective, and the southern empire is much richer under her rule than our north. This wealth is based on the betrayal of the imperial tradition. We disdain to learn, but we have to admit her success."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea are alien. This requires no argument, her face is the proof. Her father was Padi Shah, the ruler of the Eastern Darcy Empire. Her black hair, black eyes and Eastern style of conduct reminded the empire's elders that the person sitting in Lycaron's purple robe was not an imperial person. She allowed foreigners to serve as officials in the court, was particularly close to the Khuzait and Aserai people when doing business, and could even speak several foreign languages. This was unimaginable in the Western Empire. Emperor Galios came to power with the support of the veterans of the empire. He is a pure imperial man. Our Western Empire is the purest among the three parts of the empire. Rhagaea's existence is a stain on the Imperial bloodline. The more capable she is, the more dangerous she is, because her ability will make more people in the Empire forget that she is a foreigner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Queen is a good monarch. Many of us governors of the southern city-states had doubts when we were first attracted by her - could a woman, or a Darcy, stabilize the situation in the southern part of the empire? Turns out she can, and does it better than most men. She respects the autonomy of the city-state, does not engage in barracks-style populism like Galios, and is not like Lucon who talks about the tradition of the Senate every day but cannot even collect taxes. She negotiated terms with us and implemented them when they were agreed, and never played tricks behind our backs. She made the people's livelihood in the south good - the trade routes were smooth, the food harvest was good, and the public security in the city was stable. We, the consuls, are willing to support her not because of her bloodline, but because of the actual benefits she has brought to us. As for Ira, we know that Ira is useless. The consuls are the ones who really run things, and it makes little difference to us whether Ila or Rhagaea sits on the throne. The Queen knows this very well, and we also know that she knows this. This tacit understanding is the logic of the operation of the Southern Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea was the most pragmatic statesman of the era of divided empires. She is not bound by republican tradition like Lucon, nor is she bound by militarism like Galios. Her survival strategy was clear and flexible: give up control of the north and west, shrink to the richest south of the empire, and rely on maritime trade and commercial networks to consolidate the financial foundation; at the same time, she used the inheritance of her daughter Ila as the banner of legitimacy and exchanged the consulship system for the allegiance of the city-state elite. Her Darcy blood, a flaw in the eyes of the old aristocracy of the empire, is an advantage in our eyes—it makes her more receptive to outside forces, more willing to work pragmatically with the Khuzait, Aserai, and even Vlandia. It was no accident that the Southern Empire became the richest of the three empires under her rule. But her biggest political risk is also clear: her legitimacy depends entirely on Illa. If Ila loses power before the succession, or if Ila fails to convince the public after taking the throne, the political structure of the Southern Empire in the name of regency will collapse instantly. Rhagaea is obviously aware of this, so she keeps cultivating Ila's image, albeit to poor effect. She was an excellent transitional ruler, but her successors may not be able to sustain the legacy she left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea? The queen of the south. I asked people here, and they said she was a foreigner, with black hair and eyes, and spoke with an Oriental accent. The elders of the Senate in the north called her a opportunist, saying that she had driven away the Senate, became emperor herself, and occupied the south. I thought that the south was originally where people stayed, so I just drove them away. We are poor in the north, and the Senate doesn't care much about our life and death. Mr. Lucon is getting old, and he doesn't know how long he can last. I heard in the south that she was in charge of quite a lot of people, but I just heard that I had never been there. I don’t even care about things in the north, but I don’t bother to worry about things in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Queen is a good emperor. The bakery owner on my street has told me many times that although taxes have not been reduced much since she came to power, public security has improved, trade routes have opened up, and the army no longer robs people of their things. When Emperor Arenicos died, the city was in chaos, with rioters robbing everything. Later, the queen stabilized the situation and gathered the rebels who needed to be gathered in, and dispersed those who needed to be dispersed. Now the market is open until midnight and no one is causing trouble. The Queen is responsible for people's livelihood, so there is nothing to say. I heard that her daughter was not very successful and often messed around with a group of aristocratic boys in the tavern. Privately, we all worried about the Queen: Why did such a good emperor give birth to such a daughter? But the Queen is still here, so we don't have to worry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That queen in the south, I heard that the people lived well under her rule. They said the market there was open until midnight and the roads were very safe. What about our side? Emperor Galios was preoccupied with fighting, fighting Battania today, fighting the Southern Empire tomorrow, and engaging in border friction with the Vlandia people the day after tomorrow. The soldiers actually support him - he rewards the veterans with land, but what about those of us who are not veterans? The land was taken away by the military nobles, but taxes were still paid. I sometimes think, if we were also under the control of the south, would our life be easier? But I can't say this outside. If others hear me, they will call me a traitor. Galios says Rhagaea is a foreign race and she cannot be allowed to rule the empire. I can decide whoever wants to rule me, as long as they don’t fight wars and raise taxes every day. But I’m just a farmer, so I don’t have any say."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Queen treats us well. Salaries are paid on time, food is sufficient, and there are additional subsidies in winter. I escaped from the north and served as a soldier under the Senate. The war there was fierce, but the military pay was often delayed, and no one cared about me when I was injured. It was only when I got to the south that I discovered that soldiers could also be treated as human beings. The Queen is not of imperial blood, I don't care. She cares about our lives, so we give them to her. I met her daughter Ila once. She was having a sword duel with someone in the military camp. She fought well, but she didn't look like a future emperor. After the fight, she went to drink with a few aristocratic boys. She had no airs at all. Some people say she is useless, but I don't think it's a big deal. As long as she can kill people, it doesn't matter whether she is useful or not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Queen of the South? We don't recognize her here. She is a foreigner, has black hair, and is not from the Empire. The elders of the Senate accused her of usurping the throne and expelled the real Senate. Our troops in the north are not as numerous as those in the south, nor as fierce as those in the west, but we are the orthodoxy of the empire and cannot afford to lose. But I heard privately from merchants that the south is indeed very wealthy under her control, and ships come and go from the port. Food prices are high here in winter, and some brothers joked that we might as well go south to seek refuge, so that our military pay could be higher. After that, everyone laughed for a while, but no one took it seriously. Surrendering to the enemy is punishable by beheading."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Queen of the South? I heard our centurion say that. He said that the woman was a foreigner, not a member of the empire, and had taken over the south by conspiracy and winning people's hearts. Our soldiers in the west do not recognize her, only Emperor Galios. But one time we caught some deserters from the south on the border and drank with them all night. They said that the queen of the south pays the soldiers in a timely manner and never defaults on payment. It's the same here, we can still grab loot. Marshal Galios said that sooner or later he would go south to unify the empire. Then I'd like to see what that queen looks like. I heard that she was very beautiful, with black hair and dark eyes - forget it, this is not what a soldier should think about."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea? There is a female emperor on the other side of the empire. She has black hair and looks different from the rest of the empire. I heard that she is from the East and married to the old emperor of the empire. When the old emperor dies, she will become the emperor herself."
+    }
+  ],
+  "TextMappings": []
+}

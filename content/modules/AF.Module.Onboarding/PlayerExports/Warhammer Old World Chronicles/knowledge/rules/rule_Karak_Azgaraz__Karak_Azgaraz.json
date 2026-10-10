@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Azgaraz",
+  "Keywords": [
+    "Karak Azgaraz_KG",
+    "Azgaraz Fortress_KG",
+    "Azgaraz Beast Hunter Fortress_KG",
+    "Azgaraz Dwarf Territory_KG",
+    "King Azgaraz_KG",
+    "Beastbreaker Fortress_KG"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Azgaraz is a hunting dwarven stronghold in the Gray Mountains, ruled by King Turingar Beastbreaker. The dwarves here are famous for hunting giant mountain monsters, and their tradition of giant beast hunters can be traced back to the time of the dwarves' ancient ancestors. The walls of Azgaraz are decorated with skulls and scales taken from great beasts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Azgaraz—my clan’s hunting temple! King Turinga once used a hammer to crush the skull of an adult icefield grizzly bear during the last heavy snowfall. Our dwarves have never been afraid of the giants in the mountains - while the long-legged knights of Bretonnia were trembling in the forest, the hunters of Azgaraz had already hung the heads of half a dozen manticores on their waists."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kharak Azgaraz serves as the slayer of beasts in the Gray Mountains. Large monsters—such as griffins, wyverns, and trolls—regularly threaten human settlements on both sides of the mountains. King Turinga's Behemoth Hunter Legion is the only professional dwarven monster hunting force in the Old World, and its tactical value is particularly prominent when fighting against Chaos Behemoths."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Kharak Azgaraz's economy revolves around the byproducts of behemoth hunting. Leather from giant beasts—especially grizzly bear skin and griffin skin—is the most high-end cold-proof and armor material in the old world. A complete griffin skin cloak can be sold for more than eight hundred gold crowns in the empire. Animal bones are high-quality materials for making weapon handles and decorations, and animal teeth and claws are used by dwarven rune blacksmiths to make special rune materials. In addition, Azgaraz hunters also collect rare mineral plants unique to the mountains—including \"ice moss\" that only grows at extremely high altitudes. This moss is an important raw material for making dwarven spirits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dwarf women of Azgaraz are responsible for processing the prey brought back by the hunters - skinning, curing the meat, brewing animal bone glue and sewing fur products. I learned the craft from my great-grandmother, and the griffin hide requires soaking in six different solutions to tan it perfectly. There is no one idle in this fortress - everyone is preparing for the next hunt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family rides the finest hounds in Azgaraz. Bred over a dozen generations, our hound breeds can smell a gryphon half a mile away and track a troll through the snow for three days and nights. King Turinga always takes our hounds with him whenever he goes hunting - this is the cornerstone of our family's status in the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dwarves of Azgaraz are the craziest hunters I have ever seen. I saw with my own eyes the corpse of an adult wyvern that was carried in whole in the castle hall - the venomous tail of the wyvern was still twitching unconsciously on the floor. The dwarves feasted and drank beside the giant beast's carcass to celebrate the success of the hunt, as if it was not a monster that could tear ten people apart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Azgaraz's behemoth leather and bone products have markets in countries across the Old World. The noble knights of the empire are particularly fond of griffin skin cloaks - it is said that wearing it on the battlefield can make enemies frightened. But be careful: King Turinga implemented a quota system for the export of animal materials, and high-quality furs were given priority to the fortress itself. Signing long-term purchasing contracts in advance is the only way."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Azgaraz is a dwarven stronghold in the Gray Mountains known for its great beast hunting, ruled by King Turingar Beastbreaker",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Karak Azgaraz Gray Mountains Dwarf Behemoth Hunting Fortress"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Visama",
+  "Keywords": [
+    "Visama",
+    "House Visama"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Visama belongs to the Oldblood caste within the Black Wall of Volantis, whose Valyrian blood qualifies them to reside and participate in elite politics. The family figures are closely aligned with the Elephant Party line and tend to base the city's power on trade on the Rhoyne, port taxation and long-term wealth. Wisama's status was not an isolated manor-like lordship, but was woven from kinship, business partnerships, slave industries, and electoral alliances. Any break in the accounts could cause cracks to appear in the seemingly solid prestige of Old Blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Blackwall nobles value Visama's ability to coordinate interests within the Elephant Party. The old blood families intermarry with each other and compete with each other; the same silver hair and purple eyes will not eliminate the competition for ruling seats and trade routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "River boat owners and merchants evaluate Visama mainly based on tax rates, security and whether contracts can be enforced. Blood stories are good for banquets, and cargo crossing the long bridge on time is a real political achievement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Slaves performed unseen labor in Visama's mansions, shipyards, and farms. The more ancient a family fortune is, the easier it is to obscure how many tattooed people it still requires every day to maintain it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Visama Visama is an old blood family within the black walls of Volantis. The family's influence comes from blood qualifications, trade wealth and Elephant party-style city politics. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Visama Visama is an old blood family within the black walls of Volantis. The family's influence comes from blood qualifications, trade wealth and Elephant party-style city politics. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Visama Visama is an old blood family within the black walls of Volantis. The family's influence comes from blood qualifications, trade wealth and Elephant party-style city politics. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Visama Visama is an old blood family within the black walls of Volantis. The family's influence comes from blood qualifications, trade wealth and Elephant party-style city politics. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Visama: Visama is an old blood family within the black walls of Volantis. The family's influence comes from blood qualifications, trade wealth and Elephant party-style city politics."
+  ]
+}

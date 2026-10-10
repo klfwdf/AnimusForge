@@ -1,0 +1,207 @@
+{
+  "Id": "rule_The_general_name_of_dwarves",
+  "Keywords": [
+    "Mountain Kingdom",
+    "karakanko",
+    "David Empire",
+    "Dwarf Citadel Alliance",
+    "eternal throne",
+    "Karak states"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The country of the dwarves is called \"Karak Ankh\" in the dwarven language - the kingdom of the mountains. It is an alliance of independent strongholds (Karak) scattered in the World's Edge Mountains and the Gray Mountains, with the High King as the supreme authority who sits on the eternal throne of Karazha-a-Karak. The Mountain Kingdom once covered the entire World's Edge Mountains, but now more than half of its fortresses have fallen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are Dawi, and our country is Karak Ankh - humans call us \"dwarves\" in their tongues and call our country \"the Kingdom of the Mountains.\" But in our own language, Karak Ankh means more than just the kingdom of mountains—it includes the meaning of the \"Eternal Land,\" for our ancestors dug the first fortresses in these mountains when elves were still jumping in the trees and humans had not yet learned to make fire. Our political entity is not a single kingdom - it is a confederation of independent Kharaks formed through a network of ancient oaths and a common bloodline. The High King sits on the eternal throne of Karazha-a-Karak, but each King of Karak maintains his own autonomy in his own fortress, keeping his own clan chronicle and his own book of hatred. Karak Ankh was not created—it was dug up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political structure of the Mountain Kingdom is the oldest and still functioning alliance system in the Old World - it is neither an imperial-style federal electoral system nor a Bretonnia-style theocratic monarchy, but a clan-fortress dual-layer structure bound by blood oaths and stone-engraved contracts. Each Kharak is ruled by a hereditary dwarf king, who is also the head of the most important clan of Kharak and the chief keeper of the Kharak's Book of Hate. The High King's authority comes from three sources: his clan is the oldest of all the dwarf clans, he sits on an eternal throne carved by the hand of the ancestral god Grenir, and he bears the guardianship of the entire Book of Hatred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Mountain Kingdom (Karaz Ankor) carries a connotation in the dwarven language system and social structure that goes far beyond the word \"kingdom\" in human language. The word Karaz has its roots in \"eternity\" and \"solidity,\" and Ankor means \"realm\" or \"community\"—which together are most accurately translated as \"the eternal solid realm.\" The political system of the dwarves is academically described as a clan-fortress dual-layer alliance system: the base layer is the clan - each dwarf belongs to a specific clan from birth, and the clan determines the surnames, ancestral lineage and initial career direction of its members; the upper layer is the Karak - composed of clan groups settled in specific mountains. The physical boundaries of each Karak exactly coincide with the direction of the mountain's mineral veins and the scope of underground fortifications. The decline of the Mountain Kingdom is reflected in the political structure as the number of Karak dropped from more than twenty in the golden age to less than ten today. They still maintain stable contact with the High King - the loss or fall of isolated castles does not mean the surrender of sovereignty in dwarven law. They are only temporarily \"in darkness\" but still belong to Karak Ankh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female administrator of a dwarf clan, the other half of my clan’s story is missing from the official narrative of the Mountain Kingdom. The history books of the Eternal Throne are written by men and chronicle their exploits - but the underground food reserves, clan demographics and winter fuel distribution of every functioning Kharak are managed by dwarven women. Antheste led the forefathers in building the walls of Karak, but it was their wives who ensured that the fortress had enough food and warm forges during the centuries of siege."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What the Mountain Kingdom means to my clan is the direct link between us and Karazha-a-Karak. These oaths were made by my ancestors to the High King during the Longbeard War - each word is inscribed on the Clan Chronicle Stone - and require us to provide a specific number of Hammer Warriors and Ironbreakers when the High King issues a call for war. As leader, I must ensure that the clan's population and forge production are sufficient to support both our own Kharak defense needs and the High King's recruiting obligations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As you travel through the Old World you will find that the names that different races refer to the dwarven countries reflect the depth of their relationship with the dwarves. The humans call it the \"Kingdom of the Mountains\" or the \"Empire of the Dwarves\" - a rough label based on outside observation. The elves officially call it \"Karak Ankh\" - they are as old as the dwarves so know the correct name, although after the Longbeard War they rarely speak it with any reverence. The greenskins call it \"Dwarf Nest\" - a more accurate description of the way the greenskins view the dwarves than any academic name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial significance of the Mountain Kingdom is often underestimated in Old World trade. The dwarves do not export their core technologies—runesmithing and the precision machinery of the Engineers Guild—but they do export large quantities of fine iron, copper, and silver ore, as well as the strong ale brewed by the dwarves. Imperial merchants who sign long-term ore supply contracts with the Mountain Kingdom ensure that their foundries will not face shortages of raw materials for the next fifty years - but to obtain this contract your family must have established business credibility among the dwarves for at least three generations."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Ankh - the official name of the dwarves for their country, meaning \"the eternal solid realm\"",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarves' formal titles and political status"
+  ]
+}

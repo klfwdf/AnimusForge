@@ -1,0 +1,192 @@
+{
+  "Id": "rule_Lucalon_Incident",
+  "Keywords": [
+    "Lycaron Incident"
+  ],
+  "RagShortTexts": [
+    "Emperor Arenicos was assassinated in the palace during the Lycaron Incident. The Vecian Guards failed to stop it, and the murderer remains a mystery to this day."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron Incident – ​​No one can say exactly what happened that day. All we know is the outcome: Emperor Arenicos died, in his own palace. His Vekian Guards were outside the palace gates, but could not stop this. Then Rhagaea came out of the palace, holding up the bloodstained purple robe, to show it to the citizens gathered in the square. The Senate at the same time elected Lucon as the new emperor. The citizens were outraged, broke up the ranks of the Senate, and drove Lucon and his supporters from the gates of Lycaron. The empire split into three pieces that night. But who killed Arenicos? No one knows. Everyone has their own answer, and every answer seems like the truth. When put together, no one is hurt by the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I was in the square that day. First it was heard that the Emperor was dead, and then Queen Rhagaea came out, her purple robe covered in blood. She didn't cry, she just held her robe high for everyone to see. Some said men from the Senate killed the emperor, some said Rhagaea did it herself, and still others said it was a foreigner who did it. I was standing far away at the time, and all I could see was that the crowd began to surge towards the Senate. The sound of shouting and killing made all the vultures on the stone mountain fly. Later Lucon and his men were driven out of the city, and Rhagaea stood at the palace gate, the bloody robe still in her hand. To be honest, I don't care who kills the emperor. What I care about is whether there will be bread for sale tomorrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was the Senate that did it. The late emperor had been weakening the power of the Senate, and those old guys had long hated him. They bribed someone in the palace—perhaps a page, perhaps a guard—to take action at the moment when the emperor was unprotected. Then they immediately elected Lucon to create a fait accompli. But Queen Rhagaea did not let them succeed. She walked out holding the late emperor's bloody clothes, letting the whole city see their crimes. The citizens did not fail their late emperor and drove the robed murderers out of Lycaron. This is the truth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhagaea This woman is not simple. The emperor died, her husband died, and she didn't shed a single tear. The first thing she did was to get the bloody robe - as if she already knew where the robe was. She then ran to the square to incite a mob that drove Lucon, the legally elected new emperor, out of the capital. What about the Vekian Guard? What were those foreign mercenaries doing that night? Some said they were setting fires and looting all over the city instead of protecting the emperor. What if they set the fire at Rhagaea's behest? What if the emperor's death was intended to drive the Senate away from the beginning? I have no evidence, but the timing of her taking the blood robe was so coincidental that it didn't look like a temporary reaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The news we heard in the military camp was: The emperor died, and we don’t know who killed him. Then his woman and the Senate blamed each other, and finally his woman won. General Galios asked at that time: \"What are the Vecian Guards doing?\" No one could answer. Those foreigners were the emperor's most trusted guards, and they should have died in front of the emperor. But they didn't. They were either involved in the murder or were busy robbing the city after it happened. No matter what it is, they don't deserve to be called guards anymore. As for who was telling the truth, Rhagaea or Lucon - General Garius said that neither could be trusted. One used a bloody robe to incite the mob, and the other crowned himself in the Senate. No one was cleaner than the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Lycaron Incident is the biggest mystery in imperial historiography and will always remain a mystery. All parties involved had motivations: Rhagaea could become mistress of the empire through her husband's death, Lucon and the Senate could restore the Senate's authority weakened by Arenicos, Galios could go from a frontier general to Lord of the West - and indeed, all three of them got what they wanted in the end. This in itself is the most suspicious place. The behavior of the Vikian Guards is also unexplainable: How could an elite guard known for its strict discipline lose control and go berserk at the critical moment of the emperor's assassination? Were they bribed, or did they really fall into collective rage and panic because of their dereliction of duty? No one can give a definite answer. The Luccaron Incident is like a mirror that was smashed to the ground. Everyone picked up a piece and said that what he saw was the complete truth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It makes little difference to us northerners whether the emperor dies in his own bed or at the gate of the palace. But once he died, the empire was in chaos, which was a good thing for us. I heard that his woman and the Senate bit each other, and in the end the woman won and drove the Senate out of the city. It's easier for the Imperials to kill themselves than it is for us Sturgians to do it themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Aserai people are confused about what happened that day in Lycaron. When an emperor died, his wife said the senate had done it, and the senate said his woman had done it. Instead of protecting the emperor or identifying the murderer, the emperor's guards set fire to the city. The politics of the Imperials are messier than our tribal feuds. But the results were clear: Rhagaea controlled Lycaon and the silver mines to the south, Lucon controlled the north and the Senate, and Galios controlled the legions in the west. All three men benefited from the emperor's death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a saying circulating in our court in Vlandia: Arenicos was not killed by one man, but by the conspirators of a conspiracy. Maybe Rhagaea planned the assassination, maybe the Senate bribed the assassins, maybe Garius was waiting in the distance to reap the rewards. Maybe none of them took action, but everyone was waiting for this day. As soon as the emperor died, everyone was in action—Rhagaea took the Blood Robe, Lucon summoned the Senate, and Galios rallied his army in the west. It was too fast, like it was rehearsed. Of course, this is just speculation on the part of us outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Lycaron Incident is the most famous political mystery in the history of Calradia and the direct trigger for the division of the empire. Judging from the analysis of historical data, there are three core contradictions in the incident: first, why did the Vekia Guards, as the emperor's personal bodyguards, fail to effectively prevent the assassination when it occurred, and then quickly lost control and went berserk? Their behavior pattern neither conformed to the professional standards of the elite guards nor the rational logic of deliberate rebellion; second, Rhagaea Her role in the incident - was she a grieving widow defending her husband's legacy, or a well-planned coup d'etat taking advantage of her husband's death? Thirdly, the Senate elected Lucon to succeed him within hours of the emperor's death. Did the speed of their response imply that they had already known that the emperor would be assassinated, or was it simply a hasty self-rescue. There is no truth about the Lycaron Incident, only versions. And this is where it's most dangerous - when everyone believes their own version, consensus is impossible and civil war is inevitable."
+    }
+  ],
+  "TextMappings": []
+}

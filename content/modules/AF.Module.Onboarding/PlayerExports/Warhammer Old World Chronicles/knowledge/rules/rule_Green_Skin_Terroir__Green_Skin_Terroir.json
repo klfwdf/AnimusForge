@@ -1,0 +1,214 @@
+{
+  "Id": "rule_Green_Skin_Terroir",
+  "Keywords": [
+    "greenskin terroir",
+    "Orc customs",
+    "goblin society",
+    "Greenskin terroir spore reproduction",
+    "Green skin customs Green skin culture",
+    "Waaagh life",
+    "Green-skinned Tooth Coin",
+    "Bad Moon Belief",
+    "night goblin",
+    "Mycelial network",
+    "boss race",
+    "Green-skinned local fart",
+    "Scrooge"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskin social customs revolve around a simple and timeless theme - fighting. The daily routine of an orc is to search for something weaker than itself and beat it. The daily routine of a goblin is to search for something it dares not hit and find a way to sneak attack it from a distance. Greenskins do not eat bread, drink milk, or sleep in beds—they obtain food through plunder, fight instead of entertainment, and make up their only music with war cries. Their method of spore reproduction means that a tribe of greenskins does not need any social organization to care for the young - new greenskins grow on their own from the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our green-skinned lifestyle is the real enemy! Human beings are busy farming, counting money, and praying to the old man in the sky all day long—all a waste of time! All you need is a machete heavy enough, a gang of guys capable enough to fight, and a thick leather blanket to sleep in in any weather. The first thing you do in the morning is to have a fight with the guy who grabbed the mushroom soup from you last night, then go find a fight with the nearest enemy tribe, and then sit around the campfire at night while gnawing on the leg meat of the troll you killed during the day while listening to the shaman talk about how exciting the previous fight with Brother Mao was. What a joy to live!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the customs of greenskins is the only reliable way to predict their behavior. Greenskins don't launch large-scale invasions in winter - fighting makes them cold. Greenskins do not engage in long-range shooting on dark moon nights - it is easier for goblin archers to shoot their own people to death than orcs do in the dark. Greenskins will immediately start fighting among themselves after defeating a powerful enemy - because without external enemies, their only entertainment is to fight each other. All of these crude but real patterns can be exploited in military deployments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The rules of operation of greenskin society are entirely determined by their biological characteristics. Due to reproduction via spores, Greenskins do not have any form of family unit or parent-child relationship - the new Greenskins are directly equipped with basic survival and fighting instincts. Orcs gain social status by demonstrating greater fighting prowess, and goblins compensate for individual weakness by displaying more cunning survival strategies. The greenskin's religion - Gomao worship - is the superstructure of their entire social order: Goge represents cunning violence, and Maoge represents the cunningness of violence. There is a rough division of labor in greenskin society: orcs are responsible for fighting and hunting, and goblins are responsible for making simple tools, taming jumpers and giant spiders, and serving as long-range firepower and trap setters on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskin customs include a complete absence of gender roles - making their society both a threat and a mystery to the female lords of the border. The threat is this: Greenskins won't behave any differently towards you because you're a female. The mystery is: How does a society with no gender structure maintain its order? In human society, the sexual division of labor is the basis of many social foundations, but among the Greenskins this division of labor is completely absent - they are naturally graded by physical size and fighting ability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskin customs have an important implication in family defense strategies: Greenskin spore reproduction means that it is impossible to eradicate the greenskin threat from your territory. My family has owned a manor on the borders of the Badlands for two centuries - and in those two hundred years we have experienced seven greenskin Waaagh! crossings, repelling each time. But we've never been able to completely rid our territory of greenskin—because we can't remove all the spores in the soil. So our family's long-term strategy is not to eradicate the greenskins, but to manage them—regularly burning specific areas of spore accumulation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the rules of survival when wandering around badlands: don't ask the greenskins what their food is. Greenskins will eat any creature they can catch and smite in the wild—including trolls, giant spiders, and travelers unfortunate enough to encounter them. But the greenskins don't eat goblins - not out of respect, but because goblin blood has a sour taste that makes them uncomfortable. If you get caught by a greenskin, pray they still have troll leg meat in their kitchens for the time being."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most troublesome thing among greenskin folklore that troubles border merchants is their attitude towards the spoils of war. Greenskins will snatch anything that shines - gold coins, jewelry, a polished saber, even a shard of glass that reflects particularly well in the sun. The loot would be gathered together for a day or so after they captured a town - and then either thrown around in the ensuing infighting among the tribes, or buried by an orc who had escaped alone under some dune known only to himself. After the war, searching for abandoned greenskin loot in the ruins of abandoned cities around the Badlands is a highly profitable and risky occupation."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Spore Life - Greenskins reproduce via asexual spores, with no family, parentage, or gender structures",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Green-skinned social customs and cultural traditions"
+  ]
+}

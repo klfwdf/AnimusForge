@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Liddle",
+  "Keywords": [
+    "Liddle",
+    "Clan Liddle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Lindley family rules Snake Grove and is a noble family in the valley. Dense forests and mountain roads not only provide wood, game, and concealment, but also bring bandits, confusion, and border disputes. The family's power came from its control of the forest roads, estates and local riders, and was embedded in the Arryn Vale order through marriage alliances and vassal obligations. If the Lord of the Snake Forest only knows how to defend the city but does not understand the forest, he will not be able to truly rule this land where the shadows of trees cover the roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lords of the Vale valued Lindley's familiarity with the roads of the Snake Forest. Troops, caravans, and messengers may all be blocked in the forest. A family that can maintain road signs, bridges, and patrols is far more useful than a noble who sits high in the seat but does nothing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Woodmen, hunters and charcoal burners had their own names for each trail in the Snake Forest. They hope that Lindley will restrict banditry and not turn all the woods where his ancestors relied on into hunting grounds for nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Liddle The Lindley family is rooted in the Snake Forest and is a vassal of the valley. The family fortune is shaped by the dense forests, mountain roads and transportation into the hinterland of the valley. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Liddle The Lindley family is rooted in the Snake Forest and is a vassal of the valley. The family fortune is shaped by the dense forests, mountain roads and transportation into the hinterland of the valley. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Liddle The Lindley family is rooted in the Snake Forest and is a vassal of the valley. The family fortune is shaped by the dense forests, mountain roads and transportation into the hinterland of the valley. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Liddle The Lindley family is rooted in the Snake Forest and is a vassal of the valley. The family fortune is shaped by the dense forests, mountain roads and transportation into the hinterland of the valley. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Liddle: The Lindley family is rooted in the Snake Forest and is a vassal of the valley. The family fortune is shaped by the dense forests, mountain roads and transportation into the hinterland of the valley."
+  ]
+}

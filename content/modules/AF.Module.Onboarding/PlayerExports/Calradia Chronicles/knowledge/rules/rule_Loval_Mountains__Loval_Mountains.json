@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Loval_Mountains",
+  "Keywords": [
+    "Loval Mountains",
+    "Wabei Mountains"
+  ],
+  "RagShortTexts": [
+    "The Omanfad Corridor, the land passage in the Loval Mountains, is easy to defend but difficult to attack."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "Loval Mountains: The strongholds in the Loval Mountains are: Loval, Port of Osti, Tilby Fort, and Omanfader Fort. The Port of Osti is the economic center of the region and controls the sea salt industry on the entire west coast. Roval is a population center with large grain production and is the most densely populated area in Vlandia. The region has a developed economy, mainly based on commodity economy, and is rich in pottery, linen and ironware. The region's huge agriculture supports the development of commerce. There are large areas of good farmland near Loval, rich in wheat, and there are excellent horse farms near Tilby Castle. The only land route in the area is the Oman-Flanders Corridor, which directly makes the area difficult to defend and difficult to attack, and also isolates Roval from the surrounding areas to a certain extent."
+    }
+  ],
+  "TextMappings": []
+}

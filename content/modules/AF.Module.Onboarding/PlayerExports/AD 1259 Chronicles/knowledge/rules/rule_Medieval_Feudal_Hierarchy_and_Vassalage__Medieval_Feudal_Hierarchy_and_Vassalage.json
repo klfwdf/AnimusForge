@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Medieval_Feudal_Hierarchy_and_Vassalage",
+  "Keywords": [
+    "Feudalism",
+    "Vassalage",
+    "Feudal Homage",
+    "Fief",
+    "Feudal Oath",
+    "Lord and Vassal"
+  ],
+  "RagShortTexts": [
+    "Medieval European society was bound by contractual feudal vassalage, where land (fiefs) was held in exchange for military service and counsel."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thirteenth-century European society was anchored by the intricate legal and moral framework of feudal vassalage. Feudal lordship was cemented through the sacred ceremony of commendation, comprising the act of homage (homagium), the oath of fealty (fidelitas) sworn upon holy relics, and the formal investiture of a fief (feodum) through a symbolic token such as a wand or clod of earth.\n\nIn return for land, vassals owed their lord military service (auxilium, traditionally forty days of mounted service per year) and attendance at the lord's court (consilium). By 1259, this system was growing increasingly complex: subinfeudation created overlapping allegiances, money fiefs (fief-rentes) began replacing direct land grants, and liege homage was rigorously defined to establish supreme loyalty to sovereign monarchs such as the King of France."
+    }
+  ],
+  "TextMappings": []
+}

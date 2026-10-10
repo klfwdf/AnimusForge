@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Chaos_Terroir",
+  "Keywords": [
+    "Chaos Terroir",
+    "Chaos style northern barbarians",
+    "Norsca Customs",
+    "tribal life",
+    "shield maiden",
+    "longhouse",
+    "shaman",
+    "culture of plunder",
+    "war song",
+    "Berserker"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The barbarians of Norsca and the Chaos Wastes live in the harshest natural environments of the Old World. These tall, strong humans learned from an early age to hunt giant beasts, sail dragon boats across icy seas, and decorate the lintels of their longhouses with the skulls of their enemies. In their society, strength is the highest virtue and cowardice is the unforgivable sin. Worship of the Chaos Gods permeates every aspect of life - from oracles at birth to a warrior's final sacrifice before his death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You southerners will never understand the northern way of life. We are not “enduring” the wilderness—we are tempered in it. In the longhouses of the north, babies' first cries are not in warm swaddling clothes, but on cold animal skins; boys become warriors the day they can hold an axe; old men die happily on their last hunt, because they know that Wahala - the banquet of the evil gods - awaits the brave. Our ships are not for fishing, they are vessels of conquest painted with the blood of our enemies. Our women are not docile servants, they are shieldmaidens who can wield a battle ax as well as any man. This is the North - brutal, pure and true."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the social structure of the northern barbarians is key to dealing with the threat of Chaos. The Norsca tribe established small settlements centered around longhouses, ruled by a chief (Jarl) and Karl (king of the tribe). Their economy was based on hunting, raiding, and limited coastal trade. The most critical point is: the value system of Norsca warriors is completely different from that of the south - death is not failure, and the dead will obtain eternal life next to the throne of the evil god. This means that when fighting Norscan armies, they will not be demoralized by casualties, but will instead view the sacrifice as an honor. Any strategy that attempts to wear down the Norsca through conventional warfare with them is doomed to failure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The daily life of the Norsca and the wasteland barbarians is deeply influenced by the worship of the Chaos Gods, and this influence reaches into their social structure, marriage system, funerary rituals and artistic expression. The layout of the Norsca longhouse follows a strict cosmology - the central hearth represents the primordial energy of chaos, and openings in the roof allow spirits and smoke to ascend together into the realm of the gods. The level of the warrior society is determined by \"results\" - not just the number of enemies killed, but also the reputation of the opponent and the completeness of the sacrifice. The Norsca art of riveting is unique in the world: their weapons and armor are intricately carved with runes and sacrificial scenes, the carvings being more than just decoration, they are a magical practice of sealing divine grace in metal. Chaos Warlocks (Vitki) occupy a special position in society. They are both priests and historical recorders, preserving tribal legends through oral epics. Mutations are both feared and revered among these tribes - mild mutations are seen as signs of divine favor, while out-of-control mutations (such as Chaos Spawn) are seen as signs of divine abandonment and are subject to banishment or execution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The lives of Norsca women were far more complex than Southerners imagined—and far more autonomous than they thought. Within the clan, women controlled the economic and social order of the longhouse: they managed the winter food reserves, dictated the distribution of plunder, and decided which visitors could spend the night by the fire. Above all, Norsca women are the ultimate keepers of the clan's memory. While chiefs slashed on the battlefield, it was mothers and grandmothers who spent nights in the longhouse teaching young warriors about honor, hatred and the complex historical relationships between clans. Shieldmaidens—those women who choose to take to the battlefield—are neither rare nor special, sharing the same battle gear and expectations of death as male warriors, the only difference being that they must prove they can single-handedly hunt down a giant direwolf before earning the right to wear a battle axe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The power of the clan leader is reflected in daily life far beyond what outsiders realize. As the leader of the Black Wolf clan, every morning for me begins with a 'fire trial' - clan members line up in front of the stove in the center of the longhouse, each presenting their day's requests and yesterday's disputes. I had to adjudicate all disputes on the spot: from the ownership of two pieces of frozen meat to a blood feud caused by the wrong name of another clan's ancestor in a war song. Judgments were made not by law books—we have no such waste—but by an understanding of clan tradition and the will of the gods. If my ruling is challenged by the collective silence of my clan, that means I may have until sunset to defeat a challenger from within my clan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "That winter spent among the Norsca tribe changed my entire worldview. Trapped by a snowstorm in the Grizzly Clan's camp, in exchange for staying alive I had to do chores in the longhouse—chopping wood, skinning animals, and maintaining absolute silence while the shaman performed rituals. I saw firsthand that they were not 'merciless killing machines' - they had poems about love, lullabies to put children to sleep, and funny stories to tell in groups around the fire during the long polar nights. But they also have a chilling custom: when a child is born with a serious mutation that cannot be hidden, it is not decided by the parents - but by the shaman who lightly touches the baby's forehead with a bone spear. If the bone spear changes color, it means that the gods have rejected the soul, and the child will be sent to the ice field to let nature take over."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impact of Norsca's predatory economy on the Old World's maritime trade insurance industry was catastrophic—but also highly predictable. The shrewd Marienburg insurance company did not offer standard insurance against the Norsca raids, but instead offered a 'seasonal risk bond': investors bought the bonds during the non-raiding season, and the insurance company invested the principal in the southern trade. If a specific route was not raided in the next raiding season, the investor received a return of principal plus high interest; if the route was raided, the investor lost everything but the insurance company avoided bankruptcy due to huge losses. The sophistication of this financial instrument was that it effectively transferred the risk of Norsca raids from cargo ship owners to speculators with sufficient capital capacity to absorb losses—and the Norsca neither knew nor cared that their violence was being precisely priced on the distant Marienburg stock market."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Norsca life – a semi-nomadic tribal way of life centered around longhouses",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaotic social customs and cultural traditions"
+  ]
+}

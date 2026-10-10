@@ -1,0 +1,232 @@
+{
+  "Id": "rule_Ingatel",
+  "Keywords": [
+    "Ingatel",
+    "Count of Ingatell"
+  ],
+  "RagShortTexts": [
+    "Ingatell is the patriarch of the Dai Kortan family, and Vlandia is most afraid of the baron.",
+    "Cathar disrespected King Deter and fought for territory expansion.",
+    "Cathar had coveted the territory of Jeckuran because he had inherited the right from his half-brother."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ingatell is the patriarch of the Dai Kortan family and one of the most feared barons in Vlandia. His fiefdom, Shalas, was the place where the Imperials first set foot on the land of Vlandia, but now it has become his stronghold to spy on the east. This man was warlike to his core, and he had no respect for King Detel. Some say he is Vlandia's worthy hawk, others say he is just a wild dog ready to bite."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatel? He is one of the most vicious barons in our Vlandia, bar none. His Salas is on the border of the empire. Every time there is a war with the empire, he is always the one at the front. But don't think that he is some loyal and patriotic knight - he fights to expand his territory. King Detel had to both use and guard against him, because everyone knew that if this wild dog was allowed to swallow another piece of fat, the next thing he would bite might be the throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatel is a man, you have to be very alert when dealing with him. Back then, he was able to seize the inheritance rights of the Dai Kortan family from a half-brother, and one can imagine the ruthlessness of his methods. Not to mention the trick he played when Cara Tilde inherited Jie Chulan - he deliberately claimed that he had inheritance rights to Jie Chulan, forcing Cara Tilde's tribe to unite around her, and would rather let a woman head the family than let the foreign wolf Ingatell enter the door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Baron Ingartel does not have a good reputation. The taxes in his territory were notoriously heavy because he had to raise soldiers. He does have a lot of soldiers, and he is always ready to fight the Empire - or in other words, always ready to seize the Empire's territory. If you live in his territory, you'd better pray that he wins the battle, because if he loses, he will squeeze more dinars out of you to make up for his losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatell is the most troublesome enemy on the empire's borders. His Salas is at our doorstep, and it was from his family's land that the imperial fleet first landed. Now this guy has become the biggest threat to the empire's western border. He fights unconventionally, fiercely and unscrupulously. More than the other barons of Vlandia, he is the one who really gives our border generals sleepless nights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That madman from Ingatell, he was just a retainer during the Battle of Pandrak, but now he is a prince. This man's experience of rising from the bottom makes him hungrier and more unscrupulous than those hereditary nobles. It is said that he witnessed the Imperial cavalry crushing the Vlandia crossbowmen on the battlefield, and he vowed to make the Imperials pay the price ever since."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Baron Vlandia named Ingatell in the south is said to be a ruthless character. Although we northerners don’t care much about things in the south, we have heard stories about him snatching family property from his half-brother. This kind of brotherly feuding is not uncommon in Sturgia, but someone who can do it so neatly is indeed a powerful person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatell is the hawkish baron of Vlandia, whose fiefdom of Shalas lies on the borders of the empire. This man was ambitious and lacked respect for the king. Although Battania does not directly border him, the emergence of such a powerful border lord in Vlandia would not be good news for us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatell was one of the most radical barons in Vlandia. His attitude towards the Empire was much tougher than that of King Detel. Although we Aserai are far to the south, Vlandia's movements also affect the balance of the entire continent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ingatel? I spent some time in Vlandia and heard a lot of people talk about him. He seized the family property from his half-brother, and also had a hand in Baroness Caratilde's succession to the throne - he wanted to steal Getrian, but in the end he helped Caratilde, because the Dai Aromanc family would rather let their daughter be the head of the family than let Ingatel, a wild dog, enter the house. King Detel also sided with Caratilde, because everyone knew that if Ingatel swallowed Jedron again, the wolf's tail would rise to the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Ingatell is a typical case of a 'riser' in Vlandia's feudal politics. From an ordinary squire during the Battle of Pandrak, he became the patriarch of the Dai Kortan family by seizing the inheritance from his half-brother. Later, he tried to expand his power by claiming inheritance rights to Jedron, and was eventually restrained by the joint efforts of King Detel and other barons. His presence represents a destabilizing force in Vlandia's feudal system - border lords who are dissatisfied with the existing order and eager to reshuffle it through war and intrigue."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ingatel",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Day Kortan",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Salas",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

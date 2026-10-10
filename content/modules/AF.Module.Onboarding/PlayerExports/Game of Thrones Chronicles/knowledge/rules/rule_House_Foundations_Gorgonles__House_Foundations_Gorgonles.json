@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Gorgonles",
+  "Keywords": [
+    "Gorgonles",
+    "House Gorgonles"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Gorgenreth family rules the salt shores of Dorne, and its striking symbol is a red chicken holding a black snake in its mouth. The salt, fisheries, shallow bays and coastal roads that form the family's foundation also expose them to storms, smuggling and threats from the sea. Salt may seem ordinary, but it can preserve meat, support long journeys, and replenish tax warehouses; therefore, the power of the salt bank lords is often hidden in less romantic things such as salt fields, wells, docks, and patrol boats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lords of Dorne know the weight of the Salt Coast. Gogenles does not need to have the most gorgeous palace. As long as it can protect the salt fields and sea routes, it holds military rations, commercial taxes and coastal warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The skin of salt workers and fishermen is abraded by the scorching sun, salty wind and coarse salt all day long. They judge whether Gogenleth is fair only by whether the salt-measurement bucket is honest, whether taxes are reduced after the storm, and whether the patrol catches pirates or only poor people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gorgonles The Gorgenles family takes the Salt Coast as their seat, and the red rooster and black snake coat of arms reflects the salt industry, fishery and defense of the Dorne coast. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gorgonles The Gorgenles family takes the Salt Coast as their seat, and the red rooster and black snake coat of arms reflects the salt industry, fishery and defense of the Dorne coast. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gorgonles The Gorgenles family takes the Salt Coast as their seat, and the red rooster and black snake coat of arms reflects the salt industry, fishery and defense of the Dorne coast. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gorgonles The Gorgenles family takes the Salt Coast as their seat, and the red rooster and black snake coat of arms reflects the salt industry, fishery and defense of the Dorne coast. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Gorgonles: The Gorgenles family takes the Salt Coast as their seat, and the red rooster and black snake coat of arms reflects the salt industry, fishery and defense of the Dorne coast."
+  ]
+}

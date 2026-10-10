@@ -1,0 +1,100 @@
+{
+  "Id": "rule_Tavar_Lake",
+  "Keywords": [
+    "Tavar Lake"
+  ],
+  "RagShortTexts": [
+    "Lake Tavar provides trout and irrigation during the day and is considered a door to the otherworld at night"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tavar is the mother of us Battanians and our deepest fear. During the day we relied on it to survive - the trout in the lake fed many villages along the coast, the water from the lake was diverted to the fields, and the crops grew stronger than anywhere else. We walked around it at night because Tavar after dark is not a lake but a door to the otherworld. We have heard the story of Algana since childhood. Every Battania child will be taken to the lake by her grandmother one night, pointing in the direction of the Chaunon Tower, and listening to her tell how the princess with fair hair cried on the top of the tower for the man she died in battle, crying until the souls of the other world were moved, and the reflection of Golawan was visible on the lake for a day and night. Algana finally jumped into the lake. Some people say that she turned into a white bird and still flew on the top of the tower every spring equinox. We are not sure which version is true, but it has become a custom to go to the lake every spring equinox to see the white birds. As for the disappearance of King Ariel in the woods on the other side of the lake, the older generation shook their heads when it was brought up, saying that it was not enough for Lake Tavar to swallow one king, and it had to swallow another one. Caladog came to the stage from the shadow, and now he sat in the seat of the High King, but he could not control this place - Dunglanis was still overlooking the lake on the rock wall on the north shore, which was the real holy place of kingship. The ancient Queen Granis married five high kings and had a higher status than them all. Caladog has not been crowned at Dunglanis to this day, a fact that the chiefs privately gossip about. Lake Tavar looks silent, but in fact it remembers everything. Every rise and fall of the High King, every betrayal and coronation, every tear is buried under that dark water. We Battania people respect it, rely on it, and revere it from the bottom of our hearts - the lake is so deep, deep enough to hold the history of our entire nation, and more."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tavar is the geographical centerpiece of the mystique of Battania's kingship. From an external perspective, the layout of power symbols around this lake is extremely subtle - Dunglanis on the north shore is a sacred place for secret rituals. The ancient Queen Grannis overrided the royal power by marrying five high kings, making this place Battania. The highest symbol of political legitimacy; Chaunon on the south bank is the city of sorrow, and the legend of Algana gives this lake an emotional weight beyond the world; and the mysterious disappearance of the former High King Ariel in the dense forest beside the lake adds a conspiracy of power change to this water. Caladog has so far failed to control Dunglanis, which in itself is a weakness in the legitimacy of his kingship. The chiefs of Battania may outwardly submit to his martial prowess, but deep down a High King who has not been crowned by the Mysteries of Dunglanis is always incomplete. The legend of Algana and the disappearance of Ariel, the former provides the basis of emotional narrative for the political culture of Battania, while the latter has become a shadow that the current High King can never get rid of - until the old king's body is found, Caladog's position will not be secure for a day. As for the depth and color of the lake, that is a geographical feature, but in the eyes of the Battania people, it is an oracle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tavar is the mother of us Battanians and our deepest fear. During the day we relied on it to survive - the trout in the lake fed many villages along the coast, the water from the lake was diverted to the fields, and the crops grew stronger than anywhere else. We walked around it at night because Tavar after dark is not a lake but a door to the otherworld. We have heard the story of Algana since childhood. Every Battania child will be taken to the lake by her grandmother one night, pointing in the direction of the Chaunon Tower, and listening to her tell how the princess with fair hair cried on the top of the tower for the man she died in battle, crying until the souls of the other world were moved, and the reflection of Golawan was visible on the lake for a day and night. Algana finally jumped into the lake. Some people say that she turned into a white bird and still flew on the top of the tower every spring equinox. We are not sure which version is true, but it has become a custom to go to the lake every spring equinox to see the white birds. As for the disappearance of King Ariel in the woods on the other side of the lake, the older generation shook their heads when it was brought up, saying that it was not enough for Lake Tavar to swallow one king, and it had to swallow another one. Caladog came to the stage from the shadow, and now he sat in the seat of the High King, but he could not fully control this place - Dunglanis was still overlooking the lake on the rock wall on the north shore, which was the real holy place of kingship. The ancient Queen Granis married five high kings and had a higher status than them all. Caladog has not been crowned at Dunglanis to this day, a fact that the chiefs privately gossip about. Lake Tavar looks silent, but in fact it remembers everything. Every rise and fall of the High King, every betrayal and coronation, every tear is buried under that dark water. We Battania people respect it, rely on it, and revere it from the bottom of our hearts - the lake is so deep, deep enough to hold the history of our entire nation, and more."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tavar? There is a black water lake over there in Battania. I heard from business people that the lake was bottomless and the water was black. When it was cloudy, it looked like ink, and when it was sunny, it looked like a black mirror. They said that there was a city called Xiaonong by the lake. There was a high tower in the city. There used to be a princess crying on it for the man she died in battle. She cried so hard that even the underworld was moved, and the man's shadow floated on the lake for a day and a night. Later, the princess jumped into the lake, and the white bird is still flying on the top of the tower. The businessman also said that there used to be an old king in Battania who also disappeared by the lake. He was neither alive nor dead, and the current new king came to power while that old king was missing. These stories about the Battania people sounded like myths, but the businessman swore that they were all true. He also said that the local Battania people would never go near the lake after dark for fear of something in the lake. I heard that the place was intimidating, and the trade route didn't pass by the lake, so it was better to stay away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 100
+        }
+      },
+      "Content": "Lake Taivar is a deep-water structural lake in the hinterland of Battania. Its geological origin can be traced back to the accumulation of water in a faulted basin in the late Dryan orogeny. The lake basin is oval in shape, consistent with the fault line of the Dunglanis Cliff on the west coast, and is a typical rift valley lake. The physical reason why the lake is black and blue is that the water body is extremely deep and has a high organic matter content. The surrounding dense forests input a large amount of humus into the lake every year, and the concentration of suspended particulate matter is high. In addition, the light penetration rate caused by the depth is extremely low, giving the lake a pure black optical effect on cloudy days. From a hydrological point of view, Taivar Lake is the core water body of the Taivar River System. The lake's water supply mainly relies on atmospheric precipitation and fissure groundwater in the surrounding mountains. There is only one surface runoff at the outlet that flows into the upper reaches of the Miron River. The retention time of the lake water is extremely long, which is similar to Lake Laconis in the north of the mainland, but Lake Tavar is much deeper than the latter, and the water change cycle is also longer. There is currently a lack of reliable measurement of the depth of Tavar Lake. Although it is not acceptable that local fishermen’s measuring ropes have never touched the bottom, it is very possible to infer from the fault structure that the maximum depth is among the best among local lakes. The transition zone between the steep slope at the edge of the lake basin and the flat lake bottom may be the lake bottom cliff formed by ancient earthquake activity. This special terrain may also be the natural basis for cultural memories such as the local legend \"the drowned man walking on the bottom of the lake\". Furthermore, Lake Tavar occupies a special place in the political geography of Battania. Dunglanis on the north bank is a sacred place for royal power and secret rituals, Shawonon on the south bank is an iron smelting center, and the disappearance of the old High King Ariel is also near the lakeshore. Although these events do not fall into the category of geography, they still have record value as reference elements in human geography."
+    }
+  ],
+  "TextMappings": []
+}

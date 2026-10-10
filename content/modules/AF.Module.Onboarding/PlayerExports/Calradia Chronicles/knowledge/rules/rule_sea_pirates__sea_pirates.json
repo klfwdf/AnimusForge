@@ -1,0 +1,28 @@
+{
+  "Id": "rule_sea_pirates",
+  "Keywords": [
+    "Pirates"
+  ],
+  "RagShortTexts": [
+    "Pirates are extremely difficult to capture and are well-equipped and good at using javelins."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pirates are pirates who come ashore and are lawless at sea and on the coast. They are extremely difficult to capture, are well-equipped, and are good at using javelins. They are a great threat in coastal areas, and can sometimes capture lords who do not have enough escorts."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Khuzait",
+  "Keywords": [
+    "Khuzait"
+  ],
+  "RagShortTexts": [
+    "The Khuzait people regard Ulhun Khan as a steppe hero and compare the tribe to a pack of wolves"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I was born on the grassland and grew up in a tent. The name of Wu'erhun Dahan was mentioned every day by people of my grandfather's generation, saying that he turned us wild dogs who picked up garbage outside the city wall into wolves. The wolf has meat to eat and territory to eat, no need to look at the empire's face. In the generation of Monchug Khan, life was still the same - driving sheep, riding horses, and following Nayan during wars. Taxes are higher than before. The Khan said that we need to raise troops and build cities. We don't understand much, but we give it. Anyway, the rules on the grassland have not changed, and whoever is forced to do so will obey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wuerhun Khan is the glory of our family, but the mess he left behind is not easy to clean up. The various tribes were suppressed by him with iron rules. After fighting and dividing the land, they temporarily surrendered. Once he died, iron rules became suggestions. We believe that the current Monchug Khan - his bloodline is directly from Wuerhun, and his style is quite tough. But the situation he faced was much more complicated than that of his ancestors. On the surface, the Aqit tribe respected the Khan's flag, but in fact they were still remembering the old score that they should have led the conquest. The Karakulgit tribe simply didn't even do superficial things, they were still nomadic, and they still only listened to their own words. We sat in the imperial meeting, and Monchug Khan gave the order. We took the order and went back. How to implement it when we returned to our own tribe was another matter. The rules on the grassland have always been like this: by the time the Khan's order reached the third tent, it had become a suggestion. But we all agree on one thing - anyone who wants to give up the land acquired by our ancestors is a traitor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug Khan has nothing to apologize to us. He is sitting on the throne, using the name of Wuerhun, and we recognize this name. We Kugits don’t need the Khan to settle the accounts with Aqit, we settle it ourselves. In the battle of Pandlak, our Kujit men were almost wiped out. When Mo Suyi came back from Nayan, his horse was full of empty stirrups. Achit took advantage of our injuries and captured Balgad—not from the enemy, but from fellow Khuzait. They later recovered their strength, and the market in Balgad was bustling again. Under the bustle were buried the bones of our Kugits. We don’t hate Khan, Khan can’t control Achit, we can do it ourselves. Mo Suyi Nayan said that Achite and his gang would have to pay the price sooner or later. We wait for that day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of the eldest son of the female wolf. When these words were spoken on the grassland, some laughed and others were silent. Those who laugh forget history, but those who are silent remember it. Wu'erhun Khan won the battle that we failed to win. We recognize him as Khan. But what we recognize is the Khan, not the Wuerhunaite family who will always sit in that seat. Turaga Nayan said that as long as the Khan keeps his word, we will keep his word. This is not an allegiance, it is a condition. We have kept our word for decades. We got Balgard back ourselves, not the Khan. The Kugits hate us, let them hate us. Whoever has the toughest fist on the grassland has the final say. This is the rule set by Wuerhun himself. Khan wants to control us? Okay, speak with swords, not blood ties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of Wuerhun, and the sweat position is ours. This is a rule on the grassland that was exchanged for blood. Monchug Khan is our chief, and his words are the orders of the Khan's court. Back then, Wuerhun Khan shaped the loose sand that was digging for garbage outside the city wall into a pack of wolves, gave them land, and gave them a way to live. Now some tribes have forgotten this kindness - the Achit tribe feels that they deserve to sit on the throne because of their ancient times. The Karakujit tribe was even more reckless. They didn't even listen to the Khan's orders and were still nomadic, as if the Wuerhun had never fought a war. We don’t care what they think or whether they hate Khan. The Khan said that as long as we stand on the land conquered by our ancestors, it must be ruled by us. If you don't accept it, go back to the grassland. We don't hunt, but don't forget that the wolf pack was built by Wu'erhun, and he also determined the position of the wolf king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "karakhuzaits"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the Karakulgits, not the Khan’s sheep. Wuerhun is Wuerhun, and Monchug is Monchug. Wu'erhun used swords to hold the tribe together, and that was because he had swords. Monchug sits on the throne and gives us money, slaves, and fiefdoms. These things are soft, and soft things cannot buy our lives. We don’t want the city. The city is a fence for sheep, but the tent is freedom. We are still walking, following the grass and the monsoon. The Khan's land was entrusted to Uerhun, and our land was created by our ancestors from generation to generation. The Khan said that we must surrender or go back to the grassland. We didn't leave, we just stood here. This grassland is ours and no one seals it. If the Khan wants to speak with his sword, we understand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khuzait Khanate was an emerging conquest regime on the eastern steppes, taking shape in less than two generations. The Great Khan of Ulhun unified the tribes with an iron fist, turned a group of scattered nomadic forces into an organized and disciplined army, and captured the eastern provinces of the empire in one fell swoop. Judging from our intelligence, Khuzait's military strength ranks first in the mainland in the field of mounted archery, and its mass production level of armor and moon swords is also considerable. But their problem is not military, but political - after the death of Wuerhun, the cohesion of the Khan Court plummeted. Monchug Khan was orthodox in his lineage, but he faced the most stubborn centrifugal inertia of steppe politics. The Karakulgit tribe has refused to settle down and is still in a purely nomadic state. This is the most obvious crack in the authority of the Khan Court."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Khuzait people? Those horseback archers on the eastern grassland? I heard from the older generation that they came and left as fast as they came, and the whole village ran up the mountain as soon as the horses' hooves sounded. Later, I heard that they had a khan of their own, so they stopped robbing and collected taxes instead, occupying several provinces in the empire. The businessmen say that their cavalry is powerful. When riding and shooting, the man and horse work together as one, and when chasing you, they can run and shoot at the same time. They also said that their Ulhun Khan had died, and the current Khan was called Monchug. He had a tough temper and his tribesmen were not convinced by him. It sounds to me like it's similar to ours - the king can't control the big nobles, and the big nobles fight each other. The tribe on their grassland, called the Kalakujit, was still nomadic and refused to live in the city, so the Khan didn't want anything. Even such a tough king can't do anything to them."
+    }
+  ],
+  "TextMappings": []
+}

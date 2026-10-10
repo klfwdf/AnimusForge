@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Storm_Coast_Harvest_Hall",
+  "Keywords": [
+    "Harvest Hall"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Harvest Hall is located in the interior of the Stormlands and is the traditional territory of House Selmy. Its name speaks plainly of its roots: not harbors or dangers, but land, harvests, barns, and peasants and knights who can be drafted in time of war. The Stormlands are often thought of as a desolate place due to coastal storms and border conflicts, but there are also fertile estates in the interior that bear taxes, grain, and supplies. The Harvest Hall is connected to Storm's End, the Crown Road, and the surrounding lord network, so a bad harvest or a levy can be spread further afield. Local family glory comes from long-term territorial and knightly service, and does not depend on the outcome of a single variable war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall Local families also depend on rainforest timber, game, barren farmland, fisheries, and roofs to protect themselves from storms; any time a road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall Entry Harvest Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall They also recognize the accents, laws, and credentials of the Stormlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall Entry Harvest Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of the Harvest Hall relied on ship repair wood, canvas, salt, fish catches, and stones to resist the sea breeze to leave behind their craftsmanship. The priests used the seven gods, the old history of the Storm King, and the thick stone walls to resist the sea breeze to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Harvest Hall They care about rainforest timber, prey, barren farmland, fish catches, and roofs to shelter from storms. They also look at whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Harvest Hall: Harvest Hall is located in the interior of the Stormlands and is the traditional territory of House Selmy. Its name speaks plainly of its roots: not harbors or dangers, but land, harvests, barns, and peasants and knights who can be drafted in time of war. The Stormlands are often thought of as a desolate place due to coastal storms and border conflicts, but there are also fertile estates in the interior that bear taxes, grain, and supplies. The Harvest Hall is connected to Storm's End, the Crown Road, and the surrounding lord network, so a bad harvest or a levy can be spread further afield. Local family glory comes from long-term territorial and knightly service, and does not depend on the outcome of a single variable war."
+  ]
+}

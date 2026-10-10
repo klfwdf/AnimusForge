@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Sylvania",
+  "Keywords": [
+    "Sylvania",
+    "death place",
+    "Duncan Hough",
+    "vampire territory",
+    "Black soil effect",
+    "fountain of death",
+    "Graveyard guard level",
+    "Swamp of the Dead",
+    "von Carstein lair",
+    "Eastern Empire",
+    "realm of night",
+    "cursed place"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sylvania is a dark and gloomy land in the eastern part of the Empire, shrouded in gray skies and lingering fog year-round. This was once a province of mortals, but now it is the dark territory of the vampire counts - the dead walk in the fields, and the living are just the blood tax serfs of the lords. At the heart of this cursed land stands Duncanhof Castle, the millennium lair of the von Carstein family, and no one dares approach its walls in the dark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sylvania is our home, the dark garden we have spent millennia watering. Every stone and tomb here is soaked with the power of death, and the air is filled with the breath of fear seeping from the dead trees. Duncanhof is more than just a castle - it is a temple to the power of night throughout the old world, where the ancestral coffins of the von Carstein family lie in the deepest crypts, where the ancient vampires wait in silence for the next call to war. The living inhabitants of Sylvania are our most prized possessions: they feed our hunger, provide our servants, and continue to serve us in undead form after death. Don't let the desolate appearance of this land fool you - it is a silent military machine, and at the command of its master, every cemetery will burst open and spit out thousands of warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sylvania's location is of great strategic value. It is located in the eastern part of the empire, bordering Ostermark to the north and Strand and Averland to the west. It is the natural gateway to the east of the empire. Any military attempt to attack or defend Sylvania must face the curse of the land itself—the thin light, rugged terrain, swampy swamps, and ubiquitous restless undead make resupply and movement extremely difficult. Sylvania itself is agriculturally poor and cannot support a large living army, which is an advantage rather than a disadvantage for vampires who rely on undead hordes. If an attack was to be launched from Sylvania, the forests and hills surrounding Duncanhof provided excellent hiding places for a rendezvous."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The geology and magical geography of Sylvania is an excellent sample of how necromancy affects the material world. The soil of this land has accumulated the residual energy of death that has continued for thousands of years - this is known in theory as the 'graveyard layer' or the 'black soil effect'. This accumulation has caused Sylvania's groundwater to contain trace amounts of dark magical impurities, causing plants to grow distorted, animals to become deformed or escape, and corpses buried here will not decay normally, but will gradually be saturated with death energy in preparation for future resurrection rituals. Duncanhof is located on the strongest node of Sylvania's magic network. The castle's foundations penetrate deep into the underground tombs, forming the so-called 'death spring' - a magic structure that continuously radiates necromantic energy to all directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Terror of Sylvania was a gendered military challenge for the female lords of the lands that bordered it—not because it posed a greater threat to women, but because female lords were typically allocated fewer regular troops in the empire's military allocation system to deal with the same border threats. During the eleven years that I owned the border fiefdom in Ostermark, the defense budget allocated to me by the Imperial Parliament every year was only two-thirds of that of Count Strander across the street - not an explicit discrimination, but the gender logic implicit in the statistical caliber of 'taking into account that your territory has a smaller population'. I used fewer troops than male lords to deal with the same level of undead threats in the direction of Sylvania - my secret was to refuse frontal defense and instead establish an early warning system consisting of village pigeons, swamp lookout posts and intelligence serfs with relatives and friends in the direction of Sylvania. This system allowed me to be notified at least three days in advance before the appearance of the undead patrol cavalry, thereby transforming the defense from passive resistance to active evacuation and preset ambush."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For border families, Sylvania has been an inescapable geographical destiny for generations. One of the villages in our family's domain, which has been within a three-hour walk of Sylvania since the Dark Ages, is known in the family archives as 'Sentinel Five' - its true name having been forgotten through repeated wars and reconstructions over four successive generations. The family's management strategy for this village is not to develop it but to maintain its existence: we do not invest in water mills, build stone churches, or cultivate new farmland - because the cycle of each undead war is about forty to eighty years, this village will be razed to the ground every two generations, and our family's only purpose of rebuilding it on the ruins after each war is to retain a living gathering point that can serve as an early warning buffer in the next war. Being a neighbor of Sylvania means that your family must internalize an expectation of periodic losses in its operating philosophy that does not exist in any other frontier region of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once spent seven nights alone in the swamps outside Sylvania for a sizable bounty, tasked with identifying whether a large undead army was gathering in the direction of Duncanhof. For seven nights I lived on a cold slab of bacon and a pot of moldy swamp water, and on the fourth night I saw in the distant sky—in the east—a great dark purple halo that I had never seen anywhere else in the Empire. The light didn't feel like natural light, it pulsed slowly, like the earth itself was breathing, and the color of the light was unlike anything I'd ever seen - it wasn't like an aurora, it wasn't like moonlight, it was some cold color outside of all known light spectrums that could trigger a non-visual fear directly behind the retina. When I returned to the outpost on the seventh day and handed in my observation report - 'No troop concentration seen but unnatural phenomena observed' - my employer did not press for details. He simply paid me double and asked me to forget about the light. I haven't done this job for a long time, but every time the weather is gloomy, that purple light will still appear in the darkness when I close my eyes like a brand imprinted on my memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial value of the land surrounding Sylvania is a black hole that cannot be calculated using normal economics. Imperial lands along Sylvania's borders were individually marked as 'risk zones' in Imperial estate tax laws, with their assessed values ​​automatically discounted to one-third of standard farmland - not because the land there was less fertile, but because every potential buyer knew the land could turn from an asset to a liability in any given year. When our Chamber of Commerce evaluates investment opportunities in areas bordering Sylvania, we use not only general risk assessment models, but also a set of 'Periodic Tables of Undead Wars' accumulated by three generations of family accountants - this set of tables records the time, scale and direction of every Sylvanian military operation from the two thousand years of the imperial calendar to the present, and extracts from it an extremely rough but barely usable periodic pattern: Sylvania The large-scale invasion fluctuates with a cycle of about forty to one hundred years, and enough time has passed since the last large-scale invasion that the next wave may occur in any five-year window. Insurance premiums based on this model are a core competitive barrier that differentiates us from any other empire investor—our competitors are either overly fearful of missing out or overly optimistic and are doomed, while we maintain a precise, statistics-backed vigilance in the gray area in between."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Duncanhof - the millennium lair of the von Carstein family, the center of power in Sylvania",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Sylvania Death Place Duncanhof"
+  ]
+}

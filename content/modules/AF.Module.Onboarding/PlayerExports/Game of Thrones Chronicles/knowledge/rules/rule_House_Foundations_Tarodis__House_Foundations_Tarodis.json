@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Tarodis",
+  "Keywords": [
+    "Tarodis",
+    "House Tarodis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry House Tarodis The weight of the family falls in the city's way of survival: the forest supplies charcoal and wood, the caravan brings minerals and buyers, the blacksmith guards secrets that attract covetousness, and the black goat priest has religious authority that cannot be ignored. Located on the edge of the Great Forest, Qohor is known for its blacksmiths who can reforge Valyrian steel, color metal, and the faith of the Black Goat. The city's wealth comes from forests, workshops, caravans and slave labor, while religious sacrifices and industry secrets combine to shape its dark reputation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis If a family offends industry secrets or religious authorities, no matter how much money they spend, they may lose their foothold in the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis When outsiders admire colored steel, they rarely think of how many people around the fire inhale smoke and dust all year round."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis Tarodis is the sect of the Qhor family, and its status is embedded in the urban order formed by the Black Goat belief, forest resources, caravans, and metal crafts. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis Tarodis is the sect of the Qhor family, and its status is embedded in the urban order formed by the Black Goat belief, forest resources, caravans, and metal crafts. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis Tarodis is the sect of the Qhor family, and its status is embedded in the urban order formed by the Black Goat belief, forest resources, caravans, and metal crafts. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tarodis Tarodis is the sect of the Qhor family, and its status is embedded in the urban order formed by the Black Goat belief, forest resources, caravans, and metal crafts. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tarodis: Tarodis is the sect of the Qhor family, and its status is embedded in the urban order formed by the Black Goat belief, forest resources, caravans, and metal crafts."
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Grain_Trade",
+  "Keywords": [
+    "Grain Trade",
+    "Grain",
+    "Reach Grain Transport",
+    "Siege Famine"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "From field to table, grain must pass through reaping, threshing, milling, sacking, storage, and transport. Grain-growing lands such as the Reach and the Riverlands can ship out corn, whereas King's Landing, mining districts, army camps, and islands depend heavily on outside supply; a break anywhere along road, river, or port brings spoilage and rising prices. Lords collect rent, feed troops, and give relief in grain, merchants profit from price differences between regions, and the city poor take the price of a loaf as the most direct measure of politics. Hoarding grain in a fat year may be prudence, or profiteering in a lean one; during a siege, a sack of wheat is often worth more than a fine gown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in grain-producing areas know that a good harvest does not mean that everyone has enough to eat. Taxes, military requisitions, and merchant convoys will first divide the grain, and farmers still have to calculate whether their own seeds can be kept until spring."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cities and islands that relied on imports saw grain ships as a lifeline. If those in power only count the treasury without looking at the contents of the warehouse, they will find that money cannot be used to cook porridge when the blockade comes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers need rations, people need bread, and clergy face people queuing up for food. Hunger is best at tearing away etiquette, turning every conquest into a test of whether loyalty can be maintained."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Trade Manors, mills, riverboats, wagon trains, and granaries carry the harvest into cities and camps, where prices reveal war and bad harvests earlier than royal decrees. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Trade Manors, mills, riverboats, wagon trains, and granaries carry the harvest into cities and camps, where prices reveal war and bad harvests earlier than royal decrees. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Trade Manors, mills, riverboats, wagon trains, and granaries carry the harvest into cities and camps, where prices reveal war and bad harvests earlier than royal decrees. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Trade Manors, mills, riverboats, wagon trains, and granaries carry the harvest into cities and camps, where prices reveal war and bad harvests earlier than royal decrees. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Grain Trade: Manors, mills, riverboats, wagon trains, and granaries carry the harvest into cities and camps, where prices reveal war and bad harvests earlier than royal decrees."
+  ]
+}

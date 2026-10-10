@@ -1,0 +1,245 @@
+{
+  "Id": "rule_Dai_Aromanke",
+  "Keywords": [
+    "Dai Aromanke",
+    "Sylvain",
+    "Privateer"
+  ],
+  "RagShortTexts": [
+    "The ancestors of the Dai Aromanke family captured Emperor Votios on a privateer ship"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Dai Aromanc family is the ruling family of Jechlon in Vlandia, and the current head of the family is Baroness Caratilde. Their family name comes from Aromank, an olive-producing village near Jechlon - not uncommon among the Vlandian nobility, with many ancient families named after their original fiefdoms. However, what the Dai Aromanke family talks about most is the legendary way they obtained their titles: It is said that Emperor Votios was captured by a privateer of their ancestors and had to be awarded a title in order to escape."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Aromanke family brags about how their family titles came about every time they drink. It was said that Emperor Votios was captured by their ancestor's privateer ship and was knighted in order to survive. No one can tell whether it is true or not, but Sylvain - the Baroness's daughter who can fight - always adds this story every time, saying that the emperor must have been willing to grant the title because he discovered that their family's bloodline was noble. Listen, this face is really unique to Jie Qulang."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As soon as you hear the family name Dai Aromanque, you can tell that it originated from the olive trees of their ancestors. Aromank is an olive-producing village next to Jedulang. Their family uses the village as their clan name, which is similar to the clan name of King Deter's ancestors, Merok. But to be honest, the Dai Aromanke family is much more dramatic than the Merok family - they got their title by kidnapping the emperor of the empire, and there is no other family in Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Baroness of the Dai Aromanke family is not bad, but Miss Sylvain in their family is too good at fighting. Speaking of their family titles, the old people in the market can tell you about them - their ancestors were pirates and robbed the emperor. The emperor gave them titles to save their lives. Miss Sylvan always said that the emperor chose her because of her noble bloodline, but we all felt privately that the emperor was afraid of being thrown back into the sea again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stayed in Jetri for a while, and the steward of the Dai Aromanc family asked me to escort a cargo of olive oil to the north. At the wine table, I heard an old servant of their family tell me that their ancestors used a privateer to rob the ship of Emperor Votios on the Pelas Sea. The emperor was tied to the castle on the cliff of Jiequlang, and he was told not to answer every day. He finally escaped after signing the document of ennobling him. Every time Sylvan talks about this period of history, he always adds, \"He discovered the nobility of our bloodline\" - this girl is really interesting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dai Aromanc? Vlandia, the barbarian tribe of Jechlon. The origin of their family title is the shame of the empire - Emperor Votios was kidnapped by a group of pirates flying the grapevine flag, and was forced to give them titles in order to survive. Those barbarians now have the nerve to brag about their noble blood. If you ask me, Emperor Votios was afraid of death, but the sealed documents were indeed valid. This is called a joke of history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The barbarians of the Dai Aromanke family like to mention that their ancestors captured the emperor every time they negotiate on the border. They thought it was showing off, but from the empire's perspective, they were just a group of nouveau riche who made their fortune by kidnapping. But now that the empire is divided, their olive grove in Jedulang is indeed rich, and we have to endure nausea when dealing with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The origin of the title of the Dai Aromanke family is indeed recorded in the official archives of the empire. The old emperor Votios was captured by a Vlandia privateer during a patrol on the Pelas Sea at the end of his reign. One of the ransom payments was to confer on the captors a hereditary noble recognized by the empire. This event is regarded by imperial historians as one of the starting points for the decline of imperial authority. The Dai Aromanke family later packaged this period of history as a \"noble bloodline recognized by the emperor\", which was obviously a typical victor's whitewashing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a family named Dai Aromank in Vlandia, and their title was obtained by kidnapping the emperor of the empire. This seems incredible to us Aserai. Our Sultan will not be knighted just because he was kidnapped. But having said that, this family is now in charge of the olive business in Jedulang, and they often have dealings with our Aserai oil merchants. They are quite trustworthy in business."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Aromanke family is the noble family in Vlandia that I like the most - unlike those old fogies who talk about genealogy all day long, their ancestors themselves were pirates. He robbed the emperor of the empire in exchange for the title. If you talk about it in any tavern, everyone will have to toast you with a bowl of wine. But now that their family is headed by a baroness, there are more rules, but the irreconcilable spirit in their bones is still there - just go and see the baroness's daughter Sylvain and you will know."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The case that best illustrates the relationship between the rise of the feudal system in Vlandia and the decline of the empire is that of the Dai Aromank family. The family name adopts the format of the fief plus the prefix \"Dai\", which is isomorphic with King Detel's ancestral family Dai Merok, indicating that they were originally low-level nobles canonized by the empire, and only gained land and real power after the rebellion of Osric the \"Iron Arm\". The source of its title - the capture of the emperor by privateers - is a historical legend with strong Vlandia characteristics, reflecting the direct impact of the pirate power on the Perlas Sea on continental politics."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dai Aromanke",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Cara Tilde",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Sylvain",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Moat_Cailin_Causeway",
+  "Keywords": [
+    "Moat Cailin",
+    "The Neck Causeway",
+    "Gateway to the North",
+    "Ruined Towers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Moat Cailin sits on the northern edge of the Neck; though most of the ancient stronghold lies in ruin, a few remaining towers still command the causeway running through the bogs. On either side of the Neck lie quicksands, reeds, venomous insects, bad air, and hard-to-read waterways, where heavy horse and baggage trains bog down the moment they leave firm ground; thus a small garrison that knows the terrain can hold up a southern host many times its size. The strength of Moat Cailin comes not from stone walls alone, but from the narrowness of the causeway, the impossibility of deploying on the flanks, and the length of supply lines. Holding the towers is not the same as conquering the Neck, and ignoring crannogmen guides can turn victory into disappearance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northmen regard Moat Cailin as their southern gate. Its towers may be ruined, yet so long as the causeway remains narrow and the defenders still have arrows and grain, a southern host must march column by column down a road already sighted for the bow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What southern commanders fear most is not the wall they can see, but the trackless wetlands on either side of the road. The heavier the armor and the more numerous the wagons, the more Moat Cailin resembles a slowly closing hand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The crannogmen know that the causeway is not the Neck itself. They read the way by reeds, bird calls, and the color of the water, and know that even after outsiders take a tower, they can still be lost in the mist ten paces away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moat Cailin Moat Cailin Causeway: One of the few firm roads through the Neck passable by a great host, guarded by ancient ruined towers, serving as the North's southern gate and supply bottleneck. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moat Cailin Moat Cailin Causeway: One of the few firm roads through the Neck passable by a great host, guarded by ancient ruined towers, serving as the North's southern gate and supply bottleneck. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moat Cailin Moat Cailin Causeway: One of the few firm roads through the Neck passable by a great host, guarded by ancient ruined towers, serving as the North's southern gate and supply bottleneck. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moat Cailin Moat Cailin Causeway: One of the few firm roads through the Neck passable by a great host, guarded by ancient ruined towers, serving as the North's southern gate and supply bottleneck. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Moat Cailin Causeway: One of the few firm roads through the Neck passable by a great host, guarded by ancient ruined towers, serving as the North's southern gate and supply bottleneck."
+  ]
+}

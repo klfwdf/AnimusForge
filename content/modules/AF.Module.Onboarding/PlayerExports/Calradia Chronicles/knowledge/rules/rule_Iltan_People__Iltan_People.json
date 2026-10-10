@@ -1,0 +1,45 @@
+{
+  "Id": "rule_Iltan_People",
+  "Keywords": [
+    "Iltan People"
+  ],
+  "RagShortTexts": [
+    "The Iltan people were close kin of the Khuzait."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "No idea—what kind of people are those?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "They were close kin of the Khuzait who died out over a century ago—just a minor people of little consequence."
+    }
+  ],
+  "TextMappings": []
+}

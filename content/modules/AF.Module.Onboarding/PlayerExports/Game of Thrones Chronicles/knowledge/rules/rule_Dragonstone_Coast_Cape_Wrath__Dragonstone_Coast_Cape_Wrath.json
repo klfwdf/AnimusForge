@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dragonstone_Coast_Cape_Wrath",
+  "Keywords": [
+    "Cape Wrath",
+    "Capes and Promontories"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The reason why a cape is important is not that it must have a large castle, but that when the land extends to the sea, it will change the wind direction, the view, the reefs and the conditions for ships to dock. It is intertwined with Blackwater Bay, Dragonstone, and the northern sea lanes of the Stormlands; sailors use it to identify voyages, and watchers use it to spot incoming ships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath Local families also rely on fishing, salt production, docks, volcanic rock fields and narrow sea navigation; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath Entry Cape Wrath"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath They'll also recognize the accents, laws, and credentials of Dragonstone's waters; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath Entry Cape Wrath"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen use their hands to measure the stone walls, wooden beams, iron doors, tombs and seams left by generations of repairs in Cape Wrath. Priests use rituals to continue the memory of the temple, flames and old dragons left when the faith of the Seven Gods and the Lord of Light coexisted. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cape Wrath They care about fishing, salt industry, wharves, volcanic rock fields and narrow sea shipping. They also care about whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Cape Wrath: The reason why a cape is important is not that it must have a large castle, but that when the land extends to the sea, it will change the wind direction, the view, the reefs and the conditions for ships to dock. It is intertwined with Blackwater Bay, Dragonstone, and the northern sea lanes of the Stormlands; sailors use it to identify voyages, and watchers use it to spot incoming ships."
+  ]
+}

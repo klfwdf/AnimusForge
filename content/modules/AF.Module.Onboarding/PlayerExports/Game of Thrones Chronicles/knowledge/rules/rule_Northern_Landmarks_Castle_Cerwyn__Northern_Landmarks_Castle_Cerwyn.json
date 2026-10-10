@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Northern_Landmarks_Castle_Cerwyn",
+  "Keywords": [
+    "Castle Cerwyn",
+    "Eastern Hills"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Severn City is the castle territory of the Severn family in the north. It represents a large number of local strongholds in the north that are not well documented in history books but are indispensable: the city lord is responsible for mediating land, collecting shares, guarding the granary, and handing over men, horses and supplies when the vassal calls. The vastness of the north makes every small castle bear a heavier sense of isolation than similar strongholds in the south; a heavy snowfall, a broken bridge or a wolf pack can make the distance between adjacent territories longer. The name and family of Severn City can be remembered in the lord's list, but ordinary residents remember which wells are not frozen and which roads can still be walked."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn Entry Castle Cerwyn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn Entry Castle Cerwyn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of Severn City rely on the stone walls, wooden beams, iron doors, tombs and seams repaired by generations to leave behind their craftsmanship, while the priests use the old gods, weirwood trees and the cemeteries left by their ancestors to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Cerwyn They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Castle Cerwyn: Severn City is the castle territory of the Severn family in the north. It represents a large number of local strongholds in the north that are not well documented in history books but are indispensable: the city lord is responsible for mediating land, collecting shares, guarding the granary, and handing over men, horses and supplies when the vassal calls. The vastness of the north makes every small castle bear a heavier sense of isolation than similar strongholds in the south; a heavy snowfall, a broken bridge or a wolf pack can make the distance between adjacent territories longer. The name and family of Severn City can be remembered in the lord's list, but ordinary residents remember which wells are not frozen and which roads can still be walked."
+  ]
+}

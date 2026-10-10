@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Locke",
+  "Keywords": [
+    "Locke",
+    "House Locke"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Locke family rules the old city on the east coast of the North and is one of the nobles with a long history in the North. Sea breezes, fishing grounds and coastal roads constitute its daily power, and the family is also connected to other northern families through marriage. The status of the Locke family is not only written in the genealogy: shore watch, ship supply, local judgement, and responding to calls from the north are the responsibilities that the lords of the old city must fulfill year after year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern lords regard Locke as their old home on the east coast that cannot be ignored. The old city may not be able to compete with White Harbor for wealth, but it guards the coast and roads; when there are sails on the sea and recruitment on the land, Locke's judgment will directly affect the neighboring territories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen and traders near the old city are more concerned about whether the dock is safe and whether the price of salt is reasonable. For them, being able to restrain the soldiers and prevent the lone boat after the storm from being plundered is the most real dignity of a coastal family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Locke The Locke family takes the old city on the east coast of the North as its seat, relying on sea routes, ancient bloodlines, and vassal responsibilities to the North. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Locke The Locke family takes the old city on the east coast of the North as its seat, relying on sea routes, ancient bloodlines, and vassal responsibilities to the North. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Locke The Locke family takes the old city on the east coast of the North as its seat, relying on sea routes, ancient bloodlines, and vassal responsibilities to the North. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Locke The Locke family takes the old city on the east coast of the North as its seat, relying on sea routes, ancient bloodlines, and vassal responsibilities to the North. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Locke: The Locke family takes the old city on the east coast of the North as its seat, relying on sea routes, ancient bloodlines, and vassal responsibilities to the North."
+  ]
+}

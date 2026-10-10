@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Witch_Hunter",
+  "Keywords": [
+    "witch hunter",
+    "Inquisitor",
+    "Witch Hunter Sigmar Church",
+    "Chaos Hunter",
+    "vampire hunter",
+    "wide brimmed hat",
+    "rapier musket",
+    "Knights Templar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch Hunters are underground law enforcers authorized by the Sigmar Church. They wear the iconic wide-brimmed hats and carry silver swords and fire blunderbuss. They travel through the towns and wilderness of the empire to hunt down Chaos believers, necromancers and mutants hidden among mortals. Their ecclesiastical immunity from trial, allowing them to ignore the jurisdiction of local lords during investigations, made them both symbols of fear and guardians of order in Imperial society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch Hunter - we Imperials can't help but tense up at the mention of this name. They are our first and last line of defense, sentinels on the thinning wall between darkness and civilization. The Witch Hunters belong to a branch of the Holy Order of the Templars of Sigmar, a secret order that answers directly to the Archbishop of Sigmar and is not affiliated with any Elector Count or Imperial General. Each Witch Hunter carries the \"Witch Hunter's Mark\" passed down to him by his master - a silver badge engraved with the mark of Sigmar's comet, which can serve as legal evidence against the Witch Hunter's accusations in any Imperial court. They search for clues of Chaos worship - fresh human blood on the altar, mutated runes carved in the basement, unnatural gatherings of rats in the market - and then deal with the problem with their own brutal methods: interrogation, burning, whipping, and when necessary, burning the entire village to ensure that the cult does not spread. No one welcomes the Witch Hunters to their town - when you see that wide-brimmed figure in the square, it means the whole town is under suspicion - but you are eternally grateful that they burned the old miller who always went out in the middle of the night before dawn and discovered an altar to Chaos in his house. The tragedy of witch hunters is that their work must be done, but after doing it they become monsters that people avoid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch hunters exist in an unsettling twilight zone within the Imperial system of power. As a lord, you have no direct control over them - they refuse to obey the orders of any secular superiors, claiming responsibility only to Sigmar himself - but you have to rely on their expertise to cleanse the realm of lurking Chaos taint. Wise lords maintain a partnership with witch hunters that is not written on paper: you provide them with manpower and supplies, and they publicly act as if they are serving you, when in fact both parties know the script of the show. But witch hunters are also double-edged swords: once a witch hunter determines that there are cultists in your court - this determination does not require secular evidence, only \"the revelation of Sigmar\" - he has the power to arrest, interrogate or even execute any of your retainers or even family members. At least three Elector Counts in the history of the empire have tried to pass legislation to limit the trial rights of witch hunters, but each time Archbishop Sigmar would threaten excommunication on the grounds that \"forbidding the persecution of God's servants will bring disaster to Chaos,\" and the Elector Counts could only give in angrily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institutional history of the Witch Hunters is one of the core pillars of the Empire's anti-Chaos system. The Holy Tribunal of Sigmar - the official religious body of the witch hunters - was first established in 1111 of the Imperial Calendar as a temporary court to exterminate the Nurgle cult organization during the \"Black Plague\" pandemic, and has since gradually evolved into a permanent institution. Its organizational structure is based on the principle of hierarchical secrecy: the lower-level witch hunters are the public face, but the identity of their superiors - the \"Judges of the Chamber\" - is never disclosed, and it is said that a considerable number of the Chamber of Justices may themselves be Elector Counts or Bishops. The classic weapon combination used by Witch Hunters - a Styrian-made bayonet and a short-barreled musket - is not chosen randomly: the bayonet is used to accurately damage Chaos mutants during interrogation rather than killing immediately (because the Witch Hunter needs to be alive to obtain information), the musket is a special weapon blessed by the prayers of Sigmar, and the ammunition is cast from the melted metal of church bells. The most disturbing thing in the academic world is that the \"Chaos Detection Manuscript\" used internally by the witch hunters - a manual that is said to be only a handwritten copy but is the only judgment manual that the witch hunters refer to - does not have a printed version. Each apprentice witch hunter can only copy one copy from the master. The closed nature of this knowledge transmission method leads to extreme inconsistencies in the witch hunters' judgments: a crime that was burned at the stake in Middenland may be regarded as a harmless folk custom in Reikland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch hunters are particularly frightening to aristocratic women - not because they will harm us personally, but because whenever they enter the palace, the first thing they are scrutinized is the circle of ladies in the palace and the people their children associate with. I've heard so many stories about a baroness who was interrogated by witch hunters for a month because she spent her nights collecting strange herbs in her garden, and was eventually acquitted but her reputation was ruined. In the eyes of witch hunters, any behavior that does not conform to strict orthodoxy may be the seed of chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch hunters are a weapon that can be used secretly in the politics of the imperial family. If you want to destroy a rival family's political influence but can't openly send troops or initiate a duel - that would be too eye-catching - you can indirectly have a witch hunter \"discover\" clues about necromancy in the rival family. Once witch hunters began publicly investigating a family, that family was politically dead without a formal conviction. But this method must be used with extreme caution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Witch hunters are the ones that mercenaries should not mess with. We often hear this warning when drinking in hotels: If you see a lone traveler wearing a wide-brimmed hat and a silver sword on the post road, immediately pretend that you are religious, curse those around you who do not pray, and then disappear out of his sight as quickly as possible. Because they will default to any lone armed wanderer as a potential Chaos Mutant or Necromancer - and we wandering mercenaries fit that description perfectly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The purchase of witch hunter equipment is a special business that is not open to the public. Their silver swords are supplied exclusively from the silver mines of Middenland - a silver mine that must be blessed by Father Sigmar to prevent it from being tainted by Chaos during the metallurgy process; their muskets come from the custom workshops of Nuln weapon masters, using special barrel steel to prevent them from being twisted by the enemy's magic in battle. Every chamber of commerce that is lucky enough to receive an order for Witch Hunter equipment keeps it strictly secret, because publicly admitting that it supplies supplies to Witch Hunters will lead to revenge from the followers of Chaos."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Knights Templar Holy of Sigmar - Mother order of the Witch Hunters, directly subordinate to the Archbishop of Sigmar",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Witch Hunter Inquisitor Witch Hunter Sigmar Church"
+  ]
+}

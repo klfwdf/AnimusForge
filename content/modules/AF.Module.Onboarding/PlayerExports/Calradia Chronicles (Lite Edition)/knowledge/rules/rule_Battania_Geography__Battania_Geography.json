@@ -1,0 +1,53 @@
+{
+  "Id": "rule_Battania_Geography",
+  "Keywords": [
+    "Battania Geography"
+  ],
+  "RagShortTexts": [
+    "Battania is located on the Ukarion Plateau in the northwest of the Calradia continent.",
+    "Battania borders Sturgia to the east and Vlandia to the west.",
+    "Battania Lake Maud Lys enclave annexed by Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania, the full name of the High Kingdom of Battania, is located on the Ukarion Plateau in the northwest of the Calradia continent. Battania's territory has largely been reduced to the Ukarion Plateau, and the enclave of Lake Maud Lys was annexed by Vlandia two centuries ago. Today, Battania borders Sturgia to the east, Imperial Land to the south, Vlandia to the west, and the Bay of Walceg to the north. Topography The Ukarion Plateau has a high terrain, with mountains, canyons and dense forests. In the center of the entire land mass is Lake Tavar (called \"Lin Tavar\" by Battania people, meaning dark lake), which is dark and deep. The lake is surrounded by mountains and woodland, and many towns and fortresses are built on ridges or cliffs overlooking the lake. The terrain in the east and north of the plateau is steep, with cliffs and rift valleys. The Mokang Valley is a rift valley that separates the Ukarion Plateau and the Ebo Peninsula. From the northern cliffs, on a clear day you can look north towards the Valchego Bay. The eastern border had the source of the Mir River (called Miron in the empire) and the Kaval Valley, a steep valley leading into imperial territory. In the west of the plateau, the Tran River rushes down from the plateau to the Vlandia lowlands. The water in the canyon in the upper reaches of the Tlang River is rapid, and the river bed is covered with slippery stones. The Ethier River is a tributary of the Traang River and originates from a mountain outcrop near Vernon Ethier. Lake Tavar is the core body of water in the hinterland of Battania, a dark lake in the center of the Ukarion massif. The lake is dark, with many rivers originating from it or flowing around it. The Fell River flows from Lake Tavar and flows north into the Valcheg Bay. The Tran River flows westward into Vlandia. The Mir River rises in the eastern part of the plateau and is an important water system between Battania and the Empire. The Battania region is rainy, cold, and densely forested. These climatic conditions shaped the Battania people's way of life and military traditions, and also made the region shunned by peoples outside the plateau."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "sturgia",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From the perspective of its neighbors, Battania crouches atop the plateau in the northwest of the Calradian continent, the most inconspicuous small kingdom on the mainland. To its east lies Sturgia, to its south the old Imperial heartlands, to its west Vlandia, and to its north it looks across the sea toward the Bay of Varcheg. Such a position means it is encircled by three great powers, with not a single stretch of border safe.\nBattania's territory lies almost entirely upon the plateau. It once held lowland enclaves, but those were annexed by Vlandia two centuries ago. Today, all that remains of this nation are mountain ridges and forests.\nIn the eyes of Imperial and Vlandian generals, the Uchalion Plateau is a maddening piece of terrain. The plateau rises high and steep, filled everywhere with peaks, gorges, and dense woods. At its center lies a dark, brooding lake ringed by mountains, with most towns and fortresses built upon ridges or crags overlooking the water. This means any attacker must fight uphill against high ground while the defenders look down from above.\nThe eastern and northern reaches of the plateau are especially precipitous, bristling with cliffs and chasms. From the northern crags one can reportedly see the Bay of Varcheg, but to neighboring realms those cliffs represent an almost impassable natural barrier. Along the eastern border, river valleys and steep mountain glens lead toward old Imperial territory, yet the valleys are so narrow that large armies cannot deploy.\nIn the west of the plateau, rivers surge downward toward the Vlandian lowlands. The upper gorges run with torrential currents over riverbeds strewn with slick stones, making any crossing perilous. To the Vlandians, these highlands stand like a natural city wall.\nThe lake at the center of the plateau is the hub of the entire water system. Several rivers flow out from it: one runs north into the Bay of Varcheg, one flows west into Vlandia, and another rises in the eastern plateau to form a natural border between Battania and the Empire.\nTo neighboring armies, these rivers are both obstacles and threats. Crossing points are scarce and mostly held by the Battanians. Even if an army crosses successfully, only unfamiliar woodland awaits on the far bank.\nBattania is rainy, dank, and cold, cloaked in thick forests. To its neighbors, this climate is one of the greatest enemies of all. Imperial soldiers, accustomed to the warmth and dryness of the south, easily fall ill in the dank woods. Vlandian heavy knights can barely advance an inch along the muddy mountain tracks. And although the Sturgians are used to the cold, these alien forests are no more familiar to them."
+    }
+  ],
+  "TextMappings": []
+}

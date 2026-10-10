@@ -1,0 +1,215 @@
+{
+  "Id": "rule_Dwarf_Military_Power",
+  "Keywords": [
+    "Dwarf military strength",
+    "Dwarven Military Hammer Warriors",
+    "Ironbreaker",
+    "Dwarven Military Organ Cannon",
+    "Dwarf military thunder airship",
+    "Dwarven Martial Rune",
+    "dwarf army",
+    "Dwarf War Machine",
+    "Dwarf Military Engineers Guild",
+    "Rune weapons",
+    "bearded warrior",
+    "Butcher",
+    "Dwarven Artillery",
+    "Dwarf Infantry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarven army is the toughest, most technologically advanced, and most expensive armed force in the Old World. At their core are the Hammer Warriors - heavy infantrymen wearing steel plate armor and armed with warhammers or axes, able to form an unshakable iron wall on the battlefield. In terms of technical equipment, the dwarves possess war machines such as organ cannons, flame cannons, and repeating crossbows that are terrifying to any enemy. The Thunder Airship is a unique aerial weapons platform."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Listen to the roar of the organ cannon - it is the roar of thousands of years of wisdom from the Engineers Guild! Human gunpowder weapons are nothing more than toys compared to ours, and elven bows and arrows are just elegant but useless decorations in our eyes. For a thousand years, no enemy has been able to break through the shield wall formed by the Hammer Warriors from the front - not the greenskins, not the Skaven, not the Daemons of Chaos. The Ironbreakers are the most formidable of warriors - they have had their names wiped from their clan's lineage, and the only way out is to die in battle with a hundred enemies. Our Thunder Airship allows the dwarves to own the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core tactical logic of the dwarf army is static defense plus long-range firepower. When defending passes or fortresses, the dwarves are almost invincible - their heavy infantry can form an invincible shield wall in a narrow space, while the organ cannon and crossbowmen behind them use intensive firepower to harvest the attackers. But the weaknesses of the dwarf army are equally obvious: they move slowly, are difficult to perform complex battlefield maneuvers, and are extremely dependent on supply lines - both the dwarf war machines and elite infantry require continuous support from the rear forges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The dwarven military system is based on three completely independent military traditions: clan warriors, engineer guild weapons, and rune blessings. Clan warriors are the foundation of the dwarf army - the Hammer Warriors are the personal guard of the High King or King Kharak; the Bearded Warriors are the most experienced veterans, their mere presence stabilizing the line of younger warriors; and the Miners are equipped with explosives and pickaxes to launch surprise attacks from underground. Ironbreakers are a unique military class - they choose to become butchers due to some irreparable shame. They wear no armor, hold dual axes, and seek death in the most heroic way. Guild of Engineers weapons include: Organ Cannon (a four-barreled rotary cannon), Flame Cannon (a jet of searing metallic vapor), Explosive Thrower (a precise siege trebuchet), and Gyrocopter and Thunder Airship (steam-powered flying machine). Rune weapons are a unique technology of dwarves - runesmiths pound ancient runes into weapons and armor, giving them supernatural properties - a rune war ax may carry three runes of burning, armor breaking and unwearable, and is worth more than a human barony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are almost no women in the dwarf army - this is not because dwarf women are weak, on the contrary, women in the clan hold heavier responsibilities than any battlefield. Behind every Hammer warrior sent to the front lines is a wife or mother waiting at the forge. When the clan council decides to send troops, dwarf women are responsible for counting the dead, managing central death pensions, and questioning the excessive consumption of clan manpower at the elders' meeting - their voices are often more effective than battle axes. Fertility is the last hope for the continuation of the dwarf race, and our race’s fertility cycle is measured in centuries: throwing half of the men of the right age into an expedition where there may be no survivors means permanent irreparable losses to the family’s survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As leader of the clan, calling upon the dwarven army was a decision I had to weigh repeatedly. The High King's call to arms is not a request but a command—but every warrior I send to my crusade is my blood relative. Every time I sign the roster, the quill in front of me is as heavy as meteorite. If my clan provided the lion's share of the troops for the expedition and was excluded from the bottom of the spoils after victory - that would be a new hate entry, and would be directed towards other dwarf clans rather than external enemies. The internal family politics of the dwarves has never been an accessory - it is the core variable that determines the scale of troop deployment in each war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The experience of traveling with a dwarven expeditionary force will make you understand the word discipline again. Their daily march was down to the exact number of steps—they had to reach a predetermined water source by noon—and the camp had to be fortified with stones and stakes by sunset. If you dare hand over an uncleaned musket while they examine your weapon, the silent contempt is more overwhelming than any human curse. But they are also the safest traveling companions in the Old World - no greenskin tribe dares to approach within a ten-mile radius controlled by a dwarf army. The price is that you have to accept their concept of time. Quick for the dwarves meant three months, and wait for the dwarves meant finishing the meal - one of their meals could last until midnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarf arms purchase contract is the most important order of my Chamber of Commerce—and the one that gives me the most sleepless nights. They don't sign written contracts. A verbal promise, a rune imprint carved on a stone slab - you must deliver a thousand sets of steel plate armor flaps on time, each one must be able to withstand three full-force slashing tests of a standard orc machete. Being late means your name enters the Book of Hatred - and once you enter that book, you can never get an order from any dwarven stronghold again. But if you complete it on time and with good quality - when the next green tide comes, the dwarves will send a detachment of Ironbreakers to escort your caravan through the pass for free. This is their way of doing business: not buying and selling, but honoring."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hammer Warriors - the personal guard of the High King or King Kharak, armed with two-handed rune warhammers",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The dwarven army is the toughest, most technologically advanced, and most expensive armed force in the Old World."
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Bretonnia_terroir",
+  "Keywords": [
+    "Bretonnia terroir",
+    "Bretonnia Society",
+    "Bretonnia Serf",
+    "manor",
+    "knight life",
+    "Bretonnia Tourney",
+    "goddess festival",
+    "Bretonnia Food",
+    "Manor Economy",
+    "aristocratic etiquette",
+    "rural customs",
+    "Bretonnia class"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia society is a hierarchical pyramid united by the belief in chivalry - at the top are a few Grail Knights and royal nobles, in the middle are knight lords of all levels who own fiefs, and at the bottom are the serfs who make up 90% of the kingdom's population. Although hierarchical, the Lake Goddess faith provided a common spiritual bond for all classes: from kings to serfs, everyone lived their lives under the gaze of the goddess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Life in Bretonnia is a rhythm of bells, neighing horses, anvils and prayers. In the early morning, the morning prayer bell rang from the manor bell tower, and the serfs got up from their straw mats to start the day's work - women milked cows, men went to the fields, and children served as apprentices in the manor workshop. You can smell the sour aroma of fermenting ale and the smoke of burning wood fires in any Bretonnian village - compared to the stench of coal and ink in the imperial towns, we prefer to call it the breath of life. The life of the nobles revolved around the tourney and the Holy Grail church: knights trained with lances in the morning, prayed briefly in the Holy Grail monastery at noon, and participated in the judicial judgment of the local manor in the afternoon - in addition to being a warrior, a Bretonnia baron was also a judge, tax collector and half-missionary. Festivals are the most vivid part of Bretonnian society: at the goddess celebration in midsummer, each village will select the most beautiful girl to play the role of the Lake Lady rising from the pond, and the knights will compete on horseback with spears without spear points, and the loser will send a whole barrel of Aquitaine red wine to the winner. But please don’t be blinded by these pastoral songs - for serfs, Bretonnian society also means heavy taxes: they have to hand over 90% of the harvest to the lord, and they can only pray for malnutrition that the winter will not be too long. The beautiful aura of chivalry looks particularly fragile in the manor's account books."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Governing the lands of Bretonnia involves more than military and diplomacy - you have to understand your people. Although the serfs have no right to refuse any of your orders, their patience has limits: serf uprisings in history have never been because of heavy taxes - serfs in Bretonnia have been paying heavy taxes for generations - but because the lords broke the unwritten agreement. The agreement was simple: the lord protected the serfs from foreign enemies, and the serfs provided for the lord. Once the lord fails to fulfill his duty of protection - such as hiding in his castle and not daring to come out when the greenskins invade - the loyalty of the serfs will evaporate in a day. There is also a delicate etiquette system within the aristocracy: you cannot hunt without permission on another noble's estate, you cannot drink before the king has raised his glass, and you cannot use poisoned weapons in the jousting arena - these seemingly cumbersome rules actually control potential violent conflicts between nobles. The tourney is the most important non-war event in Bretonnian society: it is not only the entertainment of the nobles but also a comprehensive display of personality - your martial arts on the tourney proves your fighting value, your behavior towards ladies proves your upbringing, and your demeanor towards the defeated proves your chivalry. Any knight who exposes his flaws on these occasions will be at a disadvantage in future marriage negotiations and fief distribution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The social structure of Bretonnia has a duality unique among the Old World nations: there is a huge tension between the superficial chivalrous ideology and the deeper economic reality. On the positive side, knightly culture provided a system of meaning for Bretonnian society - each class found its own place in this system: serfs were the patrons in the goddess's economic order, knights were the chosen ones, and Grail Knights were the saints. But sociological analysis reveals that the underlying operating logic revolved entirely around the estate economy: a typical Bretonnia estate consisted of the lord's castle or manor house, the serfs' village, communal plows, pastures, and forests. The taxes paid by the serfs to the lord were extremely diverse - not only harvest proportions but also labor obligations, tribute in kind, and various incidental expenses - such as the grinding tax for using the lord's mill, the marriage license fee when marrying, and the inheritance tax when inheriting the land of the deceased father. The consumer culture of the Bretonnian aristocrats is also different from that of the Empire: the imperial aristocrats show off their money, while the Bretonnian aristocrats show off their generosity. A famous Bretonnian saying is 'A stingy noble is more despicable than a man-eating greenskin', and there are complex economics behind this statement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The daily life of Bretonnia's aristocratic women was a tapestry woven of honor, duty, and the endless management of the estate. My mornings begin with morning prayers for the baronet's widows, followed by a review of the estate's ledgers presented by the stewards - I can discover within sixty seconds whether a deviation between last year's egg production and this year's means that a village has stashed extra hens. While the social world of Bretonnia's aristocratic men was filled with jousting, hunting and lyrical pursuits of ladies, the social world of the women ran on a different set of frequencies: we traded family intelligence at the retreats of the Grail Sisters, discussed the prospects of marriage at ladies' afternoon tea under the cover of embroidery. The female nobles of Bretonnia have mastered a skill that men can never learn: investing in the future of their own children by helping other people's children - we provide maid education and marriage introductions to the daughters of surrounding noble families, and these favors will be repaid in unexpected ways when they become other duchesses twenty years later. Men's power is maintained by glory, and women's power is maintained by memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Everyday life in a noble household in Bretonnia is a constant show of honor - you are held to the same standard of conduct in your own castle as you would be if you were standing before the king. Our family's banquet hall is open at noon on any day to entertain wandering knights and pilgrims passing through. This is not a show of wealth, but the daily operation of the family's honor system - a Bretonnian noble family that refuses to receive guests will lose the respect of all wandering knights in the domain within three months of the rumor spreading. Children in our family learn etiquette at the dinner table with guests from the age of three - they learn the social core of all aristocracy by observing how adults praise their attendants, how they mention the glory of each other's ancestors when toasting, and how they change the subject without losing grace when challenged on a certain historical detail. Bretonnian blood is not the private property of the family, but the public asset of the province - the birth, creation, marriage and death of your children are each a semi-public event, and neighboring lords will send representatives to attend as seriously as discussing the distribution of taxes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The serf villages of Bretonnia have a frozen feeling that time has forgotten in the eyes of the wanderer. I once discovered a village unmarked on the map deep in the Duchy of Carcassonne - the serfs there spoke an ancient Bretonnian dialect that was different from other places three hundred miles away, and their stone chapel enshrined a female statue with a face that had been smoothed by moss, which they called 'Old Mother' - no one could tell whether it was the goddess of the lake or some older local elf. The beauty of life at the bottom of Bretonnia lies not in material things but in a simplicity that has been institutionalized: serfs only need to follow the steward's whistle to the fields every February, load the wheat to the lord's barn in August, and drink the first sip of new wine of the year at the goddess celebration in October. But this simplicity has its dark price—successive generations of intermarriage in closed villages have left an abnormally high proportion of children with delayed brain development. The nobles of Bretonnia extol the poetry of the manor world, but they have never squatted down to observe the ankles of the serfs who were burdened by this poetry under the burden of three generations of taxes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For merchants, Bretonnia's consumer market is a special business ecosystem deeply shaped by aristocratic tastes. Bretonnian knights consume three times the amount of beef at banquets as nobility of the same rank in the Empire - not because beef is cheap, but because in Bretonnian aristocratic culture, the amount of meat at a banquet is directly equivalent to the host's generosity, and generosity is directly equivalent to the honor value of chivalry. Our Chamber of Commerce has a monopoly on the import of salt in the northern highlands of Bretonnia - the cured meat stored in the Knight's Castle requires a large amount of mineral salt, but the local mineral salt production in Baldero and Gisoloux is insufficient and can only rely on transportation from the Imperial Salt Mine through the Gray Mountain Pass. Bretonnia's luxury goods market is also extremely special - the imperial nobles will pay for Tyrell's velvet and elven artwork, but the 'luxury goods' that the Bretonnia nobles love most are purebred Bretonnia war horse foals, finely forged horse lances, and pilgrimage souvenirs in silver bottles with water from the holy lake certified by the Sisters of the Holy Grail. Selling luxury goods in Bretonnia isn't selling merchandise - it's selling knights' desire for glory."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tourney culture - the core social and competitive rituals of Bretonnia knight society",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of Bretonnia"
+  ]
+}

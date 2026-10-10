@@ -1,0 +1,134 @@
+{
+  "Id": "rule_langward",
+  "Keywords": [
+    "Langward",
+    "Archduke Langward",
+    "Mommy boy"
+  ],
+  "RagShortTexts": [
+    "Archduke Langward relies on the Shield Brotherhood to monitor tavern speech"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Langvald Gundarov, Grand Duke of Sturgia. The boyars knelt down to my grandfather and begged him for help. He saved. Then their heirs turned a deaf ear to the oath, quarreled, plundered, did whatever they pleased, and cared little for the country. My grandfather ruled by favor, only to be rewarded with betrayal. I won't repeat his mistakes. I rely on the knife. Some people say I'm cold. Coldness is the only constant temperature in the north. The snowfields of Sturgia have no sympathy for the weak, no hesitation, no sympathy for the soft archduke. Old Olek folded the dragon flag into three pieces and threw it at my feet. That was the last time he said \"no\" to the royal power. Pandrak's words were both a military order and an answer. Same thing with Valla. I married her to Wendule to protect Sturgia's northern barrier; Siga killed Wendule to destroy the barrier; I executed Varra to prevent Khuzait's cavalry from setting foot in our snowfields. Every step is a stop loss. I doubt everything. Doubting the loyalty of the Boyers, doubting the silence of the Kulov family, and wondering which snowfield Sika is still wandering on. I know some people think that my reliance on Nord mercenaries is weak, and that my handling of the Kulov family's affairs is stupid. Make them feel like going. As long as my knife is fast enough, their ax will always be sharpened under the table. But I do have trouble sleeping at night. It's not that I'm afraid, it's that I'm annoyed. I'm annoyed by these boyars who can never reconcile, I'm annoyed by the unfinished blood debt of the Kulov family, and I'm annoyed by the wind on the ice field. There was the sound of axes being sharpened in the wind, all night long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Langward is the person I hate most in my life, and the person I least want to be in my life. He killed my father, he killed my sister, and he tried to kill my other sister. He thought he could make the Kulovs disappear with a knife and fear, but he was wrong. I almost killed Pandrak on the spot in his tent, with the Shield Brotherhood standing nearby, so I didn't do it. From that day on I never paid him a penny in taxes. He was so ruthless that he was able to talk and laugh in the royal council the day after Valla's death as if nothing had happened. He regards his life as a stop-loss tool and himself as the only chess player on the ice sheet. But he also has fears. He was afraid that the Kulov family would not disappear, that Xiga would wander in the snowy fields, and that the Nord mercenaries his mother left him would no longer obey his orders one day. He relied on the Shield Brotherhood to keep order in the court. It was his crutch. Once the crutch breaks, he will fall on the ice, and I will be the first to step on it. I don't admire him or respect him, but I don't deny that he is a difficult opponent. He is really good at fighting wars, but his foreign affairs and domestic affairs are in a mess - he ignored his obedient Boyer and chose to provoke the Kulov family, offending Achite, Wuerhunnet and our family together. With this level of decision-making, to be honest, I don't expect him to take the initiative to admit his mistakes. He has probably only learned one thing in his life: a knife can make people shut up, but a closed mouth will grind an ax in the heart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Langward is a poisonous snake. No, vipers at least don't pretend. He will. He called my father \"Patron of Sturgia\" at the Council, and then cornered him at Pandrak. He put a wedding dress on my sister Valla, then cut off her head, put it in a wooden box and sent it to the grassland. Every time he did something to our family, he was wrapped in a layer of respectability - military orders, diplomacy, and stop loss. Every knife has a name. I'm wandering on the ice sheet, does he know where I am? have no idea. He is afraid of me. His undercover agents couldn't catch me, his bounty hunters couldn't find me, and his Shield Brotherhood was just a bunch of statues standing guard in my eyes. I can sneak into Wendule's castle and cut the throat of a grassland man, and I can also appear in his castle on a winter night. He raised the walls in the room, lit more lanterns, and strengthened the guards. He is afraid of death. A person who is afraid of death cannot sit firmly in the position of Grand Duke. My father was not afraid of death, he died. Langward was afraid of death, so he stayed alive. But there are no lanterns in this world that never go out, and there are no guards that never change the guard. I'm waiting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grand Duke Langward is the most ruthless ruler our generation has ever seen, and the most incomprehensible ruler. He fought fiercely and never blinked an eye in suppressing the rebels. The Nord mercenaries on his mother's side were always on standby. Any Boyer who openly opposed him would not survive long. We bowed to him at the Imperial Council, not because we were loyal to him, but because we were afraid of him. Old Olek broke the dragon flag in public and was arranged to have his queen cut off that night; the Kulov family refused to pay taxes, so the Grand Duke sent their sister to the grassland for marriage; when the marriage went wrong, he chopped off the girl's head and sent her away. After using this set of methods, who would dare to be the leader? But he also has fatal shortcomings. Domestic affairs basically rely on repression, and diplomacy is so stupid that it makes people stunned. The marriage was arranged by the Grand Duke himself, and he also personally selected the candidate. He ignored the obedient Gordon and Jorig of his own family and insisted on choosing someone from the Kulov family who hated him the most. As a result, the relationship between Achit, Ulhunet and us Sturgia was completely messed up. Now the Kurovs are strangers to us, not even nominal vassals. We also secretly despise his reliance on Nord mercenaries - the Archduke of Sturgia, relying on Nord swords to maintain order in Sturgia, is a joke in itself. We didn't dare to rebel against him when he was alive, but after his death, whether the Gondarov family can still hold the position of grand duke depends on whether his son is as ruthless as he is. If not, Boyer's ax will settle the accounts for him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archduke Langward? Iron man on the ice. The attitude of us people in the north towards him is just one word: fear. He is not a bad prince, at least he does not raise taxes, but he kills without blinking an eye, and everyone knows this. Old Olek of the Kulov family, who we people in the north worship as a god, was arranged to die. One of his two daughters was beheaded after marrying in the grasslands, and the other is still wandering outside. The Patron Saint family was torn apart by him. We scolded him privately for being too cruel, but we didn't dare to speak loudly. His patrols are all over the snowfields, and the members of the Shield Brotherhood can even hear what is said in the village tavern. But for fear of returning, we have to admit that he guarded the border. During his reign, the empire did not dare to go north, Khuzait did not dare to go west, and the northern border was not burned by war. Whether it was bought with the blood of the Kulov family or stabilized with his own iron fist, no one can say. Maybe both. We just hope he won't impose additional taxes in winter. It's freezing cold and survival is crucial."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Langvald Gundarov was the most iron-fisted ruler of the Grand Duchy of Sturgia and its most controversial exerciser of power. His model of rule can be defined as \"foreign aid-dependent high-pressure centralization\", with the pillars of power divided into two layers: the inner layer is the realm of the Gondarov family and the forced allegiance of Boje in northern Sturgia, and the outer layer is the in-law network of his mother's Nord royal family and the military contracts of the Shield Brotherhood. This dual pillar allowed him to suppress in the short term the Boyer tradition of decentralization that had been deeply rooted in Sturgia since its founding, but also made his regime highly dependent on external hired forces. Militarily, he has outstanding abilities, but in diplomacy, he can only be described as a \"disaster\": a series of decisions in dealing with the Kulov family - from forcing the dragon flag, arranging to break up the queen, to choosing a marriage partner - each step intensified internal conflicts and triggered an external chain reaction. In the end, he offended the three major forces of Kulov, Achit and Ulhunait at the same time. It was only Monchug's forceful hold that prevented a war. His high-pressure rule is still continuing, but the Kulov family is virtually independent, Siga is still in exile, and the silence of the boyars in the court is not submissive but gaining momentum. Whether Langwald's successor can maintain this system without the same iron fist and the same foreign aid is the biggest variable in Sturgia's future."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Archduke of Sturgia, named Langward. The businessman said that this person was very tough and ruthless. The old prince of his family had saved the boyars of Sturgia a long time ago, but when the boys refused to admit their debt, he swore harshly, saying that he would deal with all those who disobeyed, and he would kill anyone who disobeyed. He was very good at fighting, and he tricked the old Olek to death on the battlefield in the north - he left the man in the rear position and only gave him a few soldiers, which was almost like sending him to death. There is also the matter of his daughter: let the people from the grassland do the marriage, and if it goes wrong, use the sister's head to apologize. Our businessmen here all treat him as a cold-blooded joke, saying that the nobles on the ice sheet are really unlucky to have such a big duke. However, he relied on his mother's relationship with Nord and the support of mercenaries, so those nobles did not dare to openly rebel. Anyway, things on the ice sheet sound cold, and we people in the south eat melon seeds as a show."
+    }
+  ],
+  "TextMappings": []
+}

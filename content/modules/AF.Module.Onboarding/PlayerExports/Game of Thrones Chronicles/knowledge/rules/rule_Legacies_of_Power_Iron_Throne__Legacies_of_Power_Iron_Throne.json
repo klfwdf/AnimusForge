@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Legacies_of_Power_Iron_Throne",
+  "Keywords": [
+    "Iron Throne",
+    "Balerion",
+    "King of the Seven Kingdoms"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Iron Throne stands in the throne room of the Red Keep in King's Landing. According to legend, Aegon the Conqueror ordered Balerion, the Black Death, to forge thousands of swords presented by the defeated. Huge, twisted, and riddled with sharp blades, it was anything but a comfortable seat; cuts on the king were often interpreted as the throne rejecting the unworthy, although carelessness could also result in bloodshed. The throne pressed the originally separate kingdoms into a common political center and became a symbol of the legitimacy of laws, taxes, inheritance and war. Sitting on it does not equate to true control of the Seven Kingdoms: orders still need to be carried out by ravens, roads, vassals, and armies, and the iron itself can only let the contenders see the shape of power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King's Landing The dignitaries discussed legal systems and etiquette in front of the throne, and they also knew that the golden robes, granaries and allies outside the hall were equally important. It's one thing who can sit down, it's another thing entirely who can get orders through the city gates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles everywhere view the Iron Throne as either a unifying order or a yoke of conquest, depending on family memory. The fact that it was forged by a falling sword has always been both the glory of the victor and the unforgettable surrender of the defeated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people rarely see the throne itself, but feel the taxes levied, the money minted, and the wars waged in its name. For them, the most real part of Iron Throne is often the day when a distant place decides to land on their doorstep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Throne It is a symbol of royal power forged from the sword of the war of conquest. The sharp blade will cut those who sit on it, and it also reminds the seven kingdoms that the unification began with fire and surrender. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Throne It is a symbol of royal power forged from the sword of the war of conquest. The sharp blade will cut those who sit on it, and it also reminds the seven kingdoms that the unification began with fire and surrender. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Throne It is a symbol of royal power forged from the sword of the war of conquest. The sharp blade will cut those who sit on it, and it also reminds the seven kingdoms that the unification began with fire and surrender. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Throne It is a symbol of royal power forged from the sword of the war of conquest. The sharp blade will cut those who sit on it, and it also reminds the seven kingdoms that the unification began with fire and surrender. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Iron Throne: It is a symbol of royal power forged from the sword of the war of conquest. The sharp blade will cut those who sit on it, and it also reminds the seven kingdoms that the unification began with fire and surrender."
+  ]
+}

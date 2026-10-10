@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_House_Corbray",
+  "Keywords": [
+    "House Corbray",
+    "Three Black Ravens",
+    "Lady Forlorn",
+    "Valyrian Steel Sword"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Corbray family is based in Hearts City and is an Andal noble of the valley. Their family emblem is three black ravens, each holding a red heart. The most famous legacy of the family is the Valyrian steel sword \"The Lady of Silence\". This sword is not only a battle prowess, but also the focus of inheritance, fame and intra-family comparison. Corbray has the reputation of an ancient knight, but he does not rule the entire valley like Arryn, nor does he claim to be the King of the Ancients like Royce; his influence comes more from his personal martial name, marriage, and position in valley politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of the Vale spoke of Corbrai, the actual lands of the family were as important as the blade of the Lady of Silence. A Valyrian steel sword can bring a name into countless banquets, but it can also make others look closely at whether the wielder is worthy of it. Corbray's pride is easy to understand, because in the Vale, martial names are inherently part of politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The knight and mercenary heard Corbray and asked first if the sword was really as sharp as in the song. Ordinary steel swords will break, but the story of a famous sword will not; it can inspire companions and attract challengers. For followers, the most important thing is still not what the sword is called, but where the person who draws the sword will take them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Corbray The Andal nobles of Heart City in the Vale, whose family emblem is three black crows with red hearts, own the Valyrian steel sword \"The Lady of Silence\". The family's reputation lies in the inheritance of the knight's martial name and famous sword; the motto is unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Corbray The Andal nobles of Heart City in the Vale, whose family emblem is three black crows with red hearts, own the Valyrian steel sword \"The Lady of Silence\". The family's reputation lies in the inheritance of the knight's martial name and famous sword; the motto is unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Corbray The Andal nobles of Heart City in the Vale, whose family emblem is three black crows with red hearts, own the Valyrian steel sword \"The Lady of Silence\". The family's reputation lies in the inheritance of the knight's martial name and famous sword; the motto is unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Corbray The Andal nobles of Heart City in the Vale, whose family emblem is three black crows with red hearts, own the Valyrian steel sword \"The Lady of Silence\". The family's reputation lies in the inheritance of the knight's martial name and famous sword; the motto is unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Corbray: The Andal nobles of Heart City in the Vale, whose family emblem is three black crows with red hearts, own the Valyrian steel sword \"The Lady of Silence\". The family's reputation lies in the inheritance of the knight's martial name and famous sword; the motto is unknown."
+  ]
+}

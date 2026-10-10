@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Faith_and_Myth_Religious_Coexistence_and_Conflict",
+  "Keywords": [
+    "Religious Coexistence and Conflict"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays, but when a crisis strikes, the first thing they are asked is often \"who to pray to.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays, but when a crisis strikes, the first thing they are asked is often \"who to pray to.\" Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays, but when a crisis strikes, the first thing they are asked is often \"who to pray to.\" Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays, but when a crisis strikes, the first thing they are asked is often \"who to pray to.\" Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Religious Coexistence and Conflict The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays, but when a crisis strikes, the first thing they are asked is often \"who to pray to.\" They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Religious Coexistence and Conflict: The Seven Gods, the Old Gods, R'hllor, and the Drowned God coexist with beliefs from all over the Narrow Sea, bringing religious differences to marriages, oaths, funerals, and politics. Most people can get along well with their neighbors on weekdays. When a crisis strikes, the first thing they are asked is often \"Who do you pray to?\""
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_teeth",
+  "Keywords": [
+    "teeth",
+    "green currency",
+    "tooth coins",
+    "Orc front teeth",
+    "goblin trade",
+    "green economy",
+    "rotten teeth",
+    "Knock teeth",
+    "Orc Fortune",
+    "tooth price",
+    "green market"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Teeth - or \"tusks\" or \"teeth\" in Greenskin lingo - are the only common currency in orc and goblin society. The orcs' incisors will continue to grow, so whoever has bigger and longer incisors will be richer; knocking off the enemy's teeth and using them for flowers is the simplest economic logic of the greenskins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "tooth! We greenskins don’t need those shiny round tablets! Humans and dwarves hold on to gold and silver all day long - those crappy things can't be eaten or hit, so what's the use of them? Ya is the real guy! Look at my mouth. Every tooth was knocked out from someone else's mouth with my own hands. The large orc teeth are valuable, while the small goblin teeth are not valuable, but you can save a bunch of them and buy a decent machete. The best thing about teeth is that they grow on their own - if you knock out all your teeth today and have another one grow back in two months, it's like making a fortune in vain! But what bothers you the most is those bastards touching your teeth - those little guys will secretly reach into your mouth and break your teeth while you are sleeping! The black orcs are the richest because their teeth are big, black and hard. One big black tooth can be exchanged for ten ordinary teeth. My rule is: if you lose in a fight, you have to cut your teeth. If you cut your teeth, you will be my little brother. If you don’t, I will eat your whole body - starting from your toes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Although the greenskin's tooth currency system seems absurd, it has very practical significance in military logistics. The size of a Waaagh is directly proportional to the circulation speed of teeth - when the orc army conquers a city, the non-tooth wealth looted in the city will be quickly forgotten by the orcs, and the teeth pulled out everywhere on the battlefield become the circulation capital within the army. Understanding this is crucial to defensive operations: if you want to delay a Waaagh advance, burning enemy corpses to destroy the \"Yang Source\" is a dishonorable but extremely effective strategy. Historically, an overlooked reason for the fall of Karak Eight Peaks was that the Greenskins pulled out a large number of teeth from the corpses of dwarf miners in the early stages of the siege, allowing them to quickly establish a supply and mercenary recruitment system within the army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The tooth currency system is the most typical example of the integration of green skin biological characteristics and economic behavior. Orc teeth—biologically, single-tooth root incisors that are constantly growing—complete a growth-shedding cycle approximately every forty to sixty days, a characteristic that makes individual orcs both producers and consumers of money. The value system of teeth follows a set of spontaneous iron laws of the market: the size of the tooth (corresponding to the size of the orc) determines the denomination, and the hardness and color of the tooth (the dark teeth of the black orcs are considered to have additional blessings from Brother Mao) determine the premium. The remaining flesh, flesh and nerve tissue on the tooth instead provide a \"freshness\" premium - a tooth that has just been extracted and is still bleeding is worth three times more than a dry tooth. Greenskin economists (this is a contradictory term) estimate that the total number of teeth in the circulation pool within a medium-sized Waaagh (about 10,000 to 15,000 greenskins) is about 400,000 to 600,000, and its annual circulation rate is about six times that of human gold coins, because the average time a tooth is held in the hands of an greenskin is no more than three days before it is spent on wine, weapons, or more fights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "More than once, I heard human merchants trying to establish a \"tooth exchange rate system\" with the greenskin tribes - delusional plans to use gold crowns to purchase teeth and then sell them to orc mercenaries. Everyone who tried this died, and the reason was simple: To the orcs, it wasn't how much the tooth was worth, it was the process of pulling it out of someone's face and the pain. If you trade a bag of clean teeth with an orc, he will think you are a tooth thief and pull out your teeth too."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family’s trading post in the Border Prince’s Territory once had a whole room full of confiscated orc teeth—swept from the battlefield. There were approximately more than 30,000 teeth, varying in size and quality. I once wanted to use these teeth as a bargaining chip to bribe an orc tribe to attack another tribe, but my advisor dissuaded me: he said that the teeth are a living economy in the hands of the orcs, but once they leave the greenskin society, they are just rotten bones. Later I lit a fire and burned the house down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our mercenary group made a deal with a group of goblins - exchanging three barrels of ale for their guide services. What do you think they used in change? A pair of yellow teeth with bloodshot eyes on them. The captain strung the teeth together and hung them on the saddle to ward off evil spirits. Later, the horse was bitten to death by something in the night. The teeth marks on its neck were exactly the same size as the goblin teeth. The captain threw the bunch of teeth into the river."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Did you know that there is a group of people on the market who specialize in reselling orc teeth? We call this the \"bone trade\" and it's semi-legal in the Border Princes' territory. Large orc front teeth can be sold to the Apothecary Guild and ground into powder for use in medicine, which is said to be a folk remedy for baldness. But the biggest purchase I ever made - about seven thousand pills - was made not by a pharmacist but by a researcher at the Engineering College in Nunn who said he was working on 'organic ammunition propellants'. I didn't ask any further questions."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "In the greenskin society, the primitive economic system uses orc incisors as the only currency.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tooth green skin currency tooth coin"
+  ]
+}

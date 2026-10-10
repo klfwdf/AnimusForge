@@ -1,0 +1,85 @@
+{
+  "Id": "rule_The_bloody_legacy_of_the_Nereitses_family",
+  "Keywords": [
+    "Neretse family (The bloody legacy of the Nereitses family)",
+    "Pontonnereits",
+    "Fadonereits",
+    "Nereits bloodline",
+    "Former Crown Prince",
+    "Northern Empire's hidden worries"
+  ],
+  "RagShortTexts": [
+    "The Neretse family bears the heaviest curse in the history of the empire - a father who ruined the empire and a son who spent the rest of his life atonement for his father's sins."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "When the surname Nereits is mentioned, the first reaction of the imperial people is always the same: Pandrak. In 1077, Emperor Drosius Neretses ruined the main force of the empire with a decision known as \"Neretses' Folly\" in that battle, and he himself also died on the battlefield. The empire never recovered. Delosius left behind a depleted treasury, a crippled army and a surname spurned by the aristocracy. His only son Peng Tong was twenty-seven years old at that time - he survived the massacre of Pandrak, killed the Sturgian commander Old Olek with his own hands, gathered the remaining troops and withdrew to the core of the empire. Then he watched helplessly as the Senate handed the throne to Arenicos, and he was placed in Saniopa, possessing the strongest city and the most fertile territory in the Northern Empire, but he lost forever the empire that should have belonged to him. Penton Nereits is over fifty this year. He ruled Saniopa for twenty years and built the city into the most prosperous economic center in the eastern part of the Northern Empire. He submitted to Lucon, attended senate meetings, and never challenged authority. His son Fadon is in his prime - the performance of the third generation of Nereitses will determine whether the family can continue to exist on the political map of the empire. Peng Tong's face almost never showed emotion, and his daily behavior was extremely restrained and self-disciplined. He would get up at sunrise and personally review the accounts of the territory, drink and banquet in a moderate manner, and never indulge in sensuality. People who had seen the absurd appearance of Derosius in his later years said that Peng Tong was the complete opposite of his father. But whether this is his true nature, or whether he wraps up his true self with layers of caution - no one knows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong of the Neretse family, this person is the most tolerant person I have ever seen. His father had disgraced the empire, lost his own head, and almost dragged the entire empire into the abyss in Pandrak. For anyone else, just carrying that last name would be enough to earn him a lifetime of looks. But Peng Tong not only survived, but also managed Sanyopa to be more prosperous than when Arenicos was in power. He submitted to Lucon, was respectful, and never crossed the line—when the Senate met, he attended on time, spoke on time, and shut up on time. But after you get used to it, you will find that every word he says is calculated. He never told the truth, but he also never told lies that could be caught. His voice is always steady and his expression is always calm. Some people say that the walls of Saniopa not only prevented the barbarians from the north, but also blocked all those who wanted to see Peng Tong's heart. It was the same thing at home - he ran his mansion like a military camp. There were no extravagant banquets, no groups of slave girls, and nothing to gossip about. He and his father Drosius were two completely different people - but whether that was a compliment or the highest praise for the Neretse family's ability to camouflage depends on how you think about it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "north_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong's sitting posture at Saneopa is very graceful, but his sitting there itself is a silent statement. He is the former crown prince and is theoretically the most qualified person to inherit the empire. In order to avoid suspicion, he always only sat in the seats of ordinary lords in public, and never touched the seat closer to the chairman reserved for him by the Senate. But the entire Senate knew that Saniopa's grain warehouses, trade tax cards, and the thickness of its walls were the real weight. Lucon needed Penton—the food of Saniopa to feed the army in the north, and the stability of Penton to maintain the defenses on the eastern frontier. But Lucon didn't trust him either - because in the political tradition of the empire, a former prince with legal inheritance rights sitting in a big city three hundred miles away from the imperial capital was a card that could be turned over at any time. Peng Tong's marriage is also worth pondering. His wife came from a prominent but politically neutral family—neither Lucon's closest lineage nor any overt faction. His son Fadong is receiving the best military and educational training. It all looks like a family biding its time and preparing for the long term."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "south_empire",
+          "west_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Penton Nereits? The one of Saneopa. He was the son of Drosius - the emperor who marched the Imperial troops to their death at Pandrak. His son killed one of Sturgia's legendary generals on the same battlefield and then retreated with his remaining troops. Arenicos did not touch him after he came to power - probably because it was more troublesome to kill a man with military exploits than to keep him. Now he was vassal to Lucon in the north, and had the great city of Xagneopa. Some people say that he has settled down and accepted his fate. I don't believe it. A person who has experienced the triple blow of destroying his country, losing his father, and losing his position at the age of twenty-seven cannot really be at ease. He just hides it deeply."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Crane",
+  "Keywords": [
+    "Crane",
+    "House Crane"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Crane family is based on the Red Lake and is an ancient noble in the Reach. The family name is accompanied by the crane emblem. Lakes, wetlands, pastures and surrounding farms constitute its wealth, which also determines that the lord must pay attention to embankments, ferries and seasonal floods. Ancient legends grace the house, but day-to-day governance still falls on grain rents, marriage alliances, knightly training, and responsibilities to Highgarden. Cranes can fly very high, but Honghu’s family property is stuck between the soil and water plants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach regard Crane as their old home with roots, and the crane flag is easily recognized at banquets and military formations. The weight of a family name comes from generations of accumulation, but each generation still needs to prove that it can keep the Red Lake and the covenant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen and farmers by the Red Lake are more concerned about whether the embankment is repaired and whether the ferry charges are fair. For them, the crane is a common bird beside the fields and a touchstone of whether the lord understands the land and water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crane The Klein family is a river aristocrat of Red Lake, and their family name is connected to the crane heraldry, ancient bloodline, and the local Lakeside Grange. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crane The Klein family is a river aristocrat of Red Lake, and their family name is connected to the crane heraldry, ancient bloodline, and the local Lakeside Grange. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crane The Klein family is a river aristocrat of Red Lake, and their family name is connected to the crane heraldry, ancient bloodline, and the local Lakeside Grange. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crane The Klein family is a river aristocrat of Red Lake, and their family name is connected to the crane heraldry, ancient bloodline, and the local Lakeside Grange. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Crane: The Klein family is a river aristocrat of Red Lake, and their family name is connected to the crane heraldry, ancient bloodline, and the local Lakeside Grange."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Earl",
+  "Keywords": [
+    "Earl"
+  ],
+  "RagShortTexts": [
+    "Earl is the honorific title for tribal chieftains in Battania."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Earl is the honorific title given to Battanian tribal chieftains. After Battania was formally established as a kingdom, it modeled a peerage system after the Empire's; Earl is its most important rank, granted exclusively to the chieftains of the original tribes along with the right to rule their tribal lands."
+    }
+  ],
+  "TextMappings": []
+}

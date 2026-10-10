@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Order_of_the_Crown_Town_Charters_Guilds_and_Tollgates",
+  "Keywords": [
+    "Chartered Towns",
+    "Guilds",
+    "Tollgates",
+    "Market Dues",
+    "Town Charters, Guilds, and Tollgates"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties Towns were not completely independent like modern autonomous cities. They were still bound by the power of their lords and royal families, but they could influence politics far beyond their own area with goods, news, and money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Charters, Guilds, and Tollgates"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Charters, Guilds, and Tollgates"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What merchants and travelers feel from town guilds and checkpoints is the price of checkpoints, ransoms, and information, while priests and scholars pay attention to how it shapes legitimacy; the same decision rarely has the same weight in the eyes of different classes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Chartered Towns Town Charters, Guilds, and Tollgates: The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Chartered Towns Town Charters, Guilds, and Tollgates: The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Chartered Towns Town Charters, Guilds, and Tollgates: The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In towns and villages, municipalities often appear in small ways. Town Charters, Guilds, and Tollgates: The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Town Charters, Guilds, and Tollgates: The towns of Westeros were populated by markets, ports, mills, workshops, bridges, and city gates. Merchants, shipowners, blacksmiths, bakers, and other craftsmen maintained their businesses through guilds, kinships, and hired workers; lords maintained their businesses through stall fees, bridge taxes, and port duties."
+  ]
+}

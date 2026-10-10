@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Horticulture_and_Floriculture_of_the_Reach",
+  "Keywords": [
+    "Horticulture and Floriculture of the Reach"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horticulture and Floriculture of the Reach The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Horticulture and Floriculture of the Reach: The gardens, herbs, and well-manicured avenues of the Reach are not only decorative but also a display of wealth and stability. The lord's wife can use the garden to show her upbringing, and the pharmacist can find materials from it, but the farmer knows that the beautiful flower border depends on a stable water source and the land that cannot be expropriated."
+  ]
+}

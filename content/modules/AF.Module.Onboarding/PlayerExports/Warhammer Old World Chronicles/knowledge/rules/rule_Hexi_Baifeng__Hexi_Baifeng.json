@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Hexi_Baifeng",
+  "Keywords": [
+    "Hexi Baifeng",
+    "wind of light",
+    "High School",
+    "purification magic",
+    "LoreOfLight",
+    "exorcism light",
+    "spiritual healing",
+    "Undead Restraint",
+    "Chaos Purification",
+    "white wind magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "He Xi - White Wind - is the purest and most difficult to control among the eight winds. It is sunshine, the light of wisdom, the light of guidance, the light that dispels all hypocrisy and darkness. Hexi's wind fills every corner of the daytime world. The stone slabs illuminated by the rising sun, the wheat fields at noon, the light in the eyes of children when they see true knowledge for the first time - all of these absorb Hexi's energy. But once the sun dips below the horizon, Hershey fades dramatically, and deep underground it is almost completely non-existent. Academy of Light - The mages of Hexi Academy are called priests of light. Their duty is to purify, heal the wounds of the soul, and expel the erosion of chaos and undead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexi Baifeng is the least used of all imperial magics but the most relied upon at critical moments. Every Imperial Battle Mage knows: When you step onto the battlefield and face an army of the undead, no red wind or blue wind spell can replace a light mage - because only the purifying light of the white wind can disperse dozens of skeletons pulled up by the undead wizard in an instant, and a corpse illuminated by the light of Hexi will not be able to be pulled up again. The wizards of the Academy of Light are also one of the few spellcasters in the imperial army who can dispel the pollution of Chaos Marks - the evil emblems of Chaos warriors, the contaminated places left by demons, and even the initial mutations in some mutants can all be cleared or at least suppressed under Hexi's irradiation. But the fatal weakness of the Light Mages is equally clear: their abilities are devalued by more than half in night battles, and in underground fortress battles - such as the tunnel defense battle against the Skaven - they are almost reduced to useless military clerks. The Academy's official answer is that wizards of Hershey should carry precharged Light Crystals with them—but any officer who has actually fought in cave warfare will tell you that those crystals shatter into sand after the third cast, and you still have a hundred and forty feet of darkness to traverse from the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The role of mages of the Academy of Light in military decision-making is often not the most eye-catching - they are not like fire mages who can blow an entire enemy army into ashes, nor are they like heaven mages who can change the weather to determine the outcome of a battle - but they are irreplaceable in anti-undead and anti-chaos operations. If your army is to be garrisoned permanently on the Sylvanian border—where every catacomb lurks the remains of unpurified remains of Moorish priests—then you must man the garrison with at least two Light Mages and a reserve of Whitewind-charged crystals. The cost of the White Wind Crystal is high - pure quartz of sufficient quality needs to be transported from the dwarves to Altdorf via the Reik River, and deposited in the warehouse after the semi-annual recharging ceremony of the Academy of Light - but the cost is far less than the political consequences you will get from a group of fallen soldiers forgotten and resurrected as zombies in the wilderness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Hexi White Wind occupies a special psychic position in the Eight Winds system - it is the most difficult to master but also the purest wind because it is essentially the reverse energy of chaos. The energy flow of other seven winds starts from the Chaos Star Gate, searches for corresponding elements in the material world, and then gradually attenuates and dissipates. However, Herxi's movement trajectory is in the opposite direction - it starts from the sun (the purest luminous body in the universe), illuminates the material world downwards, and sends a countervailing and purifying energy wave back to the Chaos Star Gate through the radiation of objects that absorb sunlight. This explains two phenomena: first, why the White Wind is completely unavailable underground - there is no reflection of sunlight; second, why Chaos demons and undead have a natural fear of Herxi - because Herxi's purifying flow reverses the flow of chaos pouring out of the Star Gate at the spiritual level, just like a river pouring back from a tributary into the main river. A senior scholar from the Academy of Light has put forward a hypothesis that has not yet been proven but has not been refuted in theory: if one day all the light mages in the world release all the energy of Hexi at the same time, then the Chaos Star Gate may be temporarily closed - and the magic of the world will also disappear. Darkness and light are always two sides of the same coin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Herxi Whitewind exhibits different psychic phenomena among female spellcasters than males - the average healing ability of female light mages (measured by battlefield first aid success rate) is about 20% higher than that of their male counterparts, and their success rate in exorcism rituals is statistically lower than that of men - this is unpublished data in the Imperial Military Magic Archives rather than any official conclusion. Female noble rulers should pay attention when considering the allocation of magical defense resources in the fiefdom: the Academy of Light has one of the lowest female enrollment rates among the eight academies (less than 15%). The reason is that the academy's advanced training requires apprentices to meditate in a secret room for three consecutive months without contact with the outside world. This has different physiological requirements for women than men, and the academy has always designed a work and rest system based on male standards. Despite this, the attainments of those female light mages who have successfully graduated in the field of spiritual healing often exceed that of their male counterparts of the same level - according to a retired master of Hexi Academy who did not want to be named, this is because Hexi's treatment of spiritual trauma requires the caster himself to bear one-half of the painful feedback, and the emotional structure of women can better disperse this backlash in some cases."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an abandoned White Wind Observation Tower on the top of a hill on the border of our family's territory. It was built three hundred years ago by an ancestor of our family for the wife of a light mage. The top of the tower is paved with pure quartz so that she can sit quietly and absorb the morning light before moonrise. The woman's research notes are preserved in the secret family archives - in which she proposed a hypothesis that has never appeared in the official documents of the academy: Herxi's essence is not one of the eight winds but the mother of them. She bases her reasoning on simple archaic evidence - in the oldest magical texts of the elves, the name of Elsa, the Earth Mother, is identical in pronunciation and word structure to the ancient name of Hershey - which means that the high elves may have considered the White Wind not to be a branch identical to the other seven winds, but rather to be the origin of all winds. In the second half of the note, she proposed a series of startling hypotheses about using Hershey to reversely manipulate other winds—the notebook was locked away within a lead sheet in the family archives, as any official censor of the Academy would have deemed such a hypothesis heretical."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is one thing about Hexi Baifeng that the other seven winds can never do - when you are alone in the deepest night of the old world, surrounded by invisible things that you cannot name but can feel their existence, a real Baifeng mage even if he does not release any spells and just stands there quietly, a very faint warm glow that can be detected by the soul of any living person will naturally penetrate around his body. It’s not the visual light—you can’t read with it—but the way your fear suddenly drops by half a level at a moment, like someone quietly starting a half-baked fire behind you in a snowstorm that has driven away the first layer of frost on the back of your neck before it even burns. I met an exiled mage in an abandoned lumberyard in Osterland who bore the mark of Hershey's Academy - he didn't tell me why he was expelled from the Academy, but all the nightmares I had while sitting next to him all night were half as long as they were before. He had disappeared at sunrise the next day, leaving behind a white crystal beside me - I still keep it now, every time I need to see something clearly in the dark night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hexi White Wind Crystal is the most expensive and most fake magic item in the old world magic commodity market - pure quartz itself is not rare, but what is rare is the White Wind Crystal that has been infused with Hexi energy through the Bright Academy charging ceremony. It is called a 'light storage' in the market. A standard light reservoir the size of a fist can provide a White Wind mage with about three additional energy for three purification spells in an underground environment without sunlight, or it can continuously emit a weak purifying light when no one is operating it (enough to prevent any low-level undead from approaching its five-foot radius). The market price of genuine light storage is about four times that of gold of the same weight - the reason is that the academy's charging cycle is only twice a year, and each charging ceremony can only process no more than sixty standard-sized crystals. Counterfeit light storage is usually sold in wax-sealed packages after exposing ordinary quartz to sunlight for several days. Buyers will have a brief illusion of brightness when opening it in the sun, but it will completely lose its effectiveness within minutes after entering the ground. The only reliable way to tell the authenticity is to immerse the crystal in a basin of well water in complete darkness and leave it for twenty-four hours - a layer of extremely fine white ripples that can be seen by the naked eye will appear on the surface of the genuine light-storage water."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hexi White Wind - one of the eight winds of light, the purest and most difficult to master, drawing strength from the sun",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hexi Baifeng’s magical properties and energy sources"
+  ]
+}

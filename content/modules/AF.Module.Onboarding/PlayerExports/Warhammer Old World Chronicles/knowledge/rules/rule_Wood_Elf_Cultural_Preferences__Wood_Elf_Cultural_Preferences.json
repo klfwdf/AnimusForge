@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Wood_Elf_Cultural_Preferences",
+  "Keywords": [
+    "Wood Elf Culture",
+    "Aslay's preferences",
+    "forest tranquility",
+    "perfect archery",
+    "Four Seasons Celebration",
+    "natural balance",
+    "moonlight magic",
+    "Exclusive and aloof",
+    "hunting tradition",
+    "Tree spirits dance together",
+    "Monsoon purification"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elves—or Asrai, as they call themselves—have a deep-seated distaste for the world outside the forest, resenting the noise of industry, the stench of cities, and the intrusion of outsiders. Under the canopy of Athel Loren's ancient trees, they enjoyed absolute silence, listening to the wind whisper among the thousand-year-old leaves. Every Asrai is a born hunter. They are intoxicated by the tension of the bow string when it is fully drawn and the perfect moment when the arrow hits the target a hundred steps away. Their emotions are closely synchronized with the seasons of the forest: spring is the grand dance of war, summer is the wild hunting feast, autumn is the contemplative gathering of fallen leaves, and winter is the deep retreat and meditation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We Asrai's preferences are something you from the outside world will never be able to relate to - not because we are unwilling to explain it to you, but because to understand our joy, you need to spend at least one full cycle of seasons in our forest first, and few outsiders can stay in Athel Loren for a full year without being expelled by our rangers or ostracized by the will of the forest itself. We love silence - but this is not the same thing as silence as you humans understand it. You can experience the \"quiet\" that isolates sound in a closed stone room; our tranquility in the forest is open and alive - it is a grand and silent music formed by the different pitches produced by the wind passing through the leaves of different tree species. It is the warm breath released by the thousand-year-old leaves under our feet as they slowly decay. It is the moment when a forest deer in the distance stops after noticing our presence - its heart resonates in our shared silence. We love the art of bowing - every Asrai has been practicing it since he was five years old, not for any practical purpose, but because the bow is the only tool that allows us to transform the life energy within us (what you weird Academy of Magic scholars call the \"Wind of Gyron\") into visible physical form. When you shoot a perfect arrow, what you experience is not what human hunters call \"hitting the target\" - what you experience is the temporary illusion that you, the bow, the arrow, the wind, the distance and the target become one at this moment. That is the closest feeling to divinity we can experience in the mortal world. We love the passing of the seasons - not as a flow of weather but as a spectrum of emotions: in the spring we dance the war dance of kunos, our limbs filled with all the energy accumulated during the winter break, the steps not \"dancing\" but allowing the life of the forest to flourish. Power drives our bodies to release; in summer we ride on war horses and gallop on wild hunting trails deep in the forest. Wild hunting is a cruel intoxication - you are dragged out of sleep by Orion's horn, your reason is covered by an ancient hunting impulse, and you forget Your name is only known to the prey running in front of you and your spear; in autumn, the elders among us will walk alone in the deciduous forest, holding each yellow leaf that has not yet fallen to the ground with the palm of our hands. The moment it leaves the branches is almost a slow death observation - let us pay attention to life. The circle of life remains in grateful silence; in winter we retreat to the inner space of the Oak of Time, breathing in sync with the whispers of the roots of the world, curling up in the darkness like a fetus in the mother's body - the entire winter's meditation is to re-recognize our own name in the morning light of spring. Our most important and least talked-about preference is the moment when we guide the flow of Jiron's life magic under the moonlight and starlight, standing side by side with the dryads and dryads in a secret clearing of this ancient forest, when a drop of pure life energy from the depths of Athel Loren itself condenses from the air on our fingertips - we are not \"casting\", we are \"remembering\" - recalling the distant time and space that was already part of this forest before we were born."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic thinking facing Athel Loren cannot copy any conventional strategy for human or dwarf kingdoms-the wood elves' fundamental preference is not territory, wealth or political influence, but \"the continued stability of the forest border.\" Their interest in diplomacy is limited to a narrow range of conditions: communicating only with those forces that can help prevent Chaos, Orcs, or Human loggers from invading the forest's borders. If you, as an outside lord, wish to establish any form of cooperation with the wood elves—whether it be trade or military alliances—you must first complete the transition from \"potential invader\" to \"tolerable buffer zone\" in their worldview, which usually means explicitly promising and physically proving that you will not log, mine, or build roads within a certain range of Athel Loren's borders. Wood Elves militarily favor fast, deadly, leave-no-trace guerrilla tactics - they'll wipe out your entire forward company before you know it, leaving no bodies or weapons behind, as if the whole thing never happened and just the group you were patrolling there suddenly never existed. The three things they hate most are, in order, industrial pollution - any smelter or steam facility operating within a certain distance of the forest boundaries is considered a hostile act of war; indiscriminate logging - every tree cut down without reason is considered a murder, and the memory of murder by the wood elves exceeds the length of human history; foreign armies passing through the forest - even allied armies passing through Athel Loren without permission are considered a serious violation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elf cultural system occupies a unique position among all civilizations in the old world—they neither belong to the rational and magical civilization established by the high elves on the outer islands, nor to the political and military civilization established by humans on the plains. Instead, they belong to an \"ecosystem symbiosis civilization\" that is completely bound to a specific geographical space (Athel Loren Forest). The core cultural psychological mechanism of this form of civilization can be defined as \"tree-self identity\" - Asrai's individual self-cognition during the development process does not end at the boundaries of his own body, but extends to the health of the entire forest ecosystem. When a wood elf says \"I'm hurt,\" he may be referring to his own physical wound, or he may be referring to an insect attack on an ancient tree to which he has a spiritual connection, and the intensity of his emotional response to the two conditions cannot be distinguished because the two pain sensations share the same pathway in his nervous system. This psychological structure directly derives from Aslay’s five core cultural preferences. First, xenophobia - outsiders bring not only physical invasion but also psychological noise. When a dwarf miner knocks the first pickaxe at the edge of the forest, every Asrai within a few hundred miles hears a piercing alarm signal in the brain. This experience is similar to a human having a needle inserted into the ear canal. Second, the obsession with archery - bows and arrows are not just tools for hunting and war, they are the language through which Aslay communicates with the forest space: the trajectory of an arrow perfectly avoids every branch on the way and accurately hits a squirrel deep in the canopy - this may seem to humans as mere precision, but to Aslay it is a perfect surrender to the forest space and a perfect control at the same time. Third, the Ritual of the Four Seasons - Aslay leaves his emotions to be managed by the seasons rather than by his own will. This strategy is extremely efficient in psychology: when your sadness is absorbed and digested by the collective hibernation ritual in winter, you don't need to torture yourself repeatedly in your personal memory like humans do to get out of the trauma. Fourth, balanced ethics - the spiritual satisfaction brought by repairing an ancient tree that has been corroded and should have died is beyond any external reward for Aslay, because repairing a tree is equivalent to repairing a break in the entire world order - Aslay's sense of ethics is not an abstract rule system, but a physical feeling that can be directly experienced by the senses. Fifth, moonlight preference - Aslay does not like the directness of the scorching sun, which is consistent with their essentially introverted and exclusive character: moonlight and starlight are reflected and filtered lights, just as Aslay's culture is the life energy reflected and filtered by the forest ecosystem, and they find a deep sense of resonance in these two filters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Asrai women live in a different reality than human women - we are not on the fringes of male power, because Asrai society is not organized around power the way humans are. My favorite experience was channeling Guillén energy alone in an ancient clearing under the moonlight, allowing the magic of life to flow from the earth through my body into a diseased tree that needed to be healed - that process was not like \"casting a spell\", but more like me temporarily lending my body to the forest as a transmission vein. What I experienced was the humility of being used rather than emitted by a greater consciousness of life. The hunting and fighting abilities of us Asrai women are as recognized as those of the men - my mother was undefeated in the spring war dance of Kurnos for seventeen consecutive years, no one calls her a \"warrior\" or any variant with a gender prefix, she is just a warrior and nothing more. But deep down, we female Asrai prefer gentle rituals that are less followed by male Asrai - like silent conversations with dryads in the moonlight, collecting specific fungi and moss for use in hundreds of different healing salves, and caring for Athel Loren's saplings that are too young to have yet learned to control their own growth rate - care that is not a simple transfer of maternal instinct, but because we are more physiologically in tune with those slow rhythms of growth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core challenge of leading an Asrai's clan group (what we call the \"Autumn Kindred\") lies not in any political or military skills—it lies in your ability to correctly identify the emotional tones that your kindred members are experiencing in each season, and adjust individual tasking and collective ritual schedules accordingly. Our kindred had serious internal disagreements before the Kurnos war dance last spring - some people thought we should add a \"shadow dance\" from the wildwood rangers to the war dance, while others thought it was a blasphemy against the traditional form. I did not adjudicate this dispute as Chief of the Kindred - I announced that we would perform both the old dance and the experimental steps on the night of the next full moon, and let the forest itself decide which was correct by observing the intensity of the kilon fluctuations in the surrounding trees during both dances. The result was an experimental dance move that struck a chronological chord with a nearby thousand-year-old beech tree – a tree that, at the end of the dance, sent a clear message through the World Roots network to the Age Oak. To you humans this seems like an absurd decision-making mechanism—letting a tree dictate cultural policy—but to us, our kin are not a bunch of independent individuals camping in the forest. We are one organ of an ecosystem that a three-thousand-year-old beech understands far more completely than any of us. The problem with human rulers is that they rule only themselves, and we rule a corner of Athel Loren - which includes its trees, rivers, air, animals, and elves, and decision-making requires input from all of these beings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I spent the night in a fire-scarred glade on the edge of Athel Loren—not because I was brave, but because a sudden storm forced me into an area of ​​forest that wood elves would not normally tolerate foreigners from entering. That night I experienced one of the preferences of Wood Elf culture that is most difficult for me to describe in human words: their \"silence in the woods\" is not an environmental feature - it is an actively uttered spell. I didn't hear absolute silence in that clearing - what I heard was a deliberately arranged sound field: there was a stream to the east that was deliberately diverted so that its water sound was 30% lighter than in its natural state; there were three pruned pine trees in the south that only produced ultra-low-frequency rustling sounds when the wind blew (which I felt with my hands rather than heard with my ears); there was a low and continuous hum in the bushes to the west that I couldn't find the source of. I fell asleep in that carefully tuned sonic environment and had dreams that were longer, more coherent, and less recallable upon waking than I had ever had in a city or village in my life. The next morning I discovered a pattern of shiny river stones in the middle of the clearing—not a symbol to warn me to leave (rangers don't waste stones when driving off foreigners), but an almost illegible ancient elven character that meant something like \"Thank you for your silence.\" I still don’t know which Asrai observed my sleep that night, but I know that from that night on I gained a physical understanding of the wood elves’ preferences: they didn’t want the outside world not because they were afraid of it—but because the sounds and smells outside would interfere with the extremely weak but persistent signal they received, which was the continuous whisper of the collective life consciousness of the entire Athel Loren to each individual elf through the wind and roots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elves have the most peculiar attitude toward trade of all the civilizations of the Old World—they have no need for our currency, our manufactures, or our luxuries, for they obtain everything they need to live from the forests. However, they occasionally engage in small exchanges of goods - not out of the need for exchange itself, but out of some deeper motives that outsiders cannot guess. Our caravan had indirectly learned through a halfling intermediary that Athel Loren would be open to the outside world for a \"limited exchange period\" of about thirty years every century. During this period, certain groups of Asrai would appear at the edge of the forest, using their special moonwood bows, compound forest herbs, and shrouds woven with the assistance of tree spirits that would never decay, in exchange for three things: Meteor iron (rune iron forged by dwarves does not accept any form of trade, but natural, unprocessed meteor iron is considered by Asrai as a possible Pure metallic memories introduced from outer space); living seeds from distant continents (not used as food but for cross-continental plant gene exchange to maintain the long-term genetic diversity of Athel Loren's ecosystem); and ancient human legends (they directly traded bows and ointments for ocean stories told by human sailors - a living Asrai would sit on the edge of the forest and quietly listen to a human sailor telling stories for three days and nights, and then send him away with a reward worth a whole shipload of spices). I firmly believe that this third need - \"imported narrative\" - ​​is the key to understanding the wood elf trade culture: although Asrai's life is extremely long, events are extremely rare. Their forest life is continuous, stable, and repetitive, so their own culture will not produce any new stories. They need the chaotic life of humans and dwarves to generate enough stories and then consume them occasionally - just as you humans need forest wood to build ships that can sail away to discover new stories, an exchange based on invisible complementarities."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tree-I identity - Aslay's self-perception extends to the core cultural psychological mechanism of the forest ecosystem. Individual pain and ancient tree damage share the same neural channel",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of wood elves"
+  ]
+}

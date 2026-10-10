@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Sarsfield",
+  "Keywords": [
+    "Sarsfield",
+    "House Sarsfield"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sarsfield family is a noble family in the West. Their emblem is a green arrow with a white diagonal band on a red background. There are not many grand legends about them, so the real visible roots are more important: territory, marriage, obligations to Casterly Rock, and the ability to protect farmland from bandits and armies. The glory of a small family is usually not to conquer the world, but to guard the land for generations, fulfill promises and not let their name disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the West knew that Sarsfield was not the richest vassal, but he could provide archers and riders. As long as they answer the call on time and guard the manor, the green arrows will have their place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Woodland hunters and farmers are concerned about whether hunting regulations leave a way for the poor to survive. If the lord punishes stealing a rabbit more seriously than stealing a field, the green hunter will only frighten the villagers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield The Sarsfield family is a noble of the West, and the green arrow on a white diagonal band on a red background is its family emblem. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield The Sarsfield family is a noble of the West, and the green arrow on a white diagonal band on a red background is its family emblem. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield The Sarsfield family is a noble of the West, and the green arrow on a white diagonal band on a red background is its family emblem. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield The Sarsfield family is a noble of the West, and the green arrow on a white diagonal band on a red background is its family emblem. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sarsfield: The Sarsfield family is a noble of the West, and the green arrow on a white diagonal band on a red background is its family emblem."
+  ]
+}

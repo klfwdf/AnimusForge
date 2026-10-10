@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Manorialism_and_Serfdom",
+  "Keywords": [
+    "Manorialism",
+    "Serfdom",
+    "Peasantry",
+    "Three-Field System",
+    "Open-Field Agriculture",
+    "Corvee Labor"
+  ],
+  "RagShortTexts": [
+    "Manorialism formed the economic bedrock of medieval Europe, where peasant serfs farmed open fields under the jurisdiction of the manorial lord."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The manorial system (seigneurie) formed the foundational economic structure of medieval Europe, supporting the warrior nobility and monastic orders. The agricultural manor was divided between the lord’s demesne (land farmed directly for the lord's profit) and peasant holdings worked by serfs (villeins) bound to the soil.\n\nPeasants practiced the three-field crop rotation system (planting autumn wheat, spring barley or legumes, and leaving a third fallow), which dramatically boosted European caloric yields during the Medieval Warm Period. In exchange for customary protection and access to the lord’s mill, winepress, and oven, serfs provided labor dues (corvée), paid agricultural tithes, and answered to the lord's manorial court."
+    }
+  ],
+  "TextMappings": []
+}

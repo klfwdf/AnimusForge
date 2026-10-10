@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Blackmont",
+  "Keywords": [
+    "Blackmont",
+    "House Blackmont"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Blymond, with Blymond City as its seat, is a noble family of Dorne. Lady Laura Brymond is in charge of the family business, her daughter Jonissa is the heir, and her son Penrose is training as a squire and knight. Such an arrangement is not unusual in Dorne: the eldest son or daughter inherits in order of birth, and women do not need to give in because of their gender. The stability of the family depends on the inheritance being recognized, the estate being cared for, and the children's respective choices in marriage alliances and martial arts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles would not be surprised that Blymont is ruled by a woman. They are more concerned about whether the lord keeps his promise and whether the heir can bear the responsibility for judgment and defense; ability and birth order are more important than the prejudices of southerners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Bramont City still judge the wife and heir based on well water, taxes and patrol roads. If the law is clear and strong men dare not seize land at will, whether the person who prints the palm is a man or a woman will not change the weight of a bag of grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackmont The Brymond family occupies the city of Blymond, and inheritance is continued by the blood of mother and daughter. This is a local manifestation of Dorne allowing women to inherit the tradition. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackmont The Brymond family occupies the city of Blymond, and inheritance is continued by the blood of mother and daughter. This is a local manifestation of Dorne allowing women to inherit the tradition. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackmont The Brymond family occupies the city of Blymond, and inheritance is continued by the blood of mother and daughter. This is a local manifestation of Dorne allowing women to inherit the tradition. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackmont The Brymond family occupies the city of Blymond, and inheritance is continued by the blood of mother and daughter. This is a local manifestation of Dorne allowing women to inherit the tradition. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blackmont: The Brymond family occupies the city of Blymond, and inheritance is continued by the blood of mother and daughter. This is a local manifestation of Dorne allowing women to inherit the tradition."
+  ]
+}

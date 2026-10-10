@@ -1,0 +1,146 @@
+{
+  "Id": "rule_Commodities_and_Trade_Military_Commodification_of_the_Unsullied",
+  "Keywords": [
+    "Military Commodification of the Unsullied"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Military Commodification of the Unsullied Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Military Commodification of the Unsullied: Unsullied molded training, discipline, and a brutal system into a salable military force. The masters of the city-state regard them as precious assets, and their employers value obedience and combat prowess. However, the people who are really there must live between the deprived past and the self they still want to keep."
+  ]
+}

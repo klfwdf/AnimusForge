@@ -1,0 +1,87 @@
+{
+  "Id": "rule_Volbjorn_the_Hungry",
+  "Keywords": [
+    "Volbjorn the Hungry"
+  ],
+  "RagShortTexts": [
+    "Volbjorn the Hungry founded the Kingdom of Nordvyg."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Volbjorn? Who is that? Sounds like a Nord?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 30
+        }
+      },
+      "Content": "For many years, many men claimed the title King of Nordvyg, but Volbjorn the Hungry was the first to make that title a reality of land and power. In his youth, he served the Empire as a mercenary and amassed immense wealth. Returning home with this fortune, he expanded his domain from a jarldom into a kingdom. Some who resisted him were defeated, others were bought off, and still others discovered that those they trusted had been bought. According to legend, on his deathbed Volbjorn ordered himself buried alive with his gold in his barrow, so that greed and sorcery might transform him and allow him to count his wealth every night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Volbjorn was our old grand prince. He united all our jarls and founded this principality. Sure, he killed plenty of people for his power, but that doesn't matter because he rewarded plenty of people too. Our late grand prince was truly formidable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Long live the Grand Prince! We will never forget the Grand Prince's grace!!"
+    }
+  ],
+  "TextMappings": []
+}

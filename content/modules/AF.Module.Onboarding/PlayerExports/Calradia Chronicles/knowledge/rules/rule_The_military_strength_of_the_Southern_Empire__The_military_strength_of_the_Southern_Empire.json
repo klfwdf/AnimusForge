@@ -1,0 +1,108 @@
+{
+  "Id": "rule_The_military_strength_of_the_Southern_Empire",
+  "Keywords": [
+    "Military strength of the Southern Empire",
+    "Southern Empire Military Power"
+  ],
+  "RagShortTexts": [
+    "The Southern Empire has more troops, but it needs to guard against Khuzait and the Northwest Empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military power of the Southern Empire? We actually don’t know much about it. We only know that the Southern Empire seems to be stronger. They have more horse farms and more cavalry. They have more armored cavalry than the other two empires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our Southern Empire controls the richest area of Calradia, and it is relatively easy to defend and difficult to attack. We are stronger than Aserai, and we will seek a war with Aserai to gain new territory. We don't want to fight, but sometimes wars have to be fought, but we also have to defend Khuzait in the east and the trespassers in the north of the west (Western Empire, Northern Empire), so our pressure is still quite high, even though we have more troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What is the Southern Empire? Their group of pampered city lords don't know how to fight at all. Their Eros and Turiados simply don't understand military affairs at all, but they still have military power. It's really ridiculous. Rhagaea herself doesn't know much about military affairs. Her management skills are acceptable, but she is terrible at using soldiers to fight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We border the Southern Empire, but we mainly focus on defense. After all, no one wants to be involved in a two-front war. It is not a wise choice to provoke two empires at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Southern Empire is stronger than us, but not much stronger. We can fight against the aggression of the Southern Empire and ensure that they do not penetrate our defenses. Forget about attacking."
+    }
+  ],
+  "TextMappings": []
+}

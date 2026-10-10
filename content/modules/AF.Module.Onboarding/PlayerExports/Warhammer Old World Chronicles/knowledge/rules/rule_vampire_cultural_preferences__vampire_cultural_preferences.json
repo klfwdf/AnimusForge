@@ -1,0 +1,211 @@
+{
+  "Id": "rule_vampire_cultural_preferences",
+  "Keywords": [
+    "Vampire Culture",
+    "Aesthetics of the Midnight Aristocracy",
+    "Gothic Aesthetics",
+    "Absolute Dominion",
+    "Exploration of Necromancy",
+    "Martial Duels",
+    "Blood-Vintage Tasting",
+    "Eternal Elegance",
+    "Necromantic Research",
+    "Blood Dragon Duels"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What vampires pursue is absolute elegance in eternal darkness—they loathe sunlight, indulging in the silhouettes of Gothic castle spires beneath the moonlight, the poignant beauty of withered roses, and mist-shrouded graveyards. They savor equally absolute dominion over both the living and the dead, regarding rule as a supreme aesthetic experience. Vampires of different bloodlines harbor different obsessions: the Necrarch bloodline buries itself in necromantic research within ancient libraries, while Blood Dragon knights care only for seeking out worthy opponents to prove that their martial arts have reached the realm of perfection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our tastes are incomprehensible to the living because their senses are too fleeting—they can only see the single instant a flower blooms, whereas we appreciate the subtle differences in each of its blossoms across several centuries. We love the eternal night—not out of fear of sunlight (though of course that is a factor), but because only in darkness does the essence of the world shed its vulgar disguise of color, leaving behind pure contour, texture, and temperature. We love Gothic architecture—every spire of Castle Drakenhof is in our eyes not merely stone, but an epic fixed into space, and every flying buttress and gargoyle is an aesthetic manifesto left behind three hundred years ago by one of our predecessors. We love withered roses—mortals only like flowers in full bloom because their brief lives demand immediate stimulation, whereas in a rose slowly drying and turning to ash upon the stem we see the entire process of life resisting entropy, which for an immortal is the only truly moving tragedy. We love dominion—not a crude lust for political power, but a far more refined experience: when you stand atop the highest tower of the castle looking down over all of Sylvania, knowing every heartbeat in every living village and the position of every bone in the zombie phalanxes, you need only crook a finger—or not even move a finger—to alter the tempo of any measure within it. Yet half the pleasure of such dominion lies in mastery, and the other half lies in the beauty of restraint when you choose to change nothing at all. Among us, the Necrarch house most obsessed with necromancy cherishes ancient books of necromantic art with a passion surpassing that of any mortal collector for any treasure—because within every miscopied rune in an original manuscript of Nagash lies hidden a severed causal chain of the entire history of necromantic magic, and such intellectual pursuit is one of the few means immortals have to combat boredom across eternity. Yet the preferences of the Blood Dragon house differ from mine—they care only for the perfect arc of a blade, for the instant they see the tip of their own sword reflected in an opponent's eyes, for proving the value of their existence through martial skill rather than magic. As for blood-vintage—you mortals understand it as 'blood-sucking,' but that is your physiological perspective. We taste blood the way you taste wine: provenance (which family), vintage (the age of the donor), texture (the subtle difference between arterial and venous blood), and finish (the chemical volatility in the blood of the donor's emotional state at the time). A full crystal goblet of warm, fresh blood from a royal descendant of Nehekhara's Second Dynasty holds no less value at a midnight ball than a bottle of two-hundred-year-old vintage treasured by an Elector Count holds at a human feast—and I assure you, the layers of flavor in the former are infinitely greater than in the latter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To conduct diplomacy or wage war with vampire lords, one must understand their fondness for the 'Eternal Game'—vampires are the only adversaries in the Old World who automatically adopt a century-scale timeframe in every diplomatic action. A peace treaty you sign today with a von Carstein is, in his eyes, merely 'a data-collection phase of an ongoing experiment'—he will feel no moral guilt over tearing up the treaty, because in his true plan that treaty was only ever temporary from the very beginning. The strategic preference of vampires leans toward indirect control rather than direct conquest—they prefer placing mortal lords in debt, cultivating pro-vampire factions among heirs, and infiltrating mortal courts through a seemingly neutral legal advisor or trade agent. Their preference in military force lies not in numbers, but in aesthetics and symbolic meaning—an elite host composed of Blood Knights and Zombie Dragons pleases a vampire general's aesthetic sense far more than a hundred thousand zombies. In trade, the only items vampires are truly interested in acquiring from the world of the living fall into three categories: ancient magical tomes and manuscripts, human blood of specific lineages, and high-grade alchemical materials related to necromancy—in ordinary commodities they have no interest whatsoever, as they can simply rely on zombie labor and the blood-tax economy for self-sufficiency."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The core of vampire cultural psychology can be summarized as the 'Crisis of Eternal Existence'—namely, that immortality grants vampires an infinite resource of time, yet simultaneously strips them of the capacity to generate meaning through a finite life. All cultural preferences of the living—love, honor, wealth, power—acquire urgency and meaning within the countdown to death; when vampires observe all of this from outside mortality, everything loses its natural significance. This has led vampires to develop three primary cultural compensatory strategies. The first is 'Deepening of Taste'—pushing sensory experience to superhuman degrees of refinement; for instance, blood-vintage tasting is not a physiological necessity, but an aesthetic discipline against nihilism: if a vampire can distinguish among dozens of chemical components in human blood the unique combination of a specific family, age, sex, and emotional state, he has discovered within the material world what mortals can only experience in the spiritual realm—infinitely divisible layers of meaning. The second is 'Projection of Perfection'—the martial obsession of the Blood Dragon bloodline is in essence projecting the meaning of one's own existence onto an improvable external craft with objective standards: the perfection of swordsmanship is absolute and non-subjective; a Blood Dragon knight spends five hundred years practicing the exact same thrust not for any audience, but because that thrust itself is 'right'—and this experience of perfect form grants the vampire an existential certainty approaching a mortal's religious experience. The third is 'System Construction'—the von Carstein bloodline's obsession with politics and territorial control is in essence treating mortal society as a vast chessboard to combat the tedium of eternity: every diplomatic probe, every manipulation of an heir, and every once-a-century large-scale military adventure is an interventional experiment upon a complex system, from whose anticipated long-term evolutionary outcomes the vampire derives a satisfaction akin to a mortal telling a story. Yet all three strategies suffer from a fundamental flaw: when measured against the scale of eternity, they eventually exhaust themselves. Every vampire over three thousand years old confronts the same ultimate dilemma—however unique an aesthetic taste or supreme a martial art once was, it will ultimately become familiar and repetitive. This explains why the oldest vampires are often the most dangerous destabilizing factors in the Old World: when all sources of meaning have dried up, destroying an entire continent becomes the last available means to inject dramatic tension into their eternal existence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The pursuit of beauty among female vampires reaches a frontier that mortal women can never attain—because we have infinite time to perfect a single gesture. Our ancestors of the Lahmian bloodline taught us: eternal elegance lies not in how many possessions you own, but in every movement of yours having been meticulously pruned over a thousand years to remove all superfluous elements. At the Eternal Night Balls of Drakenhof, I have observed a phenomenon a mortal noblewoman could never hope to match—female vampires who have lived for eight hundred years share the exact same arc of the wrist when setting down a crystal goblet, not out of mutual imitation, but because after repeating the same motion over eight hundred years, all that remains is the beauty of absolute efficiency. Our taste in adornment also differs utterly from that of mortal women—we do not pursue dazzling, garish colors, but indulge in a patina steeped in time: a dark velvet shawl left behind by a lover who died four hundred years ago pleases us far more than a hundred newly dyed gowns, because the faint scent of the departed still clings to that shawl—olfactory data of something that lived and died, which to us is a love letter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The governance of a vampire house differs fundamentally from the governance of mortal lords—our living serfs are not 'subjects,' but 'inheritance.' Over the past three centuries, our family's Sylvanian domain has implemented a bold yet successful experiment: our taxation on living villages is not a fixed volume of blood, but a fixed proportion—meaning that when the serfs produce more grain and raise more children, our blood-tax revenue grows accordingly. To mortal lords, such a system seems pointless—yet the first lesson of an immortal is that a sustainable system conforms far better to century-scale calculations of interest than short-term, high-efficiency extraction. My counsel to the younger generation of vampires in our house is this: do not slaughter all your living neighbors—let them learn to live relatively dignified lives within their fear, so that at the next urgent juncture when you suddenly require vast quantities of fresh blood to raise an undead host, you will not find only silent village ruins left across your domain. Managing immortality concerns not only a sustainable supply of blood, but also keeping the mind from sinking into pathological boredom—therefore our family holds an annual blood-vintage tasting competition and a necromantic disputation at Drakenhof every year, ensuring that across the span of centuries young vampires still have things to look forward to, rivals to envy, and honors to contest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In a border-town tavern in Sylvania, I once met a mortal physician who had escaped from Drakenhof—he was not a serf, but a blood-quality analysis specialist employed by a vampire lord. He told me that the vampires' system of taste is far more twisted and complex than anything I had previously understood: there was a collateral scion of the von Carsteins, sired eight hundred years ago, who specialized in collecting the very last drop of human blood—the kind drawn at executions, fatal childbirths, and battlefields, saturated with extreme terror, extreme agony, or extreme despair—not for drinking, but to paint with those drops of blood upon parchment in a cavernous black cellar. An ordinary person cannot look at this vampire's 'paintings' for more than ten seconds—not because they are gruesome, but because they convey a concentrated truth about suffering that you cannot bear. That physician also told me of another old vampire—a fellow who in life had been a Tilean architect—whose sole pastime was gazing every night from different angles at the exact same spire of the exact same tower, which he had been doing for four hundred and seventy years. When the physician spoke of these two things, his tone was not one of terror—but of an indecipherable bewilderment, as though he were trying to convey to me some terrible truth for which he held the evidence but could not form the sentences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The high-end consumer market of the vampires is an anomalous economy that does not follow the laws of supply and demand at all—a vampire noble's bid for an antique manuscript depends on whether he last read a similar text three hundred or three hundred and ten years ago, and as a merchant you can never know the answer. Our trading house once secretly operated an underground channel supplying rare blood to Sylvanian nobles—the profits were astronomical, yet the risks were equally disproportionate, because once a vampire lord feels that your 'supply chain' (the very term he used himself) for a particular blood source is not reliable enough, he will not renegotiate the price with you—he will simply turn you into an undead servant so you can work for him for free for all eternity. Vampires' demand for everyday goods is virtually zero—they do not eat food, do not wear clothes that suffer normal wear and tear, do not fall ill, and require no medical services whatsoever. Yet their demand for specific categories of goods possesses a stability that can last for centuries: high-grade crystal goblets (used for blood-vintage tasting), ancient ink (used for transcribing necromantic experimental records), and specific stone materials (used for repairing gargoyles eroded by wind and rain on Gothic castles). The only safe rule when trading with vampires is this: never let them owe you a favor—because when an immortal owes you a favor, he tends to 'repay' it in some twisted fashion two centuries later, when all your descendants have forgotten you ever existed."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Crisis of Eternal Existence — the mechanism by which vampires lose the meaning conferred by mortality due to immortality, driving them to develop three compensatory strategies: deepening of taste, projection of perfection, and system construction",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of the vampires"
+  ]
+}

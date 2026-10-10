@@ -1,0 +1,216 @@
+{
+  "Id": "rule_Chaos_Military_Power",
+  "Keywords": [
+    "Chaos Military",
+    "Chaos Military Chaos Warriors",
+    "Chaos Knight",
+    "demon",
+    "God's choice",
+    "Chosen of Chaos",
+    "Chaos Force Hell Cannon",
+    "Chaos Military Dragon Demon",
+    "Chaos Military Chaos Aberration",
+    "Chaos Military Mark of Chaos",
+    "Chaos Military Eyes of the Gods",
+    "predator",
+    "Champion of Chaos",
+    "Evil God War",
+    "Armies of Doomsday"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The armies of Chaos are the most feared force of destruction in the Old World. At the core of this army are the Chaos Warriors - elite northern warriors clad in black iron plate, each of whom has presented the skull of his enemy to the evil god as proof. Above them are the Chaos Knights, charging into battle on steel steeds mutated by the Evil God's gift. What is even more frightening is that the Chaos army often has demon companions from other worlds-these non-material forms themselves are a blasphemy to the laws of reality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our military might is the direct manifestation of the will of the gods on earth. Each Chaos Warrior is not drafted or hired - he voluntarily embarks on the iron path of seeking divine grace, writing his own legend with the blood of his enemies. Our Chaos Knights are not mortal cavalry, but Heralds of Destruction endowed with supernatural endurance by the evil god, whose mounts have devoured demonic flesh. The Chosen are champions favored by the gods. Their armor is fused with their flesh, and the weapons they hold contain angry demon souls. When the armies of Chaos appear on the horizon, any mortal army is nothing more than a harvest waiting to be harvested."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical advantage of the Chaos army lies in its absolute asymmetry: they do not need supply lines (Chaos warriors feed on fighting), are not affected by morale shakes (mortal fear is a sweet compliment to them), and can form terrifying synergy between various arms - the barbarian marauders consume the enemy first, the Chaos Warriors phalanx crushes them head-on, the Chaos Knights flank them, and the Daemon Legion is responsible for causing chaos and panic. Against Chaos, traditional positional defense warfare is almost suicidal, and its weaknesses of lack of unified command and infighting among tribes must be exploited."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The hierarchy of Chaos military power strictly follows the principle of accumulation of divine grace: at the lowest level are Chaos Reavers (barbarian warriors who have not yet proven themselves), above them are Chaos Warriors (armored warriors who have been initially recognized by the evil god), at the top are Chaos Chosen (elites marked by a specific evil god), and at the highest level are Chaos Champions and Chaos Lords (leaders who command warbands). Each level corresponds to a different degree of divine blessing - which is both a power and a trap, because the evil god's gifts are often accompanied by physical mutations: extra limbs, horny skin, the ability to breathe fire, or the spirit is gradually replaced by the evil god's will. The joining of the demon army requires the Chaos Warlock to tear apart the veil of reality through specific rituals, and the scale of the ritual determines the level of demons that can be summoned - from low-level bloodletters to powerful archdemons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The threat posed to female rulers by the armies of Chaos is rarely written about favorably in Imperial history books - but we all know it. The manuscripts circulated privately among the Countesses of the North record something more horrific than any military chronicle: after the Chaos warbands broke into the city, the female captives were not simply executed. Women with magical talents or noble blood are sacrificed to the Pleasure Cult of Slaanesh, or forced to drink the mutated blood of Chaos to \"test the strength of their souls.\" In Nordland and Osterland, every female lord has a secret plan - there is an inner room in the deepest part of the castle that only the female defenders know about. It is not gold and silver, but a quick action plan called \"Final Peace\". This is not cowardice - it is a refusal to accept the fate of being transformed into a plaything of Chaos or a walking dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The armies of Chaos are a bloodstain that can never be erased from my family tree. My family lost two-thirds of its adult males during the last great Chaos Invasion—the one during the time of Emperor Magnus. Those who weren't killed - worse. My great-uncle and his two sons were no longer what they were when they were discovered after the war, their flesh beginning to fuse with their armor, their eyes glowing faintly purple in the darkness, and they were taken to the Witch Hunters' Court in Altdorf to be processed. From that day on, our family's inheritance law added a new rule: once any family member shows signs of \"Northern Pollution\", their inheritance rights are automatically invalidated, and funeral ceremonies are not allowed to be held to reduce the risk of the power of Chaos spreading further through the remains. Defense against Chaos is not an abstract strategy - it is a lasting commitment that each generation of my family has given their blood and name to fulfill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Having spent three years as a mercenary on the Norsca border, I can tell you: the \"weaknesses\" of the Chaos armies you read about in Imperial military manuals are almost non-existent in actual combat. Yes, Chaos tribes do fight among themselves - but you won't feel it a hundred paces directly in front of your shield wall. Tactical analysis becomes meaningless when you face a phalanx of Chaos Warriors blessed by Nurgle, with all arrows you fire neutralized by the ichor in their rotting flesh. The only truly effective method of countering Chaos - something I learned after losing half a mercenary company - is fire. It's not an ordinary fire, it's an alchemical flame containing the magic circle enchanted by Guangming Academy. If you don't have that, then only the Imperial blunderbuss will allow you to see the Chaos Knights fall off their horses before they reach you. If you don't even have that - run."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the Imperial Military-Industrial Federation, the Chaos Army is the most expensive war opponent in the Old World - not because their equipment is expensive, but because fighting them requires military investment that lasts for hundreds of years. The Northern Wall, Kislev's garrison, the Nordland fleet, all the Imperial outposts in the north - these are permanent drains. I see Chaos as an economic negative externality - it forces the Empire to invest nearly three-thirds of its annual income into fortifications and military supplies, capital that could instead be invested in the expansion of the Empire's roads, the modernization of the port of Altdorf, or new steel blast furnaces. Chaos armies obey no economic rationality - they don't pillage you and then retreat, they try to destroy everything when they come, which means that all your previous defense investments will be wiped out in one fell swoop, and you'll have to rebuild from scratch. This model is a recipe for disaster that cannot be rationally planned for in any long-term budget."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Chosen Ones - Chaos elites who have received multiple blessings from the evil god, the most terrifying heavy infantry in the old world.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The armies of Chaos are the most feared force of destruction in the Old World"
+  ]
+}

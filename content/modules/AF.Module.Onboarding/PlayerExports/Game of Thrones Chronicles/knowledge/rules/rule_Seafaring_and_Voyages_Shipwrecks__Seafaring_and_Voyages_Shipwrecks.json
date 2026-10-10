@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Shipwrecks",
+  "Keywords": [
+    "Shipwrecks"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipwrecks Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shipwrecks: Shipwrecks can be caused by storms, reefs, collisions, fires, overloading or wrong headings. The cold after falling into the water, the broken ship's wood, the shore current and whether there are people nearby determine the chance of survival; the residents along the coast may either rescue the survivors or fight for the floating goods first."
+  ]
+}

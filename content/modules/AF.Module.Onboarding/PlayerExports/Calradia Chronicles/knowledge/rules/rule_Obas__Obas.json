@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Obas",
+  "Keywords": [
+    "Obas"
+  ],
+  "RagShortTexts": [
+    "Obas was a late Sturgia chief on the mountain, after whom the \"House of Obas\" (Rhodobas) is named. The village is located on a ridge overlooking the Ikara Wilderness and is a base for hunters to hunt for furs in the dark forests below."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Obas was a late Sturgia chief on the mountain, after whom the \"House of Obas\" (Rhodobas) is named. The village is located on a ridge overlooking the Ikara Wilderness and is a base for hunters to hunt for furs in the dark forests below."
+    }
+  ],
+  "TextMappings": []
+}

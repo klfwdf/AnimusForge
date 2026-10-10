@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Zeona",
+  "Keywords": [
+    "Zeona",
+    "Queen Mother",
+    "Lafayette"
+  ],
+  "RagShortTexts": [
+    "Zeona was regent as the Queen Mother, never crowned but wielding real power"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The impression we have of Zeona here cannot be said to be very clear. After so many generations, her deeds have long been obscured. But there are still a few things passed down from the streets and alleys. We know that the city was named after her. This is the most real thing, and she talks about it every day: \"I live in Zeonika.\" As for what she has done, not many people can tell clearly. That hot summer wind also called her name. Every year when we feel uncomfortable being roasted, we always say, Zeona is here again. As for why the wind called her name, we can't tell. Probably because she lived in this city back then. Or maybe not. Anyway, generations of people have been calling it this way, so let’s keep calling it. We know that she is not the queen, but manages affairs as the mother of her son. This has been passed down from generation to generation. As for why, there are many theories - some said she didn't want to, some said her son wouldn't let it, some said it was a rule. We don't care much about which statement is correct. Anyway, no matter what her name is, she has managed the empire, which is enough for us to brag about to outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Zeonna, one of the few women in the history of the empire who actually ruled the empire, was often called \"Zeonna Lafayette\" in later generations. She did not come to the court as a queen, but as the regent and acting in the name of the mother of her son. Throughout her reign, she was never officially crowned empress, and the highest title in the empire still belonged to her son. However, under her title, the real power of the empire has long been in her hands. Her political skills are known for her forbearance and patience. In the gap between name and real power, Zeonna chose the strategy of giving in on her status but not on power. Throughout her long years as regent, she not only maintained the apparent continuity of the empire's legal system - the emperor was always her son, but also ensured that no one in the court could question her actual authority."
+    }
+  ],
+  "TextMappings": []
+}

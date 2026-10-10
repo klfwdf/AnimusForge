@@ -1,0 +1,183 @@
+{
+  "Id": "rule_arenicos",
+  "Keywords": [
+    "Arenicos"
+  ],
+  "RagShortTexts": [
+    "Arenicos was the last unified emperor of the Karad Empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos Petros, the last undisputed unified emperor of the Kalad Empire and the former head of the Petros family. His military exploits and careful governance halted the empire's decline, which peaked after the Battle of Pandrak. In his early years, Arenicos was one of the most trusted commanders under the former emperor Nereitses, and enjoyed a reputation as a capable and respected member of the Senate. During the Battle of Pandrak, the imperial army was defeated by the coalition forces of Battania and Sturgia. Arenicos led a small group of guards to successfully evacuate, collecting survivors along the way and becoming the only organized imperial army after the war. After returning to the imperial capital, he maintained order when rumors of defeat spread, and was immediately elected by the Senate as Nereitses' successor, donning the purple cloak symbolizing imperial power. After taking the throne, Arenicos showed extremely slick political skills. He extolled republican ideals as the pinnacle of human achievement, worked closely with the lords to convince them that he would restore power to the Senate, and created an elite guard of external mercenaries loyal only to the emperor. He consolidated eastern trade routes by marrying Rhagaea, the daughter of a minor king east of the empire. Among the people, he is widely loved for his outstanding military record and diligence in fighting corruption. There is even a folk worship that regards him as a god, but he turns a blind eye to this. He met almost all the expectations of the army, the common people, the nobility and the Senate at the same time - the soldiers loved him because he saved the army after Pandrak, the common people and the nobility respected him for his stable and capable governance, and the Senate trusted him because of his conservative values ​​and respect for the law. However, Arenicos's reign was always clouded by an unresolved shadow - his reluctance to name a successor. According to tradition, the successor can be selected from the family, elders of the Senate or senior military officers. His only child was a daughter, Ila, who was wild and rude, and her mother, Rhagaea, was from outside the empire. This unresolved question became increasingly pressing as he aged. Finally, Arenicos returned to the palace in the southern town of Lycaron after winning a border battle. He went back to his room to rest alone, citing a severe headache. He was found dead in a pool of blood by the guards a few hours later. There is a popular belief that the emperor was poisoned by Rhagaea's poisoned wine. Whatever the truth, Arenicos' death immediately triggered a schism in the empire. The senator Lucon proclaimed himself emperor in the north, the general Garius was proclaimed emperor by the soldiers at the front, and Rhagaea announced to the cheers of the people of Lycaron that her daughter Ila should inherit the entire empire. The empire was divided into three parts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos was a good emperor, but not good enough. When he put on the purple robe, he said beautiful words to our Senate - restore the republican tradition, respect the authority of the Senate, and return the empire to the dignity it had before Pandrak. We believed it and gave him the throne. The first few years were really good. He discussed things with us. Money for wars went through the Senate, and laws also followed the procedures of the Senate. But what happened next? He hired a group of soldiers from outside who only recognized him, and kept them in the palace as personal guards. What does this mean? Does the emperor of a republic need an army loyal only to himself? He said he respected the Senate, but in his hands he was holding power in his arms bit by bit. We are not blind. It's just that he hugged you so cleverly that you couldn't say anything - he always looked kind and cheerful in the Senate, always praised the republican ideal, and then quietly erased the most critical item in your proposal with a smile. You can't hate such a person, but you can't trust him either. He died suddenly and strangely. The Gentile woman Rhagaea laughed that day, and Lycaron's clay legs made up nursery rhymes and sang them all over the street. We don't want to pursue it, and there's no point in pursuing it. An empire cannot live without an emperor, and the Senate—the true heart of the empire—must ensure that the next person to wear the purple robe understands that the purple robe was given by the Senate, not stolen, and not tied from the skirts of foreign women. The Lucon patriarch stood up for this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos is a sensible man. He knew that the roots of the empire were not in the old empty talk of the Senate, nor in the tents of the border military camps, but in the city-states. In the docks of Lycaron, in the markets of the southern cities, in the sound of silver coins clattering as the trade routes flowed through. The best proof is that he married Rhagaea - a princess from a small country to the east of the empire, who brought in the smooth flow of the eastern trade routes. The old guys in the Senate who can only gossip in the meeting hall can't understand this account, nor can the reckless men in Galios who can only kill people on the front line. Arenicos figured it out. Therefore, during the years under his rule, business in the south was easy. You have to pay the tax certificate, but after you pay it, the road will be open, the goods will be safe, and the money will be earned. He turned a blind eye and acquiesced to some things - such as the ridiculous things that people worshiped him as a god, such as some rules in the city-state that were not in line with the imperial code but everyone tacitly understood. He doesn't take things seriously, and neither do we. We all get by. He is dead. Rhagaea says Ira should succeed, and we believe Rhagaea. Not because of how nice Ila was—that girl was as wild as a horse bandit—but because Rhagaea, like her husband, was a sensible person. Only when you understand that people are in power can your business continue. Lucaron's nursery rhyme? Just sing, people always want to have some fun. All we care about is whether next season's caravan can leave on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos? A guy who fights the battle without ending it. We admit that he stabilized the situation after Pandrac. When the battle turned so badly, he could still gather the remaining soldiers and bring them back. If it had been anyone else, the imperial flag would have been abandoned in the mud of Battania. Just because of this, he deserves to wear a purple robe. The soldiers recognized him, and so did we. But admitting it, his subsequent path was wrong. He spent too much time on the Senate and those weaklings in robes, and put the war second. Those barbarians on the border have never calmed down. Instead of completely crushing them, he is only content to win one or two battles and then go back to work on his political balance. Balancing over and over again, I balanced myself to death on the bed. We don't like Rhagaea. What does it sound like for a foreign woman to laugh right after her husband dies? But we can't stand the old guys in the Senate even more. We are bleeding on the front lines, while they are behind the scenes using pens to determine our military pay and pinch our supplies. Arenicos was still able to suppress them when he was alive, but when he died, the Senate immediately launched a Lucon to drag the empire back under their robes. Galios was promoted from the military camp. He was someone who ate dry food and took arrows with the soldiers. Wealthy businessmen support us because they know that doing business with a man with a knife is a sure thing. As for Arenicos - he fought well, but he ended badly. If he doesn't appoint an heir, doesn't he just hand us the sword and let us fight for it ourselves? Then we won't be polite. But our leader Gary respected Arenicos - because Arenicos brought him back alive from Pandrak"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "battania",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos Petros - the last intact shield of the Kalad Empire. This was not said by me, but by an old general here. He fought against Imperial soldiers at the border, and when he came back he said that when that man was alive, the Imperial front was strong. It's not that he can fight well, but that the people under his hands are united. An emperor can temporarily satisfy the Senate, the military camp and the city-state, which is a skill in itself. We outsiders find it difficult to see that he has maintained it for so many years. Of course, he also has his problems. He did not name an heir, which was a taboo. Whether it is a dynasty or an empire, the most fearful thing is that the master dies without leaving a message. He clearly knew that his daughter was wild, his wife was a foreigner, and the old foxes in the Senate were always eyeing his seat, but he still put off doing it. Either he is too confident and thinks he can live for a long time; or he is too weak and does not want to offend anyone among the several forces. Either way, the result is the same - he dies and the empire breaks into three pieces. For us, this is a good thing. A unified Kharad Empire is a wall that stands in front of everyone. Now the wall collapsed on its own and collapsed into three piles, with rubble being thrown at each other. Our caravans can pass through the cracks, our envoys can drink with this emperor today and talk to that emperor tomorrow, and our borders don't need to be so tight. So I toast Arenikos - he is a respectable opponent, and we dare not underestimate him while he is alive. But I’m even more grateful for the way he died. He died in an unclear way, leaving a mess that no one could pick up. This cup is a toast to his headache."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos of Calard? Oh, that purple-robed emperor. I heard that he died in his bed, and it was his wife who did it - maybe not, who knows. Things have always been very messy over there. Our place is far away from Karad's mainland, and their soldiers can't reach here. But the goods on the trade road are getting less and less expensive every year, and we feel this. I heard from the merchants that there are three emperors fighting each other over there, and the roads are full of soldiers, making it impossible for goods to pass through. One emperor is enough for the people, three? I'm afraid the people in that place are having a hard time. In the past, when Arenikos was alive, Kalad's goods still arrived on time. He took a foreign woman as his wife, probably because he was interested in the trade route. When trade routes are open, we can also benefit from this. Now that he is dead, the trade routes are cut off, and his wife is too busy competing for seats with others to care about trade routes. As the old saying goes here, if your neighbor's house is on fire, don't just stand and watch, as the smoke will blow over and you'll choke. I don’t know how long Kalad’s fire will last."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old man is a good commander. We soldiers don’t understand the twists and turns of the Senate, nor do we understand the business practices of the city-state. We only recognize one thing - whoever we follow can survive, win, and get paid. The old man has taken all three. Pandrak was in such a horrible state in that battle, he was the one who brought us out. Just based on this, this life is owed to him. Later he became emperor and rarely went to the front line. We don't blame him, the emperor has his own business. But he hasn't forgotten us. Military pay has not been cut off, and pensions for those killed in battle have also been generously distributed. Most of the time he was dealing with those in robes in the Senate because of military expenses. He doesn’t say these things, but we know them. After he died, everything changed. Let us choose a side above - Galios, Lucon or Rhagaea. We don't want to choose. We just want to go to war with the emperor and get paid and go home. But the emperor died and he didn’t tell us who the next emperor would be. Now we are divided into two sides with the brothers who had dinner together yesterday. See you on the battlefield next time. Who is to blame for this? Some blame Rhagaea, some blame the Senate, some blame Garius. I think that if the old man had made his words clear and appointed one person while he was still alive, this wouldn't have happened. But he didn't say it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Life is manageable when Arenicos is around. This sentence sounds easy to say, but if you go to the market in Lucalon and ask anyone at random, eight out of ten people will tell you this. Can pass. The food is not too expensive, the roads are not too chaotic, and the son who is a soldier is not easy to die. It’s not that it’s great, it’s just that it’s passable. What happens after he dies? The old men in the Senate established an emperor themselves in the north, Galios also established an emperor in the west, and Rhagaea supported her daughter in sitting on the throne in the south. The empire suddenly has three emperors, how can you live this life? People are not stupid. How did Arenicos die? Officials said he had a headache. Can a headache make a middle-aged man who has just won a battle die in bed? Rhagaea smiled the next day, so it couldn't have been a headache. We make up nursery rhymes, we sing them, and we have to pay taxes after singing. It's just that in the past, taxes were paid to one emperor, but now three emperors are asking for them. We think of Arenicus, not because he is a saint, but because he only had one emperor when he was alive."
+    }
+  ],
+  "TextMappings": []
+}

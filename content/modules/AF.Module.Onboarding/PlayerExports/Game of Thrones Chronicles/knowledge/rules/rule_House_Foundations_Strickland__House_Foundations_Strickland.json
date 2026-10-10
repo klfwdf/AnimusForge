@@ -1,0 +1,148 @@
+{
+  "Id": "rule_House_Foundations_Strickland",
+  "Keywords": [
+    "Strickland",
+    "House Strickland"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Harry Strickland was a veteran commander in the Golden Company, his family name being associated with long service in the Exile Legion. Strickland did not command the Golden Company based on a piece of hereditary land in Westeros. His weight came from years of military service, familiarity with the team's accounts and contracts, and careful calculation of soldier losses in times of danger. The members of the Golden Company come from families who lost their land, Essos mercenaries, and generations of exiles. They may not worship the same king, but they respect the commander who can make the army receive its salary on time, maintain its formation, and see its retreat. Strickland's authority therefore carries the realism of a military camp: honor can be written on the flag, but food, military pay, and returning home alive are contracts that must be fulfilled every day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Golden Company Soldiers evaluated Strickland based on whether the orders were clear, whether the military pay was on time, and who was left behind during the retreat. The legion can survive for several generations not only because of its legendary invincible reputation, but also because there are people who are willing to settle the cold accounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of Westeros hear Strickland, they often think of overseas legions and old debts that may return to their homeland. Some people despise that he is not from a royal family, while others are afraid that a person who understands contracts and teams will be more difficult to deal with than a romantic exiled prince. The flag of the Golden Company is never free for anyone's blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who shipped goods for the Golden Company knew that Strickland's power rested with warehouse receipts, ports, horses, and the negotiating table. He may not tell heroic stories, but he will remember how many bags of food were missing in a ship and how late a guide was. Exile life has worn away romance, leaving only promises that must be fulfilled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Strickland Harry Strickland maintains the Golden Company with years of experience in military service, contracts, pay and logistics; he represents the cautious and realistic side of the Exiled Legion. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Strickland Harry Strickland maintains the Golden Company with years of experience in military service, contracts, pay and logistics; he represents the cautious and realistic side of the Exiled Legion. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Strickland Harry Strickland maintains the Golden Company with years of experience in military service, contracts, pay and logistics; he represents the cautious and realistic side of the Exiled Legion. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Strickland Harry Strickland maintains the Golden Company with years of experience in military service, contracts, pay and logistics; he represents the cautious and realistic side of the Exiled Legion. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Harry Strickland maintains the Golden Company with years of experience in military service, contracts, pay and logistics; he represents the cautious and realistic side of the Exiled Legion."
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "Id": "rule_kosiama",
+  "Keywords": [
+    "Cosia horse",
+    "Imperial Horse",
+    "Imperial Noble Horse"
+  ],
+  "RagShortTexts": [
+    "Cosian horses are common mounts for imperial nobles. They are heavy and powerful."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Cosian horse was the most common mount for the imperial nobility. This kind of horse is quite heavy and powerful, and can carry heavily armed riders over infantry lines on the battlefield. However, it requires a high level of riding skills and a strong temper to control it, so it cannot be controlled by just anyone riding on it. A good Cosian horse is expensive and is a symbol of imperial aristocracy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cosian horses are the standard for the nobility of our empire. On the streets of Lycaron, if you see a consul or senator passing by on horseback, nine times out of ten he is riding a Cosian horse. It's heavy, but in the eyes of us Imperial people, heavy is what counts - it rushes like a mountain, not as light as those barbarian horses. Of course, this horse has a bad temper and requires good riding skills to control it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have several Cosian horses in my stable. This horse is indeed not cheap, but as an imperial noble, it is impossible to go out without a decent mount. It has good endurance, can withstand long-distance marches, and has enough impact to tear apart the enemy formation at critical moments. The disadvantage is that it is a bit bulky and difficult to climb, but what is the problem on the plains? The empire is mostly covered with plains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Most of the cavalry of our legion ride ordinary imperial war horses, but those of the Praetorian Guards ride Cosian horses. That thing was really heavy, and the ground shook when it rushed over. However, I heard that it is difficult to control, and those who are not good at riding will be knocked off by it if they ride on it. I once helped the groom lead a horse, and the horse snorted and sprayed all over my arm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cosian horses are hard currency in the horse market here in the Empire. A Cosian horse of good pedigree can be sold for the price of a small estate. The people who buy this kind of horses are the noble nobles, and we commoners just watch the excitement. It is said that the cost of raising a Kosia horse for one year is equivalent to the annual expenses of an ordinary family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen Cosian horses all over the empire and are indeed a sign of nobility. But to be honest, although this horse is expensive, it is not the top among the imperial aristocracy. The really wealthy and powerful families, like the Petros, ride rarer horses. But for the average consul, having a Cosian horse was decent enough."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cosian horses of the Imperials look quite majestic and have large bodies. But it's too heavy, and it's much less flexible than our war horses. It's okay to charge on the plains, but it's too cumbersome to go into hills and mountains. But the Imperials like this kind of big and heavy thing, just like their armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cosian horse was the most commonly used mount by the imperial nobility. It has good impact and is a certain threat to our knights on the plains. But its shortcomings are also obvious - too heavy and not flexible enough. If our cavalry takes advantage of mobility, the Cosian horses will have nothing but dust to eat. But the Imperials have money and they don't care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The kind of Cosian horses the imperial guys ride in the south are not very good in our north. It's too heavy to run on the snow, and the horses' hooves will sink in. And it has a fierce temper. If it slips on the ice, the rider will break his neck. But that horse is indeed strong, and if it can be kept alive in the North, we Sturgians wouldn't mind getting a few to ride on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperial Cosian horses cannot run away in the forest. With such a heavy body, he was burrowing through the bushes, and he was so tired that he was foaming at the mouth after a few moments. Our warriors don't have to be afraid of it in the forest - the archers hide behind the trees, and they can't even find their target."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kosia horses are so heavy that they get stuck in the sand in the desert. A Kosia horse weighed as much as two Nahathavi horses, and he was covered in sweat after just a few steps on the sand. But the Imperial people liked this kind of horse because of its imposing manner. Riding a Cosian horse is indeed majestic during military parades and celebrations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cosian horses ridden by the imperial nobles are too heavy to catch up with our mounted archers. We don’t raise such cumbersome horses on our grasslands. They eat too much and run slower, and they can’t stay on the grasslands for a whole day. But if it hits you head-on on flat ground, it's really not a joke."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cosian horses are good horses, but not everyone can ride them. It has a fierce temper, and those who don't have enough riding skills will be knocked off if they get on it. Moreover, this horse is not cheap. There are only a few people who can afford it, and even fewer people can control it. But if you hang out in the empire and want to look like a decent person, getting a Cosian horse is a good choice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "riding": 120
+        }
+      },
+      "Content": "Cosian horses require considerable riding skills to handle. Its body is too heavy, and steering and acceleration require the rider to have enough experience and strength to guide it. Those who have not ridden a horse for a few days should not touch it even if they have money to buy it. But in the lap of a skilled rider, it's a reliable mount, with enough punch to decide the outcome at critical moments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Cosian horse’s status among the imperial aristocracy was not only a mount, but also a symbol of status and wealth. Its breeding centers are at several famous horse farms in the hinterland of the empire, and every purebred Kosia horse has a complete pedigree record. Although it is not the top war horse in some aspects, its overall performance and decent appearance make it the most common choice for imperial governors and senators."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Cosia horse",
+      "Kind": "bound_item_name",
+      "TargetId": "__bound_item__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

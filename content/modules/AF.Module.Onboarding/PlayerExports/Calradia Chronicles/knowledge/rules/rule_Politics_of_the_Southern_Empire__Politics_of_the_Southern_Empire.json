@@ -1,0 +1,66 @@
+{
+  "Id": "rule_Politics_of_the_Southern_Empire",
+  "Keywords": [
+    "Politics of the Southern Empire",
+    "Hereditary monarchy",
+    "Secular official system"
+  ],
+  "RagShortTexts": [
+    "The politics of the Southern Empire were centered on hereditary monarchy and secular officialdom."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political system of the Southern Empire? How do we know? I just heard others say that everything is hereditary, that’s all"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the Southern Empire, they emphasize that everything is hereditary and private property is sacred and inviolable, so they chose Rhagaea, the extreme blood theory, as their queen. What the city lords of these city-states fear most is to lose their territory, wealth, and status, and other things are not important - such as paying some taxes and sending some troops. They don't care what other people do, they just want to protect their own territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What we nobles of the Southern Empire are most afraid of is losing the land that our families have managed for generations. We worked hard and overcame all obstacles, and finally we have a small amount of land. And we think we have taken care of it well. No one can take it away! The Senate can’t do it, and the military can’t do it even more! We are the masters of our own land!"
+    }
+  ],
+  "TextMappings": []
+}

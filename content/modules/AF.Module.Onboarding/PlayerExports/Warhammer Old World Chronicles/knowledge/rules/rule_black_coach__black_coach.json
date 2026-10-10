@@ -1,0 +1,213 @@
+{
+  "Id": "rule_black_coach",
+  "Keywords": [
+    "Black Coach",
+    "Vampire Mount (black coach)",
+    "Black Coach Mobile Fortress",
+    "Power Unlock",
+    "Black Coach Magical Ward",
+    "Midnight Chariot",
+    "Midnight Coach",
+    "Vampire Chariot",
+    "Dark Conveyance",
+    "Death Coach",
+    "Vampire Carriage",
+    "Wraith Chariot"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Black Coach is the battlefield conveyance of mighty Vampires, drawn by spectral Nightmares as it rampages across the field of war. This mobile dark fortress not only crushes enemy troops beneath its wheels, but also absorbs death energy as the slaughter mounts, progressively unlocking ever stronger defensive and destructive capabilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Black Coach—the most exquisite craftwork of death among our Vampire kind! Every Black Coach is a unique, custom-built masterpiece: from its coffin-shaped main cabin to its intricately carved bat-wing panels, down to its ghostly wheels with bone shards embedded in the spokes. When the coach rides out at midnight, four fleshless spectral Nightmares haul this multi-ton dark conveyance, its wheels leaving smoking ruts of brimstone in their wake. In battle, with every living soul the coach crushes, the vampiric runes inlaid within the cabin drink in a measure of soul energy—starting out as little more than an ordinary war chariot, as the carnage accumulates it sequentially gains a magical barrier, a life-draining aura, and in its final form, total immunity to magic. A fully empowered Black Coach on the battlefield is more troublesome to deal with than a great dragon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Black Coach is one of the most headache-inducing heavy enemy units—its nature of 'growing stronger' on the battlefield means you cannot leave it for last. The ideal strategy is to concentrate fire and destroy it in the early stages of battle, preventing it from absorbing enough lethal energy to unlock its subsequent abilities. Ranged siege engines and armor-piercing melee units are the preferred choices against it. At the same time, bear in mind that the Black Coach's Vampire master often uses it as a mobile command center; destroying the coach may force the Vampire out into direct danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Black Coach is no ordinary vehicle—it is a composite creation of Necromancy and Dwarf craftsmanship. The main body of the coach typically uses a stone sarcophagus or iron coffin plundered from an ancient noble tomb as its core structure, inlaid with rune arrays exclusive to Vampires. The four spectral Nightmares are manifestations of the souls of slain warhorses, bound to the coach by soul-chains and unable to halt unless the coach itself is destroyed. The system of abilities unlocked step by step as the coach absorbs soul energy is known as the 'Procession of Midnight': the first stage activates the 'Wraith Ward,' forming a semi-corporeal wall of mist around the hull to deflect attacks; the second stage triggers 'Life Siphon,' radiating an aura of instant death centered on the coach; the third stage achieves 'Queen of the Night,' rendering the hull completely immune to non-magical damage. No more than a dozen or so Black Coaches are known to be in active service across the entire Old World; the material cost to construct a single coach is equivalent to roughly ten thousand to thirty thousand Gold Crowns, alongside the lives of at least twelve human blacksmiths and runic scholars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my eyes, the Black Coach is the most theatrical creation of the Vampires—as if they were not terrifying enough already, they insist on riding in a ghostly carriage adorned with bat carvings to flaunt their undying nature. This extreme obsession with 'style' makes me feel that no matter how many centuries they live, deep in their bones Vampires still harbor the vanity of a child desperate for attention."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We once encountered a Black Coach on a mountain road late at night—first came the sound of spectral hoofbeats drawing nearer from afar, and then that conveyance, blacker than the night itself, emerged from the fog. It did not stop; it simply rolled straight through the middle of our column, terrifying two of our packhorses until they collapsed limp upon the ground. The Vampire aboard did not even spare us a glance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "People say that on nights of the full moon in Sylvania, you can see the lanterns of a Black Coach along deserted roads—two orbs of sickly green corpse-fire. If you hear the sound of wheels grinding over gravel followed by a return to total silence, yet see no coach pass by—congratulations, that Black Coach just drove straight through your soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Procuring a Black Coach is an impossible task—its manufacture requires the personal involvement of a Vampire, from the ribs of living men to dark runic wheels forged by Dwarfs. However, maintenance materials for the coach can be supplied: graveyard yew wood, unblessed wrought iron, and obsidian shards. The profit margins on these materials are high, though the clients are entities with whom you never wish to haggle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Black Coach is a mobile combat conveyance of the Vampires, drawn by spectral Nightmares to crush enemy forces",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Black Coach Vampire Mount Black Coach Mobile Fortress"
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "Id": "rule_achite",
+  "Keywords": [
+    "Archit"
+  ],
+  "RagShortTexts": [
+    "The Achit tribe was an ancient Khuzait tribe that was defeated by the Ulhun."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archite Division. When these three words came out of my mouth, I spit them out and stomped them on the ground. My Kugit man was drained of blood in Pandrak, and the old wolf of Kuyuge took advantage of our serious injuries and took over Balgard. Not taken from the enemy, stolen from fellow Khuzait. Now that they have regained their strength, the market in Balgad is bustling again, and beneath that bustle lie the bones of our Kugits. Turaq now keeps saying that he respects the throne of the Khan and respects the flag of the Khan - did his uncle Kuyuge respect it back then? Wu'erhun defeated them once, I think it's time to defeat them again. As long as I live, Archite's account will never stand safely on Balgard's land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Archite Division? Those stubborn old men who hold the title of the eldest son of the she-wolf and refuse to let go. When the ancestors of Wuerhun unified the grassland, they refused to accept it. If you don't accept it, beat him. He lost the fight and came in. Now he keeps to himself and knows how to say \"respect the throne\". But where does their respect come from? It was picked up from under the hooves of the ancestors of Wuerhun. They took over Valgard to recuperate, and we saw it. As long as they don't cross the line, we don't bother to settle old scores. But if they want to establish a khanate again, the descendants of Wuerhunnaite will not mind teaching them the rules again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_s4"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archit? Oh, you mean those prairie people on horseback. Our ancestors said that they established a small khanate here, but they were beaten away not long after. Our place has been visited by Imperials, Nords, and Achits, and now it belongs to the Omidov family. Everyone who comes here says this place belongs to them. We hear a gust of wind and leave as soon as it blows. When the Aqite people were here, they erected several stone tablets by the lake, engraved with the names of their ancestors. Later the Nords came and pushed the stone tablet into the lake. The lake is still there, but the stone monument is long gone. We Varnovapol people don’t care who is above us. Anyway, it will be changed again in a few decades. Both Achit and Omidov were temporary guests. We are the long-term residents, but no one ever asks us what we think."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archite Division. Our empire is far away from them on that side of the grassland, but that doesn't mean we don't care about their affairs. One piece of our intelligence is very clear: the Aqit tribe is the oldest Khuzait tribe. It briefly established an independent khanate, declined after being defeated by Ulhun, and recently regained its strength by occupying Balgad. This pattern is all too familiar to us. An ancient tribe fell silent and then revived. What followed was either civil war or foreign invasion. At present, they are mainly focused on the blood feud inside the grassland and in the direction of Sturgia. But as long as the grassland situation stabilizes, this rejuvenated tribe will sooner or later turn its attention to the south. The name Achite will be used more frequently in the Senate in the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Achite? Grandpa said they had been here. Riding a pony and holding a bow, he camped by the lake. Later he was driven away. It's almost the same as when the Nords came, and it's almost the same as when the Imperials came. Who's here? Don't we still fish as usual? But I do remember one thing left by the Achite people - they called Lake Laconis \"the sky falls into the water\". Let me tell you, this name sounds better than the \"Laconis\" given by the Imperials. But they are not good enough. I heard that Wendule was beheaded by our Sturgia Valkyrie later. The grassland people are very good at riding horses, but they still can't meet our shield maiden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of the eldest son of the female wolf. If you say this outside, people will laugh. Said in the Ministry, everyone nodded together. What are you laughing at? Wu'erhun was powerful back then, but we, Achit, are even more ancient. Later, Kuyuganayan captured Balgad and we had our own place again. Wendulenayan died unjustly, and the Sturgians used women for their evil deeds. Turage Nayan said he would take revenge, and we believed him. We Aqite people have lived from the Wuerhun era to the present, and we have survived even when we were almost trampled into the soil. Revenge takes time, we have patience. On the grassland, whoever lives longer has the final say."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Archites want my life. Turage swore in front of his father's grave that he would cut my throat to sacrifice to Wendule. Well, he is waiting, and so am I. I killed Wendule. I won't deny it. He might be a brave fighter, he might be as good as anyone in a fair fight - but there was no fairness that night. He thought that by marrying my sister he would tie Sturgia's bloodline to Hachter's horse. Langward gave away my sister as an animal, and I will make the person who collected the animal pay the price. I don't regret it. It was Langvald, on the other hand—he cut off Valla’s head and put it in a box to give to the Achites, just to save his own dignity. His killing of my sister was not much cleaner than my killing of Wendule, but he had the crown and no one asked him to pay for it with his life. I hate the Hatch Ministry, and I'm not afraid to say it. But the hatred is the same as the hatred for Langward, which is carried by the living on behalf of the dead. Turage wants to find me, I will wait for him. When we meet, we will all know who cut whose throat in the end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Langward. Archit. These two names are tied together in my heart. Xijia killed Wendule. I didn’t stop her, and I won’t say a word of wrong to her now. My sister Valla was sent away by Langward as a gift for alliance. It was only natural for Xiga to save her. Langward killed Valla and then held her head to shake hands with the Achite, as if a head could smooth the ledger. The Achite took the head, and now they are demanding Xiga's life. Do they want to pay with blood? Who will pay for Varla’s life? Langward's throne is still safely resting in the capital, and he is the one who deserves to pay for it. I have no room for understanding the Archite Division. They are the owners of my brother-in-law's death and the buyers who received my other sister's head. Tu LaGe wants blood and asks him to come to Langward to get it. If he only wants to find Xijia, then he is being picky. Seaga is not soft."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archite Division. Wendule's tribe. I married Valla to Wendule in order to create a barrier for the northern border of Sturgia. The Khuzait are restless, and instead of having them watch our borders, give them a reason to marry. I am the king and I exchange their marriage for peace, which is the price of being a boy. But Seaga didn't understand. She set fire to Windurer's castle and burned the peace I had bought for Sturgia to ashes. For killing Wendule, I could have asked the Khuzait to pay with Xiga's life - but I didn't. I killed Olek's sister Varla and sent her head to the Achite Department just to make them stop. You think I want to do this? When I looked at that box, my hands didn't shake, and my heart didn't shake either? But the king's hands must not shake. The Kulov family is disobedient and should be cured in this way. The Archites accepted Varra's head, and now they want Siga's head. Greedy. Turage swore an oath on his father's grave, that was his business. I owe Archit my life, and I have repaid it with Valra. If he comes to collect it again, it will be another debt. I won't give it again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archduke Langward never brought up the matter of Archite in court. We don’t mention it either. So shameful. This matter is a mess from beginning to end - the king wants to stabilize the Khuzait people through marriage, which is not a wrong idea, but if you want to send the daughter of the prince's family out, at least ask them first if they are willing. The result? Siga had Wendule killed, Valla was killed by the king, and Archit now hated Sturgia with gnashing of teeth. Prince Olek was still standing in the court, but we could all see the way he looked at the king. It is said that Xiga is still wandering around the border and may be found by the Achite at any time. Those of us who are watching do not dare to say that the king is wrong, nor do we dare to say that Xijia is right. I can only say this while drinking - the most unlucky thing in Grand Duke Langward's life was that he got the two daughters of the Olek family involved in this matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hatch? Are they those people on the grassland? I heard they had a blood feud with the Sturgians. One of the two women was killed and the other is still on the run. The details are not clear, but our merchants here say that it is better to take a longer route to the north in the future. The Archite cavalry will rob the Sturgia caravan when they see it. Both sides are not easy to mess with. We ordinary people just want to sell our goods in peace. It has nothing to do with us who hits whom. But the Sturgia woman named Siga was said to be very powerful, and she killed a leader on the grassland alone. Some say she is a Valkyrie, some say she is a madman. Whether it’s a madman or a martial artist, just don’t attack our village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aqit tribe is an anomaly among the Khuzait tribes. It has played a rebellious role since the time of Wuerhun. It once established an independent khanate, fell silent for several generations after being defeated, and then rose again when the Kujit tribe was weak. The vitality of this tribe is itself a subject worthy of study. Even more noteworthy is their blood feud with Sturgia - the death of Wendule and the death of Varla are regarded as double blood debts that have not yet been paid in the steppes. Turage wants Xijia to pay for his life, but behind Xijia stands Prince Olek. Olek's resentment towards King Langward may be deeper than towards Achit. From a geographical perspective, Achit now occupies Balgard, has a deadly feud with the Kugit tribe Mosuyi Nayan, and has an unsettled blood debt with Sturgia. A resurgent ancient tribe, driven by two hatreds, sits in a strategic town at the junction of grassland and snowfield. It won't take long for someone to take advantage of this situation - either the Khan is trying to regain control of them, or someone within Sturgia wants to make something of Olek's dissatisfaction. The only thing we outsiders have to judge is who Archit will hit next."
+    }
+  ],
+  "TextMappings": []
+}

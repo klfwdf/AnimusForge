@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Lefford",
+  "Keywords": [
+    "House Lefford"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The princes of the Western Region knew that Golden Tooth City was no ordinary mountain fortress. It guards the road through the mountains, connecting Casterly Rock, the Riverlands and the mining areas of the Westerlands; Lannister armies, caravans and tax collectors may pass through here. The value of Lefford lies in the pass, the granary and the wall that can withstand sieges, not in whether you can get a seat at the center of the banquet at a remote door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants regard the Golden Tooth City as a gate that must be paid and respected, while soldiers regard it as the first high wall to appear on the mountain road. If the level is too loose, it will attract enemies, and if it is too tight, the goods will be detoured; every time Lefford opens the door, he weighs the balance between safety and income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lefford House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lefford House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lefford House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lefford House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Lefford: House Lefford defends the Golden Tooth and controls the mountain passes between the Westerlands and the Riverlands; rights of way, forage, and defenses make their territory valuable beyond its size."
+  ]
+}

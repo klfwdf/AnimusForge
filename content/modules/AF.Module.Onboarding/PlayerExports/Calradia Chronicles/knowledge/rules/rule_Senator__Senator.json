@@ -1,0 +1,64 @@
+{
+  "Id": "rule_Senator",
+  "Keywords": [
+    "Senator"
+  ],
+  "RagShortTexts": [
+    "Senators are the foundation of the Republic and led the development of the northern lands."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Senators? Those decadent noble lords? Ha! They can no longer exercise their power because they have neither fighting spirit nor ability. The senatorial spirit of the early Republic vanished into thin air long ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Senators are the foundation of the Republican system. As senators and descendants of senators, we still uphold the Senate, and the senators have led us to grow strong and prosperous—this fertile north is proof enough. Braving frost and dew, they cleared the thorns and developed this land for our use; we must never forget our roots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "As senators, we exercise our authority and fulfill our duties. We owe no one anything, nor do we oppress anyone; we are merely exercising the authority passed down to us by our ancestors. Besides, the Republican system is the finest system of all: a dictator is bound to make mistakes, and a single blunder can lead to utter ruin, whereas we rarely err because we debate, deliberate, and vote to enact the best policies."
+    }
+  ],
+  "TextMappings": []
+}

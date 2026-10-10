@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Zufba",
+  "Keywords": [
+    "Karak Zufba_KZ",
+    "Zufba Fortress_KZ",
+    "Torrent Fortress_KZ",
+    "Zufuba Engineer City_KZ",
+    "Zufuba Dwarf Territory_KZ",
+    "King Zufuba_KZ"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kharak Zulfbah, the \"Fortress of the Flood\", is located in a giant waterfall canyon in the heart of the World's Edge Mountains and is ruled by King Morgrim Ironforge. This is the temple of dwarven engineering - the birthplace of gyroplanes, steam engines and ironclad battleships. Zufuba's Engineers Guild is headquartered in the city, and water-powered forging hammers work day and night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Zufba - the cradle of our engineering genius! King Morgrim's grandfather designed the first dwarven steam engine himself. Zufuba's waterfall fell three hundred feet, hitting the water wheel ten times faster than any other dwarven city. The rotorcraft made here can fly stably in the most violent mountain winds, and even the engineers of the Empire will not be able to imitate it for a lifetime."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kharak Zulfbar is the heart of dwarven military technology. Here the Engineers Guild developed a range of decisive military technologies including dwarven artillery, organ cannons, rotorcraft and steam-powered war machines. King Mogrim's Zufuba Engineer Corps can deploy mobile forging platforms on the battlefield to provide on-site repairs and ammunition replenishment to the front lines."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Kharak Zulfbah's economy is based on engineering superiority. Zufuba Falls provides the most abundant natural hydraulic energy in the old world - the Engineers Guild measured the height drop to be 278 feet, and the impact of the water flow can drive 20 sets of hydraulic turbines to continuously operate. The fortress's machinery factory ranks first among the dwarf fortresses, producing a full range of mechanical products from steam engines to precision gears. The annual output of Zufba rotorcraft is about twelve, and the unit price exceeds 10,000 gold crowns. Although the tuition income from the Engineering College does not constitute a major financial source, it has cultivated a steady stream of technical talents for the city and ensured that the intergenerational inheritance of technology will never cease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although the female dwarves of Zufuba are rarely admitted to the Engineers Guild, we are indispensable in the quality inspection of precision components. My job was to inspect the gyrocopter transmission gears - every pitch error of more than a thousandth of an inch was discarded. King Morgrim knows that we are at least half to blame for the fact that Zufuba gyroplanes never crash due to mechanical failure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family holds a rare high-level membership in the Zufba Engineers Guild—a special honor bestowed upon my great-grandfather for his invention of the speed-regulating valve for the steam engine. King Morgrim consults our family every time he approves a new weapon design - for our family's memory holds the reasons for every project failure over the past two thousand years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sound of Zufuba's waterfall can be heard at the city gate, like an immortal beast roaring in the deep valley. I saw a rotorcraft being assembled in the fortress's machine shop - the complicated gear and connecting rod structure was completely incomprehensible to me. The dwarf engineer proudly told me that every component of the machine was made in the fortress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Trading engineering with the dwarves of Zufuba is the most profitable but difficult business in the Old World. Zufuba's steam engines and rotorcraft are priceless and unmarketable - all production is only for the Dwarf Citadel Alliance's own use, and few foreigners can obtain permission to purchase them. But the civilian machinery produced in Zufba - such as pumps for mines and hydraulic hammers for forges - was the mainstay of foreign trade."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kharak Zulfbah, the Floodhold, is the center of dwarven engineering in the World's Edge Mountains, famous for its hydromachines and gyroplanes, and is ruled by King Morgrim Ironforge",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Karak Zufba Dwarven Engineering Shrine Gyrocopter Steam Engine"
+  ]
+}

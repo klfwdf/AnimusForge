@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Bread_and_Pottage",
+  "Keywords": [
+    "Bread and Pottage"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bread is the simplest and most sensitive political language in the Seven Kingdoms. The lords regarded white bread as a sign of wealth at the banquet, while the peasants judged whether they could survive the winter from rye, oats and a pot of gruel; once the price of food in a city got out of control, Iron Throne, the placeBoth lords and traders will be questioned by the same wave of hunger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage Bread is the simplest and most sensitive political language in the Seven Kingdoms. The lords regarded white bread as a sign of wealth at the banquet, while the peasants judged whether they could survive the winter from rye, oats and a pot of gruel; once the price of food in a city got out of control, Iron Throne, the place Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage Bread is the simplest and most sensitive political language in the Seven Kingdoms. The lords regarded white bread as a sign of wealth at the banquet, while the peasants judged whether they could survive the winter from rye, oats and a pot of gruel; once the price of food in a city got out of control, Iron Throne, the place If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bread and Pottage Bread is the simplest and most sensitive political language in the Seven Kingdoms. The lords regarded white bread as a sign of wealth at the banquet, while the peasants judged whether they could survive the winter from rye, oats and a pot of gruel; once the price of food in a city got out of control, Iron Throne, the place They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bread and Pottage: Bread is the simplest and most sensitive political language in the Seven Kingdoms. The lords regarded white bread as a sign of wealth at the banquet, while the peasants judged whether they could survive the winter from rye, oats and a pot of gruel; once the price of food in a city got out of control, Iron Throne, the place"
+  ]
+}

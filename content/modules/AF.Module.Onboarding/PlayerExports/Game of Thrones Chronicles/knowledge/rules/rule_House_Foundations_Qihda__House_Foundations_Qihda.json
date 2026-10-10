@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Qihda",
+  "Keywords": [
+    "Qihda",
+    "House Qihda"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Chiheda family belongs to the old blood class of Volantis, and the political significance of the family name comes from the blood qualifications within the Black Wall. The real power of the family must still fall on real estate, cargo, manors, debts and kinship alliances; in a city where the consul is elected, noble birth also requires business support. The Tiger vs. Elephant debate cuts through every Old Blood family, and Chiheda cannot forever avoid the choice between war interests, trade security, and the slave order. True reputation is accumulated by choices and their costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Blackwall nobles observe Qiheda, they will judge the direction by which family it intermarries with and which candidate it supports. Volantis politics has no permanent friends, only relationships that will be recalculated by the next election."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary free people hope that old blood families like Chiheda will talk less about their ancestors and more about bridge taxes, food prices and street security. Ballots are one of the few moments when they can make the characters behind the black walls lean in and listen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qihda Chiheda is one of the Old Blood Houses of the Volantis, whose status is embedded in Blackwall bloodlines, business holdings, slavery, and electoral alliances. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qihda Chiheda is one of the Old Blood Houses of the Volantis, whose status is embedded in Blackwall bloodlines, business holdings, slavery, and electoral alliances. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qihda Chiheda is one of the Old Blood Houses of the Volantis, whose status is embedded in Blackwall bloodlines, business holdings, slavery, and electoral alliances. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qihda Chiheda is one of the Old Blood Houses of the Volantis, whose status is embedded in Blackwall bloodlines, business holdings, slavery, and electoral alliances. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Qihda: Chiheda is one of the Old Blood Houses of the Volantis, whose status is embedded in Blackwall bloodlines, business holdings, slavery, and electoral alliances."
+  ]
+}

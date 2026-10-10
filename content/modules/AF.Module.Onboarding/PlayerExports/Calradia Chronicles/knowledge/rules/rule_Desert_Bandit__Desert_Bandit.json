@@ -1,0 +1,45 @@
+{
+  "Id": "rule_Desert_Bandit",
+  "Keywords": [
+    "Desert Bandit"
+  ],
+  "RagShortTexts": [
+    "Harami originally meant \"follower\", but later changed to \"robber\"."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 50
+        }
+      },
+      "Content": "The original meaning of the word Harami in the ancient Aserai language is \"retinue\", which refers to the attendant cavalry who followed Fa Lys. The root cause of Harami's falling grass is the double bankruptcy of land and honor. These followers who lost their land and owners faced a simple choice: sell themselves to another tribe and become Mamluks, or disappear into the desert with their weapons and mounts. The former meant a reduction from a free man to a slave, while the latter retained freedom but was considered an outlaw under common law. Those who chose the latter were given the name Harami - the word changed from \"follower\" to \"robber\". Harami and others have experienced formal cavalry training and possess personal martial arts and equestrian skills at the French Lys level, but are not bound by tribal obligations and customary laws. This combination of high skills and low restraints makes them one of the most dangerous armed groups in the desert. But Harami's weaknesses are equally obvious: it lacks stable logistical supplies and troop replenishment channels, equipment losses cannot be systematically updated, and the scale of the organization is difficult to break through the level of tribal armed forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "They are not ordinary bandits. Ordinary bandits rob only when they can't survive - crops have died from drought, they are in debt, they have committed crimes and run away. Harami was different. They used to be serious followers, riding good horses and wearing bronze armor. Some people in the tribe knew their names. They were unwilling to lower their heads and serve as slave soldiers, so they rode into the sand dunes. From then on, their names were crossed out from the tribal rolls and became a gust of wind in the sand. Some people hate them, and some secretly envy them. Those who hate them say they are thieves, but not many people envy them - those young people who are not famous for farming on the edge of the oasis. Seeing Harami riding a horse, carrying a gun, and not having to pay taxes to anyone, it is inevitable that they will have thoughts in their hearts. But if I think about it, there are only a few people who actually take that path."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Pesar",
+  "Keywords": [
+    "Pesar",
+    "House Pesar",
+    "Island Nobility"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pesar is a family in the Loras political community. Island city-states lack vast farmland, and the stability of a family cannot only rely on land rent, but also depends on fishing, warehousing, ship shares, port connections, and old marriages with nearby islands. How many people Pesar can control depends on its ability to maintain the flow of grain and salt in the face of bad harvests, storms, and interruptions in shipping routes. The magnates of Lorath need not imitate the vassals of Westeros; they are more like intermediaries between tides, guilds, and local affairs. Specific allies will change, and the foundation of this island city will not disappear with just one war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The powerful men of Loras measured Pessar by its warehouse inventory, shipowner support and its ability to settle dock disputes. A family with only a name but no credit will soon be exposed in the long winter of the island city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen are concerned about how much mooring fees Pesar charges and whether salt is allowed on credit during bad seasons. No matter how beautifully you talk about the door of a house in the meeting hall, it cannot be compared to whether you are willing to open the barn door after the storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "artisan",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Followers of the Silent One and old craftsmen do not like exaggeration. They believed that if Pesar wanted to last, it should promise less miracles and more maintain its banks, scales, and winter reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pesar The local family of Loras is based on port intermediaries, inter-island relations and the actual ability to provide for the barren islands. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pesar The local family of Loras is based on port intermediaries, inter-island relations and the actual ability to provide for the barren islands. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pesar The local family of Loras is based on port intermediaries, inter-island relations and the actual ability to provide for the barren islands. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pesar The local family of Loras is based on port intermediaries, inter-island relations and the actual ability to provide for the barren islands. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pesar: The local family of Loras is based on port intermediaries, inter-island relations and the actual ability to provide for the barren islands."
+  ]
+}

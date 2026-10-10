@@ -1,0 +1,135 @@
+{
+  "Id": "rule_Uthelaim_Incident",
+  "Keywords": [
+    "Uthelaim Incident",
+    "Disappearance of King Aeril"
+  ],
+  "RagShortTexts": [
+    "Caladog is suspected of murdering King Aeril and claiming the throne."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What does King Aeril's disappearance have to do with us? It doesn't affect what we eat or wear—stop bothering us with such pointless talk!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King went hunting at Uthelaim and mysteriously vanished. None of us know what happened, only that his son-in-law Caladog claimed the crown, so we obey him—after all, Caladog has led us to victory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King vanished while hunting near Uthelaim. Uthelaim was under Caladog's oversight, so who knows, maybe he killed him—but it doesn't matter. Aeril was too weak, whereas Caladog leads us to victory, so we're willing to follow him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This incident refers to the disappearance of King Aeril. Rumor has it Caladog had him killed. I don't know if it's true, but if so, Caladog is a disgrace for treating his benefactor like that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Aeril died because of this affair, and Caladog's ascension directly triggered the outbreak of the Battle of Pendraic. The repercussions were enormous—it was the very first spark that led to the fracturing of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_battania_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Damn Caladog killed my brother (Ergeon's brother) / uncle, yet I have no proof!! I can only swallow my anger! I don't want Battania to slide back into anarchy, so I have no choice but to endure it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Yes, I, Caladog, killed King Aeril, but I will never admit it until the day I die. Nor will anyone in Clan fen Gruffendoc ever admit it."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Crownlands_Gazetteer_Red_Keep_Aliases",
+  "Keywords": [
+    "Royal Palace",
+    "Red Keep Aliases"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "It is the English name of the Red Fort. Situated on Aegon's Hill in King's Landing, the Red Keep is the Iron Throne's royal palace, seat of the Royal Council, and center of activity for the Royal Guard. It consists of city walls, towers, throne rooms, Maegor's Tower, dungeons and courtyards; high walls can separate the palace from the streets, but they cannot separate food prices, marriage alliances, secret messages and city turmoil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases Local families also relied on the King's Market, Blackwater Bay shipping, orchards, field rents, and the road to King's Landing; if any road, well, or wharf failed, the cost would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases Entry Red Keep Aliases"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases They also recognize the accents, laws, and credentials of the Crown; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases Entry Red Keep Aliases"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen use their hands to measure the stone walls, wooden beams, iron doors, tombs and seams left by generations of repairs of the English alias Red Castle. The priests use rituals to continue the seven gods, the royal family's decrees and the flags that have been changed since the conquest. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep Aliases They care about the King's Capital Market, Blackwater Bay shipping, orchards, field rents and the road leading to King's Landing. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Red Keep Aliases: It is the English name of the Red Fort. Situated on Aegon's Hill in King's Landing, the Red Keep is the Iron Throne's royal palace, seat of the Royal Council, and center of activity for the Royal Guard. It consists of city walls, towers, throne rooms, Maegor's Tower, dungeons and courtyards; high walls can separate the palace from the streets, but they cannot separate food prices, marriage alliances, secret messages and city turmoil."
+  ]
+}

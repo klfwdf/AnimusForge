@@ -1,0 +1,276 @@
+{
+  "Id": "rule_free_people",
+  "Keywords": [
+    "Freemen",
+    "Elutere",
+    "Imperial Borderers",
+    "Free People of the Prairies"
+  ],
+  "RagShortTexts": [
+    "Freedmen’s ancestors were runaway slaves and debtors"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Free Folk, also known as the Elutere, are an independent group living on the steppes on the edge of the empire. Their ancestors were runaway slaves and debtors who took root and multiplied on the frontiers of the empire. Now their leaders are granted titles by the empire, and young men are recruited as consuls and personal soldiers of the emperor. They were loyal to the ideals of the Empire but hostile to its actual authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Freedmen? These are the Eluteites on the borders of the empire. Their ancestors were runaway slaves from the empire and poor ghosts who ran away due to debts and went to the grasslands to fend for themselves. But after several generations, they have become the people most familiar with the border. Imperial commanders valued their knowledge of the terrain and began to bribe their leaders with titles and recruit their young men as private soldiers. But don't expect them to be sincerely loyal to the Empire - they know in their hearts that the Empire only needs them, not accepts them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleutherians were a complex group. They provided the Empire with the best border scouts and light cavalry, and their leaders accepted imperial titles. But you can never really bring them into the imperial order. In their bones they distrust any orders from Lycaron, and are only loyal to their own freedom. All we, the consuls, can do is keep our distance and not invade each other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I met free men when I served on the frontier. They are good horsemen and know every ravine on the grassland well. Some archons employ them as guides or escorts, but keep them out of your ranks. They are born loners, leading the way one day and gone tomorrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free people, the Eluteites, were quite powerful on the border. Their caravans often brought furs and horses from the grasslands to trade in imperial towns, but they did not recognize the laws of the empire, only their own rules. You have to be careful when doing business with them, they don't honor contracts, they only honor verbal promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleuthers are the most special group of people on the border of the empire. They are neither subjects of the Empire nor enemies of the Empire. Their ancestors were imperial people who escaped, but now their descendants have become the border forces that the empire relies on. But you can never expect them to raise the flag of loyalty to the Empire - they fled just to stop bowing their heads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleuthers are a unique marginalized group in the social history of the empire. Their origins can be traced to slaves and indebted peasants who fled to the frontier during the expansion of the Empire. After several generations of reproduction, they formed independent communities on the grassland. For the sake of border security, the empire adopted a tolerant policy - granting titles and recruiting private soldiers in an attempt to incorporate them into the empire's peripheral system. But the result was contradictory: the Eleutherians accepted the empire's gifts, but never accepted its authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those free folk on the east side of the empire? The Eleutherians? They are the best mercenary materials, familiar with the grasslands, skilled in bow and horse, and they will never be able to wear the same pants as the imperial people. If you're looking for a light cavalry on the borders of the Empire with no loyalty oaths, look no further than them. As long as they give enough dinars, they can draw the route of the Imperial patrol more clearly than the Imperial generals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleuthers are a bit like some of our free tribes in Sturgia, they are all disobedient to kings. The Imperials gave them titles and tried to co-opt them, but it was in vain. They are used to being free on the grassland, and they don't really listen to anyone's words. But their light cavalry is really useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The story of the Eleutherians is somewhat similar to that of us Battanians - people who did not want to be ruled by an empire. But they chose to remain on the edge of the Empire, while we retreated into the forest. Their light cavalry were disappearing on the grasslands, and the empire had nothing to do with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleuthers on the border of the empire are a group of light cavalry that cannot be underestimated. They were familiar with the terrain of the grassland and knew where to ambush and where to hide. The Aserai sometimes hired them as guides when their caravans passed through that area. Although they are hostile to the Empire, they are fair to us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleutherians are half of the people of the steppe. Their riding skills are good, but they are not pure herders. They have Imperial blood in their veins. They wavered between the Khuzait and the Empire, submitting neither to the Khan nor to the Emperor. But their light cavalry did fight some good battles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eleutherians were the best border mercenaries. They will not bow to their employers and never need any covenant. As long as you can afford the dinar, they can do it at any time. But remember one thing: Don't even think about letting them serve the Empire. They would rather starve to death than surrender to the place their ancestors worked so hard to escape. Never possible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Eleutherians were one of the most persistent small-scale hostile forces in the history of the Empire's frontiers. Their existence reveals a structural contradiction in the imperial rule model - on the one hand, the empire produces a large number of fugitives and marginalized populations during its expansion, and on the other hand, it forms a functional dependence on these marginalized populations. The Eleutherians accepted the resources of the empire, but refused to accept its rule, forming an \"asymmetrical symbiosis\" relationship: the empire needed their border services, and they needed the empire's materials and titles, but the two sides could never achieve true reconciliation at the political level."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Freemen",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Elutere",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

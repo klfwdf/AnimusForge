@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Northern_Landmarks_Greywater_Watch",
+  "Keywords": [
+    "Greywater Watch",
+    "Floating Castle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gray Waterview is the mobile home of the Reed family deep in the Neck. Outsiders are accustomed to understanding castles as fixed stone walls, but Greywater Watch is built on floating islands, wooden structures, and water networks; it changes location with waterways, seasons, and safety needs, making it the hardest to find for people unfamiliar with the swamp. The reeds, black water, mire and mosquitoes of the Neck guarded the natives more reliably than many knights. The Reeds were vassals in the north, but they had a completely different way of life from those in the south: boats, spears, traps, and memories of waterways were more useful than heavy armor and horses. Its stabilizing significance is precisely the combination of the Ningze terrain and the knowledge of the people there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch Entry Greywater Watch"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch Entry Greywater Watch"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Greywaterview are half hidden in boats, bridges, millstones, fishing nets and riverside churches, and half hidden in the graves left by old gods, weirwood trees and ancestors. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greywater Watch They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Greywater Watch: Gray Waterview is the mobile home of the Reed family deep in the Neck. Outsiders are accustomed to understanding castles as fixed stone walls, but Greywater Watch is built on floating islands, wooden structures, and water networks; it changes location with waterways, seasons, and safety needs, making it the hardest to find for people unfamiliar with the swamp. The reeds, black water, mire and mosquitoes of the Neck guarded the natives more reliably than many knights. The Reeds were vassals in the north, but they had a completely different way of life from those in the south: boats, spears, traps, and memories of waterways were more useful than heavy armor and horses. Its stabilizing significance is precisely the combination of the Ningze terrain and the knowledge of the people there."
+  ]
+}

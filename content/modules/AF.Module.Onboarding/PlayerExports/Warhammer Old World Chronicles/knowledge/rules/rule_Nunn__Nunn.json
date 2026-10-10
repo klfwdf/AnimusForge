@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Nunn",
+  "Keywords": [
+    "Nunn",
+    "imperial industrial center",
+    "Gunnery Academy",
+    "arsenal",
+    "musket casting",
+    "Capital of Wysenland",
+    "Imperial Military Industries",
+    "Imperial Gunnery School",
+    "cast iron area",
+    "Nun Ironclad",
+    "Gunpowder storage",
+    "Rick River Industrial Zone"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln is the military-industrial heart of the empire and the capital of Wesenland, located in the middle reaches of the Reik River. The whole city is famous for the thick smoke of the iron-smelting blast furnaces and the hammering of the cannon-casting workshops - almost every cannon, every musket and every shell in the empire is produced in Nunn's arsenal and foundry. The Gunnery School is the most prestigious firearms and ballistics research institution in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln - the Empire's city of iron and fire! If you ask what is the best thing about the Empire, Altdorf will tell you they have a golden crown, and Nuln will tell you - every rivet under that crown was hammered here. Nuln's foundry area works day and night, and the ore transported from the upper reaches of the Wesen River is turned into the barrel of the Hellstorm rocket launcher, into every steel plate on the breastplate of the Riker Guard, and into a large cannon that can blast from one end of the empire to the other. The artillery academy cultivates the most rigorous military minds in the empire - those old academics who have spent their whole lives in black leather aprons on ballistic calculation tables can deduce the precise location of enemy artillery positions based on the impact point of a cannonball. The Imperials should consider themselves lucky: without the chimneys of Nuln, the Empire has only a stick in its hands when facing the Champions of Chaos in the North. But having said that, the river water in Nunn is brown rusty water, the air in Nunn is precipitated with particles of sulfur and coking coal, and the nostrils of Nunn children accumulate a layer of black ash every day - this is the price of industrial glory, and we have the heart to admit it, because we deserve this glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For Imperial military commanders, Nuln is both an irreplaceable strategic resource and an unavoidable military weakness. Eighty percent of the Empire's artillery and 90% of its gunpowder supply depend on the Nunn foundry and gunpowder storage facilities. This means that any enemy who successfully attacks Nunn is equivalent to paralyzing artillery positions throughout the Empire at the same time. The key to defending Nunn is to control the waterway of the Reik upstream and the Wesen Grain Trail downstream: Nunn itself produces almost no grain, and its entire workforce-including tens of thousands of blacksmiths, foundries, and apprentices-lives off the grain transported by the Reik. The 'cast iron city wall' outside the Gunnery Academy is the most unique fortification in the empire - this wall is not made of stone, but is made up of tens of thousands of discarded cast iron gun barrels connected by riveting. It has an unexpected energy-absorbing effect when resisting artillery bombardment. Any commander stationed in Nunn should remember: inside the city, the foundry guild has as much say as the alderman. During preparations for war, you must first reach a consensus with the heads of the forge guild, because the shutdown of the 30,000 blacksmiths in the city is enough to make your war plan useless in one day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Nunn's Gunnery Academy is the oldest existing systematic firearms research institution in the old world. It was founded by Elector Count Friedrich von Nunn in Wiesenland in 1955 in the Imperial Calendar - its original intention was not for military purposes, but to solve the increasing demand for blasting engineering in iron ore mining in Wiesenland. The first milestone of the academy occurred in 1991 of the Imperial Calendar. Chief ballistician Eberhard Schwarz published an epoch-making paper, which introduced parabolic calculations into artillery sight tables for the first time - the manuscript of this paper is still preserved in the fire room of the academy library. By around Imperial Calendar 2100, the Gunnery Academy had completed a comprehensive transformation from civil demolition to military firearms. The landmark event was the completion of the 'Long-barreled Cannon Standardization' project. Before this, each cannon in the Empire was an independent individual. The barrel size, gunpowder loading, and projectile specifications were not universal, resulting in a nightmare state of battlefield logistics. After the standardization reform, the combat efficiency of the Imperial artillery increased at least three times. Another little-known important facility of the academy is the 'Acoustic Measurement Laboratory' located underground in the foundry area - ballistic engineers use a complex network of sound-transmitting copper pipes to arrange listening points on the hillside on the other side of Nunn, and calculate ballistic parameters by measuring the sound wave delay when the artillery shell flies past. This system has irreplaceable military value when it is impossible to visually observe the ballistic trajectory in foggy weather. All maintenance and repair work of steam tanks is also the responsibility of the steam research team in the Gunnery Academy - they maintain a 'health file' for each of the twelve tanks, which records every fault repair and component replacement from 2023 in the Imperial Calendar to the present. The total number of words in the file exceeds two million."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The city of Nuln's attitude towards noble women is different from the rest of the empire - because the foundation of wealth here is not land but hammer. In the aristocratic circle of Wesenland, I have seen more than one widow who inherited the family's military craftsmanship shop. She invited the elders who persuaded her to 'leave the business to a reliable man' to leave the door of her foundry, and then signed a high-quality meteorite iron purchase contract with the dwarf craftsmen within a week that has made her peers jealous for three years. Although the air in Nunn is choking, its social atmosphere is freer than that of other imperial cities - at the ballistic test field of the Gunnery Academy, the accuracy of the data is not related to gender, and whether the cannon can hit accurately depends on calculations rather than whether you wear a skirt or not. Of course, this does not mean that Nuln is already an ideal paradise of egalitarianism - when I first walked into the meeting hall of the Forge Iron Guild as a lord, more than half of the men in the seats let out an almost uniform dry cough. But it only took me eight months to stop more than half of them from dry coughing - not by any speech, but by relying on the iron foundry my father left me to win three consecutive imperial military bidding contracts among their peers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family is inseparable from the fate of Nuln - in our family's underground warehouse is a copy of the 'Iron Blood Covenant' signed by the Nuln Forge Iron Guild in 2150 Imperial Calendar, which authorizes our family to have priority purchasing rights in the mining of mineral veins in the upper reaches of the Reik River. This covenant was obtained in exchange for four consecutive generations of our family investing in foundries in Nunn, funding research at the Gunnery Academy, and using family knights to protect Nunn caravans. Every forward-thinking noble house of the Empire should place a pawn in Nuln: not as conquerors, but as patrons - the blacksmiths' guild here will not bow to any sword, but they will show surprising cooperative enthusiasm for a freshly poured bronze bell or a load of free coking coal. A family that owns shares in the Nuln Foundry has a completely different confidence when speaking in the Imperial Council - because you know that when the supply chain for 80% of the Empire's artillery is on the table behind you, no one will easily get up and interrupt your speech."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I worked as a foundry apprentice in Nunn's iron casting area for six years - don't get me wrong, it's not a respectable apprentice who can learn the skills, but a real apprentice. What you do every day is to carry a hundred kilograms of pig iron from the furnace mouth to the pouring table, day after day until your shoulders and wrists are no longer your own. The blacksmith class in Nunn is the most self-respecting species in the world - an old blacksmith who has stood in front of the blast furnace for forty years and whose eyes have been burned by the firelight may not know a word of it, but he can accurately judge the temperature of the furnace just by looking at the color of the molten iron. This skill he will never teach you until you pour him tea for ten years. The real power of Nunn is not seen in the eyes of the nobles who wear formal clothes to visit the Gunnery Academy, but in the riveting room on the third floor underground of the Iron Casting District - there are dwarf engineers teaching human apprentices how to mix meteorite powder into molten steel in specific proportions. These techniques have never been written down in any book, they are only passed down orally between bloodlines and master-disciple relationships. The Empire's military supremacy was built on the soot and sweat of Nuln - anyone who has sweated beside a true furnace knows the weight of this statement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nunn's business ecology revolves around a clear golden chain: the artillery procurement budget of the Imperial Military Department determines the annual order volume in the Nunn Foundry, and the ups and downs of these orders can reversely affect employment and food prices in the entire Wesen Territory and even the middle reaches of the Reik River. My business importing gunpowder raw materials was at the upper end of the chain - saltpeter from Tarly, sulfur from Tyrell, and the best charcoal from the hard oak of Talabek. The merchant guilds that control these supply lines have far higher bargaining leverage in Nuln than outsiders know: if the sulfur ship is delayed for two weeks on the Reik due to 'customs formalities', the gunpowder tests at the Gunnery School will be shut down, the Imperial Military's artillery delivery schedule will collapse, and the quartermasters will write in their most anxious fonts, and the letter will eventually land on our guild's desk. Nuln is the heart of the Imperial Armed Forces - and the heart cannot be without blood or oxygen, so we are always in the front row."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Imperial Gunnery Academy—Nuln’s firearms and ballistics research institution, the most authoritative artillery research institution in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Nuln Imperial Industrial Center Gunnery Academy"
+  ]
+}

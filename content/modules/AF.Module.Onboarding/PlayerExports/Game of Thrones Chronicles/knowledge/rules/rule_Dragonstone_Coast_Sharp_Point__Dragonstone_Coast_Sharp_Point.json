@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dragonstone_Coast_Sharp_Point",
+  "Keywords": [
+    "Sharp Point",
+    "Sharp Point Promontory"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Point City is located on the north shore of Blackwater Bay, near Point Point facing the Narrow Sea. It is a port town and market on the eastern route of the royal territory. Sea breezes, tides and passing ships shape life here: fishermen watch the clouds, shipowners calculate the tide, and local nobles observe incoming ships and pirates from their watchtowers. It's not far from King's Landing, but it's not the same as the capital; Point City's grain, lumber, and small fleet have to circulate between local needs and the capital market. Once the bay becomes unstable, it is these coastal towns that are the first to feel the changes in prices, rumors, and taxes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point Local families also rely on fishing, salt production, docks, volcanic rock fields and narrow sea navigation; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point Entry Sharp Point"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point They'll also recognize the accents, laws, and credentials of Dragonstone's waters; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point Entry Sharp Point"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stone and wood will decay, but Point City still relies on craftsmen to take care of ship repair wood, canvas, salt, fish catches, and stones to resist the sea wind. It relies on priests to preserve the temple, flames, and old dragon memories left behind when the faith of the Seven Gods and the Lord of Light coexisted. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sharp Point They care about fishing, salt industry, wharves, volcanic rock fields and narrow sea shipping. They also care about whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sharp Point: Point City is located on the north shore of Blackwater Bay, near Point Point facing the Narrow Sea. It is a port town and market on the eastern route of the royal territory. Sea breezes, tides and passing ships shape life here: fishermen watch the clouds, shipowners calculate the tide, and local nobles observe incoming ships and pirates from their watchtowers. It's not far from King's Landing, but it's not the same as the capital; Point City's grain, lumber, and small fleet have to circulate between local needs and the capital market. Once the bay becomes unstable, it is these coastal towns that are the first to feel the changes in prices, rumors, and taxes."
+  ]
+}

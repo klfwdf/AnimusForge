@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Battanian_Water_Goddess",
+  "Keywords": [
+    "Battania Water Goddess",
+    "Penn Cannock"
+  ],
+  "RagShortTexts": [
+    "Battania, the goddess of water, controls rivers, springs and lakes",
+    "The goddess of water is both the giver of life and the seducer of death.",
+    "Pen Cannock Legend of the Water Goddess seducing travelers to death"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Water Goddess is the deity in charge of rivers, springs and lakes in Battania belief. She dwells underwater and is both the giver of life and the seducer of death. The Battania believe that every rushing river and every deep dark pool is a manifestation of her power. Unlike other Battania deities, the Water Goddess does not patronize a specific tribe or group of people. She treats all people equally - Battanians and outsiders alike, they are just creatures that have stepped into the water before her. According to legends circulating in Pen Cannock, the goddess of water lives in the dark pool under the rocks. She often seduces travelers and intruders, leading them to their deaths. Those who were bewitched would slip on the slippery stones, fall into the rushing water, and disappear forever. But on rare occasions, a goddess falls in love with a hero. She will grant the hero victory and blessings to help him accomplish his great deeds. These favored ones can often cross the river safely or win in battles along the river. Different bards have different opinions on which heroes have gained her favor, and there is no conclusion. The Battania people's belief in the goddess of water is mainly expressed in reverence rather than worship. Fishermen and ferrymen would throw an offering - usually bread, mead, or a copper coin - into the water before their journey to pray for peace. But few dare to venture deep into her sanctum, as it is considered a recipe for death. Druids take a more cautious approach to the Water Goddess. They acknowledge her power, but rarely actively summon or sacrifice her. In Druid teachings, the Water Goddess belongs to the \"Border Goddess\" - she guards the boundary between the living and the dead, as well as the boundary between the land and the water. Those who offend her will be dragged into the water, but those who receive her favor are few and far between. The city of Pen Cannock is located on the top of a mountain, overlooking the Trang River rushing from the plateau to the Vlandia lowlands. Among the rocks below the city is a dark pool where the goddess of water lives. The residents of the city are particularly in awe of this goddess, because the river upstream is related to the water supply of the whole city, and the reefs and rapids in the river threaten the lives of those crossing the river all year round. Local fishermen and hunters privately circulated various rumors about the goddess, but in the eyes of the druids, these rumors were just \"rumors from the fishermen's mouths\". Their root was only people's awe for the upper reaches of the Trang River - because one wrong step on the slippery stones would cause people to fall into the fast water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperials and Vlandians scorned the Water Goddess of Battania as nothing more than a superstitious explanation of natural phenomena by uncivilized peoples. Imperial scholars believe that the Battanians were seeking some mysterious explanation for the deaths of drowned men. However, those mercenaries and traders who have waded in the rivers of Battania sometimes privately admit that it is hard not to be afraid of those dark pools in that cold, rainy and strange land. As for whether it is the power of the goddess or simply the ferocity of the water flow, I am afraid only the person who fell into the water will know."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Dynastic_Chronicles_Blackfyre_Rebellions",
+  "Keywords": [
+    "Blackfyre Rebellions",
+    "Daemon Blackfyre",
+    "Sword Blackfyre",
+    "Golden Company"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \" The defeated rebels fled into exile across the Narrow Sea, and their descendants and supporters formed exiled military traditions such as the Golden Company. To the nobles of the Seven Kingdoms, the Blackfyre name signifies old dangers; to the exiles, it may also mean the unacknowledged dreams of legitimacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \" A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \" They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \" The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Rebellions The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \" They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blackfyre Rebellions: The Blackfyre Rebellion began with Daemon Blackfyre's claim to the throne, and left a legacy of the Blackfyre banner being raised repeatedly for generations to come. The black fire sword, the legalization of illegitimate children, martial names, bloodlines and the ambitions of dissatisfied nobles are intertwined, making the dispute not just a war between two people, but a fight between \""
+  ]
+}

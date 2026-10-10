@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Kaderin",
+  "Keywords": [
+    "Karak Kaderin_KD",
+    "Kaderin Fortress_KD",
+    "Butcher's Fortress_KD",
+    "Axbite Pass Fortress_KD",
+    "Kaderin Butcher King_KD",
+    "Kaderin Dwarf Territory_KD"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Kaderin, the \"Butcher's Keep\", is a dwarven stronghold located north of Axbite Pass in the World's Edge Mountains. Ugrim Ironfist is the Butcher King here and the most tragic and deadly warrior among the dwarven nations. This place is the holy city of the Butcher Cult, and countless dwarf butchers seeking a glorious death in battle set out from Kaderin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Kaderin - In honor of our ancestors, this is the most tragic fortress of our race! Ugrim Ironfist bears the curse of the Butcher King. His ancestors made a vow that can never be repaid. From then on, King Kaderin has been the Butcher for generations. Our people consider Axbite Pass sacred, and the blacksmiths of Kaderin forge the sharpest butcher's war axes in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kharak Kaderin sits on one of the most important strategic passes in the Old World. The Axbite Pass is the only way for the Chaos Horde to invade south. Every generation of Kaderin's defenders have paid a heavy price to keep the invaders out of the pass. Ugrim Ironfist himself is a ferocious king of melee combat - his ax can cleave through the armor of a Chaos Champion with a single blow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Kharak Kaderin's economy revolves around military forging. The weapon workshop of Butcher's Fortress specializes in the forging of battle axes - the Kaderin battle ax uses a three-layer folding forged steel method, and the blade hardness can be more than three times that of traditional iron axes. The tax on caravans passing through the Axbite Pass is the second largest source of income, but due to the year-round war in the pass, the trade route is extremely unstable. Special economic projects include: Trading of Butcher's Relics - After the Butcher dies in battle, his weapons are recovered and redistributed. These \"Axes of the Dead\" have special religious and collection value in dwarf society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dwarf women of Karak Kaderin never go out casually - not because they are weak, but because the fortress is always in a state of war. But our workshops are running day and night deep in the fortress, making weapons and armor to supply frontline warriors. The Butcher King's wife must be stronger than anyone else, because she knows that in every battle her husband may be gone forever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our clan guards the tower at the forefront of Axbite Pass on Kharak Kaderin. The glorious mission given to our ancestors by King Ugrim Ironfist - we are the Shield of the Pass. Every clan leader must swear an oath in front of the long beards of his ancestors when he takes office: As long as the pass is still in our hands, Chaos will not step into the hinterland of the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Kaderin is the most depressing dwarven fortress I have ever seen. The iron mark above the city gate is densely engraved with the names of the deceased butchers, and new names are added every year. I met Ugrim Ironfist himself in the ale hall of the keep - his eyes were red, as if death itself were burning in his eyes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Doing business in Kaderin requires paying a blood tax - literally. All foreign caravans must donate at least ten weapons of acceptable quality or iron materials of equivalent value to the fortress arsenal. The sale of butcher weapons is the most special business here: an ax left by a slain butcher can be sold for a high price in other places, but the Kaderin people only sell it to those who deserve it."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kharak Kaderin is the Butcher's Fortress located in the Axbite Pass. It is ruled by the Butcher King Ugrim Ironfist and is the holy place of the dwarven Butcher Cult.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Kharak Kaderin Dwarf Butcher's Fortress Axbite Pass"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Slaves_Freedmen_and_Former_Masters",
+  "Keywords": [
+    "Slaves, Freedmen, and Former Masters"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Identity under slavery was not only about being bound by chains, but also about whether one's name, career, family, and past were still controlled by others. Those who are released may not be free from the influence of their old masters; the legal vocabulary of freedom is important, but the ability to truly leave, refuse and choose"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters Identity under slavery was not only about being bound by chains, but also about whether one's name, career, family, and past were still controlled by others. Those who are released may not be free from the influence of their old masters; the legal vocabulary of freedom is important, but the ability to truly leave, refuse and choose Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters Identity under slavery was not only about being bound by chains, but also about whether one's name, career, family, and past were still controlled by others. Those who are released may not be free from the influence of their old masters; the legal vocabulary of freedom is important, but the ability to truly leave, refuse and choose If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves, Freedmen, and Former Masters Identity under slavery was not only about being bound by chains, but also about whether one's name, career, family, and past were still controlled by others. Those who are released may not be free from the influence of their old masters; the legal vocabulary of freedom is important, but the ability to truly leave, refuse and choose They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Slaves, Freedmen, and Former Masters: Identity under slavery was not only about being bound by chains, but also about whether one's name, career, family, and past were still controlled by others. Those who are released may not be free from the influence of their old masters; the legal vocabulary of freedom is important, but the ability to truly leave, refuse and choose"
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "Id": "rule_House_Foundations_Long_Lances",
+  "Keywords": [
+    "Long Lances"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Long Lances are a cavalry mercenary company of Essos famed for massed lancers and rapid mobility, once commanded by men such as Gylo Rhegan. Maintaining cavalry is far more expensive than maintaining foot soldiers: fodder, remounts, horseshoes, tack, and open camps all demand silver. The Long Lances are hired for their speed, and through their speed they also possess the ability to choose their battlefields and withdraw. Their true wealth lies not only in their riders, but in trained warhorses and the logistical order capable of bringing hundreds of men and mounts to the field on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Commanders of the Free Cities hire the Long Lances for scouting, pursuit, and applying rapid pressure on the flanks. If they are trapped in street fighting or camps short of grass, even the most expensive cavalry becomes nothing more than a crowd tending sick horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A lancer knows his life is bound to his mount. A good captain asks first about water sources, fodder, and lines of retreat before asking how much glory the employer promises; a hungry horse will not run any faster because a contract bears a golden seal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When peasant households see the Long Lances, they worry first for their haystacks and wheat fields. If cavalrymen buy fodder at fair price, a village can still profit from war; if they simply turn their horses loose to graze the fields bare, they differ from locusts only in their armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Long Lances The Long Lances are an Essosi mercenary company centered on cavalry, surviving by horses, pay, mobile tactics, and their captain's judgment. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Long Lances The Long Lances are an Essosi mercenary company centered on cavalry, surviving by horses, pay, mobile tactics, and their captain's judgment. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Long Lances The Long Lances are an Essosi mercenary company centered on cavalry, surviving by horses, pay, mobile tactics, and their captain's judgment. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Long Lances: The Long Lances are an Essosi mercenary company centered on cavalry, surviving by horses, pay, mobile tactics, and their captain's judgment."
+  ]
+}

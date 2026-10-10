@@ -1,0 +1,155 @@
+{
+  "Id": "rule_Order_of_the_Crown_Succession_and_Legitimization",
+  "Keywords": [
+    "Succession",
+    "Primogeniture",
+    "Royal Succession",
+    "Succession and Legitimization"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default The role of inheritance law is not to automatically select people who cannot be challenged, but to provide language for disputes that each party can invoke. Legitimacy, consanguinity, wills, vassal recognition, and force may conflict with each other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession and Legitimization"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession and Legitimization"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession and Legitimization"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession Succession and Legitimization: Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession Succession and Legitimization: Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession Succession and Legitimization: Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Succession Succession and Legitimization: Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Succession and Legitimization: Succession in Westeros generally favors the legitimate eldest son, but local custom, family paperwork, royal edicts, and actual power can make exceptions to the rule. Dorne admits that the eldest daughter is given priority. Some families value the nearest blood relatives or local traditions; illegitimate children will not succeed by default."
+  ]
+}

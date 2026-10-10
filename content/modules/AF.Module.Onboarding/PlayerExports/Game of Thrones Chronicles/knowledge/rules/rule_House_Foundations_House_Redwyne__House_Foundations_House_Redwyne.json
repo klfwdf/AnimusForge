@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Redwyne",
+  "Keywords": [
+    "House Redwyne",
+    "Burgundy Grape Cluster",
+    "Redwyne Fleet"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Redwyne has its seat on the Arbor, bearing a cluster of grapes on blue as its sigil, and draws its family wealth from wines famed across the Seven Kingdoms, island estates, merchant ships, and a mighty fleet. The Arbor's position along the southwestern sea lanes of Westeros makes House Redwyne both a vassal of the Reach and a naval power capable of influencing Oldtown, the Shield Islands, and shipping across the Summer Sea. Nobles know Arbor wine at their feast tables, while port merchants care more about casks, convoys, and sailing schedules; ironborn and pirates first weigh whether the Redwyne fleet has put to sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Reach view House Redwyne as a house that binds land, coin, and sea power together through the grapevine. Wine from the Arbor fills cups from northern halls to the Free Cities, while its ships turn the island's abundance into political weight. Some mock their coat of arms for looking like a tavern or merchant's sign, yet when a fleet is truly needed, no one scorns a cluster of grapes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of wine merchants and sailors, House Redwyne is an entire chain of harvesting, barrelling, sealing with wax, credit, and long voyages. A good vintage packs the quays with buyers, while foul weather can turn a ship's load of wealth into splinters upon the reefs. So long as House Redwyne can guard the sea lanes and uphold the renown of its wines, merchants carry its sigil farther than knights ever ride."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmfolk of the Arbor know that fine wine begins as basket after basket of grapes that must be picked before they rot. Coopers, pressmen, and tenants do not merely praise the bouquet at noble feasts; they also remember the harvest, their wages, and the share taken for the lord's cellars. Redwyne wealth grows upon the vine, and rests upon many bent backs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Redwyne The grape and fleet house of the Arbor, whose sigil is a burgundy grape cluster on a blue field. Wine, merchantmen, war fleets, and the southwestern sea lanes together form its wealth and political standing. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Redwyne The grape and fleet house of the Arbor, whose sigil is a burgundy grape cluster on a blue field. Wine, merchantmen, war fleets, and the southwestern sea lanes together form its wealth and political standing. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Redwyne The grape and fleet house of the Arbor, whose sigil is a burgundy grape cluster on a blue field. Wine, merchantmen, war fleets, and the southwestern sea lanes together form its wealth and political standing. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Redwyne The grape and fleet house of the Arbor, whose sigil is a burgundy grape cluster on a blue field. Wine, merchantmen, war fleets, and the southwestern sea lanes together form its wealth and political standing. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Redwyne: The grape and fleet house of the Arbor, whose sigil is a burgundy grape cluster on a blue field. Wine, merchantmen, war fleets, and the southwestern sea lanes together form its wealth and political standing."
+  ]
+}

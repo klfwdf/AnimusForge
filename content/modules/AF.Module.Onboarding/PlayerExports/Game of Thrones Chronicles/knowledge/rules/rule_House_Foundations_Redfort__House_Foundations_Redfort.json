@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Redfort",
+  "Keywords": [
+    "Redfort",
+    "House Redfort"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Redfort is rooted at Redfort in the Vale and is an ancient vassal house sworn to House Arryn. Its fortress and stony lands in the mountain valley give the family a reputation for reassuring strength so long as it holds; though it does not hang in the clouds like the Eyrie, it commands the roads and supplies leading into the heart of the Vale. The strength of House Redfort comes from stout walls, knights, farmlands, and long-standing obligations to House Arryn, while its ancient First Men bloodline grants it added dignity when the nobles of the Vale sit in council. To the common folk below the mountain, what matters most about Redfort is not ancestral titles, but whether its walls will take them in when outlaws, mountain clans, or war arrive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Vale regard Redfort as an old stronghold that does not easily fall. It is at once a bannerman to House Arryn and possessed of enough land and knights to keep its own voice; when House Redfort stays silent at the council table, it often means they are still weighing the mountain roads, granaries, and the weight of alliances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People living near Redfort trust stone walls, yet do not treat stone walls as miracles. A garrison needs grain, farmhands need peace, and mountain roads need mounted patrols; if a lord boasts only of ancient blood and forgets these things, even the strongest fortress will become an empty granary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Entry Redfort The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Entry Redfort Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Entry Redfort The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Entry Redfort They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Redfort: Entry Redfort"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Chaos_Warhound",
+  "Keywords": [
+    "Chaos War Hounds",
+    "mutated hound",
+    "Chase and defeat the enemy",
+    "Wandering around the battlefield",
+    "giant hound",
+    "Herald of Chaos",
+    "carnivore",
+    "war mastiff",
+    "Twisted Hunter",
+    "Chaos Herd",
+    "fear of collapse",
+    "Ironfang Hound"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos War Dog is a huge hound that has been mutated by Chaos energy. It is as big as a pony and has a mouth full of iron teeth. It uses its terrifying sense of smell to track and pursue fleeing enemies on the battlefield. It is the most reliable pioneer and pursuer of the Chaos army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Warhound is one of the simplest gifts of the Dark Gods. You don't need temples, you don't need rituals - just raise a litter of ordinary wolfhounds on the edge of the Chaos Wastes for three generations, and their offspring will have clefts, extra eyes, and iron-hard teeth. We release the war dogs to run in front of the main force - they will smell the enemy's fear and lock on to the target of the retreat. On the battlefield, nothing scares the remaining soldiers more than the howling of a pack of Chaos Warhounds. They are not picky about their food, living or dead. But we never let our war dogs get full - hunger makes them hungrier and more efficient."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos Warhounds are your most versatile harassment and mop-up unit. Due to their high mobility and lack of formation constraints, they are ideal for harassing enemy outposts before battle, pursuing broken troops, and clearing the field of escaping enemies. They are not intended to attack heavy infantry lines head-on - that would just be a waste of them. Deploy them in any opening on the battlefield and let them penetrate behind enemy lines like a stream of water, attacking crossbowmen, mages, and artillery batteries. After breaking through the enemy's lines with the main force, release the war dogs to clean up the mess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to records in \"Chaos War Beast Chronicles\", the baseline breed of Chaos War Dogs is the Northern Gray Wolf, but after several generations of Chaos exposure, its anatomy has undergone fundamental changes: the mandible is split into two flaps, which can expand to an angle of more than 120 degrees, and the bite force is about three and a half times that of ordinary wolves; the chest cavity has expanded to accommodate a larger heart - the War Dog's heart weighs twice as much as a normal wolf, which allows them to double the continuous running time during pursuit. The most prized of the Chaos War Hounds are the \"Four-Eyed Hounds\" - two extra eyes on their heads that are said to be able to see through invisibility and magical disguises. The most famous group of Chaos War Dogs is the \"Blood Mastiffs\". They are blessed by Khorne and glow red. Their bites will never heal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have tamed an entire litter of Chaos Warhounds - they listen to my whistle rather than my whip. The female voice is shriller, making it easier for the war dogs to distinguish my commands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Each tribe should maintain at least one pack of Chaos Warhounds. They reproduce quickly and eat a large but easily satisfied diet - corpses on the battlefield are enough. Appoint a dedicated \"dog owner\" to be responsible for training and managing the war dog pack. This position is not high but extremely critical, because a poorly trained war dog pack will in turn bite its own people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There was a howl in the distance, and then more howls—low, hoarse, not at all like a normal animal. You climb a hill and look down, where a pack of Chaos Warhounds are tearing apart a corpse. One of them looks up and sniffs in your direction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Warhounds hold a unique place in the northern economy - breeding and selling domesticated warhounds is a major source of income for many small tribes. Their leather is rough but extremely tough, and their teeth and claws can be fashioned into weapons. A good Chaos Warhound can be sold for the price of ten slaves."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos War Hound - a giant hound mutated by Chaos energy, used for battlefield pursuit and cleanup.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos War Hounds Mutated Hounds Chase and Defeat Enemies"
+  ]
+}

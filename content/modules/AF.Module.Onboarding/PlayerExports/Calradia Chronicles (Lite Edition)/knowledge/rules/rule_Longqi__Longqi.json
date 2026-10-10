@@ -1,0 +1,83 @@
+{
+  "Id": "rule_Longqi",
+  "Keywords": [
+    "Dragon flag"
+  ],
+  "RagShortTexts": [
+    "The Dragon Banner, Neretze's Folly, and the Battle of Pendraic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dragon Banner is the symbol of the Calradic Empire. Legend holds that roughly five hundred years ago, Calradios, the founder of the Empire, carried this very banner in hand as he drove out the native peoples and single-handedly established the great Empire. Thus, whoever possesses and raises the Dragon Banner is invested with the legitimate authority to unify and rebuild the Empire.\n\nThe history of the Dragon Banner is closely bound up with a catastrophic campaign known as \"Neretze's Folly.\"\n\nThe Battle of Pendraic: This was a battle that reshaped the continent. At the time, the Imperial Emperor Neretzes led a grand army into a decisive clash on the plains of Pendraic against a coalition of Vlandia, Sturgia, Battania, and other realms.\n\nDefeat and Loss: The war ended in a crushing defeat for the Empire. The old Emperor perished, the Dragon Banner symbolizing Imperial authority was destroyed in the chaos and broken into three fragments scattered across the continent, and in 1084 the Empire plunged into civil war and fragmentation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dragon Banner is the symbol of the Calradic Empire. Legend holds that roughly five hundred years ago, Calradios, the founder of the Empire, carried this very banner in hand as he drove out the native peoples and single-handedly established the great Empire. Thus, whoever possesses and raises the Dragon Banner is invested with the legitimate authority to unify and rebuild the Empire.\n\nThe history of the Dragon Banner is closely bound up with a catastrophic campaign known as \"Neretze's Folly.\"\n\nThe Battle of Pendraic: This was a battle that reshaped the continent. At the time, the Imperial Emperor Neretzes led a grand army into a decisive clash on the plains of Pendraic against a coalition of Vlandia, Sturgia, Battania, and other realms.\n\nDefeat and Loss: The war ended in a crushing defeat for the Empire. The old Emperor perished, the Dragon Banner symbolizing Imperial authority was destroyed in the chaos and broken into three fragments scattered across the continent, and in 1084 the Empire plunged into civil war and fragmentation.\n\nThe principal component of the Dragon Banner is a tubular windsock shaped like the head of a wolf or serpent. When the wind blows through it, the banner emits a piercing shriek and writhes in the air like a living mythical beast. Paired with the Imperial eagle standards, it makes a truly awe-inspiring sight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dragon Banner is the sacred symbol of the Calradic Empire, said to have been carried by the founding Emperor Calradios when he established the realm; its main body is a tubular windsock shaped like a wolf's or serpent's head that shrieks in the wind like a living beast. In 1084, the Imperial Emperor Neretzes was defeated at the Battle of Pendraic by a multi-nation coalition including Sturgia—a campaign known to history as \"Neretze's Folly.\" The Emperor himself fell in battle, the Dragon Banner was shattered into three fragments in the chaos, and the Empire subsequently descended into civil war. In the final stage of the Sturgian assault that breached the Imperial lines, the Sturgian king Vadinslav Gundarov was the first to storm the ramparts and died there, while Olek the Old of the Kuloving seized the Dragon Banner from the slain Emperor Neretzes. After the battle, Vadinslav's son Raganvad Gundarov—who succeeded to the throne—came to demand the Dragon Banner, claiming it as his father's legacy and his rightful inheritance; yet Olek, covered in blood and judging that Raganvad had barely fought in the battle, mocked him and told him to \"run along and play.\" When Raganvad reached out to seize it by force, Olek the Old snapped the staff across his knee on the spot and hurled the broken Dragon Banner—splintered wood, torn cloth, and all—straight into Raganvad's face. Raganvad did not pick it up then and there, merely standing in silence for a long time. Although Raganvad himself later insisted that he had ridden into the ruins of the Imperial camp and recovered the banner with his own hands, witnesses such as Prince Olek the Younger and Prince Godun confirmed that the staff had been broken by Olek the Old and flung at Raganvad. Whatever the case, the Dragon Banner that once symbolized supreme Imperial authority was left in pieces, and the rift between the Gundarov and Kuloving clans could never again be mended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dragon Banner is the symbol of the Calradic Empire, and after the Dragon Banner was lost, the Empire was pretty much finished too. As for why? Simple folk like us wouldn't know. All we know is that the Dragon Banner is a mighty fine thing, and whoever has it can command the whole world."
+    }
+  ],
+  "TextMappings": []
+}

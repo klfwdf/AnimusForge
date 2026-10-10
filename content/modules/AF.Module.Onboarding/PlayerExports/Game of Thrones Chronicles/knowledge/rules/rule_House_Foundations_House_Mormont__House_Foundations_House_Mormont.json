@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Mormont",
+  "Keywords": [
+    "House Mormont",
+    "Black Bear",
+    "Here We Stand"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Mormont family is based on Bear Island in the Sunset Sea. The family emblem is a black bear on a green background, and the motto is \"Stand tall\". Legend has it that the Stark ancestors gave Bear Island to Mormont after winning it from the Ironborn; the island was barren, forested, and had been plundered by the sea for a long time, and the family was far less wealthy than the southern nobles. Bear Island women also often learn to hold weapons, because when men go to sea, fish, or fight, attacks will not wait. The family heirloom Valyrian steel sword \"Longclaw\" belongs to Mormont history, but an individual's departure from home or joining the Night's Watch cannot be written as an entire family's change of alignment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern nobles respect Mormont, often not because Bear Island is rich, but because it is too barren to tolerate pretense. The island lacks fertile farmland, but it guards the western coast of the north; Mormont men and women must know how to take up arms. The black bear on a green background and \"standing tall\" are not words for a banquet, but the survival attitude of a small family in the face of pirates, cold and scarcity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People from Bear Island will say that a southern knight needs a squire to hold his armor for him, but a woman on the island may hold a child in one hand and carry an ax in the other. People here don't talk about poverty as a virtue. They only know that wooden houses need to be repaired, fishing nets need to be mended, and if a long boat is seen on the sea, everyone must go ashore. Whether Mormont is worth following depends on whether he is standing in the most dangerous place when the black bear flag appears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ironborn looked at Bear Island as an old, hard-to-gnaw bone from the sea. It is not rich enough to be occupied for a long time, but it is close enough to raid; the islanders have defended the sea for generations, so that every inlet may hide an archer and an axe. Mormont's reputation on the west coast was built up by forcing visitors back into the waves again and again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mormont The green-backed black bear family on Bear Island in the north has a motto of \"Stand tall with your head held high.\" Barren islands, ironborn raids, national defense of the island, and the ancestral sword Longclaw shape its traditions; personal exile or joining Night's Watch does not mean that the family changes its alignment. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mormont The green-backed black bear family on Bear Island in the north has a motto of \"Stand tall with your head held high.\" Barren islands, ironborn raids, national defense of the island, and the ancestral sword Longclaw shape its traditions; personal exile or joining Night's Watch does not mean that the family changes its alignment. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mormont The green-backed black bear family on Bear Island in the north has a motto of \"Stand tall with your head held high.\" Barren islands, ironborn raids, national defense of the island, and the ancestral sword Longclaw shape its traditions; personal exile or joining Night's Watch does not mean that the family changes its alignment. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mormont The green-backed black bear family on Bear Island in the north has a motto of \"Stand tall with your head held high.\" Barren islands, ironborn raids, national defense of the island, and the ancestral sword Longclaw shape its traditions; personal exile or joining Night's Watch does not mean that the family changes its alignment. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Mormont: The green-backed black bear family on Bear Island in the north has a motto of \"Stand tall with your head held high.\" Barren islands, ironborn raids, national defense of the island, and the ancestral sword Longclaw shape its traditions; personal exile or joining Night's Watch does not mean that the family changes its alignment."
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "Id": "rule_Lucalon",
+  "Keywords": [
+    "Lycaon",
+    "Walk in"
+  ],
+  "RagShortTexts": [
+    "Lycaron is a stone fortress on the Ouni Stone Mountain, famous for its silver mines and many sieges",
+    "Emperor Arenicos was assassinated at Lycaron, causing the empire to split into three",
+    "Lycaron was once the old capital of the empire and is now the stronghold of Queen Rhagaea of the Southern Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lycaron is located on a gentle slope protruding from the towering Ouni Stone Mountain. It is a natural stone fortress. Its walls and towers grow out of the mountain, overlooking the vast hinterland of the empire below. The city is best known for two things: its silver mines, and its siege. There are rich silver veins in the surrounding mountains, and any ambitious person who wants to seize power in the civil war will focus on this place. Some say that the vultures that live on the top of the stone mountain have feasted on the corpses of every nation on the continent of Calradia - which is not an exaggeration, because Lycaron has been besieged more times than any other city in the empire. It was also the imperial capital during the lifetime of Emperor Arenicos and the heart of power during the last unified period of the empire. The emperor was assassinated here and the empire was divided here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron, the old capital of the empire, was also the starting point of the division of the empire. During the lifetime of Emperor Arenicus, Lycaron was the pinnacle of power in all of Calradia. Its city walls are made of stones from the Onishi Mountain and are so strong that they seem to grow directly from the mountain. Its silver mines fed the Empire's most elite legions. But everything changed the day the emperor was assassinated. The purple robe was stained with blood, the Senate was driven out of the city gates, and Queen Rhagaea came out of the palace, holding up the bloody robe. From then on, Lycaron was no longer the capital of the entire empire, only of the Southern Empire. The vultures on the rocky mountains are still circling. They are used to seeing our Imperial people killing each other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron was the last bastion of imperial orthodoxy. The late emperor ruled here for twenty years, his blood spilled on the stone slabs of the palace, and his widow still guards the city. When the traitors to the Senate were driven out by the citizens, Lucaron proved that he was no match for those old talkers. Lucon in the north proclaimed himself emperor in the senate, and Galios in the west proclaimed himself emperor in the military camp, but the real imperial bloodline was still in Lycaron. As long as we hold on to this city, its silver mines, and its walls, the Empire will not be lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "No one denies that Lycaron is the city of the late emperor. But when the late emperor dies, the empire should have the Senate designate the successor - this has been the rule of the empire for thousands of years. That day in Lycaron, the Senate had elected Lucon as the new emperor, but Rhagaea led an incited mob to break up the Senate and drive the legally elected emperor out of the capital. Since then, Lycaron has become the private property of the Petros family and is no longer a public asset of the empire. Its silver mines now feed only the armies of the Southern Empire, and its walls protect only the crown of Rhagaea alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What is Lycaron? It is the place where the late emperor was assassinated. The Vecian Guards were outside the palace, and the emperor was killed before their eyes. Then what? There was no investigation, no trial, just Rhagaea muddying the waters with a bloody coat, driving the Senate out of the city, and taking the throne herself. General Garius said it well - Lycaron is no longer a capital, it is the trophy of a family. The armies of the empire were fighting outside, and the silver mines of Lycaron were counting dinars in the palace. That's why we veterans of the Western Empire follow Galios: at least he doesn't hide behind stone walls and let women stand up for him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es4"
+        ],
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have been a soldier in Lycaron for twenty years, and I have personally seen Emperor Arenicus parading his troops on the city walls. That day in Lycaron, the eagle flag was flying on the top of the stone mountain, and everyone felt that the empire was invincible. Then the emperor died, in the palace, right under the eyes of us soldiers. The Vecian Guards who were supposed to protect him ended up dead, running away, or turning into thugs. Now Lycaron is still the same Lycaron—the walls remain the same, the silver mines remain the same, and the vultures on the rocky hills remain the same. But the eagle flag has split into three pieces, and we soldiers don't know which flag to stand on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron is the heart of the Empire, but that heart has been pierced. We northerners don't care too much about who is right and who is wrong in the imperial throne fight. We only know that after Arenicos died, the empire's legions could no longer go north to cause trouble for us like before. Their silver mines were still dug, but all the money they dug was spent on the civil war. The vultures on the stone mountain are still flying, waiting for the next batch of imperial people to die under Lycaron City."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The silver mines of Lycaron were famous throughout Calradia. We Aserai merchants visited once and said that the city was not built on the mountain at all, but grew out of the stone. The Imperials say that the vultures on the stone mountain have eaten the corpses of every nation. We believe this - Lycalon has been besieged so many times, and the soil under the city has long been soaked with blood. It is now the capital of the Southern Empire, with Queen Rhagaea guarding a city fed by silver and blood. We did business with her, and her prices were more generous than both Lucon and Gallios. The silver mine was in her hands, so at least it wasn't wasted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron's city walls are a masterpiece of imperial engineering. Our siege engines, which can break a hole elsewhere, are like children's toys smashing rocks in front of Lycaron. But no matter how strong the city wall is, it can't stop the civil strife. Arenicus died in his own palace, his guards failing to protect him, his wife and the Senate blaming each other, and the empire split into three pieces. We Vlandians learned one thing from this: Don't get stabbed to death in your capital city. It was not without reason that King Deter tripled the garrison of Palabund."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron is far away from our grassland, but its reputation spreads far and wide. The Imperials said that their emperor was stabbed to death in the palace, and that his women took his bloody coat and drove the Senate out of the city. In our grassland, the position of sweat is determined, and whoever is stronger will get the upper hand. It would be better for the Imperial people to use a blood coat and a mob to decide who is the emperor. But their silver mines are good stuff. I heard that the silver dug out is enough to support the entire Southern Empire army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lycaron is to us Battanians a tombstone of imperial arrogance. They thought the stone wall could block everything, but what happened? The walls remain, but the empire is gone. After Arenicus died, Lycaron became a bone of contention among the three emperors. Their silver mines are still being dug, but the silver they turn out kills more Imperials than our arrows in Battania. The vultures on the stone mountain were circling in the sky, waiting for the next batch of Imperial people who were killed by their own people to fall under the city wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Lycaron is one of the most emblematic imperial cities on the continent of Calradia. Its geographical location - the gently protruding slopes of the Oni Stone Mountain - gave it a natural defensive advantage, while the surrounding rich veins of silver provided a continued economic basis for the empire's expansion. After the peace between the Pala tribe and the empire, Lycaron became an important stronghold in the western part of the empire. After many sieges, it witnessed the repeated tug of war between the empire and the conquered peoples. Emperor Arenicos made Lycaron the imperial capital, making it the political heart of the empire's last unified period. After the emperor was assassinated here, the empire immediately split, and Lycaron changed from the capital of the unified empire to the capital of the southern empire. The process of Queen Rhagaea taking advantage of citizens' sentiments to expel the Senate and monopolize Lycaron was not only a landmark event in the division of the empire, but also a key node in the transformation of the Petros family from a royal family to a local ruler. Today, Lycaron's silver mines are still the economic backbone of the Southern Empire, and its city walls, which have been besieged countless times, still overlook a fragmented empire."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_ES4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "status|clan|has_any_town",
+      "TargetId": "clan_empire_south_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "Lycaron is a good place, and now it is also a good place as the capital of the Southern Empire.",
+      "FalseText": "Lycaron is no longer the imperial capital of the Southern Empire because it has fallen"
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

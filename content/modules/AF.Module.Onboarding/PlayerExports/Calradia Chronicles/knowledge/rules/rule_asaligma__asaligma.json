@@ -1,0 +1,28 @@
+{
+  "Id": "rule_asaligma",
+  "Keywords": [
+    "Assalig horse"
+  ],
+  "RagShortTexts": [
+    "The Assaliger is a Khuzait top breed horse, bred from the Assaligh Horse Farm."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Asalig horse is the top horse of Khuzait. It is produced on the Asalig horse farm and grows up eating the grass of the steppe. They are fast and docile. They are almost the third fastest in the continent and have an extremely docile character. However, the bottom plate is a little unstable, and the rider needs to adjust his body posture to prevent the horse from losing its front foot, so the skill requirements are relatively high."
+    }
+  ],
+  "TextMappings": []
+}

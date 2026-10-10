@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Order_of_the_Crown_Direct_Rule_of_the_Crownlands",
+  "Keywords": [
+    "The Crownlands",
+    "Direct Rule of the Crownlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne; Royal lords are more likely to see the rewards and threats of royal power than remote vassals, but they are also more likely to be affected by court changes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direct Rule of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direct Rule of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direct Rule of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crownlands Direct Rule of the Crownlands: The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne; They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crownlands Direct Rule of the Crownlands: The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne; For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crownlands Direct Rule of the Crownlands: The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne; Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crownlands Direct Rule of the Crownlands: The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne; What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Direct Rule of the Crownlands: The Crown Territory is a royal territory formed directly around King's Landing, Blackwater Bay, Dragonstone and the offshore peninsula, rather than an ancient kingdom with unified local traditions. It draws its power from its capital, its ports, its royal castles, its taxes, and its nobles located close to the Iron Throne;"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Sons_of_the_Harpy",
+  "Keywords": [
+    "Sons of the Harpy",
+    "Organization Foundations"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sons of the Harpy are an underground armed network backed by the former slave-owning class of Slaver's Bay. Wearing golden harpy masks, they move through the night, narrow alleys, and familiar networks of great manses, attacking freedmen, patrols, and supporters of the new order. The name borrows the emblem of Old Ghis to dress the loss of privilege as ancestral glory; their real strength comes from wealth, family ties, household informants, and those in the city who still depend on the old system. To anyone ruling Slaver's Bay, they are not merely a handful of assassins, but an entire web of interests struck by abolition lashing back from the shadows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old masters speak of the Sons of the Harpy as guardians of tradition, because openly admitting that they simply want their slaves and whips back is hardly respectable. Golden masks conceal identities and allow wealthy houses to attend feasts with one face while funding knives in the night with the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When freedmen hear of the golden masks, they think of footsteps behind the door and corpses at dawn. To them, this is not abstract politics, but former masters trying to prove that freedom can be taken back at any moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers know that urban insurgency is nothing like a pitched battle. By day the enemy may be a merchant, a servant, or a silent neighbor, putting on the mask only by night; if the garrison treats every citizen as an enemy, it will only drive more hiding places into the arms of the Sons of the Harpy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sons of the Harpy The Sons of the Harpy are an underground armed movement of the old master class in Slaver's Bay, resisting the new abolitionist order through golden masks, night attacks, and terror. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sons of the Harpy The Sons of the Harpy are an underground armed movement of the old master class in Slaver's Bay, resisting the new abolitionist order through golden masks, night attacks, and terror. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sons of the Harpy The Sons of the Harpy are an underground armed movement of the old master class in Slaver's Bay, resisting the new abolitionist order through golden masks, night attacks, and terror. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sons of the Harpy The Sons of the Harpy are an underground armed movement of the old master class in Slaver's Bay, resisting the new abolitionist order through golden masks, night attacks, and terror. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sons of the Harpy: The Sons of the Harpy are an underground armed movement of the old master class in Slaver's Bay, resisting the new abolitionist order through golden masks, night attacks, and terror."
+  ]
+}

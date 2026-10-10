@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Emirate_of_Granada_and_Nasrid_Dynasty",
+  "Keywords": [
+    "Emirate of Granada",
+    "Nasrid Dynasty",
+    "Muhammad I",
+    "Alhambra",
+    "Al-Andalus",
+    "Moorish Spain"
+  ],
+  "RagShortTexts": [
+    "The Emirate of Granada, founded by Muhammad I ibn Nasr, preserved Islamic rule in Iberia through mountain defense, silk trade, and Castilian vassalage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the collapse of the Almohad Caliphate and the Christian conquest of Córdoba, Seville, and Jaén, the Emirate of Granada survived as the sole independent Islamic state in al-Andalus. Founded in 1238 by Muhammad I ibn Nasr (Ibn al-Ahmar), the Nasrid realm anchored its defense in the rugged terrain of the Sierra Nevada and the newly begun fortress-palace of the Alhambra.\n\nGranada’s survival was secured through consummate diplomatic realism: Muhammad I accepted feudal vassalage and paid heavy annual tributes of gold dinars to the Crown of Castile, even aiding Ferdinand III against fellow Muslims. Swelled by thousands of refugees, Granada developed intensive terraced agriculture, master craftsmanship, and luxurious silk weaving that financed its long-term defense."
+    }
+  ],
+  "TextMappings": []
+}

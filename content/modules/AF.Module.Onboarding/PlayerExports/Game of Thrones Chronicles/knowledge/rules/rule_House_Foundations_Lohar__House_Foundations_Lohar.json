@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Lohar",
+  "Keywords": [
+    "Lohar",
+    "House Lohar",
+    "Maritime Trade"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lohar is one of the noble houses of Lys, whose environment is shaped by islands, sea routes, and commercial competition. Maritime trade wealth seems to flow freely, but in fact it is tightly constrained by monsoons, piracy, port taxes, crew loyalty and foreign food prices. If any family ignores any of these links, it may lose years of accumulation in one season. The foundation of Lohar should therefore not be understood just as a house, but as a set of relationships that allow goods to cross seas, debts to be paid, and messages to be returned in time. Fleets and factions may change, but the Lys family's dependence on port credit will never go away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Lys maritime merchants evaluated Lohar, they first asked whether its captain was reliable and whether the compensation for casualties was fair. The colors on the sails will change, and it is the reputation of an old sailor who is willing to go to sea again for the same family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The city's powerful people regard Lohar's maritime news as an asset, and are also afraid that it will bring outside forces into Lys's internal strife. Those who control the route can not only deliver food, but also guide the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What dock workers see is unloading time, injury compensation and the temper of the supervisor. If Lohar only remembers the value of the goods and forgets the people who moved them, the port will respond with sabotage, leakage, and silence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lohar Lys's maritime trade aristocratic family relies on routes, crews, brokers and port credit to form a liquid foundation. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lohar Lys's maritime trade aristocratic family relies on routes, crews, brokers and port credit to form a liquid foundation. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lohar Lys's maritime trade aristocratic family relies on routes, crews, brokers and port credit to form a liquid foundation. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lohar Lys's maritime trade aristocratic family relies on routes, crews, brokers and port credit to form a liquid foundation. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lohar: Lys's maritime trade aristocratic family relies on routes, crews, brokers and port credit to form a liquid foundation."
+  ]
+}

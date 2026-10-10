@@ -1,0 +1,285 @@
+{
+  "Id": "rule_Nord_Royal_Guard",
+  "Keywords": [
+    "Nord Royal Guard",
+    "Royal Guard",
+    "Nord Guard",
+    "Nord Infantry"
+  ],
+  "RagShortTexts": [
+    "The Nord Royal Guard is one of the strongest infantry in Calradia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Nord Royal Guards are the most elite infantry of the Nord Kingdom and are renowned throughout Calradia. They are equipped with sophisticated heavy armor, a strong large buckler, their main weapons are sharp swords or guard spears, and they also have several throwing axes on their waists. They are highly disciplined and highly skilled in martial arts. They can form an impenetrable shield wall and kill enemies with superb swordsmanship in melee. What's even more frightening is that these northerners have grown up in the waves since childhood, and they feel like walking on flat ground on the ship, and their naval combat capabilities far exceed those of inland soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord Royal Guard is the pride of us Nords and one of the strongest infantry in Calradia! They are not the kind of reckless men who rush around naked, but the best-equipped and best-trained professional warriors. Their large bucklers can block arrows and lances, and the guard spears in their hands make it impossible for the cavalry to come back. When they draw their long swords, they are unstoppable in close combat. The round of flying axes before the battle can always hit the enemy into chaos. At sea, these men who have been living on fishing boats and long boats since birth are even more invincible. If an enemy ship is approached by them, they will die."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord Royal Guard is the backbone of the kingdom's military. Not only are they personally brave, they also understand the value of discipline and collaboration. When they raise the iconic royal guard shield and form a shield wall side by side, any frontal attack will cause a bloody head. In naval battles, our longships can quickly get close to enemy ships. The guards first use throwing axes to clear the deck, then jump on with swords and chop down all the enemies on the shaking ship deck. Nords are born masters of the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Becoming a royal guard is the ultimate goal of every Nord warrior. They have the best armor, the strongest shields, and the sharpest swords. Follow them to form a shield wall and press forward, and you will feel that you are invincible. On the sea, it was their world. They danced on the bumpy deck to seize the ship as easily as they danced on the flat ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal guard was walking down the street. His outfit was impressive at first glance, and his big buckler was frighteningly thick. It is said that they are the most powerful at sea, and their throwing axes are accurate and hard. The axes arrive before anyone can jump over them. Soldiers from other countries were vomiting all over the place when they got on the ship, but they were just like in their own yard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nords' royal guards are real enemies. They are very well-equipped, and their large shields can withstand most of our arrows and javelins, and their swordsmanship and spear skills are also quite superb, making them particularly difficult to fight in sieges and street battles. As for naval battles, these warriors who grew up in the northern ice sea are even more terrifying. Our soldiers' combat effectiveness is greatly reduced when they get on the ship, but they feel like they have returned home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Anyone who has fought against the Nord royal guards knows that they are highly disciplined and cooperative, and are not ordinary barbarian mercenaries. Their shield wall is extremely difficult to break through, and the sudden flying axes always cause chaos. The encounter at sea was even more of a nightmare. Their ferocity and proficiency in gang fighting were simply not comparable to the imperial soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord Royal Guard is a typical heavy infantryman with sword and shield, representing the highest achievement of the Nord military system. They gave up the cumbersome two-handed giant axe, and instead used a more flexible and efficient sword, shield and spear combination, combined with the throwing axe-throwing tactic, which was extremely threatening on both offense and defense. At the same time, the Nordic nation's profound maritime tradition allows these warriors to exert a full combat power that far exceeds that of inland soldiers when fighting at sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord royal guards are worthy opponents. Their shield wall can effectively resist the fire of our crossbowmen, and their swordsmanship is not inferior in close combat. However, on the plains, they lacked mobility and were ultimately the prey of the Banner Knights. But naval battles are another matter. We Vlandians are also good at it on the deck, but the Nords' bravery, which they have learned from fighting winds and waves since childhood, is really a headache."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord Royal Guard is our northern relative, and their fighting style is similar - shield wall, sword, and spear. But there is one thing they are more extreme than us, and that is naval battles. The warriors of Sturgia also know the sea, but the Nords literally grew out of the sea. Their longships appear and disappear in the northern seas, and the boyars have to avoid them when they see them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord royal guards are no match for us in the dense forest. Their heavy armor makes it difficult to move in the forest, but our arrows can be shot from all directions. But people in Battania rarely go to sea. I heard from sailors that the Nords are as scary on the sea as we are in the forest. Once you get on their ship, you will never get off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nord Royal Guard are the strongest infantry we have seen in the North. In the Nahasa Desert, that heavy armor would kill them from the heat. But at sea, their fleet is indeed a huge threat. We Aserai also have warriors who are familiar with water. We may not be inferior to them in offshore defense, but it is hard to say in the ocean."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nords' infantry is indeed strong and they are good at attacking cities and strongholds. But they are too slow. Our mounted archers can't even touch their shadows on the grassland. As for naval battles, the Khuzait people never care, the grasslands are our sea and the horses are our ships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nord Royal Guard, that is a tough one. On land, they are weapons for siege; on the sea, they are real evil spirits. If you want to make a living on a Nord ship, you'd better check whether you get seasick and whether you can catch their throwing axes and swords on the swaying deck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 150
+        }
+      },
+      "Content": "The Nord Royal Guard are the perfect example of elite heavy infantry. Their strength lies not only in their sophisticated equipment and personal martial arts, but also in their unparalleled adaptability to the ocean. This innate talent for navigation gives the Nord army an overwhelming advantage in any naval battle in the Perlas Sea or the northern ice fields. Any army that neglects naval warfare training will pay a heavy price when encountering a Nord fleet."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Nord Royal Guard",
+      "Kind": "bound_troop_name",
+      "TargetId": "__bound_troop__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

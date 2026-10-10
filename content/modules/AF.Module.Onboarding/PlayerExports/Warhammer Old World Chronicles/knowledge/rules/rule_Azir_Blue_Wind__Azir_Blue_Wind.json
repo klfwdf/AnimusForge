@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Azir_Blue_Wind",
+  "Keywords": [
+    "Azir Blue Wind",
+    "heavenly wind",
+    "School of Astronomy",
+    "Omen Magic",
+    "LoreOfHeavens",
+    "Lightning",
+    "astrology",
+    "sky power",
+    "blue magic",
+    "Star Prophecy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Azir - the blue wind - is the wind of sky and inspiration. It flows upward from the upper atmosphere and eventually dissipates in the cosmic wind channels among the stars. Azir is the wind of prophecy and omen that permeates all possible branches of the future, bringing back to the present the faint echoes of things that have not yet happened but may happen—the astrologers of the Academy of Heaven search in the veins of these echoes for impending disasters and triumphs. The way Azir appears on the battlefield is the most miraculous of all winds: chain lightning falling from the sky, the probability of being changed, and the strange celestial phenomena written in the sky above the enemy's formation using the wind as a pen. Azir is the most balanced of the eight winds - leaning neither towards destruction nor creation, but an eternal observation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Azir's blue wind is the most eye-catching among the imperial military magics - when you see the enemy's line on the battlefield being struck by a chain of blue and white lightning falling from the sky twelve times in a row, what you see is not a random thunderstorm, it is a battle mage from Paradise Academy who accurately guides the continuous jumping shots of Azir's lightning in the enemy formation. Winds of Heaven in Altdorf stands for Celestial Academy, and our astrologers provide horoscope predictions for every major battle before the war - not a suggestion of vague mysticism, but a highly technical form of data analysis. There is a statistical correlation between the position of the stars and the flow of Azir's winds that has been verified by the academy with thousands of years of data - when a planet enters a specific constellation area, the penetration of Azir's lightning will increase by about one and a half; and when another group of planets is in opposition, astrologers will advise commanders to avoid launching aerial offensives that month. The Empire's adversaries laugh at our astrology—but they stop laughing every time they encounter blue wind lightning that shatters their command banners. Another minor but equally deadly combat application of Azir is probability interference - a high-level blue wind mage can fine-tune the distribution pattern of objective probability at a certain moment within a limited range, which means that an enemy crossbowman's crossbow bolt that was supposed to hit the imperial general's eyebrow may deviate by half an inch due to the interference of a gust of unexplainable wind. This is not blocking the arrow, this is turning the 'missed' branch of all possible futures into reality through Azir's intervention - this is an extremely profound magic that only a few heavenly mages can perform stably."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of the Academy of Paradise to rulers lay in more than its provision of weather forecasts and lightning strikes—it lay in its possession of the most complete long-term historical record of celestial phenomena in the Old World and, by extension, its long-term predictive capabilities. In the more than two thousand years since the founding of the empire, the Astronomical Observatory of Paradise College has never stopped observing and recording every star, planet, comet, and any celestial anomaly that might be noticed by mortals in the sky of the old world. The total size of this set of records - rumor has it - exceeds that of all other documents in Altdorf's imperial library combined. For an Elector Count, purchasing a forecast report from the Academy of Paradise on possible celestial anomalies (return of the twin-tailed comet, solar eclipse, auroral invasion) in the next five to ten years is no less valuable than purchasing new equipment for a legion. Historical data shows that in the year before and after a solar eclipse, the amount of undead activity in the direction of Sylvania increases by about 30% on average; in years when the auroras are highly active, the frequency of Chaos Predators in the north increases historically by about a quarter. Celestial phenomena are both omens and weapons - Paradise Academy has the highest priority in any magic license application, because any province in the empire has at least one war in any year, and Paradise Academy's celestial data can determine the timing of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Azir's blue wind is closest to the idea of ​​'pure theoretical magic' of all the eight winds - its energy density is the thinnest of all winds (because most of its energy is dissipated in the upper boundary of the upper atmosphere rather than the surface of the material world), but its information density is the densest of all winds. The essence of astrology can be restated as a form of 'future branch informatics': the flow paths of Azir's winds are distorted by the gravitational fields of celestial bodies such as stars, planets and comets, and these distortions encode probabilistic information about various possible futures at the psychic level into weak Azir vibration signals that can be decoded by the precognitive nervous system of the Heavenly Mages. One corollary of this theory is that in empty space without any celestial bodies—if such a space existed—Azir would be unable to transmit any prophecies because there would be no gravitational field to encode information about the future. The reason for the greater accuracy of the High Elf's prophecies is theorized to be that their floating towers sit atop the massive leyline nodes of Aesir Loren and Ultuan, which themselves act as additional gravitational lenses - amplifying the strength of Azir's signals to levels far beyond what human astrology can capture. In recent years, the Imperial Academy of Heaven has been secretly trying to combine dwarf observation technology - the lens accuracy of dwarf telescopes is much higher than human technology - with Azir's prophecy analysis, but the dwarves refuse to cooperate with any institution that uses magic, which makes the project progress extremely slowly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Winds of Heaven exhibits a different pattern of prophecy reception among female astrologers than that of men - this pattern is known within the academy as the dichotomy of 'intuitive reception' and 'analytical reception', which actually reflects the academy's implicit derogatory framework for women's thinking. Male Heavenly Mages tend to decode Azir's prophetic signals through star chart calculations and mathematical models (the Analytical type), while female Heavenly Mages are thought to be more inclined to receive Azir's signals through direct psychic induction (officially called the Intuitive type). In practice, there is no statistically significant difference in the effects of the two methods, but the promotion system within the academy gives a higher academic evaluation to analytical reception - the label 'intuition' is used to explain the precise predictions of the female Heaven Master as 'accidental induction' rather than a systematic technical achievement. The most unacceptable thing is: As far as I know in history, at least three female Heavenly Mages were privately asked by the male elders of the academy to undergo a 'heresy prophecy review' after accurately predicting major disasters. They were not convicted for this, but the mental pressure they suffered during the review process was enough for one of them to resign from the academy afterwards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Paradise College has always reserved two permanent privileges for astronomical observation over our family's territory - these are the permanent rights obtained by the twelfth generation patriarch of our family three hundred years ago in exchange for an extremely expensive family property with Paradise College. These two privileges are specifically: first, Paradise Academy is not allowed to release any lightning spells exceeding level three over my family’s territory (to prevent shattering the ancient stained glass windows of our castle—each window is a gift from the wedding of our ancestors and his wife); second, our family has the right to do so every year Twice, we asked Paradise Academy for a weather forecast report that was limited to our own territory - the accuracy of this report reached an astonishing over 90% in short-term forecasts (within three days), which enabled our clan to never lose a year's worth of food during the harvest season due to heavy rains in three hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most useful thing about Azir in the wild isn't prophecy or lightning—it's the stars. Any traveler who has received basic training from the Academy of Heaven can identify with the naked eye the position of every key constellation in the sky on any clear night and derive from this the precise direction, current latitude, and—if you are experienced enough—the weather trend for the next three days. I survived for three years in the wasteland of the eastern part of the old world by relying on a set of astrological formulas I learned from a retired janitor of Paradise College. Another underrated application of Azir is sleep - a night's sleep in a high-purity Azir environment (high altitude, clear night sky, away from city lights) has three times the restorative effect of ordinary sleep, because the energy of Azir seeping down from outside the atmosphere creates an extremely subtle reorganization effect with the brain in the unconscious state of human sleep. The tower student dormitory of Paradise College is built in the Blue Wind Observation Tower at the highest point of Talabek Territory. It is said that the dormitory students there never need more than four hours of sleep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Azir's Blue Wind provides an invisible but vital business service to the Imperial sea and river shipping industries - weather forecasting. Paradise Academy sells three-day standardized weather forecast services to major ports and river terminals in the empire through blue wind observatories in each province - the price is graded according to the throughput of the port, but is always controlled within the range that the average ship owner can afford. The commercial value of this service is reflected in statistics: in ports with blue wind forecast coverage, the average annual rate of ships sinking due to sudden storms is about one-third lower than in ports without coverage. The accuracy of the blue wind forecast is not absolute - when the magic wind fluctuates violently (such as during periods of high auroral activity), Azir's signal will be severely disrupted, leading to prediction failures - and the damage caused by this failure during these periods is just large enough to reflect the imperfection of the existing system. Marienburg's insurance company established an independent network of short-term meteorological observation towers outside the Paradise Academy - not relying on Azir, but based on physical meteorology observations - but the accuracy of the forecasts provided by this network could never compete with Azir's forecasts."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Blue Wind of Azir - one of the eight winds of the sky, inspiration and omens, flowing among the stars and upper atmosphere",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Azir’s blue wind’s magical properties and energy sources"
+  ]
+}

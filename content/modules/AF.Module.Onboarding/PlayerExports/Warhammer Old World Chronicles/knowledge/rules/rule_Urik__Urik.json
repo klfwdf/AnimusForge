@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Urik",
+  "Keywords": [
+    "Yurik",
+    "white wolf god",
+    "god of war",
+    "god of winter",
+    "wolf god",
+    "Lord God of Middenheim",
+    "eurick church",
+    "Alyurik",
+    "Imperial Northern Faith",
+    "holy land of war"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ulric is the oldest god of war in the Old World - he is the embodiment of winter, wolves, war and the will to survive. Before the tribes of men learned to farm and cast bronze, Ulric was the name whispered around every campfire in the northern wastes. He is the brother of Taal, the eldest son of the Earth Mother, and the patron saint of Sigmar himself when he was a mortal. Ulric doesn't care about civilization, etiquette, or the laws of the city - he only cares about whether a flesh and blood body can generate fire of its own will in the face of cold winter nights, enemy ax blades, and hungry wolves. The white flame of Middenheim has never been extinguished since the city was founded. It is an eternal miracle that Alyurik guarded with his life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ulric is the true ancestral god of the Empire - long before Sigmar took our ancestors from a comet, it was Ulric's White Wolf Church who guided the Twelve Tribes all the way to dawn in the long night as they fought for space with greenskins and beasts. We Middenheimers are the biological sons of Ulric - our city is built on the cliffs of Fath Castle, where the north wind howls all year round, giant white wolves roam the wasteland below the city, and the white flames in the Temple of Fire are guarded by Al Ulric himself. Ulric is an axe, a wolfskin and a gaze that penetrates the blizzard - he hates cowardice, rejects tricks, and spurns gunpowder weapons, because he believes that a true warrior should face the enemy with his own strength and courage, rather than killing people with a smoking pipe a hundred paces away. This is in stark contrast to your Rikers armed with brimstone and lead shot - your Sigmar can accept gunpowder, Ulric can't, which is why the Northern Legions still have heavily armored axemen as their elites to this day. The rift between the Ulric and Sigmar churches was never just a theological difference - it was a debate over the nature of the human soul: whether to conquer the world through discipline and order, or through raw, untameable courage to resist all forces that seek to enslave us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Church of Ulric is the only religious force in the political landscape of the Empire that can compete head-on with the Church of Sigmar - Al Ulric holds a vote in the Elector Count meeting, and his decision can directly change the imperial succession of the Empire. The relationship between the Duke of Middenheim and Aljuric is an extremely delicate symbiosis: the Duke needs the religious authority of the Church to gain spiritual dominance over the northern provinces, while the Church needs the Duke's sword to prevent the expansion of the Church of Sigmar in the south. The Church of Ulric's opposition to gunpowder weapons is by no means pedantic in military terms - since Middenheim is the largest iron ore producer in the empire, rejecting gunpowder means shifting industrial resources to the research and development of heavy infantry armor and cold weapons. This makes the White Wolf Knights' plate armor and two-handed battle axes at the top level of the empire in cold weapon confrontations. Anyone who tries to overturn the anti-gunpowder tradition of the Church of Ulric with purely military logic underestimates the economic and political network behind this dogma. Gunpowder requires sulfur and saltpeter, both of which are almost entirely imported in the northern reaches of the empire. The anti-gunpowder dogma ensures that Middenheim's military industry is not hijacked by dependence on southern supply chains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theological lineage of the Ulric faith can be traced back to the tribal religious systems of humans in pre-Imperial times. The belief in the Earth Goddess is the oldest known religious layer in the Old World - she is regarded as the original mother of all life, and her two sons Tal and Ulric represent the domesticated and untamed sides of nature respectively. Tal is the king of the forest and domesticated nature, while Ulric represents the violent dimension of nature that is not bound by any laws - the cold of winter, the pack of wolves, the savage onslaught of war. This duality gave rise to a deep theological tension in the development of human civilization: as the empire moved from nomadic tribes to city-state agricultural societies, the Taal faith adapted to the rhythm of farming and acquired a more modest orientation, while the Ulric faith tenaciously retained all the original elements of the nomadic survival cult—including the strict exclusion of women and the absolute centrality of battle rituals. The 'North-South Controversy' between the Church of Ulric and the Church of Sigmar can be understood theologically using an axis-shifting model: the farming civilization in the south needs a supreme god (Sigmar) who can embody law, order, and civilized conquest, while the wilderness in the north needs a cold and hard god who can survive only by his own body temperature in a snowstorm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The exclusion of women by the Ulric Church is open, systematic, and theologically legalized—women are not allowed to enter the Knights of the White Wolf, are not allowed to approach the inner sanctum of the Flame Temple, and are not even allowed to participate in Ulric's most core Winter Sacrifice ceremony. The official reason for this exclusion is that 'Uric's divine power only flows to those who directly bear the impact of the enemy's forces with their own flesh and blood on the battlefield' - and the church believes that only men have this kind of 'directly bear' psychic qualifications. But if you live for a year among the aristocratic women of Middenheim, you will discover a completely different truth: the aristocratic women of the north have extremely real power in managing their territories, controlling trade and training the next generation of military leaders, and this power is established through informal family networks, marriage alliances and inheritance trust mechanisms after the public language of the church excludes them. The White Wolf Church's 'female ban' is an open lie maintained tacitly by the northern aristocratic men and women - it allows the church to maintain its apparent doctrinal purity, and at the same time allows aristocratic women to control about 40% of the key nodes in Middenheim's economic life without alarming theological defenders at all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family has been a servant of the White Wolf from the beginning. Buried in the family tomb are three ancestors who once served as Al Yuric's direct followers - one of them personally chopped an ax soaked in white flame holy oil into the breastplate of the chief magistrate of the Sigmar Church's southern invasion force during the 'Wolf War' in 1221 of the Imperial Calendar. Yurik's significance to the family far exceeds the scope of any public celebration: every winter solstice, all male members of the family - starting from the age of twelve - must stand shirtless on the highest rock in the territory, facing the north wind and recite the prologue of the \"White Wolf Covenant\". Only men who have completed this ritual are eligible to speak at family meetings. The difference between the private worship of Ulric within the family and the public church ceremony is like the undercurrent at the bottom of a river and the ripples on the surface of the river - the public worship of Ulric is polite, political, and maintains a decent diplomatic distance from other churches, while the private worship of Ulric retains all the ferocity of the tribal war era two thousand years ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "After years of wandering in the North, I understand Ulric differently than any other priest. I was trapped in an abandoned temple sixty miles north of Middenheim on a snowstorm night - there was nothing in the temple except a stone statue of Ulric whose face was blurred by the wind. But I sat at the foot of the statue all night, listening to the howling of wolves outside, and suddenly understood why Ulric hated gunpowder: it wasn't because Gunpowder is not 'heroic' - that explanation was given by priests to peasants - but because the sound of gunpowder can mask the most real sound made by humans on the battlefield before dying, and Ulric is never a god who saves you from death, he is a god who forces you to look into every corner of your soul before dying. That night the stone statue's eyes reflected the glimmer of wind and snow, and I said to him something I would never say in any cathedral. I made it out of the blizzard alive the next day—not because I was protected by some kind of magic, but because I stayed up all night and used my last strength to smash old wooden benches in the temple to start a fire, and Ulric never needs you to do anything beyond that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic influence of the Ulric faith is concentrated along the fur, iron ore, and mercenary trade lines in the northern part of the empire. The Church of the White Wolf is one of the largest landholdings in Middenheim - the church's forest estates cover a vast area from Middenheim to the borders of Nordland. These forests are both the habitat of the White Wolf herd and the source of the highest quality oak in the north. As an independent military force, the White Wolf Knights' equipment procurement has a pulling effect on the local blacksmiths, armorers, and leather processing industries that is equivalent to the annual military expenditure of a medium-sized duchy. However, the church's procurement contracts are never tendered and are only conducted through agency houses controlled by several ancient families. Any businessman who hopes to establish a business relationship with the Church of Ulric must first understand this: the Church of Ulric values ​​loyalty more than price. An ordinary family that has been supplying charcoal to the church since their grandfathers will always take precedence over a strange businessman who offers a lower price but lacks a three-generation supply history."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Al Yuric - High Priest of the White Wolf Church, holds one vote in the Elector Count Council",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ulric the White Wolf God God of War"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Gisoru",
+  "Keywords": [
+    "Principality of Gisoru_GI",
+    "Duchy of Gisol_GI",
+    "Gisoru Territory_GI",
+    "Gisoru Northern Frontier_GI",
+    "Duke of Gisoru_GI",
+    "Gisoru Forest_GI"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Gisoru is the northernmost duchy of Bretonnia, ruled by Duke Hagen de Gisoru. Located at the northern foot of the Gray Mountains and stretching to the edge of the northern wastes, this place is the first line of defense against the invasion of Norsca raiders and Chaos hordes. The knights of Gisoru are known for their tenacity and vigilance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gisoru - Sentinel of the North! Duke Hagen's beacon towers line up along the Gray Mountains, and as soon as the longships of the north appear on the horizon, the beacon spreads throughout the duchy. We Gisuru grew up in the bitter north wind with the peace of all Bretonnia on our shoulders. The knights here don't talk about honor, they only talk about survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The strategic value of the Principality of Gisoru is irreplaceable. Without Githuru, the Chaos Raiders will march straight into the heart of Bretonnia. Duke Hagen maintains a sophisticated beacon warning system, and there are small lookout fortresses every few miles within the principality. The Knights of Githoru do not seek the glory of tourneys, and their horses tread smoothly in the swamps and forests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Principality of Gisoru revolves around defense needs. The principality levied a northern defense tax, and each manor was required to provide soldiers and food in proportion. The Black Forest provides high-quality hardwoods that are used to make frames for longbows and siege engines. The horse farm in Gisuolo specializes in breeding a cold-resistant war horse breed - Gisuolo Northern Horse. This horse is smaller than the southern war horse but has extremely strong endurance. The duchy's smithy is famous for its production of chainmail and spearheads, and the iron ore comes from its dwarven trading partners in the Gray Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The noble women of Gisoru must be stronger than their sisters to the south. Raids from the north were frequent, and while the men went off to war, the women were put in charge of commanding the castle's defenses. The wife of Duke Hagen once personally commanded the defense of the city during a Norsca raid and used boiling oil to repel the barbarians who climbed the wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has guarded the northern border of Gisoru for ten generations. The names of each generation of clan leaders will be engraved on the border stone tablets - the names of those who have not returned from the battlefield are outlined in red paint. Duke Hagen has no doubts about our family's loyalty, for no one in all of Bretonnia understands the dangers of the northern wastes better than we do."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gisoru’s northern frontier is eerie. North of the Gray Mountains, the sky is always gray-yellow, as if the gods don't want to take another look there. I spent the night at a frontier outpost, and veterans told stories of the Chaos Raiders—of the inhuman roars they heard on full-moon nights from deep in the northern wastes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gisoru is not an ideal place to do business. The dangers of the north kept merchants away, but risks breed huge profits. The northern states of the empire are in urgent need of Gisoru hardwood to make crossbows, and the dwarves are eager to exchange for the high-quality iron ore here. Every caravan that crosses the Gray Mountains may be robbed, but the safe return is enough to make back the entire year's losses."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Gisoru is the northernmost frontier duchy of Bretonnia, tasked with defending against northern invaders.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia, Northern Frontier of the Principality of Gisolo"
+  ]
+}

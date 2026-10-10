@@ -1,0 +1,207 @@
+{
+  "Id": "rule_Juling_Carriage",
+  "Keywords": [
+    "Juling carriage",
+    "Soul Gathering Carriage Undead Repair",
+    "dark magic vehicle",
+    "Necromancer's Vehicle",
+    "corpse cart",
+    "Aura of Resurrection"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Soul-Gathering Carriage is a dark magic vehicle made of corpses and debris. It slowly rolls over the rotten soil on the battlefield, emitting death energy that revives the dead. The necromancer rides on it and blows the wind of death towards the undead army, causing the fallen zombies and skeletons to stand up again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The soul-gathering carriage is the most sacred creation of our necromancers. The mountains of corpses are not corruption, but containers of power. As the carriage rumbled forward on the battlefield, the wind of death blew out of it, and the corpses of thousands of soldiers and horses danced in obedience to the order. We spend decades searching, sewing, and infusing every soul-gathering carriage. Every rune in every piece of rotten flesh contains the essence of the power of the night. Those imperial guys think we win with numbers? ridiculous. What we rely on is eternal regeneration - as long as the spirit-gathering carriage is not destroyed, our army will be undefeated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The soul-gathering carriage is the tactical core of the undead army's logistics system and must be prioritized as a target. According to my intel, these vehicles are capable of constantly repairing surrounding undead units, leaving them on the battlefield for more than a quarter of an hour to render any war of attrition strategy ineffective. There are two tactical solutions: one is to use Imperial artillery or trebuchets to concentrate firepower from a long distance to destroy; the other is to send musketeers to take advantage of their slow-moving weaknesses to carry out flanking raids. Never use ordinary infantry to engage in a war of attrition against the undead legions surrounding the Soul-Gathering Carriage - your soldiers' physical strength is limited, and all the Soul-Gathering Carriage needs to repair the dead is time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The core technology of the Soul Gathering Carriage is called the 'Corpse Carriage Resonance Array', which was first developed by the 'Brotherhood of Darkness', a guild of necromancers during the First Dynasty of Shylvania, around 1520 in the Imperial Calendar. The basic principle is to use the dense texture of rotten flesh as the matrix for storing undead energy, and form an energy resonance field through the array of micro-runes engraved on the bones of the corpse, which amplifies the wind of death released by the on-board warlock to a coverage area of ​​about three hundred feet in radius. It is worth noting that the resonance efficiency of corpses from different sources—especially different races—to the undead energy varies greatly: human corpses provide balanced efficiency and stability, green-skin corpses have high energy output but decay quickly, and dwarf corpses are extremely difficult to assimilate. Almost all the top spirit-gathering carriages use dwarf bones as the underlying energy storage matrix, which is why some dwarf clans have an everlasting hatred for vampires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The smell—first the sweetness of rotting flesh, then the futile attempts of herbs and spices to mask it, and finally something more subtle, like the smell of ozone after a thunderstorm. They say it's the smell of the winds of death, but I think it's the scorch marks left when night magic touches reality. My father forbade me from getting close to the Soul-Gathering Carriage, saying that it was not within the sight of a noble woman, but I peeked once from the tower window and saw those squirming corpses and the green light. It was an existence that violated all natural laws and was smiling at me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's soul-gathering carriage, the Bone Hall, has a history of four hundred years, and each generation of family necromancers has added new corpses and runes to its pile of carrion. It is not only a tool of war, but also a showcase of our family’s strength. My grandfather bound the skeletons of three greenskin warlords to it to absorb their brute strength, and my father fused the soul of an executed renegade warlock to enhance its resuscitation efficiency. Maintaining it requires consuming twelve barrels of antiseptic medicine and a large number of fresh battlefield corpses every year, but the reason why our family territory can stand firm in this hostile Sylvanian mountains is due to the spirit-gathering carriage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I first saw the power of the soul-gathering carriage when I was hired to clear out a village infested by the undead on the banks of the Talabek River. That damn necromancer sat on a pile of writhing corpses, and every time we chopped down a zombie, a green wind blew past the carriage, and the zombie stood up again. My teammate had a nervous breakdown after repeatedly slashing the same skeletons five times, dropped his sword and ran away. We later spent our entire commission on a Sigmar battle-priest, whose prayers seemed to briefly dissipate the wind of death, giving us time to rush in and burn the carriage. Since then, I have learned: When fighting the undead, do not attack the support or the core, but attack the source first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a freight merchant in Rutland, I really can't understand why the undead forces use such inefficient vehicles. The pile of corpses and broken bones had no wheel and axle structure at all. It was dragged and slid on the ground purely by the energy of the dead. Every time it advanced one hundred feet, it consumed an astonishing amount of magic resources. I once proposed at a meeting at the Imperial College of Engineering: Wouldn't it be more economical to use alchemically reinforced wheels and shock-absorbing systems to carry those bodies? As a result, I was kicked out of the venue - I forgot that all the people here were Imperials, they had already started vomiting when they heard 'carrying corpses'."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A dark magical vehicle made of corpses and exuding the wind of death.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Soul-Gathering Carriage Soul-Gathering Carriage Undead Repair Dark Magic Vehicle"
+  ]
+}

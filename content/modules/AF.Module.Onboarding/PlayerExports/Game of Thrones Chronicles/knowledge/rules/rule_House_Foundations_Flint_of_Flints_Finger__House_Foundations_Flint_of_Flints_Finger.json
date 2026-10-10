@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Flint_of_Flints_Finger",
+  "Keywords": [
+    "Flint of Flint's Finger",
+    "House Flint of Flint's Finger",
+    "Western Coast of the North",
+    "House Flint"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Flint family of Flint's Finger is one of the many Flint branches in the North, and is based on Flint's Finger, which stretches into the Sunset Sea on the west coast of the North. The locals face risks from winds, barren coasts, fisheries, and ironborn attacks; their understanding of the Flint family name first comes from who can watch the sea, maintain small harbors, and protect coastal residents, rather than the southern genealogy. Coat of arms, characters or territories from other Flint branches may not be transplanted to this branch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in the north know that there is more than one Flint family. When it comes to Filint, it refers to the Filint that guards the narrow promontory, reefs and small harbors on the west coast, not the Widow's Hope or the relatives with the same surname in the mountains. A common surname can bring about kinship, and it also makes it easy for outsiders to lump together the merits and demerits of each branch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People on the promontory recognized the tide and rocks first, and then the lord's distant relatives. For them, the purpose of the Fillint family is to maintain the beacon fire, organize fishing boats, and make the farmers along the coast hide behind the wall in time when they hear the news of the Ironmen. Storms don't turn because of old names, and neither do pirates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Flint's Finger The west coast branch of the Flint family in the north is based on Flint's Finger. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Flint's Finger The west coast branch of the Flint family in the north is based on Flint's Finger. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Flint's Finger The west coast branch of the Flint family in the north is based on Flint's Finger. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Flint's Finger The west coast branch of the Flint family in the north is based on Flint's Finger. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Flint of Flint's Finger: The west coast branch of the Flint family in the north is based on Flint's Finger."
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_waywatchers",
+  "Keywords": [
+    "Waywatchers",
+    "Stealth Archers",
+    "Forest Phantoms",
+    "Long-Range Sniping",
+    "Woodland Ghosts",
+    "Silent Arrows",
+    "Eyes of Athel Loren"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Waywatchers are the deadliest stealth archers among the Wood Elves; like unseen phantoms of the forest, they loose silent arrows from unfathomable distances to slay with a single shot. Only a handful of fortunate travelers have ever caught a fleeting glimpse of their forms blending into the canopy along the eaves of Athel Loren, while most mortals go their entire lives without ever knowing whether Waywatchers truly exist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Waywatchers are the most silent guardians of Athel Loren, the mortal extension of the will of Kurnous the Hunter. Our Waywatchers are trained from childhood in the deepest heart of the forest, learning to become one with every leaf and every shaft of light. They have no need of armor—for any foe is already dead before ever laying eyes upon them. A Waywatcher's arrow can thread the eye-slit of full plate armor from three hundred paces away with terrifying precision. When Dwarf loggers, Imperial colonists, or Beastmen warherds seek to defile our sacred groves, the Waywatchers are the first line of defense—loosing the fatal first shaft before the trespassers even realize their movements are being watched. The very existence of the Waywatchers is Athel Loren's warning to all outsiders: this forest sees you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In any military operation along the borders of Athel Loren, Waywatchers are an unseen threat that must be factored in above all else. What gives my staff officers the worst headaches is not the Wood Elf infantry on the open battle line, but those stealth archers you never see. They can methodically pluck an entire reconnaissance patrol clean without leaving a single trace—sentries topple over with the first bite of the day's rations still in their mouths. The only remotely effective countermeasures are maintaining two-man sentry posts, bringing warhounds trained in counter-stealth, and clearing firebreaks with incendiary bombs before entering wooded sectors to force potential stalkers to reveal their positions. Yet in truth, within the deep forest proper, such measures grant you less than a thirty percent chance of survival at best. Certain places belong by nature to the Elves, and our marching into them is suicide in itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The selection and training system of the Waywatchers is one of the most rigorous social mechanisms in Athel Loren. In each generation, only Elven children born on the darkest night of the winter solstice are eligible to be chosen as Waywatcher initiates—whom the Wood Elves call 'the Chosen of Kurnous.' Before their third year of life, these children are taken into the deepest reaches of the forest to be raised in isolation by senior Waywatchers, and at age ten they begin learning the 'Art of Stillness'—a stealth discipline combining illusion magic with muscular control that allows them to traverse any terrain completely undetected. The composite longbow wielded by a Waywatcher is known as an 'Asrai Hunter's Bow,' its limbs crafted from 'Ghost Oak' nourished by the Worldroots of Athel Loren, a timber possessing four times the density and elasticity of ordinary yew. Most wondrous of all is the Waywatchers' 'Splitting Arrow'—a single shaft that can split into three in mid-flight; according to analyses conducted by the Imperial Military Academy on arrows recovered from the Argwylon forest clashes, this splitting mechanism involves precision micro-runic arrays of a technical complexity far surpassing contemporary Imperial engineering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My elder brother once led a detachment into Athel Loren in pursuit of poachers. On the very first night they made camp at the forest's edge, they received a warning from the Waywatchers—three arrows driven into the earthen mound at the center of the camp, arranged in the pattern of Kurnous's hunting-spear totem. My brother said the fletchings of those arrows were feathers even he could not identify, and the arrowheads were polished so bright they reflected a man's pupils. He did not press deeper, choosing instead to withdraw and erect a stone marker at the woodland boundary as a token of respect to the forest. That is likely why he returned alive—because he knew how to read the language spoken by silent arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family has held logging rights in the foothills of the Grey Mountains for seven generations, and for seven generations we have borne a blood feud with the Wood Elf Waywatchers because of it. Every head of the house warns his heir: when you walk into the woods and hear no birdsong, back out at once. That is no good omen, but the signal that the Waywatchers have already cleared the sector—and they do not warn twice. Thirty-seven members of our family have their names carved upon the stone tablet in our ancestral shrine, every single one of them having fallen at the forest's edge with a finely wrought Elven shaft through the heart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once escorted a scholar from Tobaro across the outer fringes of Athel Loren in search of a rare herb. On the fourth day, the scholar suddenly clutched his throat and collapsed; only when I went to lift him did I see that an arrow fletched in green feathers had entered the back of his neck and protruded through his Adam's apple. I heard no bowstring twang, saw no figure, and felt not the slightest stir in the wind. I turned on my heel and ran, sprinting back along the trail we had come for an entire day until I had crossed a river before daring to look back. That scholar—I think the only mistake he made in his whole life was stepping across some invisible boundary line within the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "At an academic gathering at the University of Altdorf, I met a botanist recently returned from his travels. He claimed to have collected a sample of the arrow poison used by Waywatchers—an alkaloid extracted from a mushroom unique to Athel Loren. He called it 'Silent Death,' and allegedly its victims first lose the ability to speak, then their sight, and finally suffocate from respiratory muscle paralysis while remaining fully conscious. The most chilling detail was that this toxin degrades on its own inside the victim's body, leaving no trace of poisoning detectable by any autopsy method. The botanist planned to publish a treatise on it, but he never lived to see the day of publication—he was found dead in his own home, a green-fletched arrow through his throat."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The highest order of stealth archers and silent hunters among the Wood Elves",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Waywatchers Stealth Archers Forest Phantoms"
+  ]
+}

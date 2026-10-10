@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Treeyad",
+  "Keywords": [
+    "Dryad",
+    "forest spirit",
+    "nature's wrath",
+    "wooden claw",
+    "Lin Jing",
+    "Daughter of Athel Loren",
+    "Angry Elf"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads are Athel Loren's most wrathful forest spirits. They take the form of trees—twisting branches as arms and sharp thorns as claws—and tear any intruder to pieces with nature's primal fury. Legend has it that each dryad was once a free-growing tree, and when the forest was unforgivably harmed, Athel Loren's ancient will awakened them as vengeful spirits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dryads are not our servants, but our sisters—the daughters of the forest spawned from pieces of Athel Loren's own soul. The most primitive anger of Athel Loren flows in every dryad. When the invader's ax cuts the bark, their root system will shake from their slumber. We Wood Elves never try to tame the Dryads, but join them in their dance of vengeance as guardians of the forest—our songs tempering their fury, our arrows paving the way for their charge. The dwarf war engine once crushed large saplings arrogantly, and then the dryads emerged from the ground, their wooden claws piercing the steel joints, tearing the entire machine into exploding pieces - that was the most beautiful violence I have ever seen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads are a force that cannot be underestimated in frontal combat - they are extremely tolerant of physical damage, their wooden bodies can withstand most conventional arrows, and they are not afraid of fear. Their weakness is fire - a force of archers armed with incendiary arrows or a cannon's kerosene bombs can quickly ignite their dry bodies. Another tactical point: Dryads are most likely to be enraged in the core areas of ancient forests, and their power will be greatly reduced in man-made clearings or stony terrain. Therefore, it is a time-consuming but effective strategy to avoid fighting the main force of wood elves in dense woodland, but to lead them to open areas and deal with them one by one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The birth mechanism of dryads is one of the core mysteries in Athel Loren's forest ecology. According to the oral traditions of the elven sages, when an ancient tree more than a thousand years old has endured enough painful memories - usually referring to deep trauma caused by logging, forest fire, or dwarven mining - Athel Loren's collective forest consciousness 'The Soul of Athol' will infuse its life force into a 'Heart of Thorns'. This heart burst out of the body when the ancient tree died, absorbing the surrounding branches and leaves, and reshaped it into a wooden female human form—the tree demon—in about three days. Dryads theoretically live as long as the forest, but once they leave Athel Loren's spiritual coverage for more than a year, their bodies will gradually become stiff and petrified. This is a conclusion drawn by Imperial Druid scholars after observing a captured dryad. The most heartbreaking dryad awakening event in history occurred during the \"Centennial Logging Period\" in 1420 in the Imperial Calendar. The Dwarf Mining Company cut down large swaths of ancient forestland at the southern foot of the Gray Mountains over a hundred years, which eventually triggered a large-scale dryad awakening event. More than two hundred dryads swept through four dwarf fortresses in three days, known in history as the \"Root War.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once touched a dormant dryad during a diplomacy—she looked like an old, dead oak tree, but when I placed my palm on the trunk, I felt a pulse. It was not a heartbeat, but something deeper, like an undercurrent deep in the earth slowly squeezing and relaxing. I thought about the ornamental trees pruned into geometric shapes in our castle garden, and suddenly I felt how arrogant and stupid that was. If every tree in Athel Loren has the potential to become a dryad, aren't we creating future enemies for ourselves with every pruning we do to nature?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The southern border of our family territory borders an ancient woodland where a group of dryads are believed to slumber. There was a strange clause in my grandfather's will: not a single tree in that forest land could ever be cut down, otherwise he would be deprived of his inheritance rights. My father always followed this rule but never explained why. When I grew up, I found a yellowed contract from the family archives, which contained a warning written in both Elvish and Ancient Dwarf languages: 'This forest is a corner of the dream of Athel Loren, do not disturb the awakened ones. 'The signature is the name of a dryad - 'The Root of Melandir'. It turns out that our family peace is not based on strength, but on an ancestor who made some unknown deal with the tree demon four hundred years ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our mercenary group was hired by a village chief on the edge of the Loren Forest to eliminate the 'wild beasts that harassed the sheep'. When they arrived at the scene, they discovered that they were not wild beasts at all—but three tree demons, making shrill cries around an ancient felled oak tree. It turned out that the woodcutter in the village had cut down the tree for firewood. I immediately tore up the contract, returned the deposit to the village chief, and led the team to leave the village overnight. Three days later I heard from a drunken passing merchant that the village had completely disappeared overnight, leaving only turned soil and a large amount of broken wood on the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the wooden luxury goods market, a piece of rare material called 'Dryad Heart Wood' occasionally appears - said to be the core wood left after an angry dryad was defeated. Its texture will flow slowly under the moonlight, and you will feel a continuous warmth when you touch it. I handled a piece of it, bought it from an Arabi merchant, and resold it to a wandmaker in Middenheim, making a profit of twenty times the purchase price. But I was done with the business—for three months after the deal, I had nightmares about being in a burning forest and not being able to breathe."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The spiritual incarnation of an ancient tree in the forests of Athel Loren that was awakened by trauma.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dryad Forest Spirit Nature's Wrath"
+  ]
+}

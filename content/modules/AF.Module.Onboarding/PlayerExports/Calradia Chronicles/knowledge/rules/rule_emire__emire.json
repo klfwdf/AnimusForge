@@ -1,0 +1,162 @@
+{
+  "Id": "rule_emire",
+  "Keywords": [
+    "emir",
+    "Amir"
+  ],
+  "RagShortTexts": [
+    "Today Emir has evolved into an honorific title for the chief of the Aserai tribe who has military command and local governance. The chief of each tribe is Emir."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emir is the name given by the Aserai to their ruler. This word is derived from 'Amir' in the Nahasa language, and its original meaning is 'commander' - it originally refers to the commander who leads the army and issues orders on the battlefield. Today it has evolved into an honorific title for the family patriarch who has military command and local governance. In the tradition of desert tribes, every emir is the absolute master of his own territory and tribe. Even the Sultan of Aserai is essentially an emir - but he is the most powerful of all emirs and is jointly elected as the supreme leader by other emirs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In our desert, a person can be called an emir, not because he is born well or rich, but because he can make others obey his orders. The word first came from the battlefield - 'Amir', the commander. In the tribal wars hundreds of years ago, whoever could stand in front of the battle line and give orders and let the soldiers follow him was the emir. Later, when there was no war, this title was not lost and became an honorific title for the tribe leader. The head of each tribe is an emir, and our sultan is also an emir - he is the largest of all the emirs, pushed out by the other emirs to rule the world. The imperial people have the emperor first and then the general. We have the emir first and then the sultan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am the emir of my tribe, my grandfather was, and so was my great-grandfather. This title has changed from commander on the battlefield to ruler of the territory, but the core remains the same - you have to be able to let your warriors rush with you at critical moments. The Sultan is also an emir. He was elected by other emirs. He is essentially the same as us. The only difference is that his tribe is the strongest, so his orders can spread throughout the desert during war. But usually, in my territory, my orders are the only ones. The imperial people didn't understand this - they thought the Sultan was the emperor in the desert, but they didn't understand that the Sultan first had to be an emir who could fight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Emir is in charge of everything about us - taxation, water distribution, trade route security, tribal disputes. He used to be a commander on the battlefield, but now he is a lord when he is no longer fighting. A good emir can make the oasis prosperous and the caravans safe; a bad emir can make the entire tribe unable to drink clean water. As for whether the Sultan is an emir, that is a matter between their big shots. We only know that the Sultan was the leader pushed out by the emirs, but in the final analysis, he was also a commander pushed out from a tribe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We fight with the emir. If he says to charge, we will charge; if he says to withdraw, we will withdraw. This title was first used on the battlefield - the person who gives orders. When he is not fighting, he is the leader of the clan, in charge of pastures, water sources, and disputes within the clan. But on the battlefield, he is the emir and the commander. The Sultan was also an emir, and we recognized him as the greatest emir because his tribe was the strongest and he was the loudest on the battlefield. But our loyalty is first to our emir and then to the sultan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The name 'Emir' of the Aserai people sounds as primitive as their tribalism. Those who give orders on the battlefield are called commanders, and those who are not fighting become lords - this is similar to the way our empire promotes military meritorious generals to provincial governors. But they have preserved this tribal tradition until now. The patriarch of each tribe is called emir, even their sultan himself. In our empire, we first have the senate and the emperor, and then send generals to lead the army; in their case, each emir first leads the army, and then a sultan is derived from them. Power that grows from bottom to top and power that presses from top to bottom have completely different foundations. In the Southern Empire, we usually use the title 'Archon' to equate with their 'Emir', but the Archon is part of the imperial official system, and the Emir is a natural growth of tribal tradition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Emir of Aserai is somewhat similar to our Boyer, both are the leaders of their respective territories. Their name comes from the battlefield - 'Commander', which is more straightforward than our name of 'Boyer'. However, their emirs have to recommend another sultan. Our grand duke is hereditary, so this procedure is omitted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The emir of the Aserai people is similar to the Nayan on our grasslands - the tribal leader, who controls the tribe and leads the charge during war. Another sultan was chosen among their emirs, and the Yans on our side were uniformly ordered by the Khan. The difference is that the Khan relies on the blood of the Ulhun family and the swords of the strongest tribe. Their sultan is promoted from the emir. In theory, anyone can be the sultan. But isn’t it actually still about who has the biggest tribe? It doesn't matter what your name is, whoever has the toughest fist is the real one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The emir is the most basic and core ruling unit in the Aserai political system. This word is derived from the word 'Amir' in Nahasa language, which originally means 'commander' or 'one who gives orders' on the battlefield. In the Aserai political structure, the sultan is also an emir in his own right - he is the supreme leader elected by the other emirs, rather than an emperor independent of the emir system. This institutional design means that the Sultan's power is elected from the bottom up. He must maintain prestige among the emirs, otherwise he will face challenges from other powerful emirs. This was in stark contrast to the imperial bureaucracy. In the official title system of the empire, 'consul' is usually used to translate 'emir', but there is an essential difference between the two: the consul is a level in the imperial bureaucracy, and its power comes from the appointment of the emperor; while the power of the emir is rooted in tribal tradition and military prestige, and existed before the sultan."
+    }
+  ],
+  "TextMappings": []
+}

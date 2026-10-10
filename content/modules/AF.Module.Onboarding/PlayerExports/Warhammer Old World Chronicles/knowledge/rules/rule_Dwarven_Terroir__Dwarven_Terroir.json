@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Dwarven_Terroir",
+  "Keywords": [
+    "Dwarf customs",
+    "Dawei Society",
+    "Forging process",
+    "Dwarven Landslayer",
+    "Ale culture",
+    "beard tradition",
+    "ancestor worship",
+    "clan life",
+    "dwarven bearded man"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarven society revolves around three cores: clan, forge, and hatred. Dwarves live most of their lives in underground citadels - they dislike the open sky and believe in solid rock above their heads. The most sacred things a dwarf does is drink beer, sing ancestral hymns, and pound metal in front of the forge until the weapon is perfectly formed. The most miserable group of people in society are known as the \"Butchers\" - those dwarves who have chosen to wipe their names from the clan genealogy due to irreparable personal shame, and seek a glorious death in battle with their bare axes and two axes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Let me tell you what life is really like in David. The first thing I do every morning when I wake up is check the temperature of the forge - a cold forge is a sign of laziness. Then have a glass of ale - our ancestors taught us that good beer is liquid bread. Work - Every hammer at the furnace is not only forging iron, but also continuing the uninterrupted craft tradition for thousands of years. In the evening we drank more beer at the long table, the sound was loud enough to deafen a human being, but that was Davy - we didn't whisper, we sang, yelled, and pounded the table. As for the butchers - don't look at them with pity. The Butcher's fate is self-chosen, and they feel relief and freedom, not fear, as they charge shirtlessly toward the dragon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding dwarven society is crucial to working effectively with dwarves. Dwarves have a completely different view of time than humans do - they measure time in centuries, so the word \"urgent\" means something else to a dwarf. Dwarves attach great importance to etiquette: always praise the quality of the stonework when entering a dwarven stronghold, never attempt to bargain when trading with dwarves (the price a dwarf offers is the exact value they have calculated), and never touch a dwarf's beard (this is a great insult). If you want to earn the respect of a dwarf, the best way is not to give gifts - but to pay off any debt you owe, no matter how small."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The social structure of dwarves is highly systematic in six core aspects. 1. Clan system: All dwarves belong to a specific clan (Clan), and the ancestors of the clan are ancient heroes or famous craftsmen. 2. Forging culture: The daily life of dwarves is centered around the forge - not only a source of income, but also a place for spiritual practice. 3. Drinking culture: Dwarf ale (represented by Bugman's Ale) is not only a drink but also a cultural symbol. Brewing skills and forging skills are equally respected. 4. Butcher system: The butcher (the advanced system of Troll Slayer → Giant Slayer → Dragon Slayer → Daemon Slayer) is a unique catharsis mechanism in dwarf society - dwarves who cannot repay their hatred can choose the way of the butcher and redeem their honor with death. 5. Beard culture: Beards are like human names and titles to dwarves - shaving a dwarf's beard is the most unforgivable insult (this is one of the triggers of the Long Beard War). 6. Ancestor worship: Dwarf religion is not about worshiping abstract gods, but worshiping ancestors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female member of a dwarf clan, I can tell you this - dwarf women don't weave beards, but we weave clans. The outside world's impression of dwarf women is that they barely appear in public, and that's partly true - but that's because we run the entire social machine of Kharak behind the scenes. The clan affiliation of each dwarf baby does not automatically come from blood. Instead, the mother carves the baby's full name and the names of the first six generations of ancestors on the clan stone on the night of the third full moon after the baby is born. The performer of this ritual is always a woman, because only women have the complete genealogical memory of the clan. While my husband held the shield on the battlefield, I maintained food rations within the castle, dispatched messenger ravens, and coordinated refugee transfers with neighboring Karak. This is not a support role - this is the race's life-saving system in a state of siege that lasts thousands of years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a clan leader, the butcher system is not a folk tale to me - it is a real family pain. My third brother became the Butcher after the battle with the Skaven thirty years ago - not because he was defeated, but because the outpost he commanded was bypassed underground by the Skaven, causing my family to lose two young cousins ​​and the mine. Strictly speaking, this was a strategic failure, but the third brother could not accept it. I watched him shave off his beard and hair, tattoo the red runes of Georgi all over his body, pick up a pair of axes, and never use his family name again. Whenever I see him fighting the Green Goliath on the battlefield, I know in my heart that it's not death he's looking for - he's looking for a substantial death. This is the most brutal and true aspect of dwarven culture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The biggest survival tip for being a guest in a dwarven stronghold: never turn down a glass of ale. It doesn’t matter how many drinks you’ve had of the day, or whether you’re being offered a drink during breakfast. Refusing a dwarf's ale—even with good intentions—means that you don't think the offerer's ale is good enough, or that you despise his hospitality, both of which can be recorded as a grudge. Secondly, never interrupt to provide your human point of view when the dwarves are talking about their ancestors - the 'myths' in the human mouth are often the realistic genealogical records of the dwarves. Finally, if you accidentally touch a dwarf's beard - immediately take three steps back, bow deeply, and state your full name and your father's name. This won't take away the offense, but it will at least show that you admit you were wrong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The value of dwarven ale is severely undervalued on the Old World black market - a bottle of ale aged in dwarven rune barrels for over a hundred years can fetch its weight in silver in Altdorf. The problem is that ale is not a commodity in dwarven culture - it is a cultural vehicle. Asking a dwarf to sell the centuries-old ale in his cellar is like asking an Imperial noble to sell his family's crest. It took sixty years for my brewer's guild to cultivate a trusting relationship with a minor clan named Karak Kaderin before we were granted the privilege of purchasing three barrels of dwarven ale each year. The point isn't to 'buy' - Dwarfs don't sell to customers, they only share with friends on a trust basis."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Butcher's Way - a system in which dwarves choose to fight shirtless to seek a glorious death due to irreparable shame.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarf social customs and cultural traditions"
+  ]
+}

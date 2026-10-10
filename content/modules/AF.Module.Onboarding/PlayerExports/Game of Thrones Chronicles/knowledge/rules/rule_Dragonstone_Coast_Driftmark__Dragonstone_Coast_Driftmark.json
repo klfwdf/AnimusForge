@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dragonstone_Coast_Driftmark",
+  "Keywords": [
+    "Driftmark",
+    "High Tide"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Chaotou Island is an island stronghold on Blackwater Bay and its outer sea routes. The reefs, shoals and tides of the island coast determine that it relies more on people familiar with the waterways than the land castle; the harbor can provide opportunities for anchoring, replenishing water and sending messages, and it can also become a pocket that traps ships in bad weather. The islands off the coast of the Crown are never isolated stones: they are interconnected with King's Landing, Dragonstone, the Crab Claw Peninsula, and the Narrow Sea Trade Route. For sailors, the island was first of all a shelter from the wind; for the lords, it was a bit of support for taxation, signals and maritime vigilance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark Local families also rely on fishing, salt production, docks, volcanic rock fields and narrow sea navigation; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark Entry Driftmark"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark They'll also recognize the accents, laws, and credentials of Dragonstone's waters; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark Entry Driftmark"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Driftmark They care about fishing, salt industry, wharves, volcanic rock fields and narrow sea shipping. They also care about whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Driftmark: Chaotou Island is an island stronghold on Blackwater Bay and its outer sea routes. The reefs, shoals and tides of the island coast determine that it relies more on people familiar with the waterways than the land castle; the harbor can provide opportunities for anchoring, replenishing water and sending messages, and it can also become a pocket that traps ships in bad weather. The islands off the coast of the Crown are never isolated stones: they are interconnected with King's Landing, Dragonstone, the Crab Claw Peninsula, and the Narrow Sea Trade Route. For sailors, the island was first of all a shelter from the wind; for the lords, it was a bit of support for taxation, signals and maritime vigilance."
+  ]
+}

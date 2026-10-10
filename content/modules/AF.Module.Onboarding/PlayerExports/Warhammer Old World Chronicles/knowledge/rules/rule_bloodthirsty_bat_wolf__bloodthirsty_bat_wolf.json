@@ -1,0 +1,208 @@
+{
+  "Id": "rule_bloodthirsty_bat_wolf",
+  "Keywords": [
+    "Bloodthirsty Manta",
+    "fallen vampire",
+    "shadow beast",
+    "savage hunting",
+    "Lose your mind",
+    "midnight monster",
+    "Vampire degeneration"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bloodthirsty bat wolves are the degenerated monsters of vampires who completely succumbed to their thirst for blood. They abandoned their human form and transformed into dark beasts with giant claws and wings, leaving only their endless hunger and killing instinct. Each bloodthirsty manta wolf is the cruelest warning to the vampire nobles - the dark fate that awaits them after losing themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bloodthirsty bat wolves are the existence that our vampires are most ashamed to mention - they are losers, those fallen disciples who cannot control their blood thirst and are eventually devoured by their beastly nature. Every vampire who has fallen like this was once one of our compatriots, maybe your mentor, maybe your descendant. They now wander the dark night forest, crawling on all fours, huddled in the shadows of trees, waiting to tear apart any living creature that comes near. We don't hate them - in a sense, they are a mirror image of our own fate: if one day we lose control of our will, we will eventually fall into the same abyss. Some vampire lords raise manta wolves as hunting dogs, but more often than not, we choose to end them with our own hands, using both mercy and killing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bloodthirsty Mantas are tactically unsolvable weapons of chaos - they cannot be trained or commanded, but can be unleashed behind enemy lines to cause chaos. Their brute strength was enough to tear apart heavy infantry, their ability to fly allowed them to leap over city walls, and their almost uncontrollable nature was an advantage: the enemy could not predict their attack path. I never regard it as the main force, but use it at the turning point of the battle-when the enemy's formation has cracks, release the manta wolves in the lair, and they will instinctively tear the gap at the most vulnerable point. The price is that you must accept a certain number of friendly casualties, because in that bloodthirsty state, the Manta Wolf cannot tell the difference between friend and foe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The degeneration phenomenon of bloodthirsty bat wolves is called 'blood thirsty terminal metamorphosis' in vampire physiology, and its mechanism involves the progressive conflict between necromantic energy and the nervous tissue of living vampires. When a vampire is in extreme excitement or grief for a long time, the area in the cerebral cortex responsible for advanced cognition will gradually be eroded by necromantic energy, triggering physiological atavistic degeneration, bone proliferation, wing-like appendages, and mandibular protrusion to form a tearing bite structure. The rate of this degeneration varies from person to person: a strong-willed vampire may not succumb for thousands of years, while a weak-willed person may complete the metamorphosis within days after being traumatized. The most sensational case in the academic world is the 'Midnight Wailing Incident' in 2333 Imperial Calendar - three high-level vampires from the same bloodline degenerated simultaneously due to psychological trauma, which hints that the blood of the vampires may have a collective subconscious emotional resonance mechanism."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an iron cell in the deepest part of the castle cellar, where my former swordsmanship teacher, Dame Marianne, is locked. She lost control of her blood thirst after her lover was killed fifty years ago. Now she is just a black shadow with wings and claws curled up in the corner, only letting out baby-like whimpers when feeding. I feel chills to my bones every time I pass that door, not because I'm afraid of her, but because I remember the last words she ever said: 'Never let your sorrow overwhelm your control over yourself.' 'I asked the maid to slip a fresh rose under that door every day, even though I knew she no longer recognized the flower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every bloodthirsty manta is living proof of a family's shame. My third uncle was imprisoned in our family's underground web - he was once the most promising blood dragon knight of our generation, but his will collapsed due to excessive injuries during a fierce battle against the green-skinned warlord, and he transformed into a bat wolf within a week. His father refused to execute him, saying that he was a blood relative and might one day be able to find a way to reverse the degeneration. We have been looking for the so-called 'reviving blood' for three hundred years, and the gold we spent was enough to build a castle. I don’t believe such a reversal is possible, but I understand my father’s obsession—because that’s his brother."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In an abandoned outpost in Denholm Wasteland, my teammates and I discovered the body of a bloodthirsty manta wolf chained up in chains. It seemed to have been deliberately trapped there and then forgotten by its vampire master. The most bizarre thing is that the corpse is still holding a rusted silver wedding ring tightly in its claws-suggesting that maybe, just maybe, it tried to preserve some kind of memory of humanity before going completely crazy. We took the rings off and gave them to the priest of the nearest Sigmar temple, who performed a nightlong exorcism for us. No one spoke on the way back, but I knew everyone was thinking the same thing: the only thing more terrifying than a beast was once a human being."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Someone has offered to hire me to go to the Sylvanian Forest to collect the wing membranes of bloodthirsty bat wolves - it is said that grinding them into powder and adding them to molten iron can forge an indestructible weapon. This business is crazy. My caravan and I finally hired a group of mercenary guards, but on the third night we were attacked by two bat wolves, killing three of us. What's even worse is that we don't even know who the buyer of that 'material' is. The entire transaction was conducted through an agent, and the deposit was made in ancient Nehekara gold coins. Let me tell you, any vampire-related business will eventually backfire and it won’t be worth the money."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A fallen vampire who succumbed to his thirst for blood and degenerated into a beast.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bloodthirsty Manta’s family background and political status"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "Id": "rule_ballista",
+  "Keywords": [
+    "Ballista"
+  ],
+  "RagShortTexts": [
+    "The ballista arrows can penetrate multiple people, but the range is limited and cannot destroy the ram."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ballista? I’ve seen that big bow on top of the city. When attacking the city, the defenders shot out from behind the crenellations. The arrows were as thick as a man's arm. They whizzed over and the wooden shields couldn't stop them at all. A man from our village who went to defend the city came back and said that one arrow from that thing could penetrate three people. The first person was nailed directly to the ground, and the second and third ones were pierced on the arrow shaft, just like skewering fish. It sounds scary. However, he said that the thing was done shooting once it was shot. The arrow could not fly far, and it was useless when it hit the back. It was impossible to rely on it to smash the charging car on the opposite side - the arrow was stuck in the wood and could not be pulled out, but the car still pushed forward. We ordinary people don't know anything about torque or structure. We know that thing is scary, but it may not be easy to expect it to save lives. To truly defend the city, we have to rely on people to fill it in. After the ballistae was fired, someone still had to stand at the top of the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ballistas are the most pragmatic choice of equipment in siege warfare. I have seen the accounts from the quartermaster: a ballista uses less than one-third of the iron parts of a trebuchet, and one can be assembled in a few hours with the wood on site. During the siege, the forwards had just set up camp, and the ballista positions could already begin to suppress the city. But I'm also aware of its limitations. The firepower density of the crossbow is not enough, the killing efficiency is not as good as that of the archer volley, and the structural damage to the siege equipment is negligible - the crossbow arrows are nailed into the oak board of the charging vehicle and cannot be pulled out, but it will not stop the vehicle. If you want to destroy the rush car, you still have to rely on fire or people to rush out of the city and burn it. The greatest value of the ballista is to suppress the archers at the top of the city and create a window for your own infantry to board the city. It's cheap and easy to use, but it can't stand on its own. In the end, the siege still relies on men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "Ballistas are the most economical torque-projection weapons. Structurally, it has three parts: torque beam, arrow trough, and trigger. The torsion beam is tightened with animal tendons or hair ropes, the energy storage efficiency is stable, and the trigger release structure is simple and reliable. The advantage is that the manufacturing threshold is low, and the lost parts can be replaced on site - if the torsion beam is broken, just use a spare twist rope to re-tie it. If the arrow groove is cracked, find a piece of hardwood and plan it down and use it again. The disadvantage is that the ballistics decay quickly. Although the crossbow arrow has a high muzzle velocity, its mass is too high. After 150 meters, the kinetic energy drops off a cliff. After hitting the fourth person, it basically stops on the ground. It is not as efficient as a volley of crossbows. The damage to the building structure is also limited. The kinetic energy of the arrow is mainly converted into penetration rather than impact. If it hits a wooden beam, it will be inserted into it without causing structural breakage. On the battlefield, the ballista must retreat when it is time to retreat. It is not a decisive weapon, but it is an indispensable part of the siege."
+    }
+  ],
+  "TextMappings": []
+}

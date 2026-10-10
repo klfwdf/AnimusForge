@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Politics_of_the_Western_Empire",
+  "Keywords": [
+    "Politics of the Western Empire",
+    "Military politics"
+  ],
+  "RagShortTexts": [
+    "The political decision-making chain of the Western Empire was short, and the execution of military orders was efficient during wartime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The one in the west is also called a political system? What did A think of the Senate—his stamping workshop. We held a meeting in the Northern Empire, and the proposal had to be debated for three rounds. The senators could slam the table and scold the emperor, and after the scolding, the emperor had to respond with a smile. What about the west? A Let the Senate meet when it is needed, and don't even bother to send notices when it is not needed. Their senators were still sitting in the old meeting hall of Gilmalus, and there was no shortage of chairs, but everyone knew that there were soldiers standing behind the chairs. The senator of Lucon once said a very harsh thing - he said that Galios' respect for the republican tradition is like a prostitute who pays attention to the proprietress of a brothel. He bows when he enters the door and goes to bed without paying. Of course, he only spoke so publicly when he was older. The people below us are not that mean, but they also think that the Western style is a joke."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political system of the Western Empire was decided by Gallius alone, but he used barracks meetings and Senate rubber stamps to package the matter more nicely. C commented on this: A is an honest soldier, but he does not understand politics. Politics is not about drawing soldiers into a venue to shout slogans, it is about putting people with different interests on the same table so that they can sit down and eat after arguing. Our city-states in the Southern Empire each have their own tempers. It is normal for the city lords to bargain with C, and C will not send troops to silence us. But it's different in the west - a big businessman like Apis can get away with it because he can kneel quickly. Those who are unhappy on their knees should either go north and vote for B, or shut up. But having said that, although the Western Empire's method is rough, it is not low in efficiency. They never had enough food and fodder to fight, and no one dared to obey military orders. Our efficiency in the south is not as good because we have to make noise for three days first. Everyone has his own destiny."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our system? Simple. Garius is the emperor because he led us to victory. It was he who picked us up from the dead after we were in Pandrak. Where were those people from the Senate? Write letters to the home front and discuss who is responsible for the defeat. Later, Galios became emperor and left the Senate. Some people think this is just a show. But the appearance means that order is still there. A republic needs a senate as a legion needs a standard. The military flag does not necessarily kill people, but you have to carry it. Those of us who lead troops are pragmatic. Whether the system is good or not depends on the effect rather than the articles: the Western Empire recruits troops, transports grain and grass to the front lines, veterans get land, and military merits are recognized. The speed of the Senate's sealing has nothing to do with us. Anyway, we don't send the battle report to the Senate, we send it directly to Galios. Some people say we have a military dictatorship. Be dictatorial. The empire split into three parts. Dictatorships could win civil wars, but republics could not. Let’s wait until the empire is unified before talking about a republic. The current emperor is A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political system of the Western Empire was essentially a military tyranny. Its shell retained the republican trappings of the empire—the Senate, the People’s Assembly, and legal procedures—but its core was the naked power of the barracks. Gallius and his successors derived their legitimacy not from blood or Senate authorization, but from the direct allegiance of the soldiers. This system operates efficiently during wartime: the decision-making chain is short, the execution of military orders is strong, and resource allocation is subject to military logic rather than political compromise. Many among the nobles of Vlandia and Sturgia have privately studied Galios' model and concluded that it is difficult to replicate - he himself and his successors are the only fulcrum of power, and once they fall, the entire structure lacks an automatic succession mechanism. The Southern Empire has a clear line of succession, and the Northern Empire at least has a Senate that can meet to choose the next one. No one dares to say what will happen to the Western Empire after A. This system is suitable for a young military leader, but not suitable for a long-term dynasty. A still has time, but whether he is willing to use the time to solve institutional problems is what everyone is watching."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Political system? You're asking about the meeting of those big-headed soldiers, right? After Galios became emperor, the old rules were not abolished. The Senate was still there, meeting when it was time to hold meetings, and legislating when it was time to legislate. But to be honest, we people don’t care who holds the meeting and who gets the seal. What we care about are two things: food and land. Everyone knows that Galios gave land to the veterans. When soldiers retire, they can receive a piece of land. It's not big, but it's enough for farming. So our people here have no complaints against him. As for the senators wearing robes in the city, they used to have the final say, but now they don't, and they are unhappy. Ordinary people are too lazy to miss the past. In the past, when the Senate was in power, taxes were paid the same, but land was not necessarily given in excess. Now you have to pay the same taxes, but the land can be divided. If you go to the countryside of the Central Plains and ask someone who would be a good emperor, they will say: \"Whoever divides the land is better.\" Gallius divides the land, and Gallius is better. I don’t understand the political system or anything like that. The current emperor is A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "West? A over there. I heard that the soldiers over there have the final say. Our team here is different. C discussed with the gentlemen in the city. Soldiers are not too involved in political affairs. The gentlemen said the tax will be the same, and it took a long time to decide. The west side is simple, no need to make noise, it’s the final word. The businessmen said that there are many soldiers on the road there, so it is safer. Even if you are a soldier, you have to nod to them. Our soldiers here don’t have that airs. C can't control everyone, but at least she doesn't use troops to suppress others. Everyone has their own way of living."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Let the soldiers from the west become the emperor. Mr. Lucon scolded them every day in the Senate, saying that they had brought disgrace to the Republic. The Senate was still there, but it was just a facade, and the emperor himself was a big soldier. The emperor over there is in good health, but it would be better to die early than to die later - who will take over if he dies? We ordinary people don't understand these things, but we know that the elders in the Senate really scolded them, not acted them out. South C——Good people, but they are too used to the businessmen in the city. We are poorer in the north, but the Senate still keeps its word. This is rare in the west and south. But to be honest, the military camp in the west is really good at political warfare, and we recognize that. It's not good to fight in the north. Mr. Lucon is not good at this. Our current emperor is B. The emperor of the Western Empire is A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who has the final say on the other side of the Western Empire? It seems to be someone named A. I heard that he was promoted to the position by a soldier. When he was promoted, he should follow the rules of a soldier: allocate land, distribute money, and have veterans listen to what they say. They also have a parliament, but the emperor does not listen to it when it is not in session. He holds meetings and shouts slogans all day long, just like fighting a war. It's not like us here, even if the gentlemen are bad, they at least sit in the room and discuss things. But people's lives are probably going on the same way. Those who serve as soldiers are given land, those who work on the land pay grain, and those who do business pay taxes. It doesn't matter whoever becomes the emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our system? That's it - I hold the shield, the commander holds the flag, and A sits on it. The Senate does not understand us, and they have no control over the division of land. When other soldiers retire and return home, no one will take care of them. We will have land to farm when we return. This is called a system. If anyone thinks our emperor is not good, fine, speak to my shield. We listen to the drums of the barracks, not the bells of the Senate. Galios is still young, the emperor is strong, and his son will be able to continue to work in the future - we are also at ease."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

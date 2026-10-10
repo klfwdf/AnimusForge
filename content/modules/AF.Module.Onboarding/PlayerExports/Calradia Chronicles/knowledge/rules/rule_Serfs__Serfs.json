@@ -1,0 +1,84 @@
+{
+  "Id": "rule_Serfs",
+  "Keywords": [
+    "Serfs",
+    "Villeins"
+  ],
+  "RagShortTexts": [
+    "Vlandian serfs cannot leave the land and are slaves to the nobility."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vlandians have it so rough—their common folk aren't allowed to leave the land and remain slaves to the nobles for all eternity. What a tragedy. Serfs are what they call their common folk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We're what folks call serfs, and honestly we live pretty well. We only work on the lord's demesne one or two days a week, and the rest of the time is our own. His lordship gives us our own plots of land, and whatever harvest is left after paying the grain dues belongs to us—what's not to like? Plus, we can go into town once a month—how free is that?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Serfs? Villeins? Far too bookish—we usually just call them rabble, plebs, tax-paying tools, and reserve recruits, alright?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hah, here I thought it was something serious. Serfs are just serfs, totally normal—after all, lords are lords and subjects are subjects; it's all bound by contract."
+    }
+  ],
+  "TextMappings": []
+}

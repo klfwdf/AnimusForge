@@ -1,0 +1,135 @@
+{
+  "Id": "rule_House_Foundations_Beesbury",
+  "Keywords": [
+    "House Beesbury",
+    "Honeywine River",
+    "Honeyholt",
+    "Bees",
+    "Hightower Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Bisbury is based in Beehive Castle, and its territory is close to Oldtown and the Mead River. It is the Reach House under Hightower. The family emblem is centered on the black and yellow colors and the honeycomb, clearly pointing to the local economy of honey, beeswax, orchards and warm farmland. People in Oldtown are more likely to know Bisbury from honey, candles, and vassal connections; people farther away from the Reach usually have no reason to be familiar with the family name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach recognized the black and yellow coat of arms of Beehive Castle, and naturally associated Bisbury with bees, beeswax and the hinterland of Oldtown. A wise person would not judge the character of a whole family based on its family coat of arms; the real value of the family lies in managing the land, obeying the Hightower system and sending small but stable output to the big market."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Beekeepers know that bees make honey and sting. People near Beehive Castle evaluated Bisbury based on the balance of sweetness and thorns: the lord protects the market and the bee farm, so that honey, wax and copper coins can flow; if the collection is too heavy, no matter how hard-working the bees are, they will just fill the clay pots for others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Beesbury The Riverbend family of Beehive Castle near the Mead River belongs to Hightower. The family emblem has black and yellow as the core and beehive. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Beesbury The Riverbend family of Beehive Castle near the Mead River belongs to Hightower. The family emblem has black and yellow as the core and beehive. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Beesbury The Riverbend family of Beehive Castle near the Mead River belongs to Hightower. The family emblem has black and yellow as the core and beehive. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Beesbury The Riverbend family of Beehive Castle near the Mead River belongs to Hightower. The family emblem has black and yellow as the core and beehive. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Beesbury: The Riverbend family of Beehive Castle near the Mead River belongs to Hightower. The family emblem has black and yellow as the core and beehive."
+  ]
+}

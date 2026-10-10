@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Northern_Landmarks_Hornwood",
+  "Keywords": [
+    "Hornwood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Horwood City is the center of the Horwood family's northern territory, located in a network of woodlands, cultivated lands and roads leading to White Harbor. This place is not just barren and cold like the far north, nor is it as fertile as the southern plains; residents need to find a balance between forests, livestock, grains and winter storage. House Horwood's power comes from the stewardship of these resources and the ability to provide knights, archers, and fodder within the vassal order of the North. Castles were not so much isolated fortresses as counting houses and refuges for surrounding estates, mills, hunting grounds and villages. Wars in the North often make roads a lifeline, and Horwood City's location keeps it in constant contact with White Harbor, Winterfell, and the Eastern Territories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood Entry Hornwood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood Entry Hornwood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stone and wood will decay, but the city of Horwood still relies on craftsmen to take care of the stone walls, wooden beams, iron doors, tombs, and the joints left by generations of repairs, and relies on the priests to preserve the old gods, weirwoods, and cemeteries left by their ancestors. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hornwood They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Hornwood: Horwood City is the center of the Horwood family's northern territory, located in a network of woodlands, cultivated lands and roads leading to White Harbor. This place is not just barren and cold like the far north, nor is it as fertile as the southern plains; residents need to find a balance between forests, livestock, grains and winter storage. House Horwood's power comes from the stewardship of these resources and the ability to provide knights, archers, and fodder within the vassal order of the North. Castles were not so much isolated fortresses as counting houses and refuges for surrounding estates, mills, hunting grounds and villages. Wars in the North often make roads a lifeline, and Horwood City's location keeps it in constant contact with White Harbor, Winterfell, and the Eastern Territories."
+  ]
+}

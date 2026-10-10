@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Folk_Customs_Daily_Discipline_of_the_Nights_Watch",
+  "Keywords": [
+    "Daily Discipline of the Night's Watch"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The life of a man in black consists of drills, patrols, building walls, vigils and meager meals. Southerners often think of them as legends. Those who truly wear black are more familiar with frozen hands, broken boots and vacancies that can never be filled; vows must be repeated every day in trivial matters newly cashed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch The life of a man in black consists of drills, patrols, building walls, vigils and meager meals. Southerners often think of them as legends. Those who truly wear black are more familiar with frozen hands, broken boots and vacancies that can never be filled; vows must be repeated every day in trivial matters. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch The life of a man in black consists of drills, patrols, building walls, vigils and meager meals. Southerners often think of them as legends. Those who truly wear black are more familiar with frozen hands, broken boots and vacancies that can never be filled; vows must be repeated every day in trivial matters. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Daily Discipline of the Night's Watch The life of a man in black consists of drills, patrols, building walls, vigils and meager meals. Southerners often think of them as legends. Those who truly wear black are more familiar with frozen hands, broken boots and vacancies that can never be filled; vows must be repeated every day in trivial matters. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Daily Discipline of the Night's Watch: The life of a man in black consists of drills, patrols, building walls, vigils and meager meals. Southerners often think of them as legends. Those who truly wear black are more familiar with frozen hands, broken boots and vacancies that can never be filled; vows must be repeated every day in trivial matters."
+  ]
+}

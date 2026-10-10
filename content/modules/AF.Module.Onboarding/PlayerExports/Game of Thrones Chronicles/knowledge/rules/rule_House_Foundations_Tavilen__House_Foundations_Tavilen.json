@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Tavilen",
+  "Keywords": [
+    "Tavilen",
+    "House Tavilen"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Taveren family lives in an environment where theocracy and commerce intersect in Novos. Merchants need roads and river ports, nobles need relatives and armed protection, and everyone must publicly obey the call of the giant bell and the judgment of the monks. Tavilen's reputation thus depends on its ability to maintain a balance between making money, giving alms, offering sacrifices, and observing the law. Norvos is divided into the upper city on the cliff and the lower city by the river. Giant bells, stone steps and axe-bearing monks jointly maintain the theocratic order dominated by bearded monks. Caravans, carpets, armor, and inland roads brought wealth, but noble families still had to respect religious judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen Wealth can buy guards and mansions, but it is difficult to openly disobey those who have masters of divine law and armed monks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen The upper-city banquets were far away from them, but every religious decision fell down the stone steps to the market-place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen Tavilon is the sect of Norvos, whose influence is bounded by great bells, temples, axe-monks, river ports, and inland trade. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen Tavilon is the sect of Norvos, whose influence is bounded by great bells, temples, axe-monks, river ports, and inland trade. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen Tavilon is the sect of Norvos, whose influence is bounded by great bells, temples, axe-monks, river ports, and inland trade. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tavilen Tavilon is the sect of Norvos, whose influence is bounded by great bells, temples, axe-monks, river ports, and inland trade. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tavilen: Tavilon is the sect of Norvos, whose influence is bounded by great bells, temples, axe-monks, river ports, and inland trade."
+  ]
+}

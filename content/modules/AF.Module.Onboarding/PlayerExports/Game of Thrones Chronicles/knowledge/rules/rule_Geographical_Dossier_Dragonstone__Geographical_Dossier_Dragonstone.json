@@ -1,0 +1,130 @@
+{
+  "Id": "rule_Geographical_Dossier_Dragonstone",
+  "Keywords": [
+    "Dragonstone",
+    "Dragonstone Castle",
+    "Volcanic Island"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dragonstone is a black island formed from an ancient volcano, located in the Narrow Sea outside Blackwater Bay. The Targaryen family moved here before the end of Valyria. Dragonstone on the island is made of cast stone carved into dragon-shaped towers, winged beasts and doorways, still retaining the unfamiliar style of the Freehold era. The obsidian left by the volcano is all over the island. The barren land and foggy coast make it impossible to live solely on the reputation of the castle; fishing, harbors, ferries, hillside fields and narrow sea routes are equally important. For the royal family, Dragonstone has long meant the crown prince, exile or waiting to return; for the islanders, it first means storms, mineral veins, shipping schedules and a hometown that is always given too much destiny by outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kingsmen often think of the Dragonstone as the place where the stories of Thrones begin or end: the exiled dragon, the one waiting to succeed, the ship sailing to Blackwater Bay. But the people on the island know that it is said that they cannot mend the sails, and they cannot bring the fish back to the harbor in bad weather. The dragon's face in the castle stared at them, and what really kept the days going was the sea, the salt, and the sailors who could pass through the fog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia",
+          "empire",
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northerners feel that Dragonstone is too dark and too close to the capital; the Ironborn will look at the harbor and rocky shore first; the shipowners of Braavos and Pentos regard it as a maritime mark that cannot be ignored at the western end of the Narrow Sea. Outsiders are easily intimidated by the dragon-shaped stone sculptures, but those who really know how to sail will first ask whether the tide, the reef and the island can accommodate a boat in a storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone The volcanic island outside Blackwater Bay and the old home of Targaryen, with its dragon-shaped molten stone castle and rich obsidian. It controls the Narrow Sea and is both a political symbol of the crown prince and his exile, and the home of the islanders who depend on fisheries, harbors, and storms. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone The volcanic island outside Blackwater Bay and the old home of Targaryen, with its dragon-shaped molten stone castle and rich obsidian. It controls the Narrow Sea and is both a political symbol of the crown prince and his exile, and the home of the islanders who depend on fisheries, harbors, and storms. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone The volcanic island outside Blackwater Bay and the old home of Targaryen, with its dragon-shaped molten stone castle and rich obsidian. It controls the Narrow Sea and is both a political symbol of the crown prince and his exile, and the home of the islanders who depend on fisheries, harbors, and storms. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone The volcanic island outside Blackwater Bay and the old home of Targaryen, with its dragon-shaped molten stone castle and rich obsidian. It controls the Narrow Sea and is both a political symbol of the crown prince and his exile, and the home of the islanders who depend on fisheries, harbors, and storms. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dragonstone: The volcanic island outside Blackwater Bay and the old home of Targaryen, with its dragon-shaped molten stone castle and rich obsidian. It controls the Narrow Sea and is both a political symbol of the crown prince and his exile, and the home of the islanders who depend on fisheries, harbors, and storms."
+  ]
+}

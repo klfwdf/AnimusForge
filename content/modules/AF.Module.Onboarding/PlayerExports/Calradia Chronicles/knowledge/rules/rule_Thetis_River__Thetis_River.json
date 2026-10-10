@@ -1,0 +1,141 @@
+{
+  "Id": "rule_Thetis_River",
+  "Keywords": [
+    "Thetis River"
+  ],
+  "RagShortTexts": [
+    "The Thetis River originates from the hilly area north of the Lycarian plain, crosses the plain from north to south, and finally empties into the Pelas Sea.",
+    "The Thetis River does not freeze all year round and has a stable flow. The river surface swells during the summer rainy season and does not dry up in winter, providing Lycaron with year-round water transportation.",
+    "The Thetis River is Lycaron's natural moat. Its eastern side is muddy and difficult to navigate, which has blocked enemy forces attacking Lycaron from the east for hundreds of years."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Thetis was the eastern wall of Lycaon. It flows out from the hills in the north, goes all the way south, passes through the Lycarian plain, and finally pours into the Pelas Sea. Lycaron is on the west side of the river, with mountains on its back and the river on its back. If the enemy wants to attack the city, they must first cross this river - the river is not deep, but the river banks are full of mud. Heavy armored infantry can sink to their knees if they step in, and cavalry horses dare not dismount. For hundreds of years, most of the people who wanted to attack Lycaon from the east did not even touch the city wall, and were shot into sieves by arrows on the river beach. The southern sun warmed the river, and the Empire's best military horse, the Canterion Horse, grew up on the pastures on the banks of the river, drinking the warm river water and gnawing on the lush grass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis was the eastern wall of Lycaon. It flows out from the hills in the north, goes all the way south, passes through the Lycarian plain, and finally pours into the Pelas Sea. Lycaron is on the west side of the river, with mountains on its back and the river on its back. If the enemy wants to attack the city, they must first cross this river - the river is not deep, but the river banks are full of mud. Heavy armored infantry can sink to their knees if they step in, and cavalry horses dare not dismount. For hundreds of years, most of the people who wanted to attack Lycaon from the east did not even touch the city wall, and were shot into sieves by arrows on the river beach. The southern sun warmed the river, and the Empire's best military horse, the Canterion Horse, grew up on the pastures on the banks of the river, drinking the warm river water and gnawing on the lush grass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis River is not just a moat, it is the food road of Lycaron. The water flows down from the hills in the north, fertile the soil on both sides as it passes through the plains, and then flows southward into the Perlas Sea. When harvesting grain, flat-bottomed barges were loaded with wheat and horse feed from the Lycarian plain and floated south along the river to the ports on the coast of the Pelas Sea. Lycaron has been besieged so many times but has never been starved, just because of this river. In summer, there is a lot of rain and the river swells so wide that three barges can go abreast. There is no ice in winter. Winter in the south is not cold to begin with, and it is rare to see even a thin layer of ice on the river."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis is a river spoiled by the southern sun. The rivers in our north freeze so hard in the winter that boats can't move and the water can't be drank. Even to wash your face, you have to break the ice first. What about the River Thetis? The winter in the south is like spring to it, and it stays true to the current. The defenders of Lycaron did not need to smash ice to get water in winter, their horses did not need to chew frozen grass in winter, and barges still carried grain to the city in winter. The siege skills we developed in the ice and snow in the north are useless in the south - because that damn river never cuts off water for the imperial people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis is a gentle river. Not like the streams in our forests that run wild, nor like the rivers in the north that lock themselves up under the ice in winter. It has the temperament of the south, taking its time and moving from north to south, as if it already knows where it is going. The imperial people built canals, wharves, and granaries around this river, using it as Lycaron's moat and transportation line. But a river is a river, not someone’s canal. The rain in the south sometimes fell very hard. One year there was a heavy rain, and the Thetis River swelled higher than the city wall, flooding a large area of ​​the Lycarian plain. The stone embankments built by the Imperials were all washed away, and the river returned to its original course."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis River is the best river on the northern shore of the Pelas Sea. Our Aserai merchant ship set out from Sanara, crossed the Pelas Sea, entered the mouth of the Thetis River, and drifted all the way to the city of Lycaron. The river water is warm, the southern sun is shining all the way, and the wind on the water is warm. Its water volume is much more stable than the seasonal rivers in our desert - the river there has water in the rainy season, but there is only a dry ditch in the dry season, while the Thetis River never flows. This is why Lycaron has been the capital for hundreds of years. It is not because of how thick the city wall is, but because there is a river to the west that can be navigable all year round. There is a grassland fed by water beside the river, and there is a silver mine behind it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thetis River is a southern river, completely different from the rivers on the grasslands. Our river flows everywhere in the sea of ​​grass, and can change its course in spring. It has a very wild character. The Sethis River has been managed by the Empire for hundreds of years. The river bed has been dug deeper, stone embankments have been built on the river banks, and the direction of the water flow has long been different from its original direction. But it is water after all, not a tool. It is said that the rainy season in the south is particularly fierce. One year of heavy rains, the Thetis River overflowed the stone embankment and flooded the Lycarian plain into a large lake. It took the imperial people a whole year to drain the water. The river is usually as docile as a sheep, but when it catches fire it is more untamable than the wild horses on the prairie."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Thetis River was the most important water system in the southern part of the empire. It originates from the hilly area north of the Lycarian plain, crosses the plain from north to south, and finally empties into the Pelas Sea, with the city of Lycaron located on its west bank. Thanks to the Mediterranean climate in the southern part of the empire, the Thetis River does not freeze all year round, and its water volume changes with the seasons - the river is widest during the summer rainy season and does not dry up in winter. This provides Lycaron with a year-round water transportation line. In terms of military defense, the Thetis River and the wetlands on both sides formed a natural barrier on the east side of the city; in terms of economic supply, the river connected the Lycaron and the Pelas Sea, allowing this mountain city to still obtain supplies through water transportation when it was besieged. From a geographical structure point of view, Lycaron is backed by the Oni Stone Mountain and faces the Thetis River. Coupled with the warm and humid climate of the Southern Empire, it has four strategic resources: mineral veins, water sources, pastures and water transportation. This is the fundamental reason why it has remained one of the core cities of the empire for hundreds of years."
+    }
+  ],
+  "TextMappings": []
+}

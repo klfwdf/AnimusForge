@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Death_Grinder_Tribe",
+  "Keywords": [
+    "Death Grinder Tribe_DG",
+    "Broken Spine Steel Fist_DG",
+    "DeathGrindaz_DG",
+    "Grinding Behemoth_DG"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Deathgrinder tribe in the northwest Badlands is famous throughout the greenskin world for taming giant war beasts. They brutally tamed the captured badland beasts—including giant scorpions, giant rockworms, and rare basilisks—with chains and bone halters, transforming their raw destructive power into crushing weapons on the battlefield. The leader, Broken Spine Steelfist, is said to be able to smash the shell of an adult giant scorpion with his fists - this \"feat\" is regarded as an almost mythical legend by other greenskin tribes, but for Broken Spine, it is just a warm-up exercise before lunch. The tribe's name comes from the way they treat the corpses of their enemies: their bones, armor, and weapons are thrown into giant stone mills and crushed to separate the metals that can be recycled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are death grinders! Other tribes picked up their swords after the fight and ran away. We threw those dead ghosts, including their bones and iron, into the big stone mill - iron is iron, and bones are fertilizer! The boss of Broken Backbone said that recycling waste is Brother Go's idea, and breaking iron into new knives is Brother Mao's craft! The most exciting thing is when riding a big scorpion into the formation of human archers - the scorpion tail sweeps a row of people and flies out, which is a hundred times more exciting than using an axe! Unfortunately, big scorpions are too difficult to catch. Last time we had to fight with six guys just to catch one - but it was worth it!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The death grinder horde brings a crushing impact to the battlefield that standard infantry defense lines cannot handle. The giant scorpions and rockworms they domesticated are comparable in size to the empire's heavy tanks, but their attack surfaces are different - the giant scorpion's tail stinger can penetrate vertically from the top of the defense line, while the rockworms can suddenly emerge from the ground to attack the core of the defense line. Tactics against the Death Grinder cannot rely on traditional spear walls - the inertia of those giant beasts is enough to crush an entire column of spear walls into the ground, including men and spears. The only effective countermeasure is to use trebuchets to focus on the joints of the behemoth before engaging in battle - the connection between the hind legs of the giant scorpion and the rockworm's head exposed above the ground are the most vulnerable attack points. Once the behemoth loses control, the orc rider will usually be thrown off and trampled by his mount."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The death grinder tribe's war beast domestication system represents a rare case of 'systematic domestication' rather than 'one-time violent subduing' in greenskin technology. The capture and use of behemoths among most Greenskin tribes is a one-time affair—orc riders will overwhelm a wild giant scorpion or rockworm through sheer violence, forcing it to obey on the spot, but rarely sustain this submissive relationship for more than a battle or two. The special thing about the Death Grinder tribe is that they have developed a rough but effective continuous domestication process: they capture the larvae of behemoths instead of adults, and build a special 'behemoth breeding pit' in the underground cave of the tribe camp. A group of low-level orcs designated as 'behemoth boys' are responsible for daily feeding and violent obedience training. A giant scorpion trained from a young age will, as an adult, view its orc rider as an 'alpha' of sorts - a notable example of cross-species social domestication in greenskin ethology. This domestication mode makes the behemoth cavalry formations of the Death Grinder tribe far more stable and controllable on the battlefield than other green-skinned beast cavalry - their behemoths will not turn to attack friendly forces in the middle of the battle, which is almost inevitable when wild behemoths are temporarily subdued and thrown into battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The ground that the giant scorpion has stepped on will start to seep water after a few hours - this is what I personally heard from a veteran at the outpost. He told me the reason: the giant scorpions' footsteps were too heavy, and they trampled on the permeable layer of groundwater, and the water could only seep out through the sides after a few hours. When I first saw the Death Grinder's Scorpion Cavalry on the battlefield, my most intuitive feeling was not fear—it was shock. The ground beneath my feet began to tremble when they were half a league from me, and my horse refused to go any further after the trembling began. As a female border lord, I understood at that moment why the empire's main cavalry - those proud knights with full plate armor - adopted an unprecedented tactic when facing the death grinders: not to charge head-on. Not because the knight is not brave enough, but because the horse is smarter than the man, and the horse knows that the thing in front of it cannot be defeated with hoofs and lances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The real threat of the Deathgrinders lies not in the battlefield casualties they bring - but in the changes they leave in their wake with each strike. My family's southern woodland contains a low range of hills that we for generations have known as the 'Green Ridge', where three and a half leagues of continuous cave passages were created underground by rockworms released by the Death Grinder tribe during a raid on a frontier outpost. Those passages are still there today - they produce a low, persistent hum under certain wind conditions in late autumn, and nearby farmers believe it is the earth humming the beast's lullaby. But what is more important to me is that those passages have become an unblockable underground conspiracy route. Other greenskin tribes and various underground creatures can pass through them directly into the hinterland of my territory without being discovered by any surface sentinels. We tried sealing and rock-filling - each attempt was reopened within a week by unknown creatures emerging from the channel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I encountered an abandoned adult giant scorpion on a gravel wasteland in the northwest of the Badlands - its saddle was still on its back, and the rusty iron saddle had been embedded into the edge of its carapace, indicating that it had been wearing this saddle for at least several years. Its rider was missing—perhaps thrown to death, or perhaps killed in a tribal fight. This giant scorpion did not attack me, but it did not leave me either. It followed me for a whole day from about thirty steps away from me until I entered a human settlement. I later learned from an Imperial biologist that battle scorpions that lose their riders sometimes enter a state of low activity similar to that of a widower, and they will follow any creature that is similar in size to their former rider—not out of loyalty, but out of habit. On that day, I was wearing a dark brown traveling cloak, and my height was roughly equal to that of a medium-sized orc. The giant scorpion waited outside the settlement all night, and the next morning it was gone - I don't know where it went, but I still look for that low, continuous breathing sound in the badland wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Death Grinder tribe has an extremely contradictory business characteristic: the more things they destroy, the higher the stock of recyclable metals within their tribe - and this stock can be obtained to some extent through underground trade channels at a cost below the market price of ore. In the underground trade network on the border of the Badlands, there is a special commodity called \"bone-crushing iron\": mixed metal scraps ground by the giant mills of the Death Grinder tribe. After being screened and sorted by goblin middlemen, it flows into some small private iron shops in Tyrell at a cost far lower than the raw material price of the imperial smelting plant. The low-end tools and agricultural implements forged by these shops using broken bone iron are lower in quality than regular Imperial iron products, but they have an absolute advantage in cost - this is a gray market in Tyrell's rural market. The Imperial Mining Association tried to ban it but never succeeded, because these iron shops all speak the ancient Tyrell dialect and operate cash transactions without written records."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Death Grinder Tribe - Orc warbands who tame giant war beasts in the northwest Badlands",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Death Grinder Horde Scorpion Rock Worm Spine Breaker Steel Fist"
+  ]
+}

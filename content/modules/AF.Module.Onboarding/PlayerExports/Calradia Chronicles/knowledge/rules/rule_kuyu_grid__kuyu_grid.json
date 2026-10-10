@@ -1,0 +1,339 @@
+{
+  "Id": "rule_kuyu_grid",
+  "Keywords": [
+    "Kuyuge"
+  ],
+  "RagShortTexts": [
+    "Kuyuge took advantage of Kugit's vitality to capture Otungard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kuyuge is the former patriarch of the Aqit family and the father of Turage. His life has been full of ups and downs - as a descendant of the eldest son tribe, he led his tribe to try to establish a separate khanate during the westward migration, but failed to hold it; instead, he took advantage of the Kugit tribe's vitality in the Battle of Pandlak and seized their Otungard. In the end, he died in a failed marriage, and the Sturgians burned the castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge is an ambitious person, but his luck is really not good. The Achit tribe is a veteran among us Khuzait people - they were the eldest tribe on the eastern grasslands back then, and the Uerhunnait were just coming from behind. Kuyuge was not willing to be subordinated to others, so he led his troops to establish a small khanate in the west. However, he failed to hold it and was kicked back. Later, during the Battle of Pandrak, the Kugits went to work as mercenaries for the Empire in order to earn dinars from the Empire. As a result, almost all the men were left on the battlefield. Kuyuge took advantage of this opportunity to occupy Otungard. To be honest, this thing was not done in a very authentic way - the Kugits were also the Khan's vassals after all, and it was really ugly to grab the land while all the men were gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have dealt with Kuyuge. He has the courage of a grassland leader, but he also has the sour energy of a declining noble - he always feels that he is a descendant of the eldest son tribe, and that the family of Ulhun Khan has just usurped their position. He led the Aqit tribe to move westward and established a small khanate in Varnovapol, hoping to prove that he could also be called a khan. The Khanate did not last long before it collapsed. Later, in the great battle of Pandrak, Monchug Khan did not participate in the war at all. It was the Kugits themselves who coveted the empire's gold and became mercenaries for the empire. As a result, they were crippled, and Kuyuge took the opportunity to seize Otungard. From a loser in the Khanate to a speculator grabbing the dead man's territory - this was Kuyuge's life. But having said that, he finally died in the Sturgia people's conspiracy, which can be regarded as retribution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Elder Kuyuge, what can you say about him? He led us south from Varnovapol to capture Otungard, which was a really good fight. But later he married the Sturgians and wanted to stabilize the border, and ended up getting himself and his eldest son involved. His greatest skill in life is to take advantage of other people's illness to kill others - when the Kugits returned from working as mercenaries for the empire, only women and old people were left at home, so he devoured Otungard in this way. But he didn't expect that a political marriage could also turn into a talisman."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the old chief of Kuyuge was in Otungard, the Kugit people hated him so much that they gritted their teeth. They worked as mercenaries for the empire to kill all the men, but when they returned home, they found that their home was occupied by the Achite. But the people of the Achit tribe thought he was quite capable - at least he got it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Patriarch Kuyuge is the soul of our Achit people. He was unwilling to let us be oppressed by the Ulhunaite, so he took us all the way west and established his own khanate in Varnovapol. Although the Khanate failed to hold on, he did not lose heart. During the battle of Pandrak, the Kugits themselves went to work for the empire, and all the men died on the battlefield. The old chief of Kuyuge seized this opportunity and led us to capture Otungard, giving us a place to settle. He finally died in the conspiracy of the Sturgia people, and we have not yet avenged him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge is the backbone of our Achite family. After the rise of Wuerhunaite, our original status as the eldest son tribe plummeted. It was he who stood up and said that we Achitites should not be subordinate to others. He established the Khanate of Varnovapol. Although we did not hold it, at least we were our own masters during that time. Later, he took us south and took Otungard by taking advantage of the fact that the Kugits were working hard for the empire and their strength was greatly reduced. Outsiders said he was taking advantage of the situation, but the rule on the grassland has always been that the weak should prey on the strong - the Kugits themselves chose the wrong employer, who can blame them?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old chief of Kuyuge led us all the way south from Varnovapol in the north. I was right behind him when we captured Otungard. I still remember the way he shouted while riding a horse. He told us that even if the Aqit people no longer have the title of Khanate, their bones will not bend. The Kugits worked as mercenaries for the empire, and all the men died in Pandrak. This was their own choice. It was a God-given opportunity for us to seize the opportunity to capture Otungard. He will not obey anyone in his life - not the descendants of Ulhun Khan, not the nouveau riche tribes who rose up with Ulhun, nor the Sturgia people who look down on us. He didn't deserve to die, but he died standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge? That thief who takes advantage of others. We Kugit men shed our blood for the imperial dinars on the battlefield of Pandrak. It was a good thing for him to take advantage of the fact that only women and old people were left in our family, and led the Aqite people to snatch Otungard away. We are hired by the empire, warriors fighting for gold, not outcasts abandoned by the Khan. He stabbed us in the back when we were at our weakest, yet he had the nerve to claim to be a descendant of the Firstborn Tribe? He was eventually burned to death in his bed by the Sturgia woman, which was Tengri's retribution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuk is a thorn in the side of our Kugit people. On the grasslands, it is the most despicable behavior to seize someone's territory while the other party's men are killed in battle. The Aqite people claim to be the orthodox members of the eldest son tribe, but the things they do are worse than the horse thieves on the grassland. We Kugits were hired by the empire to fight in Pandrak for dinars and to strive for glory within the Khanate. But we paid the price of almost all the men, only to find that Otungard had planted Hachite's flag when we came back. The Great Khan of Monchug did not participate in the war, so he did not make decisions for us. Kuyuge saw this clearly before he dared to take action. This humiliation finally came to an end when he died in the fire of the Sturgians."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Kuyuge died, we drank and celebrated in Baltahan. It's not that we Kugits are cruel, it was him who did it first. At the Battle of Pandrak, we Kugit men collected the empire's gold and charged harder than anyone else, but less than one-tenth of them came back. At that time, he came with the Achits, not to help take care of widows and orphans, but to rob houses and pastures. I heard that he was later set on fire by a Sturgia woman and burned to death on his bed. My grandfather said: Tengri is watching from above."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge, the old patriarch of the Archit family, was a man who speculated all his life and finally died in an accident. He took advantage of the fact that the Kujit people who were working as mercenaries for the empire in Pandrak were disabled and took away their land. He turned around and wanted to marry us Sturgians in exchange for peace. The result? The marriage turned into a cremation. His son Turage is still looking for Xijia, but in the final analysis, it was Kuyuge who lost the bet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge died in the hands of Siga of the Kulov family, but to be honest, what he did before his death was not very honorable. To seize Otungard from the Kugits is to take advantage of the enemy's danger; to build a small khanate but not be able to defend it is to have great ambition and lack of talent. Archduke Langward was willing to marry him, which was enough to give him face, but he was extremely unlucky - he ran into Xiga."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuyuge is a typical speculator on the grassland. He came from the east with his tribe and established a small khanate but did not hold it. Later, during the Battle of Pandrak, our empire hired Kugits as thugs, and as a result, they were almost completely wiped out. Kuyuge took this opportunity to snatch Otongard from the Kugits. The history of his fortune is a series of gambles—wins and losses. In the end, he made the biggest gamble: trading his son's marriage for peace with the Sturgians. In the end, the bet was lost, and his life was at stake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Evaluations of Kuyuge on the grassland are divided. People of the Aqite tribe said that he was a courageous leader who was unwilling to be suppressed by the descendants of Ulhun Khan and made his own way. The Kugits spat when he mentioned him, saying that they worked as mercenaries for the empire and that all the men died in Pandrak, but Kuyuge took advantage of their family members to seize the territory. They were not good men. As for the Sturgians—they knew how Kuyug died, but none of them would say they were the wrong people. In any case, Kuyuge had an exciting life: from the heir of the eldest son tribe to the loser of the small khanate, and then from the loser to the master of Otungard, and finally died in the fire of his son's wedding room."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Kuyug's life and decisions reflect the complexity of tribal politics within the Khuzait Khanate. As the former eldest tribe, the Aqite tribe was surpassed by the Uerhunnaite tribe during their westward migration. This status gap became the driving force of Kuyuge's political ambitions. His failure to establish a short-term state in Varnovapol showed that he lacked the ability to build a lasting political power. He seized the territory of the Kugit family by taking advantage of the special opportunity after the Battle of Pandrak: Monchug Khan did not personally participate in the war at that time, and the Kugit tribe suffered heavy losses as mercenaries of the empire, which gave him the opportunity to take advantage of the situation. The Khujit family was not a native tribe of Khuzait and joined after being conquered. Therefore, the encroachment of the Khuzait by Aqit is both controversial and precedent-setting in terms of grassland morality. Kuyuge eventually died in a failed marriage, marking the end of his gambler-like political career."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kuyuge",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Archit",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Otungard",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Kugit",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

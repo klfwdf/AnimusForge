@@ -1,0 +1,213 @@
+{
+  "Id": "rule_hexwraiths",
+  "Keywords": [
+    "Hexwraiths",
+    "Hexwraiths Spectral Knights",
+    "Pass Through Walls",
+    "Soul-Reaping",
+    "Wraith Cavalry",
+    "Ignore Physical Obstacles",
+    "Spectral Cavalry",
+    "Black-Flame Knights",
+    "Ethereal Passage",
+    "Harvesting Souls",
+    "Spectral Steeds",
+    "Phantom Knights"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexwraiths are spectral cavalry coalesced from the souls of cursed knights, riding phantom warhorses wreathed in dark flames. Capable of ignoring city walls, armor, and all other physical obstacles, they pass straight through enemy ranks to reap the souls of the living."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexwraiths—the most elusive blade among our Vampire cavalry! In life, they were all proud knights who, because of forsaking oaths, murdering their liege lords, or older curses, were bound to the mortal world after death by eternal black flames, unable to rest in peace. Our Vampire Necromancers summon these vengeful spirits back from the underworld, bind them with chains of dark pacts, and form them into cavalry ranks. On the battlefield, Hexwraiths make not a single sound—no hoofbeats, no battle cries, only the eerie green light seeping through their armor and the sudden, freezing chill in the air as they pass. Most terrifying is the way they charge: they need not break down gates or scale walls, instead passing directly through castle stone walls to appear in the corridors behind the defending soldiers, reaping row after row of terrified souls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexwraiths are the hardest threat to counter in any defensive battle—ramparts, moats, and city gates are as nothing to them. Traditional defensive deployments fail completely when facing enemy forces capable of passing through solid walls. The only effective counter-strategy is to deploy magical protective wards in advance, or to intercept them with units that likewise possess magical attacks (such as Battle Wizards or wielders of blessed weapons). They are unbound by physical laws, yet magical energy can harm and restrain them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "In the study of Necromancy, the formation mechanism of Hexwraiths is classified as the 'cavalry-form manifestation of cursed souls.' Unlike ordinary wraiths, Hexwraiths must have met two conditions in life: first, they were employing violent means at the moment of being slain (typically killed in battle or in a duel); second, they died harboring an obsession exploitable by a Necromancer (hatred, an unfulfilled oath, or a craving for vengeance against a specific target). Their 'ethereal passage' ability stems from the nature of their spectral bodies—Hexwraiths do not exist wholly within the material plane, but stand simultaneously on the boundary line between the material and spiritual planes, allowing them to choose to ignore physical obstacles. This ability carries tactical limitations in use: when passing through fortress stone walls, their speed slows to one-third of a walking pace, and they cannot carry any material objects through with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexwraiths remind me of those faithless knights in Bretonnian legends who forsook their oaths and ultimately became wandering undead spirits. Their stories serve as nightmare textbooks for all noble households—teaching children the ultimate price of breaking a knight's vow. These wraiths were once living, breathing knights; perhaps after a single wrong decision on some cold night, their fates were altered forever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My clan's ancestral castle has never been breached head-on by an enemy army—yet Hexwraiths were the exception. According to the records of our clan elders, four hundred years ago on a moonless night, a troop of Hexwraiths passed right through the walls and slaughtered a third of the castle's population. There has been no incursion since, yet we have hung blessed runestones on every wall of the castle and dare not take them down to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When crossing the wilderness of Sylvania alone late at night, if you see a cluster of floating green flames in the distance moving rapidly through a windless night—that is not corpse-fire, it is a patrol of Hexwraiths. Do not run; they sense fear. Lie flat on the ground, hold your breath, and wait for them to drift past. With luck, they are merely passing through and not on the hunt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hexwraiths need no food, water, or equipment, so do not expect to get rich selling supplies to them. However, the chains of dark pacts used to bind them require a special pitch-black wrought iron—iron that can only be mined deep underground where not a single ray of sunlight has ever shone. Dealing in this iron means doing business with subterranean miners while also potentially having indirect commercial dealings with Vampire Necromancers."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hexwraiths are spectral cavalry formed from the souls of cursed knights, riding phantom warhorses",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hexwraiths Hexwraiths Spectral Knights Pass Through Walls"
+  ]
+}

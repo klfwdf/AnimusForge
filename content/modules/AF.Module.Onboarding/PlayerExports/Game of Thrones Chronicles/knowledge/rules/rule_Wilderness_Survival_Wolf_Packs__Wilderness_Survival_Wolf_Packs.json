@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Wolf_Packs",
+  "Keywords": [
+    "Wolf Packs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. Wilderness does not mitigate the consequences of being cold, hungry, or lost because of your status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. Without preparation, weather and terrain can kill more men than enemy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. Reliable experience must be able to be verified repeatedly, not just rely on tall tales in the pub."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. If a disaster cuts off transportation, the consequences will be felt in distant cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. The most expensive equipment in the wilderness cannot replace the correct timing of stopping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. Someone explains why the disaster happened, and someone is responsible for letting the victims survive the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolf Packs Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling. They looked at how much grain was left in the fields, whether the livestock could survive the winter, and whether the lord was willing to assume responsibility for its protection."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wolf Packs: Wolves rely on cooperation to chase deer, sheep and lone travelers, and harsh winters and war carcasses bring them closer to roads and villages. Fire, watch dogs, team movement, and timely burial of carcasses can reduce the danger; a wounded but not dead wolf is often more dangerous than a distant howling."
+  ]
+}

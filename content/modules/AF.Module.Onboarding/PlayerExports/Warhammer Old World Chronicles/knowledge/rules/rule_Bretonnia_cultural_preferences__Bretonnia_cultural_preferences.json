@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Bretonnia_cultural_preferences",
+  "Keywords": [
+    "Bretonnia Culture",
+    "Knight preference",
+    "Knight Glory",
+    "tourney",
+    "Warhorse Falcon",
+    "wine poetry",
+    "serf wishes",
+    "Revelation from the Lake God",
+    "Heraldry",
+    "Ranger's Oath",
+    "Holy Grail Quest",
+    "pastoral tranquility"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The noble knights of Bretonnia regard honor as a pursuit higher than life - they are keen to demonstrate their riding and martial arts skills in tourneys, and extol the heroic deeds of their ancestors in epic poems. Their horses are more precious than gold and silver, and their falcons are like living jewels on their wrists. The vast serf class in Bretonnia only had the simplest wishes - a good harvest, reduced taxes and enough coarse grains to survive the long winter. The entire kingdom believes in the goddess of the lake and longs to gain her favor and blessing in the sparkling waters of the lake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our Bretonnia preferences can be summed up in one word - \"honor\". Our knights are not on the tourney for prize money or false fame - those are the tastes of imperial merchants - but to prove before the Lady of the Lake that their souls are worthy of a purebred war horse and a family coat of arms. When a Bretonnian knight polishes his plate armor, he is not maintaining his equipment but performing a sacrament: each scratch on his armor is the writing page of his own legend, and the angle of each feather on his helmet conveys a special battle in the family history. We love horses—not as means of transport but as comrades in arms; a Bretonnian knight remembers the pedigree of each of his horses, holds formal funerals for his dead mounts, and sheds tears of pride at their performance in tourneys. We love falconry - falconry is not a pastime but a spiritual practice. A goshawk that swoops down from the clouds and accurately captures its prey allows us to experience the most perfect cooperative relationship between man and wild nature. We love poetry and song—not some tawdry tavern ditty, but the long epic poem about Gilles le Breton and the twelve first Grail Knights, sung in ancient Breton by professional court minstrels, poems that each of us has heard since childhood, and that each of us has a favorite passage etched in our souls. But what we love most - above all horses, falcons, poems and heraldry - is that indescribable glimpse of light that the Lady of the Lake casts on the water, a divine beauty that we in the mortal world can briefly touch but never fully understand, that drives We jump on horseback again and again and embark on the dangerous journey to search for the Holy Grail, because we know that if we see the face of the goddess for even one moment during the journey - by the lake, in the morning mist of the forest, in the eyes of a dying peasant woman - our life will be worth it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Those who ally or war with Bretonnia must understand their system of knightly honor - not a set of empty rhetoric but a real dynamic that drives an entire nation's war machine. The most easily satisfied core desire of Bretonnia knights is \"to be treated with the right ceremony\": a diplomatic document written on sheepskin and beginning in ancient Breton is more valued than a treaty written in New Imperial language but with more content, because in their world view form itself is substance. To militarily incentivize Bretonnian knights to join your alliance's war, the most effective way is not to bribe but to announce that the war's goals include an ancestral relic or a lake god's ruins - Bretonnian knights will fight to the death for abstract sacred symbols, but they lack the enthusiasm for wars of pure territorial expansion, because it is not in the spirit of the Holy Grail Oath. Their economic weakness lies in their extreme dependence on purebred war horses - the Royal Stud in Aquitaine supplies more than 80% of the kingdom's knightly horses. Controlling or destroying this ranch is equivalent to shattering the physiological pillars of the Bretonnia knight class. And the preferences of the Bretonnian serfs - although they are politically silent - are crucial to the foreign powers that have long occupied the Bretonnian territory: you only need to ensure that their taxes do not exceed the old lords, do not force conscription, and do not desecrate the village's sacred lake spring, and they will calmly accept the change of rulers, because there is no abstract loyalty to a specific noble family in the culture of the serfs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The uniqueness of the Bretonnia cultural system lies in the fact that it successfully operates a \"sacred dual-track\" society - the knight class enjoys an upper culture based on honor, aesthetics and sacred beliefs, while the serf class operates a lower culture centered on survival, reproduction and local reciprocity. There is almost no intersection between the two systems but has miraculously maintained stability for more than 1,500 years. From the perspective of cultural psychology, the aesthetic system of the Bretonnian knights is the most developed sensory art culture in the old world - their aesthetic standards for the light and shadow reflection on the surface of plate armor, their appreciation of the lines of horse tendons, and their sensitivity to epic rhyme structures actually constitute a highly refined sensory education system that is not inferior to that of the high elves. The knight's honor culture is essentially a \"favor mechanism\" - since the favor of the Lake God is not something that can be automatically obtained through force or wealth (obtaining the Holy Grail requires the Lake God to actively choose you), the knights show extreme honorism in all their actions - not because of the law or the supervision of superiors, but because they are always under the watchful eye of the Lake Goddess. A side effect of this \"full-time surveillance\" divine belief is that it increases the behavioral predictability of the Bretonnia knight class to an almost mechanical level - you only need to know the content of a knight's oath to accurately infer his choice in any moral dilemma. In contrast, the culture of the Bretonnian serfs embodies an \"optimal endurance strategy\" - they have developed a set of social behavior patterns during hundreds of years of exploitation that maximize the probability of survival by not showing any independent will. The cultural expressions of the serfs focused on harvest festivals, wedding and funeral rituals, and local mutual aid networks. Their attitude towards the aristocratic culture was not resentment but alienation, as if the legend of the Holy Grail of the Lady of the Lake and the heroic epic of Gilles Le Breton took place in another world that had nothing to do with them. This dichotomy may seem immoral to outside observers, but its stability is objective - Bretonnia has the lowest number of internal revolts among the major nations of the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The life of a Bretonnian female noble is not to mount a war horse and charge into battle - we are forbidden to do that - but that doesn't mean we don't have our own preferences and pursuits. My passion was cultivating the exotic roses imported from Araby and Tyrell in the castle's private gardens - a crimson rose that bloomed perfectly against the stone walls of northern Bretonnia was for me my jousting champion. The power of our female nobles exists in the allowed gaps - I influence the morals of local knights by sponsoring an independent female prayer group in the Temple of the Lake God, make or break family marriages by cleverly arranging seats at banquets, and have more accurate frontline casualty information than commanders in war by managing the medical herb garden in the castle. The most devout among us secretly learn the ancient knowledge of the Lake Witches—recipes for herbal medicines, readings of the stars, prayers to be recited at births—knowledge that is worthless in the eyes of male knights, but in every village of Bretonnia they are life itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The secret to leading a Bretonnian noble house is understanding that the preferences of the family members - not orders - are the true driving force of action. After my second son lost a tourney to an unknown knight errant, he practiced lance charge alone before dawn every day for three months - I didn't order him to do this, I didn't even show my disappointment, I just asked the servant to put a pot of warm herbal tea on the tourney every morning during those three months. My eldest son is courting an heiress from a neighboring land—not because of family interests, but because she wore a silk dress embroidered with a blue falcon at the last hunting event, and he thinks that is proof enough that her tastes meet our family standards. In Bretonnian politics, you can't directly tell a knight to do something - his sense of honor will make him feel that's an insult - but you can have his stablemaster mention in passing that an enemy in a certain direction has insulted his family's honor before he mounts his horse. I'm not manipulating them - I'm helping them become the kind of knights they aspire to be, while ensuring that the overall interests of the family are served in the process. This style of leadership takes five times as much time and effort as commanding Imperial soldiers - but its reward is that this force does not need to maintain discipline, as their honor is discipline itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of a wanderer, Bretonnia looks like two lands separated by an invisible glass wall - above, the nobles perform bright and colorful performances of honor and poetry, and below, the serfs silently and painstakingly maintain the food and iron needed for this performance. I saw a large jousting meeting outside the city of Bordero - the knights charged each other like gilded statues in the sun, and the laughter of the noble women on the auditorium was more beautiful than any lute - and in a farmhouse less than three hundred steps away from the jousting ground, five serf children surrounded a hen that was so thin that only its skeleton was left, fighting for the only egg it had just laid. The grandmother of those children was mending a tattered coat on the threshold that had no color at all. When she saw me, there was no hatred in her eyes - even the hatred was taken away - only a long, diluted, no longer painful exhaustion. Bretonnia's true cultural predilections lie not in what the knights consider themselves to be noble pursuits - but in the most humble, silent hope that most of the land's people don't go to bed hungry tonight to be killed by greenskins from the north or beastmen from the woods. Gil's Holy Grail and the goddess's lake light could not save those children from hunger, but generations of serfs still bowed devoutly to the goddess of the lake in evening prayers - because that was the only thing they did not need to exchange for bread."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The markets of Bretonnia were for merchants a paradise of luxury driven by the discerning tastes of knights and a nightmare fueled by the abject poverty of serfs - there was little in between between these two extremes. The knightly class's demand for purebred war horses created one of the most closed and highly profitable horse trading circles in the old world - the slight difference in pedigree between the pure white war horses produced in Aquitaine and the elite competition horses bred in Marienburg can be converted into a full thirty-fold price difference in Bretonnia. The market for knightly armor decoration was equally lucrative but extremely unstable—a duke who converted to a new feather color simply because of a conversation with the Witch of the Lake could bankrupt an importer specializing in eagle feathers in three days. The banquet consumption of knights is the most durable wine export engine in the old world - Bordeaux's red wine can be sold in the empire and dwarf mountain castles for a hundred times the cost of the place of origin, because the reputation of Bretonnia wine lies not only in quality but also in a myth: every bottle of Bordeaux's red wine may contain a drop of the sacred liquid that fell from the Holy Grail to the mortal world. And the serf market - strictly speaking did not exist - they did not buy goods, they produced goods: grain, wool, flax and iron sand, but the producers themselves did not participate in market exchange, their products were directly transformed into consumer goods and war materials for the knightly class through the manor system. For merchants, supplying goods to a knight of Bretonnia requires learning their own unique negotiating language - you cannot calculate his ability to pay (that would be seen as a distrust of you), but you must calculate how your supply will help him gain more honor in the next joust."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sacred dual-track system - Bretonnia, a thousand-year stable social structure in which the upper culture of knightly honor and aesthetics and the lower culture of serf survival and tolerance go hand in hand.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of Bretonnia"
+  ]
+}

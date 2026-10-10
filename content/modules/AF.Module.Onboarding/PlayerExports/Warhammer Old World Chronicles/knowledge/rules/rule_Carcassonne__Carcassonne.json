@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Carcassonne",
+  "Keywords": [
+    "Duchy of Carcassonne_CA",
+    "Territory of Carcassonne_CA",
+    "Carcassonne Castle_CA",
+    "Duke of Carcassonne_CA",
+    "Carcassonne South Frontier_CA"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Carcassonne is located in the southernmost part of Bretonnia, adjacent to the borders of Tilia and Estarly, and was ruled by Duke Ebald de Carcassonne. This ancient duchy is famous for its double walls and defense system of twenty-seven towers, making it the strongest fortress city in southern Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carcassonne - the eternal fortress of the South! Duke Huebald's bloodline can be traced back to the oldest knightly family in the Gilles era. The walls of Carcassonne are eighteen feet thick, and Tilian mercenaries know this best - they have tried to cross the border many times, and each time they fled in confusion under our arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Carcassonne is the key to Bretonnia's southern frontier. This place controls the overland trade routes to Tilia and Estarlya, and passes through the passes of the Ilana Mountains. The ancient bloodline of Duke Huebald gave him high political prestige - in the ducal council, Carcassonne's voice can often influence key decisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economic pillars of the Principality of Carcassonne are border trade and agriculture. The fertile plains in the southern part of the principality are rich in wheat and olives, with olive oil being one of the main export commodities. Fine-wool sheep are raised on the pastures on the southern slopes of the Ilana Mountains, and Carcassonne wool is renowned on the Tilia market. Border duties are an important source of revenue for the duchy - due to its location at the southernmost tip of Bretonnia, almost all overland trade with the southern kingdoms must pass through the passes controlled by Carcassonne. The ancient stone quarries of the principality also have a special business: providing exquisite carved stones for churches and noble tombs. The sculpture skills are inherited from ancient elven craftsmen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The tradition of Carcassonne is more stubborn than that of any principality - the family of Duke Ebald has ruled here for more than a thousand years. As a female noble, I have to find a balance between respecting tradition and exerting influence. Fortunately, ancient families have special respect for women - the tradition of the Lady of the Lake is particularly strong here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "The coat of arms of our family has its own tower on the walls of Carcassonne—a privilege bestowed four hundred years ago by the ancestors of Duke Ebald. The stability of the southern border requires us, the border families, to protect it from generation to generation. I have been told since I was a child: the reputation of the family is more important than life, because Carcassonne will not forget any kind of betrayal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The walls of Carcassonne take on a warm ocher color at sunset - it is said that elven craftsmen mixed a special clay into the stone. The sun in the south is hotter than in the north, and the air is filled with the smell of olive trees and lavender. The market here is livelier than in Curona, as the merchants of Tilia and Estarly bring more fancy goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Border trade in Carcassonne requires proficiency in Tyrian and Estarly languages. The trading partners to the south were shrewder but more trustworthy than the Imperials. Olive oil and wool were the most stable trade goods – demand was steady and transport was easy. But beware of Tilia's money changers; their manipulation of exchange rates can make your profits disappear."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Carcassonne is located at the southernmost tip of Bretonnia and is famous for its ancient defensive walls and border trade.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ancient fortress in the south of Bretonnia, Duchy of Carcassonne"
+  ]
+}

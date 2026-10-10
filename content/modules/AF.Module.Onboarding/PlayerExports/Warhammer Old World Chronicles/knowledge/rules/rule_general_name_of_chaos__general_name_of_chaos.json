@@ -1,0 +1,206 @@
+{
+  "Id": "rule_general_name_of_chaos",
+  "Keywords": [
+    "northern tribes",
+    "Chaos realm",
+    "The land of evil gods",
+    "Norsca Federation",
+    "Army of Chaos"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Warriors are not a unified nation - they are a loose collection of hundreds of independent tribes from the northern Chaos Wastes, the Norsca Peninsula, and the Troll Realms. In peacetime, these tribes fight against each other; when an Eternal Chosen One is chosen by the Evil God and wears the Crown of Unity, the tribes of the entire northern world will temporarily unite under his banner to form the most terrifying army of destruction in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are the People of the North - not some weak kingdom or false empire, but a collection of warriors from all the tribes who have proven their worth under the gaze of the Chaos Gods. Our land was labeled \"Chaos Wastes\" on Southerners' maps - they thought it was an uninhabitable dead zone. But we grew up, fought, and reproduced in those \"uninhabitable\" fjords, frozen soil, and black rock mountains for ten thousand years. Our only unity does not come from the vote of some Elector Count or the Church of some Goddess - it comes from the demonstration of power. When Archaon wore the Crown of Unity, he was not elected—he was the strongest of all the tribes in the north, and therefore he became Lord Commander of them all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The nature of the Chaos Warriors' political entity is the most critical variable in understanding the threat to the North. Other civilized states can be intimidated, bribed, or bound through diplomatic treaties—because their state structures make these actions meaningful. The Chaos Warriors are different: they have no lasting central government of any kind, no political capital that can be attacked, and no diplomatic bureaucracy that can be bribed. Before the emergence of the Everchosen, the North was just hundreds of independent warbands fighting each other; once the Everchosen fell, the North immediately returned to hundreds of independent warbands fighting each other. This means that victory over Chaos is never permanent - it simply buys time for the next Aeonchosen to emerge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The political geography of the Chaos Horde can be understood in terms of three concentric circles. The core layer is the Chaos Wastes - a permanently mutated zone south of the Polar Stargate - where there are no fixed tribal settlements, only demonic creatures driven directly by the evil god and the most powerful champions of Chaos. The middle level is the Norsca Peninsula and the Troll Realm - this is the area with the highest concentration of mortal troops of Chaos tribes - tribes such as the Norsca, Kurgan and Huns have settled here for generations and established a semi-permanent territory consisting of fjords, hunting grounds and sacrificial sites. The outer layer is the contact zone between the nomadic tribes of the north and the civilization of the south - the belt of tundra and taiga north of Kislev and south of Norsca - which is the starting point for the southward attacks of the Chaos Marauders and the forefront of the Empire's northern defenses. The emergence of the Eternal Chosen usually begins with a certain Chaos Champion in the core layer completing the six tests and gaining initial recognition from the Four Gods. Then he takes years or even decades to establish his own warband alliance in the middle and outer layers by defeating or subduing the Chaos Champions of various tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The social structure of the Chaos tribes has a completely different set of rules for women than the Empire - women can also become Chaos champions recognized by the gods in the Norsca and Kurgan tribes. Norsca shieldmaidens—those northern women who have proven their prowess in battle—are as high in the tribe as any male warrior. But the price for power is the same: you must sacrifice the skulls of your enemies to the evil god as a male - Chaos doesn't care about your gender, it only cares about your strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political structure of the Chaos Hordes hides a weakness that is crucial to the defense of the Empire: alliances between tribes are entirely dependent on the unifying abilities of the individual rulers. When the unified Everchosen or Chaos Champion is defeated, tribal alliances do not produce new leaders through the succession process like human nations do - they collapse directly into internal strife. This means that military strategies against Chaos should place the highest priority on the beheading target - the leader of Chaos himself. Defeating Archaon himself was more important than destroying his army of a hundred thousand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Anyone who has served as a mercenary in Norsca will tell you a secret: most of the Horde warriors in the north do not think of themselves as fighting for Chaos. Most of them believe in a set of primitive religions that are a mixture of ancestor worship, local natural spirits, and a primitive religion that has been partially influenced by evil gods - in the Norsca hunter's opinion, he is just following his chief to the south to grab some food and gold, because the fishing in the fjords is not good this winter. Chaos uses the simplest desires as its entrance - hunger, cold, the desire for power - and theologians in the South have spent too much time arguing about the theological nature of evil gods, but have ignored that Chaos recruits believers through the most basic survival needs on the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic form of the chaotic area is the largest non-market area in the business history of the old world. The Norsca tribe's \"trade\" with the South is almost entirely in the form of pillage - but when the tribe occasionally needs to acquire supplies they cannot loot through peaceful means (such as specific types of magical metals or rare spices for rituals), they engage in limited barter with the South through Kislev's informal trading network. The trade is extremely rare but incredibly profitable - a merchant who dares to sail to the Norsca Fjords with a cargo of Imperial steel can return with a stash of northern amber and ivory worth twenty times the cost."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Horde - a loose alliance of Norsca, Kurgan, and Huns warbands in the northern wastes",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos' formal name and political status"
+  ]
+}

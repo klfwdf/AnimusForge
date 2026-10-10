@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Folk_Customs_Spices_and_Distant_Trade",
+  "Keywords": [
+    "Spices and Distant Trade",
+    "Daily Life"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pepper, cinnamon, saffron and exotic sugars turn distant places into drinkable luxury. Nobles use spices to show their financial strength, and businessmen use them to calculate risks. Most common people can only smell the smell wafting from the kitchens of rich families. When a sea route is blocked, the smell on the dining table will tell you first tells people that war is coming."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade Pepper, cinnamon, saffron and exotic sugars turn distant places into drinkable luxury. Nobles use spices to show their financial strength, and businessmen use them to calculate risks. Most common people can only smell the smell wafting from the kitchens of rich families. When a sea route is blocked, the smell on the dining table will tell you first. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade Pepper, cinnamon, saffron and exotic sugars turn distant places into drinkable luxury. Nobles use spices to show their financial strength, and businessmen use them to calculate risks. Most common people can only smell the smell wafting from the kitchens of rich families. When a sea route is blocked, the smell on the dining table will tell you first. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices and Distant Trade Pepper, cinnamon, saffron and exotic sugars turn distant places into drinkable luxury. Nobles use spices to show their financial strength, and businessmen use them to calculate risks. Most common people can only smell the smell wafting from the kitchens of rich families. When a sea route is blocked, the smell on the dining table will tell you first. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Spices and Distant Trade: Pepper, cinnamon, saffron and exotic sugars turn distant places into drinkable luxury. Nobles use spices to show their financial strength, and businessmen use them to calculate risks. Most common people can only smell the smell wafting from the kitchens of rich families. When a sea route is blocked, the smell on the dining table will tell you first."
+  ]
+}

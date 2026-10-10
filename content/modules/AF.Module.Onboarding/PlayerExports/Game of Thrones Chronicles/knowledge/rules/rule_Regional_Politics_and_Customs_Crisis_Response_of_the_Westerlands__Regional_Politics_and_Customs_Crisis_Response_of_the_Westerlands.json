@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Crisis_Response_of_the_Westerlands",
+  "Keywords": [
+    "Crisis Response of the Westerlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will people follow, and when will they turn around?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of the Westerlands When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Crisis Response of the Westerlands: When facing a crisis in the West, the most reliable thing is not the legendary hero, but the long-established way of survival. In times of crisis, wealth can quickly turn into armor and alliances, making the Western Territory a target that everyone wants to pressure or plunder; this also determines why the locals will"
+  ]
+}

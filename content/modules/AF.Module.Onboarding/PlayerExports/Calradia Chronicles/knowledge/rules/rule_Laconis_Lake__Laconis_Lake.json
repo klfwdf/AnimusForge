@@ -1,0 +1,70 @@
+{
+  "Id": "rule_Laconis_Lake",
+  "Keywords": [
+    "Laconis Lake",
+    "Lake Laconia"
+  ],
+  "RagShortTexts": [
+    "Lake Laconis is the transportation artery between the empire, Sturgia, and Khuzait."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "khuzait",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Laconis? We call it the \"big mirror\". When the sky is clear, I stand by the lake and look at it. The water is so flat that the entire mountain is reflected in it. Clouds are swimming in it, and fish are also swimming in the clouds. My grandfather said that the lake is so big that it has no edge. When he was young, he took a boat trip to Tyar and walked from the south bank to the north bank for three whole days. He could see nothing but water in the middle, as if he was out at sea. The people of Sturgia call this waterway the \"Blue Road\", and here in our empire we call it the \"Northern Sea\", but the elders say it can be called anything, don't call it \"the sea\" - the sea has a way out, but this lake has no way out. It is surrounded by mountains and forests on all sides. If the boat capsizes, there will be no place to float. The lake doesn't freeze in winter, which is the most important thing. The river on the other side of Sturgia was frozen in October, and the road was blocked by snow, making it impossible to transport anything by land. But the lake is still alive. There are still boats moving in the middle of the lake, and steamy white mist floats against the water. My brother-in-law runs a boat in the winter, transporting the wheat of the empire to Tiar in Sturgia, and pulling back the furs of Sturgia. He said that sailing in winter means losing your life for money - the wind on the lake is strong and the waves are no smaller than those in the sea, but the freight in winter is three times that in summer, and one trip can feed the whole family for half a year. He is not the only one in our village who lives by the lake. The fishermen, boatmen, and people carrying goods on the dock all point to this water. As for the legend of the Dryans - that the lake was red and stained with blood - the older generation would be silent when talking about it. My brother-in-law said that the lake is still the same lake now. The water is blue and the fish are white. It has nothing to do with blood or not. But one evening every year, the water in the shallows would turn a rusty color. He still remembered that it was a lake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Laconis is the most precious communication artery between the northern border of the empire and the three forces of Sturgia and Khuzait. It is also the core link of our empire's northern defense system. The Karakazi River and the Miron River both flow into this lake. The former connects the eastern shipping of Lake Tanesis, and the latter connects the southern grain routes in the hinterland of the empire. The two rivers meet at Lake Laconis, making this lake the central hub of the northern water transportation network of the continent. The four towns along the coast - Diatma, Argolon, Tyar, Varnovapol - are each strategic pieces. Diatma is the holy city of the Northern Empire and the home port of the Lake Fleet; Algoron guards the pass on the east coast of the lake, which is the only way for the Sturgia people to go south or the Khuzait people to go west; Tiar controls the distribution center of the northern fur trade; Varnovapol, although small, has been conquered repeatedly and is the chokepoint on the lake. Even more important are the year-round ice-free shipping conditions. In winter, land routes are cut off. The snow in Sturgia and the ice in Khuzait block all ground marching routes. Lake Laconis is the only way to move. This means that whoever controls the fleet on the lake can take the strategic initiative in winter. We have been quietly expanding Diatma's shipyard in the past few years, not for trade, but so that one day when the war in the north resumes, our troop transports can reach the other side before the Sturgian longships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 100
+        }
+      },
+      "Content": "Lake Laconis is the largest and deepest closed inland freshwater lake in the northern part of the Calradia continent, with a water area second only to Lake Tanesis in the east. Its formation can be traced back to the accumulation of water in a faulted basin during the Dryad orogeny. The lake basin is long and narrow in the north-south direction, and its average depth is much higher than that of Lake Tanesis. This is the fundamental reason why it does not freeze all year round - the heat accumulated by the huge water body in summer is enough to resist the invasion of winter cold waves. The closed hydrological characteristics determine that the retention time of the lake water is extremely long, and the salinity accumulates slightly but does not reach the level of a saltwater lake. Two major inflow rivers - the Miron River and the Karakazi River - join from the south and northeast respectively, and bear most of the water supply to the lake area. The Karakazi River is also an important link in the Iletan Transportation Line. This water transportation corridor connects Lake Tanesis in the east and Lake Laconis in the north, forming an inland water transportation artery across the northern part of the continent. The distribution of coastal towns is strictly controlled by the lakeshore topography. The Sturgia side is mostly low and gentle platform deposited by glaciers, while the Imperial side retains older piedmont alluvial fan deposits. It is inferred from ancient hydrological traces that Lake Laconis was wider in earlier geological periods and may have been connected to a series of surrounding small lakes. Later, due to climate dryness and tectonic uplift, it shrank to its current size. As for the legend that the Dryans were wiped out on the lakeshore, there is no direct evidence in the lake sediments, but there is indeed a high concentration of iron oxide layer in the shallow area. This may be a natural deposit formed after a large amount of organic matter decayed in the shallow water area, and coincidentally corresponds to the legendary blood-stained lake water."
+    }
+  ],
+  "TextMappings": []
+}

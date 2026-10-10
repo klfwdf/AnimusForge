@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Riverlands_Waterways_Pinkmaiden",
+  "Keywords": [
+    "Pinkmaiden",
+    "Pink Maiden"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pink City is the Riverlands castle of the Piper family, located near the Red Fork River and fertile fields. Its name carries the bright colors common to the Riverlands, but one should not be fooled into thinking that this place is far away from the harsh reality: rivers, farmlands, taverns, mills, and local roads support the territory and make it easy for marchers, collectors, and pillagers to find it. The history of House Piper is intertwined with the marriage alliances and vassal relationships of the Riverlands lords, so the castle must maintain its own respectability while maintaining a foothold between House Tully, neighboring houses, and the politics of the larger kingdom. The stable description of the Pink City should be that of a river valley manor society, rather than a predestined battlefield outcome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden Local families also relied on river transportation, ferries, wheat fields, mills, and hiding places when war came; if any road, well, spring, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden Entry Pinkmaiden"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden They also recognize the accents, laws, and credentials of the Riverlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden Entry Pinkmaiden"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who repair the Pink City are familiar with the stone walls, wooden beams, iron gates, tombs, and the seams left by generations of repairs. Those who comfort the families of the deceased are familiar with the Seven Gods, the legend of the ancient River King, and the memory of a land that has changed hands repeatedly. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pinkmaiden They care about river transportation, ferries, wheat fields, mills, and hiding places when war comes. They also care about whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pinkmaiden: Pink City is the Riverlands castle of the Piper family, located near the Red Fork River and fertile fields. Its name carries the bright colors common to the Riverlands, but one should not be fooled into thinking that this place is far away from the harsh reality: rivers, farmlands, taverns, mills, and local roads support the territory and make it easy for marchers, collectors, and pillagers to find it. The history of House Piper is intertwined with the marriage alliances and vassal relationships of the Riverlands lords, so the castle must maintain its own respectability while maintaining a foothold between House Tully, neighboring houses, and the politics of the larger kingdom. The stable description of the Pink City should be that of a river valley manor society, rather than a predestined battlefield outcome."
+  ]
+}

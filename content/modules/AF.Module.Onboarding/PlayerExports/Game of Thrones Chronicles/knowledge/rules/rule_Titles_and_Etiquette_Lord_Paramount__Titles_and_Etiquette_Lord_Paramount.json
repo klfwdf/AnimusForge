@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Lord_Paramount",
+  "Keywords": [
+    "Lord Paramount"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry A paramount lord rules over a vast territory and his vassals, with authority derived from territory, tradition, grant from the king, and the extent to which others are willing to obey. Small lords respectfully call them lord, and their opponents will ask about their legal authority; in times of peace, this is a title of honor, and in times of crisis, it is whether they can be summoned"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount A paramount lord rules over a vast territory and his vassals, with authority derived from territory, tradition, grant from the king, and the extent to which others are willing to obey. Small lords respectfully call them lord, and their opponents will ask about their legal authority; in times of peace, this is a title of honor, and in times of crisis, it is whether they can be summoned. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount A paramount lord rules over a vast territory and his vassals, with authority derived from territory, tradition, grant from the king, and the extent to which others are willing to obey. Small lords respectfully call them lord, and their opponents will ask about their legal authority; in times of peace, this is a title of honor, and in times of crisis, it is whether they can be summoned. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord Paramount A paramount lord rules over a vast territory and his vassals, with authority derived from territory, tradition, grant from the king, and the extent to which others are willing to obey. Small lords respectfully call them lord, and their opponents will ask about their legal authority; in times of peace, this is a title of honor, and in times of crisis, it is whether they can be summoned. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lord Paramount: A paramount lord rules over a vast territory and his vassals, with authority derived from territory, tradition, grant from the king, and the extent to which others are willing to obey. Small lords respectfully call them lord, and their opponents will ask about their legal authority; in times of peace, this is a title of honor, and in times of crisis, it is whether they can be summoned."
+  ]
+}

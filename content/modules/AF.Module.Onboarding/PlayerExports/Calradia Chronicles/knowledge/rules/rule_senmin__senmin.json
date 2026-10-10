@@ -1,0 +1,101 @@
+{
+  "Id": "rule_senmin",
+  "Keywords": [
+    "Forest people"
+  ],
+  "RagShortTexts": [
+    "The forest people are descendants of the Vulcans who farmed in the Sturgia forest area. They do not pay taxes for slash-and-burn farming."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest people? Those savages who burn trees in the woods. I sent three tax collectors to collect taxes, but the first one came back empty-handed and said he could not find the village; the second one found burnt tree stumps and newly sprouted wheat, but the people were gone; the third one was lost in the woods for three days, both man and horse, and almost fed the wolves. They burned forest land, planted unowned fields, did not pay taxes, did not serve, did not recognize Boyer's land deed, and did not even leave a fixed name. Legally speaking, they are illegal occupants of my fiefdom; practically speaking, I have nothing to do with them. The forest was too vast, their number was too small, and the land burned was too little. It was not worthwhile to send troops to arrest them, and they could not find anyone if they sent tax collectors. When my father was alive, he said, \"Don't worry about them. The woods they burned are farther away than the land you measured.\" But I don't like them, it's not hate, it's awkward - they live in the land of Sturgia, but never live in the order of Sturgia. This very existence makes a mockery of order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen the forest people in the forest once. In winter, they come out to change the salt. She doesn't speak, or speaks very slowly, as if every word has to be dug out of the frozen soil. I gave them salt, they gave me a deerskin, and we went back into the woods as if we had never been there. The elders in the village said that they were Vulcans in the past and refused to submit to the Grand Duke, so they ran into the mountains and forests to hide for hundreds of years. They cultivated slash-and-burn farming, burning a piece of land for several years and then changing places when the land grew thin. It sounds wild, but people don't have to pay taxes or do corvee labor for the master, and their life is more comfortable than ours. But none of us want to imitate them. There is no blacksmith and no salt in the woods. If you get sick, you can only wait for death. Freedom is freedom, but the price is a short life. We have churches and doctors, and although the taxes are heavy, we have a roof over our heads in the winter. Forest people are free, but my wife says she would rather pay taxes than have a baby in the woods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Foresters are a marginalized group of nomads in the Sturgia forest area, descendants of the Vulcans. From the perspective of governance costs, their methods of evading feudal taxes are almost incomprehensible - they adopt the nomadic farming model of slash-and-burn farming, and their settlements move with the cultivated land without forming fixed settlements. The tax base cannot be determined, and the recovery costs are much higher than the income. The Sturgia Boyer's attitude toward the forest people throughout the ages was to tacitly give up rather than fail to conquer. This tacit understanding actually formed an informal autonomous zone in the forest area. Observed from the outside, the existence of the forest people constitutes a silent irony to the feudal governance of Sturgia - a tiny ethnic group that is illiterate and unarmored. It has survived in the gap between the empire and Sturgia to this day, not by force of arms, but by being unable to find them. But irony being irony, they pose no threat and are not worth devoting resources to changing the status quo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Savages burning the ground in the woods?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the children of the forest. This sentence goes without saying in the forest, you only need to look at the growth rings on the tree stumps to understand - when our ancestors burned the first fire in this forest, the Sturgia boyars were still herding sheep on the grassland. Fire is our plow, ashes are our fat, and the forest is our home. Boyer's tax collectors rode horses in the woods. After a few days of wandering, they lost their way. We stood on the ridge and watched them go around in circles, like watching a lost reindeer. We don't hate them, nor are we afraid of them. They are stupid. They drew the land into squares and wrote on a piece of paper who it belonged to, and they believed the piece of paper more than their own eyes. We don’t believe in paper, we believe in fire, ashes, and the sound of seeds sprouting in spring. They think we are poor and we think they are blind. Boyer's stone halls will collapse, but the forest will not; Boyer's tax rolls will be burned by fire, but the fire itself will continue to burn. We do not resist them, nor do we surrender to them, we just go around them and continue walking. We are the smoke in the forest, dispersed when the wind blows and gathered when the wind stops."
+    }
+  ],
+  "TextMappings": []
+}

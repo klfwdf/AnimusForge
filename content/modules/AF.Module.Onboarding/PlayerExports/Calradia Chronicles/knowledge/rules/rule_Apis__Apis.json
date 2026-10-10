@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Apis",
+  "Keywords": [
+    "Apis",
+    "Apis Varos"
+  ],
+  "RagShortTexts": [
+    "Information about Apis",
+    "Apis Varos was the financial backer of Galios’ army."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Apis is my money bag, everyone knows this. It's not that I don't know who he is - stingy, vindictive, and has a more detailed ledger than anyone else. But he never reneged on his debts, and he never stabbed me in the back when I was at war. A prudent profiteer is more useful than a generous fool. I have no interest in taking care of his little tricks. As long as the military pay is in place and the trade routes are constant, it is his business to make money how he likes. Besides, I'm annoyed by his face, but after all, money is a good thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Everyone who sees Varos wants to take a detour. It's not that I'm afraid of him, I'm just annoyed by him. When his eyes are fixed on you and he talks, you always feel that he is already calculating how much money he can make from you. But you have to be convinced - when we fight, we need food, horses and armor, and Apis never gets stuck. Galios trusts him, so we use it. As for what business he is discussing in private, we don't ask, and he won't tell us if we ask. This kind of person is just a piece of greasy fat, not good-looking, but capable of carrying hunger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Apis Varos is a disgrace to the empire. The bastard of Cannae, relying on the smell of copper, squeezed into the Senate, using the chamber as his counting room. After Galios was separated, he actually got on better, which in itself showed what kind of people those people in the west were. We also have businessmen here, but at least they know how to restrain themselves in decent situations. Apis does not restrain himself, he never knows what restraint is. But having said that, his trade route does connect half of the Perlas Sea. If he really wants to be touched, no one can get rid of it on the books. When the time comes for the return of the West, he will still be a veteran"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Apis of the house of Varos has heard of it. The richest businessman in the western part of the empire and the financial backer behind Galios. He was rumored to be extremely mean, stingy with his friends as well as his enemies. But Galios can use him, which shows that he is at least useful. A person who started his career in business can gain a foothold in both the Senate and the military camp. This is not only a matter of money, but also of brains. If we had a character here who could make money and know where to spend it, many things would be much easier to handle."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Varos? Not sure, never heard of it. He seems to be a rich man from the empire. It is said that he is not good-looking. Rich people are all like that, not many are good-looking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Apis Varos? He must be that rich guy who is notoriously ugly. I heard that he was very picky, but he had enough money to buy half of the Western Empire. He paid for most of Galios's army. This kind of person gets along well at the top, but has a bad reputation at the bottom. Anyway, it has nothing to do with us. No matter how much money he has, he will not charge us less in taxes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rich man with green eyes. The few times he came, we lined up in the military camp, and he followed Galios with that half-smiling expression on his face, glancing at us as if he were counting cattle. We hate him, but we also know that the salary he pays us is real money. Some people said bad things about him, and we nodded along, but we didn't spread the word - we had to count on him for the next month's salary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We see the master’s face every day—not on the street, but in our heads. He didn't go out much and lived in the house high up, crouching in a tree like a vulture. He never collects a penny less than his rent. If someone is slow to unload goods at the dock, the people he sends will not blink when he writes down the fine. He was called \"greaser\" behind his back and no one liked him. But then again, he paid for the gas for the lighthouse, and he also repaired the broken trestle at the pier. Without him, the ship could not enter the harbor. So we scold and live by him at the same time. He probably knows it himself, so he never cares whether we scold or not."
+    }
+  ],
+  "TextMappings": []
+}

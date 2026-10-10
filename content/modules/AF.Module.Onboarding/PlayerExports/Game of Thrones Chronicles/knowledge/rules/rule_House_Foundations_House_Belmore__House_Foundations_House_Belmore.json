@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Belmore",
+  "Keywords": [
+    "Belmore House"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bellmore family, with Hongge City as its seat, is a noble family in the Arryn Valley. Six silver bells on a purple background form its family crest. The city of Hongge is nestled between mountains and valley roads, and the family's power is sustained by farmsteads, pastures, mountain passes, and knights who answer the levies of the Eyrie. Bells can summon guards, celebrate weddings, and send warnings in the valley; for Bellmore, dignity lies not only in banquets, but also in whether roads are open, whether mountain clans have crossed their boundaries, and whether subjects can survive the winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the valley regarded Bellmore as a powerful vassal of the valley. The Silver Bells of Hongge City are easy to remember, but what really matters is whether they can hold the mountain passes, assemble on time, and maintain credibility when the Arryn princes argue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The herdsmen and farmers in Hongge City are familiar with the ringing of bells in the distance. In festive times it meant wedding feasts, in alert times it meant gathering livestock and closing doors; they hoped that Bellmore's riders would always arrive before the marauders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belmore House The Bellmore family rules Hongge City in the valley. The six silver bell coats of arms, valley roads and ancient vassal relationships jointly maintain the family name. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belmore House The Bellmore family rules Hongge City in the valley. The six silver bell coats of arms, valley roads and ancient vassal relationships jointly maintain the family name. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belmore House The Bellmore family rules Hongge City in the valley. The six silver bell coats of arms, valley roads and ancient vassal relationships jointly maintain the family name. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belmore House The Bellmore family rules Hongge City in the valley. The six silver bell coats of arms, valley roads and ancient vassal relationships jointly maintain the family name. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Belmore House: The Bellmore family rules Hongge City in the valley. The six silver bell coats of arms, valley roads and ancient vassal relationships jointly maintain the family name."
+  ]
+}

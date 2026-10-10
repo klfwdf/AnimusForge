@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Ranger_Knight",
+  "Keywords": [
+    "knight errant",
+    "young noble",
+    "eager to prove",
+    "lack of experience",
+    "First Knight",
+    "Hot-blooded impulse",
+    "Knight's Apprentice",
+    "fledgling",
+    "Kingdom Knight Candidate",
+    "young knight",
+    "seeking glory",
+    "immature"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights Errant were the lowest but most dynamic caste of Bretonnia's knightly caste, composed of young noblemen's sons. They have not yet obtained a fief, and are eager to prove their worth in battle to gain the qualifications to be promoted to knights of the kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "O knight errant—the youth of every Bretonnian knight! I still remember when I was eighteen years old, I put on simple armor for the first time and rode the half-tamed war horse my father gave me to the battlefield. Although we knights errant are poorly equipped, our chests burn with the hottest fire in the world. Every year hundreds of knights errant embark on a journey to find enemies worth fighting. Some hunt beasts, some pursue greenskin marauders, and some charge single-handedly at Chaos warbands - foolish, but the goddess favors the brave. Those who come back alive are heroes, and those who fail to come back...their names are engraved in the small chapel at the entrance of the village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Although inexperienced, the Knights Errant are numerous and have high morale, making them an ideal vanguard and flanking harassing force. They desire glory more than life, so they can take on high-risk missions. The disadvantage is that discipline is loose and it is easy to destroy the tactical deployment due to enthusiasm. Wise generals should organize the knights errant into independent squads and let them be led by experienced kingdom knights, rather than letting them work alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institution of knight-errant in the Bretonnian knightly promotion system dates back to the time of Gilles. A knight errant is legally defined as a \"landless nobleman with a sword\" and enjoys noble immunity but does not bear the obligations of a vassal. Requirements for promotion include proving courage in at least one official battle, receiving the recommendation of a knight of the realm or higher, and swearing allegiance to a lord. The average age of knights errant is between sixteen and twenty-four years old, and about 40% do not survive more than three years. Interestingly, knights errant's heraldry rights were strictly restricted - they could only use simplified variations of their family's crest, and were not allowed to wear full heraldic cloaks. This system not only maintained the hierarchical order of the knight class, but also provided a clear promotion path for young nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I've seen too many knights errant - young boys riding bad horses, wearing ill-fitting armor, with wild eyes. As a female noble, I understand their desire: they want not only glory, but also fiefdom, wife and family recognition. Sometimes I would give these children a few gold coins, and a good horse might bring them back alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our clan sends five to ten knights errant to join the army every year. This is the only way for the young sons of the clan - to prove themselves on the battlefield and then return home in glory as a knight of the kingdom. Some people never come back, but this is a necessary price. A clan without warriors is unworthy of a foothold in Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once met a group of knights-errant in a tavern, drunk and bragging about the great deeds they were about to accomplish. Early the next morning, their silver armor shone in the sun as they galloped into the distance. I don't know how many of them survived that winter. Young blood is both a weapon and a curse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Knights errant make the best patrons—young, generous, and regardless of price. They needed weapons, armor, horse gear, and dry food, and never bargained. However, the risk of credit is also high. The knights who died in battle were unable to repay their debts, and their families were often far away."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Knight Errant was the starting knightly rank for young landless nobles of Bretonnia.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Knights Errant are the lowest but most dynamic caste of Bretonnia's knightly caste"
+  ]
+}

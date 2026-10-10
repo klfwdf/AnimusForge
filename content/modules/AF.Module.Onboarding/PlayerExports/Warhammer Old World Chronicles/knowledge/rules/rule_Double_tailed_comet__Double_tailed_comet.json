@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Double_tailed_comet",
+  "Keywords": [
+    "twin-tailed comet",
+    "Sign of Sigmar",
+    "Apocalypse",
+    "omen",
+    "comet",
+    "Sigmar is born",
+    "Imperial Faith",
+    "Chaos Prophecy",
+    "cycle return",
+    "Astronomical phenomena"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most famous omen in the skies of the Old World is the Twin-Tailed Comet, considered by the Imperial Church to be the holy symbol of Sigmar - a twin-tailed comet that lit up the night sky on the day the God-Emperor himself was born. Whenever the comet reappeared, wise men debated whether it heralded a great revival of an empire or a devastating war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Twin-Tailed Comet is the sacred signature of Sigmar. It streaked across the sky when the late emperor was born, and reappeared when the late emperor was crowned. It will return to our heads every time the empire faces danger. The high priests of the Church of Sigmar regarded astronomical observations as the highest form of divination, and the brightness, orbit, and timing of appearance of comets were carefully recorded and compared with prophetic writings. The comet is more than just a stone in the sky - it is the gaze of the God-Emperor looking down on us from his golden throne, his reminder to the people of his empire that he has not forgotten us, nor has he forgotten the empire he founded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The twin-tailed comet's appearance has always coincided with major political and military events - the year of Sigmar's birth, the year of the Imperium's defeat of the first great invasion of Chaos, the years of the great fight against the Green Tide - giving it an almost mystical place in the rulers' strategic maneuverings. Whether or not they truly believe in the Apocalypse, it is clear to any Elector Count: when the comet appears, the people will look to the Church for explanations, the Church will pressure the Crown to take some action, and enemies - Chaos to the north, undead to the east, Greenskins to the south - will likewise see the star and read in it their own omens. Comet is a political bargaining chip, a signal for military mobilization, and a fuel for faith."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The twin-tailed comet is known as the Star of Doom in Dwarven astronomy, the Blood Path among the Chaos tribes, and is marked in the Elven Celestial Chronicles as the celestial event corresponding to the Cataclysm of the Second Age. All races have recorded this comet's periodic return, and every civilization has assigned a different meaning to it. There is also disagreement within the Imperial Church over the theological significance of the Comet: Sigmar Orthodox believe it to be proof of the God-Emperor's existence, while the more radical Apocalypse believe the Comet is a preview of the return of Sigmar himself. The prophecies of Chaos also mentioned the twin-tailed comet - the prophet of the evil god declared that when the comet passed over the sky of the old world for the third time, the Eternal Chosen would lead the armies of doom to destroy the southern kingdoms. Astronomers' calculations of the comet's orbit show that the intervals between its returns are shortening."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The appearance of the twin-tailed comet had a unique impact on the female rulers of the empire—not a direct political impact, but an indirect erosion of female authority through religious discourse. There is a strong theological sect within the Church of Sigmar that claims the comet is the 'wrath of the God-Emperor', and any natural disaster or frontier defeat occurring during the comet's appearance is usually interpreted by this sect as evidence of 'the reign of female impurity in the Empire'. Two of the most influential women in history, the Elector Count - one of whom was a distant ancestor of my family - were both forced to temporarily transfer part of their administrative powers to the male high priests of the church in the year of the comet to avoid unnecessary theological conflict. This was not a legal requirement, but a public panic pressure brought about by the comet that was actively exploited by the church."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The twin-tailed comet's most profound record in family history isn't about celestial phenomena—it's about business cycles. My ancestors recorded a disturbing pattern in the family archives: in the five-year window before the return of the Twin-Tailed Comet, the volume of weapons trade between the Empire and the Dwarves increased by an average of thirty percent, while the volume of land transactions in the northern provinces dropped by an average of twenty percent. Not because people actually believed in the end of the world, but because the uncertainty surrounding the comet was enough on its own to freeze long-term investment decisions. As the patriarch, I cannot use religious beliefs to explain these patterns, but I must make decisions about family property allocation based on them—to maintain higher liquidity and less long-term real estate exposure during the comet window."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During night stays in remote villages in the Empire, I heard a strange saying many times from elderly villagers: If you happen to sleep in the open when a twin-tailed comet streaks across the sky, your shadow will 'lengthen' the next morning - not physically longer, but your shadow will look deeper and darker at dusk than usual, as if the comet has put some kind of weight on your soul. Of course I don't believe this. But I did notice another phenomenon: a significantly higher proportion of lambs born in comet return years had two heads. Is this a simple physiological mutation or some kind of environmental magic effect - who knows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The twin-tailed comet is a super variable that cannot be quantified in the imperial insurance market. Lloyds Insurance Company of Marienburg uses comet astronomical predictions as an independent risk-weighting factor when setting annual insurance rates - when the comet is predicted to be likely to return within the next five years, all premiums for trade insurance covering the northern provinces are automatically increased by fifteen to twenty percent. This is not based on any provable cause and effect but on historical data: at least one large-scale war broke out in the Empire during the past three comet return windows. Actuaries call this the 'premium premium' and it is factored precisely into the calculation of the premium per krona."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The twin-tailed comet—a celestial omen of Sigmar’s birth, a core symbol of the Empire’s faith",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The twin-tailed comet Sigmar is a sign of the apocalypse."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "Id": "rule_king",
+  "Keywords": [
+    "king"
+  ],
+  "RagShortTexts": [
+    "King is the title of the ruler of Vlandia and Nord."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "King is the title of the ruler of Vlandia and Nord. The current king of Vlandia is A and the king of Nord is B"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "vlandia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "nord",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

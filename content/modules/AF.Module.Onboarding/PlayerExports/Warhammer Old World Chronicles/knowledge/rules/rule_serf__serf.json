@@ -1,0 +1,213 @@
+{
+  "Id": "rule_serf",
+  "Keywords": [
+    "serf",
+    "Bretonnia commoner",
+    "Bretonnia Farmer",
+    "manorial system",
+    "tax",
+    "Feudal dependence",
+    "serf uprising",
+    "John of Jano",
+    "Three-field crop rotation",
+    "Tiao Tian",
+    "free towns",
+    "Bretonnia Bottom"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's serfs made up the vast majority of the kingdom's population - they were laborers on the manorial lands and had no land ownership, no ability to leave the lord's estate, and no right to bear arms, but they provided all the material basis needed for the kingdom's survival. The serfs' taxes were paid to the lord in the form of harvest ratio, labor obligations and physical tribute, in exchange for the lord's protection - in the face of wolves, beasts and greenskin raids, the stone walls of the lord's castle were the serfs' only safety guarantee."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A Bretonnian serf belonged to his lord and the land beneath his feet, from birth to death. This is not a poetic description, it is a law - he cannot move away, change owners, or decide the future of his children on his own. The children of serfs have been working on the manor since they could walk: little boys chase crows in the wheat fields, shovel manure in the livestock sheds, and collect firewood in the woods; little girls help their mothers sew clothes, peel turnips in the kitchen, and wash clothes by the stream. Serfs do not have the right to education - this is a fact that the Imperials often use to insult us as evidence that we are barbarians - but the serfs have another kind of knowledge that the Imperials do not understand: he knows which mushrooms in which forest can be eaten and which will poison people, he knows that a certain smell of the north wind means that there will be an attack by greenskins within three days, and he knows how to use a sharpened stick to kill an orc on a war horse in close combat. Serfs paid heavy taxes, but lords - at least conscientious lords - would open their granaries in winter to distribute relief grain to families who were about to starve to death. This was not a kindness but an economic rationality: dead serfs could not plant next year's fields. The serf's dream was simple: a warm winter, a working ox that would not get sick, a child who would live to adulthood—and a name remembered by a goddess in the manor chapel after death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Managing serfs is the least appreciated but most important art of governance among Bretonnian lords. Directly draining every ounce of surplus value from serfs is the stupidest approach - the consequences are not only moral, but also economic: malnourished serfs cannot do heavy work, desperate serfs will flee without a fight when the greenskins invade instead of helping to defend the village, and serfs whose resentment has accumulated to a critical point are more likely to gather together on a dark and windy night to attack your manor steward with farm tools. Wise lords would show favor by lowering taxes appropriately in years with good harvests - serfs would see this as a mercy from the lord and be doubly grateful, and the lowered taxes would actually be made up for by more diligent work the following year. In times of war, the correct way to recruit serfs to serve as archers is not to force them: you should ask the manor steward to announce that those who volunteer to join the army will be exempt from taxes for the coming year, and place enough meat and wine as a reward in front of the families of the first batch of volunteers - the serfs joining the army are not for you, but for the whole family to have enough food for the next year. A wise lord would not pursue and beat up the escaped serfs - he would publicly announce his pardon to the escaped serfs in front of their families. This would maintain the stability of the village and avoid turning the escaped serfs into bandits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The legal basis and practical evolution of serfdom in Bretonnia is an area of ​​Old World social history most neglected by aristocratic historiography. The provisions on serfdom in the Code of Gilles occupy about one-third of the book. From a legal perspective, the Bretonnia serf had a dual personality: in the relationship with the lord, the serf was a human dependent - he could not move independently, marriage required the lord's permission, and the property was inherited by the lord after his death; but in the relationship with other serfs and free people, the serf had some legal rights - he could sue another serf through the manor court, could own his own chattels, and in some duchies could even accumulate enough gold coins to purchase freedom from the lord. The economic operation of the estate system followed a complex system of customary law: the three-field rotation system was the backbone of Bretonnia agriculture - the farmland of the estate was divided into three plots, with one planted each year to winter wheat, one to spring barley, and one to fallow, rotating the following year. The key difference between Bretonnia and Imperial serfdom was social mobility: it was possible for Imperial serfs to gain freedom and even be knighted through military service, but such a path to upward mobility was almost non-existent for Bretonnian serfs. This closed nature led to several large-scale serf uprisings in history, the most famous of which was the uprising of John of Jano, which allegedly nearly captured Curona."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The life of a serf was not an abstract concept for a female aristocrat who managed an estate - I would personally check whether pregnant women in serf families received adequate food rations during my weekly inspections of the estate, because I knew that a baby born to a malnourished pregnant woman would either die in the cold winter of the first year, or become a frail and emaciated laborer fifteen years later, both of which would leave long-term losses on the manor's books. The male lords of Bretonnia usually regard serfs as walking harvests, but as a woman, I see something deeper in the faces of serf women - those serf wives who pray silently in the manor church are the invisible pillars that keep the entire Bretonnia manor system running. What men calculate is the tax ratio, what I calculate is that when I put my hand on a serf woman's shoulder and memorize the names of her children, she will convince her husband to raise his longbow and stand behind the castle wall on the night of the next greenskin invasion instead of taking the whole family to escape into the forest at night - this is not benevolent government, this is manor economics that is more sophisticated than any swordsmanship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serfs were the most basic form of wealth for the family—not gold coins, not fiefs, but human labor that could stably turn seeds into ears of grain. Our family has maintained an unwritten rule for the past four generations: the tax standard of the family territory has never been lowered on paper, but there is always room for actual collection - the manor steward has the right to reduce the field rent by 20% in drought years, and this reduced part is never recorded in any audit books. The reason why this 'gray reduction' can continue to operate is because when each new generation of family leaders first takes office, the old steward will drag them to the oldest serf family in the territory to drink a bowl of thick wheat porridge, and listen to the old people who have been cultivating our family land since their grandfathers spoke in the simplest language about the foundation of their loyalty to the family - not the awe of the title, but the memory that our family has never pushed a serf family to the edge in four generations. The loyalty of serfs is the most unquantifiable strategic asset of a Bretonnian noble family, and it is also the fundamental reason why a family can take root in a province for ten centuries instead of just a few years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Looking at life as a serf in Bretonnia from a wanderer's perspective, there are layers of despair - the most superficial despair comes from hunger and physical exhaustion, but the deeper despair comes from realizing that your children will live exactly the same life as you, and that your grandchildren's grandchildren will share your fate. I met an old serf in the remote estate of Palavon. He spent forty years collecting colored stones by the stream, grinding them into beads and pendants with homemade tools, and secretly selling them to pilgrims at the estate as they passed by. He had no money to save because there was no place to spend it, but he used the stones to buy a new linen dress for his daughter during her pilgrimage to Curona. The life of a Bretonnian serf was hopeless, but dignified - a serf who could raise his head and look directly into the eyes of a baron in the manor court was known as the 'Bretonnian arrogance' in the free towns of the empire. But the reason why he could raise his head was not because of rights, but because he knew that six generations of his ancestors had farmed the same land, and his ownership of the land was more substantial than any imperial landlord's ownership of a building. This dignity is the most secret aspect of Bretonnia's serfdom - it is not a legal right, but a complex emotion of half kinship and half submission formed over hundreds of years of living together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia serfs are a completely ignored but huge market in the commercial system - they do not buy luxury goods, but they will buy salt, iron nails, coarse cloth, pottery and funeral shrouds in good times. These extremely low unit prices constitute Bretonnia's most stable domestic consumption base for 90% of the total population. When our Chamber of Commerce operates in the north of Bretonnia, the most important thing is not the trade contract with the Duke, but the personal relationship with the manor steward - a merchant who can convince the manor steward to purchase our iron farm tools in the spring and deduct the payment from the serfs' harvest in the autumn can lock in an unshakable market share for a whole year before competitors enter the manor. Serfs were the smallest cyclical unit and the largest cyclical base of Bretonnia's economy - the feasts of knights, the gold leaf of the Holy Grail Cathedral, the armies of kings, were ultimately built on this group of people who bent over the land and worked the land, never entering any chronicle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Three-field rotation system - Bretonnia pillar agricultural system, inter-annual rotation of winter wheat-spring barley-fallow",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Serf Bretonnia Commoner Bretonnia Peasant"
+  ]
+}

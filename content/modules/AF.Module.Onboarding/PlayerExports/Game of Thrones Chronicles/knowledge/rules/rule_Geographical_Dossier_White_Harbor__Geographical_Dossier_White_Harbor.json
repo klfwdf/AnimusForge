@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Geographical_Dossier_White_Harbor",
+  "Keywords": [
+    "White Harbor",
+    "Manderly",
+    "White Knife",
+    "The White Knife",
+    "New Castle",
+    "Northern Port"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "White Harbor is located at the mouth of the White Knife River in the southeastern part of the North, facing Bite Bay. It is the largest city in the North, its main seaport, and the territory of House Manderly. The Manderly family fled from the river bend and took root in the north under the protection of Stark. Therefore, the belief in the Seven Gods, southern knightly customs and northern loyalty can be seen coexisting in the city; the new castle overlooks the port city, and the older wolf's lair preserves the memories of pirates, Starks and past defenders. Warehouses, fish markets, shipbuilding, coinage, and merchant ships transported northern timber, furs, and grain to all shores of the Narrow Sea, making White Harbor the most stable gateway for southern news and foreign wealth to enter the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For many northerners, White Harbor has always been a little too much like the south: the streets are more crowded, there are more bells, there are more unfamiliar accents, and the seven-pointed star is more common. But when winter and war come, it is these warehouses, shipyards and merchants who know how to settle accounts that keep the north from living solely on prey in the snow. The difference in White Harbor is not a departure from the North, but a door from the North to the world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "vale",
+          "river",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants of the Narrow Sea regard White Harbor as the only great port in the north that is truly worth calling for a long time; the people of the Vale are familiar with its merchant ships and beliefs; the ironborn will first size up its walls, estuary, and lootable goods. The foreign captain knew that as dangerous as it was to insult a Northerner here, it was equally dangerous to slight Manderly's ledger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor Entry White Knife Manderly Entry New Castle They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor Entry White Knife Manderly Entry New Castle The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor Entry White Knife Manderly Entry New Castle Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor Entry White Knife Manderly Entry New Castle They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "White Harbor: White Harbor is located at the mouth of the White Knife River in the southeastern part of the North, facing Bite Bay. It is the largest city in the North, its main seaport, and the territory of House Manderly. The Manderly family fled from the river bend and took root in the north under the protection of Stark. Therefore, the belief in the Seven Gods, southern knightly customs and northern loyalty can be seen coexisting in the city; the new castle overlooks the port city, and the older wolf's lair preserves the memories of pirates, Starks and past defenders. Warehouses, fish markets, shipbuilding, coinage, and merchant ships transported northern timber, furs, and grain to all shores of the Narrow Sea, making White Harbor the most stable gateway for southern news and foreign wealth to enter the north."
+  ]
+}

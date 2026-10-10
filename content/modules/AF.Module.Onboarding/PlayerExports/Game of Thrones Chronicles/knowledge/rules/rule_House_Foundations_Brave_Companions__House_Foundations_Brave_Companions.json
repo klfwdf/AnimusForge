@@ -1,0 +1,111 @@
+{
+  "Id": "rule_House_Foundations_Brave_Companions",
+  "Keywords": [
+    "Brave Companions"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Warriors are a mercenary band from Essos, also known as the Blood Troupe. The leader, Vag Hoot, was born in Qohor, and its members include criminals, fugitives, brutal warriors and strangers from many places. They once served for powerful lords in the riverland wars, and then betrayed their old masters as their interests turned. Their mutilation, torture and plunder made their reputation far more terrifying than their achievements. The Warriors prove that contracts cannot turn a group of people who take pleasure in fear into discipline; when an employer condones atrocities, notoriety will eventually backfire on the employer's rule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the people of the Riverlands heard about Blood Troupe, they thought of burned villages and dismembered people. To them, the Warriors are not distant mercenaries, but a group of thugs who use war as an excuse and those who are unable to resist as playthings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Noble employers sometimes saw warriors as being free from chivalrous etiquette and able to do dirty things that honorable retainers would not do. But a knife without a bottom line will not be truly loyal. One day, you can intimidate the enemy, but tomorrow you may use your employer's family in exchange for money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Regular soldiers despise the lack of discipline of the warrior regiments, but cannot underestimate their cunning. Dealing with the Blood Troupe requires tight sentries and clear military laws, because prisoners, wounded soldiers, and isolated villages will all become weaknesses that they exploit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brave Companions The Warriors, also known as the Blood Troupe, are a notorious mercenary group led by Vag Hoot. They are known for their criminals, cruel methods and atrocities in the Riverlands. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brave Companions The Warriors, also known as the Blood Troupe, are a notorious mercenary group led by Vag Hoot. They are known for their criminals, cruel methods and atrocities in the Riverlands. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Brave Companions: The Warriors, also known as the Blood Troupe, are a notorious mercenary group led by Vag Hoot. They are known for their criminals, cruel methods and atrocities in the Riverlands."
+  ]
+}

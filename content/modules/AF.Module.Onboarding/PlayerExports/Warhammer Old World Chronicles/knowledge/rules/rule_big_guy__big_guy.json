@@ -1,0 +1,208 @@
+{
+  "Id": "rule_big_guy",
+  "Keywords": [
+    "Big guy",
+    "Orc Elite",
+    "second in command",
+    "The strongest boy",
+    "Horde deputy",
+    "big beast",
+    "Engage in hair selection"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Big Guy is the strongest and most capable orc elite warrior in the greenskin tribe besides the War Lord - they have earned this title by proving through countless fights that they are tougher and tougher than other boys. The big brothers are not only the elite assault force on the battlefield, but also the war king's most relied-upon lieutenants and defenders of tribal order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The big guy is the most proud guy among us greenskins besides the boss! Look at those ordinary guys - skinny and soft guys, they have to gather a group of people to fight a tough fight. But the big guys are different - their muscles look like rock lumps, and one of them can match the fighting power of twenty ordinary guys! The proof of becoming a big guy is that you defeat enough enemies or friendly forces in a monthly melee and survive to the end. The tribal shaman will draw a mark of Brother Go or Brother Mao on your head - but to be honest, I can't tell which is which - anyway, once it is drawn, you are officially a boss! The big guys are the guys that the boss relies on most. When fighting tough battles, they stand in the front row and smash the strongest opponents first, so that other guys dare to follow suit!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The role of big boys in the orc military system is similar to that of elite assault infantry in the human army - they have higher morale and better equipment (mainly stolen and beaten) than ordinary orc boys, and more importantly, their combat experience is far beyond that of ordinary greenskins. At the tactical level, the assault squads usually formed by the big guys are the spearhead of the orc charge - they are the first greenskin force to hit the enemy's line, and their role is to use overwhelming violence to tear a gap in the enemy's formation large enough for subsequent infantry to pour in. Countermeasures require pre-identification of the big guys—usually the biggest orcs with the most trophies—and concentrating firepower on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The sociological significance of Big Brother is much deeper than its appearance. In greenskin society, 'Big Brother' is not just a military title, it is closer to a status symbol similar to a 'knight' in the feudal system: an orc who has been awarded the title of Big Brother has the right to first choose loot, first choose the location of the camp, first challenge the opponent's leader, and provide advice to the war king in the war council. But this position is not locked - in the annual \"Ganggai Festival\" tribal melee, the current leader must prove himself again, and any new challenger can kill him and take the title. This is a highly efficient elimination mechanism in evolutionary biology: it ensures that only the strongest individuals can continue to be at the top of the reproductive rights and food distribution chain. According to the records of the most important orc sociology work \"Greenskin Governance: Order among the Beasts\" in the Imperial Intelligence Archives (the author is unknown, presumably an imperial spy who has been hiding in the orc tribe for twelve years), the emergence of the Big Brother system has indeed significantly improved the efficiency of the orc tribe's foreign wars - because before the introduction of this class, the vanguard of the orc charge was often a bunch of the smallest and weakest boys, who died the fastest and were the least valuable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Big Brother selection mechanism reminds me of the knighthood ceremony in the human kingdom - orcs prove their strength through fighting, and humans prove their skills through martial arts competitions. It is essentially a public performance, with the purpose of letting everyone know that 'this person is better than everyone else'. But the difference is that the title of Big Orc was not given by any authority, but earned it with his own scars. A human knight might need a king's canonization to gain a title, but an orc lord just needs enough defeated opponents. In some ways, the orc system is even purer - title and violence are one and the same, without any pretentious ritual trappings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a greenskin tribe in the gray mountains bordering our territory. Its big brother captain once challenged the best swordsman of our family in a single fight - a fight that lasted for nearly an hour, and finally our swordsman collapsed from exhaustion. But the big guy captain didn't kill him. Instead, he carried the unconscious swordsman back to the door of our border outpost and carved a word on the wall in Dwarf language: 'Come Again'. Since then, I have learned an unspoken rule for getting along with big guys: respect comes from strength, and negotiation comes from convincing each other. We exchanged a regular supply of good iron for that tribe on the border in exchange for them attacking the dwarves to the west instead of going south to invade our territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I met a retired griffon knight in a mercenary outpost in the Gray Mountains - he was one of the very few humans who had ever defeated a big guy one-on-one. He broke a leg and lost an eye, but he described the battle as the most glorious moment of his life. He said the big guy's punches were like battering rams against shields every time, but as soon as you could dodge the first sixteen blows, the orc would start to gasp and show a weakness. He took off the big guy's fangs and hung them around his neck as an amulet, saying that the curse of the fangs was to 'let you always remember what a real fight is'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the scrap iron trade, the old weapons that have been eliminated by big guys are a popular medium source of goods - they are usually deformed but not completely scrapped. After being recast, they can be made into good civilian tools. My blacksmith shop has long been cooperating with a team of scavengers who specialize in picking up rags on greenskin battlefields. Those scavengers have a piece of advice: if there are red or green marks painted on the heads of the fallen orcs on the battlefield - that is the big one. You can always find good things such as dwarf gold coins or broken amulet armor by searching. But before searching, make sure he won't suddenly stand up and hit you in the next second."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The elite orc warrior in the tribe second only to the War Lord",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The second in command of Big Brother Orc Elite"
+  ]
+}

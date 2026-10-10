@@ -1,0 +1,212 @@
+{
+  "Id": "rule_imperial_diplomacy",
+  "Keywords": [
+    "imperial diplomacy",
+    "Imperial Covenant",
+    "empire external",
+    "Dwarf Covenant",
+    "Kislev Alliance",
+    "Bretonnia relationships",
+    "Sylvania threats",
+    "Norsca Raid",
+    "eternal covenant",
+    "Imperial Intelligence",
+    "border policy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire's diplomatic situation is the most complex in the Old World - the north faces relentless incursions from the Chaos Wastes and Norscan raiders, the east is allied with Kislev against Chaos, the south is wary of the Vampire Count's Sylvania, the west maintains a fragile peace with Bretonnia, and the dwarven kingdom is the empire's oldest and most reliable ally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We had no real friends in the old world—only common enemies and temporary interests. The dwarves are the only exception: Sigmar once saved the life of the Dwarf High King Kurgan Ironbeard, and in return the dwarves gave Gael Maraz, the hammer that remains a symbol of imperial power to this day. This ancient covenant was written on stone that would never wear out, not parchment that could be torn. Kislev is our northern shield, the Tsarina's Bear Riders fight in the ice and snow against the Chaos hordes, but they also guard us - the Empire has tried to make Kislev its own northern province on more than one occasion. The knight lords of Bretonnia look down on us from across the Gray Mountains, their serf armies no match for the Imperial muskets, but their Grail Knights are probably the best heavy cavalry in the old world and we keep them at a polite distance. The merchant city-states of Tyrell export mercenaries and luxury goods to the Empire, but they may defect at any time for a higher offer. As for Sylvania - it's our disgrace that the Vampire Counts have yet to be completely eradicated, as the Elector Counts always squabble over an inconsequential castle on the border at the most critical moments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire's diplomatic strategy can be summed up in four words: defense as offense. We're not expanding our territory—we're shrinking our defenses. The alliance with the dwarves was not only military but also economic - the dwarves controlled the ores and precious metals of the World's Edge Mountains, in exchange for food, wood, and textiles from the Empire. The Nordland's Imperial fleet is constantly at war with the Norsca longships in the North Sea, keeping the trade route with Kislev open - without this route, Kislev's economy will collapse within two winters, and a collapsed Kislev means that the northern border of the empire will be directly exposed to Chaos. The key to diplomacy with Bretonnia is to always remind them that Chaos is the real enemy, and to ensure that there are Imperial garrisons in the passes of the Gray Mountains to prevent those knight lords from launching a holy war 'for the goddess'. The Empire adopts a laissez-faire but bottom-line attitude towards the Border Princedom and the Southern Principality - anyone who wants to establish power there must remember that it is a land that even Sigmar himself has not been able to completely conquer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The diplomatic history of an empire is a long chronicle of its swings between survival and expansion. The 'Eternal Covenant' with the Dwarves was concluded in the first year of the Imperial Calendar - the High King of the Dwarves, Kurgan Ironbeard, was rescued from an Greenskin ambush by Sigmar. In return, he forged the warhammer Gale Maraz and promised that the Dwarf Kingdom would be an eternal alliance with the Empire. This was the longest lasting alliance in the Old World, and dwarven engineers still work in the Imperial School of Gunnery, while Imperial legions have supported besieged dwarf fortresses on many occasions. The relationship with Bretonnia is much more complicated: there is nominal peace between the two countries, but the border friction in the Gray Mountains has never stopped. The Bretonnian knights regard the imperial people as merchant warriors lacking a sense of honor, and the imperial people regard the Bretonnian people as arrogant feudal old antiques. The relationship with Kislev is based on the 'Northern Shield' consensus - the Empire provides Kislev with gold coins and muskets, and Kislev uses the blood of Cossacks to block the Chaos Horde. Both parties tacitly maintain this military alliance based on interests. The Sylvania issue is the most failed case of imperial diplomacy: after the Vampire War, the Elector Counts chose to compromise rather than completely eliminate the vampire counts, retaining Sylvania as a province in name only, and actually allowing the von Carstein family to continue to grow in the shadows. This short-sighted appeasement policy was repeatedly criticized by later historians, but was repeated again and again under the pressure of real politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In diplomatic situations between the empire and other countries, women are often more suitable than men to play a real diplomatic role - not because of their soft charm, but because those self-righteous ambassadors always underestimate the intelligence network of a female duke when facing her. In my province, I established an 'invisible diplomatic corps' composed of female merchants and nun envoys. They went in and out of the ladies' parlors in the name of donating holy relics in the Bretonnia court, exchanged military intelligence under the cover of purchasing crafts in the dwarf fortress, and established apolitical but extremely reliable information transmission channels with the female monks in the Orthodox monastery of Kislev. Imperial diplomacy was, on paper, envoys, instruments, and treaties, but in practice - at least in my case - it was a noble widow crossing the passes of the Gray Mountains in the name of charity, bringing back true reports of border frictions in her carriage. The men on the Imperial Council never admit this publicly, but every time they discuss the border with Bretonnia they ask someone to find out what news my nuns have brought back from beyond the mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Cross-border marriages between families were the most enduring and covert tool of imperial diplomacy. Our family has weaved a silent bloodline network in the nobility of Bretonnia, Tyrell and Kislev through careful marriage arrangements in the last three hundred years - one of my great-aunts married a baron in the Duchy of Aquitaine in Bretonnia, and two of her three sons hold mid-level positions in the Bretonnia court. The eternal covenant of an empire is written in dwarven stone, but the diplomatic covenant of a family is written in flesh and blood - you can bribe an ambassador, but you cannot bribe a cousin who shares your grandmother's blood. Each Elector Count family has its own 'blood station' outside the empire. This is a wisdom that dates back to the long history of the empire - when the emperor is at war with foreign countries, the major families use their own private diplomatic channels to avoid the outbreak of all-out war, because the war may cause the other half of a family to kill each other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of mercenaries, the empire's diplomacy is a carefully choreographed drama - the envoys on the stage bow to each other and toast each other and promise eternal friendship, while we in the audience write scripts for them in those 'unexpected conflicts' on the border. I served as a privateer in the Nord fleet for two years. Our ship intercepted Norsca longships in the North Sea under the imperial flag - but occasionally also 'accidentally' intercepted several Bretonnia merchant ships at night with poor visibility. The Imperial Navy denied this, but the bounty received by the captain was paid out on time. At the passes of the Gray Mountains, the Imperial defenders would 'test-fire' several cannon rounds as Bretonnia cavalry patrols passed by, and the shells would always land 'far off' on the slopes in front of them - this was called a 'routine exercise' in diplomatic parlance, but the gunner I knew personally told me that his aim was precisely calculated, with the aim of landing the shells at just the right distance to insult the opponent without sparking a war. The peace between the empire and other countries is not maintained by treaties, but by these well-measured provocations and counter-provocations that occur every day and never appear in any official records."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The role of the empire's merchant class in foreign affairs is grossly underestimated - we are not the executors of foreign policy, we are often the creators of foreign relations. The strongest bond between the empire and the dwarves is not the Eternal Covenant, but the uninterrupted ore-food exchange trade flow between the two parties: for two hundred years, no imperial council has dared to make a resolution that might disrupt this trade flow, because the consequences would be the economic collapse of a series of towns along the Reik River. The Kislev's political dependence on the Empire is greatly exaggerated, and what really ties them to the Imperial chariot is their export of furs and amber - a third of the Kislev court's revenue comes from the fur trade with Imperial merchants, who have personal credit relationships with almost everyone among Kislev's great nobility. Bretonnia knights can laugh at us as merchants, but when a Bretonnia Duke needs to mortgage next year's wine production in exchange for a mercenary group to defend against greenskin invasion, he is not looking for the emperor of the empire - he is looking for our Chamber of Commerce. Economic penetration is the most irreversible and low-key diplomatic method. It will not appear in any treaty text, but in reality it binds countries together more deeply than any military alliance."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Eternal Covenant - a permanent military and trade alliance between Sigmar and the High King of the Dwarves",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The empire’s foreign relations and alliance system"
+  ]
+}

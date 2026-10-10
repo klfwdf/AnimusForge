@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Belmore",
+  "Keywords": [
+    "House Belmore",
+    "Silver Bells"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Belmore family is based in Hongge City and is an ancient vassal of the valley. Their family emblem is six silver bells on a purple background. The mountainous area where Hongge City is located makes the family more familiar with valley roads, winter closures and vassal summons. Locals judge the Belmore by its ability to maintain mountain roads, store grain, and deal with neighborhood disputes; few outside the valley have reason to be familiar with the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the valley recognize the six silver bells of Hongge City and know that Belmore is an ancient link in the network of vassals in the valley. The bell pattern makes it easy for singers to express echoes and alarms. What truly maintains a family is land, marriage alliances and fulfillment of obligations. Belmore may not always be at the center of the discussion table, but he is not a name that can be passed over as an empty chair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Hongge City have their own interpretations of the bells: telling time, gatherings, weddings and funerals, or danger coming from the mountain road. When the silver bell is printed on the flag, it is the family emblem, but when it actually rings, it concerns everyone. People judge Belmore based on who they ask the bell to ring for, and whether anyone actually comes after the bell rings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Belmore Vassal of Arryn of Hongge City in the Vale, his family crest is six silver bells on a purple background. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Belmore Vassal of Arryn of Hongge City in the Vale, his family crest is six silver bells on a purple background. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Belmore Vassal of Arryn of Hongge City in the Vale, his family crest is six silver bells on a purple background. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Belmore Vassal of Arryn of Hongge City in the Vale, his family crest is six silver bells on a purple background. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Belmore: Vassal of Arryn of Hongge City in the Vale, his family crest is six silver bells on a purple background."
+  ]
+}

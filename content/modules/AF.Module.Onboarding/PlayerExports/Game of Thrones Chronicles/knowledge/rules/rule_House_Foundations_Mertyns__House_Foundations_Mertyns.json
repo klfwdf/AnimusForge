@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Mertyns",
+  "Keywords": [
+    "Mertyns",
+    "House Mertyns",
+    "White Owl"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Maetellin family occupies the city of Mistywood and is a vassal of the Stormlands. Their coat of arms is a white horned owl on a gray background. The trees, sea fog, and rugged roads around the city of Foggy Forest have shaped the life of the family: the defenders must be familiar with the forest trails, the woodcutter and the hunters know the weather better than the distant knights, and news from the coast is often late in the fog. During the First Dornish War, Lord Maetellin and his family died in a barrel of poisoned wine; this old disaster made banquets, envoys, and border visitors all wary in local memory. The family's choices today can change, but the need for caution, guidance, and reliable supplies in Fogwood City will not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stormland warriors believe that the most valuable thing about Fog Forest City is not the charge on the open ground, but the ability to find the way in low clouds and dense forests. If Metaline loses its local hunters and scouts, no matter how much armor it has, it will only be spinning in the fog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Woodlanders look at the white owl flag and think of timber shares, hunting boundaries and patrols on bad roads. If the lord knows how to listen to the guide, the castle will be a refuge; if he does not know, the orders will be swallowed up by the fog when he leaves the city gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who know the old history will mention the barrel of poisonous wine, but they may not use it to accuse the Dornish people of today. It is more like a hard lesson: in border wars, banquets and wine seals sometimes need to be inspected as much as swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mertyns The Stormlands family of Mistwood City uses the white horned owl on a gray background as its emblem. Its history is shaped by the jungle, sea fog and the old creation of the Dorne War. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mertyns The Stormlands family of Mistwood City uses the white horned owl on a gray background as its emblem. Its history is shaped by the jungle, sea fog and the old creation of the Dorne War. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mertyns The Stormlands family of Mistwood City uses the white horned owl on a gray background as its emblem. Its history is shaped by the jungle, sea fog and the old creation of the Dorne War. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mertyns The Stormlands family of Mistwood City uses the white horned owl on a gray background as its emblem. Its history is shaped by the jungle, sea fog and the old creation of the Dorne War. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Mertyns: The Stormlands family of Mistwood City uses the white horned owl on a gray background as its emblem. Its history is shaped by the jungle, sea fog and the old creation of the Dorne War."
+  ]
+}

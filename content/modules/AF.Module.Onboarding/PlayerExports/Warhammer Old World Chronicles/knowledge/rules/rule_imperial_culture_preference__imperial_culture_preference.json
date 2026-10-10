@@ -1,0 +1,212 @@
+{
+  "Id": "rule_imperial_culture_preference",
+  "Keywords": [
+    "imperial culture",
+    "Imperial Preference",
+    "order and discipline",
+    "Science and technology engineering",
+    "market trade",
+    "Ale Festival",
+    "Expand and develop",
+    "worldly aspirations",
+    "infantry square",
+    "roar of steam",
+    "Provincial festivals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperials loved order—they were obsessed with neat phalanxes of infantry, well-oiled bureaucratic machines, and vast filing systems that cataloged everything. The cities of the empire are filled with the roar of steam and steel, engineers are enthusiastic about testing new artillery, and citizens are bargaining for goods from foreign lands in the bustling bazaars. During the festive season, the taverns of the Empire are filled with the foam of ale and the aroma of roasted pork knuckles, and men and women in provincial costumes sing carols in the streets in honor of Sigmar's birthday."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We Imperials are the most pragmatic in our preferences in the Old World - we are not like the Knights of Bretonnia who pursue illusory glory, nor are we like the Dwarves who cling to millennia-old hatreds. We like things we can see and touch: a perfectly balanced Nuln crafted longsword, a new hellcannon successfully fired for the first time in the morning mist, a trading fleet laden with Tyrell silk and gold crown on the Reik. We like order—not the forced order of Chaos that relies on violence, but the dull echo that echoes back across the world when ten thousand Imperial soldiers step to the same beat and point their halberds north, and that makes us feel safe. We love the excitement - the lute player plays old songs of Charlemagne at the Midsummer Festival in Altdorf, the baker hands out free rye bread from the oven to every child who passes by, the alchemist demonstrates the trick of turning water into gold on the street corner but there are still people willing to pay to watch. We love engineering - the noonday clang of steel in Nuln's gunshops is another anthem for us Imperials, and every Imperial boy has dreamed of driving a steam tank through an Greenskin position before reaching adulthood. But at the end of the day, what we love most is sitting in a pub in our hometown after a hard year, with a mug of bubbly ale and a crispy Tarabek sausage in front of us, listening to a veteran who retired from the Ostermark front at the next table tell how he survived the siege of three beastmen - that veteran is 90% bragging, but we want to believe it because we like to believe our own stories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the cultural preferences of the Imperials is critical to manipulating them in diplomacy and trade. Imperial nobles like this the most - they like to hear their family coat of arms accurately recognized and praised by outsiders, and like to receive rare books or rare mechanical models from far away as gifts at banquets. To establish a military alliance with an imperial province, the most efficient way is not to show force but to promise to share engineering drawings or provide a batch of fine firearms produced by Nuln - Nuln's guns are not only a weapon, but also a carrier of civilizational superiority for the Imperial people. The Empire's merchant class is far more profit-conscious than any other civilization in the Old World, and they like efficiency, punctuality, and detailed contract terms - showing the slightest laxity in agreed deadlines and cargo specifications in trade negotiations will cause them to internally downgrade you to an \"unreliable foreigner.\" At the war level, the Imperials preferred defensive strategies and fire suppression tactics - they did not like risky surprise attacks, and preferred the certainty of steady infantry advancement under the cover of artillery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The core of the imperial cultural psychology can be distilled into \"order anxiety\" - a pathological fear of disorder that is deeply rooted in the collective subconscious of the empire. The roots of this anxiety can be traced back to the traumatic memory of the founding of the Empire: what Charlemagne (Sigmar) faced before the Battle of Reichdorf was not just an army of greenskins, but a chaotic old world with no borders, no laws, and no future. The resulting cultural compensation mechanism manifests itself in four core preferences of the empire: First, taxonomy—the imperial bureaucracy codifies everything from provincial boundaries to bread weights into precise systems. The psychological essence of this behavior is to transform an unpredictable and disordered world into manageable symbols. system; second, the worship of technology - Nunn's engineers experience not only practical satisfaction when testing artillery, but an almost religious ecstasy, because every successful steam engine operation or accurate cannonball hit repeatedly verifies a belief - human reason can conquer nature and The contingency of chaos; third, obsession with the market - every bargain in the imperial bazaar is a miniature ritual of order versus chaos, because trading rules, weights and measures, and monetary systems transform the original predatory relationship between people into a predictable exchange relationship; fourth, the impulse to expand - The driving force for the imperial nobles to establish new colonies in the northern forests is territorial ambition on the surface, but also the continuous clearing of chaotic space from the ordered space. Every new human village means that another area on the map is relabeled from \"unknown terror\" to \"province of the empire\". The fragility of this entire cultural and psychological system lies in the fact that once there are cracks in the order - such as a plague paralyzing the city, or a Chaos invasion tearing apart the border defenses - the psychological defenses of the imperial people will collapse faster than the military defenses, because their sense of security is not based on absolute strength but on the belief in the reliability of the order system."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The subtlety of the cultural preferences of imperial aristocratic women is that although we also love the order and civilization of the empire, the way we enjoy them is completely different from that of men. I myself have discovered the ultimate beauty of order in the management of an estate: when the autumn grain storage record, the tenant's tax list and the winter fuel reserve plan all line up perfectly on the ledger, I experience no less satisfaction than a general reviewing his infantry phalanx. I loved hand-selecting the fabrics and books shipped from Marienburg at the market in Altdorf - the merchants would automatically drop 30% of the price and 70% of the intention to deceive when faced with a female Elector Count, because they could not judge the political weight behind me. But I also love those interests that Imperial men are less likely to express openly—like experiencing the presence of a god with heart rather than ritual during morning prayers in a temple, or telling a less bloody version of the Sigmar legend to my children by a winter hearth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The secret of our family's survival in the imperial provinces lies not in military might but in cultural identity - it took us three generations to convince every free peasant family in our domain that our family's preferences were the preferences of their village. My father once said: \"The peasants of the Empire don't care who sits on the throne of Altdorf, they only care whether the lord personally drank the ale they brewed at the harvest festival.\" This sentence is the essence of imperial governance - loyalty in the imperial culture is not imposed from above, but won drop by drop from below. Our family has invested in three public facilities in our domain: a guild hall that is open around the clock, a square that hosts two great markets every year, and a temple of Sigmar that provides hot soup to the poor in winter—each of which satisfies the three core desires of the Imperial people: work, trade, and faith. Humans are not bound by a thousand-year oath like dwarves, nor are they driven by an abstract idea like elves. What the Imperials need is something new to look forward to every season, new goods to touch and smell every market day, and new miracle stories to tell in the tavern every temple day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The cultural preferences of the Imperials looked from a Wanderer's perspective like a well-made coat that was constantly fraying at the edges—the coating of order and civility was thick in the big cities of Altdorf and Nunn, but the coating grew thinner as you moved toward the frontier. I saw a blacksmith in a border village in Osterland spend three months building a perfectly shaped long sword - not ordered for anyone, just because he likes to build perfect things - this love for craftsmanship is one of the core genes of the imperial culture, and it will not be extinguished even in a deserted village with no guests. In another village on the same road, the only preference of the entire village is to live to see the sun the next day. Their culture has been simplified to only the name of Sigmar and a rusty halberd hanging at the entrance of the village. The biggest contradiction of the Imperial people is that they both love order but are not strong enough to maintain order everywhere - the cultural preferences of the people in the abandoned villages on the border will eventually degenerate into a primitive mixture of superstition, and perhaps that is the true foundation of Imperial culture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The cultural preferences of the Imperial people created the most predictable consumer market in the Old World—the most stable gold mine for merchants. Imperial demand for ale never declines in good times or bad, which means a medium-sized brewery in any town in the Empire is a solid investment that can be passed down to grandchildren. The imperial nobles are picky about the quality of weapons and armor to a pathological level - they can argue with the blacksmith all afternoon about the carvings on a scabbard, but once they identify a brand, they will be loyal to it for life. This consumption habit gives those weapon workshops recognized by the Elector Count's government a near-monopoly in customer stickiness. The Imperial burgher class was the largest literate market in the Old World - booksellers, cartographers, and printers made more money in Imperial towns than in any other civilization, because of the deep-seated belief that knowledge that was not written down was unreliable. And the peasants of the empire - don't underestimate them - although they are poor, there are many of them. They need to go to the city at least twice a year to buy items that they cannot make at home: iron nails, glass bottles, dyed cloth and herbs for funerals. The total transaction volume of these humble low-priced goods in tens of thousands of villages in the empire exceeds any high-end luxury market."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Order Anxiety - the imperial people's pathological fear of disorder, originating from the trauma of the greenskin war during the founding period, and driving the formation of the entire cultural system of the empire",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of the empire"
+  ]
+}

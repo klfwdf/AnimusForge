@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Bordreau",
+  "Keywords": [
+    "Duchy of Bordero_BO",
+    "Bordeaux Territory_BO",
+    "Port of Bordero_BO",
+    "Duke of Bordero_BO",
+    "Bordeaux Wine Country_BO"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Bordeaux is located on the southwestern coast of Bretonnia and is ruled by Duke Alberic de Bordeaux. This is the richest duchy in Bretonnia, the Bordeaux wine is famous throughout the Old World, and the Port of Bordeaux is one of the most important trading hubs in the south. Wealth and wine run in the blood of this place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bordello - a haven of wine and gold! Duke Alberic's merchant ships sailed to the ports of Marienburg, Tilea and even Arabi, bringing back treasures that filled our bazaars. The amber liquid of Bordeaux sparkled on every aristocratic table in the empire. But don’t think we’re just counting money – Bordello’s naval knights are also wolves of the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Bordello controls the economic lifeline of Bretonnia. The duchy's annual wine tax revenue and port trade duties account for a significant portion of the kingdom's total revenue. Duke Alberic had the best-equipped navy in Bretonnia, and his warships dominated the Gironde Gulf. The dual economic and military strength gave Bordeaux a transcendent voice in the Duke's Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economic structure of the Principality of Bordero is characterized by diversification. The wine industry is absolutely dominant - there are more than 300 wineries in Bordello, with an annual output of more than two million barrels of wine, and exports account for 70% of Bretonnia's total wine exports. The duchy also controls the fishing and salt industries of the Gironde Bay, and has the largest salt pan area among the Bretonnia duchy. In terms of port trade, the Port of Bordero ranks first among Bretonnia ports in terms of annual throughput, and has established stable trade routes with all major maritime cities in the old world. Duke Alberic invested part of his commercial taxes into the port expansion project so that it could berth more than fifty large merchant ships at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female nobles of Bordello enjoy the highest degree of social freedom among the Bretonnian principalities. The prosperity of business has brought enlightenment of ideas - the noble women here can independently manage the manor accounts, invest in merchant ships and even participate in wine tasting decisions. The court of Duke Alberic was more like a commercial salon than that of any other duke."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family controls three of the main trade routes in Port Bordero. Duke Alberic trusts us because he knows that Bordeleau's gold is not in the vault, but in the merchant ships at sea. Each generation of clan leader must make a personal voyage to measure the farthest reaches of the family trade network with both feet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The marina of Port Bordello is a dazzling place. Goods from all over the world pile up, and foreign merchants bargain here in more than a dozen languages. I've seen silks from Tilea, spices from Arabi, and even porcelain from faraway Cathay in the bazaars. This is a city of knights soaked in money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The business opportunities in Bordello are the best in Bretonnia. The Duke's liberal trade policy allowed foreign merchants to store their goods here duty-free. Wine futures trading was a favorite financial game of Bordello merchants - selling entire batches of wine while it was still aging in oak barrels. The profits are huge but the risks are not small either."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Bordello is located on the southwest coast of Bretonnia. It is famous for its wine industry and maritime trade. It is the richest territory in the kingdom.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The rich port in the southwest of Bretonnia, Duchy of Bordello"
+  ]
+}

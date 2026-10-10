@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Malaroven",
+  "Keywords": [
+    "Malaroven",
+    "House Malaroven",
+    "Royalty"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Malaroven is a royal house of real weight in Qarth. Qarth stands where desert and sea lanes meet, and power within the city is never passed down along a single line: the Pureborn hold ancient titles and seats, merchant guilds command wealth and ships, warlocks rely on mysterious prestige, and caravans beyond the gates must contend with water sources, guards, and long roads. The foundation of House Malaroven lies in joining royal ceremony to these practical forces, upholding the dignity of its lineage without letting the city's trade grind to a halt out of pride. Factional pacts may be rewritten, but this predicament of seeking balance between bloodline and coin will not vanish."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Pureborn judge House Malaroven, they look at whether it upholds royal custom and whether it allows itself to be led around by the coin of the Thirteen. Qarth cares most for grand appearances, yet its deepest bargains are often struck behind curtains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and caravaners hope House Malaroven provides clear tariffs, secure water sources, and guards that actually show up. No matter how splendid the carvings on the city gates, they cannot find the next well for a caravan in the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk know House Malaroven through grain prices and corvee labor. With every round of factional rivalry among the highborn, what increases first is rarely their seats in council, but the burdens on the quays and market streets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Malaroven A powerful royal house of Qarth that takes part in civic politics through ancient lineage, caravan protection, and factional negotiation. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Malaroven A powerful royal house of Qarth that takes part in civic politics through ancient lineage, caravan protection, and factional negotiation. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Malaroven A powerful royal house of Qarth that takes part in civic politics through ancient lineage, caravan protection, and factional negotiation. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Malaroven A powerful royal house of Qarth that takes part in civic politics through ancient lineage, caravan protection, and factional negotiation. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Malaroven: A powerful royal house of Qarth that takes part in civic politics through ancient lineage, caravan protection, and factional negotiation."
+  ]
+}

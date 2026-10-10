@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Jovako",
+  "Keywords": [
+    "Jovako",
+    "Jovako Khalasar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jowakko represents a Dothraki khalasar. Such a community will be centered on the prestigious Khal, but it is never identified with him alone: ​​Kou manages different teams, bloodriders guard the leader, riders bring their relatives and horses, and captives and servants bear heavy labor. Commands pass through these relationships to become actions. If Jovacco wants to maintain his following, he must make bravery, migration direction, and distribution order consistent with each other; fear alone can force people to ride a journey, but it is difficult for everyone to stay where they are when the opportunity to split arises. Future allies and enemies can change, but the foundation of choice and reputation always exists."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The riders judged Jovacco not only by what he said in front of the campfire, but also by whether the tribesmen followed the orders sincerely. When orders are given loudly but no one urges the horse, it is a sign that Kaa's authority is starting to become hollow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who were responsible for the camping, herding, and porting saw another side of the khalasar. They know who paid the blood and sweat for each rapid migration, and they also know that a kindness from the leader may save an entire family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "City-state people tend to draw Jovacco's team like an arrow on the map, but people who have actually walked through the sea of ​​grass know that it is more like a group of campfires that are involved with each other. Predicting its actions requires understanding water sources, horse conditions, and internal reputation, not just remembering the khal's name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jovako A khalasar in Caohai is named after the reputation of its leader, and is continued by rider selection, kinship obligations and the order of spoils. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jovako A khalasar in Caohai is named after the reputation of its leader, and is continued by rider selection, kinship obligations and the order of spoils. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jovako A khalasar in Caohai is named after the reputation of its leader, and is continued by rider selection, kinship obligations and the order of spoils. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jovako A khalasar in Caohai is named after the reputation of its leader, and is continued by rider selection, kinship obligations and the order of spoils. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jovako: A khalasar in Caohai is named after the reputation of its leader, and is continued by rider selection, kinship obligations and the order of spoils."
+  ]
+}

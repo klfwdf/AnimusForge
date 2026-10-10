@@ -1,0 +1,125 @@
+{
+  "Id": "rule_onishishan",
+  "Keywords": [
+    "Onishi Mountain"
+  ],
+  "RagShortTexts": [
+    "The Orni Stone Mountains, located behind Lycaron, contain the richest silver veins in Calradia and are an important source of imperial treasury and military pay."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Oni Stone Mountain is behind Lycaron, or in other words, Lycaron grew out of it. The mountain is all stone, with gray-white walls so steep that even a goat can't stand, but beneath the stone lie veins of silver—the richest silver deposit in all of Calradia. For hundreds of years, these silver mines have fed the empire's treasury, legions' wages, and royal family's squandering, and have also attracted countless besiegers and careerists. There are vultures hovering on the top of the rocky mountain all year round. They are as old as the silver mines of Lycaron and have long been accustomed to seeing the fighting at the foot of the mountain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The stone mountain of Ouni is Lycalon’s money bag. Without the silver mines of that mountain, the Empire's legions could not pay their troops, and the Senate's marble palace could not be paved. In the past, when Emperor Arenicos was on the throne, the silver mines in the Onishi Mountain were under the control of the royal family, and the silver dug out went directly to the treasury. Lycaron now belonged to Rhagaea, and the silver mines to the Southern Empire. People in the north and west are very jealous, but Stone Mountain will not move away. Whoever takes possession of Lucalon will take possession of the money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Onishi Mountain is the backbone of our Southern Empire. Galios has the veterans, Lucon has the senate, we have the silver mines. Silver mines can raise soldiers, buy grain, and hire people to build city walls. As long as the Oni Stone Mountain remains behind us, Lycalon will not starve to death and the Southern Empire will not collapse. Those vultures are watching in the sky - they used to watch the late emperor's eagle flag flying over the city, now they are watching the flag of Queen Rhagaea, and they will continue to watch it in the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es4"
+        ],
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I worked in the mines of Onishi Mountain for half my life. The stone was so hard that I couldn't lift my arms all day long, but the silver that came out was really bright. In the past, when the emperor was in charge of the mines, the miners could still keep some scraps of silver to subsidize their families. Now the Queen has tightened her control, and all the money dug out must be turned over, saying it will be used for war. It doesn't matter whoever becomes the emperor - we dig the money, they spend the money, and the vultures watch in the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "No matter how much silver there is in Onishi Mountain, it cannot be squandered by the imperial people themselves. I heard that the silver mines on that mountain had raised imperial legions for hundreds of years, and now they were raising three emperors who were killing each other. We Sturgians may be poor, but our Boyer will not stab one of our own for money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The silver mines in the Onestone Mountains are one of Calradia's greatest treasures. It’s not that we Vlandians have never had the idea of ​​​​that mountain, but the city wall of Lycaron is too hard, and the cliff of the stone mountain itself is more difficult to climb than the city wall. The people of the Empire guarded the silver mines fiercely, even if their own people beat their own people, they would not let outsiders get involved."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The silver veins in the Onishi Mountains are the most abundant precious metal deposits in Calradia. Their mining history can be traced back to before the expansion of the empire. The Pala tribe has been mining silver ore in shallow layers here. After the empire's conquest, the city of Lycaron was built on the mountain, and the silver mines were brought under the direct control of the royal family and became an important pillar of the empire's central finance. After the assassination of Arenicos, the silver mines in the Onishi Mountains were transferred to the Southern Empire, providing a continued economic basis for the regime of Queen Rhagaea. It is no exaggeration to say that Lycaron became the royal capital not because of its walls - but because of the Orni stone mountain behind it."
+    }
+  ],
+  "TextMappings": []
+}

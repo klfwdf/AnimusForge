@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Wood_Elf_Politics",
+  "Keywords": [
+    "Wood Elf Politics",
+    "Wood Elf Orion",
+    "Ariel",
+    "woodland council",
+    "Two kings rule together",
+    "God's Chosen King",
+    "twelve families",
+    "season rule",
+    "royal politics"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elves are ruled by two monarchs - Orion, the hunting god, and Ariel, the magical queen. One of them represents the wild fury of the forest, and the other represents the deep wisdom of the forest. The divine consort leads the elven warrior and spellcaster factions at the royal court, and their differences sometimes cause political tension. There is also a noble council called the Woodland Council, composed of the oldest and most respected heads of the elven families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Orion and Ariel are our eternal queen and queen - but don't be fooled into thinking this is a harmonious marriage. Orion represents the wild will of Athel Loren, who is reborn every summer to unleash his accumulated bloodlust in the wild hunt. Ariel is the magical heart of the forest, her spell woven into every leaf and branch. The divisions between them determine the rhythm of our race as a whole: when Orion's voice of dominance is loud, the forest expands outward, and we unleash brutal vengeance on the intruders; when Ariel's whispers dominate, we retreat into the depths of the forest to focus on magical research and internal refinement. Composed of the heads of the twelve oldest houses, the Woodland Council maintains a fragile balance between the two rulers - sometimes serving to unite the king's court, other times ruthlessly exploiting the differences between the king and queen to further their own agenda."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The wood elves' dual-king system has a profound impact on diplomatic and military alliances. Orion and Ariel represent two completely different external tendencies within the wood elves - the former tends to take the initiative, punish intruders and even engage in pre-emptive 'preventive' wild hunting; the latter prefers isolation and defensiveness, using forest fog and misdirection spells to cause intruders to self-destruct. A shrewd diplomat must recognize which voice currently has the upper hand at court: if you are a border lord in Bretonnia, it is best to keep your peasants away from the forest edges during Orion's reign. The Wood Elves have no formal diplomatic documents or treaties with outsiders - their 'agreements' usually take the form of cryptic verbal warnings, and the intensity of their enforcement varies with the seasons and political climate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The dual king system of Orion and Ariel has far-reaching origins in political philosophy - it is essentially the symbiosis of two principles of legality of rule: Orion's authority comes from the direct incarnation inheritance of Kunos (the elf hunting god), which is a kind of divinely chosen king system; Ariel's authority comes from her mastery of forest magic and recognition by the forest spirits, which is a kind of magical meritocracy. The twelve houses of the Woodland Council also have their own origins - most of them can be traced back to the commanding families of the high elven colonial fleets, but throughout Athel Loren's long independent history, each family has developed a bond with a specific spirit or natural realm. The most fundamental aspect of Wood Elf politics that differs from human courts is that there is no concept of 'loyalty' here - at least not the kind that humans understand - Aslay's allegiance to Orlaine is loyalty to the season and the hunt itself, rather than to a specific individual; when Orlaine 'dies' in the winter, his royal politics also goes dormant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ariel's power is more than Orion's magical consort—she is the common mother of all living things in Athel Loren. When I served in Ariel's court, I witnessed firsthand how she silently operated an entire network of priestess intelligence throughout the forest: every stream, every piece of moss, every beetle could be her eyes and ears. Ariel's political skills do not rely on charm or intrigue like the human queen. Her power lies in her ability to always say the right thing at the right time - when the twelve chiefs of the Woodland Council are arguing, she only needs to lightly touch the bark of an ancient tree and let the vibration of the roots convey her dissatisfaction to everyone. This method of communication makes any written record redundant and unwieldy, and prevents outsiders from ever truly penetrating Wood Elf politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Woodland Council is not a democratic institution - it is the political expression of twelve competing forces of nature. My family occupies the seat of Twilight Glade, which means we must find a third way between Orion's hunting fervor and Ariel's magical reserve—one of twilight, half-light, neither complete violence nor complete retreat. Every time the Woodland Council meets, the twelve chiefs take their seats in the huge circular living tree hall. Each seat itself is a living tree shaped like a chair, and the roots of the tree vibrate to express disagreement. If a dull 'no' murmurs from the roots of most seats, even Orion or Ariel's proposal cannot be passed. The fundamental wisdom of this political system is that it cannot be bribed, cheated, or subverted by any form of assassination, because plants do not understand these things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once heard from an old hunter while wintering in a border village of Bretonnia that the politics of the Wood Elves could be predicted by observing the behavior of animals on the outskirts of the forest. When a wild hunt approaches, all the deer in the forest will flee southward, and the birds will remain without branches for several days—a sign that Orion is building up his killing appetite. When Ariel is politically dominant, a honey-like, drowsy aroma hangs around the edges of the forest, and lost travelers find themselves spiraling unknowingly around the forest's outskirts, never being able to penetrate deeper. If you plan to approach the borders of Athel Loren during a particular season, learning to read these natural omens is more reliable than any political analysis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the intersection of trade and political economy, a key feature of the Wood Elf political system is the complete absence of central finance. The Twelve Houses each maintain their realms and warbands independently, without any form of taxation or public expenditure - making traditional diplomatic pressure methods (such as economic sanctions or trade rewards) completely ineffective against the Wood Elves. I once suggested to the Imperial Merchant Guild that we should use the opening of exclusive trade rights to induce the Wood Elves to make concessions in the military alliance, but I was laughed out by an old merchant who had seen the world - 'They don't want our gold, they don't even want our finest Imperial steel, because they have their own metallurgy two thousand years ahead of us. What can you give to a group of people who don’t need anything? 'The answer is nothing - which is why Wood Elves cannot be bribed or influenced."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Orion - King of the Wood Elf Hunting Gods, the incarnation of Kunos, reborn from the oak tree every midsummer.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The power structure and decision-making mechanism of the wood elves"
+  ]
+}

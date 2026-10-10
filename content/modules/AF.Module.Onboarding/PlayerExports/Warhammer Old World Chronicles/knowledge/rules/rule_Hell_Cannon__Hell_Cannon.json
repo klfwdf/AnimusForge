@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Hell_Cannon",
+  "Keywords": [
+    "Hell Cannon",
+    "Chaos Dwarf",
+    "Demon Cannon",
+    "soul fireball",
+    "Bound Demon",
+    "bombardment of destruction",
+    "Twisted War Machine",
+    "Chaos Artillery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hell Cannon is a crazy war machine created by the Chaos Dwarves - they seal living dimensional demons into the bronze and black iron cannon bodies. Each time they are fired, the fury of the bound demon is transformed into hell cannonballs burning with soul fire, which explode when they hit the ground. No city wall can withstand its continuous bombardment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hell Cannon - Those little masked men of the Chaos Dwarves may be ugly, but what they build is amazing! Have you ever seen the scene where the runes on the barrel of the gun all light up when the bound demon is struggling in the barrel? The light was green, so green it made your teeth ache, and when the cannon ejected, it left a trail of flames that tore through the air. The moment it hit the city wall, it didn't explode—it wiped that part of the city wall from the world. Chaos Dwarf Gunners chain their legs to the ground, as the recoil from the Hellcannon can send people flying into the air. They never spoke, and only used a bronze devil's eye horn to order firing and calibration. The gods especially love those souls who died under the bombardment of demonic artillery. That is the most tragic sacrifice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In siege operations, the Hell Cannon is the ultimate siege trump card of the Chaos army - its shells are not only a physical impact, but also carry the emotional fury of the demon, which will cause a serious morale blow to the defenders behind the city wall. Tactically, the Hellcannon requires at least three Chaos Dwarf gunners to operate it, has a reload interval of approximately ten minutes, and has a range of approximately three-quarters of a league. The best way to use it is to conduct three rounds of concentrated bombardment on the same section of wall before the battering ram troops prepare to charge. But the fatal weakness is: if the power of the bound demon is excessively drained in a battle, the hell cannon may run out of ammunition early, and the rage of the bound demon can sometimes cause the cannonballs to miss their target. Be sure to guard the emplacements with Chaos Warrior formations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The design principle of the Hell Cannon is rooted in the unique Daemon-binding Metallurgy of the Chaos Dwarves. This technical school was founded by the ancient Chaos Dwarf wizard-blacksmith Zoltan Blackfyre in about 2000 BC. Creating a hell cannon requires three stages: the first stage is 'capture', where a Chaos Dwarf Warlock seduces and binds a secondary or intermediate dimensional demon in a rift in the subspace; the second stage is 'chain forging', where the demon binder is fixed in the core of the barrel with a black iron chain, and each chain is engraved with torture incantations to continue to anger the demon binder; the third stage is 'cannon body casting', where the entire demon binder-chain system is sealed into a shell cast by a mixture of bronze and meteorite iron. Classic battle examples include the Battle of Davar (in 1682 AD, four Hellcannons wiped the entire city of Kislev off the map) and the Defense of Blackfire Pass (in 2341 AD, Imperial engineers captured an unexploded Hellcannon and discovered that at its core was a still-beating demon heart). It is worth noting that the Prohibited Department of Altdorf Academy of Magic once had a dangerous paper titled \"Demon Binding Energy Decay Curve\", which pointed out that the hell cannon that has been used for a long time will lose its power due to the exhaustion of the demon binding. At this time, the chaos dwarf gunner needs to disassemble the barrel to recapture the demon. The author of the paper, Dr. Wolfram, disappeared the day after the publication."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I read the horrific records of Hell Cannons in the siege diary - during the siege of Helmgart, three Hell Cannons turned the entire northern city wall into powder in two days. The defenders described how the shells would scream like babies when they fell in the city. As a female lord, I care more about the symbolic meaning behind this weapon: it is a logic of imprisoning living creatures-even demons-as tools of war, which is perfectly consistent with the nature of chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You should know that the Chaos Dwarves never give away their creations for free, right? The price of the hell cannon is not gold, but slaves. For each Hellcannon delivered, the Northern Warbands are required to deliver five hundred living men to Zal-Nagrand for use in the mines, forges, and demon-binding rituals. It is recorded in my family's history that a warband sent three batches of slaves to exchange for a hell cannon. As a result, the first shot fired by the cannon on the battlefield blew up their own camp because the demon binder recognized the warband's banner as the hunter who captured him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I saw the remains of an abandoned hell cannon in the Border Prince - there was something breathing in the barrel of that thing, glowing green, flickering on and off like a heartbeat. An Arabi thief I knew wanted to pry the copper ornaments off the barrel of a gun and sell it for money. As soon as his hand touched the barrel, he screamed. His entire arm was instantly burned to gray white, and he never regained consciousness. That thing is not a metal creation, it is a devil's cell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Karak Hearne's dwarf engineers actually offered a reward: for the capture of a complete hell cannon, they would be rewarded with a complete set of rune armor and three bags of oath gold. The dwarves said they were going to 'reverse engineer that damn demon-binding technology' - of course, everyone knew how deep the hatred between the dwarves and the Chaos Dwarves was. The attitude of the Nunn Artillery Guild is much more practical: they purchase the fragments of Hell Cannonballs at a high price, claiming that the alloy formula of the Chaos Dwarves can be derived from the metal structure of the fragments."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Demon Binding: The core war technology of the Chaos Dwarves, which forcibly binds dimensional demons into war machines to serve as an energy source. The demon's fury is the lethality of the weapon.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hell Cannon Chaos Dwarf Daemon Cannon"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Sun_and_Shadow_of_Dorne_Vaith_Castle",
+  "Keywords": [
+    "Vaith Castle",
+    "Vaith (Sun and Shadow of Dorne Vaith Castle)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The city of Vance is located in the stone land west of Dorne, and its old English name is Vais. It lies close to the steep terrain of the Red Mountains and is interconnected by roads between Starfall, Prince's Pass, and the interior of Dorne. The size of towns and the way of life here are limited by the mountains: slopes suitable for grazing, valleys that can store water, and passable passes are more valuable than large tracts of fertile farmland. The Stoney Dornish people do not need to chase oases like the nomads in the sand, nor do they rely on the sea like the residents of the Salt Coast; their tenacity comes from stones, goats, springs and the memory of every mountain road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle Local families also rely on wells, irrigation canals, orchards, drought-tolerant livestock, and travel to avoid the hot sun; if any road, well, or dock fails, the cost falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle Entry Vaith Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle They also recognize Dornish accents, laws and credentials; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle Entry Vaith Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith Castle They care about wells and springs, irrigation canals, orchards, drought-tolerant livestock, and routes to avoid the scorching sun. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Vaith Castle: The city of Vance is located in the stone land west of Dorne, and its old English name is Vais. It lies close to the steep terrain of the Red Mountains and is interconnected by roads between Starfall, Prince's Pass, and the interior of Dorne. The size of towns and the way of life here are limited by the mountains: slopes suitable for grazing, valleys that can store water, and passable passes are more valuable than large tracts of fertile farmland. The Stoney Dornish people do not need to chase oases like the nomads in the sand, nor do they rely on the sea like the residents of the Salt Coast; their tenacity comes from stones, goats, springs and the memory of every mountain road."
+  ]
+}

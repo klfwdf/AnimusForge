@@ -1,0 +1,64 @@
+{
+  "Id": "rule_The_Barracks_Dynasty_of_the_House_of_Comunos",
+  "Keywords": [
+    "Comunos family",
+    "Pagarius",
+    "Tephilus",
+    "Western Empire Throne",
+    "Zeonika",
+    "Veteran regime",
+    "Barracks Dynasty"
+  ],
+  "RagShortTexts": [
+    "The Comunos family did not secure the throne by blood or the Senate - it was the veterans who pushed Galios up, and this favor had a price."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Comunos is the least dynasty in all of Calradia. Garius Comunos was not the successor - he was carried to the throne on shields by soldiers at the front. He has no canonization from the Senate, and no bloodline decree from the late emperor. He has only one legitimacy: he and the soldiers starved together, were shot by arrows together, and climbed out of Pandrak's defeat together. In the Western Empire, the words of a centurion were more effective than those of a senator, because the centurion was someone who had actually been on the battlefield. The power structure of the Comunos family revolves entirely around Galios personally. His wife Wendelia had almost no presence in the court - the politics of the Western Empire did not allow concubines to interfere in politics. His daughter Nadeya also does not participate in government affairs. His son Tephilus was the nominal heir, but he was too young to have established his prestige on the front lines. The most noteworthy member of the family is Pagarius, a close relative of Garius and considered the most cunning member of the House of Comunos. He is proficient in engineering and medicine, and is good at handling shady matters, but he has a low sense of honor and acts based on results rather than means. Garius' attitude towards him was to use his skills but guard against his shrewdness. The core problem facing the Comunos family had nothing to do with blood or hereditary inheritance - Galios had less than twenty years to establish a succession mechanism for the family that would function independently of his own will. If he fails to do this, the Western Empire may not even be able to survive a peaceful transfer of power after his death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "west_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In our Western Empire, the surname Comunos was not a natural privilege—it was earned on the battlefield. Emperor Galios ate dry food and slept in the mud just like us. He became emperor because we veterans trusted him, not because his last name was Comunos. But here's the problem - the people he trusts are us old guys. Tephilus is a good boy, but he is too young and has never experienced a real hard battle. Galios tried to lift him up while he was still alive, but the soldiers recognized only those who had shed blood. Pagarius is capable, but he's so good - you're not sure whose side he's on. He can send the best soldiers to the most dangerous positions and make them feel it is an honor. This is his ability. But how loyal he is to his family, no one can tell. As for Queen Vendelia - she almost never appears in the military camp, which is normal for us here. Women in the Western Empire did not go to the battlefield or participate in government affairs. This is tradition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The foundation of the Comunos family is not in blood, but in the battlefield. Garius was promoted to the throne because he was able to reorganize the broken troops after Pandrak, because he allocated land to the veterans, and because he spoke for the disabled soldiers who retreated from the front line. It was a debt of gratitude—a debt that he is still repaying with land and military pay. But his son Tephilus did not share this experience. The veterans would not give the knife to Tephilus just because his surname was Comunos. What about Pagarius? Garius used his talents but guarded his ambitions - the relationship between the cousins ​​is one of the most interesting to watch within the Western Empire. As for Queen Vendelia - there is almost no place for women in the entire Western Empire's power system. At this point, the Western Empire and the Southern Empire formed the most extreme contrast."
+    }
+  ],
+  "TextMappings": []
+}

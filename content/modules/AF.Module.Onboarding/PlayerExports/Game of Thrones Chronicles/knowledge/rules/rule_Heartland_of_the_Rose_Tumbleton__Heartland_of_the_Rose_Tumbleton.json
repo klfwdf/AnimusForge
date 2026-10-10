@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Heartland_of_the_Rose_Tumbleton",
+  "Keywords": [
+    "Tumbleton",
+    "Blackwater Rush"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tengshi Town is a town in the Mander River Basin in the Reach. It has water transportation conditions connecting the inland and the river mouth. Rivers allowed grain, timber, wine, and stone to move faster than by land, and they also made docks, warehouses, and ferries the focus of power. Tumstone has been mentioned repeatedly in the historical memory of the Targaryen Civil War, which allowed ordinary towns to see how dragon fire and armies could turn prosperity into ashes; but beyond the events, it was still a town in need of boatmen, porters, merchants, and farmers. Any reconstruction must start with river transportation and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton Local families also relied on grain, wine, orchards, pastures, and markets along the Mander River; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton Entry Tumbleton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton They also recognize the accents, laws, and credentials of the Reach; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton Entry Tumbleton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Tengshi Town are half hidden in the ship repair wood, canvas, salt, fish catch and stones used to resist the sea breeze, and half are hidden in the family memories left in the era of Seven Gods, Knight Legends and Gardener King. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tumbleton They care about grain, wine, orchards, pastures and markets along the Mander River. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tumbleton: Tengshi Town is a town in the Mander River Basin in the Reach. It has water transportation conditions connecting the inland and the river mouth. Rivers allowed grain, timber, wine, and stone to move faster than by land, and they also made docks, warehouses, and ferries the focus of power. Tumstone has been mentioned repeatedly in the historical memory of the Targaryen Civil War, which allowed ordinary towns to see how dragon fire and armies could turn prosperity into ashes; but beyond the events, it was still a town in need of boatmen, porters, merchants, and farmers. Any reconstruction must start with river transportation and food."
+  ]
+}

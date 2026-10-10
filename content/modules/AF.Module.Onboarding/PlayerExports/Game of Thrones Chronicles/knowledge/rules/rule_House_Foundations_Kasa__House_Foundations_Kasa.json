@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Kasa",
+  "Keywords": [
+    "Kasa",
+    "House Kasa"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kasa is the core family in the Iban power order. Life on Iban was dominated by cold seas, short growing seasons, whaling, and long-distance trade. The authority of a ruler who occupied only the halls without coordinating shipowners, whale hunters, fur traders, and grain hoarders quickly eroded. The foundation of Casa lies in transforming port income, fleet experience and kinship networks into public order: deciding when to sail, how to share losses on ships, and how to get whale oil and food through the cold season. The specific person in charge may change, and the legitimacy of this family in the eyes of local people will always be tested by sea conditions and winter food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The powerful people of Iban regarded Kasa as the hub of discussions and port interests, and also guarded against it turning joint decision-making into their own orders. The cold sea will not be calmed by a surname. One wrong judgment on a voyage may shake the prestige for many years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Whalers and crews only serve those who truly understand the sea. If Casa urges adventure on shore without bearing the loss for the families in distress, the next call-up will only be met with silence and excuses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Islanders measured kasa by the price of whale oil, winter grain reserves, and wood for ship repairs. The weight of rule is often how long a lamp can burn on a long cold night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kasa The status of a family in the core of Iban power is determined by port discussions, the whaling economy, and the ability to support the cold sea community. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kasa The status of a family in the core of Iban power is determined by port discussions, the whaling economy, and the ability to support the cold sea community. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kasa The status of a family in the core of Iban power is determined by port discussions, the whaling economy, and the ability to support the cold sea community. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kasa The status of a family in the core of Iban power is determined by port discussions, the whaling economy, and the ability to support the cold sea community. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kasa: The status of a family in the core of Iban power is determined by port discussions, the whaling economy, and the ability to support the cold sea community."
+  ]
+}

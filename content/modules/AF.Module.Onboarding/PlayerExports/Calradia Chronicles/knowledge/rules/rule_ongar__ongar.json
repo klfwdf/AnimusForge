@@ -1,0 +1,94 @@
+{
+  "Id": "rule_ongar",
+  "Keywords": [
+    "Ongar",
+    "Imperial Heartland"
+  ],
+  "RagShortTexts": [
+    "Ongar was once the heart of the empire and is now the center of Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ongar is a village near Ongar Castle, nestled in warm woodland near the meandering River Trang. Once the heart of the empire, this wheat-rich land is now the heart of the kingdom of Vlandia. The fertile soil produced high-quality wheat year after year, supplying the surrounding population."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The land of Ongar is so fertile that it flows with oil. The Trang River turned around and broke out this good soil, and the wheat harvest was particularly good. In the past, the wheat here was shipped to the empire, but now it goes into the pockets of us Vlandians. Ongar Castle is guarding the top. Anyone who dares to take advantage of this granary must first get through the castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wheat flour ground in Ongar is exceptionally white, but the wheat grown in the water of the Tlang River is different. This village is in the hinterland of Vlandia. There is no war around, and the people who farm the land are down-to-earth. Every year after the wheat harvest, the defenders of Ongar Castle and merchants from nearby towns would come to grab the goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Ongarna, wheat fields stretch to the horizon. The Trang River flows windingly beside it, the forest blocks the wind, and the waves of wheat turn over the ground layer by layer. The old farmer told me that this place used to be the granary of the empire. Now it has changed owners, but the land is still the same and it still produces good wheat every year."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ongar",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ongar Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

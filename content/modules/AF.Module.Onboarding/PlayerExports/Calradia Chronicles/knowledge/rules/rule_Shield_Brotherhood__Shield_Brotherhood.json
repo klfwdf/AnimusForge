@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Shield_Brotherhood",
+  "Keywords": [
+    "Shield Brotherhood"
+  ],
+  "RagShortTexts": [
+    "The Shield Brotherhood is a mercenary group mainly composed of Nords"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Shield Brotherhood is a mercenary group. The soldiers have undergone rigorous training and are all brave and good at fighting. They are primarily Nords, but people from other cultures can join as long as they have a brother in service as a guarantor. Their rules were almost monastic: women were prohibited from entering the camp, entertainment was prohibited, and brothers were not allowed to stay overnight without permission. In battle, they fought with Nord-style spears and axes. All the major families in the north attach great importance to them."
+    }
+  ],
+  "TextMappings": []
+}

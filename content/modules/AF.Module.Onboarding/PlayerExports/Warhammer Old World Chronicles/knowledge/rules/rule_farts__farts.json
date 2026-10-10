@@ -1,0 +1,213 @@
+{
+  "Id": "rule_farts",
+  "Keywords": [
+    "fart",
+    "Tiny green skin",
+    "mental retardation",
+    "swarm interference",
+    "ecological base",
+    "Play with hair",
+    "little goblin",
+    "The bottom layer of green skin",
+    "swarming organisms",
+    "mold farm",
+    "Harassment",
+    "Green waste"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Grots - or snotlings - are the tiniest, dumbest, and meanest tier of the greenskin family tree. They wander in swarms like a tide on the fringes of the orc and goblin tribes, chewing anything they can chew, doing all the dirty work that other greenskins don't bother to do - and then being thrown out first in the battle as a living target for the enemy's arrows to waste."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Fart! Hahaha, it made me laugh so hard - you know these little beans are the most fun thing in our green society, right? They are so stupid that they can't even fight - it's not that they don't know how to fight, they just forgot how to fight! A fart carries a small stick and rushes towards you. Then in the middle of the rush, he forgets what he is going to do and starts biting his own feet! But they have a wonderful use: there are farts everywhere in the camp. If you throw a piece of rotten meat on the ground, they will all rush up to eat it. After eating, they will lick the ground clean. They are more effective than human brooms. It’s even more useful when fighting - you just dump a few baskets of farts onto the battlefield, and these little things will scurry all over the enemy’s feet, biting their shoelaces, tugging at the corners of their cloaks, and digging into their pants - they’re not fatal, but they can drive any army crazy! I once saw a tin-can human knight fall off his horse and break his neck when three farts got into his trousers - the farts killed more people than they could hack to death! But don’t think of the grot as your little brother: they are not, they are field worms. Brother Mao made the fart just for fun - think about it, two gods made a bet in the sky whether they could create something so stupid that it would make all living creatures speechless - that is the fart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Farts have no conventional military tactical value - this is what any experienced commander can conclude in a minute. But their asymmetrical value cannot be ignored: a large group of Gruts - a basketful of about two hundred of them - can be used as a living smoke screen on the front line during a battle. The enemy will expose the gaps in their formation and consume stamina when slashing these almost harmless little things. A more insidious use is to contaminate water sources: Grots are home to at least a dozen deadly cave fungus spores. Throwing a group of dead Grots into a well or stream can cause the entire garrison to die of digestive system fungal infection within three weeks. This was used by the defenders against the Greenskin siege army during the Siege of Nunn in 1890 in the Imperial Era. As a result, the plague in the city killed half of the citizens before the city was broken. The only correct response to grunts is with fire - incinerate them in bulk, leaving no remains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The biology of the grot represents the base of the greenskin's spore-producing ecosystem. Within the framework of green-skin physiology, all green-skinned creatures reproduce asexually through spores that are continuously shed. Grots are the smallest and first mature product in this spore system. Their development cycle from germination to adulthood is only about eleven to fourteen days, which is much shorter than that of goblins (three to four weeks) and orcs (six to eight weeks). This extremely short maturation period gives grotto an ecological R-strategy advantage: in any suitable environment (humidity, decaying organic matter), grotto can form a population density of up to three to five individuals per square foot within one month. Its cognitive ability - as measured by the Imperial Animal Behavior Institute - is approximately equal to that of a two-year-old dog, but its behavioral tendencies are completely different: the Grot's brain produces almost no neural signals related to self-preservation, and its fear neural circuits are believed to have been cut off by the creative will of Gorgo Mao Er Ge in the spore stage. As a result, Grot continues to exhibit a pattern of self-destructive behavior that is difficult to explain within a conventional evolutionary framework—rushing into flames, jumping off cliffs, climbing onto the tips of enemy spears—that any hermeneutic scholar can ultimately attribute only to the black humor of Gorge Mao Er Ge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have to admit that there's something unsettlingly cute about farts. They were so small—the tallest were no bigger than a man’s kneecaps—and they had a blank, stupid curiosity about everything. I once found a grat in a grain vat in my castle kitchen, where it ate for three days and nights until it stretched itself into a ball, and then rolled out of the vat, down the steps, and out of the gate—giggling the whole time. The head maid refused to enter the storeroom again, saying it was a place contaminated by evil. And I couldn't help but wonder: What is it laughing at?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My family's northern farm once lost its entire fall grain income to a fart tide. Unusual rainfall that summer caused greenskin spores to sprout explosively in everyone's wheat fields, and thousands of grots emerged from the soil like locusts, eating all the green vegetation in the twenty settlements - crops, weeds, tree bark - and then eating each other. It took the farmers under our command two years to resume farming. So far every spring, they have to set up a circle of dwarf rune stone piles at the head of the field to prevent spore regeneration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are three things I least want to encounter when camping in the wild, in no particular order: dragons, undead—and hordes of grts. Don't laugh. Gruts can appear in groups of thousands, and they won't kill you. What they do is crawl into your half-open mouth while you sleep and try to eat your tongue coating - this happened to one of my teammates. He woke up and vomited like crazy and vomited out four grots. Then the four grots got up and sat down by the campfire and started playing with the breakfast he had vomited up. None of us had that breakfast afterwards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Many low-level apprentices of the Apothecary Guild want to use the corpses of grettors to make cheap fungal culture media - the fungi grown in each corpse of grunts can grow about six taels of edible mushrooms in two weeks. The problem is that no one catches enough farts to breed: you reach out to grab one and it slips out of your hand because their skin secretes a slime that's slipperier than lard. There's a joke in our industry: Grots are the only creatures that humans, dwarves, and elves can't catch."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The ecological bottom layer of the green-skin spore reproduction system has a development cycle of only eleven to fourteen days.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Fart, tiny green skin, mentally retarded"
+  ]
+}

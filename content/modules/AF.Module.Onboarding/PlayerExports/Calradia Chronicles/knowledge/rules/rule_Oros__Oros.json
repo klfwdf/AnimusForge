@@ -1,0 +1,171 @@
+{
+  "Id": "rule_Oros",
+  "Keywords": [
+    "Oros",
+    "Commander Oros"
+  ],
+  "RagShortTexts": [
+    "Oros's strategic decisions are erratic and made without consulting anyone."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1",
+          "clan_empire_south_2",
+          "clan_empire_south_3",
+          "clan_empire_south_4",
+          "clan_empire_south_5",
+          "clan_empire_south_6",
+          "clan_empire_south_7",
+          "clan_empire_south_8",
+          "clan_empire_south_9"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros Mestricaros is the biggest joke in our Southern Empire's military—and the least funny one. Every time we gather to discuss military affairs, we have to take a stiff drink first to steady our nerves, because we know we'll have to deal with him next. One day he declares the Aserai are marching north and troops must be rushed to reinforce Danustica immediately; the next day he decides the Khuzait are the true mortal threat and demands an offensive on the northeastern frontier. His ideas aren't necessarily always wrong, but he never offers any reasoning and disdains consulting his colleagues. If someone gently reminds him that his last decision hasn't even been carried out yet, he flies into a rage on the spot, pointing at their nose and calling them a cowardly rat. Turiados is good-tempered enough to try smoothing things over every time, though Turiados has even less decisiveness than Oros.\n\nYet what can we do? Danustica is in his hands. Every time the Aserai march north, they break their teeth against his walls. No one can erase that merit. We all understand why Empress Rhagaea tolerates him. We nobles can only hold our noses and greet him with smiles. The Southern Empire lacks neither coin, nor grain, nor soldiers—it lacks only someone who can move Oros out of the way, yet he happens to be the biggest boulder of all, and no one can budge him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "General Oros? The commander over in Danustica. When Oros inspects the troops, he rides past the front of the ranks without once looking a single soldier in the eye. Not out of deliberate contempt, mind you, but because his eyes are always fixed on the distance as if pondering some grander matter—though those grand matters never seem to come to anything. One moment he wants to expand the harbor to defend against the Aserai; the next he wants to convert the western granaries into armories, leaving the city's officials and merchants groaning in misery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1",
+          "clan_empire_north_2",
+          "clan_empire_north_3",
+          "clan_empire_north_4",
+          "clan_empire_north_5",
+          "clan_empire_north_6",
+          "clan_empire_north_7",
+          "clan_empire_north_8",
+          "clan_empire_north_9"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros is a mirror of the Southern Empire's military establishment, reflecting the structural predicament of the south. Looking down from the north, the Southern Empire has deep coffers and numerous city-states—by all rights, it should have the best chance of reunifying the Empire. Yet the configuration at the very top of their military truly invites pity: Oros is arrogant and domineering without strategic vision, Turiados has grand ambitions but is crippled by indecision, and Serandon—the only one who can actually fight—is an outcast pushed to the margins. Under such circumstances, the Southern Empire is lucky just to hold its borders; as for expansion? First figure out how to invite Oros down from the high command.\n\nNot that we want the Southern Empire to expand, of course. If they expand, the north gains a stronger neighbor. Having a man like Oros sitting in Danustica suits us just fine—he only knows how to defend, not attack. Senator Lucon once made a rather cutting remark in private: the men of House Mestricaros fight like watchdogs chained to the city gate—they won't chase an intruder a single step beyond the length of their chain. Harsh words, but dead on the mark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1",
+          "clan_empire_west_2",
+          "clan_empire_west_3",
+          "clan_empire_west_4",
+          "clan_empire_west_5",
+          "clan_empire_west_6",
+          "clan_empire_west_7",
+          "clan_empire_west_8",
+          "clan_empire_west_9"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros Mestricaros. Emperor Garios sums him up in one word: arrogant. In two words: erratic. Whenever a military intelligence briefing in our Western Empire mentions Southern Empire movements, our intelligence officers make a habit of adding a special note: 'No recent anomalies from Oros.' What that means is: today he hasn't made any sudden decision to reverse the Southern Empire's strategic direction. He originally came from one of the Empire's finest frontier military houses, but nowadays nothing is left in his head except his twisted theory of 'big thieves and little thieves.' He clutches supreme command of the Southern Empire's military in his fist, yet acts all day like a sulking old landlord who sees a thief in everyone and guards against his own people more tightly than against the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros Mestricaros is both the sturdiest and the most rigid link in the Southern Empire's defensive system. From a geopolitical standpoint, the strategic value of Danustica cannot be overstated: it commands the sole overland corridor from Aserai territory into the Imperial heartland, through which both Aserai caravans and armies must pass. With Oros holding this seat, the Aserai have never been able to turn their tactical advantage on the desert fringes into a strategic breakthrough into the Empire. In executing this specific mission, he is competent—even outstanding.\n\nYet he is also a burden on the Southern Empire's military. His erratic decision-making prevents the Southern Empire from forming a coherent foreign strategy. Furthermore, his marginalization of capable commanders of humbler origin, such as Serandon, has worsened the talent gap in the southern officer corps. In the long run, if the Southern Empire cannot resolve the structural problems at the top of its military command, its advantage in national wealth will never translate into strategic gains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros? Some general over in the Empire, right? I drive camels and I've run the trade route through Danustica. That city is huge, with walls as thick as mountains. The general guarding it is named Oros; in the inns we heard the locals cursing him, saying he has a foul temper, is stingy, and changes the rules on a whim—one day caravans entering the city have to pay a thirty-percent tariff, and the next day he raises it to fifty. The time we arrived happened to coincide with one of his rule changes, so we all had to detour for an extra day before entering the city. Still, to be fair, travelling the trade routes through his territory really is safe. The Aserai don't dare rob caravans under his protection. So even with all his shifting rules, we're still willing to pass through Danustica. After all, paying a bit more in tariffs beats getting robbed clean. He's probably the sort of man who makes you grind your teeth in hatred yet can't be done without—as merchants, we understand people like that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oros is my general, and my biggest headache. Every time he comes from Danustica to Lycaron to report on his duties, my attendants start getting nervous, because he always manages to find some trivial matter to quarrel with the palace servants about. Yet I still have to receive him, smile at him, and listen to his accounts. He says 'everyone is a thief,' and he's not wrong. I am a thief too. But this Empire needs thieves—and even more, it needs thieves who can hold the city gates. Oros holds Danustica, so no matter how arrogant, impulsive, or short-sighted he is, I can endure him.\n\nTuriados is of little use, and while I feel for Serandon, the military establishment won't accept him; forcing him to the top would only make Oros throw down his baton on the spot. I cannot let Oros quit. The moment Danustica loses Oros, the Aserai will march north and the entire southeastern frontier of the Southern Empire will waver. So I endure him, humor him, allocate him a little extra military funding each year, and bestow a few worthless titles upon him.\n\nBut if the day comes when the Empire is reunited, he will be the very first one I remove. By then we will no longer need a watchdog guarding the gate, but hunting hounds that can ride out in pursuit. He is no hunting hound; he is a dog. A good watchdog at the gate, unable to give chase, only able to bark. I know his limits, and he knows my patience. There is a tacit understanding between us: he continues to be arrogant, and I continue to endure. In his heart he surely considers me a big thief too. He is right. He only forgets that the big thief holds the knife, while he only holds the city gate."
+    }
+  ],
+  "TextMappings": []
+}

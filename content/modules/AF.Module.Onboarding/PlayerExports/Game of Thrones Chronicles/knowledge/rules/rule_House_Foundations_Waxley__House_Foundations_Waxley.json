@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Waxley",
+  "Keywords": [
+    "Waxley",
+    "House Waxley"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Waxley rules Wickenden and is a noble house of the Vale. The town is famed for candles scented with nutmeg and other costly spices, whose fragrance binds together lordly manors, merchant ledgers, and the altars of the Seven. A candle may seem a small thing, yet it requires beeswax, spices, molds, and safe trade routes; the standing of House Waxley therefore depends on artisans and commerce as much as on land and knights. Keeping a flame burning steadily is the simplest and truest wealth of this town."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Both nobles and septons of the Vale know the scented candles of Wickenden. Weddings, vigils for the dead, and prayers in the sept all require candlelight, so House Waxley's goods enter many solemn hours and give a local family a gentle, enduring renown beyond the feast hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chandlers know that a fine candle is far more than its scent. The beeswax must be clean, the wick straight, and the spice not wasted; they hope House Waxley will guard the trade roads and keep stewards from skimming their pay, rather than writing all the credit into the family ledger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Waxley House Waxley holds Wickenden as its seat, where the Vale craft of scented candles links manor estates, trade routes, and the rites of the Seven. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Waxley House Waxley holds Wickenden as its seat, where the Vale craft of scented candles links manor estates, trade routes, and the rites of the Seven. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Waxley House Waxley holds Wickenden as its seat, where the Vale craft of scented candles links manor estates, trade routes, and the rites of the Seven. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Waxley House Waxley holds Wickenden as its seat, where the Vale craft of scented candles links manor estates, trade routes, and the rites of the Seven. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Waxley: House Waxley holds Wickenden as its seat, where the Vale craft of scented candles links manor estates, trade routes, and the rites of the Seven."
+  ]
+}

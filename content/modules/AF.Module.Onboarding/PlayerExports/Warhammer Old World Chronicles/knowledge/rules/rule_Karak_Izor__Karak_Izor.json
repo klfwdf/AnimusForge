@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Izor",
+  "Keywords": [
+    "Karak Izor_KI",
+    "Izor Fortress_KI",
+    "Copper Mountain Fortress_KI",
+    "Izor Copper Mine_KI",
+    "Izor Dwarf Territory_KI",
+    "King Izor_KI"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Izor, the \"Copper Mountain Citadel\", is located in the fault zone at the southern foot of the Gray Mountains and is ruled by King Kazran Grimbrow. The copper reserves here rank first among all known mineral veins in the Old World, and the mining history can be traced back to the early Golden Age of the Dwarves. Bronze wares produced in Izor can be found throughout the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Izor—the Copper Mountain of my people! King Kazran's eyebrows were dyed copper-green by the mining dust, so people called him the King of Eyebrows. The mineral deposits in Izor were discovered by the dwarf ancestors on the first day of the Golden Age, and have been mined for thousands of years without bottoming out. At least half of the copper coins used in the entire Old World came from Izor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Izor plays an irreplaceable role in the military industry. Copper is the main metal used in the manufacture of artillery, mortar projectiles and engineering parts. The military industries of all countries around the world depend on a steady supply of copper, and King Kazran's mines provide this critical raw material. Cutting off Izor's copper supply would be equivalent to blocking the throat of half of the Old World's army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Karak Izor's copper mine production ranks first in the Old World. According to dwarf mining records, the average grade of copper ore in the Izol main vein is between eight and twelve percent, which is much higher than the average grade of other copper mines. The annual output of refined copper exceeds one thousand tons, supplying mints, arsenals and civilian copper workshops throughout the empire. The Fortress Smelting Center adopts the \"Izore Continuous Smelting Method\" - the ore is continuously processed in three furnaces with different temperatures, which can gradually separate impurities from the copper liquid, and the final accuracy reaches the standards of the Imperial Royal Mint. By-products include associated silver, lead and small amounts of gold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female dwarves of Izor were involved in the finishing of bronze vessels. We are responsible for checking the surface texture of each batch of copper ingots – any bubbles or impurities must be marked with a specific color marker. King Kazlan once said that the reputation of the Izor Copper Ingot is more valuable than the copper ingot itself. I have personally seen a batch of unqualified copper ingots being returned to the furnace in public to show their determination to not compromise on quality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our clan is in charge of the oldest copper mining layer in Izor - the mine that the dwarves call \"the first vein of the ancestors\". This mine tunnel is older than the name Karak Izor itself. King Kazran respects the continuation of this ancient tradition - as long as our mining picks continue to pound, Izor's roots will not be broken."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mountains outside Izor Fortress have a unique copper-green color - thousands of years of mining activities have allowed mineral dust to permeate every surrounding rock. At dusk, the entire mountain reflects a mysterious bronze glow. The dwarf miners told me that this light guided the ancestors to find this place thousands of years ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Izol copper ingots are one of the most stable metal investments in the Old World. Copper prices do not fluctuate as violently as gold, but the long-term upward trend is stable. The largest buyers are the mints of the Empire and the Nuln Arsenal. Signing a long-term copper supply contract with the Izor dwarves is a key step to ensure the stability of the arms industry supply chain."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Izor, the Copper Mountain Fortress, is located at the southern foot of the Gray Mountains. It is famous for its largest copper reserves in the old world and is ruled by King Kazlan Rinmei.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Karak Izor Gray Mountains Dwarf Copper Mountain Mining City"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_flying_dragon",
+  "Keywords": [
+    "Wyvern",
+    "flying reptile",
+    "beasts of the badlands",
+    "Orc mount",
+    "poison tail",
+    "flying dragon",
+    "Wyvern Stinger",
+    "green air force",
+    "Badlands Predator",
+    "giant wings",
+    "Orc Warlord's Mount"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The wyvern is a behemoth flying reptile that prowls the Badlands and the World's Edge Mountains. Its stinging tail can paralyze an adult ogre with a single blow, and its claws are strong enough to tear through a knight's plate armor. Only the most powerful orc warlords can violently subdue a wyvern and bind it as their own mount - and the warlord who can ride a wyvern into battle is usually the next leader of the Waaagh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wyvern! If I could ride a flying dragon before I die, I would give you all my rotten teeth just once! That thing is the most unruly beast in the sky - bigger than those buzzing iron dragonflies of the dwarf, and its wings are wider than the largest tent in our camp! Every big boss dreams of having a flying dragon - think about it, you ride a flying dragon and rush down from the sky. The tin cans on the opposite side look up and see the shadow of green smoke from your mouth covering the entire sky. They are so scared that water pours out of their crotches. Then you lift their general off the horse with one claw - click! - Like a rabbit. But catching a flying dragon is crazy hard: you have to climb to the highest rocky mountain in the badland to find the flying dragon's nest, then tie the baby dragon's tail in a knot and it will scream to lure the old dragon over - and then you have to fight with the old dragon. You think it can pierce you from head to toe with a flick of its tail spines - I personally watched three bosses who came to rob the flying dragon's nest, one dead and two disabled, rolling down the top of the mountain. But if you win the fight and ride it on the ground - you will be the next Iron Claw Brother!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wyverns pose a tactical asymmetrical aerial threat - currently only the Gyrocopters and High Elf Griffon Riders can stand head-on against a force of Wyvern Riders in air-to-air combat. The lethality of the flying dragon comes from the combination of three factors: flight speed, poisonous tail attack range, and the amphibious ability to transform into a ground beast after landing-this means that once the flying dragon rider is shot down, the mount itself becomes an independent ground assault force. The standard solution to defend against a wyvern is to concentrate the firepower of a phalanx of ballistae and muskets - the wyvern is huge and its flight trajectory can be accurately predicted during the dive phase, making this the only opportunity to injure it. But for any commander without air power, the presence of an enemy dragon means that your headquarters is always under threat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Wyverns - whose position in systematic taxonomy is still controversial: they neither belong entirely to the family Drapidae nor to the Chiropteridae family - are generally classified as \"Pseudosaurus, Dipterygidae\" in Old World natural history manuscripts. Its genetic sequencing shows that the genetic relationship with the true dragon family (such as Carcassonne Black Dragon and Star Dragon) diverged about 70,000 years ago, which means that they are closer to ectothermic reptiles than to the salamander branch on the evolutionary tree. The venom gland of the Wyvern is located at the base of the bone spur at the end of the tail vertebrae. The toxin composition has been analyzed by the Imperial Apothecary Guild and contains hemolytic protease and ganglion blocking base. Its toxic mechanism is to simultaneously attack the oxygen-carrying capacity of the blood and nerve conduction, causing the poisoned person to suffocate and convulse, causing death in about one to three minutes. Regarding the domestication of flying dragons: The method used by the orcs is called \"subduing mark\" by green-skin behavioral scholars - the orc warriors need to go to the flying dragon's lair alone and subdue the flying dragon with pure physical violence without killing it, so that the flying dragon will produce a \"mark of force\" for a specific individual - once the mark is formed, the flying dragon will regard the rider as an unchallengable alpha individual. However, the mortality rate in this process is extremely high - according to the operational records of the mercenary guild in the Border Prince Territory, about 70% of the orc bosses who tried to subdue the flying dragon died directly in the flying dragon's lair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I remember my father - may Mor rest his soul - once facing a flying dragon in battle. Not the kind ridden by orcs, but a wild wyvern that flew down from the World's Edge Mountains. It hovered over our march for a whole day, covering the sun like an ominous dark cloud. That night it landed in the baggage camp, tore up forty-three horses and flew off. The next day our cavalry became infantry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family ancestors once discovered the complete skeleton of a wyvern on the edge of the Badlands - the wingspan was recorded as being forty-two feet in the family tree. My ancestor spent three years transporting the skeleton from the Badlands back to the family castle, planning to erect it in the center of the hall as a symbol of the family's military exploits. But during the final stretch of transportation, a living bipedal flying dragon followed the scent of the bones and came after him - flying dragons do not kill their own kind, but they will eat the bone marrow of the dead of their own kind. My ancestors were forced to burn the skeleton to stop the smell. To this day, there is a pile of fake stone dragon bones standing in the center of our family hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While patrolling the edge of the badlands, our team encountered an injured flying dragon - one of its hind legs was bitten by something bigger, and it was lying on the rocky ground screaming. The captain asked if he should go up and kill it - that thing could be sold for a lot of money after death. We went up with the crossbow, and when we got closer, we realized that it was not a flying dragon, but a female flying dragon guarding a nest of eggs. Then another one emerged from the ridge - a male, his wings spread to cover the sky and the sun. We can run faster than any goblin. We all later agreed that wyverns are one of the few creatures in the Old World that you see that are best avoided instead of heading up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Have you ever heard of the legend among Badlands hunters? It is said that there is a professional dragon-catching team - a father and a son - who go into badlands to find wyvern nests, steal wyvern eggs, and then sell them on the black market in Altdorf to noble families who can't afford serious griffons for eight thousand to ten thousand gold crowns per egg. They worked for fifteen years, and then suddenly the whole family disappeared. Later, someone recognized the old hunter's skull at the orc market in Black Rock Castle - it was used as a drinking bowl by a black orc boss."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A giant bipedal flying reptile from the badlands, with a wingspan of more than forty feet, it possesses ferocious combat capabilities both in the air and on the ground.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "WyvernFlying ReptileBeast of the Badlands"
+  ]
+}

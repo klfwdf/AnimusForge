@@ -1,0 +1,130 @@
+{
+  "Id": "rule_House_Foundations_Duckfield",
+  "Keywords": [
+    "Duckfield",
+    "House Duckfield",
+    "Rolly Duckfield",
+    "Duck"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sir Raleigh Duckfield, known as \"Duck\", is the bodyguard, martial arts instructor and trustworthy companion of the young Griffin. Not known for his ancient family or hereditary castle, the name Duckfield comes from how a specific man earned his place in the ranks of the exiles: he taught young men to wield swords, keep close quarters safe, recognize dangers in unfamiliar ports and military camps, and maintain daily order on long voyages. Aegon's claim requires such actual supporters, not just noble lineage; Dark's value comes from him taking the prince's training, life and safety on his shoulders one by one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The soldiers who followed Griffin watched Dak, first to see if he could train the boy to be a man who could hold a sword firmly under pressure. The instructor's skill lies not only in the moves, but also in knowing when to let the young people starve, tire, obey or rest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Exiles, merchants, and sailors were more likely to remember Dark's ability to handle chores in unfamiliar places. If a team without a fixed castle wants to survive, someone must keep an eye on the cargo, routes, cabins, and secrets; Duck's reputation grows from these little things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duckfield Sir Raleigh \"Dark\" Duckfield is Young Griffin's bodyguard and martial arts instructor; his weight comes from training, close protection, and day-in and day-out reliability in the exiled ranks. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duckfield Sir Raleigh \"Dark\" Duckfield is Young Griffin's bodyguard and martial arts instructor; his weight comes from training, close protection, and day-in and day-out reliability in the exiled ranks. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duckfield Sir Raleigh \"Dark\" Duckfield is Young Griffin's bodyguard and martial arts instructor; his weight comes from training, close protection, and day-in and day-out reliability in the exiled ranks. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duckfield Sir Raleigh \"Dark\" Duckfield is Young Griffin's bodyguard and martial arts instructor; his weight comes from training, close protection, and day-in and day-out reliability in the exiled ranks. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sir Raleigh \"Dark\" Duckfield is Young Griffin's bodyguard and martial arts instructor; his weight comes from training, close protection, and day-in and day-out reliability in the exiled ranks."
+  ]
+}

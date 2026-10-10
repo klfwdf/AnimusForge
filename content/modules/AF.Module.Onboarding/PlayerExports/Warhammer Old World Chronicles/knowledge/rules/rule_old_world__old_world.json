@@ -1,0 +1,210 @@
+{
+  "Id": "rule_old_world",
+  "Keywords": [
+    "old world",
+    "warhammer world",
+    "old world empire",
+    "Old World Bretonnia",
+    "Kislev",
+    "old world world edge mountains",
+    "old world badlands",
+    "Old World Athel Loren",
+    "Old World Sylvania"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Old World is a continent torn apart by darkness, war, and ancient hatreds. The Empire of Man clings to the last bastions of civilization in the fires of steel and faith, while the Chaos Wastes of the north never stop expanding southward. There is no real peace here - just intervals of war, and respite waiting for the next storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The old world is our home and our tomb. From the shores of Norsca to the Badlands deserts, from the Gray Mountains to the World's Edge Mountains, every inch of the continent is drenched in blood. But it was in this land surrounded by fear and death that Sigmar's descendants built empires, forged steel, ignited gunpowder, and tamed the winds of magic. We are not the oldest race in the Old World, nor the most powerful, but we are the only civilization that never turns and runs away in the face of Chaos. As long as the bells of Altdorf ring, the old world is not dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The power map of the Old World is divided between seven major powers: the humans of the Empire, the knights of Bretonnia, the undead of Sylvania, the wood elves of Athel Loren, the Chaos warriors of the northern wastes, the greenskin tribes of the Badlands, and the dwarven city-states of the World's Edge Mountains. The conflicts and occasional alliances among these seven together formed the most fundamental threads of politics in the old world. Any ruler must understand this multi-polar pattern - with whom to make temporary peace, with whom to never compromise, where to build walls, and where to attack. Choosing the wrong direction will cost you not only the loss of territory, but the complete end of civilization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The geographical center of the old world is the Empire - it is located in the temperate Black Forest area where the three major river systems of the Reik, Talabek and Stir rivers meet. It is bounded by the Sea of ​​Claws to the north, the Black Mountains to the south, the Gray Mountains to the west, and the World's Edge Mountains to the east. To the west of the Empire are the fertile plains and wetlands of Bretonnia, to the south are the enchanted forests of Athel Loren, to the east are the darklands of Sylvania and the World's Edge Mountains, and to the north are the snowfields of Kislev and the Chaos Wastes, twisted by year-round mutation. The Badlands in the southern part of the continent is an arid wasteland dominated by tribes of orcs and goblins. The economy of the Old World was centered around the empire, and the monetary standards were the gold crown, silver shilling, and copper penny. Continental transportation relies on the Imperial Highway, the Reik River water transport, the dwarf mines and coastal routes. These lifelines carry commerce in peacetime, and in wartime determine whether the army can complete the assembly before the enemy arrives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord who ruled over an empire's border provinces, the map of the Old World looked to me not as patches of color but as a stress map made up of food stocks, winter fuel reserves, and estimates of peak refugee flows. While male generals drew battle arrows, we female rulers drew the winter survival rate of each village traversed by the arrow. All the military conflicts of the Old World were ultimately digested in the day-to-day management of women - when a squadron of knights galloped across the battlefield, it was me who made sure their horses didn't starve to death the previous winter; when a mortar on the wall opened fire, it was me who made sure the gunner's family wasn't left off the food ration list."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the patriarch of an ancient imperial noble family, the rise and fall of the Old World is to me something inscribed on the stone tablets of the family archives and measurable in precise numbers. At the height of prosperity during the Empire's Golden Age, the net output of one acre of wheat field on my family's domain was enough to feed three people who were not engaged in agricultural production. In the dark ages after the great invasion of Chaos, the output of the same acre of wheat field was only enough to feed 0.7 people due to continuous spring frosts and pollution by the winds of Chaos. These numbers determine the size of the imperial castle, the size of the imperial army, and the extent of diplomatic concessions the empire can afford. Politicians talk about great strategies, but we are the ones standing in the mud using abacus to calculate how many people can afford to die in each war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "After years of wandering I can tell you: there is no unified map of the old world. The Imperial map labels Bretonnia as a 'barbarous but godly nation', the Bretonnia map labels the Empire as 'a gathering place of arrogant heretical traders', the Dwarven maps show all human territory as just crude markings for 'non-Davi settlements', and the Greenskin's map - if you can call it a map - is the outline of a warlord's face drawn with a burnt stick on a scraped hide, which they believe is the end of the world. The truth about the old world lies in the stories you hear at whose dinner table you hear them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the Imperial Chamber of Commerce, the Old World is not a network of political entities - it is an economic gravitational field defined by the speed at which goods move. The freight tonnage per hour on the Reik, the customs revenue lost at the port of Marienburg after the winter freeze, and the increased cost of a ton of Gehromir iron ingots detouring around the Badlands due to the closure of the Dwarven Mines - these figures in the Imperial Chamber of Commerce archives paint a truer picture of the health of the Old World than the minutes of any Elector Count meeting. When the Reich's merchandise flow index fell for three consecutive quarters, war was already on the way, no matter what the politicians assured each other at Altdorf."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Old World - the core continent where the Warhammer story takes place, where seven major forces coexist in a state of eternal war.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Old World Warhammer World Old World"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "Id": "rule_World_Mechanics_Haunted_Forest",
+  "Keywords": [
+    "Haunted Forest",
+    "Forests Beyond the Wall",
+    "Free Folk Camps",
+    "Night's Watch Rangings"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Haunted Forest is located north of the Wall, a mixture of trees, frozen rivers, snow, hills and ancient ruins. Tribes of free folk hunted, gathered, logged, and moved camps, while Night's Watch rangers scouted along limited routes; heavy snow would obliterate the roads and leave traces of anyone who passed by. Rumors of wolves, bears, and more dangers in the woods make nighttime campfires extraordinarily important, and places like the Fist of the First Men preserve long-standing memories of war. The Ghost Forest is not a unified territory. Being familiar with a certain valley does not mean being familiar with the entire sea of ​​trees. The larger the team, the more food and shelter they need, and the more likely they are to be exposed to the cold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk obtained meat, hides, wood, and hiding places from the Haunted Forest, and did not call it just wilderness. Each tribe is familiar with its own hunting routes and is wary of others crossing boundaries that are not marked by stone monuments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Rangers knew that the forest would swallow up formations and sounds. The best patrol is not the one that goes the furthest, but the one that brings back accurate information without leaving all footprints to the tracker."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People south of the Great Wall regard the Ghost Forest as the source of coldness and wild men. Those who have truly heard the north wind blow through the forest will understand that that land is far more complicated than an enemy name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haunted Forest The vast cold forest north of the Great Wall, where game, tribal camps, ancient ruins and snowy trails shape the free folk and Night's Watch operations. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haunted Forest The vast cold forest north of the Great Wall, where game, tribal camps, ancient ruins and snowy trails shape the free folk and Night's Watch operations. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haunted Forest The vast cold forest north of the Great Wall, where game, tribal camps, ancient ruins and snowy trails shape the free folk and Night's Watch operations. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haunted Forest The vast cold forest north of the Great Wall, where game, tribal camps, ancient ruins and snowy trails shape the free folk and Night's Watch operations. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Haunted Forest: The vast cold forest north of the Great Wall, where game, tribal camps, ancient ruins and snowy trails shape the free folk and Night's Watch operations."
+  ]
+}

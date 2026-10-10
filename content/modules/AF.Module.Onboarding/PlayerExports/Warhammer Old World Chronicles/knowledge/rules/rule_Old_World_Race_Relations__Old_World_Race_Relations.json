@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Old_World_Race_Relations",
+  "Keywords": [
+    "old world race relations",
+    "camp diplomacy",
+    "Imperial Dwarf Covenant",
+    "Elf Dwarf Hatred",
+    "Bretonnia Wood Elf Tacit Understanding",
+    "Imperial Vampire Hostility",
+    "Common Defense of Chaos",
+    "Racial love and hate",
+    "old world geography",
+    "balance of power"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Race relations in the Old World were a political tapestry woven with the warp and weft of age-old hatreds, ancient oaths, and temporary interests. The Eternal Covenant between the Empire and the Dwarves—since Sigmar's rescue of the Dwarf High King Kurgan Ironbeard—is the Old World's most enduring military alliance. The eternal hatred between the dwarves and the high elves - stemming from the War of the Longbeard and the Phoenix Crown still held by the elves - remains undiminished. Bretonnia maintains a fragile, unspoken understanding with the wood elves of Athel Loren: knights do not enter the forest, and elves occasionally kill entrants to remind them of the boundaries. The hostility between the Vampire Count and the Empire is ontological - there is no peace between the undead and the living. The only relationship between the greenskin tribes and all civilized races that does not require explanation by diplomats is that they are the common enemy of the entire world. Chaos - the servants of the Northern Gods - is the only ultimate threat that causes all other foes to put aside their hatred and form a defensive alliance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Diplomatic relations between the peoples of the Old World were not written in banquet halls by statesmen—it was inscribed on the tombstones of the dead on the battlefield. Let me tell you the true nature of these relationships: The reason why the Empire's eternal alliance has never been broken is not because of some noble oath, but because the Empire needs the weapons and gunpowder of the dwarves, and the dwarves need the food and cavalry of the Empire - it is a supply and demand relationship disguised as friendship. The hatred between dwarves and elves has gone on long enough that no living dwarf or elf now remembers the specific cause of the war - but each side clearly remembers the names of their ancestors slain by the other, and these names are a permanent declaration of war that does not need to be renewed. The \"tacit understanding\" of the wood elves towards Bretonnia is a fig leaf for humanity - the truth is that the elves can shoot any Bretonnian knight who breaks into the forest to death in a position where no one can find the body, and the nobles of Bretonnia choose to call this \"tacit understanding\" because admitting that they are unable to stop it will damage the knight's dignity. Greenskins and Chaos have no need for diplomacy - their \"diplomacy\" has only one language: war. In this web of hatred, the only rule is: when Chaos invades southward, all other hatreds are suspended. For each side would rather see the world continue to exist in order to continue to hate each other than to be annihilated together in the victory of Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a ruler, you must memorize the race relations map of the Old World like a seasoned sailor memorizing the distribution of reefs. The Imperial Dwarf Covenant was more than just military mutual aid - it contained an unwritten, but tacitly renewed economic clause between each generation of Emperor and High King: Dwarven technical teams continued to work in the Imperial School of Gunnery, in exchange for which the Empire was not allowed to allow any human power to conduct any form of mineral exploration in the dwarven lands of the World's Edge Mountains. A \"coalition\" with Bretonnia against Greenskins or Chaos is possible - Karl Franz and Lawn Leo Cornish's joint campaign at Axbite Pass is a textbook example of such a relationship - but both armies must immediately withdraw to their own sides of the Gray Mountains after the war, otherwise allies who fought side by side yesterday may be at war with each other tomorrow over a drunken gaffe about honor or the goddess. Sylvania is still legally an imperial province - the Sigmar Church will not admit this publicly - but anyone who proposes \"military means to restore the administrative order of Sylvania\" in the Imperial Council is unwise: because taking action against the vampire count is equivalent to leaving all other pieces on the imperial diplomatic chessboard suspended at the same time, and the empire currently does not have enough military power to deal with a multi-front war. As for Tyrell, Estarlya, and the small city-states of the Border Princedom - they are the grease of Old World geopolitics, but not worthy of your alliance. Make deals with them, but don't sign any treaties you can't break overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The genealogy of race relations in the Old World can be systematically divided into four rungs: unbreakable alliance, icy coexistence, eternal enmity, and universal war. The first tier - the Unbreakable Alliance - covers only the Eternal Covenant between the Empire and the Dwarves (1 year BC) and the informal but never-denied Northern Shield Consensus between Kislev and the Empire. The second level - icy coexistence - includes the diplomatic distance between the Empire and Bretonnia that does not trust each other but does not engage in exchange of fire (the border guards in the Gray Mountains are in a state of \"eye to eye but not drawing the bow\"); the fragile balance between the wood elves and Bretonnia based on the principle of \"mutual disregard\"; the dwarf city-states and Athel Loren still maintain a formal truce agreement but not peace despite experiencing the Longbeard War. The core of the third tier - eternal enmity - is the aftermath of the Longbeard War between the dwarves and the high elves: the elves still keep the Phoenix Crown taken from the head of the dwarf High King, but the dwarves still regard it as an unforgivable racial humiliation, and any diplomatic dialogue between dwarves and elves is technically impossible - both sides regard each other as permanent belligerents in the sense of honor. The same rung encompasses the ontological level of hostility between the Vampire Counts and the Empire: the von Carstein family views Sylvania's legal status as their own imperial claim, while the Empire views Sylvania as occupied national territory, a conflict that cannot be resolved through negotiation and can only be suspended through war or temporary exhaustion on both sides. The fourth level - universal war - includes the all-round destructive hostility of the greenskin tribes against all civilized races (orcs and goblins regard fighting as the meaning of life and do not recognize any concept of peace), as well as the all-round destructive hostility of chaos forces against all non-chaos creatures. What is unique about Chaos is that its threat level is enough to temporarily unite all enemies of the third and even second tiers into an armed alliance - this was most fully demonstrated in the anti-Chaos alliance led by Emperor Magnus during the Chaos Invasion in 2304 Imperial History."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Diplomatic relations between races were reduced to treaties, wars, and borders in men's history books, but I discovered another layer in actual border rule—informal female communication networks that constituted the only channels of communication between races that did not leave official records. The wood elves of Athel Loren do not trust any human males, but they occasionally conduct brief barter transactions with the female medicine men of the empire's border villages who go alone into the forest edges to pick herbs. No one knows what the elves do with these herbs, but the seasonal infant mortality rate in the border villages decreases slightly after each exchange. Dwarf consorts never attend diplomatic banquets, but their embroidery—the art of weaving metal threads onto stone slabs—is considered an unreplicable luxury item among Imperial noble women, and an Imperial countess who possesses such embroidery receives a significantly faster response when making trade requests to a dwarven merchant group than a male Imperial ambassador delivering formal credentials. This is not something any imperial chronicle would record—but the truly nuanced aspects of interracial relationships all take place in the shadowy places between women that have yet to be traced by writing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Interracial trade relations between families are a grossly underestimated informal force in maintaining fragile mutual trust between ethnic groups. Our family's iron ore trade with the dwarf Karak Zion has lasted for more than four hundred years - at any formal alliance reaffirmation ceremony between the empire and the dwarves, the number of nameless trade agents sitting in the back row far outnumbers the generals and diplomats in the front row, because the daily work of these people - ensuring that the iron ore is loaded on time and that the wheat reaches the dwarven fortress before winter - is how the eternal covenant is actually fulfilled every day. The family archives preserve a letter from the dwarf king written in runes and stamped with the family crest instead of the national seal. The content is that he thanked one of my ancestors for delivering winter grain to his fortress in a private name after the great earthquake in 2001 of the Imperial Calendar. This letter is not legally binding, but its moral binding far exceeds any treaty. The most basic carrier of ethnic relations is not diplomatic documents, but the old family trade rules that insist on supplying materials to each other during the war because \"a promise is a promise.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have spent twenty years wandering in the lands of various races in the Old World, and I can tell you that the true temperature of race relations is not determined by the kings, but by whether the little people on the frontier nod to each other as they pass by each other every day. At the gray mountain pass at the junction of the Empire and Bretonnia, the sentries on both sides would put a glass of wine on the threshold of their respective posts if they happened to meet during the handover of duty. They would not walk in the middle or speak, but the glass would be collected by the other party the next morning. There was not a single conflict in twenty years of service. There is no such tacit understanding on the borders of the Empire and Sylvania - the farmers on the Empire's borders don't even collect bats that fall in their fields at night, because they can't be sure that the bat will turn back into a vampire's reconnaissance familiar at dawn. In the interactions between the dwarf outposts in the World's Edge Mountains and the occasional human hunters who pass by, the dwarves never say \"welcome\", but will leave a small bag of dwarf biscuits at the hunter's resting place after he passes by - this seems to them to be overly enthusiastic. The trust between races is not established by any covenant written on parchment, but by the non-killing of each other in the smallest units that occurs silently day after day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Interracial trade was the only aspect of all race relations in the Old World that had a stable two-way material basis—and the only economic system that could sustainably operate between hostile races. The dwarves needed the empire's food and cloth, and the empire needed the dwarves' metal and gunpowder - forming a de facto alliance that could not be disintegrated under the wrath of either party. The knights of Bretonnia expressed disdain for commerce, but Bretonnia's winery owners secretly sold barrels of fine red wine to the dwarves every year through Marienburg merchants—that knight would never admit that his estate paid the bill for winter horse feed. Even the vampire count is not completely averse to interracial trade - the von Carstein family imports black jade and funeral supplies from Tyrell through a series of carefully set up human middlemen, most of these \"funeral wholesalers\" have no idea who their ultimate customers are. In the old world, the sword determined which side prevailed, but the actual direction of the flow of goods—who needed whom, and who couldn't live without whom—was the real gravity that determined the long-term direction of race relations."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Eternal Covenant - a permanent military and trade alliance between the Empire and the Dwarf Kingdom since 1 year BC",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Old World Race Relations Faction Diplomacy Empire Dwarf Covenant"
+  ]
+}

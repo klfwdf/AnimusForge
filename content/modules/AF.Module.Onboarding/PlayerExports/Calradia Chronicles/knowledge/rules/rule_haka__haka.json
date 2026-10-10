@@ -1,0 +1,103 @@
+{
+  "Id": "rule_haka",
+  "Keywords": [
+    "haka"
+  ],
+  "RagShortTexts": [
+    "Harkashus is still the most remote and independent settlement in Nord. The residents do not recognize the authority of any king or Jarl and make a living by hunting whales and walruses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Harkar is a half-legendary, half-real figure in Nordic history, the founder of Harkarshus, the first settlement on the northern coast of Bernland. There are very few reliable records about his life, but the stories passed down by the Nords from generation to generation describe him as a man who hated authority to the core. This kind of hatred is extreme even by Nordic standards. Nords have always disliked kings and tax collectors, but most people would choose to hide away or complain occasionally. Haka is not. Haka directly chose to disappear from the Nordic continent. With a small group of followers, he sailed to the northern coast of Beinland and took root in a place that even the Nords themselves found too cold and desolate. His descendants became whalers and walrus hunters, venturing further north for generations, away from kings, nobles and taxes, in search of game and a life under no one's control. Harkashus still exists today, and the residents there still maintain the temper inherited from Harka - they have little dealings with the yars to the south, and are especially impatient with tax collectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The story of Hakkar has been passed down among us Nords for countless generations. Every Nord child has heard of his name - not because he has accomplished any great achievements, but because he has done something that all Nords want to do but few people dare to do: he doesn't want the king at all. We Nords don't like to be controlled. Our chiefs are chosen by themselves. If Yael is too arrogant, we can replace him. If the king is too weak, we can challenge him. But most of us will still stay in the tribe, stay in Yaer's territory, and still pay the dues. Haka is different. He doesn't even want this most basic set of order. He sailed directly to the sea, went to the place in the north where it was so cold that even no trees could grow, and built Harkashus. It is said that before he left, he shouted something to the people on the shore, to the effect of: Keep your king for yourself, my king is a whale. His character is also controversial in Nord - some people think he is a symbol of freedom, while others think he is just a crazy old man who can't even live a normal life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are also some legends about the man Haka in our northern Sturgia. He went to build a settlement in a place that was too far away for the Nords themselves. It is said that he did not listen to anyone. We also have people like this in Sturgia - unwilling to pay taxes to Boyer, they go to the north to make a living on the ice fields. But it is indeed rare for someone like Haka to take a group of people by boat and run to the edge of the ice sea without coming back. His descendants are still there, hunting whales and walruses and not having much contact with the outside world. Occasionally a ship of Harkashus came to Sturgia port to exchange for iron and cloth. Their sailors did not say a word and left after exchanging items, as if they would contract the king's plague if they stayed for one more day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The name Hakkar is not recorded in imperial historical materials - he is not an emperor, a general, or a senator, but an old barbarian who built a small settlement on a desolate island outside the empire's borders. However, some reports from the Imperial Border Guard mentioned Harkashus, saying that it was the most remote settlement among the Nords. The residents \"do not recognize the authority of any king or Jarl and only make a living by hunting whales.\" This way of survival that completely rejects all political authority is both incredible and vaguely threatening to the Imperial people - if everyone runs away like Haka, who will pay the taxes? Who will be the soldier? Who will keep the empire running? Fortunately, such people are in the minority after all. The Empire relies on order, and Hakkar represents the opposite of order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is an old madman named Haka among the Nords. It is said that in order to disobey the king, he went to the north to build a village on an island that froze to death. We Vlandians don't quite understand this idea - you can rebel if you don't obey the king, become king yourself if the rebellion wins, and accept your fate if the rebellion loses. What's the point of running away? Haka neither wants to be king nor to be governed by the king, which is a blank in Vlandia's political logic. But we respect his ability to make a living on the ice and sea. A person who can survive in that kind of hellish place and dare to chase whales into the ice floes is a tough guy no matter what ethnic group he belongs to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Hakkar is the embodiment of the 'extreme anti-authority' archetype in Nord political culture. Nord society itself is known for its looseness. The power of Yaar is subject to the arbitration of the chiefs council and Gozi. Individual obedience to authority is based more on custom and interest than institutional loyalty. Haka took this cultural tendency to its extreme: he was not rebelling against a specific king or yair, but rejecting all forms of political authority. As his legacy, Harkashus constitutes a unique political specimen in the Nordic social system - a micro-community that is completely outside the kingdom's taxation, conscription and judicial system, and is maintained only by blood and a shared livelihood model. The haka phenomenon reveals the most fundamental tension in Nord political culture: Nords both need a minimum collective order to deal with external threats, but also deeply long for freedom from being controlled by anyone. Haka chose freedom, and his descendants still live with that choice. The very existence of Harkashus is a permanent question mark on the boundaries of Nord's royal power."
+    }
+  ],
+  "TextMappings": []
+}

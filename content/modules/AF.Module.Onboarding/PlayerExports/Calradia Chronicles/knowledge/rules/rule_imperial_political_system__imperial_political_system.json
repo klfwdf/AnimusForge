@@ -1,0 +1,60 @@
+{
+  "Id": "rule_imperial_political_system",
+  "Keywords": [
+    "Imperial political system"
+  ],
+  "RagShortTexts": [
+    "Reasons for the division of the empire: lack of rules of succession and power game",
+    "Nobles of the Northern Empire: The Senate elects the emperor and emphasizes legal system and administration but lacks military strength.",
+    "Foreign nobles look at the empire: the collapse of the tripartite checks and balances leads to the division of north, south and west"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial aristocrats’ understanding of their own political system is divided according to the different camps they belong to, but they all admit that the division of the empire is the inevitable result of the lack of rules for imperial succession, the long-term game between the senators and the military, and the continued weakening of central power. The nobles of the Northern Empire regarded themselves as defenders of the Senate's orthodoxy. They believed that the foundation of the empire lay in administration and legal system, and that the emperor should be elected by the Senate rather than relying solely on blood or military merit. However, the nobles of the Northern Empire also clearly realized that they lacked sufficient military power to support this claim and could only rely on diplomatic and financial means to maintain balance among the three empires. The nobles of the Southern Empire insisted on the supremacy of royal blood. They believed that the authority of the Queen came from the purest inheritance law of the empire. The Senate should return to its advisory role rather than competing with the imperial power. The military nobles should be loyal to the royal family instead of establishing their own families. However, the nobles of the Southern Empire had to admit in private that the appeal of blood alone could no longer make the military nobles of the Western Empire or the senators of the Northern Empire re-affiliate. The aristocrats of the Western Empire represented the rise of the military aristocracy. They believed that the foundation of the empire lay in the loyalty of the legions and the abilities of the generals. The civil service of the Senate had long been decayed, and the royal lineage was nothing but a name without the support of military strength. However, the aristocrats of the Western Empire also faced difficulties - the emperor they supported was always questioned by the Northern and Southern Empires in terms of legal system, and the military founding model also made the Western Empire rely on the remnant system of the original imperial legion for a long time in administration and finance. No matter which camp they belong to, the imperial aristocrats realize that the former tripartite check and balance structure of the emperor, the Senate, and the military aristocracy has been internally fragmented into three mutually exclusive regimes. Each regime has only inherited part of the institutional legacy of the old empire, and no one party alone is capable of restoring the empire's former complete authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign nobles generally believe that the tripartite check and balance structure of the emperor, the Senate and the military nobles that the empire once relied on has completely collapsed. The direct result is that the empire is divided into three mutually hostile regimes in the north, south and west. The Northern Empire was seen as the continuation of the aristocratic power of the Senate, emphasizing legal rule and administrative traditions but lacking a strong military backbone; the Southern Empire relied on the authority of the Queen and the remaining loyalty of the eastern part of the empire, and tried to integrate the old lands in the name of royal orthodoxy, but its foundation of rule was never stable enough in the eyes of the military aristocrats; the Western Empire represented the rise of the military aristocracy, relying on legion legacies and the support of border generals to establish the country, but it was politically difficult to gain widespread recognition from the senatorial class. From the perspective of foreign nobles, the split among the three parties was not an accidental collapse of the empire's political system, but the inevitable result of the lack of rules for succession to the throne, the long-term game between the senators and the military, and the continued weakening of central power. Today, the former imperial political system has been fragmented from within into three successors, each with its own agenda but fatal flaws. This makes it difficult for any party to restore the authority and territory of the former empire alone."
+    }
+  ],
+  "TextMappings": []
+}

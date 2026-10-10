@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Manderly",
+  "Keywords": [
+    "House Manderly",
+    "Wolf's Den",
+    "Merman"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Manderly family was originally an ancient family along the Mander River in the Reach. After being expelled from the south, they were protected by Stark and established the White Harbor power at the mouth of the White Knife River. The family emblem is a white mermaid on a blue-green background, holding a trident; Manderly believes in the Seven Gods, retains knighthood and city etiquette, but has lived in the north for nearly a thousand years. White Harbor’s dockyard, fish market, coinage, and trade made them wealthier than most northern vassals, and also made it easy for southerners to mistakenly think that they were “not northern enough.” Northerners knew that the old kindness forged in hosting the exiles and the grain ships that could be sent out in winter could also be the root of loyalty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old people in the North know that Manderly was not born in the north, but they also remember who accepted the outcasts and who made White Harbor the sea gate of the North. Some people think that they believe in the Seven Gods, wear silks, and have etiquette too much like southerners; but when the North needs coinage, ships, tax money, and a window to the Narrow Sea, few people can still treat White Harbor as a foreigner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To White Harbor merchants, guild masters and dockkeepers, Manderly's prestige lies not only in the mermaid heraldry, but also in the weights, warehouse receipts, city walls and harbor regulations. From here the furs, timber, and silver of the north were brought to sea, and from here the salt, wine, and fine goods of the south were landed; a lord who could keep his warehouses free of fires and his roads free of bandits was more popular than a lengthy genealogy at a banquet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen call White Harbor a place where the cold wind can be exchanged for copper coins, while villagers feel that the stone walls, crowds and the bells of the Seven Gods are too southern. But when a ship goes missing, it doesn’t matter who owns the lights on the islands; when food prices rise, people just hope that the warehouse doors in the harbor will open. Manderly is remembered as both a fat and wealthy maritime merchant lord and the man who guarded the only great port in the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manderly A family that fled to the North from the Reach and settled in White Harbor after being protected by Stark. The white mermaid on a blue and green background symbolizes the foundation of the harbor; the seven gods, knightly etiquette, shipping and old favors jointly shape its northern identity. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manderly A family that fled to the North from the Reach and settled in White Harbor after being protected by Stark. The white mermaid on a blue and green background symbolizes the foundation of the harbor; the seven gods, knightly etiquette, shipping and old favors jointly shape its northern identity. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manderly A family that fled to the North from the Reach and settled in White Harbor after being protected by Stark. The white mermaid on a blue and green background symbolizes the foundation of the harbor; the seven gods, knightly etiquette, shipping and old favors jointly shape its northern identity. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manderly A family that fled to the North from the Reach and settled in White Harbor after being protected by Stark. The white mermaid on a blue and green background symbolizes the foundation of the harbor; the seven gods, knightly etiquette, shipping and old favors jointly shape its northern identity. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Manderly: A family that fled to the North from the Reach and settled in White Harbor after being protected by Stark. The white mermaid on a blue and green background symbolizes the foundation of the harbor; the seven gods, knightly etiquette, shipping and old favors jointly shape its northern identity."
+  ]
+}

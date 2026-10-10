@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Amai",
+  "Keywords": [
+    "Amai",
+    "House Amai",
+    "Salor",
+    "River Sarne"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Amai is a noble house of the Sarnori cultural sphere whose family enterprise is tied to the basin of the River Sarne and the trade routes leading farther east. The ancient river cities were once famed for the kings of the Tall Men, war chariots, and black warhorses, before Dothraki conquests reduced many cities to ruins; the power of survivors therefore often consists of two parts: memory of old status, and the practical ability to keep goods and people moving along dangerous roads. If House Amai conducts long-distance trade, what is truly scarce is not boasting, but reliable guides, interpreters, escorts, and credit recognized across different markets. Borders may shift, but rivers and distances will continue to test this house."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Sarnori nobles judge House Amai, they look both at whether it respects the rites of the old kingdoms and whether it can protect the trade routes. A house that can only recite ancestral names while failing to hold a river crossing will struggle to bring human life back to the ruins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor",
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Long-distance merchants value whether House Amai can bring different languages, measures, and coinage together on a single contract. Light as eastern silk may be, it can crush a family name that fails to keep its credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverbank residents care about ferries, levees, and road-protection tolls. If House Amai lets trade pass right before their doors without leaving behind road repairs or relief, distant wealth will only become new resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amai A mercantile house in the river-city tradition of Sarnor, grounded in long-distance trade routes, river transport, and the trustworthy delivery of eastern goods. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amai A mercantile house in the river-city tradition of Sarnor, grounded in long-distance trade routes, river transport, and the trustworthy delivery of eastern goods. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amai A mercantile house in the river-city tradition of Sarnor, grounded in long-distance trade routes, river transport, and the trustworthy delivery of eastern goods. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amai A mercantile house in the river-city tradition of Sarnor, grounded in long-distance trade routes, river transport, and the trustworthy delivery of eastern goods. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Amai: A mercantile house in the river-city tradition of Sarnor, grounded in long-distance trade routes, river transport, and the trustworthy delivery of eastern goods."
+  ]
+}

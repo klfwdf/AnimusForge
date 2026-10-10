@@ -1,0 +1,156 @@
+{
+  "Id": "rule_World_Mechanics_Greenblood_River_Network",
+  "Keywords": [
+    "Greenblood",
+    "Dornish Rivers",
+    "Orphans of the Greenblood",
+    "River Trade Routes"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The River Greenblood is formed by the inland rivers of Dorne and flows through the Hot Lands before emptying into the Summer Sea in the direction of Planktown. The water source enabled the development of orchards, fields, ferries, and markets along the river, and also allowed the transfer of goods from the interior to shallow-bottomed boats. The Greenblood River orphans who are descendants of the Rhoynar have long lived on boats, preserving their cultural memory through trade, songs, and waterways; they have not forgotten the migration brought about by Nymeria. River levels, sandbanks, and dry spells alter navigable routes, and well channels and water rights are therefore equally political. For Dorne, controlling water is not just about occupying the river banks, but about ensuring that residents everywhere can continue to share this scarce lifeline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The orphans and ship traders of the Green Blood River regard the river as their home and road, and are familiar with every ford and market. The boundaries of the lords on the shore will change, and the people on the water will remember which stretches of water can still be crossed by boats in the dry season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverside farmers and craftsmen were concerned with irrigation order, maintenance of wells and canals, and ferry fees. If a layer of water is intercepted upstream, not only will the harvest be lost downstream, but a village may be lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish lords knew that the rivers carried both food and troops, and the priests and elders reminded that water culture was more than just a source of taxation. Rough closure of the river will bring about short-term control, but will also push those who are familiar with the waterway into hostility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenblood Greenblood River Network: A lifeline in the sands of Dorne, with tributaries flowing to Planktown and the Summer Sea, carrying irrigation, ship dwellers and inland trade. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenblood Greenblood River Network: A lifeline in the sands of Dorne, with tributaries flowing to Planktown and the Summer Sea, carrying irrigation, ship dwellers and inland trade. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenblood Greenblood River Network: A lifeline in the sands of Dorne, with tributaries flowing to Planktown and the Summer Sea, carrying irrigation, ship dwellers and inland trade. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenblood Greenblood River Network: A lifeline in the sands of Dorne, with tributaries flowing to Planktown and the Summer Sea, carrying irrigation, ship dwellers and inland trade. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Greenblood River Network: A lifeline in the sands of Dorne, with tributaries flowing to Planktown and the Summer Sea, carrying irrigation, ship dwellers and inland trade."
+  ]
+}

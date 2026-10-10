@@ -1,0 +1,210 @@
+{
+  "Id": "rule_dwarf_politics",
+  "Keywords": [
+    "dwarf politics",
+    "High King",
+    "Dwarf Political Engineers Guild",
+    "Dwarf Political Runesmith",
+    "Dwarf Council",
+    "Council of Kings",
+    "Those with long beards vetoed",
+    "Karak Autonomy",
+    "clan leader"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarf politics is centered on Karak, and each Karak is ruled by a king. The highest authority of all Karak kings is the High King - a direct bloodline hereditary from the dwarf ancestor Ansestre. But dwarf politics goes far beyond the royal family - the Engineers' Guild and the Runesmiths' Guild wield enormous economic and technological power, and the Dwarf Council (Council of Elders) is composed of the eldest and wisest bearded men of each clan, who have veto power on major decisions. The biggest characteristic of dwarven politics is slowness and conservatism - any major resolution requires hundreds of years of discussion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are no secrets to our politics—it's as simple and solid as granite. The High King is a direct descendant of Ancestor, the Forefather, who rules the Eternal Peak and represents all Dawi in diplomacy. However, the kings of each Karak have absolute authority in their own cities - the High King cannot order the kings of Karak Kaderin what to do, but can only make suggestions at the general meeting of Karak. The guild is our second center of power - the Engineers Guild controls all steam weapons and gunpowder technology, and the Runesmiths Guild guards the secrets of ancient rune forging. If these two guilds disagree, even the High King's decision cannot be implemented. Humans think we're slow - right, because we're weighing the thousand-year consequences of every decision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The conservative nature and slow pace of the dwarven political system is both a weakness and a strength. Weakness: Dwarves are unable to react quickly to rapidly changing threats - be a greenskin Waaagh! While the south was forming, Karak in the north may have spent decades debating whether to send reinforcements. But the advantage is equally obvious: once the dwarves make a decision (especially a military commitment), they will follow through with incredible determination - not shrinking from losses or changing course due to setbacks. Extreme caution must be exercised when making treaties with dwarves—the dwarves will honor every term and expect you to do the same to the letter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The dwarven power structure consists of three pillars that balance each other. The first pillar is kingship: the High King (High King) is hereditary from the blood of ancestor Ansestre, currently held by Thorgrim the Hatred; the kings of Karak are elected by clan leaders or hereditary. The second pillar is the power of the guild: the Engineers Guild masters steam power, gunpowder weapons and aircraft technology; the Rune Blacksmith Guild is older and masters the forging skills of rune magic. Since the knowledge of runes can only be secretly passed down between masters and apprentices, the guild power is highly concentrated. The third pillar is the clan and the council of elders: the clan leader (Thane) has autonomy over internal affairs; the longbeards' \"Hmm\" - expressing disagreement - is enough to shelve any proposal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In dwarf politics, women's direct public power is limited - but this by no means means that they have no power, just that the channels through which they exercise it are different. There are no formal female members in the guilds, but trade networks, marriage alliances, and management of food reserves within the clan are entirely controlled by women. During times of war, when all male bearded men were on the front lines, female elders effectively took over decision-making within Karak - this temporary wartime power evolved into permanent institutional changes at least three times in history, but each time was forgotten in the official narrative after the war. I myself presided over all of my clan's trade decisions and trans-Karak negotiations while three generations of male clan leaders were simultaneously on the march."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Council of Kings is the highest formal meeting in dwarven politics - theoretically all Kharak's kings are expected to attend and reach consensus when faced with a threat. But in my experience as a patriarch, the actual process of convening the Council of Kings was a nightmare filled with old grudges and the compounding of old debts. The last time I attended the Council of Kings it was to discuss a joint response to the Chaos invasion of Archaon - and before we discussed Chaos we had spent four days dealing with a dispute between Karak Kaderin and Karak Azul over the pricing of a shipment of mithril from three hundred years ago. Prioritize old grudges first, discuss current threats later - this is an iron law of dwarf politics that cannot be changed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a human who served on a trade mission to Karazha-a-Karak, I know firsthand the 'eh' veto in dwarven politics. Our delegation presented the High King with a detailed proposal for a new trade route - two years in the making and bearing the seal of the Imperial Elector Count. The High King listened to the entire report, then turned to a row of white-bearded elders behind him. The old dwarf in the middle only took a deep breath and let out a long 'um——' from his nose. No one spoke in the entire throne room for the next forty minutes. The High King then tells us: 'The proposal requires further consideration. 'We were told we could come back in thirty to fifty years to ask about progress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the Imperial Chamber of Commerce, the guild power in dwarf politics is an existence that is both respected and feared. The Engineers Guild's monopoly on steam technology means that any improvements to the design of steam tanks that the Empire wants to obtain must be reviewed by the dwarves - and these review cycles are usually in ten-year intervals. The Runesmith Guild is even trickier - rune weapons are the most valuable commodities in the Old World, but the Runesmith Guild controls the initial production and lifelong maintenance of each rune weapon, and if they believe that a weapon holder has 'misused' the runes (such as using a rune sword to chop wood), they have the right to take the item back without compensation. This clause is unchallenged in commercial law."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "High King - the supreme king of the dwarves hereditary from ancestor Ansestre, who rules the Eternal Peak",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The power structure and decision-making mechanism of dwarves"
+  ]
+}

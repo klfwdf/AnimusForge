@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Santo",
+  "Keywords": [
+    "Santo",
+    "House Santo"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The influence of the Santo family came from the trading society of Pentos. Ships were loaded and unloaded in the ports, caravans arrived from the eastern roads, and debts and news flowed among the mansions of the powerful. If Santo wants to be established for a long time, it must convince its partners that it will keep its promises even if it suffers losses, and avoid handing over generations of accumulation to pirates or wars in one big gamble. Pentos maintains superficial order by the prince and governor class, but its real power is often hidden in merchant houses, debts, marriages and mercenary contracts. The treaty with Braavos prohibited open slavery and limited armaments, but the wealthy still circumvented the rules with indentured servants and complicated names."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo The high position here is not the natural right that comes with a fiefdom, but the fragile balance maintained by wealth and peer recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo If a rich family pays their bills on time and does not hoard food when the harvest is poor, others will praise them; if a rich family only shows its generosity with lavish banquets, the poor will soon see through it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo Santo is a merchant family of Pentos, and the family name falls in the network of warehouses, cargoes, transport teams, debts and relationships with the governor. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo Santo is a merchant family of Pentos, and the family name falls in the network of warehouses, cargoes, transport teams, debts and relationships with the governor. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo Santo is a merchant family of Pentos, and the family name falls in the network of warehouses, cargoes, transport teams, debts and relationships with the governor. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Santo Santo is a merchant family of Pentos, and the family name falls in the network of warehouses, cargoes, transport teams, debts and relationships with the governor. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Santo: Santo is a merchant family of Pentos, and the family name falls in the network of warehouses, cargoes, transport teams, debts and relationships with the governor."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "Id": "rule_Pilgrimages_and_Holy_Relics",
+  "Keywords": [
+    "Pilgrimages",
+    "Holy Relics",
+    "Camino de Santiago",
+    "Canterbury",
+    "Rome",
+    "Jerusalem",
+    "Medieval Faith"
+  ],
+  "RagShortTexts": [
+    "Pilgrimages to sacred shrines and veneration of holy relics served as universal expressions of medieval faith, mobility, and penance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pilgrimages were central to the spiritual, cultural, and economic fabric of medieval Christendom. Believers from all social strata—kings, knights, monks, and humble peasants—traveled hundreds or thousands of miles in fulfillment of sacred vows, seeking miraculous healing or undertaking solemn ecclesiastical penance for sin.\n\nThe supreme pilgrimage destinations were Jerusalem, Rome (the tombs of Saints Peter and Paul), and Santiago de Compostela in Galicia. The veneration of holy relics (the bones of saints, fragments of the True Cross, the Crown of Thorns) transformed cathedrals into vibrant cultural hubs. Monasteries and hospices along the pilgrimage ways provided shelter, hospital care, and secure road networks that encouraged international travel and cross-cultural exchange."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_ancient_sage",
+  "Keywords": [
+    "Biography of the Ancient Saint Creator",
+    "Chronicles of the Ancient Saints' Star Travelers",
+    "The Transformation of the Ancient Saint's Planet",
+    "Creator of the Ancient Saint Race",
+    "Ancient Saint Polar Star Gate Construction",
+    "Creation of the Old Saint Lizardmen",
+    "The legacy of the ancient saint Slan",
+    "The mystery of the disappearance of the ancient saint",
+    "Research on Ancient Saints and Ancient Civilizations",
+    "Said by the Old Ones"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Old Saints are the co-creators in the creation myths of all civilizations in the old world - they descended from the depths of the stars on this wild primitive planet, used unimaginable technology and magic to reshape the geology, climate and ecology into a form suitable for the reproduction of intelligent life, and then created elves, dwarves, humans, halflings, ogres and lizardmen according to their respective perfect blueprints. After everything was done, they quietly left—or rather, were forced to leave. The origin story of every race in the old world begins with the footprints of the Ancient Saints, and the star gates they left in the polar regions are still delivering destructive chaotic energy to the entire world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The bravest scholars in the Imperial Academy dare to admit an uncomfortable truth: All we know about the Old Ones is a fragmentary puzzle pieced together from scattered clues in broken lizardfolk stone carvings, elven oral poetry, and dwarven underground ruins. We knew they were coming - they built portals at the poles that could penetrate the warp, and used these star gates as energy veins to reshape the entire world. We know they created us—our skeletal structure, our brain capacity for language, and our unconscious fear of chaos, all carved into the marrow of our ancestors by the Old Ones through some bioengineering means we cannot fathom. But key questions remain unanswered: Where did the Old Ones come from? Why would they create such diverse intelligent races? Did they attempt a rescue during the disaster that caused the Stargate to collapse - or did they abandon us behind a collapsed dam? And the scariest question is: Will they come back? When they return, will they be as demiurges looking over a lost laboratory, or as debt collectors to recover experiments tainted by our design flaws of \"lifespan, free will, and chaos resistance\"?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The heritage of the Old Ones was of practical utility to rulers of any part of the Old World—not just theological curiosities. The Lizardmen - the race closest to \"perfect executors\" created by the Old Ones - are still executing the last instructions left by the Old Ones in the Rustian jungle, although they may no longer know the purpose of these instructions. They guard the relics left behind by the Old Ones—including some ancient devices said to have the power to reshape the planet's biosphere. This means that Rustia and the Slann priests who control the lizardfolk are the invisible strategic equalizers of the Old World. On the other hand, the Polar Star Gate built by the Ancient Saints is still the largest entrance for Chaos to enter the world - this means that the fundamental reason for the ultimate failure of every expedition to the north is not a lack of troops, but that no one has the ability to close the out-of-control teleportation device built by the Ancient Saints. Understanding the Old Ones is not a recollection of ancient myths - it is a metaphysical key to the fundamental balance of power in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The academic history of ancient sage studies is a discipline in itself. The Elves possess the most complete oral tradition of the Old Ones - they call them \"the Ancestors\" and claim that they personally taught the first Elves the art of magic. The heritage of the dwarves is relatively vague - they admit that they were \"awakened from the rocks\" by the Old Ones, but their attitude towards the Old Ones is a mixture of gratitude and an almost resentful dissatisfaction, as if the dwarf ancestors deliberately erased the details of their precise relationship with the Old Ones from the collective memory of the dwarves. Humankind’s inheritance is the shallowest—in the dark ages after the disappearance of the Ancient Saints, humans retreated to an almost primitive state of existence. Therefore, most of humanity’s legends about the Ancient Saints are second-hand or even third-hand versions learned from elves and dwarves in the past two thousand years after the establishment of the Imperial Calendar. The Lizardmen's heritage is the most accurate but also the most difficult to obtain - they use an inscription language that is a mixture of hieroglyphs and starry sky coordinates, and the number of scholars in the Empire who are capable of partially deciphering this language is no more than five. The physical relics left by the ancient saints in the World's Edge Mountains and the Rustian Jungle - including geological phase resonators connected by ley lines and biochemical cultivation tanks hidden deep in the jungle - are currently the most dangerous and most valuable archaeological targets in the old world. Each relic may contain ancient technology that can rewrite the world structure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a detail in the story of the Old Ones that will be familiar to all female rulers of the Empire: they divided the sexes at creation, but what was their design intent for gender? Is the elven cultural model of gender equality the original state of the ancient saints' blueprint? Or is male dominance in human society a distortion caused by the disappearance of the ancient saints? No text can answer this question - for all races' records of the Old Ones are incomplete. But an observable fact is: the Old Ones created the lizard-men with little sexual distinction, while the creation of elves and humans gave them clear sexual structures. This means that the sexual difference itself is a functional part of the design intent of the Old Ones, rather than an additional product of subsequent mutations. As a woman who rules a frontier realm, what I read from this is this: The Old Ones designed a species that required both men and women to function together, and our society's subsequent practice of excluding half of them from decision-making circles is essentially a modification - not a correction, a degradation - of the Old Ones' original blueprint."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The racial diversity created by the Old Ones is the most fundamental political and ecological reality that the families who rule the Old World must face—it is not an accident, it is by design. Each race—elves, dwarves, humans, lizardfolk, and even some not thought to be directly related to the Old Ones—is endowed with a different set of abilities that are complementary rather than competitive in nature. The longevity and sensitivity of elves to magic make them the most perfect custodians of knowledge; the memory of dwarves and their intuition for the inner structure of rocks make them irreplaceable miners and engineers; the fecundity and adaptability of humans make them the only species in the ancient saints' experiments that can thrive in all climate zones; the lizardmen are designed to be the most loyal guardians. As the head of a family that manages multiple intergenerational contracts between the Empire and the Dwarves, I’m forced to realize every day in my practice: humans, dwarves, elves—we are essentially the forgotten subdivisions of a long-disbanded team, supposed to be working together but now only suspicious of each other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My experience meeting the Lizardfolk's gaze thirty paces apart on the edge of the Rustian Jungle convinced me that not only were the Old Ones real, but that the reasons for their departure were darker than any scholar could deduce in a library. When the lizard warrior saw me, he didn't make an attacking stance but entered a state like a \"recognition program.\" His eyeball structure flashed a non-biological light in the sunlight - like a mirror that had not been wiped for too long. That's not an intelligent creature judging an intruder, that's a gatekeeper machine left behind by someone performing a verification process that has expired. When the Old Ones created the lizardfolk, they placed some kind of recognition device in their eyes - perhaps so that they could identify the Old One himself - and that device continued to function after the Old Ones disappeared, but it no longer recognized anyone. I don't think the Old Ones died or left - they lost some celestial war beyond our comprehension that turned the entire warp into a battlefield, and our planet was just an abandoned frontline outpost in that war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Relics of the Old Ones were never priced as commodities on the black market - they were priced as beliefs. A purported \"meteorite fragment\" from the age of the Old Ones - regardless of whether it is actually an ordinary piece of iron-bearing rock - can fetch the price of an entire Reik River Estate in Altdorf's private collectors' market. The real reason is not that collectors believe these objects have divine power - most of them are cool and shrewd - but a more mundane calculation: holding a \"relic of the Old Ones\" gives you a purely symbolic advantage in cross-race negotiations with dwarves, elves, or lizardfolk - because the other party will subconsciously associate you with the authority of the Old Ones. In the past thirty years, our Chamber of Commerce has obtained at least seven ancient artifacts that truly flowed out of the Lizard Man ruins through expedition returns in the Rustia Jungle. These items are not in any public directory. They are kept in special-purpose numbered safes in our underground vault as our next Chamber of Commerce director’s final bargaining chip when the continental pattern is reshaped."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Creator - the Ancient Sage transformed the primitive planet into a habitable world and created all existing intelligent races",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Legend of the Ancient Saint Creator The Ancient Saint Star Traveler's Record of the Transformation of the Ancient Saint Planet"
+  ]
+}

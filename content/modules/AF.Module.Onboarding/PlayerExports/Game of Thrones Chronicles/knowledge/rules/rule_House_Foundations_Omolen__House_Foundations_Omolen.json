@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Omolen",
+  "Keywords": [
+    "Omolen",
+    "House Omolen",
+    "Merchant Nobility"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ormoron is an important merchant noble family in Lys. The warm island city is famous for its perfume, liqueur, fabrics, hedonistic industries and shipping, but its wealth is based on harsh slavery and dependence on foreign food and raw materials. Omolun's influence thus did not reside solely in the mansion: shipowners, brokers, warehouse owners, workshop overseers, creditors, and forced laborers all supported it. Households can expand relationships through marriage and trade, but can also be exposed to vulnerability through war, blockades, or slave revolts. Who temporarily rules Lys can change, and the fact that Omoron must face both profit and the cost of order remains unchanged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lys The upper class regards Omolun as a family that can connect ships, marriages and seats into a web. Allies praise it for its reliability, while competitors believe that behind every generosity is an invisible bill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free craftsmen and sailors were concerned about whether Omolun paid the money on time and whether he would blame all the losses on the dock when the port was closed. A gorgeous banquet is inseparable from people working in hot cabins and workshops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The enslaved people saw Omolun not as perfume and white walls, but as buying and selling, punishment, and separated families. The prosperity of the family has another smell in their eyes, and no powerful person can completely cover it up with etiquette."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Omolen Lys is a wealthy merchant aristocratic family whose influence is rooted in shipping, the luxury market, slavery and city-state affairs. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Omolen Lys is a wealthy merchant aristocratic family whose influence is rooted in shipping, the luxury market, slavery and city-state affairs. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Omolen Lys is a wealthy merchant aristocratic family whose influence is rooted in shipping, the luxury market, slavery and city-state affairs. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Omolen Lys is a wealthy merchant aristocratic family whose influence is rooted in shipping, the luxury market, slavery and city-state affairs. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Omolen: Lys is a wealthy merchant aristocratic family whose influence is rooted in shipping, the luxury market, slavery and city-state affairs."
+  ]
+}

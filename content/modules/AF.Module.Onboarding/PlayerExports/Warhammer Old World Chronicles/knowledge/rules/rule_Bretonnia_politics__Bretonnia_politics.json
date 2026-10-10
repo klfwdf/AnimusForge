@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Bretonnia_politics",
+  "Keywords": [
+    "Bretonnia Politics",
+    "ducal council",
+    "royal power",
+    "feudal",
+    "Sisters of the Holy Grail",
+    "chain of oaths",
+    "ducal autonomy",
+    "Knight's Privilege",
+    "Succession to the throne",
+    "fay witch",
+    "Codex of Gilles",
+    "Grail Throney"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political system of Bretonnia is a pure feudal monarchy - the king is the supreme lord, fourteen dukes swear allegiance to the king, and below the dukes are barons, which are enfeoffed all the way down to the lower-level manor owners. The king's authority derives from two divine qualifications: he must be a Grail Knight, and he must gain the approval of the Lady of the Lake through her coronation ceremony in the Cathedral of the Holy Grail."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's politics are our glory and our curse. The king is the mortal representative of the goddess - he must be a Grail Knight. This qualification alone filters out all the ungrateful, unbrave and unworthy mediocrities. The Duke Council meets every year in the royal capital of Curona, where the dukes discuss taxes, expeditions and border disputes under the auspices of the king - but this is not the political market of the empire, and knights will not bargain at the meeting to exchange votes like selling fish. The king's authority over the duke is based on two foundations: the first is the knight's oath - when the duke puts his hand on the king's sword and swears allegiance, the consequences of breaking this oath are not only secular punishment but also eternal damnation in front of the goddess; the second is the king's personal dignity as the strongest Grail Knight - if a king loses to his own vassal in the contest, his authority will collapse within a month. But the dukes are not without means to restrain the king: if the king insists on launching a war that is not recognized by the ducal council, the dukes can legally refuse to provide troops - although this 'legal refusal' has often evolved into civil wars in the kingdom in history. The politics of Bretonnia are more focused on the individual than the empire - personal honor, personal oaths, personal courage, the system is secondary. This is both our strength and our weakness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The secrets to governing a fiefdom in Bretonnia are simple to say but require a lifetime of practice to do. As a lord you must maintain three things: your martial prowess, your honor, and your justice. In terms of martial arts - your vassals and serfs must believe that you can defeat anyone who dares to challenge your authority in single combat, which means you must constantly prove yourself in tourneys and lead the charge on the battlefield rather than sit back and give orders. In terms of honor - your oaths cannot be stained, your promises must be fulfilled, and your behavior must be in line with chivalry. Once you make a mistake in this, your enemies will spread rumors about your corruption throughout the kingdom, and these rumors will make your vassals consider finding another lord within a month. In terms of justice - you must adjudicate disputes between serfs fairly without showing any obvious favoritism; you must also fight for reasonable interests for your territory in the duke council, and you must not be so weak that you can be used as a soft persimmon by other dukes. The politics of Bretonnia are more like a family than an empire - except that the members of this family each have a sword at their waist, and anyone can challenge anyone to a duel at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's feudal political system is unique among the political systems of the old world. Its core legal principles can be summarized into three interrelated principles: The first is the principle of Holy Grail kingship - only knights who pass the Holy Grail trial can legally inherit the throne, which theoretically guarantees that every king has experienced the ultimate test of the goddess. However, historians have discovered a practical loophole in this principle: if there is no Grail Knight to succeed the throne while the throne is vacant (this is rare but not unheard of), the ducal council can temporarily elect an 'acting king' until the real Grail Knight appears. The second was the principle of the chain of oaths - Bretonnia's system of feudal allegiance was theorized by law as an unbroken chain of oaths, starting with the serf swearing fealty to the lord of the manor, passing through the baron, the duke, and finally to the king, who swore fealty to the Lady of the Lake herself. The breaking of any link in this chain would legally destabilize the whole system - which is why rebellious dukes must be quickly eliminated or pardoned, since a delay is equivalent to acknowledging that the chain of oaths has been broken. The third is the principle of distribution of favors - the king is obliged to distribute the spoils and land obtained in the war to meritorious vassals, and the vassals are also obliged to pay part of the proceeds to the lord. This two-way flow constitutes the economic-political circuit of Bretonnia. It is worth mentioning that the Sisters of the Holy Grail, as a theocratic institution independent of the feudal system, have a key arbitration function: when two dukes dispute the ownership of a certain fief, the ruling of the Sisters of the Holy Grail is considered to be the will of the Lady of the Lake and has final legal effect - this system plays a role that the Imperial Parliament cannot, that is, provides theocratic arbitration before the dispute turns into a civil war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The attitude of Bretonnian law toward female nobility can be summed up in one principle: Your worth lies in what you keep for your husband or son, not in what you gain for yourself. I have been running the Duchy as regent for eleven years as a widow - every administrative decision I have made during these eleven years has been legally signed 'in the name of my minor son'. Bretonnia does not have the flexibility of the Empire where women can inherit titles in their own name and attend parliament - but this is also the soil from which the delicate art of Bretonnian women's behind-the-scenes power is born. I never spoke publicly before the Duke's Council, but three weeks before each meeting, my butler would visit the castles of at least four other dukes late at night to deliver my personal letters. My proposal for border tariff reform, which I put forward in my letter, would be presented to a certain Duke as a 'accidental idea' during a public discussion in Parliament - and when the proposal was approved I would receive a barrel of Aquitaine's fine red wine as a veiled thank you. Women in Bretonnian politics did not sit in chairs, but they had the agenda written before every ducal council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core political challenges facing Bretonnia's House of Dukes are similar to those of the Imperial House of Elector Count with one key difference - the throne cannot be gained by vote, only by passing the Trials of the Holy Grail. This means that we can never put a clan member on the throne through political bargaining, but we can influence the throne in another way: by controlling the Sisters of the Holy Grail. The nuns of the Holy Grail Sisters come from various ducal families - in theory, they no longer belong to the family after becoming a monk, but in reality, it is impossible for every nun who comes from a noble family to completely cut off the messenger communication with the family. Our family has donated at least three altars and a retreat estate to the Cathedral of the Holy Grail over the past fifty years - these donations have never been used for overt political transactions, but it has paid for the Sisters to informally inform us of the investigations of other dukes in three major arbitrations. In Bretonnia, the most exquisite family politics is not performed with swords and fiefs, but with prayers and donations - information flows in the corridors of the Holy Grail Abbey, and the ducal family with the smoothest channels of information in the abbey will always have intelligence in the political game that only he alone among the people here knows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of Bretonnia were worlds apart from those heard in the haylofts of the serfs and in the halls of the ducal councils. I served as a messenger cavalry for two barons at the same time during a border dispute - each of them received the king's order to divide their troops to support Curona, but each of them sent a minimum force and left the elite knights in their own territory to prevent the other party from taking the opportunity to invade their borders. The impassioned speeches in the duke's council were always weakened layer by layer as they were carried out on the ground floor - the king's edict of 'five hundred knights' became, on arrival at the actual camp, one hundred and twenty armed squires and forty old knights who had passed the age of battle. Bretonnia's system is flawless on paper—the chain of oaths is a sacrosanct magic circle—but in the mire of reality, each link strives to deliver maximum ritual compliance at minimum cost. The serfs were apathetic to politics not because they were ignorant, but because no matter who ruled Bretonnia - a king, a duke or a usurper - the tax rates on the estates never really changed, the only difference being the family crest on the tax collector's clothes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's feudal political system was a trading environment for merchants secured by a mixture of credit, oaths, and intimidation. Unlike the Empire, Bretonnia had no codified commercial regulations - commercial disputes were adjudicated entirely on the local lord's personal understanding of 'justice', meaning that the same contract could receive completely different verdicts in two neighboring duchies. My greatest asset as a wool and wine exporter in Briona for twenty years was not the figures in my books but my personal relationship with the Duke of Briona - he owed me assistance during a winter grain famine, and he regarded this as a debt of honor. In Bretonnia, the political security of merchants does not depend on contracts and laws, but on your honorary network with several key knight families - once a duke regards you as a 'merchant under his protection', any other noble will think twice before expropriating your interests, because that is not a business dispute but an offense to the duke's honor. My political principles in Bretonnia are simple: never have a king owe you money - but always have at least four dukes owe you a favor."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Chain of Oaths - an unbroken chain of allegiance from serf to king to goddess, the feudal foundation of Bretonnia",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia’s power structure and decision-making mechanism"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Lykaria",
+  "Keywords": [
+    "Lycaria",
+    "Lycarian plain",
+    "Lycaon Plain"
+  ],
+  "RagShortTexts": [
+    "The Lycarian Plain was formed by the alluvial deposits of the Thetis River and was the breeding ground for the empire’s grain production and Canterion army horses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lycarian plain is a fertile land at the foot of Mount Lycaron, formed by the waters of the River Thetis. The river originates from the mountains, crosses the plains from south to north, and finally joins the Perlas Sea. It rains so much here that you can hear the sound of raindrops hitting the grass most of the year. The aquatic plants grow richer than anywhere else, and they can not only grow food to feed the legions, but also herd groups of war horses. The empire's most famous Canterion army horses came from this plain. They ran and grew up here, gnawing on the lush grass of Lycaria and drinking the water of the Thetis River. When they grew up, they carried the empire's cavalry to the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lycarian plain is a good land given to Lycaron by God. The Thetis River flows out from the foot of the mountain, cutting a waterway through the entire plain from south to north, and flows into the Perlas Sea. It rains for dozens of days in a row during the rainy season every year. The grass that grows here is so tall and dense that the war horses can eat it and gain fat and strength. The Canterion army horses were raised on this grassland - they have good endurance, are strong in carrying heavy loads, and can charge steadily even when wearing a full set of horse armor. The soldiers standing guard on the walls of Lycaron looked down the mountain every day, and what they saw was the green plain and the reflection of the Thetis River in the distance. As long as Lycaria remains, the empire will have no shortage of horses, food, or soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ancestors of Canterion’s army and horses grew up drinking water and gnawing on this grass by the River Thetis. This kind of horse has hard hooves and is not afraid of rocky ground; it has a large lung capacity and can run long distances without panting. When choosing mounts for the imperial cavalry, they always only choose Canterion horses raised in Lycaria. Horses elsewhere cannot move when they are heavily armored, but the horses here can charge on the plains even when they are fully armored. This is the ability cultivated by the rain and grass of Lycaria."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That land in Lycaria is fatter than the fattest river valleys in our north. Their horses gnawed grass there to become fat and strong, while our horses dug grass roots on the frozen soil in the north. The imperial people occupied the best land, the best horses, and the best rivers in the south. What was the result? It’s not just one’s own people beating one’s own people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The grass in Lycaria did grow well, but it was made of the silt of the River Thetis. The river rushed down from the mountain, peeling off the soil layer by layer and spreading it on the plain. This is how land comes, and this is how fertilizer comes. The people of the empire thought that this was a reward from God, but in fact it was just a river that had been a porter for thousands of years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Lycarian plain was one of the core components of the empire's military-economic system. It is formed by the long-term alluvial action of the Thetis River and flows north-south into the Perlas Sea. It receives abundant annual rainfall and forms the most fertile pasture in the central and eastern part of the Calradia continent. This is not only an important food-producing area for the empire, but also a breeding base for the empire's cavalry mounts, Canterion horses. The Thetis River provides a stable irrigation and transportation channel for the plains, connecting the waterway transportation between the city of Lycaron and the Pelas Sea. In the imperial military geography, the Lycarian Plain is an integral part of the Lycaron defense system - it is not only the food and horse supply line for the defenders, but also a strategic location that the siege team must first control."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The grass on the Lycarian plain is good, and we Khuzait people have to nod after seeing it. But that place is too wet, and it rains constantly. Our prairie horses are used to the dry wind, and they are prone to getting sick when we get there. Canterion horses can indeed carry heavy armor and have strong explosive power, but they cannot run long distances. Our horses can run on the grassland for days and nights, eating sparse weeds and drinking morning dew. Lycarian horses are indeed scary when they charge across the plains, but if you try dragging them out onto the grasslands - after three days the horses' bellies are flat and their hooves are cracked. Each has his own territory and each has his own horse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When we Aserai merchants passed by that place on the Lycarian plain, we always felt it was such a waste. So much rain and so much fertile grass were used to feed the imperial war horses. In the Nahasa Desert, a piece of land that can grow grass is more precious than gold. We have to divert water from dozens of miles away for irrigation just to grow a few rows of date palms. Fortunately for the Imperial people, God filled the ground with water for them, and they used it to feed their horses. But to be honest, Canterion army horses are indeed valuable. Some of our emirs specially send people to Lycaria to secretly buy stallions and breed them. Unfortunately, the desert is too dry, and the offspring of those horses will not be able to run in the second generation."
+    }
+  ],
+  "TextMappings": []
+}

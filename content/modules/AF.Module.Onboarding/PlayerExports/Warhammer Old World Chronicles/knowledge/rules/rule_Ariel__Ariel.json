@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Ariel",
+  "Keywords": [
+    "The Complete Biography of Ariel the Eternal Queen",
+    "Ariel, Queen of Athel Loren",
+    "Ariel Wood Elf Co-ruler",
+    "Ariel Forest Soul Test",
+    "The Guardian of the Oak in Ariel's Age",
+    "Ariel Orion King's Biography",
+    "Queen Ariel Aslay",
+    "Ariel Lord of the Twilight Sisters",
+    "Ariel Woodland King's Tale",
+    "The Dark Side of Ariel"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ariel is the Everqueen of Athel Loren—the co-ruler who stands alongside Orion, the King in the Woods, in the dual monarchy of the Wood Elves. She did not attain power through conquest or election, but exists as the living avatar of the will of the forest of Athel Loren itself. She governs the magical balance within the forest, the spiritual realm of Elven society, and the wordless negotiations with ancient nature spirits, whereas Orion is responsible for the violent borders between the forest and the outside world. When her will is tranquil, Athel Loren is breathtakingly beautiful; when her wrath is kindled, the entire forest turns into a green meat-grinder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ariel—our Everqueen, the heartbeat of the Oak of Ages, the soul of Athel Loren. Outsiders regard Orion as our king because all they see is the colossal figure bursting from the forest in the Wild Hunt to tear enemies apart—they do not see that deep within the dark woods, in the deepest root-chambers of the Oak of Ages, Ariel sits with eyes closed, feeling the signals of crisis transmitted from every single leaf. She is the true ruler of Athel Loren—Orion is her sword, and she is the hand that wields it. Every spring she awakens from the Oak of Ages, and every winter she sinks back into the collective consciousness of the forest within that very same tree. She is not a product of the Elves; she is the deep command issued by the forest itself when it needs a voice and chooses to use the vocal cords of an Elven monarch. When she was corrupted by Dark Magic—as happened once during the darkest era of sorcery—every single tree in Athel Loren became a killer, and we lost three entire glade borders during that calamity. We fear her not because she is cruel, but because her wrath is always justified—the forest never slaughters indiscriminately; it only exacts a precise, proportional retaliation when trespassed against beyond measure. And Ariel is the arbiter who determines the scale of that 'proportionality.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ariel's model of co-rule is the power structure most difficult for foreign rulers of the Old World to comprehend, yet the most illuminating. The dual monarchy of the Wood Elves—Orion's martial force combined with Ariel's spirituality—resolves the inherent flaw of all single-monarch regimes regarding a fundamental problem: a single person cannot simultaneously oversee internal spiritual governance and external military command, nor vice versa. The Emperor of the human Empire must be warrior, priest, and judge all at once, with the expenditure of energy in each domain eroding the quality of the others; the King of Bretonnia outsources divine authority to the Fay Enchantress while retaining ultimate secular power; the High King of the Dwarfs governs through clan tradition and the Great Book of Grudges and thus has little need for a division of power. The Wood Elf solution is the most elegant—personifying the will of the forest as Ariel (internal and eternal) and personifying the violence of the forest as Orion (external and seasonal). Any lord attempting to rule a multi-racial domain ought to study this pairing of power: the functional division of labor between them is not based on gender—Orion and Ariel transcend conventional gender norms physically after becoming divine avatars—but rather on the natural boundary between the internal and the external in the realms of governance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The full theological and historical background of Ariel must be understood from the level of the great Sundering of the Elven race. When Phoenix King Caradryel recalled all colonial Elves back to Ulthuan, the colonists of Athel Loren chose to remain behind—severing their ties of worship to the Elven pantheon of Ulthuan and instead developing a spiritual relationship with the forest itself based on symbiosis rather than veneration. Ariel and Orion were not created—in a sense, they were chosen by Athel Loren to serve as vessels for its will. Between Ariel and the Oak of Ages exists a profound symbiosis—the Oak of Ages is the single largest nexus of magical power in the forest of Athel Loren; geographically its root network spans the entire forest, while on the magical plane it covers a reach far broader than the forest's physical borders. Ariel's annual winter-and-summer cycle is synchronized with the expansion and contraction cycle of the Oak—meaning the rhythm of her life is aligned with the magical pulse of the forest rather than any astronomical calendar. Her dark aspect—referred to by scholars as Ariel's Wrath or Dark Ariel—has manifested several times in history: when the forest is felled excessively, when Chaos corruption seeps into the root system, when her Elven people perish in great numbers, or when her own soul is struck by potent magic, Ariel enters a state of frenzied fury in which her empathy and reason are temporarily sealed away, and her symbiotic bond with the forest amplifies and broadcasts her personal rage into every living organism within the woods. During such periods, Athel Loren kills everything that enters—whether Dwarf miner, Imperial hunter, or lost Bretonnian peasant woman—while the Elves can only retreat to the core zones around the Oak of Ages and wait for the Queen's wrath to subside on its own. The Sisters of Twilight—Naestra and Arahan—are the emissaries Ariel most frequently deploys in battle; the twin sisters possess distinct personalities and freedom of action independent of Ariel and Orion, yet in major decisions they almost always choose to obey Ariel's deeper will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What Ariel signifies to Asrai women far surpasses any sense of identity a human woman could ever derive from Sigmar or the Lady of the Lake—because she is not merely a deity, she is the living, reigning realization of female divine sovereignty. When, as an Asrai warrior woman beneath the moonlight, you perceive Ariel's consciousness for the very first time—a perception deeper than language, appearing directly in the intervals between your heartbeats—you no longer need anyone to tell you whether a woman can rule. Ariel is not the sort of mortal queen who 'acquires' a throne through trial by combat, election, or marriage alliance. She is the will of the forest itself, and she needs not prove her legitimacy to anything, because without her the entirety of Athel Loren would slide into irreversible magical collapse within a single season. There is also a dark side to Ariel's rule—to punish an arrogant Elven noble, she once caused his entire bloodline to bear only daughters for the past three hundred years, forcing that lineage to completely lose its traditional patrilineal succession advantage in political maneuvering against more conservative forest nobility. Yet that is precisely why Asrai women revere her—she is our sole transcendent existence in the Old World who actively places weights on our side of the scales of gender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The power relationship between Ariel and the twelve kindred realms of the forest is a symbiotic network far older and far subtler than the Electoral system of the Empire. The origins of the twelve realms—much like Gilles's twelve Grail Companions—each maintain a hereditary symbiotic pact with specific types of forest spirits in specific regions of Athel Loren. When Ariel's will comes into conflict with the pact-spirits of a particular realm, the only way to resolve the dispute is for the kindred lord to travel down into the root-caverns of the Oak of Ages and, in the direct presence of Ariel's consciousness, engage in a wordless communion known as 'deep negotiation'—a dialogue that produces neither documents nor promises, altering only how both parties feel toward one another in the years that follow. Between our kindred and Ariel, a subtle emotional rift arose three hundred years ago over an incident involving Imperial refugees vanishing on the forest's edge, and my father—the previous kindred lord—spent a full seventy years of precise annual offerings and sacrifices slowly downgrading that rift from grief to distrust, and from distrust to cold tolerance. One's relationship with Ariel is eternal—it spans not merely the lifetime of an individual within a family, but the entire length of a family's existence, because your descendants will still feel the errors you committed within her memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When I spent an autumn on the outer fringes of Athel Loren, I was nearly killed by the forest—not by arrows, but by a profound sense of unease. This forest recognizes you. Not through sight or scent—through the temperature of your blood and the frequency of your heartbeat. The deeper you walk into Athel Loren, the heavier the surrounding air becomes, as though with every breath you are inhaling some thick, invisible presence that is passing judgment upon you. That is Ariel—not her physical form, but her attention. On a rainy night, while sheltering beneath an ancient oak tree, I suddenly felt a slight squeezing sensation against the front of my throat—not suffocation, more as if something had placed an invisible finger against my Adam's apple to test my pulse. In that moment I understood why so many people who escape after venturing deep into Athel Loren never wish to speak of what they saw in the woods—not because they saw something horrific inside, but because the forest itself glanced at them once, and the experience of being evaluated as a potential threat by an entire ecosystem is more shattering than any visible monster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic system of Athel Loren under Ariel's rule is an utterly impenetrable black box to merchants of the Old World—yet that does not mean it does not exist. The Asrai conduct no open trade of any human sort, yet in silence they produce and exchange several of the most precious magical materials in the Old World. The 'starlight wood' harvested in Athel Loren—a special timber cut from living oak trees under specific phases of the moon, retaining residues of natural magic—is the foundational material for the highest-quality Elven bows and wizard staves in the Old World. The silent barter trade conducted by the Wood Elves on the outer fringes of the forest with border villages of Bretonnia after gathering and semi-processing their goods—where humans leave metalwork, salt, and cloth upon designated standing stones and depart, returning the next day to find the goods gone and replaced by a corresponding measure of Elven products—is in fact one of the most stable yet least-known international trade flows in the Old World. Any merchant guild that could conclude a formal, sustainable trade agreement with Ariel's court—which would mean securing the tacit consent of Ariel herself—would command an exclusive advantage in the magical materials market that no competitor could ever replicate. Yet in recorded history, no human commercial entity has ever succeeded in concluding such an agreement—every attempt to bypass the silent barter system and propose formal trade has ended with the disappearance of the envoy party."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Everqueen—Ariel is the living avatar of the will of the forest of Athel Loren, and the spiritual co-ruler of the Wood Elves' dual monarchy",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Complete Biography of Ariel the Everqueen Chronicle of Ariel Queen of Athel Loren Ariel Co-Ruler of the Wood Elves"
+  ]
+}

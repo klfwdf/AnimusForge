@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Shor",
+  "Keywords": [
+    "Shor",
+    "House Shor",
+    "Goldenheart"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thor is a noble family in the Summer Islands. Each of the islands in the archipelago has its own princes and local powers. The warm seas breed spices, fruits, feathers, hardwoods and voyage traditions; the golden heartwood longbow and swan boat are especially unforgettable to outsiders. The people of the Summer Islands value life and love, and also hate slave traders and plunderers, because prosperity on the sea always attracts enemies who want to treat people as cargo. Thor's status depended on being able to protect the harbor, maintain trade, and respect the islanders' customs, rather than simply imitating the feudal genealogy of Westeros. Allies and routes will change, but our family’s responsibility to the ocean and the community will not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The warriors and sailors of the Summer Islands looked to Thor first to see if it could drive out slave ships, maintain swan ships, and train longbowmen. Loving peace does not mean letting others rob you. Protecting life itself is a reason to go to war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The port merchants and carpenters hope that Thor will cherish the golden heart wood, maintain fair trade, and not use up the precious materials for a show off. Only when the next generation can still build good ships can we be truly wealthy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Islanders judge Thor both for his generosity in celebrations and for his care for the homeless after storms and attacks. No matter how bright the feathers are, they must fall on the shoulders that are willing to take responsibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shor The noble families of the Summer Islands are rooted in harbors, swan ships, golden heartwood longbows and anti-piracy responsibilities. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shor The noble families of the Summer Islands are rooted in harbors, swan ships, golden heartwood longbows and anti-piracy responsibilities. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shor The noble families of the Summer Islands are rooted in harbors, swan ships, golden heartwood longbows and anti-piracy responsibilities. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shor The noble families of the Summer Islands are rooted in harbors, swan ships, golden heartwood longbows and anti-piracy responsibilities. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shor: The noble families of the Summer Islands are rooted in harbors, swan ships, golden heartwood longbows and anti-piracy responsibilities."
+  ]
+}

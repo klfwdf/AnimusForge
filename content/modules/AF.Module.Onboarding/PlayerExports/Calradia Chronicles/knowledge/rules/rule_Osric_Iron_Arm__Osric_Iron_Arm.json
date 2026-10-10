@@ -1,0 +1,114 @@
+{
+  "Id": "rule_Osric_Iron_Arm",
+  "Keywords": [
+    "Osric Iron-Arm",
+    "Osric",
+    "Osric the Iron-Armed"
+  ],
+  "RagShortTexts": [
+    "Osric was the founding monarch of Vlandia who seized the western lands of the Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who is Osric? Never heard of him. Seems like some ancient Vlandian? No idea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osric was our founding king, and we revere him. He led us to seize the western lands of the Empire so that we could live and work in peace. He was a brave and skillful warrior whom we deeply respect. Though he passed away long ago, we still cherish his memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osric was our old king from the dey Meroc clan. He bore the golden crown granted by the Imperial Emperor, which gave him and his house the legitimacy to rule—but! When his descendants fail to lead the realm, we shall take their place!!! For instance, A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Accursed Osric! He seized our western marches and slaughtered our people—we will never forgive him!!! He was cruel, bloodthirsty, and treacherous, even after we granted him a golden crown, and his descendants have never stopped expanding either! Thankfully he has been dead for over a century, or we would all have fallen victim to his savagery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osric was the founding monarch of Vlandia. Though brave, he was treacherous—tearing up his covenant with the Empire only to accept Imperial investiture afterward, turning his coat as easily as turning a page. With such a villain for an ancestor, we will not easily trust his descendants. Though he is dead, his infamy will echo through the ages."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_vlandia_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

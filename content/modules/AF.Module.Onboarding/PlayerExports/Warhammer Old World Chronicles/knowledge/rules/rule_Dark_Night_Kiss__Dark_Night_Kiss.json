@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Dark_Night_Kiss",
+  "Keywords": [
+    "kiss of night",
+    "vampire transformation",
+    "blood ritual",
+    "Kiss of the Night Everlasting Curse",
+    "Midnight rebirth",
+    "Dark inheritance",
+    "Awakening by sucking blood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Kiss of the Night is a dark ritual in which vampires transform humans into their own kind. The caster drains the blood of the victim and then feeds back his own vampire blood, thereby dragging the victim from the world of the living into the dark night of the undead. The transformed ones gain immortality and power, but at the cost of eternal blood thirst and alienation from the human world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The kiss of the dark night is the highest grace we bestow upon mortals—of course, it is also the heaviest yoke. Each kiss is a transaction of souls: we elevate the chosen to a realm beyond mortals, granting them immortality, supernatural strength, and a sense of night magic, and they return with undying loyalty and a cursed bloodline. But don't think that anyone is worthy of this gift - only those who have proven themselves to be far superior to the mediocre in intelligence, beauty, or martial arts will be considered as candidates. There are too many stupid nobles who think that becoming a vampire is just a matter of 'sucking blood'. In fact, the kiss of the night is a dark night surgery deep in the soul. Those with weak will will either die directly or become brainless beasts like those lowly vampire spawns. We regard each kiss as a sacrament that continues the family line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a strategic perspective, an enemy vampire's Night's Kiss transformation ability may be the most dangerous part of the entire undead threat. Every transformed noble, official or general will become a time bomb lurking in the society of the living. Historical cases show that the most destructive kiss of the night did not occur on the battlefield, but deep inside the palace - a transformed earl could gradually turn entire provincial officials into vampire accomplices within a few years. To this end, any defense system against vampires must include regular vampire testing: silver touch tests, holy water reactions, and soul checks by priests of the White Wolf God. During the long experience of confrontation, I deeply realized that the real line of defense is not on the city wall, but behind every closed bedroom door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The physiological mechanism of the Night Kiss is far more complex than folklore. When the vampire's fangs pierce the carotid artery of the victim, what is injected is not just blood, but a biological magic factor called the 'α-Dark Enzyme Complex' by the necromancy community. It quickly invades the central nervous system within the first minute after the recipient's heart stops, reprogramming the vital signs to switch to necromantic energy-driven mode. The entire transformation process is divided into three stages: the initial stage of 'death sleep' lasts for about twenty-four hours, and the recipient is in a state of clinical death; the middle stage of 'awakening' is when the recipient opens his eyes for the first time as an undead body. This stage can easily lead to loss of control due to fasting and blood thirst; the final stage of 'belonging' lasts from several months to several years. During this period, the new vampire must be personally guided by the kisser, otherwise there is a high probability of degenerating into a bloodthirsty bat wolf. The most troubling academic controversy is: does the kiss of night retain the original soul of the recipient? The Lahmian school believes that the soul remains intact but is covered in darkness, while the Imperial Sigmar school believes that the original soul is sent directly to the realm of Maul Death, and what remains is just a dark copy with the memories of the original owner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Kiss of the Dark Night - behind this name, which is as romantic as rose petals, is the most irreversible violence in the old world. I once heard that aristocratic girls took the initiative to beg for a kiss in the night because they were infatuated with a vampire knight. They thought it was some kind of eternal love vow. But when they woke up on the first night after the ceremony and found that they could no longer feel the warmth of the sun, could no longer taste the taste of bread, and could no longer give birth to life - the first reaction of most of them was not joy, but screaming. The kiss of the dark night is not a covenant of love, but a life imprisonment for the soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The genealogy of every vampire family is a network of kisses in the dark night. Our family tradition is that every generation must kiss at least three times to ensure that the bloodline will not be severed due to the wear and tear of war. The Night's Kiss brings not only an increase in quantity, but also a choice in quality - my grandfather gave it to an Imperial engineer who later designed the entire castle defense system for our family; my mother gave it to a heretic scholar who was exiled by the Church of Sigmar, and whose knowledge of ancient languages ​​allowed us to decipher lost passages in the scrolls of Nagash. But there is a risk every time you apply the Night's Kiss - you create offspring, and all offspring have the potential to rebel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once met the victims - or survivors - of a Night Kiss in a fishing village in Nordland. The young fisherman was not completely transformed after being bitten by a wandering vampire, but fell into a state of half-life and half-death. He huddled in the shadows in pain during the day and howled for blood at night. The village elders finally reluctantly tied him to the rocks to wait for the sunrise. His last words before turning into a pile of ashes were: 'Tell everyone that that was not a kiss, that was the beginning of being exiled from the entire universe. 'That village now has a stone tablet with the inscription: 'Beware of uninvited kisses. '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Counter-research on Night's Kiss is a black market knowledge tile at the Apothecary's Guild in Altdorf. Some claim that extracting wolfsbane juice mixed with holy water can reverse the transformation process within twenty-four hours of being bitten, while others insist that a pure silver needle inserted into the heart is the only antidote. But an old pharmacist I know has been studying it for thirty years and came to a grim conclusion: There is no known way to completely reverse the Kiss of the Night, and the best you can do is delay its progression. He wrote this conclusion as a paper and sent it to the Imperial Medical College in Middenheim, where it was burned as a heretic. Ironically, the man who burned the paper was discovered three years later to be an undercover agent of the vampire."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vampires drain human blood and then feed back their own blood to complete the transformation",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Kiss of the Night Vampire Transformation Ritual"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Crooked_Eyes_Tribe",
+  "Keywords": [
+    "Crooked Eye Tribe_CE",
+    "One-eyed curved tooth_CE",
+    "Crooked-Eyed Night Goblin_CE",
+    "CrookedEye_CE"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Crooked-Eye Tribe is a tribe of night goblins in the eastern part of the Badlands. It is named after its leader, One-Eyed Crooked Fang. This goblin warlord is said to have only one eye that looks straight ahead, while the other eye always stares crookedly to the side, allowing him to monitor enemies in front and on the flanks at the same time during battle. The Crooked-Eye tribe is good at night fighting and cave ambushes. Their scimitars are coated with a kind of venom extracted from the luminous mushrooms unique to the Badlands. The wounds of the wounded enemies will emit a faint green light after death. Tribal legend believes that this is the soul of the slain being sacrificed to the Bad Moon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are crooked, even though we are small, at night you can’t even find us anywhere! The one-eyed boss is the best at choosing the right time - the night when the bad moon is at its fullest, we crawl out of the hole, smear the knife with green mushroom water, not only does it hurt when you cut it, but it also gives off a green light when you die! Last time, a big orc came and wanted to smash our holes. A dozen of us came together and cut him starting from his toes, which lasted all night. Finally, he begged us to kill him quickly - the one-eyed boss told this as a joke for three months!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Crooked-Eye Tribe posed a threat to the East Badlands trade route that was different from frontal raids—they were not the type that rushed up to smash the convoys, but infiltrated into the camp from rock crevices and caves at night, and used venom-smeared knives to cut the sentry's throats and water sacs. The core challenge in defending against the Crooked-Eye tribe is night vigilance: their small stature and cave camouflage render conventional campfire lighting and fixed sentry posts nearly ineffective. Experienced border commanders will spread a layer of gravel or dry dead branches around the perimeter of the camp as a 'sound warning net', and deploy a small group of mobile patrols equipped with hounds inside the camp - Goblin Blade Hunters are extremely sensitive to the scent and barking of dogs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Crooked-Eye Tribe's venom recipe represents a biochemical phenomenon in badland ecology that deserves further study. The \"green mushroom\" they used was classified by the Imperial Academy of Natural Sciences as Photinus orcicus - a luminous fungus that only grows in caves at certain depths in the Badlands. Its luminous properties come from the light energy released during the oxygenation reaction of a chemical called 'orco-luciferin'. The Crooked-Eye Tribe mixed this mushroom with neurotoxin extracted from the dried venom sacs of Badland Manticores to create a complex venom with a very unique mechanism of action: Mycolumines are attached to neurotoxin molecules and penetrate into the surface of the skin with the blood after the victim dies, producing a weak green fluorescence through continuous reaction with oxygen in the air. This phenomenon has special value in forensic medicine - on the battlefield after the Crooked Eye tribe's attack, the green-light corpse can be used to accurately reconstruct the attack path and battle sequence, because the green light emitted by corpses at different times of death varies in intensity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I was awakened by the same nightmare on four different nights: In the camp under the moonlight, the sentries were still standing by the campfire, but when I got closer, I found a thin green line on each of their throats - they were dead, but their bodies had not yet fallen. This dream comes from a true report from a small village in the southern part of my territory that was raided by the Crooked Eye tribe. The survivor of the village, an old woman who had escaped undetected during the attack because she fell into her cellar, told me that in the darkness she saw green lights after green lights lighting up the village alleys, each one representing the death of a neighbor. Within a month of receiving the report, all night patrols in my territory were issued with hounds - not to attack the goblins, but to at least bark once before they came near."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Crooked Eye Tribe was given a special code name in our family's war history files: 'Green Lantern' - because the corpses they left behind after each attack would glow green at night, like dark lanterns floating on the bad land. My grandfather's generation had tried to eradicate the poisonous source of the Crooked Eye tribe by burning down the mushroom caves in the eastern part of the Badlands - but the fire only lasted a day, and heavy rain began that night, and the fire was extinguished. There has since been an additional line of red text in our family archives regarding the Crooked Eye tribe: 'Don't try to destroy their mushrooms - they have ten times more mushrooms underground than you have soldiers above ground'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the darkness of the eastern Badlands, the sign of the Crooked Eye is not a sound, but a smell - a smell that smells like rotten mushrooms mixed with sweet and fishy blood, floating in the night wind so faintly that it is almost indiscernible. I once spent the night outside the entrance of a cave in a badland wadi, and was suddenly awakened by the smell in the early hours of the morning. I drew my knife and looked in the direction of the cave entrance for a full hour. Nothing came out of the cave, but I knew they were inside. The Crooked Eyes tribe is not in a hurry to fight, they are waiting for a moment - the moment when you blink, or you turn around, or just briefly lose alert in the dark due to fatigue. Underneath the Badlands, patience is the sharpest knife."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a trade perspective, the Crooked Eyes aren't the deadliest threat - but they are the most unpredictable. While other greenskin tribes have seasonal patterns and route preferences for their raids, the Crooked Eyes' raids have almost no discernible pattern: they might attack five caravans in a row in one week after three months of no activity, then disappear again for three months. This makes it impossible to accurately quantify the risk of the Crooked Eye for any business plan that relies on trade routes east of the Badlands. When our trade association calculates the trade income on the east line of the Badlands, we set the risk factor of the Crooked Eye Tribe to be the highest in this line - not because each time the loss is the largest, but because the time distribution of the loss is the most dispersed and the least hedgeable."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Crooked-Eye Tribe—a sleeper tribe in the eastern part of the Badlands that is dominated by night goblins and uses glowing venom.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Crooked Eyes Night Goblin One-Eyed Curved Teeth Glowing Venom"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "Id": "rule_World_Mechanics_Volcanoes_and_Dragonstone",
+  "Keywords": [
+    "Dragonstone Volcano",
+    "Dragonmont",
+    "Volcanic Rock",
+    "Dragonglass Deposits",
+    "Geothermal Strata"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dragonstone is a volcanic island where the heat of the Dragonmont, sulfurous fumes, black rock strata, and underground veins of dragonglass form a singular environment. The Targaryen forebears raised the fortress of Dragonstone here, shaping stone dragons, smoke-like towers, and organic curves with Valyrian craft so that the castle seems to grow straight out of the volcanic rock. Thin soil limits farming, leaving island life reliant on fishing, scant tillage, and sea-borne provisions, while its volcanic harbor and position in Blackwater Bay give it strategic weight far beyond its size. The earth's heat may be seen as the lingering warmth of the dragonlords' homeland, or simply as a reminder to the islanders that the ground beneath their feet has never truly fallen quiet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The islanders know the smell of brimstone, black stone, and warm fissures as everyday things that only outsiders marvel at. They care more about the harvest from thin soil and whether supply ships arrive in season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those of Valyrian blood easily see symbols of dragons and lineage in the volcano, while scholars study the rock strata and dragonglass. However one explains it, the shapes of Dragonstone make every visitor feel that the place obeys another memory of building altogether."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Powers around Blackwater Bay view Dragonstone more practically: it commands the sea approach, and requires steady shipments of grain. The volcano makes the castle grim; sea transport is what lets a garrison hold it over time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone Volcano Volcanoes and Dragonstone: Shaped by an active volcanic landscape, Dragonstone takes its character from black rock, steam, dragonglass, and its Valyrian-built fortress. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone Volcano Volcanoes and Dragonstone: Shaped by an active volcanic landscape, Dragonstone takes its character from black rock, steam, dragonglass, and its Valyrian-built fortress. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone Volcano Volcanoes and Dragonstone: Shaped by an active volcanic landscape, Dragonstone takes its character from black rock, steam, dragonglass, and its Valyrian-built fortress. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonstone Volcano Volcanoes and Dragonstone: Shaped by an active volcanic landscape, Dragonstone takes its character from black rock, steam, dragonglass, and its Valyrian-built fortress. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Volcanoes and Dragonstone: Shaped by an active volcanic landscape, Dragonstone takes its character from black rock, steam, dragonglass, and its Valyrian-built fortress."
+  ]
+}

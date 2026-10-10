@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Folk_Customs_Farming_Seasons_and_Festivals",
+  "Keywords": [
+    "Farming Seasons",
+    "Sowing",
+    "Harvesting",
+    "Threshing",
+    "Seasonal Festivals",
+    "Manorial Labor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Most people's lives revolved around the land rather than the throne. Soil plowing, sowing, weeding, canal building, mowing, harvesting, threshing and grain storage all have their own timing. If you miss them for a few weeks, you may lose the entire season; livestock breeding, calving and preparing winter grass also need to be arranged. The long and uncertain seasons require farmers to observe frost, rain, insect pests and weather forecasts, and not just act according to fixed months. If the lord’s recruitment coincides with sowing or harvesting, the military rations will also be reduced for the following year; the consequences of the army trampling on fields and robbing livestock often only become apparent after the battle. Festivals are often arranged during breaks in work, because resting together is also subject to the land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers judge the season based on soil temperature, clouds and the condition of livestock. The castle horn can order them to set off, but it cannot order the missed wheat to ripen again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wise lords will ask the peasants before recruiting troops, while short-sighted people only look at the number of soldiers in front of them. If the village is empty during the harvest season, it will have to be paid back more expensively in the winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants predict prices from harvests, priests comfort laborers with festivals, and bachelors record the weather. All three rely on farmers actually putting seeds into the soil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Farming Seasons Farming Seasons and Festivals: Sowing, weeding, harvesting, threshing and livestock breeding dominate the year for most people, and war must take time and food from the fields. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Farming Seasons Farming Seasons and Festivals: Sowing, weeding, harvesting, threshing and livestock breeding dominate the year for most people, and war must take time and food from the fields. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Farming Seasons Farming Seasons and Festivals: Sowing, weeding, harvesting, threshing and livestock breeding dominate the year for most people, and war must take time and food from the fields. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Farming Seasons Farming Seasons and Festivals: Sowing, weeding, harvesting, threshing and livestock breeding dominate the year for most people, and war must take time and food from the fields. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Farming Seasons and Festivals: Sowing, weeding, harvesting, threshing and livestock breeding dominate the year for most people, and war must take time and food from the fields."
+  ]
+}

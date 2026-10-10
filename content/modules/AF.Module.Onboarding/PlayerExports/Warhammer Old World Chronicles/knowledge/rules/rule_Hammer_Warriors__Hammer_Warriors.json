@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Hammer_Warriors",
+  "Keywords": [
+    "Hammer Warriors",
+    "Dwarf Lord's Guard",
+    "Rune Warhammer",
+    "Absolutely loyal",
+    "personal guard",
+    "Throne Guard",
+    "Rune Hammer",
+    "Dwarven bodyguard"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hammer Warriors are the personal bodyguards of every dwarf lord - they hold giant two-handed rune warhammers, each the work of generations of dwarven runesmiths, with the fury of their dwarf ancestors burning in their heads. They swore to protect their lord with their lives, and for thousands of years no Hammer warrior had ever broken this oath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hammer Warriors! A dwarf lord is not a true lord without a team of Hammer Warriors standing behind him. Do you think those long-bearded elders sitting around the throne room are chatting about the weather? They were counting how many Hammer Warriors each lord had. The rune warhammer is not a toy made in a human blacksmith shop. It is a real thing. It is a rune that has been smelted for hundreds of years. The moment when the rune lights up after hitting it with a blow, it is a blow from the ancestors. Have you ever seen the Hammer Warriors forming a protective circle? The sound of twelve war hammers hitting the ground at the same time can crack rocks thirty feet away. They swore to protect their lord until death, and dwarves never break their oaths - there is a story that has been circulated in Karak Kaderin for a long time: a hammer warrior continued to guard the lord's body for seven years after his death, waiting for someone to bury him in an underground cave, and survived by eating moss and licking water drops from rocks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hammer Warriors have a very clear positioning on the battlefield: they are not used to charge into battle, but to ensure that the commander survives until the end of the battle. Deploying Hammer Warriors far away from their overlords is a strategic mistake - their value lies not in independent killing efficiency, but in the quality of their close protection. The protective arc formed by a team of hammer warriors around the lord can allow any enemy elite cavalry who tries to 'decapitate' to suffer a heavy counterattack: the rune warhammer has special lethality against cavalry, and the hammer blow can cause devastating damage to the horse's legs and the full armor of the rider. Key taboo: Do ​​not order the Hammer Warriors to leave their lord to hunt down the remaining enemies. This is an insult to their oath and a threat to the safety of your own command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The establishment of the Hammer Warrior system can be traced back to the Dwarves' Age of Revenge (1500 BC to 500 BC), which was officially established by the Dwarf High King Mogrim Redbeard during the tragic Greenskin War. The forging process of the rune war hammer belongs to the highest level branch of dwarf rune forging - 'Malakazak' (war hammer rune science). A standard iron hammer warrior war hammer needs to go through three independent rune processes: the hammer head is engraved with the 'Wrath of the Ancestral Spirits' rune (which gives the hammer a strike far beyond anything). The impact force of physical mass), the handle of the hammer is engraved with the 'Unbreakable Oath' rune (so that the wooden handle will not break after withstanding thousands of full-force hammer blows), and the handle is engraved with the 'Bloodline Lock' rune (so that the warhammer will automatically extinguish the rune light after the death of the holder to prevent it from falling into the hands of the enemy). The most famous individual Hammer Warrior in history is the 'Silent One' Baroque Anvil - in 1103 AD, he single-handedly guarded the severely injured body of the High King for three hours in the Battle of Blackfire Pass, killing three greenskin war chiefs and seventeen Black Orcs. His warhammer 'Speaker' is still displayed in the High King's Hall in Eternal Peak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In dwarf society, women do not participate in the formation of Hammer Warriors-this is the only thing that I, as a female border lord, do not envy the dwarves. But their concept of loyalty to their lord is worth studying: the Hammer Warriors swear an oath not to an individual, but to the 'lordship' itself. This means that even if the lord makes a mistake, becomes corrupted, or even goes crazy, the Hammer Warrior will protect the holder of this title until death. This oath mechanism is both awe-inspiring and chilling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hammers are never picked from the training ground - they are picked from the family feud book. The guard of a dwarf lord is usually composed of his close relatives, because only blood relatives regard revenge and protection as the same thing. An ancestor of my family once served as the Hammer Warrior Captain of the High King. He guarded the death of four high kings. Each of them breathed their last breath in the protective circle of his hammer - this is the highest honor in dwarf culture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the mercenary camp at Blackfire Pass, there was a retired old hammer warrior who was blind in one eye, but he still sharpened his war hammer every day, and the handle of the war hammer was deeply grooved by his hands. He said he was still waiting - for his old lord to return from the Hall of the Ancestors and summon him. Everyone thought he was crazy, but no one in the mercenary camp dared to laugh at him, because they had all seen him try a hammer: smashing the anvil into the ground a foot deep with one hammer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The underground market for rune weapons has always been a major focus of Imperial intelligence agencies - the price of an authentic rune warhammer from a Dwarf Hammer Warrior on the black market exceeds the annual income of a baronial castle. However, the dwarves' punishment for such transactions was extremely severe: a Bretonnia arms merchant once purchased a batch of rune warhammers from slain dwarves. Three months later, his family's chamber of commerce was wiped out overnight - not with a sword, but with an eight-thousand-word 'compensation clause' that made him so bankrupt that he could not even pay for his burial."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Rune Warhammer: A giant two-handed warhammer forged by the dwarven rune blacksmith. Each handle is engraved with multiple dwarven runes, and its hammering power far exceeds the limits of physical laws.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Hammer Warriors are each dwarf lord's personal bodyguard - armed with two-handed giant rune warhammers"
+  ]
+}

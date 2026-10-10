@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Major_Ports",
+  "Keywords": [
+    "Major Ports",
+    "Port of King's Landing",
+    "Port of Oldtown"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Each great port of Westeros connects to its own hinterland: King's Landing takes in and sends out the grain and goods of the Crownlands and Blackwater Bay; Oldtown relies on the Honeywine, the Citadel, and the wealth of the Reach; White Harbor is the North's most vital sea gateway; Lannisport receives the minerals and crafts of the Westerlands; and Gulltown links the Vale to the trade routes of the Narrow Sea. A port requires quays, warehouses, lighthouses, pilots, customs officers, shipyards, and constantly dredged channels; a ship brings not only cargo, but also news, strangers, and disease. Ports are a source of revenue for kings and lords, and the first places where enemy fleets, blockades, and famine bring their weight to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants, sailors, and dockside craftsmen judge a port by its berths, warehouse rents, draft, and speed of ship repair. The fame of the Red Keep or the Hightower rings loud, yet what truly decides whether a ship returns is whether cargo can be unloaded safely and accounts settled as agreed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rulers view ports as purses and grain routes, while having to guard against smuggling, spies, and enemy fleets. Holding the city walls while losing the wharves often amounts to handing the stomachs of the townsfolk over to an adversary at sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The poor look to ports for day labor, alms, and outbound ships, and are the first to bear runaway prices and pestilence. In tales told afar, great ports are full of opportunity, yet the back alleys behind the quays are often crowded with filth, sewage, and unclaimed corpses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Major Ports Sea gates such as King's Landing, Oldtown, White Harbor, Lannisport, and Gulltown link the hinterlands to distant shores, serving as focal points for taxes, supplies, plague, and blockade. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Major Ports Sea gates such as King's Landing, Oldtown, White Harbor, Lannisport, and Gulltown link the hinterlands to distant shores, serving as focal points for taxes, supplies, plague, and blockade. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Major Ports Sea gates such as King's Landing, Oldtown, White Harbor, Lannisport, and Gulltown link the hinterlands to distant shores, serving as focal points for taxes, supplies, plague, and blockade. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Major Ports Sea gates such as King's Landing, Oldtown, White Harbor, Lannisport, and Gulltown link the hinterlands to distant shores, serving as focal points for taxes, supplies, plague, and blockade. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Major Ports: Sea gates such as King's Landing, Oldtown, White Harbor, Lannisport, and Gulltown link the hinterlands to distant shores, serving as focal points for taxes, supplies, plague, and blockade."
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Elanos",
+  "Keywords": [
+    "Elanos",
+    "House Elanos",
+    "Island Houses"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Eranos is the noble family of Loras. The size of Loras, the barren land and the topography of the archipelago mean that the nobles here cannot just guard one manor door: they must negotiate repeatedly with ship owners, fishing businesses, warehouse owners, clergy and neighboring islands. The foundation of Eranos is woven from these relationships, and the value of a family name is reflected in its ability to mediate debts, organize convoys, and find outside food for bad harvests. It may be at the forefront of a certain session, or it may retreat due to the loss of support from the fleet; as long as Rollas still depends on the sea for food, the family must accept the judgment of port credit more harshly than empty pomp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Local dignitaries regard Elanos as a network of relationships: who is connected to relatives, who is owed warehouse receipts, and who is the shipowner willing to speak for. Island-city politics rarely happens in just one chair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The longshoremen and crew did not care where Eranos' seat was ranked. They only remember the back wages, the repairs after the storm, and whether they were willing to stand on the cold and wet embankment when their home was in danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lorath's poor and silent ones value restraint. If Eranos saves the feast for winter food, he will win unarticulated respect; if he only uses poverty as an excuse for downward taxation, his resentment will be hidden in silence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Elanos The noble families in the Lorath Island order maintain their reputation through local affairs, port relations, and support during disaster years. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Elanos The noble families in the Lorath Island order maintain their reputation through local affairs, port relations, and support during disaster years. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Elanos The noble families in the Lorath Island order maintain their reputation through local affairs, port relations, and support during disaster years. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Elanos The noble families in the Lorath Island order maintain their reputation through local affairs, port relations, and support during disaster years. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Elanos: The noble families in the Lorath Island order maintain their reputation through local affairs, port relations, and support during disaster years."
+  ]
+}

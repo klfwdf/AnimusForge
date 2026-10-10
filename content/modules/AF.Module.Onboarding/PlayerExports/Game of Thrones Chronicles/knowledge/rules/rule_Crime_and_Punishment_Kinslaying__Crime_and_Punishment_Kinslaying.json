@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Crime_and_Punishment_Kinslaying",
+  "Keywords": [
+    "Kinslaying"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kinslaying Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kinslaying: Parricide is considered deeply taboo in Westeros because it destroys the most basic imaginations of blood, inheritance, and family protection. Even if the evidence is incomplete, the accusation itself is enough to destroy a person's reputation; people often fear not just the crime, but the family within them."
+  ]
+}

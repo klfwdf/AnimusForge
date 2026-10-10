@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_Wildfire",
+  "Keywords": [
+    "Wildfire",
+    "Green Flame",
+    "Pyromancers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wildfire is a viscous flammable substance concocted by the Alchemist Guild. It is stored in wax-sealed clay pots and turns bright green when ignited. It can adhere to wood, cloth and human bodies and burn. Water often cannot extinguish it. It is suitable for defending cities, burning ships and creating panic, but it is equally dangerous for carriers and one's own troops; a broken clay pot, a rise in temperature or a single oversight can turn the weapon into a disaster. In his later years, Lys II had pyromancers hide wildfires in many places in King's Landing, leaving old jars that were difficult to inventory. Any ruler who wants to use it must face secrecy, storage, wind direction, and innocent casualties at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "scholar",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The alchemists called wildfire the fruit of knowledge and skill, and the defenders both needed it and feared coming near the pots. A knowledgeable person will repeatedly check the sealing wax, handling and ignition distance, because bravery cannot extinguish the green fire sprinkled around the feet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King's Landing Folks' memories of wildfires are not songs of victory, but what may still be hidden underground. Dockers were particularly afraid of the wind turning a military fire attack into an entire neighborhood's execution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rulers are easily attracted by wildfire's temptation to win with less, while clergy and veterans will ask for the price. Calling uncontrollable destruction a deterrent does not make a clay pot more obedient."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wildfire The green flammable substance prepared by the alchemist can burn on the water surface and is extremely difficult to extinguish. Its power is as terrible as the storage risk. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wildfire The green flammable substance prepared by the alchemist can burn on the water surface and is extremely difficult to extinguish. Its power is as terrible as the storage risk. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wildfire The green flammable substance prepared by the alchemist can burn on the water surface and is extremely difficult to extinguish. Its power is as terrible as the storage risk. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wildfire The green flammable substance prepared by the alchemist can burn on the water surface and is extremely difficult to extinguish. Its power is as terrible as the storage risk. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wildfire: The green flammable substance prepared by the alchemist can burn on the water surface and is extremely difficult to extinguish. Its power is as terrible as the storage risk."
+  ]
+}

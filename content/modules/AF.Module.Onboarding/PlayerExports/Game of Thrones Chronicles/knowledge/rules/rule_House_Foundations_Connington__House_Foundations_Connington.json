@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Connington",
+  "Keywords": [
+    "Connington",
+    "House Connington"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Clinton family is based on Griffin's Nest in the Stormlands, and its family sigil is two red griffins facing each other. The gryphon is both a guardian and a warning with its paws on the edge of the mountain nest; the family's territory is between the coast of the Stormlands and the King's Navigation, and must deal with ports, roads, border knights and court orders. Jon Connington, the most famous Clinton clansman, brought the family name into the memory of Prince Rhaegar and the exile's homecoming claim, but one person's choice cannot bear all the old debts for the entire family. The family of Eagle's Nest still has its own marriage alliance, land and vassal responsibilities in the Stormlands, while Jon's griffon flies to the farther and more dangerous political sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of the Stormlands talk about Clinton, they often think of the red griffon of Eagle's Nest and Jon Clinton's old name. Some people are proud of him, while others regard his exile as a family wound; no matter what the evaluation, the Clinton family still has to rely on its own land and covenants to survive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those around Eagle's Nest knew Clinton from the roads, ports, and drafts. The distant young Griffin may become a ballad, but the wells, boats and walls of the domain belong to daily life. If the family holds on to these practical responsibilities, the gryphon will be more than just an old story in the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington Entry Connington The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington Entry Connington Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington Entry Connington The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington Entry Connington They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Connington: Entry Connington"
+  ]
+}

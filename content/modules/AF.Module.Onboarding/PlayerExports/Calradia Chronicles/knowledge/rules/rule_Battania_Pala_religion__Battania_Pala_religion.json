@@ -1,0 +1,50 @@
+{
+  "Id": "rule_Battania_Pala_religion",
+  "Keywords": [
+    "Battania/Pala Religion"
+  ],
+  "RagShortTexts": [
+    "The core of Batania religion is the worship of nature"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The core of Patania's religion is the worship of nature. As priests, judges and transmitters of knowledge, druids held a very high position in Celtic society. Believe in many gods in charge of forests, rivers, sky, war and fertility. Sacred springs, ancient trees and certain hills in the forest are considered sacred sites."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battanians believe in nature"
+    }
+  ],
+  "TextMappings": []
+}

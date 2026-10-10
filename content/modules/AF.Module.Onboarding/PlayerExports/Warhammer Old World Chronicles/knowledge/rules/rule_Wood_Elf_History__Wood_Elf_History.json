@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Wood_Elf_History",
+  "Keywords": [
+    "Wood Elf History",
+    "Aslay Origin",
+    "Wood Elf Calendar Elf Split",
+    "Battle of Nagasu",
+    "colonial era",
+    "Great elven schism",
+    "High elves break up",
+    "forest assimilation",
+    "old world colonization"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The ancestors of the wood elves were the first elven explorers to establish colonies in the old world. Over the long years, they gradually severed contact with their mother country of Ulthuan. When the Longbeard War broke out between the dwarves and the elves for supremacy of the Old World, the elves in these forests stood by and refused to support either side. After the war, they retreated to the depths of Athel Loren and evolved into an independent civilization completely different from the high elves under the protection of the enchanted forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our history is a glorious beginning of betrayal. When the Phoenix King's envoys came to Athel Loren during the Longbeard War and asked us to join the war against the dwarves, our ancestors refused - they had long seen through that this war was only for the arrogance of the Phoenix King and the stubbornness of the Dwarf High King, and had nothing to do with the forest. On the surface it is an escape, but in a deeper sense it is an awakening: our allegiance is no longer to any distant throne, but only to the living earth beneath our feet. Since then, there has been little more than a cold courtesy between us and the high elves of Ulthuan—they see us as their fallen cousins, and we as their arrogant old masters. But the true history is not just about political divisions, but about Athel Loren's transformation of us: the forest took us in, knitted our flesh and roots together, and transformed us from elven colonists into true Asrai."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of the Wood Elves teaches every military strategist an important lesson: Do not mistake the neutrality of a strong force for weakness. During the hundreds of years of the Longbeard War, many dwarven and elven commanders attempted to exploit or attack the lands surrounding Athel Loren, each time ending in disastrous failure. The Wood Elves don't join the war not out of fear, but because they don't think it's worth it. Any violation of its borders is retaliated with formidable efficiency, and the forest itself makes pursuit suicidal. Strategically, wise leaders will keep their distance from Athel Loren - respecting its borders and refraining from any form of military penetration of its forests. Wood elves rarely initiate wars of conquest, but those who anger them find themselves forever shadowed by the arrows fired from the jungle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of elven colonists in the Old World can be traced back to approximately 4500 BC, when Bel Shanar, the Phoenix King of Ulthuan, sent expedition fleets to establish trading outposts around the world. Several elven settlements appeared along the coasts and major rivers of the Old World, the largest of which were located in what is today the Bretonnian Coast and Athel Loren. These colonies initially maintained tenuous trading relations with the local dwarven kingdoms. The turning point occurred in about 2000 BC with the War of Longbeard - an all-out war between dwarves and elves. When the Phoenix King Calandor II ordered all colonists to return to Ulthuan to support the war effort, the elves of Athel Loren refused to obey, leading to a de facto schism. After the war, those elves who decided to stay in the old world gathered around Athel Loren and were gradually assimilated by the magic of the forest. By about 1500 BC, they had basically completed the transformation from high elf colonists to Asrai, and established the Forest Royal Court with Orion and Ariel as co-rulers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Writers of Asrai history often only focus on Orion's hunting and war, but the history of wood elves from a female perspective has a completely different texture. During the War of the Longbeard, when the men at the court debated whether to support the Phoenix King, it was Ariel and her priestesses who first made the fateful agreement with the forest spirits - to give up the direct protection of the elven gods in favor of Athel Loren itself. The essence of this agreement is an unprecedented soul migration: forever stripping the destiny of the entire race from the elven civilization system of Ulthuan and implanting it deep in the roots of a conscious magical forest. Ariel's vision saved us - while the high elves fought among themselves in the courts of Ulthuan, Asrai had planted unshakable roots in the deepest reaches of the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The histories of the twelve families are independent but intertwined with each other, like the twelve trunk branches of an ancient tree. The history of our Starleaf family can be traced back to Isharion, the commander of the first high elven colonial ship to arrive on the west coast of the Old World - the 'Morning Star' - who established the original wood supply station on the edge of Athel Loren to repair the voyage fleet. Issarion made a decision during the Longbeard War that shocked all high elves: he burned his ships and declared that the colonists would remain in the forest forever. In the six thousand years since, the blood of House Starleaf has never left Athel Loren, and our contract with the willow spirits has never been broken. Every family patriarch must re-read the oaths sworn by their ancestors during the succession ceremony - when those words are spoken in the ancient Elvish language, the forest will respond with a low vibration of tree roots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I discovered a strange phenomenon when I was wandering around the old world: almost every race has its own 'wood elf origin story', but they are hilariously contradictory to each other. Imperial scholars insist that Asrai is a descendant of the Fallen Elves—mutations that fled into the forests after being tainted by Chaos. Dwarf Hate Inscriptions claim that the Wood Elves are essentially traitors and deserters from the War of the Longbeard. Bretonnian folklore romanticizes the wood elves as the lost people of the Lake Lady, condemned for some ancient sin to be forever trapped in the mortal forest. Only when you actually step into Athel Loren—if you're lucky enough to make it out alive—do you realize that all these stories miss a central point: Wood elves don't stay in the forest because they're forced to, they choose to be the forest itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of trade records, the course of Wood Elf history had a profound but often overlooked impact on the commercial landscape of the Old World. Before the War of Longbeard, the elven colonies were hubs for coastal trade in the Old World - dwarven ores and elven crafts were collected and distributed in these ports. After the war, the cessation of trade in Athel Loren led to the rupture of a complete commodity chain, which directly promoted the development of metallurgy and shipbuilding technology by humans to fill the gap. The early iron industry in Imperial Reikland was largely the product of being forced out of the 'elven commodity vacuum'. What's more interesting is that one of the reasons why some dwarven rune items fetch sky-high prices on the auction market is that they use elven magic alloys obtained before the cessation of elven trade - a material that is now unobtainable from any source, making it one of the rarest commodities in the old world."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The War of the Longbeard - an all-out war between dwarves and elves that resulted in a permanent break between the elven colonists and Ulthuan",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The ancestors of the Wood Elves were the first Elf explorers to establish colonies in the Old World."
+  ]
+}

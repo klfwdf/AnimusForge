@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Islands_of_Salt_and_Iron_Hammerhorn",
+  "Keywords": [
+    "Hammerhorn"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Warhammer Point is located on the Isle of Great Wyk, one of the coastal castles of the Iron Islands. The promontory stretches out into the stormy Sunset Sea. The rocks and waves make it difficult for large ships to dock, but it provides a hidden route for ironborn longships who are familiar with the shallows. The land on the island is barren, and the residents rely more on sea fish, salt, sheep, ship materials, and goods obtained from the outside world; this scarcity is the soil for the Ironborn's ancient paths and the concept of iron prices, rather than a simple warlike nature. The stone walls of Warhammer Point can protect a section of the coastline, but they cannot live alone without the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn Local families also relied on salt fish, ore, barren fields, sheltered anchorages, and longships to return home; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn Entry Hammerhorn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn They will also recognize the accents, laws and credentials of the Iron Islands; reputations may travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn Entry Hammerhorn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhorn They care about salt fish, ore, barren fields, sheltered anchorages, and the return of longships. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Hammerhorn: Warhammer Point is located on the Isle of Great Wyk, one of the coastal castles of the Iron Islands. The promontory stretches out into the stormy Sunset Sea. The rocks and waves make it difficult for large ships to dock, but it provides a hidden route for ironborn longships who are familiar with the shallows. The land on the island is barren, and the residents rely more on sea fish, salt, sheep, ship materials, and goods obtained from the outside world; this scarcity is the soil for the Ironborn's ancient paths and the concept of iron prices, rather than a simple warlike nature. The stone walls of Warhammer Point can protect a section of the coastline, but they cannot live alone without the sea."
+  ]
+}

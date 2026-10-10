@@ -1,0 +1,171 @@
+{
+  "Id": "rule_AVILING",
+  "Keywords": [
+    "Ivyland",
+    "Aiwei leads the province_AV",
+    "Elector Count _AV",
+    "Great Swordsman of Aviland_AV",
+    "Blackfire Pass_AV",
+    "Aiwei cavalry_AV",
+    "Afelheim_AV",
+    "Avi leads the herd_AV",
+    "Marius Leitdorf_AV",
+    "Crazy Count_AV"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iverland is the richest agricultural province in the southern border of the empire. The fertile Upper Reik Plain nourishes the largest herds of cattle and the most majestic war horses in the old world. The capital, Afelheim, is located on the banks of the River Ivey and is famous for its white walls and copper-topped towers. Stretching between the southern tip of the province and the World's Edge Mountains, Blackfire Pass is the Empire's first strategic line of defense against the Greenskin invasion - it was here that Sigmar himself won the decisive battle that established the foundation of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iverland - When the people of the Empire mentioned this name, the first thing that popped into their minds was not the name of Elector Count, but steaks and war horses. The province is home to cattle herds, and Iverling steak is a signature dish in Altdorf's most expensive restaurant. Their cavalry is the best in the empire, more arrogant than the Reik Guards, and the horses they ride are more valuable than the noble car led by Tarabek. But let's be honest, their Elector Count Marius Leitdorf is a complete lunatic - on the one hand he is indeed a military genius, having fought off at least three large-scale greenskin invasions in the Blackfire Pass; on the other hand you never know if he will attend the Imperial Council in his pajamas tomorrow. But the Ivey leaders didn't care. They said they would rather have a mad genius than a sober mediocre person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of Iverland does not lie in the wisdom of its Elector Count - in fact Marius's mental condition has become an uncontrollable variable in the politics of the entire empire - but in its control of the most important land trade corridor in the Old World. The Blackfire Pass is the only safe passage connecting the empire to the southern border princedom and even the far eastern trade routes. Anyone who wants to weaken the empire's economy only needs to deploy a force at Blackfire Pass to cut off more than 70% of the trade between the empire and the dwarf city-states. However, the cavalry power of Iverland is also the most unpredictable factor in the empire's provinces: their heavy cavalry charges are enough to tear apart the lines of any orc tribe, but the prerequisite for mobilizing these cavalry is to get the approval of the mad count - and convincing him may require you to draw a unicorn on the ground with the tip of your sword, or accompany him to debate for three hours about the metaphorical relationship between cheese and political philosophy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Averland's governance model is a textbook example of the imperial agricultural economy. The province is based on the three-plantation rotation system, which maximizes the productivity of the alluvial soil in the Upper Reik Plain. Its total cattle population is conservatively estimated by the Imperial Taxation Office to be more than 120,000, providing a stable supply of meat and leather for the entire Southern Empire. The horse breeding system of the Ivey Cavalry is also worthy of in-depth study - the Royal Stud near Afelheim has adopted a pedigree registration system for more than two hundred years, and the bloodline of each war horse can be traced back for more than five generations, which is unique in the old world. However, the province's finances relied too much on agricultural and animal husbandry exports, which put it in a passive position in the imperial trade system: when the shipping on the Reik River was interrupted due to war or banditry, the cattle in Iveyland could not be transported out, and the province's income would plummet by 40% in one season. Marius Leitdorf's personal financial management was even more disastrous - he ordered three completely incompatible tax accounting systems for the province in the same year, because he was convinced that the numbers would appear differently on different colored papers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a noble woman in Iverland, you must face a unique dilemma: all the power structures in this province are based on the display of masculinity - from cavalry rodeos to parliamentary debates, from sword duels to cattle market bargaining. The political space for women in Iveyland is compressed into an extremely narrow gap, but it is not without opportunities. Marius's madness meant that it was the Privy Council of Afelheim that really controlled the day-to-day affairs of the province, and most of them were elderly nobles who signed documents for the count in his absence. A clever woman can amass far more influence than a man can actually achieve by managing the estate's economy—the true lifeblood of Iverland. While the men bickered in the council chambers over the patrol budget for Blackfire Pass, their wives were already in the ledger deciding who would provide the steeds for that patrol."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every patriarch of a family that runs an Iverland will tell you the same lesson: in this province, a family's greatest assets are not land or gold—it's the blood of their cattle and the roster of their cavalry. The old noble families in Iverland have been operating their own cattle bloodlines and cavalry companies for generations. The rise and fall of a family is directly determined by how many healthy calves its pasture produced last year and how many horses its cavalry lost in the last battle at Blackfire Pass. The reason why the Leitdorf family can secure the position of Elector Count is not because of Marius's political ability - it is known that he can argue with a wall for three hours about whether the color of the wall is correct - but because the Leitov family controls the largest cavalry establishment in the Iveyland and the breeding rights of the purest war horses. The best way to establish your family status in Iverland is not to bribe the Elector Count, but to breed a champion horse that can be praised by the emperor himself at the royal parade in Altdorf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I led mercenary duties in Ivey for four years, working as a ranch guard, a caravan escort, and a patrolman at Blackfire Pass. This province is a good place for mercenaries - the ranchers have money but lack manpower, the greenskins come south from the mountain pass every year, and the garrison of the pass fortress is always recruiting men. Although the Mad Earl himself was not sane, he never defaulted on his military pay, and he would occasionally reward the cavalry company with the best performance with a random amount of gold coins during military parades. But the most dangerous thing about Ivyland is not the greenskins - it's the bulls. Ivey's people gambled more crazily on the bull market than casino dealers. A single cattle futures transaction could turn you from a mounted cavalryman to a pauper who could only walk on foot in three days. Mark my words: take the money you make with swords in Ivey, don't lose it with bulls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chamber of Commerce in Iverland has its own set of logic - business here does not rely on rivers, but on hooves. Every large-scale transaction will involve cattle in the end: leather merchants need ranchers, quartermasters need cavalry, butchers' guilds need a stable source of meat, and even the Magic Academy has to order dozens of bulls from Iverland every year for alchemy experiments (don't ask me what they do with cows, I don't want to know). The Iverland Chamber of Commerce's biggest bargaining chip is the transit trade tax from the Blackfire Pass - every cart of ore and every box of rune artifacts shipped from the dwarf kingdom to the interior of the empire must pass through the pass, and the warehouses and inns on both sides of the pass are all controlled by the Iverland Chamber of Commerce. The dwarves have always been dissatisfied with this toll, but they understand better that there is no safe trade route without passes. However, rinderpest has been spreading recently in the eastern pastures, and the senior officials of the Chamber of Commerce are extremely worried. If the epidemic spreads to the Royal Racecourse, there will be a big problem in the supply of horses for the Imperial Cavalry next year."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Iverland—the richest agricultural province in the old world, the granary of the empire and the home of war horses",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Iverland Empire Province Agriculture and Animal Husbandry Blackfire Pass"
+  ]
+}

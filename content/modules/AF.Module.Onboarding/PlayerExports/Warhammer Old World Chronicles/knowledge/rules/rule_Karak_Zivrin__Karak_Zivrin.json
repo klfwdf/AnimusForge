@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Zivrin",
+  "Keywords": [
+    "Karak Zivrin_KF",
+    "Qivrin Fortress_KF",
+    "Granite Hand Fortress_KF",
+    "Qiflin Stone Gate_KF",
+    "Qivrin Dwarf Territory_KF",
+    "King Zivrin_KF"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Located on the westernmost side of the Gray Mountains, Karak Zivrin is the western outpost of the dwarf kingdoms and is ruled by King Lorek Granitehand. The dwarves here are famous for their stonemasonry and border guards, and the gates of Zivrin are known as the \"Mouth of the West\" - the starting point for all trade routes to Bretonnia and the western part of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Zivrin—our people’s first declaration to the west! King Lorek's hands were as thick as granite slabs, and he could crush pebbles as big as his fists with one palm. Qifrin's city gate is the widest dwarven gate in the west of the old world, big enough for three mammoths to pass through side by side. Anyone who wants to enter the western part of the Old World from Gray Mountain must first pass the Qiflin level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kharak Zivrin militarily controls the strategic passes on the west side of the Gray Mountains. Any large-scale military movement from the eastern mountains into Bretonnia or the western part of the empire had to pass through the outer passes of Zivrin. Although the garrison of King Lorek Granitehand's fortress is small, the terrain is dangerous, making it as easy to defend and difficult to attack as any large dwarven fortress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Kharak Zivrin's economy is based on stone gate services and the granite trade. Qiflin Shimen Pass is the most important transit passage on the west side of the Gray Mountains, with more than a hundred caravans passing through every day. Transit charges are subject to a tiered system - Dwarf caravans are tax-free, Imperial caravans are half-taxed, and Bretonnian caravans are fully taxed. Ziflin's granite is more practical than Kafkamaz - the former is mostly used for building cornerstones and pavement paving materials, with large quantities and low prices but stable demand. Special economic project: Qiflin is also an \"information hub\" for the dwarves. The caravans from the west carry news from all over the old world and exchange it here. The merchants are willing to pay a lot of information fees for this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female dwarves of Qifrin manage the fortress' \"Information Desk\" - a stone-carved archive that records the itinerary of the coming and going caravans, weather conditions and surrounding terrain information. It was my duty to engrave the information provided by each caravan leader into tablets and archive it. King Lorek said that whoever has the information controls the opening and closing of the city gates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has guarded the stone gate on the west side of Qivrin for thousands of years. King Lorek has given us the hereditary title of \"Watchers of the Stone Gate\" - this is both a high honor and a heavy responsibility. The long-bearded elders of our family have a motto: If the stone gate is not closed, Qifulin will not fall; if Qifulin does not fall, Gray Mountain will not be in chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Qifrin's stone door is the largest dwarf building I have ever seen - fifty feet high and twenty feet thick, with each door panel hewn from a single block of granite. The dwarf told me that the most precise spherical bearings were used for the door shafts, so that these two giant doors weighing hundreds of tons can be pushed open by a single person. I stayed at an inn under the Shimen for one night, and at least forty caravans passed in and out under my nose that night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Zivrin's information bazaar is the most valuable intangible asset in the Gray Mountains. Businessmen from all over the place will exchange information when passing through here - which mountain road is blocked by the greenskins, which human city-state has seen a sharp drop in food prices. A shrewd businessman can save hundreds of miles of futile detours by spending a few gold coins to ask the dwarf information administrator to help check recent caravan reports."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kharak Zivrin is a dwarven border stronghold on the west side of the Gray Mountains, known for its Western Gateway and Granite Craftsmanship, and is ruled by King Lorek Granitehand.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarven Western Outpost Stone Gate in the Gray Mountains of Karak Zivrin"
+  ]
+}

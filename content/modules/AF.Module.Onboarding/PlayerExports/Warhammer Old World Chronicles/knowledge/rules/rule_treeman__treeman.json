@@ -1,0 +1,210 @@
+{
+  "Id": "rule_treeman",
+  "Keywords": [
+    "tree man",
+    "Dursu",
+    "forest incarnation",
+    "ancient guardian",
+    "spirit",
+    "Treant Dryad",
+    "sleeper",
+    "forest will",
+    "Roots' Wrath"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Treants are the oldest and most powerful forest spirits in Athel Loren—living giants formed from ancient trees possessed by nature spirits. A single angry treant can destroy an entire castle wall, its roots can tear the ground apart, and its branches can mow down infantry arrays. The most famous of them, Durthu, the treant, is said to be the oldest of all dryads, having survived for tens of thousands of years. These ancient guardians usually sleep deep in the most secret places of the forest, and are only awakened when Athel Loren faces a major threat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Treants are not our servants - not at all. They are ancient allies, the oldest spirits of the forest, beings that have taken root in this land before the elves were even born. We revere them and communicate with them in the language of the ancient forests. Durthu - The oldest and most heart-wrenching of all the treants: it was once the gentlest guardian, but after seeing too many forests cut down and burned by mortals, its inner anger has condensed into a cold, opportunistic silence. Awakening a treant is an extremely important decision - once enraged, they are extremely difficult to calm down, and their rage can burn the entire area until not a single tree grows. Sometimes during wild hunting, some younger tree men will voluntarily join the hunt. Their heavy footsteps are like the heartbeat of the earth, providing the most magnificent soundtrack for our hunting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Treants are the most difficult unit in the Wood Elf army to deal with with conventional tactics. Their size, strength, and durability surpass that of any mortal creature, and it is more accurate to think of them as heavy siege weapons. The only effective way to defeat the Treants is to destroy or seriously injure them before they can close in on our lines with a massive concentrated firepower - artillery, flame projection, or magical attacks. Treants are extremely afraid of fire (this is obvious), but also have amazing resilience. Identifying the type of treant on the battlefield is crucial: younger treants, while dangerous, still have weaknesses, while ancient treants like Durthu are nearly unstoppable. If you see a moving giant tree appear in the enemy lines, re-evaluate your entire campaign - for you are facing not just an army of elves, but the will of Athel Loren itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The magical biological essence of the Treant is a 'materialized parasitic symbiont of the natural spirit' - a composite entity formed by the fusion of the original natural consciousness (spirit) and a large tree that has reached a certain age threshold. This fusion differs from the forced binding of necromancy—the relationship between the treant's spirit and the tree is symbiotic, with the spirit gaining a body to act in the physical world during the fusion process, and the tree gaining consciousness and the potential to grow beyond biological limitations. The age of a treant has an exponential relationship with strength: a newly formed treant (about 500-1000 years old tree foundation) has about twice the combat power of an ordinary giant, while an ancient treant like Durthu, estimated to be over 20,000 years old, has abilities that are theoretically close to that of a small nature god. Durthu's history is particularly noteworthy - it witnessed dwarven logging parties burning a large swath of Athel Loren's woodland during the Longbeard War, an event that permanently scarred it, causing it to maintain an almost paranoid hostility to all creatures wielding axes and torches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To an elven woman raised in Athel Loren, treants were more than weapons or guardians—they were elders, uncles, and silent witnesses. When I was a child, my grandmother, the oldest White Willow, allowed me to climb its moss-covered branches and taught me how to listen to the sounds of sap flowing within the bark—the language of communication between trees, too slow for humans and young elves to detect. The tree-man grandmother has not moved for a long time. Its roots are deeply rooted in the soil beneath an ancient battlefield, where it continues to purify the old poison that seeped into the soil thousands of years ago. This price—giving up movement, giving up growth, and continuing to use oneself to neutralize the poison of history—is a sacrifice that tree talents can truly understand, and it cannot be borne by any flesh and blood body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As leader of the Woodland Council, another key responsibility of mine is to maintain the dormant stability of the tree people within my family's domain. The decision to awaken the treants was not made unilaterally by Orion or my family - it had to go through a conversation in the ancient forest language with the spirit of the sleeping treant, and only after obtaining its explicit consent could one ask for its awakening to fight. This dialogue can take decades: first place the oldest singer of the family at the foot of the tree and continue singing the song of awakening, watering its roots with spring water every sunset, and then waiting - sometimes waiting for a generation of elves - until the tree's internal sap pressure reaches the awakening threshold. Forced awakening without the spirit's consent is an absolute taboo: there was once a reckless young elf who used blood magic to forcefully activate a sleeping ancient oak spirit. As a result, the tree man woke up and destroyed everything for several miles without distinguishing between friend and foe. In the end, Durthu needed to personally come to 'pacify' it - that is, split it in half."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the dwarven ruins of the World's Edge Mountains I met an old dwarf miner who described the treants in a very pragmatic way: 'Don't burn anything in the forest. Even if you're freezing, even if the wolves are howling around you. The sound of a live tree burning wakes things underground that shouldn't. 'He's not talking about dragons, not demons - he's talking about the ancient tree spirit system buried deep in the ground, with roots extending to every corner of the forest. Dwarves occasionally encounter living tree roots in the deepest underground mines—roots still warm and pulsing slowly hundreds of miles below the nearest forest in the World's Edge Mountains. He claimed that one time his mining pick accidentally pierced a particularly thick tree root, and three days later the entire mine tunnel was completely sealed by some kind of moss and vines that poured in from the cracks in the rock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the timber and construction industries, tree people represent a physical risk that cannot be quantified by rational economic models. The Imperial Guild of Imperial Architects has an internal confidential assessment that attempts to calculate how thick the walls would need to be to withstand a frontal attack by ancient Treants during a war if ancient Treants were to attack the Imperial walls. The answer is: A standard double stone wall works against a young dryad, but is completely useless against a Durthu-level treant - his roots can penetrate and disintegrate any non-rune-reinforced stone structure in a quarter of an hour. The report's most disturbing conclusion is this: if Durthu decided to attack Altdorf, the existing city defenses (including the Imperial Artillery School's fortified artillery emplacements) would not be able to prevent him from reaching Sigmar's Cathedral in any reasonable amount of time. That is, of course, if someone is foolish enough to trigger Durthu's attack - which would presumably require cutting down Athel Loren's heart tree, which no one in their senses would attempt."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Treeman - a living guardian giant formed by the fusion of ancient trees and natural spirits.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Treant Durthu Forest Avatar"
+  ]
+}

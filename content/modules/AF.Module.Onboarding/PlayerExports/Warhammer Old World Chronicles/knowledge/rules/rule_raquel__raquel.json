@@ -1,0 +1,159 @@
+{
+  "Id": "rule_raquel",
+  "Keywords": [
+    "Principality of Raquel_AN",
+    "Duchy of Raquel_AN",
+    "Raquel Territory_AN",
+    "Port Raquel_AN",
+    "Duke Raquel_AN",
+    "Province of Raquel_AN"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Raquel is located on the northwest coast of Bretonnia and is ruled by Duke Tobert de Raquel. This coastal territory is renowned for its fishing and shipbuilding industries, with Port Raquel being Bretonnia's second largest port and one of the main anchorages for the Kingdom's fleet. The sea breeze and salt spray have shaped the pragmatic and tenacious folk customs here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Raquel – our maritime gateway to Bretonnia! Duke Tobel is a cautious and shrewd ruler, and Raquel's shipwrights build warships that are rock-steady in the huge waves. The annual Poseidon Festival celebration is grander than any inland festival. Fishermen gather at the pier to thank Mannan Poseidon for his safe navigation throughout the year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Raquel holds Bretonnia's maritime lifeline. Controlling this place means controlling sea trade with the nations of the Old World - everything from imperial goods from Marienburg to elven treasures from the south enters Bretonnia via Port Raquel. Duke Tober's navy, while not as powerful as the Empire's, was strong enough to fend off harassment from Norsca raiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Principality of Raquel is built on the sea. The fishery produced tens of thousands of tons per year, and salted fish was exported throughout the interior of the empire. Raquel Dockyard has Bretonnia's only deep-water dry dock, allowing the construction of double-deck warships. The principality's specialty shellfish and pearls enjoyed a high reputation among the aristocratic markets of the Old World. Trade data shows that Port Raquel’s annual throughput is second only to Marienburg, accounting for more than 60% of Bretonnia’s total maritime trade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Raquel The sea breeze blew my veil. Women in the ducal court had a voice no less powerful than that of the civil warlords. The belief in the sea god Mannan is deeply rooted here, and the goddess and the sea god coexist harmoniously - this is Raquel's unique religious tolerance. I used this balance of faith to gain more trade privileges for my family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has its roots in Raquel for generations and controls the most important fishing ground in the principality. Duke Tobel relies heavily on maritime trade, and as long as the family can ensure the security of the port and the flow of goods, we will always have a place in the Duke's court. Prestige at sea is power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Raquel's marina smells of fish and sea salt year-round. I've seen the shadows of Norsca longships swimming in the open sea, and I've seen strange giant clams fishermen pull up from the deep. Duke Tober put a bounty on the heads of the Norsca raiders - twenty gold crowns each, which could be earned much more quickly than by trading inland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Raquel's Chamber of Commerce has close ties with the Duke. Shipping is the most profitable business, but it is also the most risky - Norsca raids, sea monsters, storms, any voyage may cost you everything. Smart businessmen would spread the risk and invest in both fishing and shipbuilding. Duke Tobel is gentle in taxing merchants, which is quite rare among the Bretonnia principalities."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Raquel is located on the northwest coast of Bretonnia and is famous for its fishing and shipbuilding industries. It is the main port of the kingdom",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Northwest coast port of Bretonnia, Principality of Raquel"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "Id": "rule_malewen",
+  "Keywords": [
+    "Malevin"
+  ],
+  "RagShortTexts": [
+    "Malevan is a logging village near Oaks Hall"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Malevon is a village near Oaks Hall, located on the steep forest-covered slopes of the Lenno Mountains, overlooking the entire Lake Oaks. The villagers make a living by logging, and the tall trees they cut are sold to coastal towns. They are the most important source of timber in this area."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Malevan's wood is notoriously good in Vlandia. The trees on Lionno Mountain grow so tall and straight that they can be used as ship masts without much processing. The shipbuilders on the other side of Lake Oaks use all wood from Malevan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If you want to buy good wood, go to Malebon. The loggers there work on the slopes, and the cut trees slide down the slope to the lake, and are then loaded onto boats and transported downstream along Lake Oaks. Save on shipping costs and the price is reasonable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marewuna is a place with high mountains and dense forests. Standing on the edge of the village and looking down, you can see the entire Lake Oaks. Loggers are tough guys. They compete with big trees on steep slopes all day long. The calluses on their hands are thicker than the soles of their shoes."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Malevin",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Oaks Hall",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Iron_Dragon_Hand",
+  "Keywords": [
+    "iron dragon hand",
+    "Iron Dragon Cannon",
+    "alchemical flame",
+    "Underpass",
+    "narrow clearing",
+    "Fire Troopers",
+    "Dwarven Firetrooper",
+    "tunnel flames",
+    "iron dragon hand burning",
+    "Iron Dragon Hands Heavy Armored Nemesis",
+    "tunnel",
+    "iron dragon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iron Dragon Hands - or Iron Dragon Cannons - are the most terrifying close-range destruction unit in the dwarf army: they carry solidified flame launchers (i.e. Iron Dragon Cannons) refined by dwarven alchemy, and eject a sticky flame like dragon's breath within a short distance, burning the enemies in the entire tunnel to ashes. In the narrow tunnels and tunnels, nothing is more terrifying than the Iron Dragon Hand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iron dragon hand! Humans call that thing the Iron Dragon Cannon - I'll tell you how that name came about: not because it spits out fire like a dragon, but because the fire it spits out will burn anything to the point of being as burnt as spitting out of a dragon's mouth! Do you know when we dwarves will ask the Iron Dragon Hand to come out? When a tunnel is filled with ratmen or goblins, it is too costly for ordinary heavy infantry to push in inch by inch - then the iron dragon hand comes from behind carrying a shoulder-mounted fire can. Inside the jar is the alchemical flame - the secret recipe of our dwarves: it is three times thicker than human pitch fire. After it is sprayed out, it sticks to the stone surface and continues to burn. It can burn oil stains on the rock! Then there was a \"whoop\" - the entire tunnel turned into a lying forge, and the greenskins inside were burned into charcoal foam before they even had time to scream. But the real art of the Iron Dragon Hand is not in the fire itself: the calmest person in the entire team must be the Iron Dragon Hand, because he is carrying a can of fuel that can blow the entire team into the sky, facing a dense tunnel of monsters rushing up with their teeth and claws - he cannot panic, not even a bit. We call them iron dragon hands instead of fire breathers, because the dwarves' hands are steadier than dragon claws."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Dragon Hand is a specialized killing unit for dealing with \"crowded enemies\". The sticky flames of its Iron Dragon Cannon will form a covering fire network that continues to burn along the tunnel wall in the tunnel - any unit that attempts to pass through the fire network will have suffered third-degree or higher whole-body burns before reaching the Iron Dragon Hand. In siege warfare and tunnel warfare, the optimal deployment position of the Iron Dragon Hand is \"twenty feet behind the bottleneck\": here the flame jet can perfectly cover the entire cross-section of the tunnel, and the deceleration effect of the enemy's charge into the fire network exposes them to the flames for four to seven seconds - enough to heat the iron armor to the melting point. But the core weakness of the Iron Dragon Hand is its exponential fuel consumption - an Iron Dragon tank can only maintain an effective fire flow for about seventy to ninety seconds under continuous injection. When tactically dispatching Iron Dragon Hands, your first consideration is not how many kills they can kill, but that you put 70 seconds in the most valuable tunnel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The engineering origins of the Iron Dragon Cannon can be traced back to the \"Forge Fury Chariot\" project of the Golden Age of the Dwarves - the earliest attempt by the Dwarves to turn a mobile steel forge into a war machine. In about 2100 BC, the rune blacksmith Brind Yanfa discovered a unique formula in the furnace hall of Karak Kaderin: the alchemically refined mycolith slurry (a flammable rock liquid formed under geological pressure deep underground, which Imperial scholars call \"stone blood\") was mixed with anti-magic rune stone powder crushed to the micron level to create a semi-solid fuel \"Rakul\" with a viscosity four times that of rosin. The burning temperature of this gel flame is about 1,800 degrees, which is enough to soften the steel plate within three seconds of contact and melt it within six seconds of contact. And - fundamentally different from human fire oil - the Rakul flame has strong adhesion to rocks and metals, so the Iron Dragon Hand can continue to advance after spitting fire in the tunnel without worrying about the fire extinguishing on the smooth rock wall. The most famous Iron Dragon Hand combat record in history is the \"Tunnel of the Iron Beard Abyss\" in 1534 in the Imperial Calendar. Four Iron Dragon Hands entered the \"Dark Palace\" six floors deep into an abandoned mine tunnel occupied by thousands of Skaven. They cleared the entire mine tunnel by alternately breathing fire in a passage of about 360 feet. When reinforcements arrived two days later, three of the four iron dragons were still alive, resting on a complete charred skeleton of a ratman, relying on rations and water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My chief engineer once had the opportunity to observe a live-fire training session of the Iron Dragon Hands on Karak Kaderin. He said it was not a flame - it was an orange-white dragon's tongue that was compressed to the extreme and spit out from the mouth of a fine steel pipe. The dwarf explained to him - not many words but very clear - that the alchemical fuel was mixed with crushed dwarf rune stone powder, so when it was burned it not only produced heat, but also dispelled the magic residue. I feel deeply envious and uneasy about this technology that burns magic and physics together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I was present when the dwarven allies lent our family a squad of Iron Dragon Hands to clear out the Skrats in the Mines of the North. They pointed the flame outlet at the dark main mine tunnel and sprayed it first - \"Woo\", a low and continuous roar, not the explosion of human kerosene - then the mine tunnel turned red in an instant, and dozens of rat demons rushed out and burned into rolling balls of fire. After the cleaning was completed, the fire on the mine tunnel wall was still burning, lighting up the entire cave in a warm color. One of the dwarfs turned and looked at me and said, \"It's clean now,\" in the same tone as when he said, \"We'll have wheat porridge tonight.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I've seen Iron Dragon Hands fight once in the open - don't get me wrong, that's not what they're used to. The enemy Orc Wolf Cavalry outflanked them, and the group of Iron Dragon Hands stood there waiting for the Wolf Cavalry to enter the shooting range, and then sprayed together - at the same time. The fire curtain was too wide, and the four wolf riders and the goblins on the horses rushed into the fire together, screaming together. In the gray smoke, you could only see a few wolves without riders howling and escaping, the hair on their buttocks still burning. Our whole team could feel the heat burning on our faces from our witnessing position a hundred yards away. After the battle, I remembered one line: Never ask the Iron Dragon Hand how he is feeling today within forty feet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Barak Vaal Chamber of Commerce has discussed whether to purchase Iron Dragon Hands as a mercenary force for close combat defense against pirate ships - breathing fire to deal with robbers boarding the ship sounds perfect. Until the dwarf consultant pointed out one thing: the iron dragon jar has a probability of exploding when it is hit by a strong impact (including being hit by a ball crossbow), with an explosion range of about twenty-five feet. The image of you being splashed with oil and fire on a wooden boat was marked as an \"uninsurable risk\" and the proposal was placed on the bottom shelf indefinitely."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dwarf shoulder-mounted alchemical flamethrower. The fuel \"Rakul\" burns at about 1,800 degrees.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Iron Dragon Hand Iron Dragon Cannon Alchemy Flame"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Manwoody",
+  "Keywords": [
+    "House Manwoody",
+    "Crowned Skull"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Manwudi family is based on Wangzhong City in the Crimson Mountains, and the family emblem has a black crown and skull as its core. The crown and skull preserve the memory of the dead king in the mountain, and also make this flag look solemn and cold among the houses of Dorne. As lord of Dornestone and vassal of Martell, Manwudi is familiar with the mountain passes, strongholds, and borders leading to the Reach and the Stormlands. The people of Wangzhong City do not talk to the souls of the dead all day long. They measure today's lords by guarding roads, dividing water, and whether they can save their livestock before the severe winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles recognize the crowned skeleton of King Tomb City and know that this crest preserves the memory of the king who died in the Crimson Mountains. Manwudi is located in a border crossing, and the weight of his family name comes from his tomb-guarding perseverance and mountain pass responsibility, rather than describing each clan member as a gloomy person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People near Wangzhong Castle have passed ancient tombs, stone paths and weathered bone-colored rock walls since childhood. The skull and crossbones flag will not make them talk about death all day long. They are more concerned about whether living people can guard the mountain pass, retrieve lost livestock, and prevent business travelers from trampling water sources into mud. The King of Death belongs to memory, and today’s responsibilities still fall on the shoulders of today’s people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manwoody The Dornish Stone Lords of King Tomb City use the crown and skull as their family emblem; the memory of the dead king, mountain pass defense, water sources and livestock jointly shape local life. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manwoody The Dornish Stone Lords of King Tomb City use the crown and skull as their family emblem; the memory of the dead king, mountain pass defense, water sources and livestock jointly shape local life. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manwoody The Dornish Stone Lords of King Tomb City use the crown and skull as their family emblem; the memory of the dead king, mountain pass defense, water sources and livestock jointly shape local life. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Manwoody The Dornish Stone Lords of King Tomb City use the crown and skull as their family emblem; the memory of the dead king, mountain pass defense, water sources and livestock jointly shape local life. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Manwoody: The Dornish Stone Lords of King Tomb City use the crown and skull as their family emblem; the memory of the dead king, mountain pass defense, water sources and livestock jointly shape local life."
+  ]
+}

@@ -1,0 +1,305 @@
+{
+  "Id": "rule_Wolfskin_Tribe",
+  "Keywords": [
+    "Wolfskin Tribe",
+    "Savage",
+    "wolf skin"
+  ],
+  "RagShortTexts": [
+    "The wolfskin tribe follows the tradition of savagery and is not subject to human laws."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Wolfskin Tribe is a unique warrior group in the mountains of Battania. They followed the ancient tradition of \"savagery\", leaving their clans and living like wolves in the wilderness - without clothes, cooked food, or a roof over their heads, in exchange for freedom from human laws. However, today's Wolfskin tribe members are mostly the children of wealthy families, who use this opportunity to indulge their wild nature and do not fully adhere to the ancient creed. [reference:0]"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Wolfskin Tribe is a symbol of our Battania's ancient pride and its greatest nuisance. They inherited the \"savage\" tradition of great warriors, honed their jungle skills and hard-working spirit in the wilderness, and became unrivaled hunters in the woodland. But on the other hand, these young people, mostly from rich families, are becoming more and more lawless. They rob passers-by and extort clans that don't want to fight. They no longer regard the rules of the past. [reference:1][reference:2]"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "They are wolves, and we are seen by them as mortals bound by marriage and crops. As long as they abide by the \"Wolf's Creed\" - being naked, drinking blood from their hair, and sleeping in the wilderness at night - they are not bound by the clan's laws. This is both tradition and their privilege. If you encounter them in the forest, either hire them to guide you, or take a detour and never block their \"hunting grounds.\" [reference:3][reference:4]"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wolfskin Tribe? May the spirits of the forest curse them! In name they are the inheritors of an ancient tradition, but in fact they are a group of official bandits in wolf's clothing. Our hard-earned dinars will either be taken away directly by them, or they will have to be given to their leaders as 'protection money' in order to ensure peace. But who dares to complain to the lord? The lord's own son might be howling among those wolves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have dealt with them. Legend has it that they are protected by the forest goddess Cynthia. The closer they are to nature, the stronger they become. [reference:5] They are dangerous, sure, but they also keep their word. As long as you pay them enough, they will be the best scouts and guides in the forest. However, they believe that 'prey does not distinguish between high and low', so when doing business with them, you'd better make sure that you are not their next target. [reference:6]"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those ‘werewolves’ in the mountains of Battania? Just a group of barbarians under the banner of ancient traditions. They think they can transform into real beasts by wearing wolf skins and defy all laws and order. In fact, they were just a group of rich kids who got tired of staying in their own woods and came out to rob business travelers and have fun. If they dare set foot on Imperial soil, our Legion will teach them that no matter how ferocious a wolf is, they are no match for a disciplined hunter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers patrolling the borders of the empire have heard the howls of the wolfskin tribe. They are fearsome jungle warriors who come and go like the wind and are accurate with their arrows. In the forest, the heavy infantry phalanx that our empire is so proud of is useless. But what's interesting is that they seem more willing to fight among themselves and blackmail their own people, and rarely go south on a large scale. Perhaps it was more fun for them to terrorize the peasants of Battania than to fight the Empire's legions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From an anthropological perspective, the Wolfskin Tribe is a living fossil of the social structure of Battania’s ‘Heroic Age’. A military group composed of aristocratic young people who are temporarily separated from normal society. [reference:7] This 'savageization' ritual was intended to cultivate pure warriors, but it has now become seriously corrupted and has become a way for the children of the wealthy class to evade social responsibilities and engage in legal plunder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wolfskin Tribe? Are they those Battania boys who are playing tricks in the forest? Our scouts called them 'the mad dogs of the woods'. Although they have no military discipline, their individual combat prowess is indeed impressive, especially their archery skills. On the open plains, however, they are mere targets for our Vlandia knights. They are smart and know their advantage is in the woodland, so they rarely come out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battania people always brag about their ancient traditions, and the Wolfskin Tribe is one of them. But in my opinion, allowing a group of lawless young nobles to burn, kill, and loot on their own territory is tantamount to raising a tiger. This is exactly why they cannot unite against us. How can a nation that cannot even control its own young people have the right to talk about freedom and independence?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are also legends similar to the wolfskin tribe in the northern forests. We call them 'bearskin warriors' or 'berserkers', who also believe that they can gain the power of beasts by wearing animal skins. But our warriors seek honor and death on the battlefield, not, as they did, robbing unarmed travelers in the forest. True strength comes from steel and discipline, not the skin of the beast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the desert, there is no forest for them to hide, so the wolfskin tribe is just a distant legend to us. However, any tradition that makes people stronger and more adaptable to their environment deserves respect. However, they seem to have used this tradition in the wrong place. A truly strong man should protect his own people instead of robbing them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wolfskin Tribe? The most ferocious wolf on the grassland is no match for the hordes of hunters. They may be the top predators in the forest, but when they come to the grassland, they will understand what real \"hunting\" is. Our horse archers will hunt them until they are exhausted and then kill them with a single blow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "bandit",
+          "outlaw"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wolfskin Tribe? I advise you not to mess with them. We were committing petty theft at best, but they were officially certified robbers. It is legal for them to rob you, but it is disrespectful to the gods for you to resist them. This forest is their hunting ground, and those of us without background are just prey that stray into it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "mercenary",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The individual combat capabilities of the Wolfskin Tribe are indeed formidable, especially their ‘God’s Chosen Wolf’, whose archery skills can kill enemies with a hundred steps. If you want to travel safely through the forests of Battania, hiring a few wolf-skin tribesmen as bodyguards is the best option. This is called ‘fighting wolves with wolves’. But you have to be careful, they charge a lot of money and they are very moody."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Wolfskin Tribe is a curious contradiction in the social fabric of Battania. On the one hand, it preserved the military traditions of the 'Heroic Age' and provided the clans with well-trained elite scouts and warriors; on the other hand, it served as a 'pressure relief valve' for society by legalizing the violent behavior of wealthy children, effectively preventing young nobles from directly challenging the existing power structure. However, this system has also increasingly aggravated the internal conflicts of society. The resentment of civilians against the wolfskin tribe has become a potential threat to Battania's internal stability."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wolfskin Tribe",
+      "Kind": "bound_settlement_owner_clan_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

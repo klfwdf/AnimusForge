@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Eshura",
+  "Keywords": [
+    "Eshura",
+    "Queen"
+  ],
+  "RagShortTexts": [
+    "Legend has it that the legendary queen of Banu Atiji, Eshura, was both wise and courageous. She defeated the disturbing gods and imprisoned her in Gasila. She suppressed her with an eight-pointed star and ordered her to carry water to nourish the springs and irrigate the date palm orchards for centuries."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Atiji once gave birth to a legendary queen named Eshura, who was extremely wise and courageous and loved her people deeply. Aserai used to be very barren, and gods with bad personalities often came to tease and disturb the common people of Aserai, making her people extremely troubled and depressed. Eshura used her wisdom and bravery to challenge the gods and finally won unscathed. The unruly gods were imprisoned in Gasila, and the legendary eight-pointed star symbolizing order and balance was carved on the rock to suppress them forever. She sentenced these gods to carry water deep underground to nourish the springs so that they would continuously spout living water from the cracks in the rocks. The spring water has irrigated the date palm orchards of Gasila and surrounding villages unchanged for centuries."
+    }
+  ],
+  "TextMappings": []
+}

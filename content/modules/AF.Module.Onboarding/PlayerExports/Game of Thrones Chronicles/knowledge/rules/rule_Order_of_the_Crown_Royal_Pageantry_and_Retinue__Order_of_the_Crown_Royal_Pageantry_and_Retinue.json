@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Order_of_the_Crown_Royal_Pageantry_and_Retinue",
+  "Keywords": [
+    "Royal Pageantry and Retinue"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Royal Pageantry and Retinue Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Royal Pageantry and Retinue: Entry Royal Pageantry and Retinue When orders are passed from the hall to the cottage, they always pass through human choice and local custom."
+  ]
+}

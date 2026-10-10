@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Eastern_Gate_of_Qarth_Vaes_Tolorro",
+  "Keywords": [
+    "Vaes Tolorro",
+    "Red Waste",
+    "Eastern Trade Routes"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The City of Bones is located on the desert trade road leading to Qarth. Its name comes from the common impressions of drought, death and travelers' fear. This is not a prosperous seaport, but rather passes, water points and dangerous landmarks that must be identified when crossing the red wasteland. Caravans would count wells, camels, guards and sandstorms, while raiders would consider the same road as a hunting ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro Local families also relied on wells, camel caravans, spices, and supplies across the Red Waste; if any road, well, or dock failed, the cost would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro Entry Vaes Tolorro"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro They will also recognize the accents, laws, and credentials of the eastern lands of Qarth; reputations can travel great distances from taverns, and true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro Entry Vaes Tolorro"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen use their hands to measure the stone walls, wooden beams, iron doors, tombs, and seams left by generations of repairs in the City of Bones. The priests use rituals to continue the memories of the gods of Qarth, the merchant king, and the burial customs in the wasteland. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Tolorro They care about water wells, camel caravans, spices and supplies across the red wasteland. They also look at whether seeds are left behind after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Vaes Tolorro: The City of Bones is located on the desert trade road leading to Qarth. Its name comes from the common impressions of drought, death and travelers' fear. This is not a prosperous seaport, but rather passes, water points and dangerous landmarks that must be identified when crossing the red wasteland. Caravans would count wells, camels, guards and sandstorms, while raiders would consider the same road as a hunting ground."
+  ]
+}

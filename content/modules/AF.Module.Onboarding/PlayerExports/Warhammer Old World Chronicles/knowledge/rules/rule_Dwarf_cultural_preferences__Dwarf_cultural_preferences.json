@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Dwarf_cultural_preferences",
+  "Keywords": [
+    "dwarf culture",
+    "Dwarf preferences",
+    "gold gems",
+    "Perfectly forged",
+    "Full-bodied ale",
+    "long beard tradition",
+    "liquidation of hatred",
+    "Keep your oath",
+    "Dwarf Culture Dawi",
+    "Dwarven Culture Karak",
+    "Dwarven cultural runes",
+    "Book of Dwarf Cultural Hatred"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarves—who call themselves Dawi—possess the oldest and most deeply rooted system of cultural preferences in the Old World. They are born with an indescribable obsession with precious metals and gems: wielding a pickaxe to crack open the rock wall deep in the dark mine tunnel, and discovering the glimmer of uncut natural gemstones under the torch, this is the deepest joy in every dwarf's soul. They are born craftsmen, and their favorite thing is to stand in front of a blazing forge and hammer meteorite iron into a flawless rune battle ax - in their eyes, any rough solder joint or unpolished burr is unforgivable. After hours of hard work in the mines or bloody battles, nothing soothes a dwarf's heart more than drinking strong ale with his people in the Great Hall of Kharak and singing the rough war songs of their ancestors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are David, sons of the mountains! Our love is completely different from the superficial desires of humans - humans are greedy for shiny things but do not know how to appreciate the geological time behind them. What we dig up with a pickaxe is not only gold, but also the crystallized memory slowly extruded by the mountains over hundreds of thousands of years. The people standing in front of the forge are not workers, but the creators who forge the bones of the earth into the skeleton of civilization! The rune blacksmith hammers ancient magic into the deepest part of the meteorite, and each hammer is an unreplicable skill - while humans and elves will only use assembly lines to produce a pile of garbage that cannot be passed down to their families. Of course, a good glass of ale at the end of a long day's work is better than any human wine - the songs we sing in the Great Hall of Kharak are rough but sincere, unlike the writhing harp notes of the elves. There are also beards - cutting beards is simply disrespectful to the ancestors. Each beard woven into a golden ring represents a remembered promise or a cleared hatred. We never forget, because forgetting is the most vicious betrayal of the dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The cultural preferences of the dwarves translate directly into military-industrial capabilities—a strategic asset that no other power in the Old World can provide. Their obsession with forging means that the weapons and armor made by the dwarves are three to five times superior in quality to similar products in the Empire, and a rune sword forged by the dwarves can be passed down for thirty generations without curling the blade. Their obsession with hatred means that once the dwarves commit to sending troops, they will not retreat because of any losses - destroy the enemy or shed the last drop of blood, there is no third outcome. But this also means that you can't expect the dwarf army to devote 100% of its combat power to any battlefield that they deem irrelevant to the entries in the Book of Hatred - for dwarves, fighting for allies is an obligation, and fighting for Grugi is a mission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Dwarf cultural preferences can be systematically analyzed from four dimensions. First, the aesthetic dimension of minerals - the dwarves' love for gold and gems is not greedy hoarding but aesthetic appreciation: a dwarf miner can identify the subtle differences between meteorite, stibnite and obsidian based on the luster of the fracture surface. This identification ability is the result of tens of thousands of years of underground survival evolution. Second, the dimension of forging rituals - the dwarven forging process itself is a highly ritualized cultural behavior: from mineral selection (specific veins must be opened under a specific moon phase), smelting (furnace temperature is determined by rune blacksmiths by observing the color of the flame rather than the temperature) Each step is accompanied by corresponding ancestral prayers and clan secret techniques. Weapons that have not been completed through ritual steps are regarded as scrap metal in the eyes of dwarves. Third, the social dimension of ale - the dwarven brewing and drinking habits serve a key social cohesion function: at clan banquets, seats are arranged according to beard length, toasts must be given in the correct ancestral order, drunken fights are considered social - and as long as both parties pay for the damage to the tavern the next morning and shake hands to make peace, the episode will not be recorded in the Book of Hatred. Fourth, the dimension of beards and oaths - beards have quasi-legal effect in dwarf society: when a dwarf holds his beard with his left hand and shakes hands with others with his right hand, he is signing an irrevocable contract; the number of gold rings woven into the beard represents the number of major oaths the owner has completed in his life. The Book of Hatred is the moral ballast of the entire dwarf culture - every unpaid Georgi forms a collective psychological burden on the racial level, and the sense of relief when a great revenge is avenged is almost as intense as a religious experience. The dwarves would rather the whole of Karak be besieged for six thousand years than tear up a page of promised things in front of the enemy - because for the dwarves, death is only the physical end, and breaking an oath is the permanent destruction of the soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarven society's respect for women manifests itself in a dimension that human aristocratic women would take a long time to truly understand - not through hymns but through inheritance. Dwarf women have completely equal rights to property inheritance and veto power with men in the clan. This is not a window-dressing of women's rights, but because the dwarf population is too small. Any clan decision-making that loses the opinions of women may mean an avoidable and devastating war. Every sapphire in the gemstone necklace I wear comes from rough stones mined by my mother, grandmother, and great-grandmother in the mines. In dwarven tradition, women’s jewelry is not only decorative, but also a material carrier of family mining knowledge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thunder Copper Clan once had a low-intensity confrontation with the Copperhead Clan that lasted for 378 years due to a dispute over the theft of the brewing recipe. During that time, trade between the two Kharaks was frozen, intermarriage prohibited, and we accumulated nearly four hundred entries in the Book of Mutual Hatred. My great-grandfather completed the reconciliation on his 300th birthday with a barrel of special brew - a marriage ale laced with trace amounts of gold dust from the oldest veins of each Karak. The two recipes for this barrel of wine are now engraved on the stone wall of my family hall as a permanent memorial. In dwarven society, ale sometimes has more power than swords in resolving hatreds - something that is often overlooked by humans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During the years of traveling between Karak in the World's Edge Mountains, I understood one thing: the dwarves' obsession with perfect forging is almost pathological - but it is this obsession that makes them the only race in the old world that is not defeated by time. I have seen a hammer warrior spend forty-seven years on the blade of a battle ax - during these forty-seven years, the emperors of the human empire changed three generations, the greenskins launched six waves of Waaagh!, and the dwarf craftsman only cared about whether the last hammer mark was exactly the same as the example left by his great-great-grandfather. If you want a legendary weapon come to a dwarf, but never ask them how long it will take to complete it - because from the dwarf's perspective you are already offending the sanctity of the forge itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarven ale trade is one of the most arbitrageable and least discussed commodity markets in the Old World. In the Empire, a barrel of the 'Supreme Ale' from Karazha-a-Karak can be sold for a three-story merchant's house in Altdorf - and the wine is not retailed at all, with all output distributed within the dwarven clans in the form of quotas. My trading house obtained its annual ration of three barrels through an extremely rare method - my great-grandfather used his wagon and all his cargo to block the crevasse leading to the southern gate of Karak Qadrin during an avalanche, saving three mining teams that were trapped outside. The dwarves don't give me letters of thanks or medals, but they gave my family a permanent quota of ale. Three generations have passed, and the value of this quota itself has exceeded the sum of all other businesses of my firm."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Grugi - A dwarven record of any offense and unpaid debt, ranging from beer money owed to the level of a fallen fortress",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarf social customs and cultural traditions"
+  ]
+}

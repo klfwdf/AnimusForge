@@ -1,0 +1,122 @@
+{
+  "Id": "rule_Vlandia",
+  "Keywords": [
+    "Vlandia",
+    "Kingdom of Vlandia",
+    "Kingdom of the West",
+    "Mercenary Kingdom"
+  ],
+  "RagShortTexts": [
+    "Vlandia is the richest and most defensible country in Calradia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia, the full name of the Kingdom of Vlandia, is located on the west coast of the Calradia continent. The country is powerful. The current king is Detel de Merok. It contains 11 families and governs 8 cities and 8 fortresses. It is the country with the most cities, the richest, and the easiest to defend and difficult to attack among the nine countries of Calradia. However, behind its strength lies division and party struggle, which restricts the development of Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia is bounded by the Western Ocean to the west, the Biscayne Sea to the south, the Western Empire to the southeast, Battania to the east, and the North Sea to the north. Its general geographical divisions are divided into the following three from north to south: 1: Loval Mountains, 2: Svadia Hills, and 3: Rhodok Valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The social structure of the Vlandians is second to none in the continent of Calradia. They established a complete feudal ruling order on the west coast and were the first region in the entire continent to enter feudal society. The organizational power brought by feudal rule is unmatched by the tribal system (Battania, Nord), the clan city-state system (Sturgia, Aserai, Southern Empire), and the aristocratic republic (Northern Empire). At the same time, it has economic strength and popular support that the military dictatorship (Western Empire) does not have. The pyramid structure of King (Queen) - Baron (Baroness) - Knight (Female Knight) - Serf is very stable and efficient."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 150
+        }
+      },
+      "Content": "Vlandia implements serfdom. Due to the dependence of serfs, when the lord sends troops, they are obliged to join the army to fight. This is also the source of Vlandia’s levies (mainly recruiting crossbowmen). This is much more efficient than the volunteer and mercenary systems of other barbarian countries. In addition, the influence of martial culture has led to the formation of Vlandia. The army's ability to violently attack was extremely terrifying, and the army's combat effectiveness was also extremely high. In peacetime, serfs were not allowed to leave the land without permission, and were tied to the manor for farming. After completing a certain period of labor in the public fields every week, they could obtain the right to use the allotment. This greatly increased the enthusiasm of the serfs for labor, and was characterized by efficiency and self-sufficiency. The feudal system is the cornerstone of their strength"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although the Vlandia people who are mercenaries are martial, they are not barbaric. On the contrary, they have the most cumbersome and unbearable red tape in the entire continent. The first is etiquette, which has strict class-discriminatory regulations, such as: civilians must bow and salute after seeing nobles, civilians are not allowed to wear swords, wear wide belts, wear silk and linen clothes, and are not allowed to wear bright clothes, etc. Vlandia also places great restrictions on women and the relationship between the sexes. Women are not allowed to expose skin except for the head and hands. Women must remain chaste, otherwise they will be punished with ink. Women are not allowed to walk on the street at will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 80
+        }
+      },
+      "Content": "Vlandia people do not pay attention to credibility. They started out through deception, rebellion, and robbery. For them, credibility and contracts are just a piece of paper that can be thrown away after use. They tore up agreements and betrayed covenants at will, and were not ashamed of it. For the Vlandia people, although they often talk about honor, what they care most about is profit, and it is short-term profit. For a little profit, the baron of Vlandia can even surrender directly to the enemy."
+    }
+  ],
+  "TextMappings": []
+}
