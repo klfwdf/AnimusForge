@@ -1,3 +1,45 @@
+<a id="policy-effect-bounded-retrieval-20261010"></a>
+## 政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
+
+### 授权、基线与有限退出门
+
+- 本轮从只读审查转入用户明确授权的“两片全做，重构”；暂停后“继续”。工作区 `E:/AnimusForge-klfwdf`，分支 `main`，修前 `f577a9818ca2c3b88a3a0964a23f4ae17bfa8d10`，跟踪树 `8060cca0f8f52f9c40ea1687321637b02ed0a187`，开工干净。该树是已回滚后的远端产品基线，不恢复先前被拒绝的全模块注入实现或其ignored证据。
+- 检查点 `a8bedb1a`；片1 `04409b29`；片2产品源码 `c350529251bb1c5b1a16061e8735cf13c531118f`。退出门为真实生产查询、NPC请求冻结、18模块实际ONNX矩阵及双API编译/授权边界回归；已完成本包，不扩张到政策数值、执行器、存档迁移、对话渠道或全仓重构。
+- 用户单独批准原构建脚本清理本工作区的 `bin/Debug/single_module_artifacts` 和 `obj/single_module/Debug`；未改构建脚本，未使用Stage/Deploy。外部游戏/model/reference路径只作为只读输入；不push、不部署、不打包、不调用付费LLM。
+
+### 旧行为、批准的新行为与真实owner
+
+1. **生产查询**：旧`BuildPostAssessmentQueries`在收集和发出条款时对同一`seen`做两次Add，独立条款全部被吞，实际最多完整原文+两段摘要。片1先修dedup，片2将算法真实迁移到`PolicyEffectRecallQueryBuilder`，玩家与NPC的`RouteAfterAssessment`消费同一typed查询。完整原文仍为第一个query；补充原文窗、明确否定标记及摘要来源，忽略“无直接数值意图”哨兵。逗号保留目标/条件语境，`而是/但是`拆出实际措施，不按“或”切碎。长条款增加80字尾窗及带64字重叠的最大320字上下文窗，避免仅保留原文尾部但embedding仍被前缀稀释；UTF-16窗不拆代理对。
+2. **NPC冻结**：`PolicyEffectModuleRetrievalSettings.CaptureRequestSnapshot`产生只读ID副本及请求详情数。建议/自主生成两入口提交前捕获，`NpcRulerPolicyBatchContext`仅在运行时持有，draft await后不再读取活MCM。以后请求读取新设置，既有政策不是runtime kill switch。NPC候选数量上限与router的72理论上限共用，详情上限仍8；未改12效果腿、6机制或24运行时实例限制。
+3. **详情选择**：`PolicyEffectDetailSelector`拥有原文措施覆盖排序与目标资格后的选择。仍只在真实ONNX Top4+每query最多2条cue补位的并集中选择；原文正向措施优先于摘要重复投票和明确不执行的条款。否定只影响优先级，不硬拒绝候选；禁止烧村、合法减值不是一律否定。LLM仍看完整原文并决定零/一/多效果，没有新增最少效果数或第三阶段请求。
+4. **目标补位**：玩家/NPC先用真实candidate构造既有授权目录，再按相同详情预算挑有合法target的模块，裁剪未选能力及无引用句柄。不可绕过scope、issuer绑定、actor排除、foreign授权、`SourceModuleId`或编译器检查；后处理仍只收到实际目录能力，不收到candidate-only的全量schema。无合法候选则保留原渠道的无效果/失败语义，不借补位扩张到所有enabled模块。
+5. **检索文本**：按唯一实测自然改写漏召回，补充`clanLeaderRelationOnce`稳定RetrievalText中的受益/受损/特权/冒犯所致人际态度语义。没有修改该模块ID、payload、数值、执行或JSON理解/评估规则；可编辑理解/评估prompt仍不作为ONNX向量索引，不新增第二套可编辑检索配置。
+
+源码一基范围、符号与真实消费者集中在[本包代码范围图](architecture/af-framework-code-scope.md#policy-effect-bounded-retrieval-20261010)，不把巨大Behavior全文件标为重写。
+
+### 验证与证据层级
+
+本地证据目录 `artifacts/policy-retrieval-refactor-20261010/`；`verification-receipt.json`绑定源码/DLL SHA、`test-results.json`、模型五文件hash、fixture与13处源码坐标。ignored产物不提交，不把此前同名历史测试当作当前证明。
+
+| 检查 | 实际结果与局限 |
+| --- | --- |
+| 修前负控 | 新条款断言先红；原最终224案例矩阵203通过、21失败（`baseline-final-matrix.log`），含关系自然改写、否定/相邻概念抢详情、六措施及长自然尾部。修前还未执行第二query，故新的第二embedding故障断言亦红 |
+| 实际ONNX生产入口 | 双最终DLL各224/224通过，另有既有7例legacy ONNX回归及故障断言；512维真实推理，两个API的candidate/detail ID与顺序逐例相同。18模块各有直述/无cue自然改写/相邻概念/否定及四context，另73关闭、4多措施、2长文、1无数值案例 |
+| 生产纯合同 | 两版各44新断言；覆盖真正yield后的MCM修改不变更在途snapshot、以后请求关闭、两NPC入口实际接线、候选18不触发旧12上限、12query预算、详情clamp8、禁掠/减值与否定、目录资格后的候选内补位/裁剪 |
+| 既有相关专项 | 两版各routing322、two-stage1408、all-modules1457（18模块）、NPC repair1318、pending150、effect-repair29、target-jurisdiction62、target-plan765、normalizer118、history1830通过。与ONNX/新合同合计28模式24通过，另4为下述两项同基线失败 |
+| 原统一构建 | Debug原命令exit0；引用1.3 `v1.3.15.110062` /1.4 `v1.4.6.115628`，各348警告/0错误；Bootstrap0警告/0错误，双Coup managed seam门禁通过。未Stage/安装/游戏加载 |
+| 源码坐标 | `verify_code_map.py --map artifacts/policy-retrieval-refactor-20261010/code-map.json`及`--working-tree`均13锚点PASS；仅本包定位，不宣称全仓历史图已同步或实机通过 |
+
+扩展失败明确保留：`--policy-prompt-management-only`失败于普通覆盖/日志/缓存目录与typed user-data root不一致；`--policy-log-contract-only`失败于`CustomPolicyBehavior.Management.cs`绕过`PolicySystemLog`。两API修前/修后均同断言失败，相关生产文件与基线逐字相同；日志`baseline-<api>-*.log`和当前同名模式可对照，不删除断言/刷新hash凑PASS。新ONNX模式只验证embedding路径及推理，不宣称全套游戏冷启动gate/reranker验收。
+
+### 性能、未覆盖与回滚
+
+- 只在政策生成时做一次有界检索，最多12query、每窗320字符；18可见模块当前candidate实测最多16，理论并集最多72，索引Lazy缓存/请求embedding缓存仍复用。新排序只消费本次召回；目标资格检查为当前candidate×已有冻结handles，增加生成边界工作以换取合法补位，不新增Tick、全世界扫描、反射、线程游戏读取或额外LLM请求。
+- 本机224案例合计ONNX route计时1.3为1278ms/1.4为1318ms，单例最大291/290ms，包含重复文本cache命中及冷索引初始化；修前查询被吞导致workload更小，不能将其当等价性能优化，也不能把重复案例的0ms中位数当生产SLA。实际游戏目标目录耗时及真实模型输出仍需实机验证。
+- 矩阵是这些输入的candidate/detail覆盖，不保证所有自然语句召回、不证明否定模块最终一定不执行。无数值案例仍可召回评估候选，零效果由已有后处理合同决定；未新增相似度阈值或强迫效果。复杂指代/否定仍由完整原文+LLM判断。
+- 未真实LLM、实机NPC/玩家生成、真实大世界目标、旧存档、全仓回归或覆盖率仪器测量；不宣称80%覆盖、零bug或已修复其他历史缺口。没有存档schema/键迁移，无需用chunk合同结果替代本包验收。
+- 源码回滚按片2`c3505292`、片1`04409b29`依次做focused inverse；检查点`a8bedb1a`只作定位，禁止hard reset。基线DLL留在本证据目录`baseline/`，不是部署授权。将来推送须重新核对明确授权与本地排除历史，不能沿旧HANDOFF自动push。
+
 <a id="bulletin-independent-publishing-toggle-20261010"></a>
 ## 快报独立自动发布开关接线修复（2026-10-10，OFFLINE_VERIFIED_NOT_DEPLOYED）
 

@@ -1,3 +1,22 @@
+<a id="policy-effect-bounded-retrieval-20261010"></a>
+### 政策效果检索：真实query、详情owner及玩家/NPC消费者
+
+片1`04409b29`，最终产品源码`c350529251bb1c5b1a16061e8735cf13c531118f`；状态、双API/真实ONNX证据与已知基线失败见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#policy-effect-bounded-retrieval-20261010)。本地13锚点`artifacts/policy-retrieval-refactor-20261010/code-map.json`已按记录提交/working-tree校验。本表只覆盖具名职责，不覆盖整份Behavior或下方历史交付。
+
+| 当前源码（一基范围）/符号 | 已接通的责任及未覆盖边界 |
+| --- | --- |
+| `PolicySystem/Effects/PolicyEffectRecallQueryBuilder.cs:19–73,75–96`；Build / IsExplicitExclusion / Windows | 实际查询组成与来源/否定标记owner：完整原文、独立措施、摘要、长文尾窗及窗口预算；不替代LLM的语义判断或游戏动作 |
+| `PolicySystem/Effects/PolicyEffectDetailSelector.cs:10–38,40–49`；Rank / HasCue / ApplyTargetCapabilities | 实际原文覆盖排序、已授权目录资格后的候选内补位与裁剪；不增添candidate，不改变授权器/执行器 |
+| `PolicySystem/Effects/PolicyEffectModuleRouter.cs:214–220,511–597`；BuildPostAssessmentQueries / RouteAfterAssessment | 查询API保持兼容；真实生产route接入新owner、仍用缓存ONNX index和Top4+cue并集。旧Route及SelectDetails兼容调用保留，不误称其为生产第二阶段 |
+| `PolicySystem/Effects/PolicyEffectModuleRetrievalSettings.cs:20–34,117–120`；PolicyEffectModuleRetrievalRequestSnapshot / CaptureRequestSnapshot | 不可变请求设置副本；不改设置文件schema或执行阶段MCM读取 |
+| `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:151–278,280–424`；TryStartSuggestedPolicyInternal / TryStartPolicyGeneration；具体capture `234–235,375–376` | 建议/自主两入口在queue前冻结；其余资格/调度/重试代码保留，不宣称完整NPC线程重写 |
+| 同文件`3467–3470,3854–3926`；候选/详情界限 / PrepareNpcPolicyEffectRouting；`.Persistence.cs:1755–1758`运行时snapshot字段 | draft await之后只读冻结设置，候选界限共用router；实际目录消费者接入补位并同步DetailedModuleIds。运行时batch字段不进已存政策record/SyncData |
+| `PolicySystem/Core/CustomPolicyBehavior.Generation.cs:2197–2209`；GeneratePolicyResultAsync目标目录段 | 玩家实际candidate目录→详情资格→SelectedEffectModuleIds；普通评议/后处理、target授权、source编译、效果与存档owner仍保留原职责 |
+| `PolicySystem/Effects/Modules/clanLeaderRelationOnce/ClanLeaderRelationOnceEffectModule.cs:24`；ModuleDescriptor.RetrievalText | 唯一模块语义文本调整；payload/数值/执行及JSON评估prompt未变 |
+| `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectRetrievalTests.cs:17–206`；Production contracts / NPC request snapshot / Detail coverage / ONNX matrix | 真实DLL算法、yield设置变更、受控目标目录和实际ONNX推理；fixture224案例，不覆盖真实provider输出、游戏目标/线程、UI或旧坏档 |
+
+无全量模块注入、数值或存档重构、外部API/DLL拆分、构建脚本变更、Tick新增、Stage/部署/打包/push。本包源码/contract/native推理通过不代表全仓合同或实机接受；两项同基线失败保留在主台账。
+
 <a id="bulletin-independent-publishing-toggle-20261010"></a>
 ### 快报独立自动发布开关：实际门控与消费者
 
