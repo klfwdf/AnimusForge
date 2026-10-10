@@ -9270,7 +9270,7 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未启动游戏、实机、真实LLM、旧存档、全仓回归、打包或推送。安装回退使用上述私有Recovery逐文件恢复；不hard-reset或改写Git历史。本次部署接续相关产品条目的安装状态，保留原有LIVE_PENDING与专项未覆盖边界。
 
 <a id="tts-agent-plan-20261011"></a>
-## 2026-10-11：Agent Plan HTTP TTS 地址兼容（OFFLINE_VERIFIED / STAGE_VERIFIED / WAITING_FOR_LAUNCHER_CLOSE / LIVE_PENDING）
+## 2026-10-11：Agent Plan HTTP TTS 地址兼容（DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 最新请求：“将这个兼容问题补齐”；工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / main，基线 `c8389bdfa`，初始工作区干净。普通V3路径已支持；Agent Plan官方HTTP路径 `/api/v3/plan/tts/unidirectional` 被 `VolcTtsGateway.GetVersion` 的其他V3拒绝分支拦截。官方依据为 https://docs.volcengine.com/docs/ark/agent-plan-personal-voice-model?lang=zh ，用户控制台截图与之匹配。
 - 范围：明确识别这一个套餐HTTP路径并复用既有V3 transport；更新MCM/终端地址与凭据说明、已有TTS回放。不改V1默认值、凭据保存键、音色映射、PCM/WAV播放、口型、重试/取消/超时或存档，不放行WS/SSE/ASR等其他路径。每次合成/测试预检只增加一次有界字符串比较，无新增Tick、扫描、反射或缓存责任。
@@ -9281,3 +9281,6 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原 `deploy_module.ps1` 已生成并通过清洁Stage/layout/current-artifact校验的本地统一模块 `bin/Debug/single_module_stage/AnimusForge`；游戏目录安装尚未成功，完成安装及SHA/Recovery核对后再接续最终状态。未运行实机声音/口型、真实Agent Plan账号授权/额度、玩家存档或全仓回归；未推送、打包或自动填入玩家密钥。源码回滚仅focused inverse产品提交，安装回退按本次Recovery逐文件恢复，不改写历史或回滚其他作者。
 - 首次部署因正在运行的原版启动器占用Bootstrap旧DLL，删除同卷替换临时文件失败；原脚本自动回滚。私有Recovery `deploy-d2ffd653ef5e4a3482d0bc68cd179382` 有rolled-back标记，9项安装文件SHA均匹配旧清单，见本地 `rollback-receipt.json`；不把该次失败算部署成功。只发现启动器、无游戏进程，调用CloseMainWindow正常关闭并确认退出；核对本次遗留单个临时文件与旧Bootstrap备份SHA一致后删除，未强制结束游戏或清理其他文件。原脚本重试日志 `deploy-retry.log`，正在按相同已验产物执行。
 - 重试期间启动器于01:45:01再次打开（PID23160），旧Bootstrap临时备份再度被占用；临时文件属性仅Archive，非只读。第二次Recovery `deploy-dd50844519114744881f3e955745576e` 有rolled-back标记，9项旧安装SHA再次全部匹配，见 `rollback-retry-receipt.json`。已请求用户退出游戏/启动器并保持关闭后回复，等待该运行条件再继续原部署；不强制结束进程、不把可用Stage或代码修复当安装完成。第二次替换临时文件仅属本次失败操作，待释放后以旧Bootstrap SHA核对再定点清理，其他清单外文件不动。
+- 后续用户明确授权“覆盖吧，并且把这个修复推送到远端”，替代上方等待启动器关闭及未授权发布状态。本轮开始工作区干净、HEAD `b7544c461`，未发现游戏/启动器进程；清理与旧Bootstrap SHA一致的第二次失败临时文件后，以同一组已验产物运行原部署脚本，日志 `deploy-authorized.log`。fetch后 `origin/main` 仍为 `bd443eb2c`，待发布仅本会话4个本地提交：前次覆盖记录、TTS检查点/产品/验证；8文件中唯一产品变化为本修复，不含其他产品改动或本地artifacts/私密数据。后续普通推送 `origin/main`，不强推、不改写历史；安装与远端成功仍须各自收据核验。
+- 最终覆盖exit0，原脚本更新9个受管文件，目标 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；独立核对3381项Stage/安装SHA、双实现候选SHA及9份旧备份均通过。本次Recovery `deploy-778e7620bb94410f888a3578fb2e365b` complete通过，详见 `artifacts/tts-agent-plan-20261011/receipt.json`、`deploy-verification.log`。本条明确替代上方待安装状态；先前失败记录保留，不代表当前仍未部署。未知清单外文件由原部署策略保留，没有另行全目录前后快照验收。
+- 发布边界：本会话本地提交加本次覆盖/发布核验说明普通推送到 `https://github.com/klfwdf/AnimusForge.git` 的 `refs/heads/main`；以 `git ls-remote` 返回完整HEAD一致为成功判据，本地 `publication-receipt.json` 保存推送日志、期望/实际ref及修复产品修订。未推送其他产品变化、本地artifacts或密钥；实机声音/口型、真实账号额度与音色授权仍NOT-RUN，用户可保存Agent Plan配置后测试。
