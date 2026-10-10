@@ -2328,7 +2328,7 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_VassalageManagementInfo" text="Vassalage management details" />
   <string id="AF_UI_ErrorAnalysis_NoRecentError" text="[AnimusForge] There is no recent error available for analysis." />
   <string id="AF_UI_ErrorAnalysis_Title" text="Analyze the error?" />
-  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="The full details of “{TITLE}” were shown in the lower-left message feed.\n\nUse the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice." />
+  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="The full details of “{TITLE}” were shown in the lower-left message feed.&#10;&#10;Use the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice." />
   <string id="AF_UI_ErrorAnalysis_Analyze" text="Analyze" />
   <string id="AF_UI_ErrorAnalysis_Skip" text="Skip for now" />
   <string id="AF_UI_ErrorAnalysis_AlreadyRunning" text="[AnimusForge] Another error is already being analyzed. Please wait." />
@@ -3027,5 +3027,11 @@ Choose how to proceed:" />
   <string id="AF_UI_ErrorAnalysis_EmptyAnalysis" text="No analysis was generated." />
   <string id="AF_UI_ErrorAnalysis_FailureBody" text="The preprocessing API could not complete the error analysis.&#10;&#10;[Analysis request error]&#10;{ERROR}&#10;&#10;[Original error]&#10;{TITLE}&#10;{DETAIL}" />
   <string id="AF_UI_ErrorAnalysis_FailedTitle" text="AI analysis failed" />
+  <string id="AF_UI_ErrorAnalysis_ConfigUnavailable" text="Could not read the MCM preprocessing API configuration." />
+  <string id="AF_UI_ErrorAnalysis_ConfigIncomplete" text="The preprocessing API URL, key, or model name is not fully configured." />
+  <string id="AF_UI_ErrorAnalysis_HttpFailure" text="The preprocessing API returned HTTP {STATUS}." />
+  <string id="AF_UI_ErrorAnalysis_RequestFailure" text="The preprocessing API request failed: {CODE}" />
+  <string id="AF_UI_ErrorAnalysis_EmptyReply" text="The preprocessing API responded, but no usable model reply could be parsed." />
+  <string id="AF_UI_ErrorAnalysis_Timeout" text="The preprocessing API analysis exceeded 60 seconds; the request was canceled." />
   </strings>
 </base>
