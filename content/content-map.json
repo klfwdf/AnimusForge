@@ -17089,6 +17089,12 @@
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/af_runtime_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/af_runtime_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json",
+      "target": "ModuleData/GeneratedRpVocabulary.json",
+      "logicalName": "AnimusForge.Defaults.GeneratedRpVocabulary.json"
     }
   ]
 }

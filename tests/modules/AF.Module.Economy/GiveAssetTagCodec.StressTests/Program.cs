@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using AnimusForge;
 
@@ -615,20 +616,25 @@ Test.True(!myBehavior.Contains("TranslateRewardItemIndexes(", StringComparison.O
     && HasSharedRewardCodec(sharedPostprocessOwner, sharedPostprocessOwner),
     "free conversation must use the shared translator rather than retain a duplicate private implementation");
 Test.True(sharedPostprocessOwner.Contains("getItemDisplayName", StringComparison.Ordinal) && !sharedPostprocessOwner.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
-Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);
-Test.True(foodSuffixBlock.Success, "generated RP food suffix pool missing");
-int foodSuffixCount = Regex.Matches(foodSuffixBlock.Value, "\"(?:[^\"\\\\]|\\\\.)*\"").Count;
+using var vocabularyDocument = JsonDocument.Parse(File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json")));
+JsonElement vocabulary = vocabularyDocument.RootElement;
+Test.True(rewardSystem.Contains("GeneratedRpFoodSuffixRules = GeneratedRpVocabulary.FoodRules();", StringComparison.Ordinal), "generated RP food suffix pool is not wired to its resource");
+string[] foodSuffixValues = vocabulary.GetProperty("FoodSuffixRules").EnumerateArray()
+    .SelectMany(row => row.GetProperty("Suffixes").EnumerateArray().Select(value => value.GetString()!)).ToArray();
+int foodSuffixCount = foodSuffixValues.Length;
 Test.True(foodSuffixCount >= 500, "generated RP food suffix pool unexpectedly small: " + foodSuffixCount);
 foreach (string requiredFoodSuffix in new[] { "\"糕\"", "\"果\"", "\"梨\"", "\"菜\"", "\"肉\"", "\"牛肉\"", "\"羊肉\"", "\"猪肉\"", "\"牛排\"", "\"卜丁\"", "\"鱼青\"", "\"虾圭\"", "\"虾面盒\"", "\"焖鸡\"", "\"鸡徘\"", "\"肉元\"", "\"肉丝\"", "\"羊腿\"", "\"羊肝\"", "\"牛扒\"", "\"牛尾\"", "\"谷物\"", "\"穀物\"", "\"水\"", "\"药\"", "\"药水\"", "\"apple\"", "\"beef\"", "\"bread\"", "\"water\"", "\"medicine\"", "\"potion\"" })
 {
-    Test.True(foodSuffixBlock.Value.Contains(requiredFoodSuffix, StringComparison.Ordinal), "required food suffix missing: " + requiredFoodSuffix);
+    Test.True(foodSuffixValues.Contains(requiredFoodSuffix.Trim('"'), StringComparer.Ordinal), "required food suffix missing: " + requiredFoodSuffix);
 }
+string[] foodFalsePositives = vocabulary.GetProperty("StringLists").GetProperty("GeneratedRpFoodNonFoodEndingExceptions")
+    .EnumerateArray().Select(value => value.GetString()!).ToArray();
 Test.True(rewardSystem.Contains("GeneratedRpFoodNonFoodEndingExceptions", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"结果\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"王八蛋\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"铁饼\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"香水\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"火药\"", StringComparison.Ordinal), "food false-positive guards missing");
+    && foodFalsePositives.Contains("结果", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("王八蛋", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("铁饼", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("香水", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("火药", StringComparer.Ordinal), "food false-positive guards missing");
 Test.True(rewardSystem.Contains("IsCloneSafeGeneratedRpFoodTemplateItem", StringComparison.Ordinal)
     && rewardSystem.Contains("rp_food_template", StringComparison.Ordinal)
     && rewardSystem.Contains("ClearGeneratedRpFoodTemplateCache", StringComparison.Ordinal), "food template cache integration missing");

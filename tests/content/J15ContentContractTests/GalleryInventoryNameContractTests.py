@@ -39,10 +39,11 @@ check('foreach' not in create and 'Task.' not in create, "no new item scan or ba
 # Both templates must continue through the same miscellaneous-item selector. Read the
 # real equipment/food suffix tables, including English word-boundary requirements.
 rules = []
-for m in re.finditer(r'new GeneratedRp(?:Equipment|Food)SuffixRule\([^\n]+', economy):
-    boundary = ', true,' in m[0]
-    for text in re.findall(r'"(?:\\.|[^"\\])*"', m[0]):
-        rules.append((json.loads(text), boundary))
+vocabulary = json.loads((ROOT / 'content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json').read_text(encoding='utf-8'))
+check('GeneratedRpEquipmentSuffixRules = GeneratedRpVocabulary.EquipmentRules();' in economy and
+      'GeneratedRpFoodSuffixRules = GeneratedRpVocabulary.FoodRules();' in economy, 'production uses external vocabulary')
+for row in vocabulary['EquipmentSuffixRules'] + vocabulary['FoodSuffixRules']:
+    rules.extend((suffix, row['RequiresEnglishWordBoundary']) for suffix in row['Suffixes'])
 check(len(rules) > 100, "production suffix rules extracted")
 for lang, relative in (("en", "illustrator_strings.xml"), ("zh", "CNs/illustrator_strings-zh-CN.xml")):
     path = ROOT / "content/modules/AnimusForge.Illustrator/ModuleData/Languages" / relative
