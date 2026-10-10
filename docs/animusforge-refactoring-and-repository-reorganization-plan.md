@@ -1,6 +1,8 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+追加历史设置识别语料外置：54原值/236源码中文字面量，保持旧配置ordinal迁移判断；117静态合同+现有专项通过，编译迁移回放未跑。[证据](handoffs/2026-10-10-localization-mainline-integration.md#历史设置提示词识别语料外置2026-10-10)。
+
 接收用户转交“B报告”的固定界面包（原任务卡C范围）：`41a82ad2a / d1f5b9214 / 054b181c6 / 02eb72bad`，87对新增资源及快报/图库/标签目录投影。主线复跑专项与28对资源通过，既有双API各13128次AF.UI+1384次图库文本解析通过；编译/实机未验收。[接收边界与回滚依赖](handoffs/2026-10-10-localization-mainline-integration.md#用户转交b报告的固定界面包验收2026-10-10)。
 
 最新主线在途快照`85ca920e4`：场景动作27项目录/115条正反例与4段分类Prompt已双语接线，新增资源对115键；493静态检查、中文逐值保留及既有双API各460目录+84语言资源解析PASS，产品与Core编译仍NOT RUN。全量源码19952中文位置/589文件（含外部B/C并行改动），全模组目标尚未完成。[本片证据](handoffs/2026-10-10-localization-mainline-integration.md#场景动作双语目录与分类提示词2026-10-10)。

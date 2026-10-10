@@ -81,3 +81,10 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - `02eb72bad`：14对已知村庄动作显示键，列表/详情/导出共用`TagCatalogUiText`；未知描述与协议值透传。全动态快照未知项不属于已证明覆盖。
 - 主线复跑PASS：资源28对、Illustrator24通知/入口键与346配对键、TagCatalog42键+3复用、Duel41检查。既有1.3/1.4分别13128次AF.UI解析及1384次Illustrator解析PASS，补足报告未做的资源加载验证。
 - 验收结论：接收87对新增固定界面资源与相应显示投影。报告的27对为其交付时快照，主线新增场景目录后当前28对。没有当前C#产品编译、游戏视觉/语言切换或旧档实机通过证据，不声称全模组完成；没有推送/部署/Stage/打包。
+
+## 历史设置提示词识别语料外置（2026-10-10）
+
+- `DuelSettings.cs`的52个含中文历史常量及2个依赖别名改为同名私有static readonly字段，`DuelSettings.LegacyPromptDefaults.cs`一次加载`LegacySettingsPrompts.json`。54值/41920字符逐值不变，从源码移除236个中文字面量；仅`Previous*`/`Leaked*`，当前Default规则不在此批范围。
+- 嵌套静态缓存避免partial初始化顺序问题；只读嵌入资源，不读用户文件、不接触游戏对象、不写存档、不新增Tick扫描。稳定原字段名以保留反射测试入口；ordinal完全匹配迁移逻辑与自定义文本保留逻辑未修改。
+- 反向源码还原完全一致。语料SHA256 `e670050b8c5ac31ebb7d04e22451da404f50a326454cc52d442d833b8fe634bc`，`LegacySettingsPromptContractTests.py`117项、PackagedPromptDefaults41项、ConnectionTest36项、资源28对PASS。外交SmokeTests的旧默认读取改指JSON权威源，既有迁移安全断言逐项保留；此编译测试和真实旧配置回放NOT RUN。
+- 语料属于历史识别输入，不应翻译后破坏旧配置匹配；英文发行门禁需区分这类数据与仍未翻译的当前输出。该任务与PolicySystem既有dirty改动独立。
