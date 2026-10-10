@@ -2964,5 +2964,14 @@ Choose how to proceed:" />
   <string id="AF_MCM_Policy_RecentActive_Hint" text="When evaluating player policies or generating NPC policies, the maximum number of the kingdom's latest active policies AI may reference. Reads newest to oldest regardless of publisher; default: 2. Used to detect duplicates, conflicts, and continuation; it is not a cap on policies that can take effect and does not change existing effects. 0 disables this reference set; fewer policies are not padded; ordinary dialogue is unaffected." />
   <string id="AF_MCM_Policy_RelatedActive_Title" text="Related active world policies referenced by AI" />
   <string id="AF_MCM_Policy_RelatedActive_Hint" text="In addition to the latest domestic policies above, the maximum number of active policies related to the current policy that AI may reference when evaluating player policies or generating NPC policies. Candidates come from all kingdoms, including the player's, and exclude policies already selected above; the most related are chosen with no minimum similarity threshold. Default: 3, so both sets reference at most 2 plus 3 = 5 policies; this is not a cap on policies that can take effect. 0 disables this set; insufficient candidates are not padded; ordinary dialogue and existing effects are unaffected." />
+  <string id="AF_MCM_Prompt_Folder" text="Custom prompt JSON folder" />
+  <string id="AF_MCM_Prompt_OpenFolder" text="Open folder" />
+  <string id="AF_MCM_Prompt_Folder_Hint" text="Open the CustomPrompts folder to edit prompt JSON files directly." />
+  <string id="AF_MCM_Prompt_KeepSceneNarration" text="Keep scene-shout actions and inner thoughts" />
+  <string id="AF_MCM_Prompt_KeepSceneNarration_Hint" text="When disabled, detailed action and inner-thought prompts are still used, but these descriptions are filtered from output. When enabled, actions and inner thoughts are retained." />
+  <string id="AF_MCM_Prompt_KeepAsteriskActions" text="Keep actions enclosed in asterisks" />
+  <string id="AF_MCM_Prompt_KeepAsteriskActions_Hint" text="Retain actions enclosed in **...** or *...*, even when keeping scene-shout actions and inner thoughts is disabled." />
+  <string id="AF_MCM_Prompt_CustomSceneFormat" text="Custom format: omit default scene-reply prompt" />
+  <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="Omit the default one-on-one identity restrictions and reply format, action, inner-thought, and length requirements. Provide a complete format in the player custom rules. Disabled by default." />
   </strings>
 </base>
