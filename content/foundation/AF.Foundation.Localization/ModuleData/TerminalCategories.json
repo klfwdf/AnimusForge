@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 1,
+  "Categories": {
+    "All": {
+      "LegacyValue": "全部",
+      "DisplayText": "{=AF_UI_Terminal_All}All"
+    },
+    "War": {
+      "LegacyValue": "战争",
+      "DisplayText": "{=AF_UI_Terminal_War}War"
+    },
+    "Diplomacy": {
+      "LegacyValue": "外交与国家",
+      "DisplayText": "{=AF_UI_Terminal_Diplomacy}Diplomacy and kingdoms"
+    },
+    "Prompt": {
+      "LegacyValue": "提示词与规则",
+      "DisplayText": "{=AF_UI_Terminal_Prompt}Prompts and rules"
+    },
+    "Ai": {
+      "LegacyValue": "AI核心",
+      "DisplayText": "{=AF_UI_Terminal_Ai}AI core"
+    },
+    "Duel": {
+      "LegacyValue": "决斗与部队",
+      "DisplayText": "{=AF_UI_Terminal_Duel}Duels and parties"
+    },
+    "Scene": {
+      "LegacyValue": "场景互动",
+      "DisplayText": "{=AF_UI_Terminal_Scene}Scene interaction"
+    },
+    "Characters": {
+      "LegacyValue": "角色与同伴",
+      "DisplayText": "{=AF_UI_Terminal_Characters}Characters and companions"
+    }
+  }
+}

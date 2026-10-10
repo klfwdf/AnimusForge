@@ -20,7 +20,7 @@ public sealed class AnimusForgeTerminalNode
 	public string Title { get; set; } = "";
 	public string Hint { get; set; } = "";
 	public string SearchTerms { get; set; } = "";
-	public string Category { get; set; } = "全部";
+	public string Category { get; set; } = TerminalCategories.All;
 	public string Icon { get; set; } = "❖";
 	public Action OnExecute { get; set; }
 	public Func<ImageIdentifier> ImageFactory { get; set; }
@@ -227,7 +227,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private string _titleText = new TextObject("{=AF_UI_Terminal_Title}AnimusForge Terminal").ToString();
 	private string _subtitleText = new TextObject("{=AF_UI_Terminal_Subtitle}Choose a tool or adjust a mechanism setting. Search, paginate, then press ESC or Close to exit.").ToString();
 	private string _breadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString();
-	private string _selectedTab = "全部";
+	private string _selectedTab = TerminalCategories.All;
 	private bool _hasUnsavedChanges;
 	private bool _canGoBack;
 	private readonly HashSet<string> _collapsedGroups = new HashSet<string>(StringComparer.Ordinal);
@@ -298,7 +298,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public bool IsTagCatalogBrowser => _currentViewMode == TerminalViewMode.MenuList && _tagBrowser != null
 		&& _path.Count > 0 && ReferenceEquals(_path.Peek(), _tagBrowser);
 	[DataSourceProperty]
-	public bool IsSearchVisible => _currentViewMode == TerminalViewMode.MenuList && (string.Equals(_selectedTab, "全部", StringComparison.Ordinal) || IsTagCatalogBrowser);
+	public bool IsSearchVisible => _currentViewMode == TerminalViewMode.MenuList && (string.Equals(_selectedTab, TerminalCategories.All, StringComparison.Ordinal) || IsTagCatalogBrowser);
 	[DataSourceProperty]
 	public float MenuContentTop => IsTagCatalogBrowser ? 98f : (IsSearchVisible ? 50f : 6f);
 	[DataSourceProperty]
@@ -457,7 +457,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		TabItems = new MBBindingList<AnimusForgeTerminalTabItemVM>();
 		Items = new MBBindingList<AnimusForgeTerminalItemVM>();
 
-		string[] tabs = new[] { "战争", "全部", "外交与国家", "提示词与规则", "AI核心", "决斗与部队", "场景互动", "角色与同伴" };
+		string[] tabs = new[] { TerminalCategories.War, TerminalCategories.All, TerminalCategories.Diplomacy, TerminalCategories.Prompt, TerminalCategories.Ai, TerminalCategories.Duel, TerminalCategories.Scene, TerminalCategories.Characters };
 		foreach (string tab in tabs)
 		{
 			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, LocalizeTab(tab), SelectTab));
@@ -468,28 +468,14 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			if (!string.IsNullOrEmpty(d.GroupName))
 			{
-				_collapsedGroups.Add($"全部/{d.GroupName}");
+				_collapsedGroups.Add($"{TerminalCategories.All}/{d.GroupName}");
 			}
 		}
 
 		RefreshItems();
 	}
 
-	private static string LocalizeTab(string tab)
-	{
-		string key = tab switch
-		{
-			"战争" => "{=AF_UI_Terminal_War}War",
-			"外交与国家" => "{=AF_UI_Terminal_Diplomacy}Diplomacy and kingdoms",
-			"提示词与规则" => "{=AF_UI_Terminal_Prompt}Prompts and rules",
-			"AI核心" => "{=AF_UI_Terminal_Ai}AI core",
-			"决斗与部队" => "{=AF_UI_Terminal_Duel}Duels and parties",
-			"场景互动" => "{=AF_UI_Terminal_Scene}Scene interaction",
-			"角色与同伴" => "{=AF_UI_Terminal_Characters}Characters and companions",
-			_ => "{=AF_UI_Terminal_All}All"
-		};
-		return new TextObject(key).ToString();
-	}
+	private static string LocalizeTab(string tab) => new TextObject(TerminalCategories.DisplayText(tab)).ToString();
 
 	public void ToggleGroupCollapse(string groupKey)
 	{
@@ -507,14 +493,14 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void SelectTab(string tab)
 	{
-		_selectedTab = string.IsNullOrWhiteSpace(tab) ? "全部" : tab;
+		_selectedTab = string.IsNullOrWhiteSpace(tab) ? TerminalCategories.All : tab;
 		CancelListeningKey();
 		_path.Clear();
 		_tagBrowser = null;
 		_tagCatalogSnapshot = null;
 		_returnToView = null;
 		ResetMenuFilter();
-		if (string.Equals(_selectedTab, "战争", StringComparison.Ordinal))
+		if (string.Equals(_selectedTab, TerminalCategories.War, StringComparison.Ordinal))
 		{
 			ShowWarStats();
 			return;
@@ -659,11 +645,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		else
 		{
 			var rootItems = new List<AnimusForgeTerminalItemVM>();
-			var nodes = _selectedTab == "全部" ? _roots : _roots.Where(node => string.Equals(node.Category, _selectedTab, StringComparison.Ordinal));
+			var nodes = _selectedTab == TerminalCategories.All ? _roots : _roots.Where(node => string.Equals(node.Category, _selectedTab, StringComparison.Ordinal));
 			foreach (var node in nodes.Where(node => query.Length == 0 || NodeMatchesQuery(node, query)))
 				rootItems.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
 
-			var definitions = _selectedTab == "全部" ? TerminalSettingsRegistry.AllDefinitions : TerminalSettingsRegistry.GetByCategory(_selectedTab);
+			var definitions = _selectedTab == TerminalCategories.All ? TerminalSettingsRegistry.AllDefinitions : TerminalSettingsRegistry.GetByCategory(_selectedTab);
 			foreach (var group in definitions.Where(def => query.Length == 0 || SettingMatchesQuery(def, query)).GroupBy(def => def.GroupName))
 			{
 				string groupKey = _selectedTab + "/" + group.Key;
@@ -777,12 +763,12 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ShowWarStats()
 	{
-		_selectedTab = "战争";
+		_selectedTab = TerminalCategories.War;
 		if (TabItems != null)
 		{
 			foreach (AnimusForgeTerminalTabItemVM tab in TabItems)
 			{
-				tab.IsSelected = string.Equals(tab.TabId, "战争", StringComparison.Ordinal);
+				tab.IsSelected = string.Equals(tab.TabId, TerminalCategories.War, StringComparison.Ordinal);
 			}
 		}
 		if (WarStatsVm == null)
@@ -1046,7 +1032,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 		if (_currentViewMode != TerminalViewMode.MenuList)
 		{
-			SelectTab("全部");
+			SelectTab(TerminalCategories.All);
 			return;
 		}
 

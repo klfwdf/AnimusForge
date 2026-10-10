@@ -1,9 +1,11 @@
 """Static tag-catalog UI integration and protocol/cache inverse; C#/game NOT-RUN."""
 from pathlib import Path
 import importlib.util
+import json
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+from terminal_category_contract_support import restore_terminal_categories
 
 ROOT = Path(__file__).resolve().parents[3]
 BASELINE = "63591ee19"
@@ -61,7 +63,8 @@ def main():
     catalog = (ROOT / PREFIX / "AnimusForgeTagCatalog.cs").read_text(encoding="utf-8-sig")
     vm = (ROOT / PREFIX / "AnimusForgeTerminalUiModels.cs").read_text(encoding="utf-8-sig")
     assert restore(catalog, catalog_pairs) == old("AnimusForgeTagCatalog.cs"), "Snapshot/scan/cache/ID/tag/category/group/sort/log/export-file behavior changed"
-    assert restore(vm, vm_pairs) == old("AnimusForgeTerminalUiModels.cs"), "VM input/lifecycle/search/original routing changed"
+    categories = json.loads((ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json").read_text(encoding="utf-8"))["Categories"]
+    assert restore(restore_terminal_categories(vm, categories), vm_pairs) == old("AnimusForgeTerminalUiModels.cs"), "VM input/lifecycle/search/original routing changed"
     helper = (ROOT / PREFIX / "TagCatalogUiText.cs").read_text(encoding="utf-8-sig")
     assert 'default: return raw;' in helper and 'return description;' in helper
     assert ': raw ?? string.Empty;' in helper and 'return raw != null && raw.StartsWith(prefix, StringComparison.Ordinal)' in helper

@@ -110,3 +110,10 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 验证：`BattleSpeechBilingualContractTests.py`131静态/模拟、场景目录494、词表110、资源29对PASS；既有1.3/1.4各400次演讲资源解析PASS。迁移脚本核对85段中文/原兜底池完全一致；相对`08aa81d3c`，动作/战术解析前缀与五组安全方法不变。CN资源SHA256 `2d562e62ff0b05a30a28ce38b1cdb4327378a5ab4bce81f5d2d2386bc548cee6`。Core测试新增中英归一化、协议拒绝、第三人称称呼、敌我口号、显式英文长填充、完整提示词/联合输出用例，但未编译运行。
 - Jev持续复核：`work/localization-decisions-20261010-03`先offline后一次8个Choice，全部preserved，confidence 0.88–1.00；2755输入/374输出，返回cost=0.001653，底层版本未固定。此为译文语义辅助，不是编译、LLM真实生成或游戏验收。
 - 全量新扫描（`08aa81d3c`含本片工作树）1829源文件、19600中文位置、585含中文文件、13794去重值，无扫描中变化。全模组任务仍ACTIVE，识别语料/其他模块Prompt、日志、事实与剩余显示仍待处理；编译/压力回放/真实LLM/实机/正式包全部未获本片验证。
+
+## 终端分类路由资源化（2026-10-10）
+
+- `TerminalSettingsRegistry.cs`259设置定义的6类分类值、All筛选值，及`AnimusForgeTerminalUiModels.cs`的8个页签/筛选/折叠路由，统一读取`TerminalCategories.json`中保持原字节的LegacyValue。原显示资源键及英文fallback一起登记；`TerminalCategories`只在静态初始化读取嵌入资源，路由走缓存字段，显示标签走8项ordinal字典。没有翻译内部身份或改默认页签。
+- 另发现并修正RerankerDeviceDropdown为空时的中文CPU默认显示，复用`AF_MCM_Option_DeviceCpu`。除此显示补漏，两份消费者反向展开后与`192390cbb`完全一致（字符串转义标准化）；设置ID、getter/setter/invoker、范围、排序、状态、页签顺序保持。
+- `TerminalCategoryContractTests.py`21检查、TerminalSettingsFallback2552检查/259定义、TerminalTagDisplay原全文件逆向断言与资源29对PASS。旧Tag测试新增精确逆向展开分类语料步骤，未删去原输入/生命周期/搜索/路由断言。注册表当前中文字面量词法扫描为0；不是全终端或全模组清零。当前C#编译、MCM/终端实机、正式包未跑。
+- 发行门禁检查确认：`package_localization.ps1`仍先拒绝源码中文，再拒绝所有含中文嵌入资源。这会同时阻断有效双语表和兼容识别语料；本片未改放行规则，未来需具名资源身份/内容与用途验证，不能按目录整体豁免或取消DLL用户字符串检查。
