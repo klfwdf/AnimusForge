@@ -26,7 +26,7 @@
     <string id="AF_MEMORY_UI_BlockDeleted" text="已删除压缩记忆块。" />
     <string id="AF_MEMORY_UI_BlockEditOverviewClearNotice" text="编辑或删除后，该NPC的记忆大总结会被清空并重新排队整理。" />
     <string id="AF_MEMORY_UI_BlockList" text="压缩记忆块列表" />
-    <string id="AF_MEMORY_UI_BlockListDescription" text="选择一个压缩记忆块进入编辑选项。\n压缩记忆块：" />
+    <string id="AF_MEMORY_UI_BlockListDescription" text="选择一个压缩记忆块进入编辑选项。&#10;压缩记忆块：" />
     <string id="AF_MEMORY_UI_BlockListResult" text=" 块；当前结果：" />
     <string id="AF_MEMORY_UI_BlockNotFound" text="找不到要编辑的压缩记忆块。" />
     <string id="AF_MEMORY_UI_BlockPagePrefix" text=" 块；第 " />
@@ -36,12 +36,12 @@
     <string id="AF_MEMORY_UI_BlockUpdated" text="压缩记忆块已更新。" />
     <string id="AF_MEMORY_UI_Blocks" text=" 块" />
     <string id="AF_MEMORY_UI_BlocksTitle" text="压缩记忆块" />
-    <string id="AF_MEMORY_UI_BodyPrefix" text="正文：\n" />
+    <string id="AF_MEMORY_UI_BodyPrefix" text="正文：&#10;" />
     <string id="AF_MEMORY_UI_BodyPreviewLabel" text="正文预览：" />
     <string id="AF_MEMORY_UI_BodyUpdated" text="未压缩记忆正文已更新。" />
     <string id="AF_MEMORY_UI_Cancel" text="取消" />
     <string id="AF_MEMORY_UI_ClearBodyPrefix" text="将删除" />
-    <string id="AF_MEMORY_UI_ClearBodySuffix" text="的今日历史、待总结队列、压缩记忆块和记忆大总结。\n此操作不可撤销，是否继续？" />
+    <string id="AF_MEMORY_UI_ClearBodySuffix" text="的今日历史、待总结队列、压缩记忆块和记忆大总结。&#10;此操作不可撤销，是否继续？" />
     <string id="AF_MEMORY_UI_ClearLlm" text="取消LLM对话标记" />
     <string id="AF_MEMORY_UI_ClearNewData" text="清空该NPC新记忆数据" />
     <string id="AF_MEMORY_UI_ClearSearch" text="清空搜索" />
@@ -54,14 +54,14 @@
     <string id="AF_MEMORY_UI_ConfirmDelete" text="确认删除" />
     <string id="AF_MEMORY_UI_ConfirmDeleteBlock" text="确认删除压缩记忆块" />
     <string id="AF_MEMORY_UI_ConfirmDeleteDay" text="确认删除未压缩记忆" />
-    <string id="AF_MEMORY_UI_ConfirmDeleteDayBody" text="将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteDayBody" text="将删除该日全部未压缩原始历史，并移除同日待总结队列。&#10;此操作不可撤销，是否继续？" />
     <string id="AF_MEMORY_UI_ConfirmDeleteDialogue" text="确认删除对话历史" />
     <string id="AF_MEMORY_UI_ConfirmDeleteLine" text="确认删除未压缩记忆行" />
     <string id="AF_MEMORY_UI_ContentLabel" text="内容：" />
     <string id="AF_MEMORY_UI_CurrentBlocks" text="当前压缩记忆块：" />
     <string id="AF_MEMORY_UI_CurrentDate" text="当前日期: " />
-    <string id="AF_MEMORY_UI_CurrentDateNewline" text="\n当前日期: " />
-    <string id="AF_MEMORY_UI_CurrentSearch" text="\n当前搜索：" />
+    <string id="AF_MEMORY_UI_CurrentDateNewline" text="&#10;当前日期: " />
+    <string id="AF_MEMORY_UI_CurrentSearch" text="&#10;当前搜索：" />
     <string id="AF_MEMORY_UI_DailyCompressionHeader" text="【日结对话压缩】" />
     <string id="AF_MEMORY_UI_DateLabel" text="日期：" />
     <string id="AF_MEMORY_UI_Day" text="第 {DAY} 日" />
@@ -69,12 +69,12 @@
     <string id="AF_MEMORY_UI_DaysComma" text=" 天，" />
     <string id="AF_MEMORY_UI_DeleteAllDialogue" text="一键删除该NPC全部对话历史" />
     <string id="AF_MEMORY_UI_DeleteBlock" text="删除该记忆块" />
-    <string id="AF_MEMORY_UI_DeleteBlockBody" text="的压缩记忆中删除该块，并使记忆大总结重新整理。\n此操作不可撤销，是否继续？" />
-    <string id="AF_MEMORY_UI_DeleteBlockBodyPrefix" text="\n\n将从" />
+    <string id="AF_MEMORY_UI_DeleteBlockBody" text="的压缩记忆中删除该块，并使记忆大总结重新整理。&#10;此操作不可撤销，是否继续？" />
+    <string id="AF_MEMORY_UI_DeleteBlockBodyPrefix" text="&#10;&#10;将从" />
     <string id="AF_MEMORY_UI_DeleteBlockHint" text="删除后会清空该NPC的记忆大总结并重新排队整理。" />
     <string id="AF_MEMORY_UI_DeleteDay" text="删除该日未压缩记忆" />
     <string id="AF_MEMORY_UI_DeleteDayHint" text="删除该日全部未压缩原始历史，并移除同日待总结队列。" />
-    <string id="AF_MEMORY_UI_DeleteDialogueBody" text="将删除 {HERO} 的全部对话历史（共 {COUNT} 条）。\n此操作不可撤销，是否继续？" />
+    <string id="AF_MEMORY_UI_DeleteDialogueBody" text="将删除 {HERO} 的全部对话历史（共 {COUNT} 条）。&#10;此操作不可撤销，是否继续？" />
     <string id="AF_MEMORY_UI_DeleteLine" text="删除该行" />
     <string id="AF_MEMORY_UI_DeleteLineHint" text="删除后会同步移除对应旧对话历史行。" />
     <string id="AF_MEMORY_UI_DialogueDeleted" text="已删除该NPC的全部对话历史。" />
@@ -101,10 +101,10 @@
     <string id="AF_MEMORY_UI_EditDialogueHistory" text="编辑对话历史 - " />
     <string id="AF_MEMORY_UI_EditDialogueLine" text="编辑对话行 - " />
     <string id="AF_MEMORY_UI_EditDialogueLineHint" text="下方输入框可直接修改整条内容，留空则删除该行。" />
-    <string id="AF_MEMORY_UI_EditDialogueLineLoadedHint" text="\n原内容已载入下方输入框，可直接编辑。\n留空则删除该行。" />
+    <string id="AF_MEMORY_UI_EditDialogueLineLoadedHint" text="&#10;原内容已载入下方输入框，可直接编辑。&#10;留空则删除该行。" />
     <string id="AF_MEMORY_UI_EditHour" text="编辑小时" />
     <string id="AF_MEMORY_UI_EditHourHint" text="修改该行游戏时间小时。" />
-    <string id="AF_MEMORY_UI_EditHourPrompt" text="\n请输入 0~23 的整数。" />
+    <string id="AF_MEMORY_UI_EditHourPrompt" text="&#10;请输入 0~23 的整数。" />
     <string id="AF_MEMORY_UI_EditHourTitle" text="编辑未压缩记忆小时" />
     <string id="AF_MEMORY_UI_EditOverview" text="编辑记忆大总结" />
     <string id="AF_MEMORY_UI_EditOverviewPrompt" text="请输入新的过往记忆总览；留空=清空并等待重新生成。" />
@@ -142,7 +142,7 @@
     <string id="AF_MEMORY_UI_IncludedBlockLabel" text="已纳入记忆块：" />
     <string id="AF_MEMORY_UI_IncludedBlocks" text=" 块；已纳入：" />
     <string id="AF_MEMORY_UI_InvalidHour" text="请输入 0~23 的整数。" />
-    <string id="AF_MEMORY_UI_IrreversibleConfirm" text="\n\n此操作不可撤销，是否继续？" />
+    <string id="AF_MEMORY_UI_IrreversibleConfirm" text="&#10;&#10;此操作不可撤销，是否继续？" />
     <string id="AF_MEMORY_UI_Items" text=" 项" />
     <string id="AF_MEMORY_UI_LastFailure" text="最近失败：" />
     <string id="AF_MEMORY_UI_LatestError" text="；最近错误：" />
@@ -152,7 +152,7 @@
     <string id="AF_MEMORY_UI_LineCount" text="行数：" />
     <string id="AF_MEMORY_UI_LineCountSuffix" text="（共 {COUNT} 条）" />
     <string id="AF_MEMORY_UI_LineDeleted" text="已删除未压缩记忆行。" />
-    <string id="AF_MEMORY_UI_LineListDescription" text="\n\n当前共 " />
+    <string id="AF_MEMORY_UI_LineListDescription" text="&#10;&#10;当前共 " />
     <string id="AF_MEMORY_UI_LineListDescriptionSuffix" text=" 行。选择右侧条目进入行详情。" />
     <string id="AF_MEMORY_UI_LineTypeUpdated" text="未压缩记忆行类型已更新。" />
     <string id="AF_MEMORY_UI_Lines" text=" 行" />
@@ -168,7 +168,7 @@
     <string id="AF_MEMORY_UI_NoData" text="（无数据）" />
     <string id="AF_MEMORY_UI_NoDialogueLinesForDate" text="该日期下没有对话行。" />
     <string id="AF_MEMORY_UI_NoHistory" text="该NPC当前没有任何对话历史。" />
-    <string id="AF_MEMORY_UI_NoMatches" text="\n\n没有匹配结果。" />
+    <string id="AF_MEMORY_UI_NoMatches" text="&#10;&#10;没有匹配结果。" />
     <string id="AF_MEMORY_UI_NoRawHistory" text="该NPC当前没有未压缩原始历史。" />
     <string id="AF_MEMORY_UI_None" text="无" />
     <string id="AF_MEMORY_UI_Normal" text="普通" />
@@ -176,7 +176,7 @@
     <string id="AF_MEMORY_UI_NotGenerated" text="未生成" />
     <string id="AF_MEMORY_UI_Overview" text="记忆大总结：" />
     <string id="AF_MEMORY_UI_OverviewCleared" text="已清空记忆大总结，并重新检查待整理队列。" />
-    <string id="AF_MEMORY_UI_OverviewEditHint" text=" 块。\n保存非空内容后，会把当前所有压缩记忆块标记为已纳入，避免被待更新队列立即覆盖。" />
+    <string id="AF_MEMORY_UI_OverviewEditHint" text=" 块。&#10;保存非空内容后，会把当前所有压缩记忆块标记为已纳入，避免被待更新队列立即覆盖。" />
     <string id="AF_MEMORY_UI_OverviewGenerated" text="已生成，纳入 " />
     <string id="AF_MEMORY_UI_OverviewHeader" text="【记忆大总结】" />
     <string id="AF_MEMORY_UI_OverviewQueue" text="；待更新队列：" />
@@ -202,7 +202,7 @@
     <string id="AF_MEMORY_UI_RawLineNotFound" text="找不到要编辑的未压缩记忆行。" />
     <string id="AF_MEMORY_UI_RawLineTitle" text="未压缩记忆行 - " />
     <string id="AF_MEMORY_UI_RawLineUpdated" text="未压缩记忆行已更新。" />
-    <string id="AF_MEMORY_UI_RawListDescription" text="选择一天未压缩原始历史进行编辑。\n原始历史：" />
+    <string id="AF_MEMORY_UI_RawListDescription" text="选择一天未压缩原始历史进行编辑。&#10;原始历史：" />
     <string id="AF_MEMORY_UI_RawListResult" text=" 天；当前结果：" />
     <string id="AF_MEMORY_UI_RawMemoryNotFound" text="找不到未压缩记忆。" />
     <string id="AF_MEMORY_UI_RawMemoryTitle" text="未压缩记忆 - " />
@@ -214,7 +214,7 @@
     <string id="AF_MEMORY_UI_SearchBlocks" text="搜索压缩记忆块" />
     <string id="AF_MEMORY_UI_SearchBlocksPrompt" text="输入关键词，可匹配标题、正文、场景、AFEF、日期或记忆块ID。" />
     <string id="AF_MEMORY_UI_SearchDialogue" text="搜索对话历史" />
-    <string id="AF_MEMORY_UI_SearchDialoguePrompt" text="输入关键词，按内容模糊匹配该 NPC 的全部对话历史。\n留空将不改变当前搜索。" />
+    <string id="AF_MEMORY_UI_SearchDialoguePrompt" text="输入关键词，按内容模糊匹配该 NPC 的全部对话历史。&#10;留空将不改变当前搜索。" />
     <string id="AF_MEMORY_UI_SearchDialogueTitle" text="搜索对话历史 - " />
     <string id="AF_MEMORY_UI_SearchNpcHistory" text="搜索该NPC历史" />
     <string id="AF_MEMORY_UI_SearchRaw" text="搜索未压缩记忆" />
