@@ -67,7 +67,7 @@ Every function under `一键编译覆盖推送` (the `.bat` entry points) and `s
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
 - Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified private Recovery backups and roll back touched files on a caught failure; an interrupted transaction blocks another deploy pending recovery inspection. Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
-- Package: package the one staged module into one ZIP containing both implementation DLLs.
+- Package: project the one staged module into CN and EN ZIPs, each containing both implementation DLLs.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
 - Validation: verify the module id, Bootstrap declaration, both implementation paths, and absence of conflicting implementation declarations before deployment or packaging.
 
@@ -92,13 +92,14 @@ Because the launcher module id changes from a retired versioned id to `AnimusFor
 
 ## Package Rules
 
-One-click packaging creates one client package, for example:
+One-click packaging creates two client packages from the same Stage and runtime DLLs, for example:
 
 ```text
-AnimusForge_<version>_bannerlord_1.3.x-1.4.x_<timestamp>.zip
+AnimusForge_<version>_bannerlord_1.3.x-1.4.x_<timestamp>_CN.zip
+AnimusForge_<version>_bannerlord_1.3.x-1.4.x_<timestamp>_EN.zip
 ```
 
-Its root folder must be `AnimusForge`. The package must contain:
+Each root folder must be `AnimusForge`. Each package must contain:
 
 - `AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll`
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
@@ -110,7 +111,7 @@ The one-click entry passes `-Build` to `package_mod.ps1`: select the next versio
 
 Successful packaging retains that version in both the source and project-local staged XML for the next increment. `-NoBump` keeps the current version; explicit `-Version` overrides it; explicit `-BumpMicro` remains available but neither one-click entry enables it by default. Captured build/ZIP failures restore version sources byte-for-byte without consuming a release number; concurrent source edits are preserved and reported instead of overwritten. A direct package-only invocation requires already-built DLLs matching the requested version; it cannot just relabel old DLLs through XML. Interrupted processes or system failures still require inspecting version sources and rebuilding before retrying.
 
-The ZIP is first written to a temporary file in the package directory. It becomes the final ZIP only after validating the Bootstrap-only XML, strict DLL allowlist, both implementation markers, and marker-to-DLL hashes; failed temporary archives are removed.
+The localized packaging slice is currently under implementation. It must preserve original asset filenames inside each ZIP, leave source Chinese assets and Stage untouched by localization, and reject an incomplete English projection. Both temporary archives must pass the Bootstrap-only XML, strict DLL allowlist, both implementation markers, marker-to-DLL hashes, and localization checks before either final archive is published. Shared DLLs also need English readiness; replacing disk JSON alone does not remove embedded defaults or runtime hardcoded Chinese. Failure cleans up both candidates and follows the existing version rollback contract.
 
 The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
 
