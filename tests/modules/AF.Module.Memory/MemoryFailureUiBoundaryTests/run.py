@@ -4,7 +4,7 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment, current_source_path
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--prepare-only',action='store_true');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(n):return subprocess.check_output(['git','show','38488ed2:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
 s=read('MyBehavior.cs')
@@ -17,13 +17,16 @@ else:
  factory=read('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryQueueRun.cs')
  recall=read('src/modules/AF.Module.Memory/Recall/MemoryRecallContextOwner.cs')
  recall_adapter=read('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecall.cs')
- assert factory.count('BlockingPopup = ShowCompressedMemoryBlockingPopup,')==1
- runtime_calls=re.findall(r'_ports.BlockingPopup\(([^\n]*?)\);',run)
+ assert factory.count('BlockingPopup = (title, message, generation, display) => MemoryFailureNotices.PublishMemoryFailureNotice(title, message, generation, display),')==1
+ runtime_arguments=re.findall(r'_ports.BlockingPopup\((.*?)\);',run,re.S)
  recall_calls=[line.strip() for line in recall.splitlines() if line.strip().startswith('snapshot.RecordBlockingFailure(')]
- assert len(runtime_calls)==2 and len(recall_calls)==7,'Actual current producer closure changed'
- runtime_calls=['ShowCompressedMemoryBlockingPopup('+x.replace('error.Message','ex.Message').replace(', generation',', runtimeGeneration')+');' for x in runtime_calls]
- publication_payloads=runtime_calls+[x.replace('snapshot.RecordBlockingFailure(','ShowCompressedMemoryBlockingPopup(',1) for x in recall_calls]
- calls=runtime_calls+[x+' PublishMemoryRecallFailure(snapshot);' for x in recall_calls]
+ displays=re.findall(r'snapshot.SetBlockingDisplay\((.*?)\);',recall,re.S)
+ assert len(runtime_arguments)==2 and len(recall_calls)==len(displays)==7,'Actual current producer closure changed'
+ # Original diagnostic inputs remain byte-identical; separately exercise today's display inputs.
+ runtime_payloads=['ShowCompressedMemoryBlockingPopup('+x.split(', generation,',1)[0].replace('error.Message','ex.Message')+', runtimeGeneration);' for x in runtime_arguments]
+ publication_payloads=runtime_payloads+[x.replace('snapshot.RecordBlockingFailure(','ShowCompressedMemoryBlockingPopup(',1) for x in recall_calls]
+ runtime_calls=['MemoryFailureNotices.PublishMemoryFailureNotice('+x.replace('error.Message','ex.Message').replace(', generation',', runtimeGeneration')+');' for x in runtime_arguments]
+ calls=runtime_calls+[x+' snapshot.SetBlockingDisplay('+display+'); PublishMemoryRecallFailure(snapshot);' for x,display in zip(recall_calls,displays)]
 assert len(calls)==9, 'Failure publication consumer count changed'
 if not a.original:
  # The historical full-process inverse predates J17. Bind only this UI publication boundary.
@@ -41,21 +44,21 @@ if not a.original:
 show=ex.declaration(s,'private void ShowCompressedMemoryBlockingPopup(');tick=ex.declaration(s,'public void OnEngineTick()')
 if not a.original:show+='\n'+ex.declaration(recall_adapter,'private void PublishMemoryRecallFailure(')
 stubs='\n'.join('private void '+n+'(){OtherTickPhases++;}' for n in re.findall(r'^\s+(\w+)\(\);',tick,re.M) if n!='ProcessPendingMemoryFailureNotice')
-code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('string error=',('string failureMessage="fixture failure"; '+('var snapshot=new MemoryRecallRequest { Generation=runtimeGeneration }; ' if not a.original else '')+'string error='),1).replace('@@SHOW@@',show).replace('@@TICK@@',tick).replace('@@TICK_STUBS@@',stubs).replace('@@PRODUCERS@@',' '.join('case '+str(i)+': '+call+' break;' for i,call in enumerate(calls)))
+code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('string error=',('string failureMessage="fixture failure", displayFailureLines="fixture failure", parseError="fixture format error", content="fixture reply"; '+('var snapshot=new MemoryRecallRequest { Generation=runtimeGeneration }; ' if not a.original else '')+'string error='),1).replace('@@SHOW@@',show).replace('@@TICK@@',tick).replace('@@TICK_STUBS@@',stubs).replace('@@PRODUCERS@@',' '.join('case '+str(i)+': '+call+' break;' for i,call in enumerate(calls)))
 out=new_run_root(ROOT,'MemoryFailureUiBoundaryTests',a.run_root)
 if not a.original:
  capture_source=read('src/AF.GameAdapter.Bannerlord/Prompt/MemoryRecallInputCaptureAdapter.cs')
  publication=ex.declaration(capture_source,'internal static void PublishMemoryRecallFailure(')
- port_field=re.findall(r'^\s*internal Action<string,string,long> ShowBlockingFailure;',capture_source,re.M)
+ port_field=re.findall(r'^\s*internal Action<string,string,long,MemoryFailureDisplay> ShowBlockingFailure;',capture_source,re.M)
  binding=re.findall(r'^\s*ShowBlockingFailure = [^\n]+',recall_adapter,re.M)
  assert len(port_field)==1 and len(binding)==1,'Actual recall publication capability drift'
  code='using AnimusForge.Refactor.Adapters;\n'+code
  code+='\nnamespace AnimusForge.Refactor.Adapters { internal static class MemoryRecallInputCaptureAdapter { internal sealed class CapturePorts { '+port_field[0].strip()+' } '+publication+' }}'
  code+='\nnamespace AnimusForge { public partial class MyBehavior { private MemoryRecallInputCaptureAdapter.CapturePorts _memoryRecallCapturePorts; private MemoryRecallInputCaptureAdapter.CapturePorts MemoryRecallCapturePorts => _memoryRecallCapturePorts ??= new MemoryRecallInputCaptureAdapter.CapturePorts { '+binding[0].strip()+' }; }}'
  # Source-extract only the scalar request publication projection; the whole recall/run behavior has separate actual owner fixtures.
- request_fields='internal long Generation; internal string BlockingTitle, BlockingMessage;'
+ request_fields='internal long Generation; internal string BlockingTitle, BlockingMessage; internal MemoryFailureDisplay BlockingDisplay;'
  assert 'internal long Generation;' in recall and 'internal string BlockingTitle, BlockingMessage;' in recall
- code+='\nnamespace AnimusForge { internal sealed class MemoryRecallRequest { '+request_fields+ex.declaration(recall,'internal void RecordBlockingFailure(')+' }}'
+ code+='\nnamespace AnimusForge { internal sealed class MemoryRecallRequest { '+request_fields+ex.declaration(recall,'internal void RecordBlockingFailure(')+ex.declaration(recall,'internal void SetBlockingDisplay(')+' }}'
  ui=read('MyBehavior.MemoryFailureNotice.cs')
  owner=read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs')
  code=code.replace('private bool _memorySummaryFailurePopupActive;', 'private ref bool _memorySummaryFailurePopupActive => ref _memoryFailureNotices.Active;')
@@ -75,10 +78,14 @@ if not a.original:
   else:ui=target
  (out/'Notice.cs').write_text(ui,encoding='utf-8')
  (out/'MemoryFailureNoticeOwner.cs').write_text(owner,encoding='utf-8')
+ (out/'MemoryFailureUiText.cs').write_text(read('src/modules/AF.Module.Memory/Summary/MemoryFailureUiText.cs'),encoding='utf-8')
+ (out/'TextObjectFixture.cs').write_text((HERE/'TextObjectFixture.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
  import json
  (out/'source-manifest.json').write_text(json.dumps({'actual_owner_sha256':hashlib.sha256(read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs').encode()).hexdigest(),'actual_host_sha256':hashlib.sha256(read('MyBehavior.MemoryFailureNotice.cs').encode()).hexdigest(),'actual_publication_sha256':hashlib.sha256(publication.encode()).hexdigest(),'actual_capture_source_sha256':hashlib.sha256(capture_source.encode()).hexdigest(),'actual_capture_root_sha256':hashlib.sha256(recall_adapter.encode()).hexdigest(),'publication_layer':'complete actual Publish method plus same-owner scalar capability root; other recall behavior not replayed','mutation':a.mutate},indent=2),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'SaveRuntimeGuard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
+if a.prepare_only:
+ print('PASS prepared actual Memory failure UI sources; compilation/runtime NOT-RUN');raise SystemExit(0)
 dotnet=str(resolve_dotnet(ROOT))
 env=minimal_test_environment(Path(dotnet),out)
 r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150);log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

@@ -188,6 +188,7 @@ def main():
             files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
     run_scope.include(files, original=bool(a.source_baseline))
+    display=module('memory_display_fixture',HERE.parent/'MemoryFailureUiBoundaryTests/display_fixture_support.py');display.include(files)
     if a.run_scope_cases:
         files['RunScopeCases.cs']=(ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/TerminalCases.cs.txt').read_text(encoding='utf-8-sig')
         anchor='   int failures=0;foreach(var test in cases)'

@@ -62,7 +62,7 @@ internal static string ResolveCapturedMemoryLineSceneForPrompt(DailyMemoryLine l
         internal Func<string,List<CompressedMemoryBlock>> LoadBlocks;
         internal Func<string,List<DailyMemoryDraft>> LoadDrafts;
         internal Func<int> FinalCount, CandidateLimit, PreprocessMode;
-        internal Action<string,string,long> ShowBlockingFailure;
+        internal Action<string,string,long,MemoryFailureDisplay> ShowBlockingFailure;
     }
 
 internal static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts, string capturedScene = null)
@@ -117,6 +117,6 @@ internal static MemoryRecallRequest CaptureMemoryRecallRequest(CapturePorts port
 internal static void PublishMemoryRecallFailure(CapturePorts ports, MemoryRecallRequest request)
     {
         if (!string.IsNullOrWhiteSpace(request.BlockingTitle))
-            ports.ShowBlockingFailure(request.BlockingTitle, request.BlockingMessage, request.Generation);
+            ports.ShowBlockingFailure(request.BlockingTitle, request.BlockingMessage, request.Generation, request.BlockingDisplay);
     }
 }

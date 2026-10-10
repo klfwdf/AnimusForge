@@ -50,27 +50,28 @@ internal sealed class MemorySummaryApplicationAdapter
                     bool current = await _dispatch(run, generation, delegate
                     {
                         if (!_inputCurrent(input)) return false;
-                        if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; return true; }
+                        if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; result.ErrorDisplay = api.ErrorMessage == null
+                            ? MemoryFailureUiText.T("AF_MEMORY_UI_ApiRequestFailed", "API request failed") : MemoryFailureUiText.Error(api.ErrorMessage); return true; }
                         var hero = _findHero(input.HeroId);
                         string error;
                         if (input.Job is MemorySummaryJob)
                         {
                             parsed = TryParseMemorySummaryResponse(api.Content, hero, input.Draft, line => BuildDailyMemoryLineForPrompt(line, _resolveScene), out var block, out error);
                             result.Value = block;
-                            if (!parsed) result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, api.Content);
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         else if (input.Job is MajorActionSummaryJob major)
                         {
                             parsed = TryParseMajorActionSummaryResponse(api.Content, hero, major, input.Actions, out var state, out error);
                             result.Value = state;
-                            if (!parsed) result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, api.Content);
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         else
                         {
                             parsed = TryParseMemoryOverviewResponse(api.Content, hero, (MemoryOverviewJob)input.Job,
                                 input.Overview, input.Blocks, out var state, out error);
                             result.Value = state;
-                            if (!parsed) result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, api.Content);
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         return true;
                     });
@@ -81,7 +82,7 @@ internal sealed class MemorySummaryApplicationAdapter
             { result.IsObsolete = true; result.Value = null; return result; }
             if (outcome == MemorySummaryAttemptRunner.Outcome.Completed) return result;
         }
-        catch (Exception ex) { result.Error = ex.Message; }
+        catch (Exception ex) { result.Error = ex.Message; result.ErrorDisplay = MemoryFailureUiText.Error(ex.Message); }
         finally
         {
             // Process may wait for other RPM waves before applying this receipt.
@@ -346,6 +347,7 @@ internal async Task<MyBehavior.MemorySummaryExecutionResult> ExecuteMemorySummar
 			Source = captured.Source,
 			Block = captured.Value as CompressedMemoryBlock,
 			Error = captured.Error,
+			ErrorDisplay = captured.ErrorDisplay,
 			IsObsolete = captured.IsObsolete
 		};
 	}
@@ -359,6 +361,7 @@ internal async Task<MyBehavior.MajorActionSummaryExecutionResult> ExecuteMajorAc
 			Source = captured.Source,
 			State = captured.Value as MajorActionSummaryState,
 			Error = captured.Error,
+			ErrorDisplay = captured.ErrorDisplay,
 			IsObsolete = captured.IsObsolete
 		};
 	}
@@ -372,6 +375,7 @@ internal async Task<MyBehavior.MemoryOverviewExecutionResult> ExecuteMemoryOverv
 			Source = captured.Source,
 			State = captured.Value as MemoryOverviewState,
 			Error = captured.Error,
+			ErrorDisplay = captured.ErrorDisplay,
 			IsObsolete = captured.IsObsolete
 		};
 	}
