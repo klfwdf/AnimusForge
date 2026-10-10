@@ -3226,5 +3226,11 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Retry_NoModelReply" text="（未收到或未能解析出模型回复）" />
   <string id="AF_UI_Retry_FullRawResponse" text="【API原始响应（完整）】" />
   <string id="AF_UI_Retry_ProviderException" text="{CODE}" />
+  <string id="AF_UI_Scene_SummonUnknownTargets" text="那些人" />
+  <string id="AF_UI_Scene_NameSeparator" text="、" />
+  <string id="AF_UI_Scene_SummonStarted" text="{SPEAKER} 去叫{TARGET}了。" />
+  <string id="AF_UI_Scene_SummonStartedAcrossLocations" text="{SPEAKER} 去帮你叫{TARGET}了。" />
+  <string id="AF_UI_Browser_InvalidUrl" text="链接格式无效，只能打开 HTTP 或 HTTPS 页面。" />
+  <string id="AF_UI_Browser_StartFailed" text="系统默认浏览器无法启动，且未能启动注册表或常见安装位置中的本机浏览器。请安装或设置 Chrome、Edge、Firefox 等浏览器后重试。原因：{REASON}" />
 </strings>
 </base>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Win32;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -94,7 +95,7 @@ internal static class ExternalBrowserLauncher
 		failureMessage = "";
 		if (!TryNormalizeHttpUrl(url, out string normalizedUrl))
 		{
-			failureMessage = "链接格式无效，只能打开 HTTP 或 HTTPS 页面。";
+			failureMessage = new TextObject("{=AF_UI_Browser_InvalidUrl}Invalid link. Only HTTP or HTTPS pages can be opened.").ToString();
 			return false;
 		}
 		try
@@ -120,7 +121,9 @@ internal static class ExternalBrowserLauncher
 				}
 				ClearCachedBrowserPathIfMatching(item);
 			}
-			failureMessage = "系统默认浏览器无法启动，且未能启动注册表或常见安装位置中的本机浏览器。请安装或设置 Chrome、Edge、Firefox 等浏览器后重试。原因：" + ex.Message;
+			var failure = new TextObject("{=AF_UI_Browser_StartFailed}The default browser could not start, and no local browser could be launched from the registry or common installation paths. Install or configure Chrome, Edge, Firefox, or another browser and try again. Reason: {REASON}");
+			failure.SetTextVariable("REASON", ex.Message);
+			failureMessage = failure.ToString();
 			return false;
 		}
 	}

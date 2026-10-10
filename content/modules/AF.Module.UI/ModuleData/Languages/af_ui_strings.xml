@@ -3195,5 +3195,11 @@ Choose how to proceed:" />
   <string id="AF_UI_Retry_NoModelReply" text="(No model reply was received or could be parsed)" />
   <string id="AF_UI_Retry_FullRawResponse" text="Raw API response (complete)" />
   <string id="AF_UI_Retry_ProviderException" text="{CODE}" />
+  <string id="AF_UI_Scene_SummonUnknownTargets" text="those people" />
+  <string id="AF_UI_Scene_NameSeparator" text=", " />
+  <string id="AF_UI_Scene_SummonStarted" text="{SPEAKER} went to summon {TARGET}." />
+  <string id="AF_UI_Scene_SummonStartedAcrossLocations" text="{SPEAKER} went to summon {TARGET} for you." />
+  <string id="AF_UI_Browser_InvalidUrl" text="Invalid link. Only HTTP or HTTPS pages can be opened." />
+  <string id="AF_UI_Browser_StartFailed" text="The default browser could not start, and no local browser could be launched from the registry or common installation paths. Install or configure Chrome, Edge, Firefox, or another browser and try again. Reason: {REASON}" />
 </strings>
 </base>

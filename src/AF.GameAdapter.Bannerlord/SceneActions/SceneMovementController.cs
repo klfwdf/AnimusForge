@@ -1113,13 +1113,13 @@ internal sealed class SceneMovementController
 		}
 		if (list.Count == 0)
 		{
-			return "那些人";
+			return ConversationUiLocalization.Text("AF_UI_Scene_SummonUnknownTargets", "those people");
 		}
 		if (list.Count == 1)
 		{
 			return list[0];
 		}
-		return string.Join("、", list);
+		return string.Join(ConversationUiLocalization.Text("AF_UI_Scene_NameSeparator", ", "), list);
 	}
 
 	internal string BuildSceneSummonArrivedDisplayNames(int batchId, string fallbackTargetName)
@@ -3876,7 +3876,7 @@ internal sealed class SceneMovementController
 				ArrivalSpeechDeadlineMissionTime = mission.CurrentTime + 6f,
 				Stage = SceneSummonStage.PendingLaunch,
 				PendingLaunchStage = SceneSummonStage.MessengerToTarget,
-				LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去叫" + text2 + "了。") : null),
+				LaunchAnnouncement = (isInitialRequest ? ConversationUiLocalization.Text("AF_UI_Scene_SummonStarted", "{SPEAKER} went to summon {TARGET}.", ("SPEAKER", batch.SpeakerName), ("TARGET", text2)) : null),
 				KeepMessengerWithTarget = keepMessengerWithTarget
 			};
 			LogSceneSummonState(isInitialRequest ? "start_same_scene" : "start_same_scene_followup", activeSceneSummonRequest, speakerAgent, agent, "pathLen=1 keepMessenger=" + keepMessengerWithTarget, force: true);
@@ -3913,7 +3913,7 @@ internal sealed class SceneMovementController
 			ArrivalSpeechDeadlineMissionTime = mission.CurrentTime + 8f,
 			Stage = SceneSummonStage.PendingLaunch,
 			PendingLaunchStage = SceneSummonStage.MessengerToDoor,
-			LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去帮你叫" + text2 + "了。") : null),
+			LaunchAnnouncement = (isInitialRequest ? ConversationUiLocalization.Text("AF_UI_Scene_SummonStartedAcrossLocations", "{SPEAKER} went to summon {TARGET} for you.", ("SPEAKER", batch.SpeakerName), ("TARGET", text2)) : null),
 			KeepMessengerWithTarget = keepMessengerWithTarget
 		};
 		LogSceneSummonState(isInitialRequest ? "start_cross_scene" : "start_cross_scene_followup", activeSceneSummonRequest2, speakerAgent, null, "pathLen=" + sceneLocationPath.Count + " keepMessenger=" + keepMessengerWithTarget, force: true);
