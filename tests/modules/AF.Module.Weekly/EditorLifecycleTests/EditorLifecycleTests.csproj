@@ -1,1 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup><Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportEditorController.cs" Link="Production/WeeklyReportEditorController.cs"/><Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs" Link="Production/WeeklyEditorProjection.cs"/><Compile Include="../../../../src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs" Link="Production/WeeklyLegacyDtos.cs"/><Compile Include="../../../../src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs" Link="Production/WeeklyReportArchivePolicy.cs"/><Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="Production/WorldBulletinPolicy.cs"/><Compile Include="../WorldBulletinPolicy.SmokeTests/LayoutStub.cs" Link="LayoutStub.cs"/></ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportEditorController.cs" Link="Production/WeeklyReportEditorController.cs"/>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs" Link="Production/WeeklyEditorProjection.cs"/>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/EventEditorUiText.cs" Link="Production/EventEditorUiText.cs"/>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportUiText.cs" Link="Production/WeeklyReportUiText.cs"/>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs" Link="Production/WeeklyDiagnosticPreviewProjection.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs" Link="Production/WeeklyLegacyDtos.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs" Link="Production/WeeklyReportArchivePolicy.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="Production/WorldBulletinPolicy.cs"/>
+    <Compile Include="../WorldBulletinPolicy.SmokeTests/LayoutStub.cs" Link="LayoutStub.cs"/>
+    <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml" Link="ui-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml" Link="ui-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_ui_strings.xml" Link="weekly-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/CNs/afweekly_ui_strings-zh-CN.xml" Link="weekly-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+</Project>

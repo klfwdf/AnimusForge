@@ -3033,5 +3033,39 @@ Choose how to proceed:" />
   <string id="AF_UI_ErrorAnalysis_RequestFailure" text="The preprocessing API request failed: {CODE}" />
   <string id="AF_UI_ErrorAnalysis_EmptyReply" text="The preprocessing API responded, but no usable model reply could be parsed." />
   <string id="AF_UI_ErrorAnalysis_Timeout" text="The preprocessing API analysis exceeded 60 seconds; the request was canceled." />
+  <string id="AF_UI_WeeklyProjection_InvalidGroup" text="Invalid group" />
+  <string id="AF_UI_WeeklyProjection_MaterialCounts" text="{SOURCE} / {PROMPT} materials" />
+  <string id="AF_UI_WeeklyProjection_OtherRecent" text="Other recent news" />
+  <string id="AF_UI_WeeklyProjection_KingdomRecent" text="{KINGDOM} recent news" />
+  <string id="AF_UI_WeeklyProjection_EmptyBody" text="This weekly-report issue has no body text yet." />
+  <string id="AF_UI_WeeklyProjection_Kingdom" text="Kingdom" />
+  <string id="AF_UI_WeeklyProjection_KingdomWeekly" text="{KINGDOM} weekly report" />
+  <string id="AF_UI_WeeklyProjection_GenerationTarget" text="Generation target" />
+  <string id="AF_UI_WeeklyProjection_AssociatedKingdom" text="Associated kingdom" />
+  <string id="AF_UI_WeeklyProjection_OutputMode" text="Output mode" />
+  <string id="AF_UI_WeeklyProjection_LengthProfile" text="Length profile" />
+  <string id="AF_UI_WeeklyProjection_SystemPrompt" text="[System Prompt]" />
+  <string id="AF_UI_WeeklyProjection_UserPrompt" text="[User Prompt]" />
+  <string id="AF_UI_WeeklyProjection_BatchWeek" text="Batch week" />
+  <string id="AF_UI_WeeklyProjection_MaterialRange" text="Material day range" />
+  <string id="AF_UI_WeeklyProjection_BatchBlocks" text="Batch block count" />
+  <string id="AF_UI_WeeklyProjection_BatchMode" text="Batch mode" />
+  <string id="AF_UI_WeeklyProjection_BatchTargets" text="Batch targets" />
+  <string id="AF_UI_WeeklyProjection_InvalidMaterial" text="Invalid material" />
+  <string id="AF_UI_WeeklyProjection_ActionDay" text="[Day {DAY}] " />
+  <string id="AF_UI_WeeklyProjection_UnknownLord" text="A lord" />
+  <string id="AF_UI_WeeklyProjection_NoPreview" text="No preview" />
+  <string id="AF_UI_WeeklyProjection_MaterialAggregate" text="Weekly-report aggregate material" />
+  <string id="AF_UI_WeeklyProjection_MaterialWorldOpening" text="World opening summary" />
+  <string id="AF_UI_WeeklyProjection_MaterialKingdomOpening" text="Kingdom opening summary" />
+  <string id="AF_UI_WeeklyProjection_MaterialRuler" text="Current ruler" />
+  <string id="AF_UI_WeeklyProjection_MaterialRecentAction" text="Recent NPC action" />
+  <string id="AF_UI_WeeklyProjection_MaterialMajorAction" text="Major NPC action" />
+  <string id="AF_UI_WeeklyProjection_MaterialRawText" text="Raw text material" />
+  <string id="AF_UI_WeeklyProjection_MaterialUnclassified" text="Unclassified material" />
+  <string id="AF_UI_WeeklyProjection_Profile1" text="Tier 1 (200-400 characters)" />
+  <string id="AF_UI_WeeklyProjection_Profile2" text="Tier 2 (200-800 characters)" />
+  <string id="AF_UI_WeeklyProjection_Profile3" text="Tier 3 (200-1200 characters)" />
+  <string id="AF_UI_WeeklyProjection_Profile4" text="Tier 4 (200-1500 characters)" />
   </strings>
 </base>

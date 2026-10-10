@@ -693,10 +693,10 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		=> WeeklyEditorProjection.BuildWeeklyReportBrowserDefaultTitle(_port, eventKind, scopeKingdomId, weekIndex);
 
 	private string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
-		=> WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(_port, group, systemPrompt, userPrompt);
+		=> WeeklyEditorProjection.BuildWeeklyReportPromptPreviewTextForDisplay(_port, group, systemPrompt, userPrompt);
 
 	private string BuildWeeklyBatchPromptPreviewText(WeeklyReportBatchRequest batch, string systemPrompt, string userPrompt)
-		=> WeeklyEditorProjection.BuildWeeklyBatchPromptPreviewText(_port, batch, systemPrompt, userPrompt);
+		=> WeeklyEditorProjection.BuildWeeklyBatchPromptPreviewTextForDisplay(_port, batch, systemPrompt, userPrompt);
 
 	private string BuildWeeklyPreviewMaterialLabel(EventMaterialReference material)
 		=> WeeklyEditorProjection.BuildWeeklyPreviewMaterialLabel(_port, material);

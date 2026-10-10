@@ -57,14 +57,22 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+ private static readonly WeeklyEditorDisplayPort WeeklyEditorDiagnostic = new WeeklyEditorDisplayPort
+ {
+  PromptProfileLabel = () => GetWeeklyReportPromptProfile().Label,
+  ResolveKingdomDisplay = ResolveKingdomDisplay,
+  AppendDevNpcActionField = WeeklyDiagnosticPreviewProjection.AppendField,
+  GetEventAndRebellionApiMaxTokens = GetEventAndRebellionApiMaxTokens,
+  BuildWeeklyReportGroupReportId = BuildWeeklyReportGroupReportId,
+ };
  private static readonly WeeklyEditorDisplayPort WeeklyEditorDisplay = new WeeklyEditorDisplayPort
  {
   FormatNewsDate = FormatNewsCalendarDate,
-  PromptProfileLabel = () => GetWeeklyReportPromptProfile().Label,
+  PromptProfileLabel = () => WeeklyEditorProjection.ProfileForDisplay(CaptureWeeklyReportLengthPreset()),
   ResolveHeroDisplay = ResolveHeroDisplay,
   ResolveSettlementDisplay = ResolveSettlementDisplay,
   BuildDevSummaryPreview = BuildDevSummaryPreview,
-  TranslateEventMaterialTypeForDev = TranslateEventMaterialTypeForDev,
+  TranslateEventMaterialTypeForDev = WeeklyEditorProjection.MaterialTypeForDisplay,
   AppendDevNpcActionField = AppendDevNpcActionField,
   ResolveKingdomDisplay = ResolveKingdomDisplay,
   GetEventAndRebellionApiMaxTokens = GetEventAndRebellionApiMaxTokens,
@@ -85,11 +93,11 @@ public partial class MyBehavior
   BulletinKingdomAssociations = () => WorldBulletinState.SnapshotLegacyBulletinKingdomAssociations(),
   BuildBulletinPanel = BuildWorldBulletinPanelData, AwardReadingXp = id => TryAwardWeeklyReportReadingXp(id),
   FormatNewsDate = FormatNewsCalendarDate,
-  PromptProfileLabel = () => GetWeeklyReportPromptProfile().Label,
+  PromptProfileLabel = () => WeeklyEditorProjection.ProfileForDisplay(CaptureWeeklyReportLengthPreset()),
   ResolveHeroDisplay = ResolveHeroDisplay,
   ResolveSettlementDisplay = ResolveSettlementDisplay,
   BuildDevSummaryPreview = BuildDevSummaryPreview,
-  TranslateEventMaterialTypeForDev = TranslateEventMaterialTypeForDev,
+  TranslateEventMaterialTypeForDev = WeeklyEditorProjection.MaterialTypeForDisplay,
   AppendDevNpcActionField = AppendDevNpcActionField,
   ResolveKingdomDisplay = ResolveKingdomDisplay,
   GetEventAndRebellionApiMaxTokens = GetEventAndRebellionApiMaxTokens,
@@ -165,10 +173,10 @@ public partial class MyBehavior
 		=> WeeklyEditorProjection.BuildWeeklyReportBrowserDefaultTitle(WeeklyEditorDisplay, eventKind, scopeKingdomId, weekIndex);
 
 	private static string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
-		=> WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(WeeklyEditorDisplay, group, systemPrompt, userPrompt);
+		=> WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(WeeklyEditorDiagnostic, group, systemPrompt, userPrompt);
 
 	private static string BuildWeeklyBatchPromptPreviewText(WeeklyReportBatchRequest batch, string systemPrompt, string userPrompt)
-		=> WeeklyEditorProjection.BuildWeeklyBatchPromptPreviewText(WeeklyEditorDisplay, batch, systemPrompt, userPrompt);
+		=> WeeklyEditorProjection.BuildWeeklyBatchPromptPreviewText(WeeklyEditorDiagnostic, batch, systemPrompt, userPrompt);
 
 	private void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
 		=> WeeklyEditor.OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);

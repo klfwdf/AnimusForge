@@ -25,6 +25,19 @@ stateOwner._port=new(){Records=()=>records,FindRecord=id=>records.FirstOrDefault
 stateOwner.UpsertWorldBulletinRecord(bulletinId,"world","","new bulletin","new summary","new bulletin body",15,ids);
 Check(records.Count==4&&notices==1&&metadataAtNotify,"one canonical issue with metadata before timeline notification");
 var display=new WeeklyEditorDisplayPort {ResolveKingdomDisplay=id=>id};
+foreach(bool chinese in new[]{false,true}) {
+ TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+ var empty=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,new(){new(){EventId="weekly_report:world:empty",EventKind="world",WeekIndex=1,CreatedDay=-1}},"world","").Single();
+ Check(empty.Title==(chinese?"世界周报 · 日期未知":"World weekly report · Unknown date")&&empty.BodyText==(chinese?"当前这期周报还没有正文。":"This weekly-report issue has no body text yet."),"controlled EN/CN archive fallback title and empty body");
+ Check(empty.CreatedDate==(chinese?"日期未知":"Unknown date"),"controlled EN/CN unknown date");
+ var recentSource=new EventRecordEntry{EventId=WeeklyReportArchivePolicy.RecentId("A",1),EventKind="kingdom",ScopeKingdomId="A",CreatedDay=15,CreatedDate="1084年1月10日 — 1084年1月15日"};
+ int dateCaptures=0;
+ display.FormatNewsDate=day=>{dateCaptures++;return "formatted-day-"+day;};
+ var recent=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,new(){recentSource},"kingdom","A").Single();
+ Check(recent.Title.EndsWith(recentSource.CreatedDate)&&recent.CreatedDate=="formatted-day-15"&&dateCaptures==1&&recentSource.CreatedDate=="1084年1月10日 — 1084年1月15日","recent title preserves full stored date range; date property keeps single-day formatter without editing source (range localization remains incomplete)");
+ display.FormatNewsDate=null;
+}
+TaleWorlds.Localization.TextObject.UseLanguage(true);
 List<WeeklyReportBrowserEntryData> Project(string kind,string id,IReadOnlyDictionary<string,List<string>> legacy=null)=>WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,records,kind,id,legacy);
 var a=Project("kingdom","a");
 Check(a.Count==3&&a[0].EventId==bulletinId&&a[0].BodyText=="new bulletin body","kingdom shows latest related bulletin above retained weekly and brief");

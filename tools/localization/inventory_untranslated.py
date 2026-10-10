@@ -41,6 +41,8 @@ SINKS = {
 # Consumers verified in DeveloperRootEditorController:648,727-728 and
 # WeeklyReportEditorController:683-702. These helpers only construct UI projections.
 PROJECTIONS = {"NpcActionEditorProjection.cs", "WeeklyEditorProjection.cs"}
+# Saved previews are not the editor display path; tracked separately for runtime extraction.
+DIAGNOSTIC_SOURCES = {"src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs"}
 INTERNAL = re.compile(r'\b(?:IndexOf|StartsWith|EndsWith|Contains|Equals|Replace|Regex|Log|Trace|LogDebug|LogError|LogWarning)\b')
 UI_CONTEXT = re.compile(r'Inquiry|InformationMessage|DisplayMessage|Show.*(?:Popup|Editor)|Title|Subtitle|Hint|Tooltip|Button|Notification|StatusText|DisplayName|SettingProperty|TextObject|AppendDev.*Field|MenuOption', re.I)
 PROMPT_CONTEXT = re.compile(r'prompt|instruction|afef|constraint|ruletemplate|tagtemplate', re.I)
@@ -268,6 +270,9 @@ def run(root: Path):
         for match, frames in tokens:
             value = decode(match[0])
             if not HAN.search(value):
+                continue
+            if relative in DIAGNOSTIC_SOURCES:
+                excluded["saved_diagnostic_preview"] += 1
                 continue
             left = max(code.rfind(";", 0, match.start()), code.rfind("{", 0, match.start()), code.rfind("}", 0, match.start())) + 1
             right = code.find(";", match.end())
