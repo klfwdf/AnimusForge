@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+from verify_failure_static import restore_failure_catalog
 
 ROOT = Path(__file__).resolve().parents[4]
 PREFIX = "extensions/AnimusForge.Illustrator/src/"
@@ -36,6 +37,7 @@ def restore_probe(source):
 
 
 def restore_probe_catalog(source):
+    source = restore_failure_catalog(source)
     lines = [line for line in source.splitlines(keepends=True) if '"AF_ILL_UI_SCENE_PROBE_NOTE"' in line]
     assert len(lines) == 1
     return source.replace(lines[0], "", 1)

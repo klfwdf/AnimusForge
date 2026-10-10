@@ -330,5 +330,22 @@
     <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="画面内容尚未注明。" />
     <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="画中的内容属于艺术描绘，不代表其中的事件已经真实发生。" />
     <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="【独立场景试采预览】从附近30米的静态副本采集前后左右上下六个90度方向，投影为360×180度全景。中央为前方，左右边缘在后方相接，顶部/底部是上方/下方。展开拉伸不是建筑变形；人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。" />
+    <string id="AF_ILL_ERROR_PORTRAIT_REFERENCE" text="百科完整装备离屏立绘未取得，已停止生成；请查看本次 portrait_stage_result 的 failureCode。" />
+    <string id="AF_ILL_ERROR_PLAYER_REFERENCE" text="玩家完整装备离屏立绘失败，已停止生成。" />
+    <string id="AF_ILL_ERROR_PARTNER_REFERENCE" text="对方完整装备离屏立绘失败，已停止生成。" />
+    <string id="AF_ILL_ERROR_PROBE_MISSING" text="独立场景未返回完整的全景参考图。" />
+    <string id="AF_ILL_ERROR_PROBE_EMPTY" text="独立场景返回了空的参考拼图。" />
+    <string id="AF_ILL_ERROR_CAPTURE_QUEUE" text="游戏线程任务队列已满，无法执行插画采集操作。" />
+    <string id="AF_ILL_ERROR_DISABLED" text="AI 生图系统未启用" />
+    <string id="AF_ILL_ERROR_ENDPOINT_MISSING" text="未配置生图 API 端点 (Base URL)" />
+    <string id="AF_ILL_ERROR_MISSION_UNAVAILABLE" text="当前没有可供截图生图的玩家场景，或生图尚未启用。" />
+    <string id="AF_ILL_ERROR_CONFIGURE_API" text="请先配置生图 API。" />
+    <string id="AF_ILL_ERROR_REDRAW_SOURCE" text="基于本图重绘需要一张有效的当前成图，未发送请求。" />
+    <string id="AF_ILL_ERROR_EDITS_REFERENCE" text="images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。" />
+    <string id="AF_ILL_ERROR_GENERATIONS_REFERENCE" text="精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。" />
+    <string id="AF_ILL_ERROR_RESPONSE_IMAGE" text="未能从服务端响应中提取到有效图像数据" />
+    <string id="AF_ILL_ERROR_CANCELLED" text="生图请求已取消" />
+    <string id="AF_ILL_ERROR_TIMEOUT" text="生图请求超过{SECONDS}秒总预算" />
+    <string id="AF_ILL_ERROR_COMMUNICATION" text="生图通信异常: {DETAIL}" />
   </strings>
 </base>

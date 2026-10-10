@@ -15,25 +15,31 @@ namespace AnimusForge.Illustrator.UI
         internal static string Format(string id, string englishFallback, string variable, object value)
         {
             var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(variable, value?.ToString() ?? string.Empty);
+            text.SetTextVariable(variable, DisplayValue(variable, value));
             return text.ToString();
         }
 
         internal static string Format2(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue)
         {
             var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
-            text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
+            text.SetTextVariable(firstName, DisplayValue(firstName, firstValue));
+            text.SetTextVariable(secondName, DisplayValue(secondName, secondValue));
             return text.ToString();
         }
 
         internal static string Format3(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue, string thirdName, object thirdValue)
         {
             var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
-            text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
-            text.SetTextVariable(thirdName, thirdValue?.ToString() ?? string.Empty);
+            text.SetTextVariable(firstName, DisplayValue(firstName, firstValue));
+            text.SetTextVariable(secondName, DisplayValue(secondName, secondValue));
+            text.SetTextVariable(thirdName, DisplayValue(thirdName, thirdValue));
             return text.ToString();
+        }
+
+        private static string DisplayValue(string name, object value)
+        {
+            string raw = value?.ToString() ?? string.Empty;
+            return name == "ERROR" ? IllustrationFailureUiText.Project(raw) : raw;
         }
 
         internal static string GalleryTitle => Resolve("AF_ILL_UI_GALLERY_TITLE", "Calradia Visual Chronicle Gallery");
