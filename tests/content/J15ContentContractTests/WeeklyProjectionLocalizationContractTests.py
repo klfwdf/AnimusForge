@@ -29,7 +29,17 @@ for key in ids:
     assert en and zh
     assert re.findall(r"\{([A-Z][A-Z0-9_]*)\}", en) == re.findall(r"\{([A-Z][A-Z0-9_]*)\}", zh), key
 assert "WeeklyReportArchivePolicy" in source
-assert ' + " · " + x.CreatedDate;' in source  # Preserve archived date ranges.
+assert 'string date = recent ? BuildRecentDateForDisplay(port, x)' in source
+assert ' + " · " + date;' in source and "CreatedDate = date," in source
+date_projection = source.split("internal static string BuildRecentDateForDisplay", 1)[1].split("internal static string BuildWeeklyReportBrowserDefaultTitle", 1)[0]
+assert "materials.Min(material => material.ActionDay.Value)" in date_projection
+assert "materials.Max(material => material.ActionDay.Value)" in date_projection
+assert "materials.All(material => material.ActionDay.HasValue && material.ActionDay.Value >= 0" in date_projection
+assert 'IndexOf(" — ", StringComparison.Ordinal) < 0' in date_projection  # Nested historical ranges retain their archived extent.
+assert 'return firstDay == lastDay ? first : first + " — " + last;' in date_projection
+assert "entry.CreatedDate.Trim()" in date_projection
+assert "entry.CreatedDay" not in date_projection  # A single end day cannot replace a range.
+assert not re.search(r"entry\.[A-Za-z]+\s*=(?!=)", date_projection)
 assert "BodyText = body.Length == 0 ? T(" in source
 assert "systemPrompt ?? \"\"" in source and "userPrompt ?? \"\"" in source
 weekly_en = ROOT / "content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_ui_strings.xml"
