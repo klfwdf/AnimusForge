@@ -212,8 +212,10 @@ internal sealed partial class KingdomCivilWarOwner
 			{
 				if (f.PendingResponse.LeaderClanId != f.LeaderClanId || f.PendingResponse.RulerClanId != k.RulingClan?.StringId)
 				{
+					// Diagnostic state only: ResolutionError is never rendered verbatim (only its emptiness is
+					// tested in the panel), so this stays a stable internal string.
 					if (f.PendingResponse.Accepted) { f.ResolutionNeedsReview = true; f.ResolutionError = "已接受协议的当事方发生变化，保留执行进度待核查。"; }
-					else { f.PendingResponse = null; AddHistory(s, week, "交涉当事方发生变化，未接受的旧提议已撤回。"); }
+					else { f.PendingResponse = null; AddHistory(s, week, CivilWarUiText.T("AF_KINGDOM_CW_Event_ProposalPartiesChanged", "The parties to the negotiation changed; the unaccepted old proposal has been withdrawn.")); }
 					f.Version++; yield return true; continue;
 				}
 				if (f.PendingResponse.Accepted)
@@ -297,6 +299,8 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		var d = CivilWarCatalog.FindDemand(f.DemandId);
 		if (d == null) return false;
+		// Deliberately not localized: `reason` is both published as political-result material (LLM/AFEF) and
+		// written to the saved chronicle, so it must stay a stable rule string.
 		string reason = null;
 		if (d.Id == CivilWarCatalog.UsurpDemandId && k.RulingClan?.StringId == f.LeaderClanId) reason = "派系领袖已经继位，宣权诉求已满足。";
 		if (d.Target == CivilWarDemandTarget.ImposedPolicy && !k.ActivePolicies.Any(x => x.StringId == f.TargetId)) reason = "目标政策已撤销，诉求已满足。";

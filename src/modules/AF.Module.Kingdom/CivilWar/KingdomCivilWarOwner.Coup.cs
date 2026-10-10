@@ -13,7 +13,7 @@ internal sealed partial class KingdomCivilWarOwner
     // Adopt the already-created rebel kingdom. Registration never repeats kingdom creation.
     internal bool TryRegisterCoupWar(CoupCivilWarRegistration request, out string message)
     {
-        message = "政变内战登记条件不满足。";
+        message = CivilWarUiText.T("AF_KINGDOM_CW_Coup_ConditionsUnmet", "Coup civil war registration requirements are not met.");
         if (request == null || string.IsNullOrWhiteSpace(request.CoupId)) return false;
         Kingdom home = CivilWarWorld.FindKingdom(request.KingdomId), rebel = CivilWarWorld.FindKingdom(request.RebelKingdomId);
         Clan leader = CivilWarWorld.FindClan(request.LeaderClanId);
@@ -22,7 +22,9 @@ internal sealed partial class KingdomCivilWarOwner
         if (existing != null)
         {
             bool same = existingState.KingdomId == request.KingdomId && existing.RebelKingdomId == request.RebelKingdomId;
-            message = same ? "政变内战已经登记。" : "政变内战身份冲突，保留原记录。";
+            message = same
+                ? CivilWarUiText.T("AF_KINGDOM_CW_Coup_AlreadyRegistered", "The coup civil war is already registered.")
+                : CivilWarUiText.T("AF_KINGDOM_CW_Coup_IdentityConflict", "Coup civil war identity conflict; the existing record is kept.");
             return same;
         }
         // A resolved receipt prevents registration replay after the faction is removed.
@@ -33,13 +35,16 @@ internal sealed partial class KingdomCivilWarOwner
         if (request.RestoreDynasty && (dynasty == null || dynasty.IsEliminated || dynasty.Kingdom != rebel
             || string.IsNullOrWhiteSpace(request.FormerKingId) || string.IsNullOrWhiteSpace(request.OriginalName)
             || string.IsNullOrWhiteSpace(request.OriginalShortName)))
-        { message = "旧王家族尚未加入叛军或复位身份/原国名缺失，暂不登记。"; return false; }
+        { message = CivilWarUiText.T("AF_KINGDOM_CW_Coup_RestorationIdentityMissing", "The former royal clan has not joined the rebels, or the restoration identity/original kingdom name is missing; registration is postponed."); return false; }
         int week = CivilWarWorld.CurrentWeek(), day = CivilWarWorld.CurrentDay();
         var state = GetOrCreate(home, week);
         var faction = new KingdomCivilWarFactionState
         {
             Id = id, CoupId = request.CoupId, Stage = KingdomCivilWarStage.OpenWar,
             DemandId = CivilWarCatalog.UsurpDemandId, WarGoal = (int)CivilWarWarGoal.Usurp,
+            // Display-only field: the match value is TargetId. Left hardcoded because the coup demand is always
+            // `usurp`, whose catalog text has no {target} placeholder, and the same literal is written by
+            // KingdomCivilWarOwner.cs:422 for the non-coup path (cross-file decision, reported).
             LeaderClanId = leader.StringId, TargetName = request.RestoreDynasty ? "旧王朝复位" : "王位",
             CreatedWeek = week, StageWeek = week, WarRequestWeek = week, WarStartWeek = week,
             WarRequestDay = day, WarStartDay = day, WarEvaluationDay = day,
@@ -58,6 +63,8 @@ internal sealed partial class KingdomCivilWarOwner
         }
         _openWarKingdoms.Add(home.StringId); IndexOppositionSettlements(state, faction);
         faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebel) / (float)Math.Max(1, CivilWarWorld.FortificationCount(home));
+        // Deliberately not localized: this same string is the saved receipt replayed on load (line 32), the panel
+        // chronicle entry, and the LLM/AFEF material published below, so it must stay a stable rule string.
         message = request.RestoreDynasty ? "复位内战已登记：仅叛军战胜才恢复旧王朝与原国名，和平谈判不会复位。" : "政变后内战已登记：被扣押旧王及其家族不加入本次叛军。";
         _storage.Operations[id] = new CivilWarOperation { Fingerprint = home.StringId + "|" + rebel.StringId, FactionId = id, Status = (int)CivilWarActionStatus.Applied, Message = message };
         AddHistory(state, week, message); SaveSummary(state); Revision++;

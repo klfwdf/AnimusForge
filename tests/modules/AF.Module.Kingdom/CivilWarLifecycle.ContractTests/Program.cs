@@ -123,7 +123,7 @@ f.Reload();
 GiveGoldAction.ThrowAfterApply = false;
 f.Tick(102);
 Check(GiveGoldAction.Calls == 1 && f.State.Factions.Count == 1, "uncertain money transfer never automatically repeats");
-Check(f.Owner.BuildPlayerKingdomPanel().Factions.Single().Stage.Contains("需检查"), "blocked settlement is visible");
+Check(f.Owner.BuildPlayerKingdomPanel().Factions.Single().Stage.Contains("check the log"), "blocked settlement is visible");
 
 // Previously fulfilled demands can finish after the return phase, rather than getting stuck forever.
 f = new Fixture();
