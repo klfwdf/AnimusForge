@@ -62,6 +62,23 @@ HeroPersonaGenerationTests helper闭包与受控TextObject线程leaf但未编译
 仍可上屏中文；不标全英文完成。世界书仍由B处理，主线不覆盖其资产。
 用户最新明确暂不处理J17，停止该支线；本地化继续，目标保持ACTIVE。
 
+最新主线集成（`6329b2641`）：D 四提交 `d7f2c0fe0` / `a67d2e24e` /
+`4cbcb4d11` / `70aca3fc7` 已在 main；D 静态契约重跑 PASS（外交1059对、
+王国114对、动态键66、产出code39），继承fallback漂移仍显式登记。
+`bda62c6e6` 完成共享长文本编辑器默认按钮与打开失败；`6329b2641`
+合入7个稳定度百科键、复用9键并缓存每页面前次追加块，以兼容语言切换、
+英文/中文完整标题行和禁用清理；仅在原刷新入口运行，无新增Tick。
+26对注册资源契约、百科静态接线、12556次UI真实DLL解析PASS；fixture与
+本轮产品编译、实机、旧档仍NOT-RUN。详见[百科交付](handoffs/2026-10-10-kingdom-stability-encyclopedia-ui-delivery.md)。
+DSH读取时C与E仍显示进行中，E有1个运行子智能体；未发送消息或中止会话。
+新只读盘点 `artifacts/localization/untranslated-after-d-integration.json`：
+确认UI22位置、消费者待审1215位置/137文件，扫描期间无变化；是工作树下限，
+不能当全英文残余总数。该盘点的世界书身份匹配未完整识别B英文资产，不据此
+宣布B未完成。另有一处中文原版世界书JSON解析异常，待资产验收时核对。
+D10 worker命名错误仍待显示边界处理，另确认自动命名worker中既有TextObject
+调用（`c0d452361e`）需移至主线程；稳定度Lab四个raw评级入口仍待投影。
+全部任务仍ACTIVE / NOT RELEASE READY；没有构建、Stage、部署、正式打包或Push。
+
 NOT-RUN：当前产品编译、专项编译型回放、全部UI实机、长战役/旧档、
 正式CN/EN打包与N网上传。当前无发布验收。回滚：各产品focused inverse；
 历史交付报告保留原记录，后续修复另记，不回滚其他作者及未跟踪资产。
