@@ -1,3 +1,29 @@
+<a id="full-english-release-20261010"></a>
+## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+
+实际工作区 F:/AnimusForge-main，main；范围扩展基线 `7341afe55`。
+用户要求上 N 网完整英文、两套 ZIP 名区分 CN/EN、包内原文件名不变、
+运行时中文字符串不再硬编码。保留中文原版资产及存档、协议行为；源码注释
+与交接文档不视为玩家运行时字符串。未授权语言探测，不通过语言探测切换。
+打包脚本的既有单模块、Bootstrap 唯一加载、1.3/1.4 双实现及版本事务保留。
+修改脚本不代表授权执行构建/Stage/部署/push；用户延后编译仍有效。
+
+B/C 交付按两份仓库报告验证。B 3 产品提交253对新键、C 9产品提交234对；
+静态资源自洽不能验收全英文。C原报告提交数/Kingdom分项有笔误；Weekly
+7键原未注册，主线 `7341afe55` 补2份LanguageData和2个映射。现有引用快照
+1.3/1.4各39,992次真实TextObject解析通过，资源契约25对通过。
+
+当前切片：[下拉显示](handoffs/2026-10-10-localization-dropdown-display.md)。
+WorldMap/Issue/Economy仍有实际通知中文泄漏；CivilWar/Diplomacy/Policy/Memory
+同样未全量闭环。共享事实的中文不得通过修改存档值消除，需独立显示投影。
+部分原测试锁中文文案，必须保持线程、发布、生命周期断言并补双语显示断言，
+不能将测试文案当永久排除理由。EN资产实际覆盖和纯英文门禁由打包切片核实；
+缺少平行英文默认内容会阻止EN包，不能仅改ZIP名宣称完成。
+
+NOT-RUN：当前产品编译、专项编译型回放、全部UI实机、长战役/旧档、
+正式CN/EN打包与N网上传。当前无发布验收。回滚：各产品focused inverse；
+历史交付报告保留原记录，后续修复另记，不回滚其他作者及未跟踪资产。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ## MCM 模型预设与快报战事修复接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
