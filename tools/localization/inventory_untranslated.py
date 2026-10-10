@@ -42,6 +42,14 @@ SINKS = {
 # Consumers verified in DeveloperRootEditorController:648,727-728 and
 # WeeklyReportEditorController:683-702. These helpers only construct UI projections.
 PROJECTIONS = {"NpcActionEditorProjection.cs", "WeeklyEditorProjection.cs"}
+# BuildPlayerNotorietyEncyclopediaTextForExternal -> Hero encyclopedia InformationText;
+# BuildPlayerNotorietyPopupData/OpenPlayerNotorietyView -> popup/inquiry HistoryText.
+# Shared history/Prompt producers are deliberately outside these display-only methods.
+TRACED_UI_METHODS = {
+    "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs": (
+        "BuildPlayerNotorietyDisplayText", "BuildPlayerNotorietyHistoryText",
+        "BuildNotorietyActionLineForDisplay", "GetLevelText"),
+}
 # Saved previews are not the editor display path; tracked separately for runtime extraction.
 DIAGNOSTIC_SOURCES = {"src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs"}
 INTERNAL = re.compile(r'\b(?:IndexOf|StartsWith|EndsWith|Contains|Equals|Replace|Regex|Log|Trace|LogDebug|LogError|LogWarning)\b')
@@ -385,6 +393,8 @@ def run(root: Path):
             continue
         code, tokens = tokenize(source)
         projected_offsets = mcm_projected_offsets(source, code, tokens, en_keys) if relative == MCM_SOURCE else set()
+        display_regions = [region for name in TRACED_UI_METHODS.get(relative, ())
+                           if (region := method_region(source, code, name))]
         lines = source.splitlines()
         newlines = [m.start() for m in re.finditer("\n", source)]
         for match, frames in tokens:
@@ -442,6 +452,8 @@ def run(root: Path):
                 confirmed, evidence = True, "MCM display attribute"
             if path.name in PROJECTIONS:
                 confirmed, evidence = True, "traced display projection; consumers recorded in scanner"
+            if any(start <= match.start() < end for start, end in display_regions):
+                confirmed, evidence = True, "traced display-only method; encyclopedia/popup consumer recorded in scanner"
             if value in REVIEWED.get(path.name, set()):
                 confirmed, evidence = True, "reviewed selector or error UI display boundary; preserve internal value"
             if failure_argument in {"titleTemplate", "reasonTemplate", "titleSource", "reasonCode", "modelReply", "rawResponse"}:

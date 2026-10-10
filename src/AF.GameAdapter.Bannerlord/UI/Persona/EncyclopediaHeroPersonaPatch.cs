@@ -31,6 +31,8 @@ public static class EncyclopediaHeroPersonaPatch
 	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
 	private const string RerollButtonId = "AnimusForgeHeroPersonaRerollButton";
 	private const string PlayerNotorietyMarker = "【玩家知名度】";
+	private sealed class NotorietyBlock { internal string Text = ""; }
+	private static readonly ConditionalWeakTable<EncyclopediaHeroPageVM, NotorietyBlock> NotorietyBlocks = new ConditionalWeakTable<EncyclopediaHeroPageVM, NotorietyBlock>();
 	private const int UpdateBrushesContainerIndex = 5;
 	private static readonly long CourierMissionPresenceCacheTicks = Math.Max(1L, Stopwatch.Frequency / 4L);
 
@@ -655,17 +657,45 @@ public static class EncyclopediaHeroPersonaPatch
 			return;
 		}
 		string notorietyText = (PlayerNotorietyBehavior.BuildPlayerNotorietyEncyclopediaTextForExternal() ?? "").Trim();
+		NotorietyBlock previous = NotorietyBlocks.GetValue(vm, _ => new NotorietyBlock());
+		string baseText = RemovePreviousNotorietyBlock(vm.InformationText, previous.Text);
 		if (string.IsNullOrWhiteSpace(notorietyText))
 		{
+			vm.InformationText = baseText;
+			previous.Text = "";
 			return;
 		}
-		string baseText = (vm.InformationText ?? "").Trim();
-		int markerIndex = baseText.IndexOf(PlayerNotorietyMarker, StringComparison.Ordinal);
-		if (markerIndex >= 0)
-		{
-			baseText = baseText.Substring(0, markerIndex).Trim();
-		}
 		vm.InformationText = string.IsNullOrWhiteSpace(baseText) ? notorietyText : (baseText + "\n\n" + notorietyText);
+		previous.Text = notorietyText;
+	}
+
+	private static string RemovePreviousNotorietyBlock(string input, string previousBlock)
+	{
+		string text = (input ?? "").Trim();
+		// Per-page suffix covers language changes without depending on the current translated heading.
+		if (!string.IsNullOrEmpty(previousBlock) && text.EndsWith(previousBlock, StringComparison.Ordinal))
+		{
+			int start = text.Length - previousBlock.Length;
+			if (start == 0 || text[start - 1] == '\n') text = text.Substring(0, start).TrimEnd();
+		}
+		int oldIndex = FindNotorietyHeading(text, PlayerNotorietyMarker);
+		int englishIndex = FindNotorietyHeading(text, "[Player notoriety]");
+		if (oldIndex < 0 || (englishIndex >= 0 && englishIndex < oldIndex)) oldIndex = englishIndex;
+		return oldIndex < 0 ? text : text.Substring(0, oldIndex).TrimEnd();
+	}
+
+	private static int FindNotorietyHeading(string text, string heading)
+	{
+		int start = 0;
+		while (start < text.Length)
+		{
+			int found = text.IndexOf(heading, start, StringComparison.Ordinal);
+			if (found < 0) return -1;
+			int end = found + heading.Length;
+			if ((found == 0 || text[found - 1] == '\n') && (end == text.Length || text[end] == '\r' || text[end] == '\n')) return found;
+			start = end;
+		}
+		return -1;
 	}
 
 	private static bool ShouldOverride(Hero hero, EncyclopediaHeroPageVM vm)

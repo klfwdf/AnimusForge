@@ -88,5 +88,29 @@
     <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="多配偶执行失败，{DETAIL}" />
     <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="执行 MarriageAction 失败，{DETAIL}" />
     <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="解除配偶关系时异常，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_Notoriety_Heading" text="【玩家知名度】" />
+    <string id="AF_SOCIAL_UI_Notoriety_WorldScore" text="世界知名度：{EFFECTIVE}/100（{LEVEL}；基础 {BASE} + 家族修正 {BONUS}）" />
+    <string id="AF_SOCIAL_UI_Notoriety_ClanBonus" text="家族等级修正：+{BONUS}" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureHeading" text="【文化知名度】" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoCultures" text="（暂无文化知名度）" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureScore" text="- {CULTURE}：{BASE}/100；有效 {EFFECTIVE}/100（{LEVEL}）" />
+    <string id="AF_SOCIAL_UI_Notoriety_HistoryHeading" text="【玩家履历】" />
+    <string id="AF_SOCIAL_UI_Notoriety_PendingHeading" text="【未总结素材】" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoPending" text="（无）" />
+    <string id="AF_SOCIAL_UI_Notoriety_Player" text="玩家" />
+    <string id="AF_SOCIAL_UI_Notoriety_Day" text="第{DAY}日" />
+    <string id="AF_SOCIAL_UI_Notoriety_ActionLine" text="- {DATE}：{TEXT}" />
+    <string id="AF_SOCIAL_UI_Notoriety_UnknownCulture" text="未知文化" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level0" text="默默无闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level1" text="鲜为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level2" text="略有耳闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level3" text="渐为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level4" text="口耳相传" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level5" text="广为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level6" text="远近皆知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level7" text="街知巷闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level8" text="妇孺皆知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level9" text="家喻户晓" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level10" text="人尽皆知" />
   </strings>
 </base>
