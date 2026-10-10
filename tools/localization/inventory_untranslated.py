@@ -58,6 +58,88 @@ REVIEWED = {
     "AiErrorAnalysisInquiry.cs": {"无法读取 MCM 前处理 API 配置。", "前处理 API 地址、密钥或模型名未配置完整。", "前处理 API 返回 HTTP ", "前处理 API 请求失败：", "前处理 API 已响应，但没有解析出可用的模型回复。", "未生成分析结果。", "前处理 API 分析超过 60 秒，已取消本次请求。", "AI 报错分析 - ", "AnimusForge 报错", "前处理 API 未能完成报错分析。\n\n【分析请求错误】\n", "\n\n【原报错】\n", "AI 分析失败"},
 }
 
+MCM_SOURCE = "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"
+RETRY_SOURCE = "src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs"
+
+
+def method_region(source: str, code: str, name: str):
+    signature = re.search(r'^\s*(?:private|public|internal)\s+[^\n;=]+\b' + re.escape(name) + r'\s*\(', code, re.M)
+    if not signature:
+        return None
+    opening = code.find("{", signature.end())
+    arrow = code.find("=>", signature.end(), opening if opening >= 0 else len(code))
+    if arrow >= 0:
+        end = code.find(";", arrow)
+        return (signature.start(), end + 1) if end >= 0 else None
+    if opening < 0:
+        return None
+    depth = 1
+    end = opening + 1
+    while end < len(code) and depth:
+        depth += (code[end] == "{") - (code[end] == "}")
+        end += 1
+    return (signature.start(), end) if depth == 0 else None
+
+
+def mcm_projected_offsets(source: str, code: str, tokens, en_keys):
+    # Each retained value requires its exact declaration/list and a live display call.
+    specs = [
+        ("ManualDropdownModelName", "ModelManual", "BuildModelDisplayDropdown", "BuildDropdownFromOptions"),
+        ("ShoutInputUiBackgroundBlack", "BackgroundBlack", "BuildShoutInputUiBackgroundDisplayDropdown", "BuildShoutInputUiBackgroundDropdown"),
+        ("ShoutInputUiBackgroundWhite", "BackgroundWhite", "BuildShoutInputUiBackgroundDisplayDropdown", "BuildShoutInputUiBackgroundDropdown"),
+        ("ShoutInputUiBackgroundPink", "BackgroundPink", "BuildShoutInputUiBackgroundDisplayDropdown", "BuildShoutInputUiBackgroundDropdown"),
+        ("LogCleanupOff", "CleanupOff", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupOnStartup", "CleanupStartup", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEvery30Minutes", "Cleanup30Minutes", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEveryHour", "CleanupHour", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEvery6Hours", "Cleanup6Hours", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEveryDay", "CleanupDay", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEvery3Days", "Cleanup3Days", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+        ("LogCleanupEveryWeek", "CleanupWeek", "BuildLogCleanupIntervalDisplayDropdown", "BuildLogCleanupIntervalDropdown"),
+    ]
+    projected = set()
+
+    def witnessed(key, projection, consumer):
+        region = method_region(source, code, projection)
+        caller = method_region(source, code, consumer)
+        return (key in en_keys and region and caller
+                and any(key in ID.findall(match[0]) for match, _ in tokens
+                        if region[0] <= match.start() < region[1])
+                and re.search(r'\b' + re.escape(projection) + r'\s*\(', code[caller[0]:caller[1]]))
+
+    for symbol, suffix, projection, consumer in specs:
+        key = "AF_MCM_Option_" + suffix
+        if not witnessed(key, projection, consumer):
+            continue
+        for match, _ in tokens:
+            if re.search(r'\bconst\s+string\s+' + re.escape(symbol) + r'\s*=\s*$', code[max(0, match.start()-160):match.start()]):
+                projected.add(match.start())
+    api_options = {"主链路": "ApiMain", "前处理": "ApiPreprocess", "后处理": "ApiPostprocess", "周报": "ApiWeekly"}
+    for method, consumer in (("BuildPolicyApiSourceOptions", "BuildPolicyApiSourceDropdown"),
+                             ("BuildPlayerPolicyAutoDraftApiSourceOptions", "BuildPlayerPolicyAutoDraftApiSourceDropdown")):
+        region = method_region(source, code, method)
+        if not region:
+            continue
+        for match, _ in tokens:
+            suffix = api_options.get(decode(match[0]))
+            if (suffix and region[0] <= match.start() < region[1]
+                    and witnessed("AF_MCM_Option_" + suffix, "BuildPolicyApiSourceDisplayOptions", consumer)):
+                projected.add(match.start())
+    return projected
+
+
+def retry_literal_role(source, code, match, frames):
+    value = decode(match[0])
+    region = method_region(source, code, "RetryStageDisplay")
+    if (value == "LLM请求" and region and region[0] <= match.start() < region[1]
+            and re.search(r'\bcase\s*$', source[:match.start()])):
+        return "internal"
+    region = method_region(source, code, "BuildFailureDetail")
+    if (value == "未知错误" and region and region[0] <= match.start() < region[1]
+            and frames and frames[-1][:2] == ("NormalizeFullText", 1)):
+        return "raw_diagnostic"
+    return None
+
 
 def decode(raw: str) -> str:
     prefix = raw[:raw.index('"')]
@@ -265,11 +347,19 @@ def run(root: Path):
         if not HAN.search(source) and not re.search(r'\\[uUx]', source):
             continue
         code, tokens = tokenize(source)
+        projected_offsets = mcm_projected_offsets(source, code, tokens, en_keys) if relative == MCM_SOURCE else set()
         lines = source.splitlines()
         newlines = [m.start() for m in re.finditer("\n", source)]
         for match, frames in tokens:
             value = decode(match[0])
             if not HAN.search(value):
+                continue
+            if match.start() in projected_offsets:
+                excluded["mcm_mapped_display"] += 1
+                continue
+            retry_role = retry_literal_role(source, code, match, frames) if relative == RETRY_SOURCE else None
+            if retry_role == "internal":
+                excluded["internal_matching"] += 1
                 continue
             if relative in DIAGNOSTIC_SOURCES:
                 excluded["saved_diagnostic_preview"] += 1
@@ -316,12 +406,14 @@ def run(root: Path):
                 confirmed, evidence = True, "traced display projection; consumers recorded in scanner"
             if value in REVIEWED.get(path.name, set()):
                 confirmed, evidence = True, "reviewed selector or error UI display boundary; preserve internal value"
+            if retry_role == "raw_diagnostic":
+                confirmed = False
             if path.name in {"LlmRetryPrompt.cs", "AiErrorAnalysisInquiry.cs"} and value == "未知错误":
                 # This fallback also appears in protocol/diagnostic helpers.
                 display_context = "".join(calls)
                 if not any(t in display_context for t in ("Show", "Retry", "NormalizeFullText")) and line > 415:
                     confirmed = False
-            if not confirmed and (PROMPT_CONTEXT.search(statement) or PROMPT_CONTEXT.search(path.stem)):
+            if not confirmed and retry_role != "raw_diagnostic" and (PROMPT_CONTEXT.search(statement) or PROMPT_CONTEXT.search(path.stem)):
                 # LlmRetryPrompt also contains UI calls; only its direct UI arguments are confirmed.
                 excluded["prompt_or_protocol"] += 1
                 continue
@@ -331,7 +423,8 @@ def run(root: Path):
             rows.append({"file": relative, "line": line, "column": match.start() - (source.rfind("\n", 0, match.start()) + 1) + 1,
                          "module": module(path, root), "text": value,
                          "status": "confirmed_ui" if confirmed else "consumer_review",
-                         "evidence": evidence if confirmed else "Chinese literal near UI; trace consumer before translating",
+                         "evidence": ("raw diagnostic fallback; display consumer remains untranslated" if retry_role == "raw_diagnostic"
+                                      else evidence if confirmed else "Chinese literal near UI; trace consumer before translating"),
                          "sourceLine": lines[line-1].strip(), "hasEnglishResourceWithSameChineseCopy": False})
     # Identical Chinese text in a resource does not prove the caller resolves it.
     zh_values = {n.get("text") for _, zh in pairs for n in ET.parse(zh).getroot().iter("string")}
