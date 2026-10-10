@@ -2892,7 +2892,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_VoiceType" text="Volcengine dedicated voice_type" />
   <string id="AF_MCM_Tts_VoiceType_Hint" text="Example: zh_male_M392_conversation_wvae_bigtts" />
   <string id="AF_MCM_Tts_ExtraParam" text="Volcengine dedicated extra_param (JSON object)" />
-  <string id="AF_MCM_Tts_ExtraParam_Hint" text="Written verbatim to request.extra_param as a string. Example: {&quot;disable_markdown_filter&quot;:true}" />
+  <string id="AF_MCM_Tts_ExtraParam_Hint" text="Written verbatim to request.extra_param as a string. Example key/value: disable_markdown_filter=true" />
   <string id="AF_MCM_Tts_AudioFormat" text="Volcengine dedicated audio format" />
   <string id="AF_MCM_Tts_AudioFormat_Hint" text="V1 encoding; the current player supports wav or pcm only." />
   <string id="AF_MCM_Tts_SampleRate" text="Volcengine dedicated sample rate" />
