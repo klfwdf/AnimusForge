@@ -37,7 +37,7 @@ internal static partial class VanillaIssueOfferBridge
 			if (!TryCheckQuestPreconditions(issue, giver, out var text))
 			{
 				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=preconditions giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " reason=" + (text ?? ""));
-				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", text)), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text))), isError: true);
 				return false;
 			}
 			try
@@ -59,7 +59,7 @@ internal static partial class VanillaIssueOfferBridge
 				if (!FinalizeClassicQuestAcceptance(issue, out var text2))
 				{
 					Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=finalize giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " questId=" + (issue?.IssueQuest?.StringId ?? "") + " error=" + (text2 ?? ""));
-					ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_FinalizeFailed", "Quest was created, but failed to finalize vanilla acceptance.") : text2, isError: true);
+					ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_FinalizeFailed", "Quest was created, but failed to finalize vanilla acceptance.") : IssueDisplayTexts.ForDisplay(text2), isError: true);
 					return false;
 				}
 				string text3 = GetSafeIssueTitle(issue);
@@ -91,12 +91,12 @@ internal static partial class VanillaIssueOfferBridge
 			}
 			if (!TryCheckQuestPreconditions(issue, giver, out var text))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", text)), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text))), isError: true);
 				return false;
 			}
 			if (!TryBuildAlternativeCandidates(issue, out var list, out var text2))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoAltSolution", "This quest cannot be solved by a companion right now.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAltReason", "Cannot assign to companion: {REASON}", ("REASON", text2)), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoAltSolution", "This quest cannot be solved by a companion right now.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAltReason", "Cannot assign to companion: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text2))), isError: true);
 				return false;
 			}
 			CompanionCandidate companionCandidate = list.FirstOrDefault((CompanionCandidate x) => string.Equals(x.HeroId, (companionId ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
@@ -107,7 +107,7 @@ internal static partial class VanillaIssueOfferBridge
 			}
 			if (!IsValidAlternativeCompanion(companionCandidate.Hero, out var text3))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text3) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionUnavailable", "This companion is currently unavailable.") : text3, isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text3) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionUnavailable", "This companion is currently unavailable.") : IssueDisplayTexts.ForDisplay(text3), isError: true);
 				return false;
 			}
 			try
@@ -302,7 +302,7 @@ internal static partial class VanillaIssueOfferBridge
 			}
 			if (!TryProbeQuestTurnIn(giver, issue, execute: true, out _, out var executionError))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(executionError) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TurnInFailed", "Failed to turn in vanilla quest.") : executionError, isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(executionError) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TurnInFailed", "Failed to turn in vanilla quest.") : IssueDisplayTexts.ForDisplay(executionError), isError: true);
 				return false;
 			}
 			string safeIssueTitle = GetSafeIssueTitle(issue);

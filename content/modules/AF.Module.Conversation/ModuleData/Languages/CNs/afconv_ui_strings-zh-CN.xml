@@ -324,5 +324,19 @@
     <string id="AF_CONV_UI_Issue_DispatchCancelled" text="已取消同伴代办派兵。" />
     <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="当前派兵结果不满足任务要求。" />
     <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="当前派兵结果不满足任务要求：{REASON}" />
+    <string id="AF_CONV_UI_Issue_NoQuestOrGiver" text="未找到任务或发放者。" />
+    <string id="AF_CONV_UI_Issue_QuestNotCreated" text="任务对象未创建。" />
+    <string id="AF_CONV_UI_Issue_AcceptBranchEnded" text="原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。" />
+    <string id="AF_CONV_UI_Issue_QuestNotOngoing" text="任务没有进入进行中状态。" />
+    <string id="AF_CONV_UI_Issue_AcceptFinalizeException" text="原版任务接受收尾异常。" />
+    <string id="AF_CONV_UI_Issue_NoOngoingVanillaQuest" text="当前没有进行中的原版任务。" />
+    <string id="AF_CONV_UI_Issue_NoDiscussFlow" text="当前任务没有可用的原版 discuss 流。" />
+    <string id="AF_CONV_UI_Issue_DiscussAgentMissing" text="当前场景中找不到原版 discuss 探测所需的 Agent。" />
+    <string id="AF_CONV_UI_Issue_ConversationManagerUnavailable" text="当前原版 ConversationManager 不可用于静默任务交付。" />
+    <string id="AF_CONV_UI_Issue_NoClearTurnInOption" text="当前原版 discuss 流里没有足够明确的可交付成功选项。" />
+    <string id="AF_CONV_UI_Issue_TurnInProbeException" text="原版任务交付异常：{REASON}" />
+    <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="缺少原版任务交付执行参数。" />
+    <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="原版交付链在中途出现多条分支，且无法高置信度自动选择。" />
+    <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="原版交付链已运行，但任务仍未完成。" />
   </strings>
 </base>

@@ -642,6 +642,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			return;
 		}
+		text = IssueDisplayTexts.ForDisplay(text);
 		InformationManager.DisplayMessage(new InformationMessage(text, isError ? Color.FromUint(4294923605u) : new Color(0f, 1f, 0f)));
 	}
 
