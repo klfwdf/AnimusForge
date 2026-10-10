@@ -324,5 +324,19 @@
     <string id="AF_CONV_UI_Issue_DispatchCancelled" text="Companion mission troop dispatch was cancelled." />
     <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="Selected troops do not meet the quest requirements." />
     <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="Selected troops do not meet the quest requirements: {REASON}" />
+    <string id="AF_CONV_UI_Issue_NoQuestOrGiver" text="No quest or quest giver was found." />
+    <string id="AF_CONV_UI_Issue_QuestNotCreated" text="The quest object was not created." />
+    <string id="AF_CONV_UI_Issue_AcceptBranchEnded" text="The vanilla acceptance branch ended or removed the quest immediately, so it never reached the normal in-progress state." />
+    <string id="AF_CONV_UI_Issue_QuestNotOngoing" text="The quest did not enter the in-progress state." />
+    <string id="AF_CONV_UI_Issue_AcceptFinalizeException" text="An error occurred while finalizing the vanilla quest acceptance." />
+    <string id="AF_CONV_UI_Issue_NoOngoingVanillaQuest" text="There is no ongoing vanilla quest right now." />
+    <string id="AF_CONV_UI_Issue_NoDiscussFlow" text="The current quest has no usable vanilla discuss flow." />
+    <string id="AF_CONV_UI_Issue_DiscussAgentMissing" text="The Agent required for the vanilla discuss probe could not be found in the current scene." />
+    <string id="AF_CONV_UI_Issue_ConversationManagerUnavailable" text="The vanilla ConversationManager is not available for silent quest turn-in." />
+    <string id="AF_CONV_UI_Issue_NoClearTurnInOption" text="The vanilla discuss flow has no sufficiently clear successful turn-in option." />
+    <string id="AF_CONV_UI_Issue_TurnInProbeException" text="An error occurred while turning in the vanilla quest: {REASON}" />
+    <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="Missing the vanilla quest turn-in execution parameters." />
+    <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="The vanilla turn-in chain branched into multiple paths and could not be auto-selected with high confidence." />
+    <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="The vanilla turn-in chain ran, but the quest is still not completed." />
   </strings>
 </base>
