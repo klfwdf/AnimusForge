@@ -9249,8 +9249,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 本地收据与真实日志在忽略的 `artifacts/npc-hideout-clear-20261009/`；推送确认以同目录 API/远端 ref 复核收据为准，未将本地 commit 当作远端成功。源码回滚采用产品提交的 focused inverse/revert，不重写历史；已在新战斗中保存的存档不承诺向旧 DLL 降级兼容。
 <a id="diplomacy-draft-length-20261011"></a>
-## 书记官代笔篇幅与回填简化（2026-10-11，ACTIVE）
+## 书记官代笔篇幅与回填简化（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 本轮基线 `50a5c27ebe0aea26797225520cfdcc847270aa15`，实际工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`，开工无未提交改动。用户要求：生成前遵循 MCM 篇幅、明确目标篇幅及文风优先级；输出预算随篇幅准备；完整稿直接回填，不做 MCM 字数拒收、字数提示或自动修稿重试。
 - 范围只含玩家书记官代笔 owner、已有回放和对应说明；NPC 自主外交、发布机制、HTTP 传输、玩家 API 配置上限、UI 技术容量、存档及一键流程保持。退出门：真实请求包含篇幅/优先级与动态预算，越界完整稿回填；空/坏协议/截断仍保护原文；编辑、取消、读档保护与旧外交发送回放通过；原双 API/Bootstrap 构建通过。未授权部署、打包或推送。
-- 性能：仅按钮点击时计算一次篇幅与预算，完成时有界清理正文；删除完成时 MCM 字数扫描，不添加 Tick 扫描、后台游戏对象读取或自动重试。完成后在此集中记录源码行号、产品修订、命令、结果与实机未验边界。
+- 检查点 `a2381a666`，产品 `462d0e9297070dfb852bd1ae54ad2b55a6a4feac`。生成前在同一 system 消息的文风偏好之后明确本次范围、其中点目标、提纲扩写和篇幅优先级；预算为归一化最大篇幅×4＋256，保留 API 显式上限。完成时删除 MCM 字数扫描/区间拒收；有效完整正文直接回填，不发字数偏差提示或自动重试。空/坏协议/截断/既有编辑器技术容量保护保留，不改正式发布或 NPC 外交。
+- 性能：仅按钮点击时计算一次篇幅与预算，完成时有界清理正文；不添加 Tick 扫描、后台游戏对象读取或自动重试。源码 owner/消费者及一基行号见[代码范围图](architecture/af-framework-code-scope.md#diplomacy-draft-length-20261011)，本地六锚点 `artifacts/diplomacy-draft-length-20261011/code-map.json` 记录提交及 working-tree 两模式均通过。
+- `dotnet run --project tests/modules/AF.Module.Diplomacy/PlayerDocumentDraftTests -c Release`：退出0，65项通过。直接链接正式 VM/application/client/protocol/transport/save guard，Gauntlet/MCM/日志为替身；真实HTTP请求回放300—1000字/650目标/4256预算、下次缩短预算、显式API上限、范围外完整稿不提示不重试、空稿、编辑/关闭取消/读档及旧外交调用。
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot .tmp/stage_game_root -Bannerlord13ReferenceDir _deps_auto -Bannerlord14ReferenceDir .tmp/build_check/1.4 -RuntimeDependencyDir bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client -HarmonyCorePath .tmp/stage_game_root/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client/0Harmony.dll -Configuration Debug`：退出0；1.3.15/1.4.6各350警告、0错误，Bootstrap 2个NU1900警告（NuGet审计服务不可达）、0错误；双最终 DLL Coup managed门禁通过。本次进程临时 import 排除 ignored net8 候选程序集污染并定位既有net472引用包，沿用之前验证方式，未改一键脚本。三产物marker/SHA与源码收据已核对并保存在 `artifacts/diplomacy-draft-length-20261011/receipt.json`；未Stage、部署、打包或推送。
+- 初次构建预检指定了已不存在的Debug Stage依赖路径，改用已存在Release依赖后通过；新格式断言曾错误假设旧清理器保留emoji，修正断言到既有多行语义，未改清理器。原失败与最终日志均保留。未验实机卷轴/真实provider生成篇幅或语义/玩家存档/全仓；本包离线证据不替代这些验收。回滚仅 focused inverse 产品 `462d0e929`，不回滚其他作者或改写历史。
