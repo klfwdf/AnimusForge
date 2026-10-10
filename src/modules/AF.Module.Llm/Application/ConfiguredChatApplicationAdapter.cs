@@ -546,7 +546,8 @@ internal static class ConfiguredChatApplicationAdapter
 		{
 			if (!ownerAvailable())
 			{
-				LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail("找不到 MyBehavior，无法调用辅助模型。", ""));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", LlmRetryPrompt.BuildFailureDetail("找不到 MyBehavior，无法调用辅助模型。", ""), source ?? "ExternalAuxiliary",
+					reasonTemplate: "{=AF_UI_Retry_AuxiliaryHostUnavailable}MyBehavior could not be found; the auxiliary model cannot be called.", modelReply: "");
 				return "";
 			}
 			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, user, source, 0, forceThinkingDisabled: true);
@@ -554,13 +555,16 @@ internal static class ConfiguredChatApplicationAdapter
 			{
 				return apiCallResult.Content ?? "";
 			}
-			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("辅助模型调用失败。", apiCallResult.Content, apiCallResult.ResponseBody));
+			LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("辅助模型调用失败。", apiCallResult.Content, apiCallResult.ResponseBody), source ?? "ExternalAuxiliary",
+				reasonTemplate: apiCallResult.ErrorMessage == null ? "{=AF_UI_Retry_AuxiliaryCallFailed}The auxiliary model call failed." : null,
+				modelReply: apiCallResult.ErrorMessage == null ? apiCallResult.Content ?? "" : null, rawResponse: apiCallResult.ErrorMessage == null ? apiCallResult.ResponseBody : null);
 			return "";
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(source ?? "ExternalAuxiliary", "[ERROR] CallAuxiliaryApiTextForExternal: " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
+			LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""), source ?? "ExternalAuxiliary",
+				reasonTemplate: "{=AF_UI_Retry_ProviderException}{CODE}", modelReply: "", reasonCode: ex.Message ?? "");
 			return "";
 		}
 	}

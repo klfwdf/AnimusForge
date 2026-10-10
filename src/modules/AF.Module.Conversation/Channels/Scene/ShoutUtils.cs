@@ -956,24 +956,27 @@ public static class ShoutUtils
 				default).ConfigureAwait(false);
 			if (generated.Status != LlmResultStatus.Succeeded)
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", "统一 LLM Gateway 请求失败：" + (generated.ErrorCode ?? "unknown"));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", "统一 LLM Gateway 请求失败：" + (generated.ErrorCode ?? "unknown"),
+					reasonTemplate: "{=AF_UI_Retry_GatewayFailed}LLM gateway request failed: {CODE}", reasonCode: generated.ErrorCode ?? "unknown");
 				return;
 			}
 			string rawResp = (generated.RawText ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rawResp))
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", LlmRetryPrompt.BuildFailureDetail("模型回复为空，无法生成人设。", ""));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", LlmRetryPrompt.BuildFailureDetail("模型回复为空，无法生成人设。", ""),
+					reasonTemplate: "{=AF_UI_Retry_PersonaReplyEmpty}The model reply is empty; a persona cannot be generated.", modelReply: "");
 				return;
 			}
 			if (rawResp.Contains("错误：未配置 API Key") || rawResp.Contains("API请求失败") || rawResp.Contains("程序错误") || rawResp.Contains("API响应格式错误"))
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", rawResp);
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", rawResp);
 				return;
 			}
 			if (!TryParsePersonaJson(rawResp, out var genP, out var genB))
 			{
 				Logger.Log("UnnamedPersona", "auto_gen_parse_fail key=" + k + " resp=" + rawResp);
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为人设 JSON。", rawResp));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaParseFailed}Unnamed NPC persona parsing failed", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为人设 JSON。", rawResp),
+					reasonTemplate: "{=AF_UI_Retry_PersonaReplyInvalid}The model reply could not be parsed as persona JSON.", modelReply: rawResp);
 				return;
 			}
 			string profileText = "";

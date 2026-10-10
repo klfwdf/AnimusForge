@@ -3209,5 +3209,22 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect" text="王室直辖地忠诚日修正：{VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaTitle" text="【王国稳定度】" />
   <string id="AF_UI_KingdomRebellion_NamingForcedBackgroundFailurePrefix" text="强制叛乱建国命名后台任务异常：" />
+  <string id="AF_UI_Retry_CourierReplyPreprocessFailed" text="信使回信前处理失败" />
+  <string id="AF_UI_Retry_CourierLetterPreprocessFailed" text="信使来信前处理失败" />
+  <string id="AF_UI_Retry_NativeReplyFailed" text="自由对话正文生成失败" />
+  <string id="AF_UI_Retry_UnnamedPersonaFailed" text="无名NPC人设生成失败" />
+  <string id="AF_UI_Retry_UnnamedPersonaParseFailed" text="无名NPC人设解析失败" />
+  <string id="AF_UI_Retry_WeekZeroShortReportFailed" text="第0周短周报生成失败" />
+  <string id="AF_UI_Retry_ExternalAuxiliaryFailed" text="{SOURCE} 失败" />
+  <string id="AF_UI_Retry_GatewayFailed" text="统一 LLM Gateway 请求失败：{CODE}" />
+  <string id="AF_UI_Retry_PersonaReplyEmpty" text="模型回复为空，无法生成人设。" />
+  <string id="AF_UI_Retry_PersonaReplyInvalid" text="模型回复无法解析为人设 JSON。" />
+  <string id="AF_UI_Retry_ThreeAttemptsFailed" text="三次尝试均失败。" />
+  <string id="AF_UI_Retry_AuxiliaryHostUnavailable" text="找不到 MyBehavior，无法调用辅助模型。" />
+  <string id="AF_UI_Retry_AuxiliaryCallFailed" text="辅助模型调用失败。" />
+  <string id="AF_UI_Retry_FullModelReply" text="【模型回复（完整）】" />
+  <string id="AF_UI_Retry_NoModelReply" text="（未收到或未能解析出模型回复）" />
+  <string id="AF_UI_Retry_FullRawResponse" text="【API原始响应（完整）】" />
+  <string id="AF_UI_Retry_ProviderException" text="{CODE}" />
 </strings>
 </base>

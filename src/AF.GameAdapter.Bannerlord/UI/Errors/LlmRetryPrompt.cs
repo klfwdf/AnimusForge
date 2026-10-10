@@ -116,6 +116,54 @@ public static class LlmRetryPrompt
 		PostToMainThread(Show);
 	}
 
+	// Inputs are detached strings. Native localization runs only inside the existing dispatcher.
+	internal static void ShowLocalizedFailurePopup(string titleTemplate, string diagnostic,
+		string titleSource = null, string reasonTemplate = null, string modelReply = null,
+		string rawResponse = null, string reasonCode = null)
+	{
+		void Show()
+		{
+			string title = ResolveFailureTemplate(titleTemplate, "SOURCE", titleSource);
+			string display = reasonTemplate == null ? null : FailureDetailForDisplay(reasonTemplate, modelReply, rawResponse, reasonCode);
+			NonBlockingErrorReport.Show(
+				string.IsNullOrWhiteSpace(title) ? new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString() : title,
+				NormalizeFullText(diagnostic, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()), true, display);
+		}
+		PostToMainThread(Show);
+	}
+
+	private static string ResolveFailureTemplate(string template, string variableName, string value)
+	{
+		string raw = (template ?? "").Trim();
+		if (!raw.StartsWith("{=", StringComparison.Ordinal)) return raw;
+		var text = new TextObject(raw);
+		if (value != null) text.SetTextVariable(variableName, value);
+		return text.ToString();
+	}
+
+	private static string FailureDetailForDisplay(string reasonTemplate, string modelReply, string rawResponse, string reasonCode)
+	{
+		string reason = ResolveFailureTemplate(reasonTemplate, "CODE", reasonCode);
+		StringBuilder text = new StringBuilder();
+		text.Append(NormalizeFullText(reason, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
+		// Null means no reply section in the original diagnostic; empty means no reply was received.
+		if (modelReply == null && rawResponse == null) return text.ToString();
+		string reply = NormalizeFullText(modelReply, "");
+		string response = NormalizeFullText(rawResponse, "");
+		text.AppendLine();
+		text.AppendLine();
+		text.AppendLine(new TextObject("{=AF_UI_Retry_FullModelReply}Model reply (complete)").ToString());
+		text.Append(string.IsNullOrWhiteSpace(reply) ? new TextObject("{=AF_UI_Retry_NoModelReply}(No model reply was received or could be parsed)").ToString() : reply);
+		if (!string.IsNullOrWhiteSpace(response) && !string.Equals(response, reply, StringComparison.Ordinal))
+		{
+			text.AppendLine();
+			text.AppendLine();
+			text.AppendLine(new TextObject("{=AF_UI_Retry_FullRawResponse}Raw API response (complete)").ToString());
+			text.Append(response);
+		}
+		return text.ToString().TrimEnd();
+	}
+
 	public static Task<bool> PromptRetryAsync(string stageName, string error)
 	{
 		if (!IsRetryableLlmError(error))

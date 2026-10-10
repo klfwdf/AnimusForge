@@ -34,6 +34,7 @@ SINKS = {
     "MultiSelectionInquiryData": None, "InquiryElement": {1},
     "InformationMessage": {0}, "TextObject": {0},
     "ShowFailurePopup": {0, 1}, "ShowRetryPrompt": {0},
+    "ShowLocalizedFailurePopup": {0, 3},
     "NonBlockingErrorReport.Show": {0, 1},
     "AppendDevNpcActionField": {1}, "AppendDevField": {1},
     "AddGameMenu": {1}, "AddGameMenuOption": {2},
@@ -175,6 +176,42 @@ def tokenize(source: str):
         elif char == "," and stack and stack[-1][0] == "(":
             stack[-1][2] += 1
     return code, [(m, frames.get(m.start(), [])) for m in matches if m.lastgroup == "string"]
+
+
+FAILURE_ARGUMENTS = ("titleTemplate", "diagnostic", "titleSource", "reasonTemplate",
+                     "modelReply", "rawResponse", "reasonCode")
+
+
+def call_argument_spans(code: str, opening: int):
+    """Top-level argument spans in masked C#; literals/comments cannot split a call."""
+    start, depth = opening + 1, 1
+    spans = []
+    for offset in range(start, len(code)):
+        char = code[offset]
+        if char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+            if depth == 0:
+                spans.append((start, offset))
+                return spans, offset + 1
+        elif char == "," and depth == 1:
+            spans.append((start, offset))
+            start = offset + 1
+    raise ValueError("Unclosed call at " + str(opening))
+
+
+def localized_failure_argument(code: str, frames):
+    for callee, argument, opening in reversed(frames):
+        if callee.split(".")[-1] != "ShowLocalizedFailurePopup":
+            continue
+        spans, _ = call_argument_spans(code, opening)
+        if argument >= len(spans):
+            return None
+        start, end = spans[argument]
+        named = re.match(r"\s*(\w+)\s*:", code[start:end])
+        return named[1] if named else FAILURE_ARGUMENTS[argument] if argument < len(FAILURE_ARGUMENTS) else None
+    return None
 
 
 def module(path: Path, root: Path) -> str:
@@ -358,6 +395,7 @@ def run(root: Path):
                 excluded["mcm_mapped_display"] += 1
                 continue
             retry_role = retry_literal_role(source, code, match, frames) if relative == RETRY_SOURCE else None
+            failure_argument = localized_failure_argument(code, frames)
             if retry_role == "internal":
                 excluded["internal_matching"] += 1
                 continue
@@ -406,6 +444,13 @@ def run(root: Path):
                 confirmed, evidence = True, "traced display projection; consumers recorded in scanner"
             if value in REVIEWED.get(path.name, set()):
                 confirmed, evidence = True, "reviewed selector or error UI display boundary; preserve internal value"
+            if failure_argument in {"titleTemplate", "reasonTemplate", "titleSource", "reasonCode", "modelReply", "rawResponse"}:
+                confirmed, evidence = True, "localized failure display argument: " + failure_argument
+            elif failure_argument == "diagnostic":
+                # A new method name is not evidence of translation. These literals remain
+                # tracked even when a parallel reason projection exists; runtime extraction
+                # and unprojected provider/legacy diagnostic paths still require review.
+                confirmed, evidence = False, "raw diagnostic passed to localized failure UI; verify projection and runtime literal extraction"
             if retry_role == "raw_diagnostic":
                 confirmed = False
             if path.name in {"LlmRetryPrompt.cs", "AiErrorAnalysisInquiry.cs"} and value == "未知错误":
@@ -413,18 +458,18 @@ def run(root: Path):
                 display_context = "".join(calls)
                 if not any(t in display_context for t in ("Show", "Retry", "NormalizeFullText")) and line > 415:
                     confirmed = False
-            if not confirmed and retry_role != "raw_diagnostic" and (PROMPT_CONTEXT.search(statement) or PROMPT_CONTEXT.search(path.stem)):
+            if not confirmed and retry_role != "raw_diagnostic" and failure_argument != "diagnostic" and (PROMPT_CONTEXT.search(statement) or PROMPT_CONTEXT.search(path.stem)):
                 # LlmRetryPrompt also contains UI calls; only its direct UI arguments are confirmed.
                 excluded["prompt_or_protocol"] += 1
                 continue
-            if not confirmed and not ("/UI/" in relative or UI_CONTEXT.search(statement)):
+            if not confirmed and failure_argument != "diagnostic" and not ("/UI/" in relative or UI_CONTEXT.search(statement)):
                 excluded["non_ui_or_internal"] += 1
                 continue
             rows.append({"file": relative, "line": line, "column": match.start() - (source.rfind("\n", 0, match.start()) + 1) + 1,
                          "module": module(path, root), "text": value,
                          "status": "confirmed_ui" if confirmed else "consumer_review",
                          "evidence": ("raw diagnostic fallback; display consumer remains untranslated" if retry_role == "raw_diagnostic"
-                                      else evidence if confirmed else "Chinese literal near UI; trace consumer before translating"),
+                                      else evidence if confirmed or failure_argument == "diagnostic" else "Chinese literal near UI; trace consumer before translating"),
                          "sourceLine": lines[line-1].strip(), "hasEnglishResourceWithSameChineseCopy": False})
     # Identical Chinese text in a resource does not prove the caller resolves it.
     zh_values = {n.get("text") for _, zh in pairs for n in ET.parse(zh).getroot().iter("string")}
