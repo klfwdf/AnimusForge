@@ -5709,6 +5709,64 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		return (list.Count > 0) ? string.Join("，", list) : "（无）";
 	}
 
+	// Display-only formatting at duel settlement; raw summaries remain authoritative history.
+	private static string BuildDuelStakeGoldDisplayText(int amount)
+	{
+		return DuelText("AF_UI_Duel_StakeGold", "{AMOUNT} denars")
+			.SetTextVariable("AMOUNT", amount)
+			.ToString();
+	}
+
+	private static string BuildDuelStakeItemDisplayText(string itemName, int amount)
+	{
+		return DuelText("AF_UI_Duel_StakeItem", "{ITEM} x{AMOUNT}")
+			.SetTextVariable("ITEM", itemName ?? string.Empty)
+			.SetTextVariable("AMOUNT", amount)
+			.ToString();
+	}
+
+	private static string JoinDuelStakeDisplayText(IEnumerable<string> parts)
+	{
+		return string.Join(DuelString("AF_UI_Duel_StakeSeparator", ", "), parts);
+	}
+
+	private static string BuildDuelStakeSummaryDisplayText(int gold, Dictionary<string, int> items)
+	{
+		List<string> parts = new List<string>();
+		if (gold > 0)
+		{
+			parts.Add(BuildDuelStakeGoldDisplayText(gold));
+		}
+		if (items != null)
+		{
+			foreach (KeyValuePair<string, int> item in items.Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase))
+			{
+				parts.Add(BuildDuelStakeItemDisplayText(item.Key.Trim(), item.Value));
+			}
+		}
+		return parts.Count > 0 ? JoinDuelStakeDisplayText(parts) : DuelString("AF_UI_Duel_StakeNone", "(none)");
+	}
+
+	private static string BuildDuelStakeDebtDisplayText(string npcName, string stakeText, string debtId = null, string dueStatusDisplayText = null, string note = null)
+	{
+		string debtIdSuffix = string.IsNullOrWhiteSpace(debtId) ? string.Empty
+			: DuelText("AF_UI_Duel_StakeDebtIdSuffix", " (Debt ID: {DEBT_ID})")
+				.SetTextVariable("DEBT_ID", debtId).ToString();
+		string dueSuffix = string.IsNullOrWhiteSpace(dueStatusDisplayText) ? string.Empty
+			: DuelText("AF_UI_Duel_StakeDueSuffix", ", {DUE}")
+				.SetTextVariable("DUE", dueStatusDisplayText).ToString();
+		string noteSuffix = string.IsNullOrWhiteSpace(note) ? string.Empty
+			: DuelText("AF_UI_Duel_StakeNoteSuffix", ", Note: {NOTE}")
+				.SetTextVariable("NOTE", note).ToString();
+		return " " + DuelText("AF_UI_Duel_StakeDebtResult", "You lost the duel to {NPC} and now owe {NPC} {STAKE}{DEBT_ID} (duel wager){DUE}{NOTE}.")
+			.SetTextVariable("NPC", npcName ?? "NPC")
+			.SetTextVariable("STAKE", stakeText ?? string.Empty)
+			.SetTextVariable("DEBT_ID", debtIdSuffix)
+			.SetTextVariable("DUE", dueSuffix)
+			.SetTextVariable("NOTE", noteSuffix)
+			.ToString();
+	}
+
 	private static string ApplyDuelRenownPenaltyAndBuildResultText(
 		Hero targetHero,
 		bool playerWon,
@@ -5794,7 +5852,23 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				MyBehavior.AppendExternalDialogueHistory(mainHero, null, null, fact);
 			}
 			Logger.Log("DuelBehavior", "[DuelRenownPenalty] transferred playerWon=" + playerWon + " loser=" + (loserHero?.StringId ?? "") + " loserClan=" + (loserClan.StringId ?? "") + " loserBefore=" + before.ToString("0.##") + " transferred=" + penaltyText + " loserAfter=" + afterText + " winner=" + (winnerHero?.StringId ?? "") + " winnerClan=" + (winnerClan.StringId ?? "") + " winnerBefore=" + winnerBefore.ToString("0.##") + " winnerAfter=" + winnerAfterText + " minimum=" + minimum + " percent=" + percent + " maximum=" + maximum + " loserTierPreserved=" + loserClan.Tier + " winnerTier=" + winnerClan.Tier);
-			return " " + clanLabel + "声望减少" + penaltyText + "（剩余" + afterText + "），" + winnerClanLabel + "获得" + penaltyText + "声望（现为" + winnerAfterText + "）。";
+			string loserClanDisplayName = loserClan.Name?.ToString()?.Trim();
+			if (string.IsNullOrWhiteSpace(loserClanDisplayName))
+			{
+				loserClanDisplayName = DuelString("AF_UI_Duel_RenownLoserClan", "The loser's clan");
+			}
+			string winnerClanDisplayName = winnerClan.Name?.ToString()?.Trim();
+			if (string.IsNullOrWhiteSpace(winnerClanDisplayName))
+			{
+				winnerClanDisplayName = DuelString("AF_UI_Duel_RenownWinnerClan", "The winner's clan");
+			}
+			return " " + DuelText("AF_UI_Duel_RenownSettlement", "{LOSER_CLAN} lost {AMOUNT} renown ({LOSER_AFTER} remaining); {WINNER_CLAN} gained {AMOUNT} renown (now {WINNER_AFTER}).")
+				.SetTextVariable("LOSER_CLAN", loserClanDisplayName)
+				.SetTextVariable("WINNER_CLAN", winnerClanDisplayName)
+				.SetTextVariable("AMOUNT", penaltyText)
+				.SetTextVariable("LOSER_AFTER", afterText)
+				.SetTextVariable("WINNER_AFTER", winnerAfterText)
+				.ToString();
 		}
 		catch (Exception ex)
 		{
@@ -5838,7 +5912,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					string npcName2 = targetHero?.Name?.ToString() ?? "NPC";
 					string playerName2 = Hero.MainHero?.Name?.ToString() ?? "玩家";
 					mutationStarted = true;
-					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
+					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 					{
 						outcomeState = DuelOutcomeEffectState.Confirmed;
 						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
@@ -5846,7 +5920,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 						string text5 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
 						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {playerName2}，并已记下：{playerName2} 欠你 {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。");
 						MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {npcName2}，欠 {npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。");
-						return $" 你在决斗中输给了{npcName2}，现在欠{npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。";
+						return BuildDuelStakeDebtDisplayText(npcName2, BuildDuelStakeGoldDisplayText(amount), debtId, dueStatusDisplayText, note);
 					}
 					outcomeState = DuelOutcomeEffectState.Partial;
 				}
@@ -5876,7 +5950,8 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				if (instance == null)
 				{
-					return " " + text + "没有结算赌注。";
+					return " " + DuelText("AF_UI_Duel_StakeNotSettled", "{NPC} has not settled the wager.")
+						.SetTextVariable("NPC", text).ToString();
 				}
 				int num2 = 0;
 				bool transferUnknown = false;
@@ -5896,13 +5971,17 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				}
 				List<string> list = new List<string>();
 				List<string> list2 = new List<string>();
+				List<string> paidDisplay = new List<string>();
+				List<string> unpaidDisplay = new List<string>();
 				if (num2 > 0)
 				{
 					list.Add(num2 + " 第纳尔");
+					paidDisplay.Add(BuildDuelStakeGoldDisplayText(num2));
 				}
 				if (num > num2)
 				{
 					list2.Add((num - num2) + " 第纳尔");
+					unpaidDisplay.Add(BuildDuelStakeGoldDisplayText(num - num2));
 				}
 				foreach (KeyValuePair<string, int> item in dictionary)
 				{
@@ -5927,10 +6006,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					if (num4 > 0)
 					{
 						list.Add(num4 + " 个 " + text3);
+						paidDisplay.Add(BuildDuelStakeItemDisplayText(text3, num4));
 					}
 					if (num3 > num4)
 					{
 						list2.Add(text3 + " x" + (num3 - num4));
+						unpaidDisplay.Add(BuildDuelStakeItemDisplayText(text3, num3 - num4));
 					}
 				}
 				outcomeState = transferUnknown
@@ -5945,18 +6026,26 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注）。");
 					if (list2.Count > 0)
 					{
-						string text5 = string.Join("，", list2);
-						return $" 你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注），但对方无法支付剩余 {text5}。";
+						return " " + DuelText("AF_UI_Duel_StakePaidPartially", "You defeated {NPC} in the duel and received {PAID} from {NPC} (duel wager), but they could not pay the remaining {UNPAID}.")
+							.SetTextVariable("NPC", text)
+							.SetTextVariable("PAID", JoinDuelStakeDisplayText(paidDisplay))
+							.SetTextVariable("UNPAID", JoinDuelStakeDisplayText(unpaidDisplay))
+							.ToString();
 					}
-					return $" 你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注）。";
+					return " " + DuelText("AF_UI_Duel_StakePaid", "You defeated {NPC} in the duel and received {PAID} from {NPC} (duel wager).")
+						.SetTextVariable("NPC", text)
+						.SetTextVariable("PAID", JoinDuelStakeDisplayText(paidDisplay))
+						.ToString();
 				}
-				string text6 = string.Join("，", list2);
-				return $" 你在决斗中击败了 {text}，但 {text}无法支付赌注 {text6}。";
+				return " " + DuelText("AF_UI_Duel_StakeUnpaid", "You defeated {NPC} in the duel, but {NPC} could not pay the wager of {UNPAID}.")
+					.SetTextVariable("NPC", text)
+					.SetTextVariable("UNPAID", JoinDuelStakeDisplayText(unpaidDisplay))
+					.ToString();
 			}
 			if (instance != null && flag)
 			{
 				mutationStarted = true;
-				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
+				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 				{
 					outcomeState = DuelOutcomeEffectState.Confirmed;
 					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
@@ -5964,7 +6053,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					string text11 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
 					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。");
 					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {text}，欠 {text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。");
-					return $" 你在决斗中输给了{text}，现在欠{text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。";
+					return BuildDuelStakeDebtDisplayText(text, BuildDuelStakeGoldDisplayText(amount), debtId, dueStatusDisplayText, note);
 				}
 				outcomeState = DuelOutcomeEffectState.Partial;
 			}
@@ -5979,7 +6068,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			string text8 = BuildStakeSummaryText(num, dictionary);
 			MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {text8}（决斗赌注）。");
 			MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {text}，欠 {text} {text8}（决斗赌注）。");
-			return $" 你在决斗中输给了{text}，现在欠{text} {text8}（决斗赌注）。";
+			return BuildDuelStakeDebtDisplayText(text, BuildDuelStakeSummaryDisplayText(num, dictionary));
 		}
 		catch
 		{
