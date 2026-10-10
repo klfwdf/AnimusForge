@@ -3381,7 +3381,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private bool TryApplySettlementTransferEntryAction(Hero giver, Hero receiver, string directionToken, MyBehavior.SettlementTransferPromptEntry entry, bool allowDirectFixedAssetIdOverride, out string statusText, EconomyMutationObservation mutationObservation)
 	{
+		return TryApplySettlementTransferEntryAction(giver, receiver, directionToken, entry,
+			allowDirectFixedAssetIdOverride, out statusText, out _, mutationObservation);
+	}
+
+	private bool TryApplySettlementTransferEntryAction(Hero giver, Hero receiver, string directionToken, MyBehavior.SettlementTransferPromptEntry entry, bool allowDirectFixedAssetIdOverride, out string statusText, out EconomyUiTexts.FixedAssetDisplayContext displayContext, EconomyMutationObservation mutationObservation)
+	{
 		statusText = "";
+		displayContext = default;
 		try
 		{
 			if (giver == null || receiver == null)
@@ -3407,6 +3414,16 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			Hero targetOwner = direction == "TO_PLAYER" ? receiver : giver;
 			string assetName = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
+			// Capture presentation values before ownership changes can rename an asset.
+			// A display-only lookup must never prevent the authorized mutation.
+			try
+			{
+				displayContext = new EconomyUiTexts.FixedAssetDisplayContext(assetName, giver.Name?.ToString() ?? "");
+			}
+			catch
+			{
+				displayContext = default;
+			}
 			switch (entry.AssetKind)
 			{
 			case MyBehavior.SettlementTransferAssetKind.Settlement:
@@ -6226,8 +6243,15 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, IDictionary<string, FixedAssetTokenResolution> fixedAssetResolutionCache, ISet<string> unresolvedFixedAssetTokens, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText, EconomyMutationObservation mutationObservation)
 	{
+		return TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken,
+			fixedAssetResolutionCache, unresolvedFixedAssetTokens, out authorizedEntry, out statusText, out _, mutationObservation);
+	}
+
+	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, IDictionary<string, FixedAssetTokenResolution> fixedAssetResolutionCache, ISet<string> unresolvedFixedAssetTokens, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText, out EconomyUiTexts.FixedAssetDisplayContext displayContext, EconomyMutationObservation mutationObservation)
+	{
 		authorizedEntry = null;
 		statusText = "";
+		displayContext = default;
 		try
 		{
 			if (giver == null || receiver == null)
@@ -6257,6 +6281,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				authorizedEntry,
 				allowDirectFixedAssetIdOverride: !isPromptAuthorized,
 				statusText: out statusText,
+				displayContext: out displayContext,
 				mutationObservation: mutationObservation);
 		}
 		catch (Exception ex)
@@ -16220,9 +16245,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.SettlementTransferPromptEntry entry = null;
 					bool validQuantity = string.Equals(quantityToken, "1", StringComparison.Ordinal);
 					bool flag2 = false;
+					EconomyUiTexts.FixedAssetDisplayContext displayContext = default;
 					if (validQuantity)
 					{
-						flag2 = TryApplySettlementTransferAction(giver, receiver, "TO_PLAYER", settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out entry, out statusText);
+						flag2 = TryApplySettlementTransferAction(giver, receiver, "TO_PLAYER", settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out entry, out statusText, out displayContext, mutationObservation: null);
 					}
 					else
 					{
@@ -16250,7 +16276,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FixedAssetTransfer" : "AF_ECO_UI_FixedAssetTransferFailed", flag2 ? "[Fixed asset transfer] {STATUS}" : "[Fixed asset transfer failed] {STATUS}", EconomyUiTexts.FixedAssetStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FixedAssetTransfer" : "AF_ECO_UI_FixedAssetTransferFailed", flag2 ? "[Fixed asset transfer] {STATUS}" : "[Fixed asset transfer failed] {STATUS}", EconomyUiTexts.FixedAssetStatusForDisplay(statusText, displayContext)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				else

@@ -11,6 +11,20 @@ namespace AnimusForge;
 /// </summary>
 internal static class EconomyUiTexts
 {
+	internal readonly struct FixedAssetDisplayContext
+	{
+		internal readonly string AssetName;
+		internal readonly string GiverName;
+		internal FixedAssetDisplayContext(string assetName, string giverName)
+		{
+			AssetName = assetName;
+			GiverName = giverName;
+		}
+		internal bool Matches(string value, string prefix, string separator, string suffix)
+			=> AssetName != null && GiverName != null && string.Equals(
+				value, prefix + AssetName + separator + GiverName + suffix, StringComparison.Ordinal);
+	}
+
 	private static string Text(string id, string fallback, params (string Name, object Value)[] variables)
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
@@ -403,7 +417,7 @@ internal static class EconomyUiTexts
 	public static string PlayerRpCraftRefundFull(object amount)
 		=> Text("AF_ECO_UI_RpForgeRefundFull", "Fully refunded {AMOUNT} denars.", ("AMOUNT", amount));
 
-	public static string FixedAssetStatusForDisplay(string status)
+	internal static string FixedAssetStatusForDisplay(string status, FixedAssetDisplayContext context)
 	{
 		string value = (status ?? string.Empty).Trim();
 		if (string.IsNullOrEmpty(value))
@@ -481,10 +495,9 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetSettlementToPlayer", "{ASSET} was transferred to the player's clan (payment not automatically deducted).", ("ASSET", asset));
 		}
 
-		Match mSettlementNpc = Regex.Match(value, @"^执行成功：玩家已将 (.+) 转交给 (.+) 的家族（未自动扣款）。$");
-		if (mSettlementNpc.Success)
+		if (context.Matches(value, "执行成功：玩家已将 ", " 转交给 ", " 的家族（未自动扣款）。"))
 		{
-			return Text("AF_ECO_UI_FixedAssetSettlementToNpc", "Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted).", ("ASSET", mSettlementNpc.Groups[1].Value), ("GIVER", mSettlementNpc.Groups[2].Value));
+			return Text("AF_ECO_UI_FixedAssetSettlementToNpc", "Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted).", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
 		const string succAssetPlayerSuffix = " 已转交给玩家（未自动扣款）。";
@@ -494,10 +507,9 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetAssetToPlayer", "{ASSET} was transferred to the player (payment not automatically deducted).", ("ASSET", asset));
 		}
 
-		Match mAssetNpc = Regex.Match(value, @"^执行成功：玩家已将 (.+) 转交给 (.+)（未自动扣款）。$");
-		if (mAssetNpc.Success)
+		if (context.Matches(value, "执行成功：玩家已将 ", " 转交给 ", "（未自动扣款）。"))
 		{
-			return Text("AF_ECO_UI_FixedAssetAssetToNpc", "Player transferred {ASSET} to {GIVER} (payment not automatically deducted).", ("ASSET", mAssetNpc.Groups[1].Value), ("GIVER", mAssetNpc.Groups[2].Value));
+			return Text("AF_ECO_UI_FixedAssetAssetToNpc", "Player transferred {ASSET} to {GIVER} (payment not automatically deducted).", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
 		const string skipClanPrefix = "执行跳过：";
@@ -537,10 +549,9 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetUnderSiege", "{ASSET} is currently in battle or under siege and cannot be transferred.", ("ASSET", asset));
 		}
 
-		Match mNotGiverClan = Regex.Match(value, @"^执行失败：(.+) 不属于 (.+) 的家族，不能由其转给玩家。$");
-		if (mNotGiverClan.Success)
+		if (context.Matches(value, "执行失败：", " 不属于 ", " 的家族，不能由其转给玩家。"))
 		{
-			return Text("AF_ECO_UI_FixedAssetNotGiverClan", "{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player.", ("ASSET", mNotGiverClan.Groups[1].Value), ("GIVER", mNotGiverClan.Groups[2].Value));
+			return Text("AF_ECO_UI_FixedAssetNotGiverClan", "{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
 		const string notPlayerClanSuffix = " 当前不属于玩家家族。";
@@ -571,10 +582,9 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetWorkshopOwnerDead", "{ASSET}'s current workshop owner is invalid or deceased.", ("ASSET", asset));
 		}
 
-		Match mNotGiver = Regex.Match(value, @"^执行失败：(.+) 不属于 (.+)，不能由其转给玩家。$");
-		if (mNotGiver.Success)
+		if (context.Matches(value, "执行失败：", " 不属于 ", "，不能由其转给玩家。"))
 		{
-			return Text("AF_ECO_UI_FixedAssetNotGiver", "{ASSET} does not belong to {GIVER} and cannot be transferred to the player.", ("ASSET", mNotGiver.Groups[1].Value), ("GIVER", mNotGiver.Groups[2].Value));
+			return Text("AF_ECO_UI_FixedAssetNotGiver", "{ASSET} does not belong to {GIVER} and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
 		const string notPlayerSuffix = " 当前不属于玩家本人。";

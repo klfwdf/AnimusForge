@@ -88,3 +88,9 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 嵌套静态缓存避免partial初始化顺序问题；只读嵌入资源，不读用户文件、不接触游戏对象、不写存档、不新增Tick扫描。稳定原字段名以保留反射测试入口；ordinal完全匹配迁移逻辑与自定义文本保留逻辑未修改。
 - 反向源码还原完全一致。语料SHA256 `e670050b8c5ac31ebb7d04e22451da404f50a326454cc52d442d833b8fe634bc`，`LegacySettingsPromptContractTests.py`117项、PackagedPromptDefaults41项、ConnectionTest36项、资源28对PASS。外交SmokeTests的旧默认读取改指JSON权威源，既有迁移安全断言逐项保留；此编译测试和真实旧配置回放NOT RUN。
 - 语料属于历史识别输入，不应翻译后破坏旧配置匹配；英文发行门禁需区分这类数据与仍未翻译的当前输出。该任务与PolicySystem既有dirty改动独立。
+
+## 固定资产显示参数明确化（2026-10-10）
+
+- `EconomyUiTexts.FixedAssetStatusForDisplay`移除4处从中文句子贪婪拆名称的正则，改用`FixedAssetDisplayContext`捕获值进行完整ordinal匹配和资源变量投影；支持名称含原句分隔词/换行，不靠猜测分割归属。内部唯一HUD消费者改传context；未知原文仍透传。
+- `RewardSystemBehavior.TryApplySettlementTransferEntryAction`在调用任何转移函数前捕获资产名/给付者名，透传经`TryApplySettlementTransferAction`到HUD；捕获失败不阻断授权动作。两层原有私有重载保留供外部入口/回放复用，mutationObservation仍传递；原状态与facts不改。
+- `FixedAssetDisplayContextContractTests.py`156静态/模拟检查PASS；对Git `e732a3ab3`逐段验证Settlement/Workshop/Caravan三个实际转移方法与全部giver/receiverFacts.Add语句不变。既有经济词表245、债务34、图库30及28资源对PASS。真实转移、编译压力/回放、游戏仍NOT RUN。未将此项当作所有未知经济状态已翻译。
