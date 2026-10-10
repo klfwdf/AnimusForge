@@ -243,6 +243,37 @@ internal static class EconomyUiTexts
 	public static string DebtDueUnlimited
 		=> Text("AF_ECO_UI_DebtDueUnlimited", "repayment deadline: unlimited (debt remains active)");
 
+	public static string DebtPromiseCounterpartyForDisplay(string name)
+	{
+		string value = (name ?? string.Empty).Trim();
+		return string.IsNullOrWhiteSpace(value) || string.Equals(value, "对方", StringComparison.Ordinal)
+			? Text("AF_ECO_UI_DebtPromiseCounterparty", "the counterparty")
+			: value;
+	}
+
+	public static string DebtPromiseNoteForDisplay(string note)
+	{
+		string value = (note ?? string.Empty).Trim();
+		return string.IsNullOrWhiteSpace(value) || string.Equals(value, "无", StringComparison.Ordinal)
+			? Text("AF_ECO_UI_DebtPromiseNoNote", "None")
+			: value;
+	}
+
+	public static string DebtPromisePlayer
+		=> Text("AF_ECO_UI_DebtPromisePlayer", "the player");
+
+	public static string DebtSeason(int seasonIndex)
+		=> seasonIndex switch
+		{
+			0 => Text("AF_ECO_UI_DebtSeasonSpring", "Spring"),
+			1 => Text("AF_ECO_UI_DebtSeasonSummer", "Summer"),
+			2 => Text("AF_ECO_UI_DebtSeasonAutumn", "Autumn"),
+			_ => Text("AF_ECO_UI_DebtSeasonWinter", "Winter")
+		};
+
+	public static string DebtCalendarDate(int year, string season, int day)
+		=> Text("AF_ECO_UI_DebtCalendarDate", "Year {YEAR}, {SEASON}, day {DAY}", ("YEAR", year), ("SEASON", season), ("DAY", day));
+
 	public static string DebtDueDays(object days, string date)
 		=> Text("AF_ECO_UI_DebtDueDays", "repayment deadline: about {DAYS} day(s) (due {DATE})", ("DAYS", days), ("DATE", date));
 

@@ -672,7 +672,7 @@ public partial class RewardSystemBehavior
 			return string.Empty;
 		}
 		float remaining = dueDay - GetNowCampaignDay();
-		string date = FormatAbsDayAsGameDate(ToDisplayDay(dueDay));
+		string date = FormatDebtDisplayDate(ToDisplayDay(dueDay));
 		if (remaining > 0.01f)
 		{
 			return EconomyUiTexts.DebtDueDays(Math.Max(1, (int)Math.Ceiling(remaining)), date);
@@ -682,6 +682,19 @@ public partial class RewardSystemBehavior
 			return EconomyUiTexts.DebtDueToday(date);
 		}
 		return EconomyUiTexts.DebtOverdue(Math.Max(1, (int)Math.Ceiling(0f - remaining)), date);
+	}
+
+	// Mirrors the raw calendar arithmetic without changing AI-facing date text.
+	private static string FormatDebtDisplayDate(int absDay)
+	{
+		int daysInSeason = GetDaysInSeasonSafe();
+		int daysInYear = GetDaysInYearSafe();
+		int day = Math.Max(0, absDay);
+		int year = day / daysInYear;
+		int dayOfYear = day % daysInYear;
+		int season = NormalizeSeasonIndex(dayOfYear / daysInSeason);
+		int dayOfSeason = dayOfYear % daysInSeason + 1;
+		return EconomyUiTexts.DebtCalendarDate(year, EconomyUiTexts.DebtSeason(season), dayOfSeason);
 	}
 
 	private DebtRecord GetOrCreateDebtRecord(Hero npc)
@@ -1027,12 +1040,36 @@ public partial class RewardSystemBehavior
 	}
 
 	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText)
+		=> TryRecordDeferredDuelDebtForNpc(npc, goldAmount, dueDays, debtNote, out debtId, out dueStatusText, out _);
+
+	// Produce the HUD projection from the same authoritative debt line; never record a second debt.
+	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText, out string dueStatusDisplayText)
+	{
+		dueStatusDisplayText = string.Empty;
+		if (!TryRecordDeferredDuelDebtForNpc(npc, goldAmount, dueDays, debtNote, out debtId, out dueStatusText, out DebtRecord.DebtLine debtLine))
+		{
+			return false;
+		}
+		try
+		{
+			dueStatusDisplayText = BuildDebtEditorDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
+		}
+		catch
+		{
+			// A presentation failure must not turn an already-recorded debt into a failed action.
+			dueStatusDisplayText = dueStatusText;
+		}
+		return true;
+	}
+
+	private bool TryRecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText, out DebtRecord.DebtLine debtLine)
 	{
 		debtId = "";
 		dueStatusText = "";
+		debtLine = null;
 		try
 		{
-			DebtRecord.DebtLine debtLine = SetDebtForNpc(npc, goldAmount, dueDays, debtNote);
+			debtLine = SetDebtForNpc(npc, goldAmount, dueDays, debtNote);
 			if (debtLine == null)
 			{
 				return false;
@@ -1045,6 +1082,7 @@ public partial class RewardSystemBehavior
 		{
 			debtId = "";
 			dueStatusText = "";
+			debtLine = null;
 			return false;
 		}
 	}

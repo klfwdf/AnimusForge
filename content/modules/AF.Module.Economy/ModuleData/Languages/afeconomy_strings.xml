@@ -8,6 +8,14 @@
     <string id="AF_DEBT_PROMISE_COMPLETE" text="This promise has been completed or released." />
     <string id="AF_DEBT_PROMISE_EXPIRED" text="This promise has expired, but it can still be released or completed later." />
     <string id="AF_ECO_DebtPromise_Instruction" text="Talk with the counterparty to complete or release this promise." />
+    <string id="AF_ECO_UI_DebtPromiseCounterparty" text="the counterparty" />
+    <string id="AF_ECO_UI_DebtPromiseNoNote" text="None" />
+    <string id="AF_ECO_UI_DebtPromisePlayer" text="the player" />
+    <string id="AF_ECO_UI_DebtSeasonSpring" text="Spring" />
+    <string id="AF_ECO_UI_DebtSeasonSummer" text="Summer" />
+    <string id="AF_ECO_UI_DebtSeasonAutumn" text="Autumn" />
+    <string id="AF_ECO_UI_DebtSeasonWinter" text="Winter" />
+    <string id="AF_ECO_UI_DebtCalendarDate" text="Year {YEAR}, {SEASON}, day {DAY}" />
     <string id="AF_ECO_UI_CompanionReturnedClan" text="[Companion departed] {HERO} returned to {CLAN}." />
     <string id="AF_ECO_UI_CompanionReturnedSettlement" text="[Companion departed] {HERO} returned to {SETTLEMENT}." />
     <string id="AF_ECO_UI_CompanionWanderer" text="[Companion departed] {REASON}{HERO} became a wanderer." />
