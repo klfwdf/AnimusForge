@@ -4284,7 +4284,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (requireCurrentConversationRequest && !DoesNativeConversationRequestStillMatch(joiningCharacter, targetAgentIndex, expectedConversationManager, expectedConversationToken, out string staleReason))
 		{
 			responseText = latestReplyWithoutTag;
-			notifications.Add("【加入队伍】已拦截过期动作：原版对话已先处理。");
+			notifications.Add(EconomyUiTexts.RecruitmentIntercepted);
 			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] stale native join tag intercepted reason=" + staleReason + " target=" + (joiningCharacter.StringId ?? "") + " agentIndex=" + targetAgentIndex + " expectedToken=" + expectedConversationToken);
 			FreezeWatchdog.Mark("NonHeroJoin.stale_intercepted", "target=" + (joiningCharacter.StringId ?? "") + " agent=" + targetAgentIndex + " reason=" + staleReason, immediate: true);
 			return true;
@@ -4299,8 +4299,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			bool intercepted = !flag && statusText.StartsWith("执行拦截", StringComparison.Ordinal);
 			bool promotedPlayerCompanion = flag && promotedHero != null && promotedHero.CompanionOf == Clan.PlayerClan && promotedHero.Occupation == Occupation.Wanderer;
 			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
-			string successPrefix = promotedPlayerCompanion ? "【成为同伴】" : (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】");
-			string text = (intercepted ? "【加入队伍】" : (flag ? successPrefix : "【加入队伍失败】")) + statusText;
+			string text = intercepted
+				? EconomyUiTexts.RecruitmentIntercepted
+				: EconomyUiTexts.JoinResult(flag, promotedPlayerClanLord, promotedPlayerCompanion, SocialUiLocalization.RecruitmentStatusForDisplay(statusText));
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			if (!intercepted)
 			{
@@ -17184,7 +17185,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		receiver.ChangeHeroGold(total);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(GetSettlementMarketTypeLabel(settlement))));
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(EconomyUiTexts.SettlementMarketType(settlement.IsVillage))));
 			InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.DenarsReceived(arg, total)));
 			AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.DenarsReceived(arg, total), RewardQuickInfoDurationMs, giverCharacter);
 		}
@@ -18212,7 +18213,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(GetSettlementMarketTypeLabel(settlement))));
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? EconomyUiTexts.MerchantAt(EconomyUiTexts.SettlementMarketType(settlement.IsVillage))));
 			InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.ItemsReceived(arg, FormatItemAmount(num2, displayItem, itemName))));
 			AnimusForgeQuickInfo.ShowForDuration(EconomyUiTexts.ItemsReceived(arg, FormatItemAmount(num2, displayItem, itemName)), RewardQuickInfoDurationMs, giverCharacter);
 		}

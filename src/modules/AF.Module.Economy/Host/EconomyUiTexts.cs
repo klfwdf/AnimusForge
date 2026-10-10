@@ -134,6 +134,14 @@ internal static class EconomyUiTexts
 	public static string MerchantAt(string marketType)
 		=> Text("AF_ECO_UI_MerchantAt", "the {MARKET} merchant", ("MARKET", marketType));
 
+	public static string SettlementMarketType(bool village)
+		=> village
+			? Text("AF_ECO_UI_MarketVillage", "village")
+			: Text("AF_ECO_UI_MarketTown", "town");
+
+	public static string RecruitmentIntercepted
+		=> Text("AF_ECO_UI_RecruitmentIntercepted", "[Join intercepted] The native conversation had already handled this action; the stale action was blocked.");
+
 	public static string Status(string id, string fallback, string status)
 		=> Text(id, fallback, ("STATUS", status));
 
