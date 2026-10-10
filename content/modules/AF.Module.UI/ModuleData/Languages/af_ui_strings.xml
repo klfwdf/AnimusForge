@@ -3118,5 +3118,8 @@ Choose how to proceed:" />
   <string id="AF_CASTLE_UI_EXECUTION_COMPLETED_NO_SCENE" text="[Castle aftermath] You confirmed the execution of {LORD}; the scene death animation failed, but the death has been persisted. Relationships and clan consequences are handled by the native campaign system." />
   <string id="AF_CASTLE_UI_CAPACITY_NONE" text="[Castle aftermath] No main-party slots are available for recruitment ({FREE} free, reserved by earlier recruitment groups). This recruitment was not staged; free slots or choose another disposition." />
   <string id="AF_CASTLE_UI_CAPACITY_TRIM" text="[Castle aftermath] The main party has insufficient free slots. This recruitment was reduced from {REQUESTED} to {STAGED}; the other prisoners remain unassigned and can be handled separately." />
+  <string id="AF_UI_KingdomRebellion_ReasonTargetChanged" text="the target kingdom or clan changed" />
+  <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="player-kingdom stability rebellion immunity is enabled" />
+  <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="the rebel kingdom naming was skipped" />
   </strings>
 </base>
