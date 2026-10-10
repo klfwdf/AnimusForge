@@ -7,6 +7,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).parent
 COURIER = "src/modules/AF.Module.Conversation/Channels/Courier/"
+BASELINE = "ad623a06d"
 CHANGES = {
     "CourierDeliveryBehavior.GenerationLifecycle.cs": [
         ('NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\\n\\n" + (error ?? "未知错误"));',
@@ -27,7 +28,7 @@ CHANGES = {
 
 for name, changes in CHANGES.items():
     path = COURIER + name
-    baseline = subprocess.check_output(["git", "show", "HEAD:" + path], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+    baseline = subprocess.check_output(["git", "show", BASELINE + ":" + path], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
     current = (ROOT / path).read_text(encoding="utf-8-sig")
     for before, after in changes:
         count = 2 if after in ("CourierFailureUiText.Retry,\n", "CourierFailureUiText.Abort,\n") else 1
