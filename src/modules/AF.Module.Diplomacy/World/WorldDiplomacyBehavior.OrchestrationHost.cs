@@ -161,9 +161,13 @@ public sealed partial class WorldDiplomacyBehavior
         }
 
         // Presentation / effect leafs and world snapshots.
-        public void ShowPlayerCourtDelivery(string receiverName) =>
+        public void ShowPlayerCourtDelivery(string receiverName)
+        {
+            var text = new TaleWorlds.Localization.TextObject("{=AF_DIP_UI_Notice_PlayerCourtDelivery}Your declaration has reached {RECEIVER}.");
+            text.SetTextVariable("RECEIVER", receiverName ?? "");
             TaleWorlds.Library.InformationManager.DisplayMessage(
-                new TaleWorlds.Library.InformationMessage("你的宣言已传播至" + (receiverName ?? "") + "。"));
+                new TaleWorlds.Library.InformationMessage(text.ToString()));
+        }
         public void RemoveQueuedNativeDiplomacyDecisions() => _owner.RemoveQueuedNativeDiplomacyDecisions();
         public List<(string firstId, string secondId)> ActiveWarKingdomPairs()
         {
