@@ -91,7 +91,7 @@ internal static class PolicyPromptEditorUi
 			.Select(module => new PolicyEffectPromptEditorEntry
 			{
 				ModuleId = module.Id,
-				DisplayName = module.Descriptor.PlayerDisplayName,
+				DisplayName = PolicyEffectUiText.Name(module),
 				DefaultUnderstandingPrompt = module.Descriptor.EditableUnderstandingPrompt,
 				DefaultEvaluationPrompt = module.Descriptor.EditableEvaluationPrompt
 			})

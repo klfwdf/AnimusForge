@@ -1642,7 +1642,7 @@ public sealed partial class CustomPolicyBehavior
 		bool isPermanentPlayerEffect = IsPermanentPlayerPolicyEffect(request);
 		if (postprocess?.Effects == null || postprocess.Effects.Count == 0)
 		{
-            result.NoticeLines.Add("没有明确的数值变化。");
+            result.NoticeLines.Add(PolicyUiTexts.Get("AFPOL_UI_NoticeNoClearNumericChange", "No clear numeric change."));
 			return result;
 		}
 		Kingdom playerKingdom = GetPlayerKingdom();
@@ -1651,26 +1651,26 @@ public sealed partial class CustomPolicyBehavior
 			Kingdom targetKingdom = ResolveTargetKingdom(effect, playerKingdom);
 			if (targetKingdom == null)
 			{
-                result.NoticeLines.Add("跳过未知目标：" + (effect.TargetKingdomId ?? effect.TargetKingdomName ?? "未指定"));
+                result.NoticeLines.Add(PolicyUiTexts.Format("AFPOL_UI_NoticeSkippedUnknownTarget", "Skipped unknown target: {TARGET}", "TARGET", effect.TargetKingdomId ?? effect.TargetKingdomName ?? PolicyUiTexts.Get("AFPOL_UI_Unspecified", "Unspecified")));
 				continue;
 			}
 			AppliedKingdomEffect applied = BuildContinuousEffectForKingdom(targetKingdom, effect);
 			applied.IsPermanentEffect = isPermanentPlayerEffect;
 			if (!applied.IsPermanentEffect && applied.DurationDays <= 0)
 			{
-				result.NoticeLines.Add("跳过持续时间无效的效果：" + GetKingdomName(targetKingdom));
+				result.NoticeLines.Add(PolicyUiTexts.Format("AFPOL_UI_NoticeSkippedInvalidDuration", "Skipped effect with an invalid duration: {TARGET}", "TARGET", GetKingdomName(targetKingdom)));
 				continue;
 			}
 			if (!HasAnyDailyDelta(applied))
 			{
-                result.NoticeLines.Add(GetKingdomName(targetKingdom) + "没有每日数值变化，但政策有效期仍保留 " + applied.DurationDays.ToString(CultureInfo.InvariantCulture) + " 天。");
+                result.NoticeLines.Add(PolicyUiTexts.Format("AFPOL_UI_NoticeNoDailyDeltaDurationKept", "{TARGET} has no daily numeric change, but the policy remains valid for {DAYS} days.", "TARGET", GetKingdomName(targetKingdom), "DAYS", applied.DurationDays.ToString(CultureInfo.InvariantCulture)));
 			}
 			result.AppliedEffectCount++;
 			result.KingdomEffects.Add(applied);
 		}
 		if (result.KingdomEffects.Count == 0 && result.NoticeLines.Count == 0)
 		{
-            result.NoticeLines.Add("政策未产生可落地的数值变化。");
+            result.NoticeLines.Add(PolicyUiTexts.Get("AFPOL_UI_NoticeNoApplicableNumericChange", "The policy produced no applicable numeric change."));
 		}
 		return result;
 	}
@@ -1691,14 +1691,14 @@ public sealed partial class CustomPolicyBehavior
 				if (!handleByKey.TryGetValue(targetKey, out PolicyTargetHandleSaveData target)
 					|| !IsPolicyTargetHandleAllowedForRequest(request, target))
 				{
-                    result.NoticeLines.Add("跳过未知地方目标句柄：" + targetKey);
+                    result.NoticeLines.Add(PolicyUiTexts.Format("AFPOL_UI_NoticeSkippedUnknownLocalTarget", "Skipped unknown local target handle: {TARGET}", "TARGET", targetKey));
 					continue;
 				}
 				bool isSource = string.Equals(target.Kind, PolicyTargetKindSource, StringComparison.OrdinalIgnoreCase);
 				int effectDuration = isPermanentPlayerEffect ? 0 : request?.ManualDurationDays > 0 ? request.ManualDurationDays : effect.DurationDays;
 				if (!isPermanentPlayerEffect && effectDuration <= 0)
 				{
-					result.NoticeLines.Add("跳过持续时间无效的地方目标：" + targetKey);
+					result.NoticeLines.Add(PolicyUiTexts.Format("AFPOL_UI_NoticeSkippedInvalidLocalTargetDuration", "Skipped local target with an invalid duration: {TARGET}", "TARGET", targetKey));
 					continue;
 				}
 				List<Settlement> targetSettlements = isSource
@@ -1745,7 +1745,7 @@ public sealed partial class CustomPolicyBehavior
 			result.AppliedEffectCount = result.KingdomEffects.Count;
 			if (result.KingdomEffects.Count > 0 && result.KingdomEffects.All(x => !HasAnyDailyDelta(x)))
 			{
-                result.NoticeLines.Add("全部每日数值为 0：政策仍会计时、显示反馈并进入地方记录，费用仍按本次实际投入结算。");
+                result.NoticeLines.Add(PolicyUiTexts.Get("AFPOL_UI_NoticeAllDailyValuesZero", "All daily values are zero: the policy still runs on its timer, shows feedback and enters the local record; the cost is still settled against what was actually committed this time."));
 			}
 			return result;
 		}
@@ -1813,7 +1813,7 @@ public sealed partial class CustomPolicyBehavior
 		result.AppliedEffectCount = result.KingdomEffects.Count;
 		if (result.KingdomEffects.All(x => !HasAnyDailyDelta(x)))
 		{
-            result.NoticeLines.Add("全部每日数值为 0：政策仍会计时、显示反馈并进入地方记录，费用仍按本次实际投入结算。");
+            result.NoticeLines.Add(PolicyUiTexts.Get("AFPOL_UI_NoticeAllDailyValuesZero", "All daily values are zero: the policy still runs on its timer, shows feedback and enters the local record; the cost is still settled against what was actually committed this time."));
 		}
 		return result;
 	}
@@ -6470,7 +6470,7 @@ public sealed partial class CustomPolicyBehavior
 				effect.ModuleEffects = synchronizedInstances;
 				effect.ExecutionReceipts = synchronizedReceipts;
 			}
-			record.ImpactEffectsSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
+			record.ImpactEffectsSummary = LimitDisplayChars(BuildRawPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
 			_policyRecordHistory[activeEffect.RecordId] = JsonConvert.SerializeObject(record);
 		}
 		catch (Exception ex)

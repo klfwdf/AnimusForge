@@ -1450,11 +1450,11 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			Kingdom owner = ResolveNpcPolicyKingdomById(record.KingdomId);
 			float reviewDays = CustomPolicyBehavior.GetDynamicPolicyAdoptionReviewDaysForExternal(owner);
-			string kingdomName = FirstNonEmpty(owner?.Name?.ToString(), record.KingdomName, record.KingdomId, "目标王国");
-			string policyName = FirstNonEmpty(record.PolicyName, "新政策");
+			string kingdomName = FirstNonEmpty(owner?.Name?.ToString(), record.KingdomName, record.KingdomId, PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom"));
+			string policyName = FirstNonEmpty(record.PolicyName, PolicyUiTexts.Get("AFPOL_UI_NewPolicy", "New Policy"));
 			InformationManager.DisplayMessage(new InformationMessage(
-				"AF 已确认《" + Limit(policyName, 70) + "》进入" + Limit(kingdomName, 50)
-				+ "议程，预计 " + reviewDays.ToString("0.#", CultureInfo.InvariantCulture) + " 天后审议；统治者将推动采纳。",
+				PolicyUiTexts.Format("AFPOL_UI_NpcAgendaConfirmed", "AF confirmed that {POLICY} entered {KINGDOM}'s agenda. Review is expected in {DAYS} days; the ruler will promote its adoption.",
+					"POLICY", Limit(policyName, 70), "KINGDOM", Limit(kingdomName, 50), "DAYS", reviewDays.ToString("0.#", CultureInfo.InvariantCulture)),
 				Colors.Green));
 			PolicySystemLog.Write("Notice", "suggested-policy-agenda-confirmed",
 				"policyId=" + (record.PolicyId ?? "") + " kingdom=" + (record.KingdomId ?? "")
@@ -1882,8 +1882,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		try
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"AF 未能确认《" + Limit(FirstNonEmpty(record.PolicyName, "新政策"), 70)
-				+ "》已进入目标王国议程。为避免重复决定，本次不提供直接重试；请查看政策日志。",
+				PolicyUiTexts.Format("AFPOL_UI_NpcAgendaUnconfirmed", "AF could not confirm that {POLICY} entered the target kingdom's agenda. Direct retry is unavailable to avoid duplicate decisions; check the policy log.",
+					"POLICY", Limit(FirstNonEmpty(record.PolicyName, PolicyUiTexts.Get("AFPOL_UI_NewPolicy", "New Policy")), 70)),
 				Colors.Red));
 		}
 		catch (Exception ex)
@@ -2034,7 +2034,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			out string failureReason))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"已手动重新提交统治者政策建议；AF 将冻结新快照并生成新的议程请求。",
+				PolicyUiTexts.Get("AFPOL_UI_NpcAgendaResubmitted", "The ruler's policy proposal was manually resubmitted. AF will freeze a new snapshot and create a new agenda request."),
 				Colors.Green));
 			return;
 		}
@@ -2792,7 +2792,7 @@ public sealed partial class NpcRulerPolicyBehavior
 				AddNpcPolicyHistoryId(entry.TargetKingdomIds, effect?.TargetKingdomId);
 				AddNpcPolicyHistoryEffectSummaries(
 					entry,
-					PolicyEffectSaveCodec.DescribePlayerVisibleInstances(effect?.ModuleEffects),
+					PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect?.ModuleEffects),
 					FirstNonEmpty(effect?.TargetKingdomName, effect?.TargetKingdomId));
 				foreach (PolicyEffectInstanceSaveData instance in effect?.ModuleEffects ?? new List<PolicyEffectInstanceSaveData>())
 				{
@@ -3156,7 +3156,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return "无有效影响";
 		}
-		List<string> values = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(effect.ModuleEffects);
+		List<string> values = PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect.ModuleEffects);
 		string effectText = values.Count <= 0 ? "无可执行模块效果" : string.Join("/", values);
 		return Limit(Limit(FirstNonEmpty(effect.TargetKingdomName, "目标王国"), 30)
 			+ "[" + effectText + "]", AgendaDialoguePolicyEffectChars);

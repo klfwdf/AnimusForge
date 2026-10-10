@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnimusForge.PolicyTargets;
+using AnimusForge;
 
 namespace AnimusForge.PolicyEffects;
 
@@ -79,6 +80,11 @@ internal sealed class PolicyEffectSaveDecodeResult
 
 internal static class PolicyEffectSaveCodec
 {
+	// Display-only strings of the player-visible effect description are resolved through
+	// PolicyUiTexts so the mainline language XML can override them. Grouping, filtering and
+	// all Ordinal comparisons keep using the raw literals, never these localized values.
+	private const string PlayerVisibleTextKeyPrefix = "AFPOL_UI_";
+
 	internal const int MaxPayloadBytes = 4 * 1024;
 	internal const int MaxTotalPayloadBytes = 32 * 1024;
 	internal const int MaxRuntimeStateBytes = 512 * 1024;
@@ -548,9 +554,15 @@ internal static class PolicyEffectSaveCodec
 		return DescribeInstancesCore(sources, playerVisible: true);
 	}
 
+	internal static List<string> DescribeRawPlayerVisibleInstances(IEnumerable<PolicyEffectInstanceSaveData> sources)
+	{
+		return DescribeInstancesCore(sources, playerVisible: true, localized: false);
+	}
+
 	private static List<string> DescribeInstancesCore(
 		IEnumerable<PolicyEffectInstanceSaveData> sources,
-		bool playerVisible)
+		bool playerVisible,
+		bool localized = true)
 	{
 		List<PolicyEffectInstanceSaveData> instances = (sources ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
 			.Where(instance => instance != null)
@@ -570,7 +582,7 @@ internal static class PolicyEffectSaveCodec
 				|| string.IsNullOrWhiteSpace(module.Descriptor.DisplayGroup))
 			{
 				result.Add(playerVisible
-					? DescribePlayerVisibleInstance(instance, module)
+					? (localized ? DescribePlayerVisibleInstance(instance, module) : DescribeRawPlayerVisibleInstance(instance, module))
 					: DescribeInstance(instance));
 				continue;
 			}
@@ -594,12 +606,15 @@ internal static class PolicyEffectSaveCodec
 				grouped.Add(candidate);
 			}
 
-			result.Add(DescribeDisplayGroup(displayGroup, grouped, playerVisible));
+			result.Add(playerVisible && localized
+				? DescribeDisplayGroup(displayGroup, grouped, playerVisible: true)
+				: DescribeRawDisplayGroup(displayGroup, grouped, playerVisible));
 		}
 		return result.Where(text => !string.IsNullOrWhiteSpace(text)).ToList();
 	}
 
-	private static string DescribePlayerVisibleInstance(
+	// Preserve the pre-localization descriptions used by facts, prompts and diagnostics.
+	private static string DescribeRawPlayerVisibleInstance(
 		PolicyEffectInstanceSaveData source,
 		IPolicyEffectModule knownModule = null)
 	{
@@ -626,14 +641,14 @@ internal static class PolicyEffectSaveCodec
 			: module.Descriptor.PlayerDisplayName.Trim();
 		if (normalized.RuntimeInstance.Payload is NumericPolicyEffectPayload numericPayload)
 		{
-			return displayName + "：" + DescribePlayerVisibleNumericValue(module.Descriptor, numericPayload.Value);
+			return displayName + "：" + DescribeRawPlayerVisibleNumericValue(module.Descriptor, numericPayload.Value);
 		}
 		return string.IsNullOrWhiteSpace(payloadText)
 			? displayName
 			: displayName + "：" + payloadText.Trim();
 	}
 
-	private static string DescribeDisplayGroup(
+	private static string DescribeRawDisplayGroup(
 		string displayGroup,
 		IReadOnlyCollection<PolicyEffectInstanceSaveData> instances,
 		bool playerVisible)
@@ -732,7 +747,7 @@ internal static class PolicyEffectSaveCodec
 		return playerVisible ? "模块效果" : displayGroup;
 	}
 
-	private static string DescribePlayerVisibleNumericValue(
+	private static string DescribeRawPlayerVisibleNumericValue(
 		PolicyEffectModuleDescriptor descriptor,
 		double value)
 	{
@@ -767,6 +782,279 @@ internal static class PolicyEffectSaveCodec
 			return "生效时一次 " + signed;
 		}
 		return "每日 " + signed;
+	}
+
+	private static string DescribePlayerVisibleInstance(
+		PolicyEffectInstanceSaveData source,
+		IPolicyEffectModule knownModule = null)
+	{
+		if (!TryNormalizeInstance(source, out PolicyEffectNormalizedInstance normalized, out _))
+		{
+			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
+		}
+		if (normalized.IsInert)
+		{
+			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectNotExecutable", "Module effect that this version cannot execute");
+		}
+		IPolicyEffectModule module = normalized.Module ?? knownModule;
+		if (module == null
+			|| !PolicyEffectModuleCatalog.TryFormatPayload(
+				module.Id,
+				normalized.RuntimeInstance.Payload,
+				out string payloadText,
+				out _))
+		{
+			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
+		}
+		string displayName = PolicyEffectUiText.Name(module);
+		if (normalized.RuntimeInstance.Payload is NumericPolicyEffectPayload numericPayload)
+		{
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "EffectNameValue",
+				"{NAME}: {VALUE}",
+				"NAME",
+				displayName,
+				"VALUE",
+				DescribePlayerVisibleNumericValue(module.Descriptor, numericPayload.Value));
+		}
+		return string.IsNullOrWhiteSpace(payloadText)
+			? displayName
+			: PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "EffectNameValue",
+				"{NAME}: {VALUE}",
+				"NAME",
+				displayName,
+				"VALUE",
+				payloadText.Trim());
+	}
+
+	private static string DescribeDisplayGroup(
+		string displayGroup,
+		IReadOnlyCollection<PolicyEffectInstanceSaveData> instances,
+		bool playerVisible)
+	{
+		if (string.Equals(displayGroup, "clanInfluence", StringComparison.Ordinal))
+		{
+			float once = SumNumericPayloadValues(instances, "clanInfluenceNextDayOnce");
+			float daily = SumNumericPayloadValues(instances, "clanInfluencePerDay");
+			List<string> parts = new List<string>();
+			if (Math.Abs(once) > 0.0001f
+				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluenceNextDayOnce", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
+					"Once next game day {VALUE}",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(once)));
+			}
+			if (Math.Abs(daily) > 0.0001f
+				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluencePerDay", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleThenDaily",
+					"Then daily {VALUE}",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(daily)));
+			}
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "InfluenceValue",
+				"Influence: {VALUE}",
+				"VALUE",
+				parts.Count > 0
+					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+		}
+		if (string.Equals(displayGroup, "heroGold", StringComparison.Ordinal))
+		{
+			float once = SumNumericPayloadValues(instances, "heroGoldNextDayOnce");
+			float daily = SumNumericPayloadValues(instances, "heroGoldPerDay");
+			List<string> parts = new List<string>();
+			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldNextDayOnce", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
+					"Once next game day {VALUE}",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(once)));
+			}
+			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldPerDay", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleThenDaily",
+					"Then daily {VALUE}",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(daily)));
+			}
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "HeroGoldValue",
+				"Character denars: {VALUE}",
+				"VALUE",
+				parts.Count > 0
+					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+		}
+		if (string.Equals(displayGroup, "soldierTroopXp", StringComparison.Ordinal))
+		{
+			float once = SumNumericPayloadValues(instances, "soldierTroopXpOnce");
+			float daily = SumNumericPayloadValues(instances, "soldierTroopXpPerDay");
+			List<string> parts = new List<string>();
+			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpOnce", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnceXpPerSoldier",
+					"Once next game day {VALUE} XP/soldier",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(once)));
+			}
+			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpPerDay", StringComparison.Ordinal)))
+			{
+				parts.Add(PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "ScheduleThenDailyXpPerSoldier",
+					"Then daily {VALUE} XP/soldier",
+					"VALUE",
+					FormatSignedPlayerVisibleNumber(daily)));
+			}
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "SoldierTroopXpValue",
+				"Soldier elite training: {VALUE}",
+				"VALUE",
+				parts.Count > 0
+					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+		}
+		if (string.Equals(displayGroup, "partySizeLimit", StringComparison.Ordinal))
+		{
+			float value = SumNumericPayloadValues(
+				instances,
+				"partySizeLimitClanLeader",
+				"partySizeLimitClanLords");
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "PartySizeLimitValue",
+				"Lords' party size limit: {VALUE}",
+				"VALUE",
+				FormatSignedPlayerVisibleNumber(value));
+		}
+		if (string.Equals(displayGroup, "kingdomStability", StringComparison.Ordinal))
+		{
+			float value = SumNumericPayloadValues(
+				instances,
+				"kingdomStabilityNextDayOnce",
+				"kingdomStabilityOnce");
+			bool hasDeferredInstance = (instances ?? Array.Empty<PolicyEffectInstanceSaveData>()).Any(instance =>
+				string.Equals(instance?.ModuleId, "kingdomStabilityNextDayOnce", StringComparison.Ordinal));
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "KingdomStabilityValue",
+				"Kingdom stability: {SCHEDULE}{VALUE}",
+				"SCHEDULE",
+				hasDeferredInstance
+					? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ScheduleNextDayOncePrefix", "Once next game day ")
+					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ScheduleOnActivationPrefix", "Once on activation "),
+				"VALUE",
+				FormatSignedPlayerVisibleNumber(value));
+		}
+
+		PolicyEffectInstanceSaveData first = instances?.FirstOrDefault();
+		if (first == null)
+		{
+			return playerVisible
+				? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
+				: displayGroup;
+		}
+		if (TryNormalizeInstance(first, out PolicyEffectNormalizedInstance normalized, out _)
+			&& !normalized.IsInert
+			&& PolicyEffectModuleCatalog.TryFormatPayload(
+				normalized.Module.Id,
+				normalized.RuntimeInstance.Payload,
+				out string payloadText,
+				out _))
+		{
+			if (playerVisible)
+			{
+				string displayName = PolicyEffectUiText.Name(normalized.Module);
+				return string.IsNullOrWhiteSpace(payloadText)
+					? displayName
+					: PolicyUiTexts.Format(
+						PlayerVisibleTextKeyPrefix + "EffectNameValue",
+						"{NAME}: {VALUE}",
+						"NAME",
+						displayName,
+						"VALUE",
+						payloadText.Trim());
+			}
+			return displayGroup + "=" + payloadText;
+		}
+		return playerVisible
+			? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
+			: displayGroup;
+	}
+
+	private static string DescribePlayerVisibleNumericValue(
+		PolicyEffectModuleDescriptor descriptor,
+		double value)
+	{
+		string signed = FormatSignedPlayerVisibleNumber(value);
+		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PercentPoints)
+		{
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "NativeTaxIncomePercent",
+				"Native main tax income {VALUE}%",
+				"VALUE",
+				signed);
+		}
+		if (descriptor?.ValueUnit == PolicyEffectValueUnit.RelativePercent)
+		{
+			if (descriptor.Hook == PolicyEffectHook.VolunteerProductionProbability)
+			{
+				return PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "RelativeVolunteerDailyChancePercent",
+					"Relative to native daily volunteer check frequency {VALUE}%",
+					"VALUE",
+					signed);
+			}
+			if (descriptor.Hook == PolicyEffectHook.VillageGoodsProduction)
+			{
+				return PolicyUiTexts.Format(
+					PlayerVisibleTextKeyPrefix + "RelativeVillageGoodsProductionPercent",
+					"Relative to native village goods production {VALUE}%",
+					"VALUE",
+					signed);
+			}
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "RelativeCandidateScorePercent",
+				"Relative to native candidate score {VALUE}%",
+				"VALUE",
+				signed);
+		}
+		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PartySizePoints)
+		{
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "NativePartySizeLimit",
+				"Native party size limit {VALUE}",
+				"VALUE",
+				signed);
+		}
+		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce)
+		{
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
+				"Once next game day {VALUE}",
+				"VALUE",
+				signed);
+		}
+		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.OneShot
+			|| descriptor?.ValueUnit == PolicyEffectValueUnit.PointsOnce)
+		{
+			return PolicyUiTexts.Format(
+				PlayerVisibleTextKeyPrefix + "ScheduleOnActivation",
+				"Once on activation {VALUE}",
+				"VALUE",
+				signed);
+		}
+		return PolicyUiTexts.Format(
+			PlayerVisibleTextKeyPrefix + "ScheduleDaily",
+			"Daily {VALUE}",
+			"VALUE",
+			signed);
 	}
 
 	private static string FormatSignedPlayerVisibleNumber(double value)

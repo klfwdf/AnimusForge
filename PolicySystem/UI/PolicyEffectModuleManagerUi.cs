@@ -376,8 +376,8 @@ internal sealed class PolicyEffectModuleManagerRowVM : ViewModel
 		}
 		_onChanged = onChanged;
 		ModuleIdText = module.Id;
-		ModuleNameText = module.Descriptor?.PlayerDisplayName ?? module.Id;
-		CapabilitySummaryText = (module.Descriptor?.CatalogSummary ?? module.RetrievalText ?? string.Empty).Trim();
+		ModuleNameText = PolicyEffectUiText.Name(module);
+		CapabilitySummaryText = PolicyEffectUiText.Summary(module);
 		CanTogglePlayer = PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerKingdom);
 		CanToggleLocal = PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerLocal);
 		CanToggleRuler = PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.NpcRulerKingdom);

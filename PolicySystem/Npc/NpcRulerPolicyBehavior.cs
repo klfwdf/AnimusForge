@@ -306,11 +306,14 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			if (effect == null) continue;
 			lines.AddRange(CustomPolicyBehavior.BuildPlayerVisibleEffectLinesForExternal(
-				FirstNonEmpty(effect.TargetKingdomName, "目标王国"), effect.ModuleEffects, -1));
+				FirstNonEmpty(effect.TargetKingdomName, PolicyUiTexts.Get("AFPOL_UI_TargetKingdomLabelOnly", "Target kingdom")), effect.ModuleEffects, -1));
 			lines.Add(effect.IsEnded || (effect.DurationDays > 0 && effect.RemainingDays <= 0) || string.Equals(record.AgendaStatus, AgendaStatusAbolished, StringComparison.OrdinalIgnoreCase)
-				? "持续效果已结束" : effect.DurationDays == 0 ? "持续效果：永久" : "效果剩余 " + Math.Max(0, effect.RemainingDays).ToString(CultureInfo.InvariantCulture) + " 天");
+				? PolicyUiTexts.Get("AFPOL_UI_ContinuousEffectsEnded", "Continuous effects ended")
+				: effect.DurationDays == 0
+					? PolicyUiTexts.Get("AFPOL_UI_ContinuousEffectsPermanent", "Continuous effects: Permanent")
+					: PolicyUiTexts.Format("AFPOL_UI_EffectSummaryRemainingDays", "Effects remaining {DAYS} days", "DAYS", Math.Max(0, effect.RemainingDays).ToString(CultureInfo.InvariantCulture)));
 		}
-		return lines.Count == 0 ? "无持续效果" : string.Join("\n", lines);
+		return lines.Count == 0 ? PolicyUiTexts.Get("AFPOL_UI_NoContinuousEffects", "No continuous effects") : string.Join("\n", lines);
 	}
 
 	// Read-only view of an NPC policy's module effects for vote-interest scoring. Cold path: the

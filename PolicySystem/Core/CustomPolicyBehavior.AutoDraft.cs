@@ -134,7 +134,7 @@ public sealed partial class CustomPolicyBehavior
 			PolicyEligibility eligibility = EvaluateLocalPolicyEligibility(options, validFiefs.Count > 0);
 			if (!eligibility.CanPublish)
 			{
-				error = eligibility.Reason;
+				error = MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason);
 				return false;
 			}
 			selectedFiefIds = validFiefs.Select(fief => fief.StringId ?? "").Where(id => id.Length > 0).ToList();
@@ -149,7 +149,7 @@ public sealed partial class CustomPolicyBehavior
 			PolicyEligibility eligibility = EvaluateEligibility(options);
 			if (!eligibility.CanPublish)
 			{
-				error = eligibility.Reason;
+				error = MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason);
 				return false;
 			}
 			string targetId = (input.TargetKingdomId ?? "").Trim();
@@ -162,7 +162,7 @@ public sealed partial class CustomPolicyBehavior
 			bool isVassal = !ownKingdom && targetKingdom != null;
 			if (targetKingdom == null || (isVassal && !IsPlayerRuler(playerKingdom)))
 			{
-				error = "所选政策国家已经失效，或玩家已不再具备发布资格。";
+				error = PolicyUiTexts.Get("AFPOL_UI_AutoDraftTargetUnavailable", "The selected policy target is no longer valid, or the player is no longer eligible to publish.");
 				return false;
 			}
 			scopeKind = isVassal ? PolicyScopeVassal : PolicyScopeKingdom;
@@ -199,7 +199,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		try
 		{
-			callback?.Invoke(result ?? PlayerPolicyAutoDraftResult.Failed("AI编写没有返回结果。"));
+			callback?.Invoke(result ?? PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftFailed", "AI drafting failed; the original input was kept.")));
 		}
 		catch (Exception ex)
 		{

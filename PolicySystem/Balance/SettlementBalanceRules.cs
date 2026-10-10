@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AnimusForge;
 
@@ -97,7 +98,12 @@ internal sealed class SettlementBalanceSnapshot
 			int value = Get(definition.Metric).Value;
 			if (value < definition.Minimum || value > definition.Maximum)
 			{
-				error = definition.Name + "必须在 " + definition.Minimum + "–" + definition.Maximum + " 之间。";
+				error = PolicyUiTexts.Format(
+					"AFPOL_UI_BalanceValueOutOfRange",
+					"{NAME} must be between {MIN} and {MAX}.",
+					"NAME", definition.Name,
+					"MIN", definition.Minimum.ToString(CultureInfo.InvariantCulture),
+					"MAX", definition.Maximum.ToString(CultureInfo.InvariantCulture));
 				return false;
 			}
 		}

@@ -2000,9 +2000,25 @@ public sealed partial class CustomPolicyBehavior
 		return new LocalPolicyFiefData
 		{
 			FiefId = fief?.StringId ?? "",
-			NameText = fief?.Name?.ToString() ?? fief?.StringId ?? "未知封地",
-			TypeText = GetLocalPolicyFiefTypeText(fief)
+			NameText = fief?.Name?.ToString() ?? fief?.StringId ?? PolicyUiTexts.Get("AFPOL_UI_UnknownFief", "Unknown Fief"),
+			TypeText = BuildLocalPolicyFiefTypeDisplayText(fief)
 		};
+	}
+
+	/// <summary>
+	/// Display projection for the settlement type shown in the local-policy fief picker. The shared
+	/// <see cref="GetLocalPolicyFiefTypeText"/> helper feeds the persisted target snapshot and the prompt
+	/// payload, so its return value must stay byte-identical; only this player-facing copy is localized.
+	/// </summary>
+	private static string BuildLocalPolicyFiefTypeDisplayText(Settlement fief)
+	{
+		switch ((GetLocalPolicyFiefTypeText(fief) ?? string.Empty).Trim())
+		{
+			case "城堡": return PolicyUiTexts.Get("AFPOL_UI_SettlementTypeCastle", "Castle");
+			case "城镇": return PolicyUiTexts.Get("AFPOL_UI_SettlementTypeTown", "Town");
+			case "村庄": return PolicyUiTexts.Get("AFPOL_UI_SettlementTypeVillage", "Village");
+			default: return PolicyUiTexts.Get("AFPOL_UI_Fief", "Fief");
+		}
 	}
 
 	private static bool IsSettlementInActiveLocalPolicyScope(ActivePolicyEffectSaveData effect, Settlement settlement)

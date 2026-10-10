@@ -1548,7 +1548,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		foreach (NpcRulerPolicyEffectDto effect in validEffects)
 		{
 			string target = FirstNonEmpty(effect.TargetKingdomName, "目标王国");
-			lines.AddRange(CustomPolicyBehavior.BuildPlayerVisibleEffectLinesForExternal(
+			lines.AddRange(CustomPolicyBehavior.BuildRawPolicyEffectLinesForExternal(
 				target,
 				effect.ModuleEffects,
 				effect.DurationDays));
