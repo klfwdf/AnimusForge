@@ -1,6 +1,10 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+当前接续（主线`d00e33d07`，替代下文“E未交付”和仅UI清零口径）：用户已确认目标为全模组源码中文硬编码外置及双语本地化，B/C已派发外部。主线完成内战raw/display端口、图库真实新物品名及旧名保护、债务/决斗显示接收；移除755终端显示fallback、27连接测试Prompt/日志及696经济词表中文位置，5份默认Prompt改读缓存的包内资产。各切片提交、命令结果、源码位置与未覆盖责任见[主线详细证据](handoffs/2026-10-10-localization-mainline-integration.md#已接通并验证的主线切片)。27对语言资源及专项静态合同通过；分块目录旧位置修正后当前契约PASS；未执行当前产品编译/实机/正式包。
+
+完整源码扫描`artifacts/localization/runtime-literals-mainline-current.json`（含并行工作树）为20860中文字符串/字符位置、590文件，起始22357；不是UI漏译数或完成率，Prompt/日志/协议不再从全量清单排除。PlayerCustomPromptRule源码与CN/EN资产语义不等价仍OPEN；1470词项外置保留中英识别能力，EN门禁对这类兼容数据的严格语义验证尚待接线，不声称已可发行。B/C在途文件及原Policy/HANDOFF改动保持。
+
 最新主线接收：政策C工作树已复审并提交 `19f11c941`（20文件），afpol中英各621唯一键；共享效果/失败恢复raw生产者，显示投影独立，模块36对新键和5个主线键依赖一并接收。修复raw清理规则与UI混用、英文溢出数量误报；政策测试完整双语oracle与NPC raw oracle已维护。raw30/模块90/失败92/oracle272项、26资源对、既有双API资源各2484解析PASS。不是当前产品构建或程序集契约执行。详见[政策复审](handoffs/2026-10-10-localization-policy-review-illustrator-errors.md#主线接收结果2026-10-10)与[外部C历史报告](handoffs/2026-10-10-localization-package-c-policy-delivery.md)。
 
 城堡选择器/处刑状态已提交 `b8ad0a54a`，7对新键、两个Bridge显示表达式逆向保真、26资源对与既有双API各12792次UI资源解析PASS；[详细交付](handoffs/2026-10-10-localization-castle-selection-execution.md#实际结果)。稳定扫描 `artifacts/localization/untranslated-after-c-review.json`：HEAD b8ad0a54a工作树快照，confirmed_ui=0，consumer_review=1250，137文件，扫描期间无变化。候选是位置，含事实/诊断/内部值，不当唯一未译条目或全英文百分比。中文原世界书JSON一份解析异常仍登记；不能用身份匹配未识别的2641文件否定用户确认B完成。
