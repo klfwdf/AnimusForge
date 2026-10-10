@@ -29,12 +29,32 @@ namespace AnimusForge.Illustrator
         public override string FolderName => IllustratorSettingsStorage.DirectoryKey;
         public override string FormatType => "json";
 
-        private List<string> _modelOptions = new List<string> { "*手动输入*" };
+        private const string ManualModelOption = "{=AF_ILL_UI_OPTION_MANUAL_MODEL}*Manual input*";
+        private const string DefaultDirectorModelOption = "{=AF_ILL_UI_OPTION_DEFAULT_DIRECTOR}*Default (reuse conversation API)*";
+        private const string Player2ModelOption = "{=AF_ILL_UI_OPTION_PLAYER2_MODEL}Use the model selected in the Player2 app";
+
+        private static bool IsManualModelOption(string value) => value == ManualModelOption || value == "*手动输入*";
+        private static bool IsDefaultDirectorModelOption(string value) => value == DefaultDirectorModelOption || value == "*默认(复用正文API)*";
+        private static bool IsPlayer2ModelOption(string value) => value == Player2ModelOption || value == "使用 Player2 应用中选择的模型";
+
+        // Normalize only when MCM loads a setting/preset; API model names remain raw values.
+        private static Dropdown<string> NormalizeModelOptions(Dropdown<string> value)
+        {
+            if (value == null) return null;
+            var options = new List<string>(value.Count);
+            foreach (string option in value)
+                options.Add(IsManualModelOption(option) ? ManualModelOption
+                    : IsDefaultDirectorModelOption(option) ? DefaultDirectorModelOption
+                    : IsPlayer2ModelOption(option) ? Player2ModelOption : option);
+            return new Dropdown<string>(options, value.SelectedIndex);
+        }
+
+        private List<string> _modelOptions = new List<string> { ManualModelOption };
         private Dropdown<string> _modelDropdown;
         private static readonly object _modelLock = new object();
         private static string _cachedModelsFilePath;
 
-        private List<string> _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+        private List<string> _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
         private Dropdown<string> _directorModelDropdown;
         private static readonly object _directorModelLock = new object();
         private static string _cachedDirectorModelsFilePath;
@@ -125,7 +145,7 @@ namespace AnimusForge.Illustrator
                 lock (_modelLock)
                 {
                     // Isolate active settings and preset selections.
-                    ReplaceModelDropdown(value == null ? null : new Dropdown<string>(value, value.SelectedIndex));
+                    ReplaceModelDropdown(NormalizeModelOptions(value));
                     ModelSelectionChanged(_modelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
                 }
             }
@@ -144,7 +164,7 @@ namespace AnimusForge.Illustrator
             var dropdown = _modelDropdown;
             if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
             string selected = dropdown[dropdown.SelectedIndex];
-            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*" || selected == "使用 Player2 应用中选择的模型" || _modelName == selected) return;
+            if (string.IsNullOrWhiteSpace(selected) || IsManualModelOption(selected) || IsPlayer2ModelOption(selected) || _modelName == selected) return;
             _modelName = selected;
             OnPropertyChanged(nameof(ModelName));
         }
@@ -155,8 +175,8 @@ namespace AnimusForge.Illustrator
             var dropdown = _directorModelDropdown;
             if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
             string selected = dropdown[dropdown.SelectedIndex];
-            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*") return;
-            if (selected == "*默认(复用正文API)*") selected = "";
+            if (string.IsNullOrWhiteSpace(selected) || IsManualModelOption(selected)) return;
+            if (IsDefaultDirectorModelOption(selected)) selected = "";
             if (_directorModelName == selected) return;
             _directorModelName = selected;
             OnPropertyChanged(nameof(DirectorModelName));
@@ -185,7 +205,7 @@ namespace AnimusForge.Illustrator
                 if (_sizePresetDropdown != null && _sizePresetDropdown.SelectedIndex >= 0
                     && _sizePresetDropdown.SelectedIndex < _sizePresetOptions.Count)
                 {
-                    return ExtractSizeToken(_sizePresetOptions[_sizePresetDropdown.SelectedIndex]);
+                    return _sizePresetTokens[_sizePresetDropdown.SelectedIndex];
                 }
 
                 return NormalizeImageSize(_imageSize);
@@ -202,28 +222,22 @@ namespace AnimusForge.Illustrator
 
         private static readonly List<string> _sizePresetOptions = new List<string>
         {
-            "1024x1024 (1:1 方形)",
-            "1280x720 (16:9 宽屏横幅)",
-            "720x1280 (9:16 竖幅立绘)",
-            "1344x768 (7:4 史诗宽画幅)",
-            "1024x1536 (2:3 竖版海报)",
-            "2048x2048 (1:1 超高清方形)"
+            "{=AF_ILL_UI_OPTION_SIZE_SQUARE}1024x1024 (1:1 square)",
+            "{=AF_ILL_UI_OPTION_SIZE_WIDE}1280x720 (16:9 widescreen)",
+            "{=AF_ILL_UI_OPTION_SIZE_PORTRAIT}720x1280 (9:16 character portrait)",
+            "{=AF_ILL_UI_OPTION_SIZE_EPIC}1344x768 (7:4 epic widescreen)",
+            "{=AF_ILL_UI_OPTION_SIZE_POSTER}1024x1536 (2:3 portrait poster)",
+            "{=AF_ILL_UI_OPTION_SIZE_UHD}2048x2048 (1:1 ultra-high-definition square)"
         };
+        private static readonly string[] _sizePresetTokens = { "1024x1024", "1280x720", "720x1280", "1344x768", "1024x1536", "2048x2048" };
         private Dropdown<string> _sizePresetDropdown;
-
-        private static string ExtractSizeToken(string preset)
-        {
-            if (string.IsNullOrWhiteSpace(preset)) return "1024x1024";
-            int separator = preset.IndexOf(' ');
-            return (separator > 0 ? preset.Substring(0, separator) : preset).Trim();
-        }
 
         private static int FindSizePresetIndex(string size)
         {
             string token = NormalizeImageSize(size);
             for (int i = 0; i < _sizePresetOptions.Count; i++)
             {
-                if (string.Equals(ExtractSizeToken(_sizePresetOptions[i]), token, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(_sizePresetTokens[i], token, StringComparison.OrdinalIgnoreCase))
                     return i;
             }
 
@@ -233,7 +247,7 @@ namespace AnimusForge.Illustrator
         private static string NormalizeImageSize(string size)
         {
             int index = FindSizePresetIndexWithoutNormalization(size);
-            return index >= 0 ? ExtractSizeToken(_sizePresetOptions[index]) : "1024x1024";
+            return index >= 0 ? _sizePresetTokens[index] : "1024x1024";
         }
 
         private static int FindSizePresetIndexWithoutNormalization(string size)
@@ -241,7 +255,7 @@ namespace AnimusForge.Illustrator
             string token = (size ?? string.Empty).Trim();
             for (int i = 0; i < _sizePresetOptions.Count; i++)
             {
-                if (string.Equals(ExtractSizeToken(_sizePresetOptions[i]), token, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(_sizePresetTokens[i], token, StringComparison.OrdinalIgnoreCase))
                     return i;
             }
 
@@ -263,11 +277,11 @@ namespace AnimusForge.Illustrator
             }
             set
             {
-                _sizePresetDropdown = value;
+                _sizePresetDropdown = value == null ? null : new Dropdown<string>(_sizePresetOptions, value.SelectedIndex);
                 int idx = value?.SelectedIndex ?? 0;
                 if (idx > 0 && idx < _sizePresetOptions.Count)
                 {
-                    string size = ExtractSizeToken(_sizePresetOptions[idx]);
+                    string size = _sizePresetTokens[idx];
                     if (!string.IsNullOrWhiteSpace(size))
                     {
                         _imageSize = NormalizeImageSize(size);
@@ -279,20 +293,20 @@ namespace AnimusForge.Illustrator
                 }
                 else if (idx == 0)
                 {
-                    _imageSize = ExtractSizeToken(_sizePresetOptions[0]);
+                    _imageSize = _sizePresetTokens[0];
                 }
             }
         }
 
         private static readonly List<string> _qualityOptions = new List<string>
         {
-            "默认 (不传)",
-            "standard (标准)",
-            "hd (高清细节)",
-            "low (低-最快出图)",
-            "medium (中等)",
-            "high (高-精细渲染)",
-            "auto (交由服务端自动)"
+            "{=AF_ILL_UI_OPTION_QUALITY_DEFAULT}Default (omit parameter)",
+            "{=AF_ILL_UI_OPTION_QUALITY_STANDARD}standard (standard)",
+            "{=AF_ILL_UI_OPTION_QUALITY_HD}hd (high detail)",
+            "{=AF_ILL_UI_OPTION_QUALITY_LOW}low (fastest generation)",
+            "{=AF_ILL_UI_OPTION_QUALITY_MEDIUM}medium (balanced)",
+            "{=AF_ILL_UI_OPTION_QUALITY_HIGH}high (fine rendering)",
+            "{=AF_ILL_UI_OPTION_QUALITY_AUTO}auto (server decides)"
         };
         private Dropdown<string> _qualityDropdown;
 
@@ -308,7 +322,7 @@ namespace AnimusForge.Illustrator
                     _qualityDropdown = new Dropdown<string>(_qualityOptions, 0);
                 return _qualityDropdown;
             }
-            set => _qualityDropdown = value;
+            set => _qualityDropdown = value == null ? null : new Dropdown<string>(_qualityOptions, value.SelectedIndex);
         }
 
         public string SelectedQuality
@@ -322,14 +336,14 @@ namespace AnimusForge.Illustrator
 
         private static readonly List<string> _styleOptions = new List<string>
         {
-            "古典油画（默认）",
-            "vivid (鲜艳生动·API枚举)",
-            "natural (自然真实·API枚举)",
-            "暗黑史诗写实 (提示词注入)",
-            "电影级光影 (提示词注入)",
-            "提示词 (自定义画风)",
-            "莫桑艺术·默兹河珐琅彩饰 (提示词注入)",
-            "日系半写实叙事插画 (提示词注入)"
+            "{=AF_ILL_UI_OPTION_STYLE_CLASSIC}Classical oil painting (default)",
+            "{=AF_ILL_UI_OPTION_STYLE_VIVID}vivid (vivid colors; API enum)",
+            "{=AF_ILL_UI_OPTION_STYLE_NATURAL}natural (natural realism; API enum)",
+            "{=AF_ILL_UI_OPTION_STYLE_DARK}Dark epic realism (prompt instructions)",
+            "{=AF_ILL_UI_OPTION_STYLE_CINEMATIC}Cinematic lighting (prompt instructions)",
+            "{=AF_ILL_UI_OPTION_STYLE_CUSTOM}Prompt (custom style)",
+            "{=AF_ILL_UI_OPTION_STYLE_MOSAN}Mosan art: Meuse enamel decoration (prompt instructions)",
+            "{=AF_ILL_UI_OPTION_STYLE_ANIME}Japanese semi-realistic narrative illustration (prompt instructions)"
         };
         private Dropdown<string> _styleDropdown;
 
@@ -343,7 +357,7 @@ namespace AnimusForge.Illustrator
                     _styleDropdown = new Dropdown<string>(_styleOptions, 0); // 默认 古典油画
                 return _styleDropdown;
             }
-            set => _styleDropdown = value;
+            set => _styleDropdown = value == null ? null : new Dropdown<string>(_styleOptions, value.SelectedIndex);
         }
 
         public string SelectedStyle
@@ -444,7 +458,7 @@ namespace AnimusForge.Illustrator
                 lock (_directorModelLock)
                 {
                     // Isolate active settings and preset selections.
-                    ReplaceDirectorModelDropdown(value == null ? null : new Dropdown<string>(value, value.SelectedIndex));
+                    ReplaceDirectorModelDropdown(NormalizeModelOptions(value));
                     DirectorSelectionChanged(_directorModelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
                 }
             }
@@ -465,7 +479,7 @@ namespace AnimusForge.Illustrator
                 if (_directorModelOptions == null || _directorModelOptions.Count == 0 || _directorModelDropdown == null) return;
                 if (string.IsNullOrWhiteSpace(modelName))
                 {
-                    int defaultIdx = _directorModelDropdown.IndexOf("*默认(复用正文API)*");
+                    int defaultIdx = _directorModelDropdown.IndexOf(DefaultDirectorModelOption);
                     _directorModelDropdown.SelectedIndex = defaultIdx >= 0 ? defaultIdx : 0;
                 }
                 else
@@ -529,8 +543,8 @@ namespace AnimusForge.Illustrator
 
         private static readonly List<string> _conversationDisplayOptions = new List<string>
         {
-            "独立面板",
-            "全屏覆盖（默认）"
+            "{=AF_ILL_UI_OPTION_DISPLAY_PANEL}Standalone panel",
+            "{=AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN}Fullscreen overlay (default)"
         };
         private Dropdown<string> _conversationDisplayDropdown;
 
@@ -544,7 +558,7 @@ namespace AnimusForge.Illustrator
                     _conversationDisplayDropdown = new Dropdown<string>(_conversationDisplayOptions, 1);
                 return _conversationDisplayDropdown;
             }
-            set => _conversationDisplayDropdown = value;
+            set => _conversationDisplayDropdown = value == null ? null : new Dropdown<string>(_conversationDisplayOptions, value.SelectedIndex);
         }
 
         public bool ConversationIllustrationUsesFullscreen
@@ -693,7 +707,7 @@ namespace AnimusForge.Illustrator
                     {
                         if (_modelOptions == null)
                         {
-                            _modelOptions = new List<string> { "*手动输入*" };
+                            _modelOptions = new List<string> { ManualModelOption };
                         }
                         foreach (var m in cached)
                         {
@@ -748,7 +762,7 @@ namespace AnimusForge.Illustrator
 
                     if (_modelOptions == null || _modelOptions.Count == 0)
                     {
-                        _modelOptions = new List<string> { "*手动输入*" };
+                        _modelOptions = new List<string> { ManualModelOption };
                     }
                     if (!string.IsNullOrWhiteSpace(ModelName) && !_modelOptions.Contains(ModelName))
                     {
@@ -921,14 +935,14 @@ namespace AnimusForge.Illustrator
 
             if (result.Player2)
             {
-                ReplaceModelDropdown(new Dropdown<string>(new[] { "使用 Player2 应用中选择的模型" }, 0));
+                ReplaceModelDropdown(new Dropdown<string>(new[] { Player2ModelOption }, 0));
                 RequestMcmRefresh();
                 InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_PLAYER2", "[AI Image] Player2 detected. Select generation/edit models in the Player2 app; the model name on this page is not sent.")));
                 return;
             }
             lock (_modelLock)
             {
-                _modelOptions = new List<string> { "*手动输入*" };
+                _modelOptions = new List<string> { ManualModelOption };
                 _modelOptions.AddRange(result.Models);
 
                 if (!string.IsNullOrWhiteSpace(ModelName) && !_modelOptions.Contains(ModelName))
@@ -971,14 +985,14 @@ namespace AnimusForge.Illustrator
 
                     if (_directorModelOptions == null || _directorModelOptions.Count == 0)
                     {
-                        _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                        _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
                     }
                     if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
                     {
                         _directorModelOptions.Add(DirectorModelName);
                     }
                     int idx = string.IsNullOrWhiteSpace(DirectorModelName)
-                        ? _directorModelOptions.IndexOf("*默认(复用正文API)*")
+                        ? _directorModelOptions.IndexOf(DefaultDirectorModelOption)
                         : _directorModelOptions.IndexOf(DirectorModelName);
                     ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, idx >= 0 ? idx : 0));
                 }
@@ -1136,7 +1150,7 @@ namespace AnimusForge.Illustrator
 
             lock (_directorModelLock)
             {
-                _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
                 _directorModelOptions.AddRange(result.Models);
 
                 if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
@@ -1175,7 +1189,7 @@ namespace AnimusForge.Illustrator
                     {
                         if (_directorModelOptions == null)
                         {
-                            _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                            _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
                         }
                         foreach (var m in cached)
                         {
