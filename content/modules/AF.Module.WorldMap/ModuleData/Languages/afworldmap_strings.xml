@@ -144,5 +144,78 @@
     <string id="AF_WM_PreemptSiege" text="the current siege" />
     <string id="AF_WM_PreemptStrategicAction" text="the current strategic action" />
     <string id="AF_WM_PreemptNativeAction" text="the current native action" />
+    <string id="AF_WM_DisplayCompanionCreateFailed" text="{HERO} cannot create companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayCompanionFollowUpFailed" text="{HERO} cannot continue follow-up world-map commands after creating companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayCompanionCreateException" text="{HERO} failed to create companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionFailed" text="{HERO} cannot form governor expedition: {DETAIL}" />
+    <string id="AF_WM_DisplayFollowUpCommandsFailed" text="Cannot continue follow-up commands after party creation: {DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionDeparted" text="{HERO} stepped down as governor of {SETTLEMENT}, drafted {COUNT} troops, and began the expedition." />
+    <string id="AF_WM_DisplayQueueEnded" text="{ACTOR}'s world-map command queue has ended ({REASON})." />
+    <string id="AF_WM_DisplayQueueEndedWithTail" text="{ACTOR}'s world-map command queue has ended ({REASON}), {TAIL}" />
+    <string id="AF_WM_DisplayHideoutOutcome" text="{ACTOR} hideout clear against {TARGET} {OUTCOME}: {DETAIL}" />
+    <string id="AF_WM_DisplayOutcomeSucceeded" text="succeeded" />
+    <string id="AF_WM_DisplayOutcomeFailed" text="failed" />
+    <string id="AF_WM_DisplayOutcomeIncomplete" text="incomplete" />
+    <string id="AF_WM_DisplayRaidSuccess" text="{ACTOR} successfully raided {TARGET}: {DETAIL}" />
+    <string id="AF_WM_DisplayRaidFailed" text="{ACTOR} raid on {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplayRaidIncomplete" text="{ACTOR}'s raid on {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeSuccess" text="{ACTOR} successfully besieged {TARGET}: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeFailed" text="{ACTOR} siege of {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeIncomplete" text="{ACTOR}'s siege of {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackSuccess" text="{ACTOR}'s attack on {TARGET} succeeded: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackFailed" text="{ACTOR}'s attack on {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackIncomplete" text="{ACTOR}'s attack on {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplayWaitingHeroShelter" text="{HERO} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack." />
+    <string id="AF_WM_DisplayWaitingPartyShelter" text="{PARTY} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack." />
+    <string id="AF_WM_DisplayRaidStartedUnderway" text="{ACTOR} began raiding {SETTLEMENT}; battle underway." />
+    <string id="AF_WM_DisplaySiegeStartedUnderway" text="{ACTOR} began besieging {SETTLEMENT}; siege underway." />
+    <string id="AF_WM_DisplayAttackHeroStartedUnderway" text="{ACTOR} attacked {TARGET}'s party; battle underway." />
+    <string id="AF_WM_DisplayAttackPartyStartedUnderway" text="{ACTOR} attacked {TARGET}; battle underway." />
+    <string id="AF_WM_DisplayArrivedSettlementHolding" text="{ACTOR} arrived at {SETTLEMENT} and is holding position." />
+    <string id="AF_WM_DisplayArrivedSettlementPatrolling" text="{ACTOR} arrived near {SETTLEMENT} and began patrolling." />
+    <string id="AF_WM_DisplayFollowStartedUnderway" text="{ACTOR} caught up and is following {TARGET}." />
+    <string id="AF_WM_DisplayFollowJoinedSiege" text="{ACTOR} accompanied {TARGET} and joined the siege of {SETTLEMENT}." />
+    <string id="AF_WM_DisplayAbandonedForNewCommand" text="{ACTOR} abandoned {REASON} and switched to the new world-map command." />
+    <string id="AF_WM_DisplaySettlementAttackFinished" text="{HERO} ended the assault on {SETTLEMENT}." />
+    <string id="AF_WM_RebellionNoPlayerClan" text="Player clan does not exist; cannot execute rebellion attack." />
+    <string id="AF_WM_RebellionOnlyPlayerCompanion" text="Only independent companion parties of the player clan can execute rebellion attacks on the player's behalf." />
+    <string id="AF_WM_RebellionNoControllableParty" text="The executor does not currently lead a controllable independent companion party; cannot execute rebellion attack." />
+    <string id="AF_WM_RebellionNotPlayerClanParty" text="The executing party does not belong to the player clan; cannot trigger player clan rebellion." />
+    <string id="AF_WM_RebellionPlayerNotInKingdom" text="The player clan does not belong to any kingdom; kingdom rebellion is unnecessary and cannot be executed." />
+    <string id="AF_WM_RebellionTargetNotSameKingdom" text="Target does not belong to the player's current kingdom and cannot trigger a rebellion attack." />
+    <string id="AF_WM_RebellionKingdomEliminated" text="The player's kingdom has been eliminated; cannot execute kingdom rebellion." />
+    <string id="AF_WM_RebellionMercenaryCannotRebel" text="The player clan is currently under mercenary service and cannot execute kingdom rebellion." />
+    <string id="AF_WM_RebellionRulingClanCannotRebel" text="The player clan is the ruling clan and cannot execute rebellion against its own kingdom." />
+    <string id="AF_WM_RebellionTargetIsPlayerClanHero" text="Target belongs to the player clan; cannot attack own clan forces through rebellion." />
+    <string id="AF_WM_RebellionTargetIsPlayerClanParty" text="Target party belongs to the player clan; cannot attack own clan forces through rebellion." />
+    <string id="AF_WM_RebellionTargetIsPlayerSettlement" text="Target settlement belongs to the player clan; cannot attack own fiefs through rebellion." />
+    <string id="AF_WM_AttackTargetSameParty" text="Target and executor are in the same party; cannot initiate attack." />
+    <string id="AF_WM_AttackPartySameParty" text="Target party and executor party are the same party; cannot initiate attack." />
+    <string id="AF_WM_AttackTargetDefeatedDeadOrCaptured" text="Target was defeated, killed, or captured." />
+    <string id="AF_WM_AttackTargetDeadCapturedOrInvalid" text="Target is dead, captured, or invalid." />
+    <string id="AF_WM_AttackTargetPartyDefeatedOrDisbanded" text="Target party was defeated or disbanded." />
+    <string id="AF_WM_AttackTargetNoAttackableParty" text="Target has no attackable party." />
+    <string id="AF_WM_AttackTargetPartyInvalidOrMissing" text="Target party is invalid or no longer on the world map." />
+    <string id="AF_WM_AttackBesiegerNoLongerHostile" text="The besieging party is no longer hostile; attack discontinued." />
+    <string id="AF_WM_AttackSettlementInvalid" text="Target settlement is invalid or not an attackable target." />
+    <string id="AF_WM_AttackTargetUnavailable" text="Target is no longer attackable." />
+    <string id="AF_WM_AttackActorLostPartyOrCaptured" text="Executor lost controllable party or was captured; command failed." />
+    <string id="AF_WM_ResultTargetAchieved" text="Target objective was achieved." />
+    <string id="AF_WM_ResultNativeFailed" text="Native event determined failure." />
+    <string id="AF_WM_ResultNoClearOutcome" text="No definitive outcome was reached." />
+    <string id="AF_WM_TimeoutTargetInShelter" text="{TARGET} remained inside {SHELTER}; time limit expired before battle could begin." />
+    <string id="AF_WM_TimeoutTrackExpired" text="Time limit expired before tracking target could engage in battle." />
+    <string id="AF_WM_TimeoutAttackExpired" text="Time limit expired before attack could engage in battle." />
+    <string id="AF_WM_ReasonQueueDone" text="all commands completed" />
+    <string id="AF_WM_ReasonMergeInvalid" text="merge conditions no longer met" />
+    <string id="AF_WM_ReasonMergeTransferFailed" text="troop transfer failed" />
+    <string id="AF_WM_ReasonMergeDestroyFailed" text="temporary party could not be safely disbanded" />
+    <string id="AF_WM_ReasonTimeout" text="time limit expired" />
+    <string id="AF_WM_ReasonActorInvalid" text="executor invalid" />
+    <string id="AF_WM_ReasonTargetInvalid" text="target invalid or inexecutable" />
+    <string id="AF_WM_ReasonCommandInvalid" text="command invalid" />
+    <string id="AF_WM_TailGovernorReturning" text="governor expedition returning to return garrison troops." />
+    <string id="AF_WM_TailGovernorEnded" text="governor expedition ended or returned to native AI." />
+    <string id="AF_WM_TailNativeResumed" text="resuming native behavior." />
   </strings>
 </base>
