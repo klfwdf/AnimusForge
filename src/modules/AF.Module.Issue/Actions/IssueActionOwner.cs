@@ -133,7 +133,7 @@ internal static partial class VanillaIssueOfferBridge
 						(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit) => AlternativePartyScreenDoneCondition(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit, pending),
 						(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel) => OnAlternativePartyScreenClosed(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel, pending),
 						(character, type, side, leftParty) => AlternativeTroopTransferableDelegate(character, type, side, leftParty, pending), null);
-					ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionConfirmedSelectTroops", "Confirmed that {HERO} will lead. Please select the accompanying troops.", ("HERO", GetHeroName(companionCandidate.Hero))), isError: false);
+					ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionConfirmedSelectTroops", "Confirmed that {HERO} will lead. Please select the accompanying troops.", ("HERO", IssueDisplayTexts.CompanionNameForDisplay(GetHeroName(companionCandidate.Hero)))), isError: false);
 					Logger.Log("Logic", "[IssueOffer] 打开同伴代办派兵界面 giver=" + (giver.StringId ?? "") + " companion=" + (companionCandidate.Hero.StringId ?? ""));
 					return true;
 				}
@@ -164,7 +164,7 @@ internal static partial class VanillaIssueOfferBridge
 				string heroName = GetHeroName(companion);
 				MyBehavior.AppendExternalNpcFact(giver, "你已经同意让玩家派 " + heroName + " 率队代办任务“" + safeIssueTitle + "”。");
 				MyBehavior.AppendExternalPlayerFact(giver, "你已经与对方谈妥，让 " + heroName + " 率队代办任务“" + safeIssueTitle + "”。");
-				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltAccepted", "{HERO} has taken over the quest: {TITLE}", ("HERO", heroName), ("TITLE", safeIssueTitle)), isError: false);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltAccepted", "{HERO} has taken over the quest: {TITLE}", ("HERO", IssueDisplayTexts.CompanionNameForDisplay(heroName)), ("TITLE", safeIssueTitle)), isError: false);
 				Logger.Log("Logic", "[IssueOffer] 同伴代办启动成功 giver=" + (giver?.StringId ?? "") + " companion=" + (companion?.StringId ?? "") + " issue=" + safeIssueTitle);
 				return true;
 			}

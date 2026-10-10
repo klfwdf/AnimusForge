@@ -92,6 +92,38 @@ internal static class IssueDisplayTexts
 	private const string TurnInProbeExceptionPrefix = "静默原版任务交付异常: ";
 
 	/// <summary>
+	/// The placeholder <c>VanillaIssueOfferBridge.GetHeroName</c> falls back to
+	/// when a companion hero has neither a name nor a stable StringId.
+	/// </summary>
+	private const string UnknownCompanionFallback = "未知同伴";
+
+	/// <summary>
+	/// Projects the companion-name variable of a display sentence.
+	///
+	/// <para>
+	/// <c>GetHeroName</c> is shared between display call sites and non-display
+	/// ones: <c>IssueActionOwner</c> line 254 emits it into the model prompt body
+	/// and <c>IssueRuntimePromptOwner</c> line 190 into
+	/// <c>"当前带队同伴："</c>.  Those prompt/fact channels must keep the raw
+	/// Chinese bytes, so this projection is applied to the *variable value* at the
+	/// display call site rather than inside the producer.
+	/// </para>
+	///
+	/// <para>
+	/// Only the exact placeholder is replaced; a real hero name - including a
+	/// name that merely contains CJK characters - is returned unchanged.  Like
+	/// <see cref="ForDisplay(string)"/> this is idempotent and never drops
+	/// information.
+	/// </para>
+	/// </summary>
+	/// <param name="heroName">Raw companion name or placeholder.</param>
+	/// <returns>Localised placeholder text, or the input unchanged.</returns>
+	internal static string CompanionNameForDisplay(string heroName)
+		=> string.Equals(heroName, UnknownCompanionFallback, StringComparison.Ordinal)
+			? ConversationUiLocalization.Text("AF_CONV_UI_Issue_UnknownCompanion", "an unknown companion")
+			: heroName;
+
+	/// <summary>
 	/// Projects one producer reason into player-facing bilingual text.  Returns
 	/// the input unchanged when nothing is recognised.
 	/// </summary>
