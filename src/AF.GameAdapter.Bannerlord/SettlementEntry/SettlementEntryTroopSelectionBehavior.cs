@@ -7749,7 +7749,7 @@ agent.Controller = AgentControllerType.None;
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
 			InformationManager.DisplayMessage(new InformationMessage(_armedCoup
-				? "【宣权篡位】本场守军已被击溃。继续完成政变目标；大厅胜利后确认旧王处置，离场查看登基动画与战报。"
+				? new TextObject("{=AF_NOTIFY_Coup_GarrisonDefeated}[Usurpation] The garrison has been defeated. Continue the coup objectives; after victory in the hall, confirm the former ruler's fate, then leave to view the coronation and battle report.").ToString()
 				: SiegeAftermathUiText.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
