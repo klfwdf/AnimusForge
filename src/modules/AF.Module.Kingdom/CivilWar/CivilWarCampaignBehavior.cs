@@ -80,7 +80,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		request.Accept = accept;
 		var result = TeamModuleServices.CivilWar.Execute(request);
-		InformationManager.DisplayMessage(new InformationMessage(result.Message));
+		InformationManager.DisplayMessage(new InformationMessage(CivilWarUiText.ResultNotice(result)));
 	}
 
 	private static void Answer(string factionId, bool accept)

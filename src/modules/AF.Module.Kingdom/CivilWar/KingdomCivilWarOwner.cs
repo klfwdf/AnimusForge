@@ -975,9 +975,16 @@ internal sealed partial class KingdomCivilWarOwner
 		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();
 		int day = CivilWarWorld.CurrentDay();
 		if (CivilWarWorld.IsPlayerRuled(kingdom) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()) panel.StageText = CivilWarUiText.T("AF_KINGDOM_CW_Panel_StagePlayerKingdomDisabled", "Factions are disabled by settings in the player's kingdom");
-		else if (factions.Count == 0) panel.StageText = state != null && day < state.CooldownUntilDay
-			? CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageCooldown", "Settling after civil war  ·  no faction can form before day {DAY}", ("DAY", state.CooldownUntilDay.ToString()))
-			: CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageNoneFormed", "No factions have formed yet");
+		else if (factions.Count == 0)
+		{
+			bool cooling = state != null && day < state.CooldownUntilDay;
+			// The ledger wants a distinct title only for the plain "nothing has formed" case; cooldown
+			// keeps its own text, so the flag is false there.
+			panel.NoFactionFormed = !cooling;
+			panel.StageText = cooling
+				? CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageCooldown", "Settling after civil war  ·  no faction can form before day {DAY}", ("DAY", state.CooldownUntilDay.ToString()))
+				: CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageNoneFormed", "No factions have formed yet");
+		}
 		else if (factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) panel.StageText = CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageOpenWar", "{COUNT} factions are in civil war", ("COUNT", factions.Count(x => x.Stage == KingdomCivilWarStage.OpenWar).ToString()));
 		else if (factions.Any(x => x.Stage == KingdomCivilWarStage.Ultimatum)) panel.StageText = CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageUltimatum", "{COUNT} factions have issued an ultimatum", ("COUNT", factions.Count(x => x.Stage == KingdomCivilWarStage.Ultimatum).ToString()));
 		else panel.StageText = CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageFormed", "{COUNT} opposition factions have formed", ("COUNT", factions.Count.ToString()));
@@ -1139,13 +1146,13 @@ internal sealed partial class KingdomCivilWarOwner
 			Tag = tag,
 			DemandTag = CivilWarUiText.T("AF_KINGDOM_CW_Panel_DemandTag", "{TAG} demand", ("TAG", demandWord)),
 			DemandId = faction.DemandId, TargetId = faction.TargetId,
-			Name = FactionName(faction, demand),
+			Name = FactionDisplayName(faction, demand),
 			ShortName = CivilWarUiText.T("AF_KINGDOM_CW_Panel_ShortName", "{CLAN} {TAG}", ("CLAN", CivilWarWorld.ClanName(leader)), ("TAG", tag)),
 			Color = demand?.Color ?? "#6B3A78FF",
 			LeaderLine = CivilWarUiText.T("AF_KINGDOM_CW_Panel_LeaderLine", "Leader  {CLAN}{YOU}   ·   Relation with king {RELATION}", ("CLAN", CivilWarWorld.ClanName(leader)), ("YOU", leader != null && leader == Clan.PlayerClan ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_YouSuffix", " (you)") : ""), ("RELATION", SignedRelation(leader, kingdom))),
 			DemandTitle = demand == null
 				? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DemandTitleExpired", "Demand no longer valid")
-				: CivilWarUiText.T("AF_KINGDOM_CW_Panel_DemandTitle", "Demand: {DEMAND}", ("DEMAND", FormatDemand(demand, faction.TargetName))),
+				: CivilWarUiText.T("AF_KINGDOM_CW_Panel_DemandTitle", "Demand: {DEMAND}", ("DEMAND", CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, faction, kingdom)))),
 			Grievance = (int)Math.Round(CivilWarRules.Clamp(faction.Grievance, 0f, 100f)),
 			Stage = FactionStageText(faction, week, paused, CurrentAftermath(state, week)),
 			Refusals = faction.Refusals,
@@ -1335,6 +1342,12 @@ internal sealed partial class KingdomCivilWarOwner
 			: format.Replace("{leader}", leader);
 	}
 
+	// Display-only faction name for the panel. Composes the localized faction tag with the leader clan
+	// so English never renders the catalog's Chinese "…为首的反对派" rule text. Stored history, AFEF and
+	// weekly material keep using FactionName, which stays on the catalog format.
+	private static string FactionDisplayName(KingdomCivilWarFactionState faction, CivilWarDemandDef demand)
+		=> CivilWarUiText.T("AF_KINGDOM_CW_Panel_FactionName", "{LEADER}'s {TAG}", ("LEADER", CivilWarWorld.ClanName(CivilWarWorld.FindClan(faction?.LeaderClanId))), ("TAG", CivilWarUiText.DemandTag(demand)));
+
 	private static string SignedRelation(Clan clan, Kingdom kingdom)
 	{
 		int relation = CivilWarWorld.Relation(clan?.Leader, kingdom?.Leader);
@@ -1451,6 +1464,28 @@ internal sealed partial class KingdomCivilWarOwner
 		if (demand.Target == CivilWarDemandTarget.EnemyKingdom) return CivilWarWorld.KingdomName(StrongestForeignEnemy(kingdom, state));
 		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return "现行政策";
 		return "";
+	}
+
+	// Display-only projection of a faction's demand target. The stored faction.TargetName stays the
+	// Chinese rule fact that history, AFEF and weekly material keep using; the panel and menus render
+	// a live, localized name instead. Unknown targets fall back to the stored fact so a future demand
+	// kind still shows something truthful rather than a blank.
+	private static string ResolveDemandTargetDisplay(CivilWarDemandDef demand, KingdomCivilWarFactionState faction, Kingdom kingdom)
+	{
+		string stored = faction?.TargetName ?? "";
+		if (demand == null) return stored;
+		switch (demand.Target)
+		{
+			case CivilWarDemandTarget.EnemyKingdom:
+				string enemy = CivilWarWorld.KingdomName(CivilWarWorld.FindKingdom(faction?.TargetId));
+				return string.IsNullOrWhiteSpace(enemy) ? stored : enemy;
+			case CivilWarDemandTarget.ImposedPolicy:
+				string policy = kingdom?.ActivePolicies?.FirstOrDefault(x => x.StringId == faction?.TargetId)?.Name?.ToString();
+				if (!string.IsNullOrWhiteSpace(policy)) return policy;
+				return CivilWarUiText.T("AF_KINGDOM_CW_Panel_TargetCurrentPolicy", "the current policy");
+			default:
+				return stored;
+		}
 	}
 
 	private static string FormatDemand(CivilWarDemandDef demand, string target)
