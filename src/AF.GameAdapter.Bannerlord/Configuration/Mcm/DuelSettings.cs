@@ -73,21 +73,21 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PlayerCustomPromptRuleFileName = "PlayerCustomPromptRule.txt";
 
-	private const string DefaultKingdomRebellionSystemPrompt = "你是一名负责为当前剧本世界中的叛乱政权命名的史官。\n你的任务是根据给定素材，为一个刚刚脱离旧国家的新国家生成国家名称与百科简介。\n命名要求：\n1. 名称必须符合当前剧本的中世纪风格，不要使用现代政治术语。\n2. 尽量以原王国名称为基础生成名称，尽量不要使用地名和家族名，可根据叛乱的原因命名，但原王国如果是帝国，那么不可使用帝国后缀，以及称帝\n3. 正式名要自然、庄重、可作为百科词条标题；简称要更短，适合显示。\n4. 不要与现有王国重名。\n5. 百科简介应像原版百科文本，简洁、客观、概括其建立背景。\n6. 只输出固定字段，不要解释。";
+
 
 	private const string KingdomRebellionSystemPromptFileName = "KingdomRebellionSystemPrompt.txt";
 
-	private const string DefaultWeeklyReportWritingRequirements = "1. 必须覆盖本周或该期素材中的关键变化，但不必逐条复述；允许将同类信息合并表达。\n2. 只有完整 [REPORT] 正文需要先按顺序分为三类小节：【军事事件】、【外交事件】、【领地内事件】。每类写一小段，素材不足时写“本周未见明显变化”，不要省略小节；短周报和 [SHORT] 不需要也不得分三类，只写一段紧凑事实摘要。\n3. 军事事件包括战斗、攻城、军队调动、俘虏、军事胜败与边境威胁；外交事件包括宣战、议和、结盟、停战、条约、封臣与王国关系；领地内事件包括城镇、城堡、村庄的归属、治安、忠诚、繁荣、粮食、治理与民众变化。\n4. 跨国事件只能从当前周报目标的视角组织，不得把别国素材误写为本国主体。\n5. 不要编造素材中没有明确支持的核心事实。\n6. 如果素材偏零碎，应提炼成局势观察；如果素材很多，应归纳成若干主线。\n7. 文风应像编年史、政局纪要或贵族周报，清楚、流利、华丽，有史诗感，以及极高的文学素养和辞藻；不要写成项目符号列表。\n8. 不要写成小说对白。\n9. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。\n10. 不要用数字描述变化，多用形容词描述变化。\n11. 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利；攻城导致的易主放入军事事件，交易或治理移交可放入外交事件或领地内事件。\n12. 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。\n13. 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。\n14. 标题要简洁，正文要完整，短摘要要适合后续注入 NPC prompt；短摘要要紧凑保留关键事实锚点。\n15. 如果素材不足以支持重大变化，也要如实写出局势概况，不要硬造戏剧化转折。\n16. 战场交锋若对手是村民队、商队、巡逻队、民兵或匪帮，写明部队名/类型，不得渲染成领主级大胜。";
+
 
 	private const string WeeklyReportWritingRequirementsFileName = "WeeklyReportWritingRequirements.txt";
 
 	private const string DefaultNpcPersonaGenerationRequirements = "";
 
-	private const string DefaultDailyMemoryCompressionWritingRequirements = "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易、任务与情绪走向。";
 
-	private const string DefaultMemoryOverviewCompressionWritingRequirements = "可按时间线或主题组织，语言紧凑；不要逐条罗列或重复复述同一事实。";
 
-	private const string DefaultMajorActionCompressionWritingRequirements = "写成易懂的概要。不重要、重复或繁杂的信息可以省略。";
+
+
+
 
 	private const string PreviousDefaultWorldDiplomacyPrompt = "让统治者依据自己已经收到的公文、文化、性格、人物关系、战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，不要求每次都触发外交动作。公告使用清楚自然的现代中文表达世界内内容，避免文言文、模板化古腔和反复自称‘本王’；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
 
