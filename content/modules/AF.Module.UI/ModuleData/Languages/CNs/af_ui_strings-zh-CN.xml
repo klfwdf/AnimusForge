@@ -1627,6 +1627,40 @@
   <string id="AF_UI_KingdomRebellion_TargetMissing" text="无法启动强制叛乱：找不到目标王国或家族。" />
   <string id="AF_UI_KingdomRebellion_ThisKingdom" text="该王国" />
   <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="某王国" />
+  <string id="AF_UI_KingdomRebellion_AlternateDefaultName" text="{CLAN}自立同盟" />
+  <string id="AF_UI_KingdomRebellion_AutomaticPlayerImmune" text="{KINGDOM}当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次自动稳定度叛乱已跳过。" />
+  <string id="AF_UI_KingdomRebellion_AutomaticTargetChanged" text="本周自动叛乱已命中，但目标王国或家族状态已变化，无法继续执行。" />
+  <string id="AF_UI_KingdomRebellion_AutomaticTargetChangedAfterNaming" text="叛乱命名已完成，但目标王国或家族状态已变化，无法继续执行。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionFailedPrefix" text="执行叛乱失败：" />
+  <string id="AF_UI_KingdomRebellion_ExecutionFollowers" text=" 联合响应家族：{FOLLOWERS}。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionInvalidNaming" text="叛乱建国命名结果无效或与现有王国重名，已中止建国。请重新填写事件/叛乱 API 信息后再试。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionManagerMissing" text="{CLAN} 已从 {KINGDOM} 反出，但当前未找到 KingdomManager，未能继续建立新王国。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionPlayerImmune" text="执行叛乱失败：该王国当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionPreconditionChanged" text="建国前条件已变化，未离开原王国。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionSkippedPlayerImmune" text="{KINGDOM} 当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次稳定度叛乱已跳过。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionSuccess" text="{CLAN} 已从 {KINGDOM} 反出，并建立了 {NEW_KINGDOM}。" />
+  <string id="AF_UI_KingdomRebellion_ExecutionUnconfirmed" text="家族已离开原王国，但建国结果尚未确认。" />
+  <string id="AF_UI_KingdomRebellion_FormerKingdom" text="原王国" />
+  <string id="AF_UI_KingdomRebellion_NamingBackgroundFailurePrefix" text="叛乱建国命名后台任务异常：" />
+  <string id="AF_UI_KingdomRebellion_NamingClanMissing" text="主导家族为空，无法请求命名。" />
+  <string id="AF_UI_KingdomRebellion_NamingFailureDetailsSuffix" text=" 最后一次失败详情已显示在左下角消息并写入日志。" />
+  <string id="AF_UI_KingdomRebellion_NamingFailureNoRetry" text="叛乱建国命名未能完成，已中止本次建国。" />
+  <string id="AF_UI_KingdomRebellion_NamingFailureRetried" text="叛乱建国命名已连续自动重试 {ATTEMPTS}/{MAX} 次仍失败，已中止本次建国。" />
+  <string id="AF_UI_KingdomRebellion_NamingFailureRetrySuffix" text=" 请重新填写事件/叛乱 API 信息后再试。" />
+  <string id="AF_UI_KingdomRebellion_NamingRetryBackgroundFailurePrefix" text="叛乱建国命名重试后台任务异常：" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingEncyclopedia" text="{FORMAL}由{CLAN}家族在反抗{OLD_KINGDOM}的内战中建立。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionChanceMissed" text="{KINGDOM}本周叛乱抽签未命中。当前档位“{TIER}”，概率 {CHANCE}，本次掷值 {ROLL}。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionDisabled" text="王国稳定度与叛乱功能已在 MCM 中关闭，跳过叛乱判定。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionEliminated" text="{KINGDOM}已灭亡，跳过叛乱判定。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionExpectedFollowers" text="；预计跟随家族 {FOLLOWERS}。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionLeaderMissing" text="{KINGDOM}当前缺少有效领袖，跳过叛乱判定。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoCandidate" text="{KINGDOM}当前没有满足条件的带城叛乱候选家族。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoChance" text="{KINGDOM}当前稳定度为“{TIER}”，本周没有叛乱概率。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoExpectedFollowers" text="；当前没有会联合响应的其他家族。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionPlayerImmune" text="{KINGDOM}当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，跳过本模组稳定度叛乱判定。" />
+  <string id="AF_UI_KingdomRebellion_ResolutionPreview" text="当前最可能反出的家族是 {CLAN}（关系 {RELATION}，评分 {SCORE}）{FOLLOWERS}" />
+  <string id="AF_UI_KingdomRebellion_ResolutionTargetMissing" text="找不到目标王国。" />
+  <string id="AF_UI_KingdomRebellion_DefaultName" text="{CLAN}同盟" />
   <string id="AF_UI_KingdomStability_NoKingdoms" text="当前没有可测试的王国。" />
   <string id="AF_UI_KingdomStability_Back" text="返回" />
   <string id="AF_UI_KingdomStability_LabDescription" text="这里用于实验王国稳定度与带城反出逻辑。" />
