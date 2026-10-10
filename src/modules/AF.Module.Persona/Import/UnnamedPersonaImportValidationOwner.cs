@@ -45,7 +45,7 @@ internal static class UnnamedPersonaImportValidationOwner
 		{
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				error = "导入失败：找不到导出目录。";
+				error = PersonaUiTexts.Text("AF_PERSONA_UI_ImportMissingDirectory", "Import failed: the export directory could not be found.");
 				return false;
 			}
 			List<string> source = new List<string>
@@ -81,12 +81,12 @@ internal static class UnnamedPersonaImportValidationOwner
 					{
 						if (!hashSet.Add(text))
 						{
-							error = "导入失败：导入文件夹中存在重复 Key（" + text + "）。";
+							error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportDuplicateFolderKey", "Import failed: the import folder contains a duplicate Key ({KEY}).", ("KEY", text));
 							return false;
 						}
 						if (hasExistingKey(text))
 						{
-							error = "导入失败：Key 冲突（" + text + "）。当前游戏已存在该 Key，禁止导入覆盖。";
+							error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportExistingKeyConflict", "Import failed: Key conflict ({KEY}). The current game already contains this Key; import cannot overwrite it.", ("KEY", text));
 							return false;
 						}
 					}
@@ -96,7 +96,7 @@ internal static class UnnamedPersonaImportValidationOwner
 		}
 		catch (Exception ex)
 		{
-			error = "导入失败：Key 校验异常：" + ex.Message;
+			error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportValidationException", "Import failed: Key validation exception: {ERROR}", ("ERROR", ex.Message));
 			return false;
 		}
 	}
