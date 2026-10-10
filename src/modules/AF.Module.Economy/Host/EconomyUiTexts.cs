@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using TaleWorlds.Localization;
 
 namespace AnimusForge;
@@ -334,4 +335,442 @@ internal static class EconomyUiTexts
 	public static string PartyTransferBatchSummary(object attempted, object succeeded, object failed, object units, object value)
 		=> Text("AF_ECO_UI_PartyTransferBatchSummary", "Party and prisoner transfer: attempted {ATTEMPTED}, succeeded {SUCCEEDED}, failed or partial {FAILED}; transferred {UNITS} units; estimated value {VALUE} denars.",
 			("ATTEMPTED", attempted), ("SUCCEEDED", succeeded), ("FAILED", failed), ("UNITS", units), ("VALUE", value));
+
+	public static string LetterDefaultTitle => Text("AF_ECO_UI_LetterDefaultTitle", "Letter");
+
+	public static string ViewLetterTitle => Text("AF_ECO_UI_ViewLetterTitle", "View Letter");
+
+	public static string PopupCloseButton => Text("AF_ECO_UI_PopupCloseButton", "Close");
+
+	public static string RpItemDefaultTitle => Text("AF_ECO_UI_RpItemDefaultTitle", "RP Item");
+
+	public static string ViewRpItemIntroductionTitle => Text("AF_ECO_UI_ViewRpItemIntroductionTitle", "View Item Description");
+
+	public static string RpItemIntroductionPending => Text("AF_ECO_UI_RpItemIntroductionPending", "Item description is generating, please check back later.");
+
+	public static string RpItemIntroductionEmpty => Text("AF_ECO_UI_RpItemIntroductionEmpty", "This RP item has no description yet.");
+
+	public static string PlayerRpCraftFailedFallback => Text("AF_ECO_UI_RpForgeFailed", "Crafting failed.");
+
+	public static string PlayerRpCraftFailedWithException(object error)
+		=> Text("AF_ECO_UI_RpForgeFailedException", "Crafting failed: {ERROR}", ("ERROR", error));
+
+	public static string PlayerRpCraftRollbackIncomplete(object issues)
+		=> Text("AF_ECO_UI_RpForgeRollbackIncomplete", "Item rollback was not fully completed: {ISSUES}", ("ISSUES", issues));
+
+	public static string PlayerRpCraftRollbackCleaned => Text("AF_ECO_UI_RpForgeRollbackCleaned", "Cleaned up the generated item, records, and runtime caches.");
+
+	public static string PlayerRpCraftRefundNoCharge => Text("AF_ECO_UI_RpForgeRefundNoCharge", "No denars were deducted; no refund needed.");
+
+	public static string PlayerRpCraftRefundFull(object amount)
+		=> Text("AF_ECO_UI_RpForgeRefundFull", "Fully refunded {AMOUNT} denars.", ("AMOUNT", amount));
+
+	public static string FixedAssetStatusForDisplay(string status)
+	{
+		string value = (status ?? string.Empty).Trim();
+		if (string.IsNullOrEmpty(value))
+		{
+			return string.Empty;
+		}
+
+		if (string.Equals(value, "执行失败：缺少转移双方。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetMissingParties", "Missing transfer counterparties.");
+		}
+		if (string.Equals(value, "执行失败：后处理仅允许 NPC 向玩家转移固定资产。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetNpcOnly", "Postprocess only allows NPCs to transfer fixed assets to the player.");
+		}
+		if (string.Equals(value, "执行失败：家族成员或同伴不允许通过固定资产转移。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetClanMemberBlocked", "Clan members or companions cannot be transferred via fixed assets.");
+		}
+		if (string.Equals(value, "执行失败：缺少可转移固定资产。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetMissingAsset", "Missing transferable fixed asset.");
+		}
+		if (string.Equals(value, "执行失败：未知固定资产类型。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetUnknownType", "Unknown fixed asset type.");
+		}
+		if (string.Equals(value, "执行失败：固定资产数量必须为 1。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetQuantityMustBeOne", "Fixed asset quantity must be 1.");
+		}
+		if (string.Equals(value, "执行失败：目标接收方没有合法家族。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetTargetNoClan", "Target recipient does not have a valid clan.");
+		}
+		if (string.Equals(value, "执行失败：缺少工坊接收者。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetWorkshopMissingRecipient", "Missing workshop recipient.");
+		}
+		if (string.Equals(value, "执行失败：工坊接收者不是有效存活英雄。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetWorkshopRecipientInvalid", "Workshop recipient is not a valid living hero.");
+		}
+		if (string.Equals(value, "执行失败：缺少商队接收者。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FixedAssetCaravanMissingRecipient", "Missing caravan recipient.");
+		}
+
+		const string notFoundPrefix = "执行失败：未找到可转移的固定资产（";
+		if (value.StartsWith(notFoundPrefix, StringComparison.Ordinal) && value.EndsWith("）。", StringComparison.Ordinal))
+		{
+			string token = value.Substring(notFoundPrefix.Length, value.Length - notFoundPrefix.Length - 2);
+			return Text("AF_ECO_UI_FixedAssetNotFound", "No transferable fixed asset was found ({TOKEN}).", ("TOKEN", token));
+		}
+
+		const string unknownDirPrefix = "执行失败：未知固定资产转移方向 ";
+		if (value.StartsWith(unknownDirPrefix, StringComparison.Ordinal) && value.EndsWith("。", StringComparison.Ordinal))
+		{
+			string dir = value.Substring(unknownDirPrefix.Length, value.Length - unknownDirPrefix.Length - 1);
+			return Text("AF_ECO_UI_FixedAssetUnknownDirection", "Unknown fixed asset transfer direction ({DIRECTION}).", ("DIRECTION", dir));
+		}
+
+		const string exPrefix = "执行失败（异常）：";
+		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
+		{
+			string err = value.Substring(exPrefix.Length);
+			return Text("AF_ECO_UI_FixedAssetException", "Transfer failed with an error: {ERROR}", ("ERROR", err));
+		}
+
+		const string succSettlementPlayerPrefix = "执行成功：";
+		const string succSettlementPlayerSuffix = " 已转交给玩家家族（未自动扣款）。";
+		if (value.StartsWith(succSettlementPlayerPrefix, StringComparison.Ordinal) && value.EndsWith(succSettlementPlayerSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(succSettlementPlayerPrefix.Length, value.Length - succSettlementPlayerPrefix.Length - succSettlementPlayerSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetSettlementToPlayer", "{ASSET} was transferred to the player's clan (payment not automatically deducted).", ("ASSET", asset));
+		}
+
+		Match mSettlementNpc = Regex.Match(value, @"^执行成功：玩家已将 (.+) 转交给 (.+) 的家族（未自动扣款）。$");
+		if (mSettlementNpc.Success)
+		{
+			return Text("AF_ECO_UI_FixedAssetSettlementToNpc", "Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted).", ("ASSET", mSettlementNpc.Groups[1].Value), ("GIVER", mSettlementNpc.Groups[2].Value));
+		}
+
+		const string succAssetPlayerSuffix = " 已转交给玩家（未自动扣款）。";
+		if (value.StartsWith(succSettlementPlayerPrefix, StringComparison.Ordinal) && value.EndsWith(succAssetPlayerSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(succSettlementPlayerPrefix.Length, value.Length - succSettlementPlayerPrefix.Length - succAssetPlayerSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetAssetToPlayer", "{ASSET} was transferred to the player (payment not automatically deducted).", ("ASSET", asset));
+		}
+
+		Match mAssetNpc = Regex.Match(value, @"^执行成功：玩家已将 (.+) 转交给 (.+)（未自动扣款）。$");
+		if (mAssetNpc.Success)
+		{
+			return Text("AF_ECO_UI_FixedAssetAssetToNpc", "Player transferred {ASSET} to {GIVER} (payment not automatically deducted).", ("ASSET", mAssetNpc.Groups[1].Value), ("GIVER", mAssetNpc.Groups[2].Value));
+		}
+
+		const string skipClanPrefix = "执行跳过：";
+		const string skipClanSuffix = " 已经属于目标家族。";
+		if (value.StartsWith(skipClanPrefix, StringComparison.Ordinal) && value.EndsWith(skipClanSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(skipClanPrefix.Length, value.Length - skipClanPrefix.Length - skipClanSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetAlreadyTargetClan", "{ASSET} already belongs to the target clan.", ("ASSET", asset));
+		}
+
+		const string skipPersonSuffix = " 已经属于目标人物。";
+		if (value.StartsWith(skipClanPrefix, StringComparison.Ordinal) && value.EndsWith(skipPersonSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(skipClanPrefix.Length, value.Length - skipClanPrefix.Length - skipPersonSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetAlreadyTargetPerson", "{ASSET} already belongs to the target character.", ("ASSET", asset));
+		}
+
+		const string failPrefix = "执行失败：";
+		const string notFortSuffix = " 不是可转移的城市或城堡。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notFortSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notFortSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNotFortification", "{ASSET} is not a transferable town or castle.", ("ASSET", asset));
+		}
+
+		const string noOwnerSuffix = " 当前没有可识别的合法归属。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(noOwnerSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - noOwnerSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNoValidOwner", "{ASSET} has no recognized valid owner.", ("ASSET", asset));
+		}
+
+		const string underSiegeSuffix = " 当前处于战事或围攻状态，不能转移。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(underSiegeSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - underSiegeSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetUnderSiege", "{ASSET} is currently in battle or under siege and cannot be transferred.", ("ASSET", asset));
+		}
+
+		Match mNotGiverClan = Regex.Match(value, @"^执行失败：(.+) 不属于 (.+) 的家族，不能由其转给玩家。$");
+		if (mNotGiverClan.Success)
+		{
+			return Text("AF_ECO_UI_FixedAssetNotGiverClan", "{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player.", ("ASSET", mNotGiverClan.Groups[1].Value), ("GIVER", mNotGiverClan.Groups[2].Value));
+		}
+
+		const string notPlayerClanSuffix = " 当前不属于玩家家族。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notPlayerClanSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notPlayerClanSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNotPlayerClan", "{ASSET} currently does not belong to the player's clan.", ("ASSET", asset));
+		}
+
+		const string notWorkshopSuffix = " 不是可安全转移的工坊。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notWorkshopSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notWorkshopSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNotWorkshop", "{ASSET} is not a workshop that can be safely transferred.", ("ASSET", asset));
+		}
+
+		const string noWorkshopOwnerSuffix = " 当前没有可识别的工坊主人。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(noWorkshopOwnerSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - noWorkshopOwnerSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNoWorkshopOwner", "{ASSET} currently has no recognized workshop owner.", ("ASSET", asset));
+		}
+
+		const string workshopOwnerDeadSuffix = " 当前工坊主人无效或已死亡。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(workshopOwnerDeadSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - workshopOwnerDeadSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetWorkshopOwnerDead", "{ASSET}'s current workshop owner is invalid or deceased.", ("ASSET", asset));
+		}
+
+		Match mNotGiver = Regex.Match(value, @"^执行失败：(.+) 不属于 (.+)，不能由其转给玩家。$");
+		if (mNotGiver.Success)
+		{
+			return Text("AF_ECO_UI_FixedAssetNotGiver", "{ASSET} does not belong to {GIVER} and cannot be transferred to the player.", ("ASSET", mNotGiver.Groups[1].Value), ("GIVER", mNotGiver.Groups[2].Value));
+		}
+
+		const string notPlayerSuffix = " 当前不属于玩家本人。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notPlayerSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notPlayerSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNotPlayer", "{ASSET} currently does not belong to the player.", ("ASSET", asset));
+		}
+
+		const string notCaravanSuffix = " 不是可转移商队。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notCaravanSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notCaravanSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetNotCaravan", "{ASSET} is not a transferable caravan.", ("ASSET", asset));
+		}
+
+		const string caravanEventSuffix = " 当前处于事件或战斗中，不能转移。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanEventSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanEventSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetCaravanInEvent", "{ASSET} is currently in an event or battle and cannot be transferred.", ("ASSET", asset));
+		}
+
+		const string caravanOwnerDeadSuffix = " 当前商队主人无效或已死亡。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanOwnerDeadSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanOwnerDeadSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetCaravanOwnerDead", "{ASSET}'s current caravan owner is invalid or deceased.", ("ASSET", asset));
+		}
+
+		const string caravanNoHomeSuffix = " 缺少可用的商队归属定居点。";
+		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanNoHomeSuffix, StringComparison.Ordinal))
+		{
+			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanNoHomeSuffix.Length);
+			return Text("AF_ECO_UI_FixedAssetCaravanNoHomeSettlement", "{ASSET} lacks an available home settlement for the caravan.", ("ASSET", asset));
+		}
+
+		return status ?? string.Empty;
+	}
+
+	public static string KingdomTransferStatusForDisplay(string status)
+	{
+		string value = (status ?? string.Empty).Trim();
+		if (string.IsNullOrEmpty(value))
+		{
+			return string.Empty;
+		}
+
+		if (string.Equals(value, "执行失败：未找到玩家家族。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_KingdomTransferPlayerClanNotFound", "Player clan was not found.");
+		}
+		if (string.Equals(value, "执行失败：当前对话对象不是可让位的王国国王。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_KingdomTransferNotKing", "The conversation partner is not a reigning king who can abdicate.");
+		}
+		if (string.Equals(value, "执行失败：当前对话对象没有有效王国。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_KingdomTransferNoKingdom", "The conversation partner has no valid kingdom.");
+		}
+		if (string.Equals(value, "执行失败：玩家家族不能通过对方让位重复取得王位。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_KingdomTransferAlreadyKing", "The player's clan cannot reacquire the crown through abdication.");
+		}
+
+		Match mSkip = Regex.Match(value, @"^执行跳过：(.+) 已经是 (.+) 的执政家族。$");
+		if (mSkip.Success)
+		{
+			return Text("AF_ECO_UI_KingdomTransferAlreadyRuling", "{CLAN} is already the ruling clan of {KINGDOM}.", ("CLAN", mSkip.Groups[1].Value), ("KINGDOM", mSkip.Groups[2].Value));
+		}
+
+		Match mNotKing = Regex.Match(value, @"^执行失败：(.+) 不是 (.+) 的国王，不能让出王位。$");
+		if (mNotKing.Success)
+		{
+			return Text("AF_ECO_UI_KingdomTransferPartnerNotKing", "{GIVER} is not the king of {KINGDOM} and cannot abdicate.", ("GIVER", mNotKing.Groups[1].Value), ("KINGDOM", mNotKing.Groups[2].Value));
+		}
+
+		Match mJoinFailed = Regex.Match(value, @"^执行失败：玩家家族未能加入 (.+)，王位没有转移。$");
+		if (mJoinFailed.Success)
+		{
+			return Text("AF_ECO_UI_KingdomTransferJoinFailed", "The player's clan failed to join {KINGDOM}; the crown was not transferred.", ("KINGDOM", mJoinFailed.Groups[1].Value));
+		}
+
+		Match mSuccess = Regex.Match(value, @"^执行成功：(.+) 已将 (.+) 的王位让给(.+)，(.+) 成为新的执政家族.*。$");
+		if (mSuccess.Success)
+		{
+			return Text("AF_ECO_UI_KingdomTransferSuccess", "{GIVER} has abdicated the throne of {KINGDOM} to {PLAYER}; {CLAN} is now the ruling clan.",
+				("GIVER", mSuccess.Groups[1].Value), ("KINGDOM", mSuccess.Groups[2].Value), ("PLAYER", mSuccess.Groups[3].Value), ("CLAN", mSuccess.Groups[4].Value));
+		}
+
+		const string exPrefix = "执行失败（异常）：";
+		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_KingdomTransferException", "Kingdom transfer failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));
+		}
+
+		return status ?? string.Empty;
+	}
+
+	public static string FactionIdentityStatusForDisplay(string status)
+	{
+		string value = (status ?? string.Empty).Trim();
+		if (string.IsNullOrEmpty(value))
+		{
+			return string.Empty;
+		}
+
+		if (string.Equals(value, "执行失败：只有被招揽家族的现任族长才能代表全族归附。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionOnlyLeaderCanPledge", "Only the active clan leader can pledge the entire clan.");
+		}
+		if (string.Equals(value, "执行失败：玩家当前没有可接纳该家族的有效王国。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionNoKingdomToAccept", "The player currently has no valid kingdom to accept the clan.");
+		}
+		if (string.Equals(value, "执行失败：玩家不是所属王国的统治者，不能在城堡现场直接批准全族归附。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionPlayerNotRuler", "The player is not the ruler of the kingdom and cannot approve clan allegiance directly.");
+		}
+		if (string.Equals(value, "执行失败：目标王国无效或已经灭亡。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionTargetKingdomInvalid", "The target kingdom is invalid or has been eliminated.");
+		}
+		if (string.Equals(value, "执行失败：未找到当前NPC所属家族。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionNpcClanNotFound", "The NPC's clan could not be found.");
+		}
+		if (string.Equals(value, "执行失败：玩家家族不能通过当前NPC重复归附其他王国。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionCannotRePledgePlayerClan", "The player's clan cannot re-pledge allegiance through this NPC.");
+		}
+		if (string.Equals(value, "执行失败：只有当前家族族长本人才能代表全族选择效忠王国。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionOnlyClanLeaderCanChoose", "Only the clan leader can pledge the clan's allegiance to a kingdom.");
+		}
+		if (string.Equals(value, "执行失败：玩家当前未加入任何势力，无需退出。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionPlayerNotInKingdom", "The player is not currently part of any faction.");
+		}
+		if (string.Equals(value, "执行失败：玩家当前没有可供目标家族加入的王国。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionNoKingdomForTarget", "The player currently has no kingdom for the target clan to join.");
+		}
+		if (string.Equals(value, "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionPartnerNotVassal", "The conversation partner is not a vassal of this faction and cannot sign a mercenary contract.");
+		}
+		if (string.Equals(value, "执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionPlayerAlreadyVassal", "The player is already a vassal of a kingdom and cannot join as a mercenary.");
+		}
+		if (string.Equals(value, "执行失败：只有目标王国的国王才能授予正式封臣身份。", StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionOnlyKingGrantsVassalage", "Only the king of the target kingdom can grant official vassalage.");
+		}
+
+		Match mSkipPledge = Regex.Match(value, @"^执行跳过：(.+) 已经效力于 (.+?)[。]?$");
+		if (mSkipPledge.Success)
+		{
+			return Text("AF_ECO_UI_FactionAlreadyServesKingdom", "{CLAN} already serves {KINGDOM}.", ("CLAN", mSkipPledge.Groups[1].Value), ("KINGDOM", mSkipPledge.Groups[2].Value));
+		}
+
+		Match mClanDead = Regex.Match(value, @"^执行失败：(.+) 已经灭亡或不可用。$");
+		if (mClanDead.Success)
+		{
+			return Text("AF_ECO_UI_FactionClanEliminated", "{CLAN} has been eliminated or is unavailable.", ("CLAN", mClanDead.Groups[1].Value));
+		}
+
+		Match mClanJoinFail = Regex.Match(value, @"^执行失败：(.+) 未能加入 (.+?)[。]?$");
+		if (mClanJoinFail.Success)
+		{
+			return Text("AF_ECO_UI_FactionClanJoinFailed", "{CLAN} failed to join {KINGDOM}.", ("CLAN", mClanJoinFail.Groups[1].Value), ("KINGDOM", mClanJoinFail.Groups[2].Value));
+		}
+
+		Match mMercToLord = Regex.Match(value, @"^执行成功：(.+) 已结束旧雇佣关系，并作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		if (mMercToLord.Success)
+		{
+			return Text("AF_ECO_UI_FactionMercToLordSuccess", "{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord.", ("CLAN", mMercToLord.Groups[1].Value), ("KINGDOM", mMercToLord.Groups[2].Value));
+		}
+
+		Match mDefectToLord = Regex.Match(value, @"^执行成功：(.+) 已脱离 (.+?)，并作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		if (mDefectToLord.Success)
+		{
+			return Text("AF_ECO_UI_FactionDefectToLordSuccess", "{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord.", ("CLAN", mDefectToLord.Groups[1].Value), ("OLD_KINGDOM", mDefectToLord.Groups[2].Value), ("KINGDOM", mDefectToLord.Groups[3].Value));
+		}
+
+		Match mJoinAsLord = Regex.Match(value, @"^执行成功：(.+) 已作为领主加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		if (mJoinAsLord.Success)
+		{
+			return Text("AF_ECO_UI_FactionJoinAsLordSuccess", "{CLAN} joined {KINGDOM} as a lord.", ("CLAN", mJoinAsLord.Groups[1].Value), ("KINGDOM", mJoinAsLord.Groups[2].Value));
+		}
+
+		Match mEndMerc = Regex.Match(value, @"^执行成功：玩家已结束与 (.+) 的雇佣兵契约。$");
+		if (mEndMerc.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerEndMercSuccess", "The player ended their mercenary contract with {KINGDOM}.", ("KINGDOM", mEndMerc.Groups[1].Value));
+		}
+
+		Match mLeaveVassal = Regex.Match(value, @"^执行成功：玩家已退出 (.+)，不再是其正式封臣。$");
+		if (mLeaveVassal.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerLeaveVassalSuccess", "The player left {KINGDOM} and is no longer an official vassal.", ("KINGDOM", mLeaveVassal.Groups[1].Value));
+		}
+
+		Match mJoinMerc = Regex.Match(value, @"^执行成功：玩家已作为雇佣兵加入 (.+?)(?:（KingdomId=.*）.*|。)$");
+		if (mJoinMerc.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerJoinMercSuccess", "The player joined {KINGDOM} as a mercenary.", ("KINGDOM", mJoinMerc.Groups[1].Value));
+		}
+
+		Match mAlreadyVassal = Regex.Match(value, @"^执行跳过：玩家已是 (.+) 的正式封臣。$");
+		if (mAlreadyVassal.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerAlreadyVassalSkip", "The player is already an official vassal of {KINGDOM}.", ("KINGDOM", mAlreadyVassal.Groups[1].Value));
+		}
+
+		Match mFailVassal = Regex.Match(value, @"^执行失败：玩家未能成为 (.+) 的正式封臣。$");
+		if (mFailVassal.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerFailVassal", "The player failed to become an official vassal of {KINGDOM}.", ("KINGDOM", mFailVassal.Groups[1].Value));
+		}
+
+		Match mJoinVassal = Regex.Match(value, @"^执行成功：玩家已加入 (.+?) 成为正式封臣(?:（KingdomId=.*）.*|。)$");
+		if (mJoinVassal.Success)
+		{
+			return Text("AF_ECO_UI_FactionPlayerJoinVassalSuccess", "The player joined {KINGDOM} as an official vassal.", ("KINGDOM", mJoinVassal.Groups[1].Value));
+		}
+
+		const string exPrefix = "执行失败（异常）：";
+		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
+		{
+			return Text("AF_ECO_UI_FactionException", "Faction action failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));
+		}
+
+		return status ?? string.Empty;
+	}
 }
