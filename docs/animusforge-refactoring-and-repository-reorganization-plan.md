@@ -9268,3 +9268,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 上轮 Stage 因并行构建覆盖共享产物而未完成。本轮确认无并行dotnet后，把不完整Stage保存在同证据目录 `previous-incomplete-stage/`，由原脚本完整重建并校验；保留其他任务的提交与改动。
 - 安装目标 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；原脚本成功更新9个受管文件。部署后3381个Stage/安装文件逐项SHA-256一致；私有Recovery `deploy-3f90b2d9e9a54c04a02a7cc833682313` 的complete标记、9旧文件备份SHA与manifest一致。原脚本仅更新Stage清单文件，ONNX与未知清单外文件保留；未另行扫描前后全目录，因此不声称独立验证所有未知文件的字节保持。
 - 未启动游戏、实机、真实LLM、旧存档、全仓回归、打包或推送。安装回退使用上述私有Recovery逐文件恢复；不hard-reset或改写Git历史。本次部署接续相关产品条目的安装状态，保留原有LIVE_PENDING与专项未覆盖边界。
+
+<a id="tts-agent-plan-20261011"></a>
+## 2026-10-11：Agent Plan HTTP TTS 地址兼容（ACTIVE）
+
+- 最新请求：“将这个兼容问题补齐”；工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / main，基线 `c8389bdfa`，初始工作区干净。普通V3路径已支持；Agent Plan官方HTTP路径 `/api/v3/plan/tts/unidirectional` 被 `VolcTtsGateway.GetVersion` 的其他V3拒绝分支拦截。官方依据为 https://docs.volcengine.com/docs/ark/agent-plan-personal-voice-model?lang=zh ，用户控制台截图与之匹配。
+- 范围：明确识别这一个套餐HTTP路径并复用既有V3 transport；更新MCM/终端地址与凭据说明、已有TTS回放。不改V1默认值、凭据保存键、音色映射、PCM/WAV播放、口型、重试/取消/超时或存档，不放行WS/SSE/ASR等其他路径。每次合成/测试预检只增加一次有界字符串比较，无新增Tick、扫描、反射或缓存责任。
+- 完成门：原生产消费者的套餐无AppID按钮/队列回归、实际候选DLL的loopback协议与负向路由检查、1.3/1.4+Bootstrap及双Coup门禁；沿本会话授权部署当前修复到本地统一模块并核对hash与备份。未授权推送、打包或真实收费API调用；实机语音由用户保存配置后验收。
