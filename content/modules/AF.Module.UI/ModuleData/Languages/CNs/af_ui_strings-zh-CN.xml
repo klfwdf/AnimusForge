@@ -3200,5 +3200,6 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomRebellion_ReasonTargetChanged" text="目标王国或家族状态已变化" />
   <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="玩家王国稳定度叛乱免疫" />
   <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="跳过了叛乱建国命名" />
+  <string id="AF_UI_Editor_OpenFailed" text="文本编辑器未能打开，请关闭后重试。" />
 </strings>
 </base>

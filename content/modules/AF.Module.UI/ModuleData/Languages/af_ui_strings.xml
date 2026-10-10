@@ -3169,5 +3169,6 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomRebellion_ReasonTargetChanged" text="the target kingdom or clan changed" />
   <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="player-kingdom stability rebellion immunity is enabled" />
   <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="the rebel kingdom naming was skipped" />
+  <string id="AF_UI_Editor_OpenFailed" text="The text editor could not be opened. Close it and try again." />
 </strings>
 </base>
