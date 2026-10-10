@@ -210,5 +210,31 @@
     <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="Empty result" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="Fetch failed (HTTP {STATUS}): {BODY}" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="The API returned success, but no usable model data could be parsed." />
+    <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*Manual input*" />
+    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*Default (reuse conversation API)*" />
+    <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="Use the model selected in the Player2 app" />
+    <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 square)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 widescreen)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_PORTRAIT" text="720x1280 (9:16 character portrait)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_EPIC" text="1344x768 (7:4 epic widescreen)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_POSTER" text="1024x1536 (2:3 portrait poster)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_UHD" text="2048x2048 (1:1 ultra-high-definition square)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_DEFAULT" text="Default (omit parameter)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_STANDARD" text="standard (standard)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HD" text="hd (high detail)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_LOW" text="low (fastest generation)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_MEDIUM" text="medium (balanced)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HIGH" text="high (fine rendering)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_AUTO" text="auto (server decides)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CLASSIC" text="Classical oil painting (default)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_VIVID" text="vivid (vivid colors; API enum)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_NATURAL" text="natural (natural realism; API enum)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_DARK" text="Dark epic realism (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CINEMATIC" text="Cinematic lighting (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CUSTOM" text="Prompt (custom style)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_MOSAN" text="Mosan art: Meuse enamel decoration (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="Japanese semi-realistic narrative illustration (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="Standalone panel" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="Fullscreen overlay (default)" />
   </strings>
 </base>

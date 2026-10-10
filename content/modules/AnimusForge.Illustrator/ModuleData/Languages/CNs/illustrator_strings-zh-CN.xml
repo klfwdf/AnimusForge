@@ -210,5 +210,31 @@
     <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="空结果" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="拉取失败 (HTTP {STATUS}): {BODY}" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="接口返回成功，但未解析到可用模型数据。" />
+    <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*手动输入*" />
+    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*默认(复用正文API)*" />
+    <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="使用 Player2 应用中选择的模型" />
+    <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 方形)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 宽屏横幅)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_PORTRAIT" text="720x1280 (9:16 竖幅立绘)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_EPIC" text="1344x768 (7:4 史诗宽画幅)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_POSTER" text="1024x1536 (2:3 竖版海报)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_UHD" text="2048x2048 (1:1 超高清方形)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_DEFAULT" text="默认 (不传)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_STANDARD" text="standard (标准)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HD" text="hd (高清细节)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_LOW" text="low (低-最快出图)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_MEDIUM" text="medium (中等)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HIGH" text="high (高-精细渲染)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_AUTO" text="auto (交由服务端自动)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CLASSIC" text="古典油画（默认）" />
+    <string id="AF_ILL_UI_OPTION_STYLE_VIVID" text="vivid (鲜艳生动·API枚举)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_NATURAL" text="natural (自然真实·API枚举)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_DARK" text="暗黑史诗写实 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CINEMATIC" text="电影级光影 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CUSTOM" text="提示词 (自定义画风)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_MOSAN" text="莫桑艺术·默兹河珐琅彩饰 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="日系半写实叙事插画 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="独立面板" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="全屏覆盖（默认）" />
   </strings>
 </base>
