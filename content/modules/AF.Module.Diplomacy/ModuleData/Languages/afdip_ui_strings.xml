@@ -541,5 +541,16 @@
     <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="Only your clan can decide · You decide" />
     <string id="AF_DIP_UI_Vote_NoOtherVoters" text="No other clans are voting" />
     <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="The council has no trend yet (excluding you)" />
+    <string id="AF_DIP_UI_Annexation_Processing" text="Annexation paused: {TARGET} integration is already being processed." />
+    <string id="AF_DIP_UI_Annexation_NoClans" text="Annexation aborted: {TARGET} has no valid clans left to swear allegiance." />
+    <string id="AF_DIP_UI_Annexation_SettlementsPending" text="Annexation aborted: {TARGET} still has settlements awaiting transfer. The former kingdom was not dissolved to prevent ownership errors." />
+    <string id="AF_DIP_UI_Annexation_ClansPending" text="Annexation aborted: {TARGET} still has clans that have not completed their allegiance. The former kingdom was not dissolved to prevent clan ownership errors." />
+    <string id="AF_DIP_UI_Annexation_DestroyFailed" text="Annexation aborted: all clans of {TARGET} have sworn allegiance to {PLAYER}, but the former kingdom could not be dissolved." />
+    <string id="AF_DIP_UI_Annexation_Completed" text="Annexation complete: {TARGET} has joined {PLAYER}. All clans of {TARGET} have sworn allegiance to {PLAYER}; {TARGET} has ceased to exist." />
+    <string id="AF_DIP_UI_Annexation_NotPlayerRuler" text="Annexation not established: you must be the ruler of your own kingdom." />
+    <string id="AF_DIP_UI_Annexation_TargetInvalid" text="Annexation not established: the target kingdom does not exist or has already been eliminated." />
+    <string id="AF_DIP_UI_Annexation_SameKingdom" text="Annexation not established: you cannot annex your own kingdom." />
+    <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="Annexation not established: the other party cannot renounce the target kingdom's sovereignty without being its ruler." />
+    <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET} has joined your kingdom; its former vassalage treaties are now void." />
   </strings>
 </base>

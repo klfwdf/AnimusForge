@@ -69,7 +69,10 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		string targetId = (targetKingdom.StringId ?? "").Trim();
 		if (!_annexationsInProgress.Add(targetId))
 		{
-			statusText = "吞并暂缓：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "的并入政务正在处理中。";
+			statusText = DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Annexation_Processing",
+				"Annexation paused: {TARGET} integration is already being processed.",
+				("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")));
 			LogApplyReject("duplicate_in_progress", playerKingdom, targetKingdom, conversationHero);
 			return false;
 		}
@@ -86,7 +89,10 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 
 			if (targetClans.Count == 0)
 			{
-				statusText = "吞并中止：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "已无可宣誓效忠的有效家族。";
+				statusText = DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Annexation_NoClans",
+					"Annexation aborted: {TARGET} has no valid clans left to swear allegiance.",
+					("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")));
 				LogApplyReject("no_target_clans", playerKingdom, targetKingdom, conversationHero);
 				return false;
 			}
@@ -128,12 +134,18 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 
 			if (residualSettlements.Count > 0)
 			{
-				statusText = "吞并中止：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "仍有领地未完成移交。为避免领地归属出错，旧王国暂未解散。";
+				statusText = DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Annexation_SettlementsPending",
+					"Annexation aborted: {TARGET} still has settlements awaiting transfer. The former kingdom was not dissolved to prevent ownership errors.",
+					("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")));
 				return false;
 			}
 			if (remainingClans.Count > 0)
 			{
-				statusText = "吞并中止：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "仍有家族未完成效忠。为避免家族归属出错，旧王国暂未解散。";
+				statusText = DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Annexation_ClansPending",
+					"Annexation aborted: {TARGET} still has clans that have not completed their allegiance. The former kingdom was not dissolved to prevent clan ownership errors.",
+					("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")));
 				return false;
 			}
 
@@ -156,13 +168,19 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 			KingdomAnnexationDiagnosticLog.Event("destroy.finish.after", destroyFinishSnapshot);
 			if (!destroyOk)
 			{
-				statusText = "吞并中止：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "所有家族已向" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "效忠，但旧王国暂未能完成解散。";
+				statusText = DiplomacyUiLocalization.Format(
+					"AF_DIP_UI_Annexation_DestroyFailed",
+					"Annexation aborted: all clans of {TARGET} have sworn allegiance to {PLAYER}, but the former kingdom could not be dissolved.",
+					("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")),
+					("PLAYER", GetKingdomDisplayName(playerKingdom, "the player kingdom")));
 				return false;
 			}
 			MyBehavior.Instance?.CaptureWorldBulletinAnnexation(playerKingdom, targetKingdom, formerRuler, movedCount);
-			statusText = "吞并完成：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "已并入" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "。"
-				+ GetKingdomDisplayName(targetKingdom, "目标王国") + "所有家族已向" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "宣誓效忠，"
-				+ GetKingdomDisplayName(targetKingdom, "目标王国") + "就此灭亡。";
+			statusText = DiplomacyUiLocalization.Format(
+				"AF_DIP_UI_Annexation_Completed",
+				"Annexation complete: {TARGET} has joined {PLAYER}. All clans of {TARGET} have sworn allegiance to {PLAYER}; {TARGET} has ceased to exist.",
+				("TARGET", GetKingdomDisplayName(targetKingdom, "the target kingdom")),
+				("PLAYER", GetKingdomDisplayName(playerKingdom, "the player kingdom")));
 			return true;
 		}
 		finally
@@ -255,22 +273,22 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 	{
 		if (!IsValidKingdom(playerKingdom) || playerKingdom.RulingClan?.Leader?.IsAlive != true)
 		{
-			statusText = "吞并未成立：你必须是自己王国的国王。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_UI_Annexation_NotPlayerRuler", "Annexation not established: you must be the ruler of your own kingdom.");
 			return false;
 		}
 		if (!IsValidKingdom(targetKingdom))
 		{
-			statusText = "吞并未成立：目标王国不存在，或已经灭亡。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_UI_Annexation_TargetInvalid", "Annexation not established: the target kingdom does not exist or has already been eliminated.");
 			return false;
 		}
 		if (targetKingdom == playerKingdom)
 		{
-			statusText = "吞并未成立：不能吞并自己的王国。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_UI_Annexation_SameKingdom", "Annexation not established: you cannot annex your own kingdom.");
 			return false;
 		}
 		if (!IsKingdomRuler(conversationHero, targetKingdom))
 		{
-			statusText = "吞并未成立：对方无权代表目标王国放弃王权。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_UI_Annexation_TargetRulerRequired", "Annexation not established: the other party cannot renounce the target kingdom's sovereignty without being its ruler.");
 			return false;
 		}
 		statusText = "";
@@ -395,7 +413,8 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		KingdomAnnexationDiagnosticLog.Event("vassalage.cleanup.start", KingdomAnnexationDiagnosticLog.BuildVassalageCleanupSnapshot(targetKingdom, calledBreakAgreementsForAnnexedKingdom, 0, targetWasPlayerVassal, targetWasPlayerSuzerain, "before"));
 		try
 		{
-			int removed = VassalageBehavior.Instance?.BreakAgreementsForAnnexedKingdom(targetKingdom, "kingdom_annexation", GetKingdomDisplayName(targetKingdom, "目标王国") + "已并入你的王国，旧臣属条约随之作废。") ?? 0;
+			string targetName = GetKingdomDisplayName(targetKingdom, "the target kingdom");
+			int removed = VassalageBehavior.Instance?.BreakAgreementsForAnnexedKingdom(targetKingdom, "kingdom_annexation", DiplomacyUiLocalization.Format("AF_DIP_UI_Annexation_VassalageEndedReason", "{TARGET} has joined your kingdom; its former vassalage treaties are now void.", ("TARGET", targetName))) ?? 0;
 			KingdomAnnexationDiagnosticLog.Event("vassalage.cleanup.finish", KingdomAnnexationDiagnosticLog.BuildVassalageCleanupSnapshot(targetKingdom, calledBreakAgreementsForAnnexedKingdom, removed, targetWasPlayerVassal, targetWasPlayerSuzerain, "after"));
 			return removed;
 		}
