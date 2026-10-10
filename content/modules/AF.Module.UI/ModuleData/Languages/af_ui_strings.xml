@@ -3306,5 +3306,19 @@ Choose how to proceed:" />
   <string id="AF_UI_Weekly_Bulletin_KindKingdomAnnexed" text="Kingdom annexed" />
   <string id="AF_UI_Weekly_Bulletin_KindVassalageEstablished" text="Vassalage established" />
   <string id="AF_UI_Weekly_Bulletin_KindVassalageEnded" text="Vassalage ends" />
+  <string id="AF_UI_TagCatalog_VillageActionGatherElders" text="Gather elders" />
+  <string id="AF_UI_TagCatalog_VillageActionRestrainTroops" text="Enforce troop discipline" />
+  <string id="AF_UI_TagCatalog_VillageActionPacify" text="Pacify the village" />
+  <string id="AF_UI_TagCatalog_VillageActionRelief" text="Provide relief" />
+  <string id="AF_UI_TagCatalog_VillageActionFine" text="Levy fines" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionFood" text="Requisition food" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionProduce" text="Requisition produce" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionLivestock" text="Requisition livestock" />
+  <string id="AF_UI_TagCatalog_VillageActionLevyRecruits" text="Levy recruits" />
+  <string id="AF_UI_TagCatalog_VillageActionPunishRingleader" text="Punish the ringleader" />
+  <string id="AF_UI_TagCatalog_VillageActionConfiscateProperty" text="Confiscate village property" />
+  <string id="AF_UI_TagCatalog_VillageActionDestroyLivelihood" text="Destroy livelihoods" />
+  <string id="AF_UI_TagCatalog_VillageActionMassacre" text="Massacre" />
+  <string id="AF_UI_TagCatalog_VillageActionCulturalReform" text="Enforce cultural reform" />
 </strings>
 </base>

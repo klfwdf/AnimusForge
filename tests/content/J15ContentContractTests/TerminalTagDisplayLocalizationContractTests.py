@@ -85,10 +85,26 @@ def main():
         assert not re.search(r'[\u4e00-\u9fff]', value), key
         assert sorted(re.findall(r'\{[A-Z_]+\}', value)) == sorted(re.findall(r'\{[A-Z_]+\}', zh[key])), key
         keys.add(key)
-    assert len({key for key in keys if key.startswith('AF_UI_TagCatalog_')}) == 28
+    assert len({key for key in keys if key.startswith('AF_UI_TagCatalog_')}) == 42
+    village_actions = (
+        "GatherElders", "RestrainTroops", "Pacify", "Relief", "Fine", "RequisitionFood", "RequisitionProduce",
+        "RequisitionLivestock", "LevyRecruits", "PunishRingleader", "ConfiscateProperty", "DestroyLivelihood", "Massacre", "CulturalReform",
+    )
+    for action in village_actions:
+        assert f'case "{action}": return Text("AF_UI_TagCatalog_VillageAction{action}",' in helper
+    built_ins = catalog.split('private static void AddBuiltInEntries', 1)[1].split('private static void AddTag', 1)[0]
+    builtin_descriptions = (
+        ("不是动作标签。标签测试输入框里除动作标签外的文本会作为 NPC 可见正文显示或写入历史。", "AF_UI_TagCatalog_DescriptionBody"),
+        ("内部正文分隔标记。通常不是玩家手写动作标签。", "AF_UI_TagCatalog_DescriptionContent"),
+        ("玩家行为事实写入标记，用于告诉 LLM 已实际发生的玩家行为。", "AF_UI_TagCatalog_DescriptionPlayerFact"),
+        ("NPC行为事实写入标记，用于告诉 LLM 已实际发生的 NPC 行为。", "AF_UI_TagCatalog_DescriptionNpcFact"),
+    )
+    description_method = helper.split('internal static string Description(', 1)[1].split('private static string VillageActionDisplay', 1)[0]
+    for description, key in builtin_descriptions:
+        assert description in built_ins and f'case "{description}":' in description_method and key in description_method
     assert 'Title = BuildTagCatalogEntryTitle(entry)' in vm and 'Hint = BuildTagCatalogEntryHint(entry)' in vm
     assert 'BuildTagCatalogEntryDetailText(entry)' in vm and 'BuildExportText(snapshot, moduleRoot)' in catalog
-    print("PASS terminal tag static integration: 28 new keys + 3 reused; raw protocol/snapshot/cache/scan/sort/export mechanics exact inverse; raw and English search aliases present; unknown values retained; C#/game NOT-RUN")
+    print("PASS terminal tag static integration: 42 new keys + 3 reused; raw protocol/snapshot/cache/scan/sort/export mechanics exact inverse; raw and English search aliases present; unknown values retained; C#/game NOT-RUN")
 
 
 if __name__ == "__main__":
