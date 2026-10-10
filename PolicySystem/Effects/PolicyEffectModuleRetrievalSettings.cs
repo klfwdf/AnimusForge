@@ -17,6 +17,21 @@ internal enum PolicyEffectRetrievalContext
 	PlayerVassal
 }
 
+// Request-only value; never re-read mutable MCM settings after the draft await.
+internal sealed class PolicyEffectModuleRetrievalRequestSnapshot
+{
+	internal PolicyEffectModuleRetrievalRequestSnapshot(PolicyEffectRetrievalContext context, IEnumerable<string> enabledModuleIds, int requestedDetailCount)
+	{
+		Context = context;
+		EnabledModuleIds = Array.AsReadOnly((enabledModuleIds ?? Array.Empty<string>()).Distinct(StringComparer.Ordinal).ToArray());
+		RequestedDetailCount = requestedDetailCount;
+	}
+
+	internal PolicyEffectRetrievalContext Context { get; }
+	internal IReadOnlyList<string> EnabledModuleIds { get; }
+	internal int RequestedDetailCount { get; }
+}
+
 internal sealed class PolicyEffectModuleRetrievalState
 {
 	[JsonProperty("PlayerPolicyEnabled")]
@@ -97,6 +112,11 @@ internal static class PolicyEffectModuleRetrievalSettings
 		return snapshot.EnabledModules.TryGetValue(context, out IReadOnlyList<IPolicyEffectModule> modules)
 			? modules
 			: Array.Empty<IPolicyEffectModule>();
+	}
+
+	internal static PolicyEffectModuleRetrievalRequestSnapshot CaptureRequestSnapshot(PolicyEffectRetrievalContext context, int requestedDetailCount)
+	{
+		return new PolicyEffectModuleRetrievalRequestSnapshot(context, GetEnabledModules(context).Select(module => module.Id), requestedDetailCount);
 	}
 
 	internal static Dictionary<string, PolicyEffectModuleRetrievalState> CreateEditableStateSnapshot()
