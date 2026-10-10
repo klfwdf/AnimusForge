@@ -107,7 +107,7 @@ if (Test-Path -LiteralPath (Join-Path $ProjectRoot 'concurrent-edit')) {
 }
 function Assert-AnimusForgeCleanStage { param($ProjectRoot, $StageModuleDir, [switch]$RequireCurrentArtifacts) }
 function Write-ZipFromModule {
-    param($ModulePath, $PackageVersion, [switch]$AutoDetected)
+    param($ModulePath, $PackageVersion, $ProjectRoot, [switch]$AutoDetected)
     if ($script:FailZip) { throw 'injected ZIP failure' }
     Check ((Get-SubModuleVersion (Join-Path $ModulePath 'SubModule.xml')) -ceq $PackageVersion) 'Stage XML must already match the ZIP version.'
     $zipPath = Join-Path $RunRoot ('package-' + [guid]::NewGuid().ToString('N') + '.zip')
