@@ -1064,5 +1064,217 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin." />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="Your declaration has reached {RECEIVER}." />
+    <string id="AF_DIP_Prompt_Composer_000" text="player_diplomacy=true; Player-related diplomacy: autonomous AI limits on cooldowns, war count, civil war, round turns, action count, one action per target, and mandatory priority responses do not apply. Preserve all explicit actions and their order; do not refuse publication or alter demands because of these limits. Actual targets and source offers must still be accurate." />
+    <string id="AF_DIP_Prompt_Composer_001" text="Unknown" />
+    <string id="AF_DIP_Prompt_Composer_002" text="MODE=ROUND_PLAN in the final message determines the task and output structure." />
+    <string id="AF_DIP_Prompt_Composer_003" text="[Opening declaration]" />
+    <string id="AF_DIP_Prompt_Composer_004" text="Initiating kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_005" text="Title=" />
+    <string id="AF_DIP_Prompt_Composer_006" text="Body=" />
+    <string id="AF_DIP_Prompt_Composer_007" text="Explicitly addressed=" />
+    <string id="AF_DIP_Prompt_Composer_008" text="Mentioned=" />
+    <string id="AF_DIP_Prompt_Composer_009" text="Maximum total participants, including the initiator=" />
+    <string id="AF_DIP_Prompt_Composer_010" text="Candidate kingdoms:" />
+    <string id="AF_DIP_Prompt_Composer_011" text="  Policies=" />
+    <string id="AF_DIP_Prompt_Composer_012" text="Select participants for this event once, based on the opening diplomatic declaration and the candidates' actual interests. Observer kingdoms will not be repeatedly reassessed later." />
+    <string id="AF_DIP_Prompt_Composer_013" text="Any kingdom explicitly addressed by the declaration must participate. Select only kingdoms that will actually intervene in these negotiations, not mere observers or commentators. The participant count is a ceiling, not a quota; use only candidate IDs." />
+    <string id="AF_DIP_Prompt_Composer_014" text="The event's cause does not predetermine its outcome. Participants should be able to advance currently legal alliances, alliance termination, trade, trade termination, war declarations or peace, or propose, accept, reject or counter terms." />
+    <string id="AF_DIP_Prompt_Composer_015" text='Output only JSON: [[AF_JSON_OPEN]]"topic":"brief diplomatic issue","selected_kingdom_ids":["ID"],"reason":"brief reason"[[AF_JSON_CLOSE]]' />
+    <string id="AF_DIP_Prompt_Composer_016" text="[Current state for this diplomatic document]" />
+    <string id="AF_DIP_Prompt_Composer_017" text="Declarations in the long-term archive are published official documents, not live ruler chat. Draft a separate formal document for the current kingdom that can circulate independently. Meaningful negotiations are allowed, but do not repeat historical statements or reiterate positions without substance. Only mechanical diplomatic acts count as round action progress; negotiation statements do not extend the round indefinitely." />
+    <string id="AF_DIP_Prompt_Composer_018" text="Topic=" />
+    <string id="AF_DIP_Prompt_Composer_019" text="Document delivery and publication order=" />
+    <string id="AF_DIP_Prompt_Composer_020" text="Publisher of this document=" />
+    <string id="AF_DIP_Prompt_Composer_021" text=", authorizing ruler=" />
+    <string id="AF_DIP_Prompt_Composer_022" text="[Priority task: respond to the player kingdom's declaration]" />
+    <string id="AF_DIP_Prompt_Composer_023" text="The following declaration from the player kingdom has reached this court and directly addresses this kingdom. This document must respond to it directly instead of following the original document sequence to discuss other kingdoms: source=" />
+    <string id="AF_DIP_Prompt_Composer_024" text="|issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_025" text="|title=" />
+    <string id="AF_DIP_Prompt_Composer_026" text="|actions relevant to this kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_027" text="Choose a currently available action. If the player issued a condemnation or ultimatum, use comply_ultimatum only for unconditional submission. Any other actual action is settled as non-compliance, and the threat source fields must remain empty." />
+    <string id="AF_DIP_Prompt_Composer_028" text="Most recent document delivered to this court came from=" />
+    <string id="AF_DIP_Prompt_Composer_029" text="The sender is merely the source of the latest document, not a program-selected target. This kingdom must choose from the allowed action targets below." />
+    <string id="AF_DIP_Prompt_Composer_030" text="Allowed action targets=" />
+    <string id="AF_DIP_Prompt_Composer_031" text="Response to an original peace offer: target=" />
+    <string id="AF_DIP_Prompt_Composer_032" text="; choose only accept_peace to accept unchanged or reject_peace to explicitly reject. Do not add or modify terms or propose another peace plan." />
+    <string id="AF_DIP_Prompt_Composer_033" text="Multiple original peace offers include territorial cessions: accept at most one in this document; reject the others or leave them for the next document." />
+    <string id="AF_DIP_Prompt_Composer_034" text="This document must answer an original peace offer: source=" />
+    <string id="AF_DIP_Prompt_Composer_035" text="|proposing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_036" text="If statement is currently available, it represents a structured negotiation move, not a mechanical diplomatic act. Fill in negotiation_move and actually perform that move in the body; the document will still be delivered to the next kingdom on the original route. Do not pass vague positions off as new progress." />
+    <string id="AF_DIP_Prompt_Composer_037" text="For annexation, tribute, garrison or full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal. New offers include treaty_terms=[[AF_JSON_OPEN]]receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID[[AF_JSON_CLOSE]]; make these roles explicit in the body too. Accepting an original offer must bind responding_to_offer_document_id and responding_to_offer_action_id and adopt all original terms. withdraw_offer may only stand alone to withdraw a specific, unaccepted offer made by this kingdom; it cannot reverse effects that already occurred." />
+    <string id="AF_DIP_Prompt_Composer_038" text="Offer awaiting response=" />
+    <string id="AF_DIP_Prompt_Composer_040" text="|target kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_041" text="|source=" />
+    <string id="AF_DIP_Prompt_Composer_042" text="|response eligibility=this kingdom may accept or reject" />
+    <string id="AF_DIP_Prompt_Composer_043" text="|response eligibility=this kingdom is not the target and may not accept or reject; it may only make a new offer or choose another legal action" />
+    <string id="AF_DIP_Prompt_Composer_044" text="These negotiations have lasted=" />
+    <string id="AF_DIP_Prompt_Composer_045" text=" days; expected duration=" />
+    <string id="AF_DIP_Prompt_Composer_046" text=" days; time until expected closure=" />
+    <string id="AF_DIP_Prompt_Composer_047" text=" days; current document exchange stage=" />
+    <string id="AF_DIP_Prompt_Composer_048" text="The final stage has begun: choose a currently available action that can bring the situation to a conclusion." />
+    <string id="AF_DIP_Prompt_Composer_049" text="The round is in its later stages: prioritize resolving differences and reaching a definite outcome." />
+    <string id="AF_DIP_Prompt_Composer_050" text="[Known external developments in this diplomatic event]" />
+    <string id="AF_DIP_Prompt_Composer_051" text="[Recent relevant feasts]" />
+    <string id="AF_DIP_Prompt_Composer_052" text="Feasts are merely public developments that can be used or commented upon. They do not predetermine praise, mockery or hostility, nor do they automatically produce diplomatic outcomes." />
+    <string id="AF_DIP_Prompt_Composer_053" text="Targets to whom peace may currently be proposed=" />
+    <string id="AF_DIP_Prompt_Composer_054" text="[External diplomatic events that have already occurred]" />
+    <string id="AF_DIP_Prompt_Composer_055" text="This is a real event that this kingdom may use or respond to; it does not predetermine this kingdom's target, position or action." />
+    <string id="AF_DIP_Prompt_Composer_056" text="[Determine participants for this diplomatic event in the same response]" />
+    <string id="AF_DIP_Prompt_Composer_057" text="Based on the issuing kingdom's national profile and the actual current situation, independently choose one or more targets, actions and participating kingdoms. Use only candidate IDs and currently available actions for each target." />
+    <string id="AF_DIP_Prompt_Composer_058" text="Include round_plan in the same JSON. Maximum total participants, including the initiator=" />
+    <string id="AF_DIP_Prompt_Composer_059" text=". Directly addressed kingdoms must appear in selected_kingdom_ids. Select only kingdoms that actually need to join this ongoing document exchange; do not fill the quota." />
+    <string id="AF_DIP_Prompt_Composer_060" text="[Available diplomatic targets and immediate hard facts]" />
+    <string id="AF_DIP_Prompt_Composer_061" text="  War assessment=" />
+    <string id="AF_DIP_Prompt_Composer_062" text="Diplomatic activity is low: prefer lower-cost offers or responses, but still take at least one actual action." />
+    <string id="AF_DIP_Prompt_Composer_063" text="Diplomatic activity is high: seek opportunities to advance national goals more actively, but do not start wars without cause." />
+    <string id="AF_DIP_Prompt_Composer_064" text="Diplomatic activity is normal: balance national goals against the cost of responding." />
+    <string id="AF_DIP_Prompt_Composer_065" text="[Targets and legal actions for this document]" />
+    <string id="AF_DIP_Prompt_Composer_066" text="Primary target kingdom:" />
+    <string id="AF_DIP_Prompt_Composer_067" text="); ruler:" />
+    <string id="AF_DIP_Prompt_Composer_068" text="Legal actions for this document=" />
+    <string id="AF_DIP_Prompt_Composer_069" text=". Choose one of them." />
+    <string id="AF_DIP_Prompt_Composer_070" text="For the original peace offer, choose only accept_peace to accept unchanged or reject_peace to explicitly reject. Do not add or modify terms or propose another peace plan." />
+    <string id="AF_DIP_Prompt_Composer_073" text="The program has not locked in a target. Choose one or more legal candidates and perform one action per target." />
+    <string id="AF_DIP_Prompt_Composer_074" text="[External cause of this diplomatic event]" />
+    <string id="AF_DIP_Prompt_Composer_076" text="Feasts are merely public developments that rulers may use, assess or respond to. They do not predetermine a ruler's attitude or automatically produce diplomatic outcomes." />
+    <string id="AF_DIP_Prompt_Composer_078" text="Fill in round_plan while drafting the opening declaration. Maximum total participants, including the initiator=" />
+    <string id="AF_DIP_Prompt_Composer_079" text=". Kingdoms explicitly addressed by the declaration must be selected first. Select others only if they have real war, alliance, trade, security or political interests and can take diplomatic action; do not fill the roster merely for spectacle. Candidate summary:" />
+    <string id="AF_DIP_Prompt_Composer_080" text="The current diplomatic event has lasted " />
+    <string id="AF_DIP_Prompt_Composer_081" text=" days; the soft time scale is " />
+    <string id="AF_DIP_Prompt_Composer_082" text=" days." />
+    <string id="AF_DIP_Prompt_Composer_083" text="If statement is currently listed, you may perform a structured negotiation move. Fill in negotiation_move and introduce new substance; do not merely rephrase a position." />
+    <string id="AF_DIP_Prompt_Composer_084" text="When approaching or exceeding the soft time scale, choose a currently legal action that can conclude negotiations. Do not delay with empty declarations of a final position." />
+    <string id="AF_DIP_Prompt_Composer_085" text="The following public diplomatic declaration has been delivered. Respond using a currently legal action for this document." />
+    <string id="AF_DIP_Prompt_Composer_086" text="Source document ID:" />
+    <string id="AF_DIP_Prompt_Composer_087" text="; proposing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_088" text="; actions relevant to this kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_089" text="Original peace offer terms=" />
+    <string id="AF_DIP_Prompt_Composer_090" text="Original offer: source=" />
+    <string id="AF_DIP_Prompt_Composer_094" text="The target kingdom has not responded for some time. This document must still take an actual action; do not merely urge a response, complain or assume acceptance." />
+    <string id="AF_DIP_Prompt_Composer_095" text="Diplomatic activity is low: prefer restraint, caution and practical interests, but serious conflicts may still escalate." />
+    <string id="AF_DIP_Prompt_Composer_096" text="Diplomatic activity is high: more actively propose claims, cooperation or conflict plans that others can answer, but do not start wars without cause." />
+    <string id="AF_DIP_Prompt_Composer_097" text="Diplomatic activity is standard: act according to current interests and constraints." />
+    <string id="AF_DIP_Prompt_Composer_098" text="Issuing kingdom:" />
+    <string id="AF_DIP_Prompt_Composer_099" text="For annexation, tribute, garrison and full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal respectively. New offers must include treaty_terms=[[AF_JSON_OPEN]]receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID[[AF_JSON_CLOSE]]. Acceptance, rejection or withdrawal must accurately bind responding_to_offer_document_id and responding_to_offer_action_id. Use withdraw_offer only to withdraw this kingdom's own unaccepted original offer. The player's text is already public; ambiguity or an invalid action must not block the declaration." />
+    <string id="AF_DIP_Prompt_Composer_100" text="Direct subject kingdom IDs when this declaration was submitted (use release_subject for explicit release):" />
+    <string id="AF_DIP_Prompt_Composer_101" text="Candidate target kingdoms:" />
+    <string id="AF_DIP_Prompt_Composer_102" text="Current system candidate for primary target:" />
+    <string id="AF_DIP_Prompt_Composer_103" text="Unresolved original offers known to this kingdom: its own may be withdrawn; foreign offers may be accepted or rejected. Changed terms constitute a new offer." />
+    <string id="AF_DIP_Prompt_Composer_104" text="- Source=" />
+    <string id="AF_DIP_Prompt_Composer_105" text="|action=" />
+    <string id="AF_DIP_Prompt_Composer_106" text="|type=" />
+    <string id="AF_DIP_Prompt_Composer_108" text="|receiving kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_109" text="|treaty roles=" />
+    <string id="AF_DIP_Prompt_Composer_111" text="|summary=" />
+    <string id="AF_DIP_Prompt_Composer_112" text="|original terms=" />
+    <string id="AF_DIP_Prompt_Composer_113" text="|response=accept unchanged or explicitly reject" />
+    <string id="AF_DIP_Prompt_Composer_114" text="Other original offers are not listed; do not assume uniqueness or guess source IDs." />
+    <string id="AF_DIP_Prompt_Composer_115" text="Acceptance, rejection or withdrawal must bind the source document and action IDs. Acceptance inherits the original terms; changed terms are extracted as a new offer. Extract only the player's meaning here; do not judge the player's expression using round-turn limits. If there is only commentary and no actual action, return statement or condemn." />
+    <string id="AF_DIP_Prompt_Composer_116" text="This document responds to:" />
+    <string id="AF_DIP_Prompt_Composer_117" text="Actions relevant to this kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_119" text="Document title:" />
+    <string id="AF_DIP_Prompt_Composer_120" text="Document body:" />
+    <string id="AF_DIP_Prompt_Composer_122" text="[This kingdom's national prestige, international reputation trends and unresolved threats; internal dynamic facts: do not publish the numbers in the document]" />
+    <string id="AF_DIP_Prompt_Composer_123" text="Current national prestige=" />
+    <string id="AF_DIP_Prompt_Composer_124" text="National prestige measures whether this kingdom follows through on threats and commitments. Low prestige undermines the credibility of threats and dynamically reduces formal vassal clan leaders' relations with the ruler according to the prestige tier. Restored prestige removes this dynamic relation penalty." />
+    <string id="AF_DIP_Prompt_Composer_125" text="Current international reputation=" />
+    <string id="AF_DIP_Prompt_Composer_126" text="/100 (foreign public assessment tier=" />
+    <string id="AF_DIP_Prompt_Composer_127" text="); current natural trend=" />
+    <string id="AF_DIP_Prompt_Composer_128" text=". Use the exact value, tier and trend to plan how to maintain, repair or spend this strategic capital for core interests. When the actual situation allows it, you may proactively issue substantive declarations to maintain reputation. Do not stay silent, avoid legitimate positions, mechanically switch actions or publish empty rhetoric just for reputation." />
+    <string id="AF_DIP_Prompt_Composer_129" text="There are no recent settled international reputation events for this kingdom to review; do not invent reasons for gains or losses." />
+    <string id="AF_DIP_Prompt_Composer_130" text="Recent international reputation facts=" />
+    <string id="AF_DIP_Prompt_Composer_131" text="Recent national prestige settlement=" />
+    <string id="AF_DIP_Prompt_Composer_132" text="; reason=" />
+    <string id="AF_DIP_Prompt_Composer_133" text="Mandatory consequence notice:" />
+    <string id="AF_DIP_Prompt_Composer_134" text=") has decided not to comply with this kingdom's condemnation. This is this kingdom's next declaration after that condemnation. Prefer escalating to a war ultimatum against that kingdom (intent=ultimatum); otherwise 20 national prestige will be deducted immediately after publication. The ultimatum must continue the same military dispute and core demand, not switch issues. Original condemnation title=" />
+    <string id="AF_DIP_Prompt_Composer_135" text="; original condemnation summary=" />
+    <string id="AF_DIP_Prompt_Composer_137" text=") has decided not to comply with this kingdom's ultimatum. This is this kingdom's next declaration after that ultimatum. Prefer declaring war on that kingdom (intent=declare_war); otherwise 15 national prestige will be deducted immediately after publication. Still consider the consequences of war." />
+    <string id="AF_DIP_Prompt_Composer_138" text="This kingdom already has a pending " />
+    <string id="AF_DIP_Prompt_Composer_139" text=": target=" />
+    <string id="AF_DIP_Prompt_Composer_140" text=", source=" />
+    <string id="AF_DIP_Prompt_Composer_141" text=". The target kingdom has not yet published its one-time decision; do not repeat or escalate this threat before it does." />
+    <string id="AF_DIP_Prompt_Composer_142" text="Unresolved threat received by this kingdom:" />
+    <string id="AF_DIP_Prompt_Composer_143" text=": issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_144" text="; source=" />
+    <string id="AF_DIP_Prompt_Composer_145" text="; title=" />
+    <string id="AF_DIP_Prompt_Composer_146" text="; summary=" />
+    <string id="AF_DIP_Prompt_Composer_147" text=". Choosing intent=comply_ultimatum means unconditional submission. Any other intent means non-compliance, and the decision cannot later be reversed. Submission reduces this kingdom's national prestige and lowers every formal vassal clan's relation with the current ruling clan by 20, potentially leading to civil war. Weigh the costs and benefits against the situation, war, national character and long-term strategy." />
+    <string id="AF_DIP_Prompt_Composer_148" text="Attached policy condition: if this kingdom chooses comply_ultimatum, " />
+    <string id="AF_DIP_Prompt_Composer_149" text=" will be canceled by the game mechanism." />
+    <string id="AF_DIP_Prompt_Composer_150" text="Confirmed: " />
+    <string id="AF_DIP_Prompt_Composer_151" text=" has explicitly complied with this kingdom's previous " />
+    <string id="AF_DIP_Prompt_Composer_152" text=". Subsequent declarations need not declare war or escalate that threat further, and no national prestige will be deducted for it." />
+    <string id="AF_DIP_Prompt_Composer_153" text="The attached policy '" />
+    <string id="AF_DIP_Prompt_Composer_154" text="' has been canceled." />
+    <string id="AF_DIP_Prompt_Composer_155" text="Unresolved threats currently available for semantic adjudication to bind:" />
+    <string id="AF_DIP_Prompt_Composer_158" text="|issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_161" text="Adjudicate comply_ultimatum and bind that source only when the player's body text explicitly, fully and unconditionally submits to one of these threats on behalf of this kingdom. This is a one-time decision: partial or in-principle acceptance, added demands, counterconditions, silence, third-country narration or any other intent immediately counts as non-compliance." />
+    <string id="AF_DIP_Prompt_Composer_162" text="[Stable profile of the issuing party]" />
+    <string id="AF_DIP_Prompt_Composer_165" text="This kingdom is currently at war with=" />
+    <string id="AF_DIP_Prompt_Composer_166" text=". This states only the war status; it does not authorize diplomatic actions outside the listed options." />
+    <string id="AF_DIP_Prompt_Composer_167" text="[Issuing ruler's personality and voice]" />
+    <string id="AF_DIP_Prompt_Composer_168" text="Draft the national document according to this ruler's actual priorities. Express personality through interests, trust, costs and restraint in action; express the national position in terms of the kingdom, court, nobility and subjects." />
+    <string id="AF_DIP_Prompt_Composer_169" text="[Institutional, legitimacy and ceremonial voice of the issuing kingdom]" />
+    <string id="AF_DIP_Prompt_Composer_170" text="Hard facts about current in-game identities and government take precedence over retrieved background. Background may supplement tone, but must not alter ruler titles or government or invent institutions." />
+    <string id="AF_DIP_Prompt_Composer_171" text="[Authoritative people and family relationships]" />
+    <string id="AF_DIP_Prompt_Composer_172" text="Only the direct family relationships listed in this section are facts. Use them only when this diplomacy actually concerns dynasties, marriage alliances, hostages or royal security." />
+    <string id="AF_DIP_Prompt_Composer_173" text="[Issuing kingdom's policy snapshot]" />
+    <string id="AF_DIP_Prompt_Composer_174" text="Policies inform current goals, interests and pressures; they do not prove diplomatic or military outcomes that have not been explicitly supplied." />
+    <string id="AF_DIP_Prompt_Composer_175" text="[Hard facts for decisions about the target]" />
+    <string id="AF_DIP_Prompt_Composer_176" text="Target kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_177" text="); ruler=" />
+    <string id="AF_DIP_Prompt_Composer_178" text="Target kingdom's national prestige=" />
+    <string id="AF_DIP_Prompt_Composer_179" text="); foreign public international reputation tier for this kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_180" text=". Low national prestige makes its threats less credible, but may also drive it to riskier follow-through to avoid losing more prestige. International reputation informs the credibility of commitments, terms of cooperation and diplomatic risk; it does not imply friendliness, a preference for peace or immunity from war declarations." />
+    <string id="AF_DIP_Prompt_Composer_181" text="Current relations=" />
+    <string id="AF_DIP_Prompt_Composer_182" text="; overall relations between the two kingdoms' nobles=" />
+    <string id="AF_DIP_Prompt_Composer_183" text="; rulers' personal relations=" />
+    <string id="AF_DIP_Prompt_Composer_184" text="; geography=" />
+    <string id="AF_DIP_Prompt_Composer_185" text="No shared border" />
+    <string id="AF_DIP_Prompt_Composer_186" text="; overall military strength=" />
+    <string id="AF_DIP_Prompt_Composer_187" text="Number of the issuing kingdom's culturally affiliated towns and castles held by the target=" />
+    <string id="AF_DIP_Prompt_Composer_188" text="; border and political pressure=" />
+    <string id="AF_DIP_Prompt_Composer_189" text=". These are for the court's judgment only; do not express them as scores or thresholds." />
+    <string id="AF_DIP_Prompt_Composer_190" text="Target kingdom's policies=" />
+    <string id="AF_DIP_Prompt_Composer_191" text="Recent native diplomatic motivation material]" />
+    <string id="AF_DIP_Prompt_Composer_192" text="Recent bilateral battle facts." />
+    <string id="AF_DIP_Prompt_Composer_193" text="Refer to specific battles only using the hard facts above. Do not invent unlisted battles, outcomes, troop counts, casualties or prisoners." />
+    <string id="AF_DIP_Prompt_Composer_194" text="Hard war status: the parties are already at war; do not declare war again." />
+    <string id="AF_DIP_Prompt_Composer_195" text="Hard war status: the parties are not currently at war. Historical hostility, unification claims or border friction do not mean war already exists." />
+    <string id="AF_DIP_Prompt_Composer_196" text="; available actions=" />
+    <string id="AF_DIP_Prompt_Composer_197" text="[Relations between this kingdom and other kingdoms]" />
+    <string id="AF_DIP_Prompt_Composer_198" text="The following information is for overall judgment only and grants no extra actions. Action targets are still limited to those currently available for this document." />
+    <string id="AF_DIP_Prompt_Composer_199" text="  War situation=" />
+    <string id="AF_DIP_Prompt_Composer_200" text="; with this kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_206" text="; national prestige=" />
+    <string id="AF_DIP_Prompt_Composer_207" text="; foreign public international reputation tier=" />
+    <string id="AF_DIP_Prompt_Composer_208" text="; policy leanings=" />
+    <string id="AF_DIP_Prompt_Composer_209" text="[War situation for the ruler's judgment only] The war has " />
+    <string id="AF_DIP_Prompt_Composer_210" text="Overall military strength of both sides=" />
+    <string id="AF_DIP_Prompt_Composer_211" text="; recent course of the war=" />
+    <string id="AF_DIP_Prompt_Composer_212" text="; issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_213" text="; target kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_214" text=". These are overall assessments. Render them only in in-world language; do not disclose scores, score differences, openness values or military strength numbers." />
+    <string id="AF_DIP_Prompt_Composer_215" text="[Peace terms: use only when peace actions are available for this document] Peace pressure on the issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_216" text="; peace pressure on the target kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_217" text="Tribute and territorial cessions may coexist. Indicative daily tribute: if the issuing kingdom pays, approximately " />
+    <string id="AF_DIP_Prompt_Composer_218" text="; if the target kingdom pays, approximately " />
+    <string id="AF_DIP_Prompt_Composer_219" text=". Negotiation is allowed, but do not exceed the legal ceilings supplied by the task." />
+    <string id="AF_DIP_Prompt_Composer_220" text="Fiefs the target kingdom may currently legally offer to cede to the issuing kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_221" text="; fiefs the issuing kingdom may currently legally offer to cede to the target kingdom=" />
+    <string id="AF_DIP_Prompt_Composer_222" text=". If the list is empty, do not propose or agree to territorial cessions or invent settlement names. Prioritize lost territory not yet recovered in this war. Towns appear in the list only when the war situation is severely unfavorable." />
+    <string id="AF_DIP_Prompt_Composer_223" text="The ruler is imprisoned or controlled by the current target kingdom: prioritize a truce, peace and executable concessions more strongly, but do not bypass currently legal actions." />
+    <string id="AF_DIP_Prompt_Composer_224" text="The ruler is imprisoned or controlled by another kingdom: this kingdom's overall position has worsened. Give stability and negotiation greater weight; do not mistake the current target for the captor." />
+    <string id="AF_DIP_Prompt_Composer_225" text="The ruler is a prisoner, but the imprisoning or controlling party is unknown: this kingdom's position has worsened. Give stability and negotiation greater weight; do not guess the captor." />
+    <string id="AF_DIP_Prompt_Composer_226" text="Assess in relation to the specific diplomatic target" />
+    <string id="AF_DIP_Prompt_Composer_227" text="Yes" />
+    <string id="AF_DIP_Prompt_Composer_228" text="No" />
+    <string id="AF_DIP_Prompt_Composer_230" text="[Current circumstances of this kingdom's ruler]" />
+    <string id="AF_DIP_Prompt_Composer_231" text="This kingdom's ruler is a prisoner: yes; current imprisoning/controlling party=" />
+    <string id="AF_DIP_Prompt_Composer_233" text="; captivity pressure concerning this document's target=" />
+    <string id="AF_DIP_Prompt_Composer_234" text="The ruler's captivity increases this kingdom's concern for stability, truces and negotiations. If this document's target is the actual imprisoning or controlling party, give concessions and compromise even greater weight. Do not guess an unknown captor or bypass currently legal actions." />
+    <string id="AF_DIP_Prompt_Composer_235" text="The ruler is imprisoned or controlled by the current diplomatic target. This kingdom is at a clear disadvantage; give greater weight to a truce, peace, concessions and avoiding a wider war. Terms less favorable than usual may be accepted if executable. This does not authorize unconditional acceptance of nonexistent offers or illegal terms, or bypassing currently legal actions." />
+    <string id="AF_DIP_Prompt_Composer_236" text="This kingdom's ruler is imprisoned or controlled by another kingdom. Its overall position has worsened; reduce pointless diplomatic escalation and give stability and negotiation greater weight. Do not automatically accept the current target's terms or assume that target is the captor." />
+    <string id="AF_DIP_Prompt_Composer_237" text="This kingdom's ruler is a prisoner, but the current imprisoning/controlling party cannot be reliably confirmed. Its position has worsened; give stability and negotiation greater weight. Do not guess the captor or automatically assume the current target is the captor." />
 </strings>
 </base>

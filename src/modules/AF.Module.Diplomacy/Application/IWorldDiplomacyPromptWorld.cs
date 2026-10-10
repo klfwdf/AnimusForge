@@ -9,6 +9,7 @@ namespace AnimusForge;
 // ordering, eligibility branching, and prompt policy live in the composer.
 internal interface IWorldDiplomacyPromptWorld
 {
+    string LocalizePrompt(string id, string englishFallback);
     string ResolveKingdom(string id);
     bool IsEliminated(string id);
     bool HasIndependentWorldDiplomacyAuthority(string id);
