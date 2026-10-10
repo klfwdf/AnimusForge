@@ -3232,5 +3232,33 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Scene_SummonStartedAcrossLocations" text="{SPEAKER} 去帮你叫{TARGET}了。" />
   <string id="AF_UI_Browser_InvalidUrl" text="链接格式无效，只能打开 HTTP 或 HTTPS 页面。" />
   <string id="AF_UI_Browser_StartFailed" text="系统默认浏览器无法启动，且未能启动注册表或常见安装位置中的本机浏览器。请安装或设置 Chrome、Edge、Firefox 等浏览器后重试。原因：{REASON}" />
+  <string id="AF_UI_TagCatalog_CategoryBody" text="正文" />
+  <string id="AF_UI_TagCatalog_CategoryHistory" text="正文/历史" />
+  <string id="AF_UI_TagCatalog_CategoryFacts" text="正文/事实" />
+  <string id="AF_UI_TagCatalog_CategoryPostprocess" text="后处理" />
+  <string id="AF_UI_TagCatalog_CategoryRules" text="后处理/规则表" />
+  <string id="AF_UI_TagCatalog_CategoryRelay" text="后处理/接力" />
+  <string id="AF_UI_TagCatalog_CategoryGccz" text="后处理/GCCZ" />
+  <string id="AF_UI_TagCatalog_CategoryVillage" text="后处理/GCCZ村庄" />
+  <string id="AF_UI_TagCatalog_NaturalLanguage" text="正文（自然语言）" />
+  <string id="AF_UI_TagCatalog_DescriptionBody" text="不是动作标签。标签测试输入框里除动作标签外的文本会作为 NPC 可见正文显示或写入历史。" />
+  <string id="AF_UI_TagCatalog_DescriptionContent" text="内部正文分隔标记。通常不是玩家手写动作标签。" />
+  <string id="AF_UI_TagCatalog_DescriptionPlayerFact" text="玩家行为事实写入标记，用于告诉 LLM 已实际发生的玩家行为。" />
+  <string id="AF_UI_TagCatalog_DescriptionNpcFact" text="NPC行为事实写入标记，用于告诉 LLM 已实际发生的 NPC 行为。" />
+  <string id="AF_UI_TagCatalog_DescriptionVillage" text="仅在有权限的普通村庄场景中，由玩家明确命令触发：{ACTION}" />
+  <string id="AF_UI_TagCatalog_SourceBuiltIn" text="内置说明" />
+  <string id="AF_UI_TagCatalog_SourceAssembly" text="程序集：{SOURCE}" />
+  <string id="AF_UI_TagCatalog_ExportEmpty" text="当前没有可导出的标签。" />
+  <string id="AF_UI_TagCatalog_ExportRootMissing" text="没有找到可写入的 AnimusForge 模块目录。" />
+  <string id="AF_UI_TagCatalog_ExportNameConflict" text="导出文件名冲突过多，请稍后再试。" />
+  <string id="AF_UI_TagCatalog_ExportTitle" text="AnimusForge 标签列表" />
+  <string id="AF_UI_TagCatalog_ExportTime" text="导出时间：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportRoot" text="模块目录：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportTotal" text="标签总数：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportBody" text="正文/历史：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportPostprocess" text="后处理：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportFiles" text="扫描文件：{VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportSources" text="扫描来源：" />
+  <string id="AF_UI_TagCatalog_ExportExplanation" text="此文件由游戏内 U 键 AnimusForge 终端的一键导出生成。列表来自当前模块文件、当前程序集字符串和内置运行时规则。" />
 </strings>
 </base>
