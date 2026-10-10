@@ -1,3 +1,23 @@
+<a id="bulletin-independent-publishing-toggle-20261010"></a>
+## 快报独立自动发布开关接线修复（2026-10-10，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 本轮请求：只修快报独立自动发布开关，改完推送；跨期重复桥段明确不处理。实际工作区 `E:/AnimusForge-klfwdf`、`main`，开工与 fetch 后基线均为 `83ba387987f54ce53d5ef40cd69cae735cc4ea5d`，工作树干净，无待推送历史；产品提交 `9bba267ef93d4d43cd525cf057d2112a1bae08d0`。
+- 根因/修复：`WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled` 仍读旧 `AutoGenerateWeeklyReports`，现仅改为 `UseWorldBulletin && AutoGenerateWorldBulletins`。真实宿主端口绑定继续共用此门控，小时调度阻止新请求，完成回写再次拦截已关闭开关的晚结果。采集只受新闻模式控制，关闭发布仍保留事实与历史；设置默认、旧配置迁移、档案/存档身份、提示词、配图与周报链均不改。
+- 性能：沿用原小时/请求完成边界的常数次设置读取，无新增 Tick、扫描、反射、网络任务或分配。
+- 回归：在既有 F4 owner 测试增加三开关8组合、空设置回退、关闭发布时保留事实/档案、周报关闭仍发布、在途快报关闭后不发布。门控/生成/提交为实际生产源，设置取值和 provider/game 叶受控；另跑真实新闻设置 partial + MCM 的既有迁移与默认测试。runner 默认仍为 .NET 8，新增显式 `--target-framework net10.0` 并记录收据；Newtonsoft 改用当前 SDK 的既有依赖，不硬编码另一机器的本地 SDK 路径，未改一键构建/覆盖脚本。
+
+| 验证 | 实际结果与边界 |
+| --- | --- |
+| 修前负控 | 新回归在未修改生产门控时失败于 `True/False/True`（快报模式/快报关闭/周报开启）；原输出保留在 `red/run.log` |
+| 实际 owner 生成/发布 | `F4GenerationOwnerTests/run.py --target-framework net10.0`：124 PASS；受控异步完成、晚结果、归档与通知，不是实机或真实 provider |
+| 原快报策略 / 设置 | 保持源文件与测试不变、在隔离输出显式投影 .NET 10：policy141、NewsSettings12 PASS；真实 MCM 与设置 partial，路径/宿主叶为替身，不是渲染后的 MCM UI |
+| 原统一构建 | `build_single_module.ps1 -ProjectRoot E:/AnimusForge-klfwdf -BannerlordRoot <本机已核实安装目录> -Bannerlord13ReferenceDir .tmp/build_check/1.3 -Bannerlord14ReferenceDir .tmp/build_check/1.4 -Configuration Debug`，无 Stage/Deploy；exit0，引用1.3.15.110062/1.4.6.115628，各348警告0错误，Bootstrap/probe无警告错误，双真实DLL Coup门禁Passed |
+| 源码坐标 | 本地 code-map 的 recorded-revision / working-tree 校验通过；只证明坐标/内容绑定，不代替行为验收 |
+
+保留环境失败：原 .NET 8烟测缺8.0.30引用包报 `NU1100`，不安装全局 SDK、不把 .NET 10回放冒称 .NET 8通过；隔离构建首轮子进程缺 `PATHEXT` 导致 PowerShell找不到 dotnet，仅补子进程环境后原脚本完整通过。没有覆盖率百分比或全仓绿的声明。PowerShell生成的单个 ModuleAnalysisCache已移入本地构建证据目录，未删除或提交；其他作者与外部目录未写。
+
+详细命令、输出和候选绑定集中在本地 `artifacts/tests/bulletin-switch-20261010/receipt.json`、`code-map.json`及其关联目录；核实的一基源码范围与实际消费者见[代码导航](architecture/af-framework-code-scope.md#bulletin-independent-publishing-toggle-20261010)。用户授权推送 `origin/main`，真实远端ref以同目录 `publication-receipt.json` 核验，不以本地commit或dry-run代替推送成功。未 Stage/部署/打包/启动游戏，实机开关、玩家配置/存档、真实模型仍未验。源码回滚使用产品 `9bba267e` 的 focused inverse，保留其他历史；没有游戏安装改动需要恢复。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ## MCM 模型预设与快报战事修复接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
