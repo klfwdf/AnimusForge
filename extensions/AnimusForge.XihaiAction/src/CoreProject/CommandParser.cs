@@ -27,103 +27,14 @@ namespace AnimusForge.SceneActions.Core
         private static readonly Regex RawActionIdPattern = new Regex(
             "act_",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-        private static readonly string[] NonSelfPlayerPrefixes =
-        {
-            "我们",
-            "我方",
-            "我的",
-            "我等",
-            "我辈",
-            "我军",
-            "我队",
-            "我部",
-            "我手下",
-            "我麾下",
-            "我让",
-            "我叫",
-            "我令",
-            "我命令",
-            "我要求",
-            "我请他们",
-            "我请大家"
-        };
-        private static readonly string[] NpcThirdPartyDirectiveVerbs =
-        {
-            "命令",
-            "要求",
-            "吩咐",
-            "迫使",
-            "逼迫",
-            "强迫",
-            "让",
-            "叫",
-            "请",
-            "要",
-            "逼"
-        };
-        private static readonly string[] NpcThirdPartyRecipients =
-        {
-            "他们",
-            "她们",
-            "所有人",
-            "众人",
-            "大家",
-            "部下",
-            "士兵",
-            "我们",
-            "你们",
-            "我",
-            "你",
-            "他",
-            "她"
-        };
-        private static readonly string[] ClearlyNonPerformedNpcMarkers =
-        {
-            "拒绝", "不愿", "不肯", "并未", "未曾", "从未", "绝不",
-            "不再", "毫无", "只是想", "仅想", "只想", "想要", "试图",
-            "准备", "打算", "正要", "刚要", "差点", "险些", "几乎",
-            "如果", "假如", "倘若", "若是", "要是", "万一", "是否",
-            "请解释", "只是说", "说出", "提到", "谈到", "讨论", "引用",
-            "回忆", "先前", "此前", "曾经", "昨天", "口头表示", "声称",
-            "考虑", "没有付诸行动", "没有做出任何动作", "没有任何动作",
-            "最终忍住", "眼下站着没动", "站着没动", "一动不动", "纹丝不动",
-            "不是否认", "并非否认", "不是拒绝", "并非拒绝"
-        };
-        private static readonly string[] StopOwnedActionCues =
-        {
-            "停止欢呼", "别再欢呼", "不再欢呼", "停止跳舞", "别跳了",
-            "停止当前动作", "停止动作", "停下当前动作", "结束当前动作",
-            "结束此项", "结束这个动作", "收起动作", "恢复正常", "恢复站姿",
-            "恢复端正站姿", "回到正常站姿", "站好", "放下手臂", "把手放下",
-            "将手放下", "收回手臂", "垂下手臂", "结束行礼", "停止行礼",
-            "stop cheering",
-            "stop dancing", "stop action", "return to idle"
-        };
-        private static readonly string[] DrawWeaponCues =
-        {
-            "拔剑", "抽剑", "拔出剑", "抽出剑", "拔出佩剑", "抽出佩剑",
-            "拔出武器", "抽出武器", "剑已出鞘", "拔剑出鞘", "抽剑出鞘",
-            "剑身出鞘", "draw weapon", "draw sword",
-            "drew his sword", "drew her sword", "unsheathed his sword",
-            "unsheathed her sword"
-        };
-        private static readonly string[] SheatheWeaponCues =
-        {
-            "收剑", "还剑入鞘", "收剑入鞘", "将剑插回鞘中", "把剑收回鞘中",
-            "收起武器", "武器入鞘", "剑已入鞘", "sheathe weapon",
-            "sheathed his sword", "sheathed her sword", "put his sword away",
-            "put her sword away"
-        };
-        private static readonly string[] RuntimeControlNonPerformedMarkers =
-        {
-            "拒绝", "不愿", "不肯", "并未", "未曾", "从未", "绝不", "没有",
-            "只是想", "仅想", "只想", "想要", "试图", "准备", "打算", "正要",
-            "刚要", "差点", "险些", "几乎", "如果", "假如", "倘若", "若是",
-            "要是", "万一", "是否", "请解释", "只是说", "说出", "提到", "谈到",
-            "讨论", "引用", "回忆", "先前", "此前", "曾经", "昨天", "口头表示",
-            "声称", "考虑", "没有付诸行动", "没有做出任何动作", "没有任何动作",
-            "最终忍住", "眼下站着没动", "站着没动", "一动不动", "纹丝不动"
-        };
+        private static readonly string[] NonSelfPlayerPrefixes = SceneActionVocabulary.List("CommandParser.NonSelfPlayerPrefixes");
+        private static readonly string[] NpcThirdPartyDirectiveVerbs = SceneActionVocabulary.List("CommandParser.NpcThirdPartyDirectiveVerbs");
+        private static readonly string[] NpcThirdPartyRecipients = SceneActionVocabulary.List("CommandParser.NpcThirdPartyRecipients");
+        private static readonly string[] ClearlyNonPerformedNpcMarkers = SceneActionVocabulary.List("CommandParser.ClearlyNonPerformedNpcMarkers");
+        private static readonly string[] StopOwnedActionCues = SceneActionVocabulary.List("CommandParser.StopOwnedActionCues");
+        private static readonly string[] DrawWeaponCues = SceneActionVocabulary.List("CommandParser.DrawWeaponCues");
+        private static readonly string[] SheatheWeaponCues = SceneActionVocabulary.List("CommandParser.SheatheWeaponCues");
+        private static readonly string[] RuntimeControlNonPerformedMarkers = SceneActionVocabulary.List("CommandParser.RuntimeControlNonPerformedMarkers");
 
         private readonly SceneActionCatalog _catalog;
         private readonly bool _useV3;

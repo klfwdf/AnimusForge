@@ -53,3 +53,10 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - `TerminalSettingsRegistry.cs:120-380`：259设置定义，CJK显示fallback移除；`ConnectionTestText.cs`和`DuelSettings.cs:6874,6906,6981,7063,7174`：五个按钮捕获点，后台只使用字符串。
 - `RewardSystemBehavior.cs:263-279`及`RewardSystemBehavior.Vocabulary.cs`：原缓存数组仍供匹配方法使用；资源只在嵌套静态类型初始化读取。JSON不写入.sav，不新增分块键。
 - `DuelSettings.PackagedPromptDefaults.cs`：5个Lazy默认值和已有严格读取器；用户覆盖仍由原TryReadLayeredCustomPromptTextJsonFile负责。
+
+## 场景动作输入词表切片（2026-10-10）
+
+- 基线`ace292b7d`：`CommandParser.cs`、`SceneActionFrameworkV1.cs`、`SceneActionFrameworkV3.cs`的49个静态字符串数组移入`content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionVocabulary.xml`，721原始词项（684含中文）；中英别名、拒绝/否定词及顺序逐值保持。动作契约、输入权限、匹配循环未修改。
+- `CoreProject/SceneActionVocabulary.cs`嵌套静态缓存只加载一次嵌入XML，使用BCL XmlReader/XmlDocument，无新增包依赖、磁盘轮询或游戏对象访问。统一模组与独立Core项目均嵌入同一资源；content-map登记同一逻辑名。
+- 迁移反向重建三份源文件与基线一致（换行标准化），证据`artifacts/localization/scene-vocabulary-migration-20261010.json`和`verify_scene_vocabulary_20261010.py`。`SceneActionVocabularyContractTests.py` PASS 110检查；资源合同PASS 27对；diff空白检查通过。Core编译/动作解析测试及双实现产品编译仍NOT RUN。
+- 这只是识别输入外置，不代表动作模块提示词/日志/显示全部双语完成；规则内嵌别名和正则仍待后续处理。双语兼容数据的英文发行门禁仍OPEN。

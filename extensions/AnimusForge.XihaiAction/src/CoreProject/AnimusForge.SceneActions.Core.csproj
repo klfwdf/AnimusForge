@@ -7,4 +7,9 @@
     <AssemblyName>AnimusForge.SceneActions.Core</AssemblyName>
     <RootNamespace>AnimusForge.SceneActions.Core</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\content\modules\AnimusForge.XihaiAction\ModuleData\SceneActionVocabulary.xml">
+      <LogicalName>AnimusForge.Defaults.SceneActionVocabulary.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

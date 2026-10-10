@@ -257,207 +257,19 @@ namespace AnimusForge.SceneActions.Core
                      "gave up resistance")
             });
 
-        private static readonly string[] StrongCueSuppressors =
-        {
-            "拒绝",
-            "不愿",
-            "不肯",
-            "不想",
-            "不打算",
-            "无意",
-            "只是想",
-            "仅想",
-            "只想",
-            "想",
-            "想要",
-            "试图",
-            "准备",
-            "打算",
-            "正要",
-            "刚要",
-            "欲要",
-            "本来要",
-            "本来想",
-            "本来打算",
-            "差点",
-            "险些",
-            "几乎",
-            "停止",
-            "没能",
-            "未能",
-            "避免",
-            "尝试",
-            "计划",
-            "企图",
-            "考虑",
-            "希望",
-            "设想",
-            "想象",
-            "假设",
-            "如果",
-            "假如",
-            "倘若",
-            "若是",
-            "要是",
-            "万一",
-            "口头表示",
-            "口头说",
-            "口头声称",
-            "只是说道",
-            "声称",
-            "回忆",
-            "先前",
-            "此前",
-            "曾经",
-            "刚才",
-            "之前",
-            "原本",
-            "嘴上",
-            "是否",
-            "会不会",
-            "能不能",
-            "要不要",
-            "请解释",
-            "解释",
-            "说出",
-            "只是说",
-            "提到",
-            "谈到",
-            "讨论",
-            "引用",
-            "念出",
-            "读出",
-            "写下"
-        };
+        private static readonly string[] StrongCueSuppressors = SceneActionVocabulary.List("SceneActionFrameworkV1.StrongCueSuppressors");
 
-        private static readonly string[] DirectCueSuppressors =
-        {
-            "没有",
-            "毫无",
-            "并无",
-            "并未",
-            "未曾",
-            "从未",
-            "绝不",
-            "不再",
-            "并不",
-            "没",
-            "未",
-            "不"
-        };
+        private static readonly string[] DirectCueSuppressors = SceneActionVocabulary.List("SceneActionFrameworkV1.DirectCueSuppressors");
 
-        private static readonly string[] NonPerformativeContextSuppressors =
-        {
-            "只是想",
-            "仅想",
-            "只想",
-            "想要",
-            "试图",
-            "准备",
-            "打算",
-            "正要",
-            "刚要",
-            "欲要",
-            "本来要",
-            "本来想",
-            "本来打算",
-            "差点",
-            "险些",
-            "几乎",
-            "尝试",
-            "计划",
-            "企图",
-            "考虑",
-            "希望",
-            "设想",
-            "想象",
-            "假设",
-            "如果",
-            "假如",
-            "倘若",
-            "若是",
-            "要是",
-            "万一",
-            "口头表示",
-            "口头说",
-            "口头声称",
-            "只是说道",
-            "声称",
-            "回忆",
-            "先前",
-            "此前",
-            "曾经",
-            "刚才",
-            "之前",
-            "原本",
-            "嘴上",
-            "是否",
-            "会不会",
-            "能不能",
-            "要不要",
-            "请解释",
-            "解释",
-            "说出",
-            "只是说",
-            "提到",
-            "谈到",
-            "讨论",
-            "引用",
-            "念出",
-            "读出",
-            "写下"
-        };
+        private static readonly string[] NonPerformativeContextSuppressors = SceneActionVocabulary.List("SceneActionFrameworkV1.NonPerformativeContextSuppressors");
 
-        private static readonly string[] PerformedDespiteNegationPrefixes =
-        {
-            "忍不住",
-            "不由得",
-            "不得不",
-            "没有犹豫",
-            "没有迟疑",
-            "毫不犹豫",
-            "毫不迟疑",
-            "不假思索"
-        };
+        private static readonly string[] PerformedDespiteNegationPrefixes = SceneActionVocabulary.List("SceneActionFrameworkV1.PerformedDespiteNegationPrefixes");
 
-        private static readonly string[] PerformanceRecoveryMarkers =
-        {
-            "但仍",
-            "却仍",
-            "仍然",
-            "依然",
-            "还是",
-            "转而",
-            "而是",
-            "随后",
-            "随即",
-            "然后",
-            "接着",
-            "继而",
-            "后来",
-            "反而",
-            "但是",
-            "不过",
-            "完成了",
-            "完成",
-            "作出",
-            "做出",
-            "只是",
-            "却",
-            "又",
-            "并且",
-            "同时"
-        };
+        private static readonly string[] PerformanceRecoveryMarkers = SceneActionVocabulary.List("SceneActionFrameworkV1.PerformanceRecoveryMarkers");
 
-        private static readonly string[] HypotheticalCueSuppressors =
-        {
-            "如果", "假如", "倘若", "若是", "要是", "万一", "假设"
-        };
+        private static readonly string[] HypotheticalCueSuppressors = SceneActionVocabulary.List("SceneActionFrameworkV1.HypotheticalCueSuppressors");
 
-        private static readonly string[] HypotheticalRecoveryMarkers =
-        {
-            "但", "却", "然而", "不过", "反而", "而是", "还是"
-        };
+        private static readonly string[] HypotheticalRecoveryMarkers = SceneActionVocabulary.List("SceneActionFrameworkV1.HypotheticalRecoveryMarkers");
 
         private static readonly string[] CompactEnglishSuppressors =
         {
@@ -492,160 +304,54 @@ namespace AnimusForge.SceneActions.Core
             "wantsto"
         };
 
-        private static readonly string[] AfterCueSuppressors =
-        {
-            "的念头",
-            "的打算",
-            "的想法",
-            "吗",
-            "么",
-            "呢",
-            "会怎样",
-            "会怎么样",
-            "是什么意思",
-            "意味着什么",
-            "是否可行",
-            "还是不",
-            "butnot",
-            "notto",
-            "notfor",
-            "ratherthan",
-            "insteadof",
-            "二字",
-            "这个词",
-            "一词",
-            "过"
-        };
+        private static readonly string[] AfterCueSuppressors = SceneActionVocabulary.List("SceneActionFrameworkV1.AfterCueSuppressors");
 
-        private static readonly string[] RagePhysicalCues =
-        {
-            "怒吼", "怒喊", "咆哮", "挥舞", "挥动", "挥臂", "挥拳", "跺脚", "暴跳", "拍桌"
-        };
+        private static readonly string[] RagePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.RagePhysicalCues");
 
-        private static readonly string[] FearPhysicalCues =
-        {
-            "发抖", "颤抖", "连退", "后退", "退了两步", "护住", "抱住脑袋", "摆手", "慌张摆手", "惊慌失措"
-        };
+        private static readonly string[] FearPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.FearPhysicalCues");
 
-        private static readonly string[] DisappointedPhysicalCues =
-        {
-            "叹气", "叹息", "长叹", "垂头", "低头", "摇头", "丧气", "失落地",
-            "sighed", "sigh", "lowered his head", "lowered her head"
-        };
+        private static readonly string[] DisappointedPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.DisappointedPhysicalCues");
 
-        private static readonly string[] CheerPhysicalCues =
-        {
-            "振臂", "高举拳头", "呐喊", "叫好", "喝彩", "欢呼起来", "欢呼着", "挥舞双臂"
-        };
+        private static readonly string[] CheerPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.CheerPhysicalCues");
 
-        private static readonly string[] ApplaudPhysicalCues =
-        {
-            "拍手", "拍掌", "拍击", "鼓起掌", "双掌", "掌声"
-        };
+        private static readonly string[] ApplaudPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.ApplaudPhysicalCues");
 
-        private static readonly string[] ThreatPhysicalCues =
-        {
-            "挥拳", "握紧拳", "攥紧拳", "攥拳", "拳头", "示威", "作势", "逼近", "晃了晃"
-        };
+        private static readonly string[] ThreatPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.ThreatPhysicalCues");
 
-        private static readonly string[] SurrenderPhysicalCues =
-        {
-            "放下武器", "放下兵器", "扔下", "丢下", "扔掉", "扔到脚边", "高举过头", "高举双手", "举起双手", "双手高举", "缴械", "弃械", "束手就擒"
-        };
+        private static readonly string[] SurrenderPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.SurrenderPhysicalCues");
 
-        private static readonly string[] LaughPhysicalCues =
-        {
-            "大笑", "笑出声", "笑了起来", "仰头", "前仰后合", "捧腹",
-            "发出一阵笑声", "爆发出一阵笑声", "爆发出笑声", "骤然笑了出来",
-            "朗声笑了起来", "放声笑了起来"
-        };
+        private static readonly string[] LaughPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.LaughPhysicalCues");
 
-        private static readonly string[] PointPhysicalCues =
-        {
-            "指向", "指了指", "伸手指", "抬手指", "食指", "一指", "点去", "点向"
-        };
+        private static readonly string[] PointPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.PointPhysicalCues");
 
-        private static readonly string[] ChallengePhysicalCues =
-        {
-            "勾手", "叫阵", "拍胸", "挑衅地招手", "挑战姿态"
-        };
+        private static readonly string[] ChallengePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.ChallengePhysicalCues");
 
-        private static readonly string[] SearchPhysicalCues =
-        {
-            "环顾", "张望", "扫视", "搜寻", "寻找", "环视", "伸长脖子", "四处看"
-        };
+        private static readonly string[] SearchPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.SearchPhysicalCues");
 
-        private static readonly string[] DancePhysicalCues =
-        {
-            "跳舞", "起舞", "舞动", "扭动", "随着节拍", "转身跳"
-        };
+        private static readonly string[] DancePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.DancePhysicalCues");
 
-        private static readonly string[] AgreePhysicalCues =
-        {
-            "点头", "点了点头", "点点头", "颔首"
-        };
+        private static readonly string[] AgreePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.AgreePhysicalCues");
 
-        private static readonly string[] DisagreePhysicalCues =
-        {
-            "摇头", "摇了摇头", "摇了几下头", "摆手明确表示反对", "摇头表示反对"
-        };
+        private static readonly string[] DisagreePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.DisagreePhysicalCues");
 
-        private static readonly string[] UnsurePhysicalCues =
-        {
-            "摊手", "摊开双手", "耸肩", "耸了耸肩", "拿不准", "不确定手势"
-        };
+        private static readonly string[] UnsurePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.UnsurePhysicalCues");
 
-        private static readonly string[] ExplainPhysicalCues =
-        {
-            "比划", "摊开手", "手势解释", "挥动双手", "作出说明", "来回比划"
-        };
+        private static readonly string[] ExplainPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.ExplainPhysicalCues");
 
-        private static readonly string[] PromisePhysicalCues =
-        {
-            "举手起誓", "抬手立誓", "举起右手", "郑重起誓", "拍胸", "作保证", "承诺手势"
-        };
+        private static readonly string[] PromisePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.PromisePhysicalCues");
 
-        private static readonly string[] CrossArmsPhysicalCues =
-        {
-            "抱臂", "抱起双臂", "交叉双臂", "双臂交叉", "交叉抱在胸前", "收回双手"
-        };
+        private static readonly string[] CrossArmsPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.CrossArmsPhysicalCues");
 
-        private static readonly string[] DeepBowPhysicalCues =
-        {
-            "深鞠", "深深鞠", "弯腰", "躬身到底", "九十度鞠躬", "深深弯腰"
-        };
+        private static readonly string[] DeepBowPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.DeepBowPhysicalCues");
 
-        private static readonly string[] GreetPhysicalCues =
-        {
-            "挥手", "挥了挥", "挥挥手", "招手", "抬手打招呼", "打招呼", "打了个招呼", "挥手打招呼", "挥手问候"
-        };
+        private static readonly string[] GreetPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.GreetPhysicalCues");
 
-        private static readonly string[] CommandPhysicalCues =
-        {
-            "挥臂", "抬臂", "大手一挥", "下令手势", "命令手势", "向众人下令", "发号施令"
-        };
+        private static readonly string[] CommandPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.CommandPhysicalCues");
 
-        private static readonly string[] FollowMePhysicalCues =
-        {
-            "招手", "挥手示意", "跟上手势", "示意队伍跟上", "示意同伴跟上", "招手跟上"
-        };
+        private static readonly string[] FollowMePhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.FollowMePhysicalCues");
 
-        private static readonly string[] CutThroatPhysicalCues =
-        {
-            "喉前", "划过喉", "横划", "抹脖子", "割喉手势"
-        };
-        private static readonly string[] GenericRespectCues =
-        {
-            "行礼",
-            "回礼",
-            "施礼",
-            "见礼",
-            "还礼",
-            "答礼",
-            "致礼",
-            "抬手致意",
-            "举手致意"
-        };
+        private static readonly string[] CutThroatPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.CutThroatPhysicalCues");
+        private static readonly string[] GenericRespectCues = SceneActionVocabulary.List("SceneActionFrameworkV1.GenericRespectCues");
 
         private const string RespectMotionAdverbPatternText =
             "(?:缓缓|慢慢|逐渐|徐徐|轻轻|猛地|迅速|突然)?";
@@ -661,16 +367,7 @@ namespace AnimusForge.SceneActions.Core
             "(?:抬手|举手|伸手|抬臂|举臂|伸臂))",
             RegexOptions.CultureInvariant);
 
-        private static readonly string[] RespectRecoveryMarkers =
-        {
-            "但仍",
-            "却仍",
-            "仍然",
-            "依然",
-            "还是",
-            "转而",
-            "而是"
-        };
+        private static readonly string[] RespectRecoveryMarkers = SceneActionVocabulary.List("SceneActionFrameworkV1.RespectRecoveryMarkers");
 
         private const string RespectCeremonyPatternText =
             "(?:(?:(?<!举)行|施|回|还|答|见|致)" +
@@ -683,103 +380,23 @@ namespace AnimusForge.SceneActions.Core
             RespectCeremonyPatternText,
             RegexOptions.CultureInvariant);
 
-        private static readonly string[] XihaiSpecificLimbs =
-        {
-            "右臂",
-            "右手",
-            "手臂"
-        };
+        private static readonly string[] XihaiSpecificLimbs = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiSpecificLimbs");
 
-        private static readonly string[] XihaiMotions =
-        {
-            "抬起",
-            "高抬",
-            "抬高",
-            "抬到",
-            "抬至",
-            "举起",
-            "举高",
-            "举到",
-            "举至",
-            "斜举",
-            "伸出",
-            "伸直",
-            "前伸"
-        };
+        private static readonly string[] XihaiMotions = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiMotions");
 
-        private static readonly string[] XihaiUpwardDirections =
-        {
-            "斜向上",
-            "向前斜上",
-            "朝前斜上",
-            "前斜上方",
-            "向斜上方",
-            "朝斜上方",
-            "斜上方",
-            "向前上方",
-            "前上方"
-        };
+        private static readonly string[] XihaiUpwardDirections = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiUpwardDirections");
 
-        private static readonly string[] XihaiFingerDetails =
-        {
-            "手指并拢",
-            "五指并拢",
-            "指尖并拢",
-            "手指伸直并拢",
-            "五指伸直并拢"
-        };
+        private static readonly string[] XihaiFingerDetails = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiFingerDetails");
 
-        private static readonly string[] XihaiPalmDetails =
-        {
-            "掌心向下",
-            "掌心朝下",
-            "手掌向下",
-            "手掌朝下"
-        };
+        private static readonly string[] XihaiPalmDetails = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiPalmDetails");
 
-        private static readonly string[] XihaiGeometryBlockers =
-        {
-            "左臂",
-            "左手",
-            "双臂",
-            "双手",
-            "挥手",
-            "摆手",
-            "招手",
-            "握手",
-            "举手发言",
-            "指向",
-            "拿起",
-            "拿着",
-            "握着",
-            "端起",
-            "托起",
-            "手持",
-            "举起酒杯",
-            "举着酒杯",
-            "举起杯子",
-            "举着杯子",
-            "举起武器",
-            "举着武器",
-            "举起兵器",
-            "举起盾牌",
-            "举起火把",
-            "举起旗帜",
-            "举起旗子",
-            "递出",
-            "递给",
-            "接过"
-        };
+        private static readonly string[] XihaiGeometryBlockers = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiGeometryBlockers");
 
         // “西海” is also used as the name of the legacy uniform set.  Keep the
         // short action alias for explicit stage descriptions, but do not treat
         // an immediately following clothing/equipment noun as a performed
         // salute (for example, “他穿着西海军装”).
-        private static readonly string[] XihaiEquipmentContinuations =
-        {
-            "军装", "军服", "战衣", "制服", "服饰", "衣服", "衣物", "衣甲",
-            "套装", "装备", "盔甲", "军帽", "帽子", "军靴", "靴子", "鞋子", "鞋"
-        };
+        private static readonly string[] XihaiEquipmentContinuations = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiEquipmentContinuations");
 
         private static readonly Regex XihaiDegreeGesturePattern = new Regex(
             "(?:(?:抬起|举起|伸出|伸直)(?:了)?(?:手臂|右臂|右手|手)|" +

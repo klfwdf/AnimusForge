@@ -324,14 +324,7 @@ namespace AnimusForge.SceneActions.Core
             Entries.Where(entry => entry.CanOverlayKneel).Select(entry => entry.IntentKey),
             StringComparer.Ordinal);
 
-        private static readonly string[] UnsupportedActionCues =
-        {
-            "哭泣", "大哭", "哭了起来", "坐下", "躺下", "趴下", "转身", "走路",
-            "走了两步", "走了过去", "走过去", "走去", "走向", "走到", "迈步", "迈步走向",
-            "跑步", "奔跑", "拥抱", "亲吻", "喝酒", "吃东西", "踢腿", "踢人", "攻击",
-            "walked over", "walked toward", "walked to", "moved toward", "approached",
-            "sat down", "lay down", "hugged", "kissed", "drank", "ate", "kicked", "attacked"
-        };
+        private static readonly string[] UnsupportedActionCues = SceneActionVocabulary.List("SceneActionFrameworkV3.UnsupportedActionCues");
 
         public static IReadOnlyList<SceneActionContractEntryV3> LogicalActions => Entries;
 

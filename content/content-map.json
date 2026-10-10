@@ -17095,6 +17095,12 @@
       "source": "content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json",
       "target": "ModuleData/GeneratedRpVocabulary.json",
       "logicalName": "AnimusForge.Defaults.GeneratedRpVocabulary.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionVocabulary.xml",
+      "target": "ModuleData/SceneActionVocabulary.xml",
+      "logicalName": "AnimusForge.Defaults.SceneActionVocabulary.xml"
     }
   ]
 }
