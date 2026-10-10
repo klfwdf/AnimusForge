@@ -1,0 +1,8 @@
+{
+  "Version": 1,
+  "UnknownSettlementName": "this occupied settlement",
+  "SelectionPromptTemplate": "[Siege Settlement]Select up to {max_count} followers; issue orders directly via in-scene dialogue upon entering.",
+  "SceneNarrationTemplate": "You don your armor and step into {settlement} with {arrived_count} selected followers. The occupied streets await your command; leaving now will resume the default siege aftermath flow.",
+  "AutomaticSelectionNarrationTemplate": "You don your armor and step into {settlement}, followed by {arrived_count} available followers assembled on short notice. The occupied streets await your command; leaving now will resume the default siege aftermath flow.",
+  "NoFollowersArrivedNarrationTemplate": "You don your armor and step into {settlement}, though no followers caught up with you in the streets. The occupied streets await your command; leaving now will resume the default siege aftermath flow."
+}
