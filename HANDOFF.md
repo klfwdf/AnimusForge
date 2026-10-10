@@ -1,5 +1,7 @@
 # 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+- 最新主线 `5173ec03e` / `3f8227076` 知名度与通知收口；`ecd8cca60` / `b510df4bb` 公告配图状态、图库默认介绍与试采说明，静态合同/26对资源/既有双API引用各1304次Illustrator解析PASS。稳定盘点7确认UI（Policy）/1210待审，无扫描变化。转RP真物品名和终端标签目录等仍OPEN；当前编译/实机/旧档/正式ZIP NOT-RUN。[最新切片及下一片](docs/handoffs/2026-10-10-localization-illustrator-bulletin-defaults.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
+
 - 主线失败显示 `dfae5984d`：11入口/17对键，原诊断与dispatcher保持，静态/26对资源/既有双API DLL各12628次UI解析PASS；盘点7确认UI、1220待审（含6个重新登记的原诊断）。当前编译/实机仍NOT-RUN，下一片为玩家百科知名度标签与刷新去重。[切片证据](docs/handoffs/2026-10-10-localization-llm-failure-display.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 - 最新用户目标替代早期仅 UI 的范围：全部默认运行时文本与内容英文可用，完整保留中文原版；ZIP 名区分 `_CN` / `_EN`，包内原文件名、单模块及双 API 实现身份不变。
 - B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
