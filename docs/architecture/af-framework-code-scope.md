@@ -1,3 +1,17 @@
+<a id="diplomacy-draft-length-20261011"></a>
+### 书记官代笔：生成前篇幅预算与完整稿回填
+
+产品源码 `462d0e9297070dfb852bd1ae54ad2b55a6a4feac`；详细行为、65项回放、双版本/Bootstrap构建、剩余实机边界与回滚见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-draft-length-20261011)。本地六锚点 `artifacts/diplomacy-draft-length-20261011/code-map.json` 已按产品修订及working-tree核验；仅覆盖以下责任。
+
+| 当前源码（一基范围）/符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPlayerDraftRules.cs:45–61`；BuildMessages | 代笔篇幅范围/中点目标/提纲扩写/文风优先级；应用在点击时传入实际HTTP请求，不替代真实provider语义验收 |
+| 同文件 `63–68`；GetOutputTokenBudget | 最大篇幅×4＋256输出容量，由同一应用传入既有LLM client；client继续遵守玩家API配置上限 |
+| 同文件 `70–91`；Parse | 完整有效稿不以MCM范围拒收；空/坏协议/既有6000字符编辑器容量仍保护原文；不改发布链路 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerDraftApplication.cs:9–39`；TryPrepare | 主线程冻结MCM/正文/偏好和预算，后台单请求/结果解析；不改HTTP transport、NPC自主外交或存档 |
+| `src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyComposePopupVM.AutoDraft.cs:109–135`；ProcessAutoDraftCompletion（源码保持） | 实际UI回填消费者，继续重验owner/request/generation/revision；本次范围外稿通过正式消费者直接回填，无字数提示 |
+| `tests/modules/AF.Module.Diplomacy/PlayerDocumentDraftTests/Program.cs:129–157`；LengthBudgetAndFill | 受控HTTP+正式VM回放范围/预算/显式API上限、范围外完整稿显示、零字数提示与零修稿重试；Gauntlet/MCM为替身 |
+
 <a id="policy-effect-bounded-retrieval-20261010"></a>
 ### 政策效果检索：真实query、详情owner及玩家/NPC消费者
 

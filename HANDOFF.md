@@ -1,3 +1,9 @@
+# 当前交接：书记官代笔篇幅与回填简化（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户要求直接生成并显示代笔稿。基线 `50a5c27eb`，检查点 `a2381a666`，产品 `462d0e929`，工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`。生成前明确MCM范围、中点目标、提纲扩写与文风优先级；预算随篇幅计算，完整稿不再以MCM字数拒收或提示，无新增重试。
+- 65项正式owner回放、Debug双API/Bootstrap及双Coup managed门禁通过；6源码锚点双模式通过。未验实机/真实provider/玩家存档/全仓，未Stage、部署、打包或推送；玩家显式API上限与原编辑器/空稿/坏协议/截断保护保留。
+- [唯一主台账：范围、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-draft-length-20261011)；[已核验源码与消费者](docs/architecture/af-framework-code-scope.md#diplomacy-draft-length-20261011)。本地证据 `artifacts/diplomacy-draft-length-20261011/receipt.json`，回滚仅 focused inverse 产品提交。
+
 # 当前交接：政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
 
 - 用户明确要求“两片全做，重构”，暂停后已恢复；实际工作区 `E:/AnimusForge-klfwdf`。原本地 `main` 保留，干净交付分支 `delivery/policy-bounded-retrieval-20261010` 从远端安全基线创建；接线修复 `b7809f99`，查询/详情 owner 重构 `a1a4aa21`，与原已验源码树完全一致。不是恢复已回滚的“所有模块全部注入”方案；ONNX 候选筛选、默认6/最大8详情、12效果腿/6机制及来源/目标/执行/存档边界保留。
