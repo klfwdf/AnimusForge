@@ -305,7 +305,7 @@ public sealed partial class CourierDeliveryBehavior
 				if (!IsCourierPromptRunCurrent(promptRun)) return;
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("信使回信前处理失败", ex.Message);
+					LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierReplyPreprocessFailed}Courier reply preprocessing failed", ex.Message);
 				}
 				catch
 				{
@@ -707,7 +707,7 @@ public sealed partial class CourierDeliveryBehavior
 				if (!IsCourierPromptRunCurrent(promptRun)) return;
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("信使来信前处理失败", ex.Message);
+					LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierLetterPreprocessFailed}Courier letter preprocessing failed", ex.Message);
 				}
 				catch
 				{

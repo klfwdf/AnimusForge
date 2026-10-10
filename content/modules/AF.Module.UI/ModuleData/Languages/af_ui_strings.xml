@@ -3178,5 +3178,22 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect" text="Royal-domain daily loyalty modifier: {VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaTitle" text="Kingdom stability" />
   <string id="AF_UI_KingdomRebellion_NamingForcedBackgroundFailurePrefix" text="Background forced-rebellion kingdom naming task failed: " />
+  <string id="AF_UI_Retry_CourierReplyPreprocessFailed" text="Courier reply preprocessing failed" />
+  <string id="AF_UI_Retry_CourierLetterPreprocessFailed" text="Courier letter preprocessing failed" />
+  <string id="AF_UI_Retry_NativeReplyFailed" text="Free conversation reply generation failed" />
+  <string id="AF_UI_Retry_UnnamedPersonaFailed" text="Unnamed NPC persona generation failed" />
+  <string id="AF_UI_Retry_UnnamedPersonaParseFailed" text="Unnamed NPC persona parsing failed" />
+  <string id="AF_UI_Retry_WeekZeroShortReportFailed" text="Week-zero short report generation failed" />
+  <string id="AF_UI_Retry_ExternalAuxiliaryFailed" text="{SOURCE} failed" />
+  <string id="AF_UI_Retry_GatewayFailed" text="LLM gateway request failed: {CODE}" />
+  <string id="AF_UI_Retry_PersonaReplyEmpty" text="The model reply is empty; a persona cannot be generated." />
+  <string id="AF_UI_Retry_PersonaReplyInvalid" text="The model reply could not be parsed as persona JSON." />
+  <string id="AF_UI_Retry_ThreeAttemptsFailed" text="All three attempts failed." />
+  <string id="AF_UI_Retry_AuxiliaryHostUnavailable" text="MyBehavior could not be found; the auxiliary model cannot be called." />
+  <string id="AF_UI_Retry_AuxiliaryCallFailed" text="The auxiliary model call failed." />
+  <string id="AF_UI_Retry_FullModelReply" text="Model reply (complete)" />
+  <string id="AF_UI_Retry_NoModelReply" text="(No model reply was received or could be parsed)" />
+  <string id="AF_UI_Retry_FullRawResponse" text="Raw API response (complete)" />
+  <string id="AF_UI_Retry_ProviderException" text="{CODE}" />
 </strings>
 </base>

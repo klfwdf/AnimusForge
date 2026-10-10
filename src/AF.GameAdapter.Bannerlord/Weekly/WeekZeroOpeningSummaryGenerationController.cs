@@ -326,7 +326,8 @@ internal async Task<bool> GenerateWeekZeroShortSummaryWithRetriesAsync(WeekZeroS
 			}
 		}
 		if (!IsCurrent(stamp)) return false;
-        LlmRetryPrompt.ShowFailurePopup("第0周短周报生成失败", failureDetails.Count > 0 ? string.Join("\n\n", failureDetails) : LlmRetryPrompt.BuildFailureDetail("三次尝试均失败。", ""));
+        LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_WeekZeroShortReportFailed}Week-zero short report generation failed", failureDetails.Count > 0 ? string.Join("\n\n", failureDetails) : LlmRetryPrompt.BuildFailureDetail("三次尝试均失败。", ""),
+            reasonTemplate: failureDetails.Count > 0 ? null : "{=AF_UI_Retry_ThreeAttemptsFailed}All three attempts failed.", modelReply: failureDetails.Count > 0 ? null : "");
 		return false;
 	}
 

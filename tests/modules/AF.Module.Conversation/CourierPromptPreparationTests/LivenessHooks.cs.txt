@@ -18,7 +18,7 @@ namespace AnimusForge {
  internal sealed class MobileParty {internal static MobileParty MainParty=new();internal bool IsActive=true;}
  internal enum CourierStage {GeneratingReply,Returning,WaitingSender,Outbound}
  internal static class ShoutNetwork {internal static void RecordPrimaryRequestBodyForTokenStats(List<object> a,int b,string c){} }
- internal static class LlmRetryPrompt {internal static void ShowFailurePopup(string a,string b){Probe.MainOnly();} }
+ internal static class LlmRetryPrompt {internal static void ShowFailurePopup(string a,string b){Probe.MainOnly();} internal static void ShowLocalizedFailurePopup(string titleTemplate,string diagnostic,string titleSource=null,string reasonTemplate=null,string modelReply=null,string rawResponse=null,string reasonCode=null){Probe.MainOnly();} }
  internal sealed class PromptPackage {} internal sealed class InteractionEnvelope {} internal sealed class LegacyInteractionPipelinePorts {}
  internal interface ILlmGateway {} internal sealed class LegacyShoutNetworkGateway:ILlmGateway {}
  internal static class LegacyPromptPackageAdapter {internal static PromptPackage FromLegacyMessages(List<object> a,int b,string c)=>new();}
@@ -72,6 +72,13 @@ namespace AnimusForge {
 // @@COURIER_CURRENT_LEAVES@@
 using System;using System.Collections.Generic;using System.Collections.Concurrent;using System.Threading;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using AnimusForge.Refactor.Runtime;
 namespace AnimusForge;
+// Current-consumer reporting boundary; language/resource behavior is verified separately.
+internal static partial class LlmRetryPrompt
+{
+    internal static void ShowLocalizedFailurePopup(string titleTemplate, string diagnostic,
+        string titleSource = null, string reasonTemplate = null, string modelReply = null,
+        string rawResponse = null, string reasonCode = null) => NativeHost.Game();
+}
 public sealed partial class CourierDeliveryBehavior
 {
     private static CourierDeliveryBehavior Instance;

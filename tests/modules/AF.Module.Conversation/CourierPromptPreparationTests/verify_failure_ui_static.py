@@ -10,6 +10,10 @@ COURIER = "src/modules/AF.Module.Conversation/Channels/Courier/"
 BASELINE = "ad623a06d"
 CHANGES = {
     "CourierDeliveryBehavior.GenerationLifecycle.cs": [
+        ('LlmRetryPrompt.ShowFailurePopup("信使回信前处理失败", ex.Message);',
+         'LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierReplyPreprocessFailed}Courier reply preprocessing failed", ex.Message);'),
+        ('LlmRetryPrompt.ShowFailurePopup("信使来信前处理失败", ex.Message);',
+         'LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierLetterPreprocessFailed}Courier letter preprocessing failed", ex.Message);'),
         ('NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\\n\\n" + (error ?? "未知错误"));',
          'NonBlockingErrorReport.Show(CourierFailureUiText.ReplyFailedTitle, CourierFailureUiText.ReplyFailedDetail(error));'),
         ('"信使回信生成失败",\n', 'CourierFailureUiText.ReplyFailedTitle,\n'),
