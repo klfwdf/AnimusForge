@@ -8479,7 +8479,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			List<string> list2 = ParseRagShortTextCandidates(raw, Math.Max(RagShortTextAutoGenerateCount * 2, 6));
 			if (list2.Count <= 0)
 			{
-				LlmRetryPrompt.ShowFailurePopup("RAG专用短句解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。", raw));
+				LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagParseFailureTitle, LlmRetryPrompt.BuildFailureDetail(KnowledgeUiTexts.RagParseFailureReason, raw));
 				list2 = BuildDeterministicRagShortTextFallback(rule, RagShortTextAutoGenerateCount);
 			}
 			int num = 0;
@@ -8510,7 +8510,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Knowledge] 生成RAG专用短句失败: " + ex);
-			LlmRetryPrompt.ShowFailurePopup("生成RAG专用短句失败", ex.Message);
+			LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagGenerationFailureTitle, ex.Message);
 		}
 		onDone();
 	}

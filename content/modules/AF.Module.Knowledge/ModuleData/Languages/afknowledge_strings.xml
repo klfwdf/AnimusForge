@@ -3,7 +3,7 @@
   <tags><tag language="English" /></tags>
   <strings>
     <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="Duplicate condition" />
-    <string id="AF_KNOWLEDGE_DuplicateCondition" text="Identical conditions cannot be used by multiple prompts.\n\nDuplicate item: {ITEM} prompt\n\nCondition:\n{CONDITION}" />
+    <string id="AF_KNOWLEDGE_DuplicateCondition" text="Identical conditions cannot be used by multiple prompts.&#10;&#10;Duplicate item: {ITEM} prompt&#10;&#10;Condition:&#10;{CONDITION}" />
     <string id="AF_KNOWLEDGE_Back" text="Back" />
     <string id="AF_KNOWLEDGE_PlayerPersonaCreateFailed" text="Could not open the player profile editor: the knowledge entry could not be created." />
     <string id="AF_KNOWLEDGE_PlayerAppearanceCreateFailed" text="Could not open the player appearance and background editor: the knowledge entry could not be created." />
@@ -19,11 +19,11 @@
     <string id="AF_KNOWLEDGE_BulkActionsCannotMix" text="The bulk-delete page cannot select an operation together with knowledge entries." />
     <string id="AF_KNOWLEDGE_NoRulesSelected" text="No deletable knowledge entries are selected." />
     <string id="AF_KNOWLEDGE_ConfirmBulkDeleteTitle" text="Confirm bulk deletion" />
-    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="The following knowledge entries will be deleted:\n\n{PREVIEW}\n\nTotal: {COUNT}. This action cannot be undone." />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="The following knowledge entries will be deleted:&#10;&#10;{PREVIEW}&#10;&#10;Total: {COUNT}. This action cannot be undone." />
     <string id="AF_KNOWLEDGE_ConfirmDelete" text="Delete" />
     <string id="AF_KNOWLEDGE_Deleted" text="Deleted {COUNT} knowledge entries." />
     <string id="AF_KNOWLEDGE_AgeRangeTitle" text="Set age range" />
-    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="Enter an age range in minimum-maximum format.\nExample: 18-35\nCurrent value: {MIN}-{MAX}" />
+    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="Enter an age range in minimum-maximum format.&#10;Example: 18-35&#10;Current value: {MIN}-{MAX}" />
     <string id="AF_KNOWLEDGE_InvalidAgeRange" text="Enter a valid range, for example 18-35." />
     <string id="AF_KNOWLEDGE_Confirm" text="Confirm" />
     <string id="AF_KNOWLEDGE_KeywordInRuleAlreadyExists" text="Could not add the keyword: it is already present in this knowledge entry." />
@@ -125,29 +125,29 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_RemoveRagTitle" text="Remove RAG short text" />
     <string id="AF_KNOWLEDGE_RemoveRagPrompt" text="Choose a RAG short text to remove:" />
 
-    <string id="AF_KNOWLEDGE_MapCategoryStatus" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpc" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryPlayer" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryBound" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryKingdom" text="" />
-    <string id="AF_KNOWLEDGE_MapCategorySettlement" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryClan" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryHero" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryOther" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryStatusDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpcDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryPlayerDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryBoundDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryKingdomDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="" />
-    <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="" />
+    <string id="AF_KNOWLEDGE_MapCategoryStatus" text="Status checks" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpc" text="What about the current NPC?" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayer" text="What about the player?" />
+    <string id="AF_KNOWLEDGE_MapCategoryBound" text="What about the object bound to this knowledge?" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdom" text="What about the kingdom?" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlement" text="What about the settlement?" />
+    <string id="AF_KNOWLEDGE_MapCategoryClan" text="What about the clan?" />
+    <string id="AF_KNOWLEDGE_MapCategoryHero" text="What about the hero?" />
+    <string id="AF_KNOWLEDGE_MapCategoryOther" text="Other" />
+    <string id="AF_KNOWLEDGE_MapCategoryStatusDescription" text="These mappings check a status first, then output your true/false text. Other mapping tokens can also be used in those texts." />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpcDescription" text="These mappings read values from the NPC in the current interaction; choose which value to retrieve." />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayerDescription" text="These mappings read values from the player character; choose which value to retrieve." />
+    <string id="AF_KNOWLEDGE_MapCategoryBoundDescription" text="These mappings read from the kingdom, settlement or hero uniquely bound by this knowledge entry's conditions." />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdomDescription" text="Choose a kingdom, then choose which value to retrieve." />
+    <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="Choose a settlement, then choose which value to retrieve." />
+    <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="Choose a clan, then choose which value to retrieve." />
+    <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="Choose a hero, then choose which value to retrieve." />
     <string id="AF_KNOWLEDGE_SearchByKeywordId" text="Search (keyword/ID)" />
     <string id="AF_KNOWLEDGE_BulkDelete" text="Bulk delete knowledge" />
     <string id="AF_KNOWLEDGE_NoValue" text="(none)" />
     <string id="AF_KNOWLEDGE_PlayerNameConflictStatus" text="(could not be saved because it conflicts with another knowledge entry)" />
     <string id="AF_KNOWLEDGE_PlayerKeywordSetupTitle" text="Player name settings" />
-    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="Welcome to AnimusForge! Use this screen to add extra names for your character. If you do not need them, continue to appearance and background settings.\n\nCharacter name: {NAME}{CONFLICT}\nExtra names: {OPTIONAL}" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="Welcome to AnimusForge! Use this screen to add extra names for your character. If you do not need them, continue to appearance and background settings.&#10;&#10;Character name: {NAME}{CONFLICT}&#10;Extra names: {OPTIONAL}" />
     <string id="AF_KNOWLEDGE_AddOptionalName" text="Add extra name" />
     <string id="AF_KNOWLEDGE_RemoveOptionalName" text="Remove extra name" />
     <string id="AF_KNOWLEDGE_OpenAppearanceBackground" text="Write appearance and background" />
@@ -162,7 +162,7 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail" text="Save the current settings and leave this screen." />
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle" text="Player appearance and background" />
     <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription" text="Player information is divided into appearance and background information." />
-    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="Player information is divided into appearance and background information.\n\nAppearance (always visible):\n{APPEARANCE}\n\nBackground (general):\n{BACKGROUND}\n\nConditional background details: {COUNT}" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="Player information is divided into appearance and background information.&#10;&#10;Appearance (always visible):&#10;{APPEARANCE}&#10;&#10;Background (general):&#10;{BACKGROUND}&#10;&#10;Conditional background details: {COUNT}" />
     <string id="AF_KNOWLEDGE_PlayerOptionUnset" text="Not filled in. Select this option to enter the full text." />
     <string id="AF_KNOWLEDGE_PlayerOptionFilled" text="{COUNT} characters entered. The full text is shown on the left; select this option to edit it." />
     <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundCount" text="{COUNT} conditional background entries configured." />
@@ -177,7 +177,7 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_AddDetailedBackground" text="Add a detailed entry" />
     <string id="AF_KNOWLEDGE_EmptyPreview" text="(empty)" />
     <string id="AF_KNOWLEDGE_DetailedBackgroundEditorTitle" text="Edit detailed background" />
-    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="Current condition: {CONDITION}\n\nCurrent content preview:\n{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="Current condition: {CONDITION}&#10;&#10;Current content preview:&#10;{PREVIEW}" />
     <string id="AF_KNOWLEDGE_EditDetailedBackgroundContent" text="Edit entry content" />
     <string id="AF_KNOWLEDGE_EditDetailedBackgroundCondition" text="Edit condition" />
     <string id="AF_KNOWLEDGE_DeleteDetailedBackground" text="Delete this detailed entry" />
@@ -191,7 +191,7 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_RetrievalOff" text="disabled" />
     <string id="AF_KNOWLEDGE_RetrievalYes" text="yes" />
     <string id="AF_KNOWLEDGE_RetrievalNoKeywordFirst" text="no (keyword first)" />
-    <string id="AF_KNOWLEDGE_RetrievalDescription" text="Configuration source: {SOURCE}\nCurrent mode: {MODE}\nSemantic retrieval: {ENABLED}\nSemantic first: {FIRST}\nKnowledge return limit: {TOPK}\nDetails: each mentioned term is retrieved independently in importance order, with one knowledge slot per term. If the highest-scoring knowledge is already used by an earlier term, the next unused knowledge is selected. Additional terms are only filled when the limit is greater than the number of terms." />
+    <string id="AF_KNOWLEDGE_RetrievalDescription" text="Configuration source: {SOURCE}&#10;Current mode: {MODE}&#10;Semantic retrieval: {ENABLED}&#10;Semantic first: {FIRST}&#10;Knowledge return limit: {TOPK}&#10;Details: each mentioned term is retrieved independently in importance order, with one knowledge slot per term. If the highest-scoring knowledge is already used by an earlier term, the next unused knowledge is selected. Additional terms are only filled when the limit is greater than the number of terms." />
     <string id="AF_KNOWLEDGE_RetrievalSwitchSource" text="Configuration source: switch to {SOURCE}" />
     <string id="AF_KNOWLEDGE_RetrievalToggle" text="Semantic retrieval: {STATE}" />
     <string id="AF_KNOWLEDGE_RetrievalTopK" text="Set knowledge return limit (current: {TOPK})" />
@@ -621,10 +621,10 @@ Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_MappingSummaryStatus" text="{BASE} (true: {TRUE}/false: {FALSE})" />
     <string id="AF_KNOWLEDGE_MappingSummaryEmptyFallback" text=" [empty =&gt; {TEXT}]" />
     <string id="AF_KNOWLEDGE_MappingSummary" text="{SOURCE} -&gt; {KIND} ({TARGET}) =&gt; {VALUE}" />
-    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="\nTrue-state text: {TRUE}\nFalse-state text: {FALSE}" />
-    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="\nEmpty-value text: {TEXT}" />
-    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="\nAge range: {RANGE}" />
-    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="Source text: {SOURCE}\nMapping type: {KIND}\nTarget {TARGET_TYPE}: {TARGET}{STATUS}{EMPTY}{AGE}\nCurrent preview: {PREVIEW}" />
+    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="&#10;True-state text: {TRUE}&#10;False-state text: {FALSE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="&#10;Empty-value text: {TEXT}" />
+    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="&#10;Age range: {RANGE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="Source text: {SOURCE}&#10;Mapping type: {KIND}&#10;Target {TARGET_TYPE}: {TARGET}{STATUS}{EMPTY}{AGE}&#10;Current preview: {PREVIEW}" />
     <string id="AF_KNOWLEDGE_ExportRuleEmpty" text="Knowledge entry is empty." />
     <string id="AF_KNOWLEDGE_ExportRagTooLong" text="Knowledge entry {NAME}{ID} contains a RAG short text longer than {MAX} characters. Shorten it before continuing." />
     <string id="AF_KNOWLEDGE_ExportRagMissing" text="Knowledge entry {NAME}{ID} has no RAG short text. Add one before exporting." />
@@ -664,5 +664,11 @@ Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_DatabaseReloadEmptyEntry" text="The package contains an empty knowledge entry." />
     <string id="AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty" text="Knowledge entry {SOURCE} has an empty RuleId." />
     <string id="AF_KNOWLEDGE_DatabaseReloadDuplicateId" text="Could not generate a stable ID for duplicate knowledge RuleId: {ID}" />
-  </strings>
+      <string id="AF_KNOWLEDGE_RoleDetailTitle" text="Specific identity - {ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleSearchTitle" text="Search {ROLE}" />
+    <string id="AF_KNOWLEDGE_VariantEditorDescription" text="Current conditions: {CONDITION}&#10;&#10;Current content preview:&#10;{PREVIEW}{TRUNCATED}" />
+    <string id="AF_KNOWLEDGE_RagParseFailureTitle" text="RAG short-text parsing failed" />
+    <string id="AF_KNOWLEDGE_RagParseFailureReason" text="The model reply could not be parsed into RAG short texts. A deterministic fallback will be used." />
+    <string id="AF_KNOWLEDGE_RagGenerationFailureTitle" text="RAG short-text generation failed" />
+</strings>
 </base>

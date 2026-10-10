@@ -268,6 +268,9 @@ internal static class KnowledgeUiTexts
 	public static string RagGenerating => Text("AF_KNOWLEDGE_RagGenerating", "[Knowledge] Generating RAG short texts. Please wait...");
 	public static string RagGenerated(int count) => Text("AF_KNOWLEDGE_RagGenerated", "[Knowledge] Generated and added {COUNT} RAG short texts.", ("COUNT", count.ToString()));
 	public static string RagNoNew => Text("AF_KNOWLEDGE_RagNoNew", "[Knowledge] No new RAG short texts were generated; they may duplicate existing content.");
+	public static string RagParseFailureTitle => Text("AF_KNOWLEDGE_RagParseFailureTitle", "RAG short-text parsing failed");
+	public static string RagParseFailureReason => Text("AF_KNOWLEDGE_RagParseFailureReason", "The model reply could not be parsed into RAG short texts. A deterministic fallback will be used.");
+	public static string RagGenerationFailureTitle => Text("AF_KNOWLEDGE_RagGenerationFailureTitle", "RAG short-text generation failed");
 	public static string PrototypeDisabled => Text("AF_KNOWLEDGE_PrototypeDisabled", "[Knowledge] Prototype sentences are disabled. Maintain keywords, RAG short texts and prompts directly.");
 
 	public static string PrototypeCountSummary(int count, string query, int page, int pages, bool empty)
