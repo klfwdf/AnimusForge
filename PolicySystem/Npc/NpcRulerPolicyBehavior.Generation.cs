@@ -231,6 +231,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		try
 		{
 			PolicyApiExecutionProfile apiProfile = ResolveNpcPolicyApiProfile();
+			context.EffectRetrievalSnapshot = PolicyEffectModuleRetrievalSettings.CaptureRequestSnapshot(
+				PolicyEffectRetrievalContext.NpcRulerKingdom, DuelSettings.GetPlayerPolicyEffectModuleDetailCountForExternal());
 			job = new NpcPolicyGenerationJob
 			{
 				JobId = "npc_policy_job:" + context.BatchId,
@@ -370,6 +372,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		try
 		{
 			PolicyApiExecutionProfile apiProfile = ResolveNpcPolicyApiProfile();
+			context.EffectRetrievalSnapshot = PolicyEffectModuleRetrievalSettings.CaptureRequestSnapshot(
+				PolicyEffectRetrievalContext.NpcRulerKingdom, DuelSettings.GetPlayerPolicyEffectModuleDetailCountForExternal());
 			job = new NpcPolicyGenerationJob
 			{
 				JobId = "npc_policy_job:" + context.BatchId,
@@ -3460,9 +3464,9 @@ public sealed partial class NpcRulerPolicyBehavior
 		return ComposeNpcPolicyDraftPrompt(context, ResolveNpcRulerPolicyEditablePrompt());
 	}
 
-	private const int NpcPolicyCandidateModuleLimit = 12;
+	private const int NpcPolicyCandidateModuleLimit = PolicyEffectModuleRouter.CandidateHardMaximum;
 	private const int NpcPolicyCompiledInstanceLimit = 24;
-	private const int NpcPolicyDetailedModuleLimit = 8;
+	private const int NpcPolicyDetailedModuleLimit = PolicyEffectModuleRouter.DetailHardMaximum;
 	private const int NpcPolicyMechanismLimit = 6;
 
 	private static void EnsureNpcPolicyModuleAllowlists(NpcRulerPolicyBatchContext context, string editablePrompt)
@@ -3853,6 +3857,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		long runtimeGeneration)
 	{
 		NpcRulerPolicyKingdomContext target = RequireSingleNpcPolicyKingdomContext(context);
+		PolicyEffectModuleRetrievalRequestSnapshot retrieval = context.EffectRetrievalSnapshot
+			?? throw new InvalidOperationException("NPC policy retrieval settings were not frozen before generation.");
 		string routingQuery = (draft?.PolicyName ?? string.Empty).Trim() + "\n" + (draft?.PolicyContent ?? string.Empty).Trim();
 		Func<string, float[]> queryEmbeddingProvider = NpcPolicyQueryEmbeddingOverrideForTests;
 		if (queryEmbeddingProvider == null)
@@ -3872,10 +3878,9 @@ public sealed partial class NpcRulerPolicyBehavior
 			draft?.PolicyContent,
 			draft?.ImpactSummary,
 			draft?.NumericIntent,
-			PolicyEffectRetrievalContext.NpcRulerKingdom,
-			PolicyEffectModuleRetrievalSettings.GetEnabledModules(PolicyEffectRetrievalContext.NpcRulerKingdom)
-				.Select(module => module.Id),
-			DuelSettings.GetPlayerPolicyEffectModuleDetailCountForExternal(),
+			retrieval.Context,
+			retrieval.EnabledModuleIds,
+			retrieval.RequestedDetailCount,
 			embeddingSession);
 		context.CandidateModuleIds = routing.Candidates.Select(selection => selection.Module.Id).ToList();
 		context.DetailedModuleIds = routing.Details.Select(selection => selection.Module.Id).ToList();

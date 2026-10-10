@@ -1752,6 +1752,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		public string NpcReplyText;
 		public string HistoryContext;
 		public string ChainName;
+		// Runtime generation snapshot, not part of any persisted policy record.
+		public PolicyEffectModuleRetrievalRequestSnapshot EffectRetrievalSnapshot;
 		public List<string> CandidateModuleIds = new List<string>();
 		public List<string> DetailedModuleIds = new List<string>();
 		public string RoutingQueryHash;

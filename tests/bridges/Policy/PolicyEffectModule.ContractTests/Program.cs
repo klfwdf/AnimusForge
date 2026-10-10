@@ -116,6 +116,20 @@ internal static partial class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if (args.Any(value => value == "--policy-production-retrieval-only"))
+			{
+				TestProductionPolicyRetrievalContracts();
+				Console.WriteLine("PASS productionPolicyRetrievalAssertions=" + _assertionCount);
+				return 0;
+			}
+			if (args.Any(value => value == "--policy-production-onnx-only"))
+			{
+				Check(!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(OnnxRuntimeDirectoryEnvironmentVariable))
+					&& args.Contains(OnnxModuleRootOption), "Production ONNX matrix requires explicit runtime and module assets; skipping is not a pass.");
+				TestProductionPolicyOnnxMatrix();
+				Console.WriteLine("PASS productionPolicyOnnxAssertions=" + _assertionCount);
+				return 0;
+			}
 			if (args.Any(value => value == "--policy-record-management-only"))
 			{
 				TestPolicyRecordManagementContracts();
@@ -628,6 +642,12 @@ internal static partial class Program
 			patchedAssemblies);
 		foreach (Assembly assembly in patchedAssemblies)
 		{
+			if (args.Contains("--policy-production-onnx-only"))
+			{
+				VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveEmbedding", "ONNX", true);
+				InitializeOnnxContractEmbedding(assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true), moduleRoot);
+				continue;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-cold-main-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				if (assembly == _sut) VerifyOnnxContractColdMainGate(assembly, moduleRoot);

@@ -221,15 +221,16 @@ internal static class PolicyEffectModuleRouter
 		// model-length truncation; C# must not replace the authoritative query with a narrative fragment.
 		List<string> queries = new List<string>(QueryIntentLimit) { authoritative };
 		HashSet<string> seen = new HashSet<string>(queries, StringComparer.Ordinal);
+		HashSet<string> clauseSeen = new HashSet<string>(StringComparer.Ordinal);
 		IReadOnlyList<IPolicyEffectModule> modules = enabledModules ?? Array.Empty<IPolicyEffectModule>();
 		List<(string Text, int Ordinal, bool CueMatched, bool NumericOrTimed)> clauses = new List<(string, int, bool, bool)>();
 		int ordinal = 0;
 		foreach (string part in (policyContent ?? string.Empty).Split(
 			new[] { '\r', '\n', '。', '；', ';', '，', ',', '！', '!', '？', '?' },
-			StringSplitOptions.RemoveEmptyEntries))
+			StringSplitOptions.RemoveEmptyEntries).SelectMany(SplitQueryWindows))
 		{
 			string clause = LimitText(part.Trim(), QueryIntentCharacterLimit);
-			if (clause.Length < 2 || !seen.Add(clause))
+			if (clause.Length < 2 || !clauseSeen.Add(clause))
 			{
 				ordinal++;
 				continue;
@@ -251,7 +252,8 @@ internal static class PolicyEffectModuleRouter
 		{
 			supplements.Add("影响概述：" + impactSummary.Trim());
 		}
-		if (!string.IsNullOrWhiteSpace(numericIntent))
+		if (!string.IsNullOrWhiteSpace(numericIntent)
+			&& !string.Equals(numericIntent.Trim(), "无直接数值意图", StringComparison.Ordinal))
 		{
 			supplements.Add("数值意图：" + numericIntent.Trim());
 		}
@@ -277,6 +279,18 @@ internal static class PolicyEffectModuleRouter
 		currentLimit = QueryIntentLimit;
 		addQueries(supplements);
 		return queries;
+	}
+
+	private static IEnumerable<string> SplitQueryWindows(string text)
+	{
+		string clean = (text ?? string.Empty).Trim();
+		const int overlap = 64;
+		for (int offset = 0; offset < clean.Length; offset += QueryIntentCharacterLimit - overlap)
+		{
+			int length = Math.Min(QueryIntentCharacterLimit, clean.Length - offset);
+			yield return clean.Substring(offset, length);
+			if (offset + length == clean.Length) yield break;
+		}
 	}
 
 	internal static IReadOnlyList<PolicyEffectModuleSelection> Recall(float[] queryVector, string scope)
