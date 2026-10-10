@@ -260,134 +260,23 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private static Dictionary<int, int> PlayerRpMedianPriceByItemType = new Dictionary<int, int>();
 	private static int PlayerRpCraftCommitGate;
 	private static readonly char[] GeneratedRpTrailingPunctuation = new char[24] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011', ')', ']', '}', '\uff09', '\u3015', '\u3009' };
-	private static readonly string[] GeneratedRpFoodNonFoodEndingExceptions = new string[]
-	{
-		"如果", "结果", "后果", "因果", "效果", "成果", "战果", "恶果", "苦果",
-		"笨蛋", "混蛋", "坏蛋", "傻蛋", "滚蛋", "完蛋", "脸蛋", "捣蛋", "穷光蛋", "王八蛋",
-		"奶奶", "姑奶奶",
-		"血肉", "骨肉", "皮肉",
-		"铁饼", "画饼", "帮派",
-		"香水", "花露水", "墨水", "薪水", "泪水", "汗水", "口水", "血水", "海水", "洪水", "污水", "废水", "泥水",
-		"火药", "炸药", "弹药", "农药", "鼠药", "麻药", "迷药", "外用药", "膏药", "兽药", "杀虫药",
-		"waste water", "sea water", "dirty water", "sewage water"
-	};
-	private static readonly string[] GeneratedRpEquipmentNonEquipmentEndingExceptions = new string[]
-	{
-		"bottle cap", "jar cap", "pen cap", "hub cap", "wheel cap", "knee cap",
-		"gold standard", "living standard", "quality standard", "industry standard",
-		"safety standard", "technical standard", "accounting standard"
-	};
-	private static readonly string[] GeneratedRpFoodMeatTemplateTokens = new string[20] { "meat", "beef", "pork", "mutton", "lamb", "chicken", "poultry", "turkey", "duck", "venison", "bacon", "ham", "sausage", "steak", "jerky", "肉", "牛排", "羊排", "猪排", "香肠" };
-	private static readonly string[] GeneratedRpFoodFishTemplateTokens = new string[15] { "fish", "seafood", "salmon", "trout", "herring", "tuna", "sardine", "shrimp", "prawn", "crab", "oyster", "shellfish", "鱼", "虾", "蟹" };
-	private static readonly string[] GeneratedRpFoodGrainTemplateTokens = new string[18] { "grain", "wheat", "flour", "bread", "rice", "noodle", "pasta", "porridge", "cereal", "oatmeal", "dumpling", "ration", "粮", "麦", "面包", "米饭", "面条", "粥" };
-	private static readonly string[] GeneratedRpFoodFruitTemplateTokens = new string[22] { "fruit", "apple", "pear", "peach", "plum", "apricot", "grape", "berry", "orange", "lemon", "melon", "banana", "mango", "coconut", "olive", "date_fruit", "苹果", "梨", "葡萄", "水果", "浆果", "枣" };
-	private static readonly string[] GeneratedRpFoodVegetableTemplateTokens = new string[18] { "vegetable", "veggie", "cabbage", "carrot", "potato", "onion", "garlic", "lentil", "chickpea", "bean", "pea", "turnip", "mushroom", "蔬菜", "白菜", "萝卜", "土豆", "蘑菇" };
-	private static readonly string[] GeneratedRpFoodDairyTemplateTokens = new string[12] { "dairy", "cheese", "butter", "cream", "milk", "yogurt", "yoghurt", "奶酪", "芝士", "黄油", "牛奶", "酸奶" };
-	private static readonly string[] GeneratedRpFoodEggTemplateTokens = new string[6] { "egg", "鸡蛋", "鸭蛋", "鹅蛋", "鸟蛋", "鹌鹑蛋" };
-	private static readonly string[] GeneratedRpFoodSweetTemplateTokens = new string[18] { "cake", "pastry", "biscuit", "cookie", "candy", "chocolate", "pudding", "jam", "honey", "sweet", "糖果", "巧克力", "蛋糕", "糕", "布丁", "果酱", "蜂蜜", "甜点" };
-	private static readonly string[] GeneratedRpFoodBeerTemplateTokens = new string[8] { "beer", "ale", "lager", "stout", "porter", "啤酒", "麦酒", "麦芽酒" };
-	private static readonly string[] GeneratedRpFoodWineTemplateTokens = new string[13] { "wine", "mead", "cider", "liquor", "spirit", "葡萄酒", "果酒", "蜂蜜酒", "红酒", "白酒", "米酒", "黄酒", "烈酒" };
-	private static readonly string[] GeneratedRpFoodDrinkTemplateTokens = new string[16] { "drink", "beverage", "juice", "tea", "coffee", "cocoa", "milkshake", "beer", "wine", "果汁", "饮料", "饮品", "茶", "咖啡", "啤酒", "酒" };
-	private static readonly string[] GeneratedRpFoodWaterTemplateTokens = new string[15] { "water", "freshwater", "spring water", "mineral water", "drinking water", "泉水", "井水", "清水", "净水", "纯净水", "饮用水", "矿泉水", "淡水", "开水", "圣水" };
-	private static readonly string[] GeneratedRpFoodMedicineTemplateTokens = new string[20] { "medicine", "medication", "remedy", "potion", "elixir", "tonic", "antidote", "drug", "pill", "capsule", "herb", "syrup", "药", "药剂", "药丸", "药水", "丹药", "灵药", "草药", "解药" };
-	private static readonly GeneratedRpEquipmentSuffixRule[] GeneratedRpEquipmentSuffixRules = new GeneratedRpEquipmentSuffixRule[]
-	{
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, false, "投斧", "飞斧"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, false, "投刀", "飞刀"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, false, "标枪"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, false, "霰弹枪", "散弹枪", "狙击枪", "冲锋枪", "左轮枪", "燧发枪", "火绳枪", "激光枪", "猎枪", "机枪", "火枪", "手枪", "步枪", "鸟铳", "火铳", "铳"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, false, "弩箭", "弩矢"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, false, "强弩", "重弩", "轻弩", "弩"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, false, "长弓", "短弓", "战弓", "反曲弓", "弓"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, false, "盾牌", "大盾", "小盾", "圆盾", "塔盾", "盾"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, false, "箭矢", "箭袋", "箭"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, false, "投石索"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, false, "弹药", "子弹", "枪弹"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, false, "匕首", "短刃", "小刀"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Whip, false, "马鞭", "长鞭", "短鞭", "战鞭", "皮鞭", "鞭子", "鞭"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, false, "双手剑", "单手剑", "长剑", "短剑", "大剑", "巨剑", "弯刀", "佩剑", "战刀", "军刀", "长刀", "短刀", "剑", "刀"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, false, "双手斧", "单手斧", "战斧", "巨斧", "手斧", "斧"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, false, "钉头锤", "战锤", "大锤", "铁锤", "锤矛", "权杖", "锤", "棒", "棍"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, false, "长柄武器", "长柄", "长枪", "骑枪", "短枪", "战矛", "长矛", "短矛", "槊", "戟", "矛", "枪"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, false, "投掷武器"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Horse, false, "战马", "骏马", "军马", "良马", "坐骑", "马匹"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, false, "马铠", "马甲", "马具", "鞍具", "马鞍", "鞍"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "兜帽", "风帽", "帽子", "头巾", "面纱", "面甲", "面罩", "面具", "头冠", "王冠", "冠冕", "盔", "帽"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "腕甲", "臂铠", "护臂", "护腕", "护手", "手套", "拳套", "手衣"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "足甲", "脚甲", "护腿", "护胫", "护膝", "战靴", "长靴", "靴子", "鞋子", "战鞋", "皮鞋", "布鞋", "凉鞋", "袜子", "长袜", "短袜", "靴", "鞋", "袜"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩", "围巾", "披巾", "披帛"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "长袍", "短袍", "战袍", "法袍", "礼袍", "罩袍", "袍子", "袍"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "上衣", "外衣", "衬衣", "内衣", "衣服", "服装", "礼服", "制服", "战服", "外套", "大衣", "夹克", "长衫", "短衫", "衫", "衣"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "裤子", "长裤", "短裤", "马裤", "皮裤", "布裤", "裙子", "长裙", "短裙", "战裙", "裤", "裙"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "胸甲", "身甲", "板甲", "链甲", "鳞甲", "皮甲", "布甲", "重甲", "轻甲"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "甲胄", "铠甲", "盔甲", "护甲", "铠", "甲"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, false, "旗帜", "军旗", "战旗", "旗"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, false, "武器", "兵器", "兵刃"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, false, "装备", "武装"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, true, "throwing axes", "throwing axe"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, true, "throwing knives", "throwing knife"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, true, "javelins", "javelin"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, true, "crossbows", "crossbow"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, true, "longbows", "longbow", "shortbows", "shortbow", "warbows", "warbow", "recurve bows", "recurve bow", "bows", "bow"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, true, "shields", "shield", "bucklers", "buckler"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, true, "arrows", "arrow", "quivers", "quiver"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, true, "crossbow bolts", "bolts", "bolt"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, true, "slings", "sling"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, true, "pistols", "pistol", "muskets", "musket", "rifles", "rifle", "firearms", "firearm", "guns", "gun"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, true, "ammunition", "ammo", "bullets", "bullet"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, true, "longswords", "longsword", "shortswords", "shortsword", "broadswords", "broadsword", "greatswords", "greatsword", "swords", "sword", "sabers", "saber", "sabres", "sabre", "scimitars", "scimitar", "katanas", "katana", "blades", "blade"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, true, "battleaxes", "battleaxe", "greataxes", "greataxe", "handaxes", "handaxe", "axes", "axe"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, true, "warhammers", "warhammer", "hammers", "hammer", "maces", "mace", "clubs", "club"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, true, "daggers", "dagger", "knives", "knife"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Whip, true, "horsewhips", "horsewhip", "bullwhips", "bullwhip", "whips", "whip"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, true, "polearms", "polearm", "spears", "spear", "lances", "lance", "pikes", "pike", "halberds", "halberd", "glaives", "glaive"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, true, "throwing weapons", "thrown weapons"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Horse, true, "warhorses", "warhorse", "horses", "horse", "steeds", "steed", "mounts", "mount"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, true, "horse armors", "horse armor", "horse armours", "horse armour", "bardings", "barding", "saddles", "saddle", "harnesses", "harness"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm", "headscarves", "headscarf", "circlets", "circlet", "turbans", "turban", "crowns", "crown", "hoods", "hood", "hats", "hat", "caps", "cap", "masks", "mask", "veils", "veil", "coifs", "coif"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace", "mittens", "mitten", "handwraps", "handwrap", "wristguards", "wristguard", "armguards", "armguard"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, true, "greaves", "greave", "boots", "boot", "shoes", "shoe", "sandals", "sandal", "slippers", "slipper", "leggings", "legging", "stockings", "stocking", "socks", "sock", "footwear"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, true, "pauldrons", "pauldron", "capes", "cape", "cloaks", "cloak", "mantles", "mantle", "scarves", "scarf", "shawls", "shawl"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "robes", "robe", "tunics", "tunic", "shirts", "shirt", "trousers", "trouser", "pants", "breeches", "skirts", "skirt", "kilts", "kilt"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "dresses", "dress", "gowns", "gown", "coats", "coat", "jackets", "jacket", "waistcoats", "waistcoat", "vests", "vest", "jerkins", "jerkin", "doublets", "doublet"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "uniforms", "uniform", "outfits", "outfit", "garments", "garment", "clothing", "clothes", "apparel"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "body armors", "body armor", "body armours", "body armour", "chest armors", "chest armor", "chest armours", "chest armour", "cuirasses", "cuirass", "breastplates", "breastplate", "chainmail"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "armors", "armor", "armours", "armour"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, true, "banners", "banner", "standards", "standard"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, true, "weapons", "weapon", "armaments", "armament"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, true, "equipment", "combat gear", "gear")
-	};
-	private static readonly GeneratedRpFoodSuffixRule[] GeneratedRpFoodSuffixRules = new GeneratedRpFoodSuffixRule[]
-	{
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Medicine, false, "疗伤药水", "解毒药水", "治疗药水", "恢复药水", "法力药水", "生命药水", "药水", "药剂", "药丸", "药片", "药粉", "药散", "药材", "药草", "药酒", "药茶", "药汤", "药粥", "药膳", "丹药", "灵药", "草药", "汤药", "中药", "西药", "补药", "秘药", "圣药", "神药", "解药", "伤药", "疗伤药", "退烧药", "止痛药", "治病药", "仙丹", "金丹", "灵丹", "妙药", "药"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, false, "麦芽啤酒", "黑啤酒", "白啤酒", "淡啤酒", "啤酒", "麦芽酒", "麦酒"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Wine, false, "蜂蜜酒", "葡萄酒", "苹果酒", "梨酒", "果酒", "米酒", "黄酒", "白酒", "红酒", "烈酒", "烧酒", "清酒", "甜酒", "奶酒", "酒"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Drink, false, "蔬菜汁", "葡萄汁", "苹果汁", "柠檬汁", "橙汁", "梨汁", "果汁", "酸梅汤", "奶茶", "红茶", "绿茶", "花茶", "茶", "咖啡", "可可", "饮料", "饮品", "汽水"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Water, false, "饮用水", "矿泉水", "纯净水", "过滤水", "净化水", "蜂蜜水", "柠檬水", "椰子水", "泉水", "井水", "清水", "净水", "淡水", "凉水", "温水", "热水", "开水", "圣水", "河水", "雨水", "糖水", "盐水", "水"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Sweet, false, "巧克力蛋糕", "蜂蜜蛋糕", "奶油蛋糕", "水果蛋糕", "蛋糕", "糕点", "米糕", "年糕", "发糕", "糕", "饼干", "月饼", "烧饼", "煎饼", "烙饼", "馅饼", "糖果", "软糖", "硬糖", "蜂蜜", "巧克力", "布丁", "卜丁", "果酱", "甜点"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fish, false, "烤鱼青", "鱼青", "烤虾圭", "虾圭", "虾面盒", "鱼肉", "烤鱼", "咸鱼", "熏鱼", "鱼干", "鱼排", "鱼丸", "鱼饼", "河鱼", "海鱼", "鲜鱼", "海鲜", "虾", "蟹", "鱼"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Meat, false, "鸡丁敏士", "烤马骏", "纸包鸡", "椰子鸡", "奶油鸡", "焖鸡", "鸡肉元", "肉元", "鸡肉丝", "肉丝", "鸡肉饼", "鸡卷", "鸡排", "鸡徘", "牛扒", "羊腿", "羊肝", "牛尾", "牛排", "羊排", "猪排", "肉排", "牛肉", "羊肉", "猪肉", "鸡肉", "鸭肉", "鹅肉", "鹿肉", "兔肉", "马肉", "禽肉", "兽肉", "熏肉", "腊肉", "烤肉", "肉干", "肉饼", "肉松", "肉酱", "肉串", "香肠", "火腿", "培根", "肉丸", "肉"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, false, "谷物", "穀物", "谷类", "穀類", "五谷", "五穀", "杂粮", "雜糧", "粗粮", "粗糧", "细粮", "細糧", "稻谷", "稻穀", "谷子", "穀子", "面包", "馒头", "包子", "饺子", "馄饨", "面条", "拉面", "汤面", "炒面", "凉面", "挂面", "意面", "米饭", "炒饭", "饭团", "稀饭", "米粥", "麦粥", "麦片", "大米", "小麦", "燕麦", "玉米", "口粮", "粮食", "饭", "粥", "粮"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fruit, false, "苹果", "雪梨", "鸭梨", "香梨", "梨", "樱桃", "桃子", "蜜桃", "李子", "杏子", "红枣", "蜜枣", "枣", "葡萄", "橙子", "橘子", "柑橘", "柠檬", "石榴", "香蕉", "芒果", "菠萝", "柚子", "柿子", "椰子", "西瓜", "甜瓜", "草莓", "蓝莓", "树莓", "黑莓", "浆果", "莓果", "莓", "水果", "鲜果", "干果", "坚果", "果"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Vegetable, false, "大白菜", "小白菜", "胡萝卜", "马铃薯", "大蒜", "生姜", "白菜", "青菜", "蔬菜", "萝卜", "土豆", "红薯", "地瓜", "南瓜", "黄瓜", "冬瓜", "丝瓜", "茄子", "洋葱", "豆角", "豌豆", "扁豆", "蚕豆", "豆腐", "蘑菇", "香菇", "菌菇", "菜"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Dairy, false, "奶酪", "乳酪", "芝士", "黄油", "奶油", "酸奶", "牛奶", "羊奶", "马奶", "驼奶", "椰奶", "乳品", "奶"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Egg, false, "鹌鹑蛋", "鸡蛋", "鸭蛋", "鹅蛋", "鸟蛋", "咸蛋", "皮蛋", "蛋"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.PreparedMeal, false, "三明治", "汉堡", "炖菜", "沙拉", "菜肴", "佳肴", "寿司", "浓汤", "肉汤", "鱼汤", "菜汤", "汤", "羹", "餐", "食物", "食品"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Medicine, true, "healing potions", "healing potion", "health potions", "health potion", "medicinal syrups", "medicinal syrup", "herbal medicines", "herbal medicine", "medicines", "medicine", "medications", "medication", "remedies", "remedy", "potions", "potion", "elixirs", "elixir", "tonics", "tonic", "antidotes", "antidote", "capsules", "capsule", "pills", "pill", "herbs", "herb", "syrups", "syrup", "drugs", "drug"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Water, true, "purified waters", "purified water", "drinking waters", "drinking water", "mineral waters", "mineral water", "spring waters", "spring water", "holy waters", "holy water", "clean waters", "clean water", "fresh waters", "fresh water", "rainwaters", "rainwater", "freshwaters", "freshwater", "waters", "water"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Wine, true, "sparkling wines", "sparkling wine", "dessert wines", "dessert wine", "red wines", "red wine", "white wines", "white wine", "fruit wines", "fruit wine", "meads", "mead", "ciders", "cider", "liquors", "liquor", "spirits", "spirit", "wines", "wine"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, true, "wheat beers", "wheat beer", "dark beers", "dark beer", "lagers", "lager", "stouts", "stout", "porters", "porter", "beers", "beer", "ales", "ale"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Drink, true, "vegetable juices", "vegetable juice", "fruit juices", "fruit juice", "apple juices", "apple juice", "orange juices", "orange juice", "grape juices", "grape juice", "lemonades", "lemonade", "milkshakes", "milkshake", "beverages", "beverage", "drinks", "drink", "juices", "juice", "coffees", "coffee", "teas", "tea", "cocoa"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Sweet, true, "cheesecakes", "cheesecake", "fruitcakes", "fruitcake", "shortcakes", "shortcake", "moon cakes", "moon cake", "mooncakes", "mooncake", "cupcakes", "cupcake", "pancakes", "pancake", "cakes", "cake", "pastries", "pastry", "biscuits", "biscuit", "cookies", "cookie", "candies", "candy", "chocolates", "chocolate", "puddings", "pudding", "jams", "jam", "honeys", "honey", "sweets", "sweet"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fish, true, "smoked salmon", "grilled salmon", "salmons", "salmon", "trouts", "trout", "herrings", "herring", "tunas", "tuna", "sardines", "sardine", "shrimps", "shrimp", "prawns", "prawn", "crabs", "crab", "oysters", "oyster", "shellfish", "seafood", "fishes", "fish"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Meat, true, "beefsteaks", "beefsteak", "lamb chops", "lamb chop", "pork chops", "pork chop", "meatballs", "meatball", "sausages", "sausage", "venison", "mutton", "chicken", "poultry", "turkey", "ducks", "duck", "bacons", "bacon", "jerkies", "jerky", "steaks", "steak", "beefs", "beef", "porks", "pork", "lambs", "lamb", "hams", "ham", "meats", "meat"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, true, "sourdough breads", "sourdough bread", "flatbreads", "flatbread", "cornbreads", "cornbread", "bread rolls", "bread roll", "dumplings", "dumpling", "porridges", "porridge", "noodles", "noodle", "pastas", "pasta", "cereals", "cereal", "oatmeals", "oatmeal", "breads", "bread", "rices", "rice", "grains", "grain", "wheats", "wheat", "rations", "ration"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fruit, true, "date fruits", "date fruit", "dragon fruits", "dragon fruit", "passion fruits", "passion fruit", "strawberries", "strawberry", "blueberries", "blueberry", "raspberries", "raspberry", "blackberries", "blackberry", "coconuts", "coconut", "pomegranates", "pomegranate", "apricots", "apricot", "bananas", "banana", "oranges", "orange", "lemons", "lemon", "melons", "melon", "mangoes", "mango", "grapes", "grape", "peaches", "peach", "plums", "plum", "pears", "pear", "apples", "apple", "berries", "berry", "olives", "olive", "fruits", "fruit"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Vegetable, true, "sweet potatoes", "sweet potato", "green beans", "green bean", "kidney beans", "kidney bean", "mushrooms", "mushroom", "cabbages", "cabbage", "carrots", "carrot", "potatoes", "potato", "onions", "onion", "garlics", "garlic", "lentils", "lentil", "chickpeas", "chickpea", "beans", "bean", "peas", "pea", "turnips", "turnip", "vegetables", "vegetable", "veggies", "veggie"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Dairy, true, "goat cheeses", "goat cheese", "cream cheeses", "cream cheese", "yoghurts", "yoghurt", "yogurts", "yogurt", "cheeses", "cheese", "butters", "butter", "creams", "cream", "milks", "milk", "dairy products", "dairy"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Egg, true, "quail eggs", "quail egg", "duck eggs", "duck egg", "chicken eggs", "chicken egg", "boiled eggs", "boiled egg", "fried eggs", "fried egg", "eggs", "egg"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.PreparedMeal, true, "meat pies", "meat pie", "fruit pies", "fruit pie", "cheeseburgers", "cheeseburger", "hot dogs", "hot dog", "sandwiches", "sandwich", "hamburgers", "hamburger", "burgers", "burger", "pizzas", "pizza", "tacos", "taco", "curries", "curry", "kebabs", "kebab", "sushis", "sushi", "salads", "salad", "stews", "stew", "soups", "soup", "pies", "pie", "meals", "meal", "foods", "food")
-	};
+	private static readonly string[] GeneratedRpFoodNonFoodEndingExceptions = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodNonFoodEndingExceptions));
+	private static readonly string[] GeneratedRpEquipmentNonEquipmentEndingExceptions = GeneratedRpVocabulary.Strings(nameof(GeneratedRpEquipmentNonEquipmentEndingExceptions));
+	private static readonly string[] GeneratedRpFoodMeatTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodMeatTemplateTokens));
+	private static readonly string[] GeneratedRpFoodFishTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodFishTemplateTokens));
+	private static readonly string[] GeneratedRpFoodGrainTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodGrainTemplateTokens));
+	private static readonly string[] GeneratedRpFoodFruitTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodFruitTemplateTokens));
+	private static readonly string[] GeneratedRpFoodVegetableTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodVegetableTemplateTokens));
+	private static readonly string[] GeneratedRpFoodDairyTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodDairyTemplateTokens));
+	private static readonly string[] GeneratedRpFoodEggTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodEggTemplateTokens));
+	private static readonly string[] GeneratedRpFoodSweetTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodSweetTemplateTokens));
+	private static readonly string[] GeneratedRpFoodBeerTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodBeerTemplateTokens));
+	private static readonly string[] GeneratedRpFoodWineTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodWineTemplateTokens));
+	private static readonly string[] GeneratedRpFoodDrinkTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodDrinkTemplateTokens));
+	private static readonly string[] GeneratedRpFoodWaterTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodWaterTemplateTokens));
+	private static readonly string[] GeneratedRpFoodMedicineTemplateTokens = GeneratedRpVocabulary.Strings(nameof(GeneratedRpFoodMedicineTemplateTokens));
+	private static readonly GeneratedRpEquipmentSuffixRule[] GeneratedRpEquipmentSuffixRules = GeneratedRpVocabulary.EquipmentRules();
+	private static readonly GeneratedRpFoodSuffixRule[] GeneratedRpFoodSuffixRules = GeneratedRpVocabulary.FoodRules();
 
 	public class RewardItemInfo
 	{
