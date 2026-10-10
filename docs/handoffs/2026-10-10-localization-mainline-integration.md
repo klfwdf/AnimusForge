@@ -146,3 +146,12 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - C# PromptWorldFixture实现新接口并使用嵌入的权威中文资源保持原业务预言，新增英文参与国必选/候选限制及JSON示例断言，原中文测试未删除。该SmokeTests及产品1.3/1.4编译没有运行；实际资源DLL测试不等于新C#已加载。没有部署/打包/推送。
 - Jev work/localization-decisions-20261011-02：先offline后一次8项语义检查，均选择preserved但4项置信不足（37/99/134/137），needs_review=true，不能记作全通过；人工逐条复核条约角色、原案绑定、不可撤销既成效果及20/15威望扣除条件与原句一致。3029输入/359输出，返回cost0.0018174，底层版本未固定。
 - 未覆盖：GetCommonDiplomacyContract、WorldDiplomacyPromptContractRules共享段、TextRules返回标签、政策/战争/亲属等外部事实片段、用户或存档公文正文；这些仍可能把中文带进最终请求。下一步继续处理这些真实上游，不以本文件237处完成声称整个外交链路全英文。回滚使用本片精确提交的focused inverse，C任务模块及其他作者dirty未触碰。
+
+## 外交共同契约与内置偏好（2026-10-11）
+
+- 基线d446823a6。DuelSettings.DiplomacyPromptLocalization.cs为共同契约v25、内置偏好、偏好段标题与约束句提供4对资源英文fallback；复用DiplomacyUiLocalization，无新加载器/磁盘缓存/异常兜底。
+- 唯一生产接线为WorldDiplomacyBehavior.BuildCommonDiplomacySystemPrefix：同步请求组装时调用LocalizeWorldDiplomacyContractForPrompt。旧GetWorldDiplomacyCommonContractForExternal及obsolete别名仍返回原始协议，DuelSettings.cs逐字未改；设置迁移/文件写入不受语言切换影响。原中文常量目前继续用于旧合同识别，后续源码语料外置仍待处理。
+- 完整已知合同用已有TryExtractWorldDiplomacyPreference拆出偏好；仅与DefaultWorldDiplomacyPreference ordinal完全相等时换成内置双语偏好，自定义正文不翻译/不覆盖，未知合同整体透传。中文资源逐值等于原常量。请求构建频率解析，未新增Tick全量扫描或IO。
+- DiplomacyCommonContractLocalizationTests：4资源、完整设置源码不变、单一主机接线、原中文组合/自定义保留模拟PASS。LegacySettingsPromptContractTests117、LocalizationResourceContractTests29对PASS；既有1.3/1.4 DLL各5108资源解析及6JSON字面括号解析PASS。新C#产品编译/调用回放/游戏/旧档未运行。
+- Jev work/localization-decisions-20261011-03先offline后一次3题，全部preserved；共同契约0.92、guard0.95、默认偏好0.73触发needs_review。人工复核默认偏好的强弱应对、尊严、多国交战求盟、生存优先与长期战略顺序保持。2136输入/136输出，返回cost0.0012816，底层版本未固定；不当作编译或实机证据。
+- 未覆盖：WorldDiplomacyPromptContractRules固定MODE合同仍含中文与中文字符要求；外部政策/战争/历史事实仍可能中文。此片实际增加共同前缀的双语覆盖，未声称源码中文净减少或整个外交链路英文完成。回滚使用本片精确提交的focused inverse；未推送、部署或打包。

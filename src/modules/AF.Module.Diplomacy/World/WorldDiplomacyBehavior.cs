@@ -1042,7 +1042,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static string BuildCommonDiplomacySystemPrefix()
 	{
-		return DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "";
+		return DuelSettings.LocalizeWorldDiplomacyContractForPrompt(DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "");
 	}
 	private string GetCommonDiplomacyContract(WorldDiplomacyRound round)
 	{
