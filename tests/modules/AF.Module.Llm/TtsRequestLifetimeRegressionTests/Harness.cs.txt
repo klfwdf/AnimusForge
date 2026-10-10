@@ -57,6 +57,23 @@ static class Program {
   typeof(TtsEngine).GetField("_tempAudioDir",F).SetValue(null,Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));
   foreach(string scenario in new[]{"v3-no-app","master-disabled","provider-disabled","url-empty","url-unsupported","v1-no-app"})
   Check("settings test button: "+scenario,()=>{using var e=Manual();var slot=typeof(TtsEngine).GetField("_instance",F);object prior=slot.GetValue(null);slot.SetValue(null,e);try{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};if(scenario=="master-disabled")settings.EnableTtsSpeech=false;if(scenario=="provider-disabled")settings.TtsVolcDedicatedEnabled=false;if(scenario=="url-empty")settings.TtsVolcDedicatedApiUrl="";if(scenario=="url-unsupported")settings.TtsVolcDedicatedApiUrl+="/sse";if(scenario=="v1-no-app")settings.TtsVolcDedicatedApiUrl="https://fixture.invalid";DuelSettings.Read=()=>settings;InformationManager.Messages.Clear();settings.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==(scenario=="v3-no-app"?1:0),"incorrect enqueue");Assert(InformationManager.Messages.Count==1,"missing or duplicated feedback");}finally{slot.SetValue(null,prior);}});
+  Check("Agent Plan settings test accepts empty AppID",()=>{
+   using var e=Manual();WithTestButton(e,s=>{
+    s.TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/plan/tts/unidirectional";
+    s.TestTtsVolcDedicatedVoice();
+    Assert(Jobs(e).Count==1,"Agent Plan HTTP test was rejected");
+    Assert(InformationManager.Messages.Count==1&&InformationManager.Messages[0].Contains("测试中"),"incorrect test feedback");
+   });
+  });
+  Check("Agent Plan test reaches gateway once and retains request ownership",()=>{
+   int sent=0,done=0;
+   LegacyVolcTtsGateway.Send=(r,c)=>{Assert(r.Endpoint=="https://fixture.invalid/api/v3/plan/tts/unidirectional","plan endpoint rewritten");Assert(c.CanBeCanceled,"lost request token");Interlocked.Increment(ref sent);return new(){Success=true,AudioBytes=new byte[16]};};
+   using var e=Active();e.OnRequestPlaybackFinished+=_=>Interlocked.Increment(ref done);
+   WithTestButton(e,s=>{s.TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/plan/tts/unidirectional";s.TestTtsVolcDedicatedVoice();Eventually(()=>done==1&&Jobs(e).Count==0,"plan test did not finish");Assert(sent==1,"duplicate or missing plan request");});
+  });
+  Check("Agent Plan WebSocket stream path is rejected before enqueue",()=>{
+   using var e=Manual();WithTestButton(e,s=>{s.TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/plan/tts/unidirectional/stream";s.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==0,"unsupported plan stream enqueued");Assert(InformationManager.Messages.Count==1&&InformationManager.Messages[0].Contains("API 地址"),"unsupported plan stream lacks error");});
+  });
   foreach(string protocol in new[]{"V1","V3"})
   Check("test feedback: "+protocol+" failure visible once on main tick without Scene owner",()=>{
    string error=protocol=="V3"?"tts_v3_speed_invalid":"tts_http_401";

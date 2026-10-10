@@ -23,7 +23,8 @@ public sealed class VolcTtsGateway : ITtsGateway
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) ||
             (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) || !string.IsNullOrEmpty(uri.UserInfo)) return 0;
         string path = uri.AbsolutePath.TrimEnd('/');
-        if (path.Equals("/api/v3/tts/unidirectional", StringComparison.OrdinalIgnoreCase)) return 3;
+        if (path.Equals("/api/v3/tts/unidirectional", StringComparison.OrdinalIgnoreCase) ||
+            path.Equals("/api/v3/plan/tts/unidirectional", StringComparison.OrdinalIgnoreCase)) return 3;
         if (path.StartsWith("/api/v3", StringComparison.OrdinalIgnoreCase)) return 0;
         return 1;
     }
@@ -40,7 +41,7 @@ public sealed class VolcTtsGateway : ITtsGateway
     {
         switch (code)
         {
-            case "tts_endpoint_unsupported": return "API 地址无效或协议不支持；V3 请使用 /api/v3/tts/unidirectional（非 SSE/WS）。";
+            case "tts_endpoint_unsupported": return "API 地址无效或协议不支持；V3 请使用 /api/v3/tts/unidirectional，Agent Plan 使用 /api/v3/plan/tts/unidirectional（非 SSE/WS）。";
             case "tts_configuration_incomplete": return "请检查凭据、Resource ID 和音色；V1 还需要 AppID。";
             case "tts_extra_parameters_invalid": return "附加参数不是有效 JSON；V3 要求 JSON 对象。";
             case "tts_v3_speed_invalid": return "V3 语速须为 0.5–2.0 倍，未自动修改您的设置。";
@@ -50,7 +51,7 @@ public sealed class VolcTtsGateway : ITtsGateway
             case "tts_v3_loudness_invalid": return "V3 云端音量倍率须为 0.5–2.0。";
             case "tts_timeout": return "合成超时（30 秒）；未自动重试。";
             case "tts_cancelled": return "语音请求已取消。";
-            case "tts_http_401": case "tts_http_403": return "鉴权失败；V3 请填写新控制台 API Key，并检查资源与音色授权。";
+            case "tts_http_401": case "tts_http_403": return "鉴权失败；V3 请填写对应服务的 API Key，Agent Plan 使用套餐专属 API Key，并检查资源与音色授权。";
             case "tts_http_429": return "请求受限；请检查额度/并发，未自动重试。";
             case "tts_response_too_large": return "响应超过 AF 音频/传输大小限制。";
             default: return "合成失败（" + (code ?? "unknown") + "），请查看 TtsEngine 日志；未自动重试。";

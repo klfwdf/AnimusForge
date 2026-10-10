@@ -30,13 +30,16 @@ internal static class V3Cases
             object Get(string name) => result.GetType().GetProperty(name).GetValue(result);
             return ((bool)Get("Success"), (byte[])Get("AudioBytes"), (string)Get("ErrorCode"), (string)Get("LogId"));
         }
-        string Url(ReplayServer server) => new Uri(new Uri(server.Url), "/api/v3/tts/unidirectional").ToString();
+        const string standardPath = "/api/v3/tts/unidirectional";
+        const string planPath = "/api/v3/plan/tts/unidirectional";
+        string Url(ReplayServer server, string path = standardPath) => new Uri(new Uri(server.Url), path).ToString();
         const string frames = "{\"code\":0,\"sentence\":{\"text\":\"你好 { \\\" }\"}}\n{\n \"code\":0,\"data\":\"AQ==\"\n}{\"code\":0,\"data\":\"AgME\"}{\"code\":20000000,\"usage\":{\"text_words\":6}}";
         int passed = 0;
+        foreach (string path in new[] { standardPath, planPath, "/API/V3/PLAN/TTS/UNIDIRECTIONAL/" })
         foreach (string format in new[] { "pcm", "wav" })
         {
             using var server = ReplayServer.Start(null, 0, body: frames, chunked: true, fragmentSize: 1);
-            var result = await Send(Request(Url(server), format, 1.25f, 16000));
+            var result = await Send(Request(Url(server, path), format, 1.25f, 16000));
             Assert(result.ok && result.log == "replay-log-123", "V3 fragmented stream failed: " + result.code);
             byte[] pcm = { 1, 2, 3, 4 };
             if (format == "pcm") Assert(result.audio.SequenceEqual(pcm), "PCM reordered");
@@ -49,6 +52,7 @@ internal static class V3Cases
             }
             string raw = server.RequestText; int bodyOffset = raw.IndexOf("\r\n\r\n") + 4;
             string body = raw.Substring(bodyOffset);
+            Assert(raw.StartsWith("POST " + path + " HTTP/1.1\r\n"), "configured endpoint rewritten");
             Assert(raw.Contains("X-Api-Key: fixture-api-key") && raw.Contains("X-Api-Resource-Id: seed-tts-2.0") && raw.Contains("X-Api-Request-Id:"), "V3 headers missing");
             Assert(!raw.Contains("Authorization:") && !raw.Contains("X-Api-App-Id:") && !body.Contains("fixture-api-key"), "credential scheme leaked");
             var json = JsonDocument.Parse(body).RootElement.GetProperty("req_params");
@@ -78,10 +82,22 @@ internal static class V3Cases
         {
             var r = await Send(Request(Url(server))); Assert(!r.ok && r.audio.Length == 0, "truncated HTTP exposed partial audio"); passed++;
         }
+        foreach (string path in new[] { standardPath, planPath })
         foreach (int code in new[] { 401, 403, 429, 500, 302 })
         {
             using var server = ReplayServer.Start(null, 0, code, body: "not-json");
-            var r = await Send(Request(Url(server))); Assert(!r.ok && r.code == "tts_http_" + code && server.RequestCount == 1, "HTTP error retried/misclassified"); passed++;
+            var r = await Send(Request(Url(server, path))); Assert(!r.ok && r.code == "tts_http_" + code && server.RequestCount == 1, "HTTP error retried/misclassified"); passed++;
+        }
+        foreach (string path in new[] { planPath + "/stream", planPath + "/sse", planPath + "-other", "/api/v3/plan/tts/bidirection", "/api/v3/plan/sauc/bigmodel_async" })
+        {
+            using var server = ReplayServer.Start(null, 0);
+            var r = await Send(Request(Url(server, path)));
+            Assert(!r.ok && r.code == "tts_endpoint_unsupported" && server.RequestCount == 0, "unsupported Plan protocol reached network"); passed++;
+        }
+        foreach (string url in new[] { "wss://openspeech.bytedance.com" + planPath, "https://user:secret@openspeech.bytedance.com" + planPath })
+        {
+            var r = await Send(Request(url));
+            Assert(!r.ok && r.code == "tts_endpoint_unsupported", "invalid Plan endpoint accepted"); passed++;
         }
         foreach (string expected in new[] { "tts_v3_speed_invalid", "tts_v3_sample_rate_invalid", "tts_extra_parameters_invalid", "tts_audio_format_unsupported", "tts_v3_text_invalid", "tts_endpoint_unsupported", "tts_configuration_incomplete" })
         {
@@ -102,10 +118,11 @@ internal static class V3Cases
         {
             var r = await Send(Request(server.Url, app: "v1-app")); Assert(r.ok && server.RequestText.Contains("Bearer;fixture-api-key"), "router broke V1"); passed++;
         }
+        foreach (string path in new[] { standardPath, planPath })
         using (var server = ReplayServer.Start(null, 0, body: frames, chunked: true, stallAfterHeaders: 5000))
         using (var cancel = new CancellationTokenSource(150))
         {
-            var r = await Send(Request(Url(server)), cancel.Token); Assert(!r.ok && r.code == "tts_cancelled" && r.audio.Length == 0, "body read ignored cancellation"); passed++;
+            var r = await Send(Request(Url(server, path)), cancel.Token); Assert(!r.ok && r.code == "tts_cancelled" && r.audio.Length == 0, "body read ignored cancellation"); passed++;
         }
         using (var server = ReplayServer.Start(null, 0, body: frames, chunked: true, stallAfterHeaders: 35000))
         {

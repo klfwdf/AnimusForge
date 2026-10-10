@@ -1952,15 +1952,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool EnableTtsSpeech { get; set; } = true;
 
-	[SettingPropertyBool("启用火山专用模式", Order = 1, RequireRestart = false, HintText = "按 API 地址选择 V1 或 V3 HTTP 单向流式接口；均收齐音频后播放，旧配置不自动迁移。")]
+	[SettingPropertyBool("启用火山专用模式", Order = 1, RequireRestart = false, HintText = "按 API 地址选择 V1 或 V3 HTTP 单向流式接口（含 Agent Plan）；均收齐音频后播放，旧配置不自动迁移。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool TtsVolcDedicatedEnabled { get; set; } = false;
 
-	[SettingPropertyText("火山专用 API 地址", -1, true, "", Order = 2, RequireRestart = false, HintText = "V1: https://openspeech.bytedance.com/api/v1/tts；V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional（非 SSE/WS）。")]
+	[SettingPropertyText("火山专用 API 地址", -1, true, "", Order = 2, RequireRestart = false, HintText = "V1: https://openspeech.bytedance.com/api/v1/tts；V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional；Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional（非 SSE/WS）。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedApiUrl { get; set; } = "https://openspeech.bytedance.com/api/v1/tts";
 
-	[SettingPropertyText("火山专用 Token / API Key", -1, true, "", Order = 3, RequireRestart = false, HintText = "V1 填旧 Token（Bearer;token）；V3 填新控制台 API Key（X-Api-Key），不可直接复用旧 Token。")]
+	[SettingPropertyText("火山专用 Token / API Key", -1, true, "", Order = 3, RequireRestart = false, HintText = "V1 填旧 Token（Bearer;token）；V3 填对应语音服务 API Key（X-Api-Key）；Agent Plan 填套餐专属 API Key，不可直接复用旧 Token。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
