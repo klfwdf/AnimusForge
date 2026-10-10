@@ -1,4 +1,11 @@
 using System;using System.Collections.Generic;
+namespace TaleWorlds.Localization {
+internal sealed class TextObject {
+ private string _text;
+ internal TextObject(string text){int close=text.IndexOf('}');_text=text.StartsWith("{=")&&close>=0?text.Substring(close+1):text;}
+ internal void SetTextVariable(string name,string value){_text=_text.Replace("{"+name+"}",value);}
+ public override string ToString()=>_text;
+}}
 namespace TaleWorlds.CampaignSystem {public class Hero {public static Hero MainHero;public static List<Hero> AllAliveHeroes=new();public string Name,StringId;public static Hero FindFirst(Func<Hero,bool> test)=>AllAliveHeroes.Find(h=>test(h));}}
 namespace TaleWorlds.Library {
 public class InquiryElement {public object Identifier;public string Title;public InquiryElement(object id,string title,object image){Identifier=id;Title=title;}}

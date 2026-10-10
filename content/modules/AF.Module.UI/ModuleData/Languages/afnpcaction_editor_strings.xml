@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base>
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_NPCACTION_EDITOR_Day" text="Day {DAY}" />
+    <string id="AF_NPCACTION_EDITOR_DetailKind" text="Action record (structured) - {DATE} / {KIND}" />
+    <string id="AF_NPCACTION_EDITOR_DetailDate" text="Action record (structured) - {DATE}" />
+    <string id="AF_NPCACTION_EDITOR_ActionSummary" text="Action: {KIND}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewLocation" text="Location: {SETTLEMENT}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorClanKingdom" text="Their clan is {CLAN}, which serves {KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorClan" text="Their clan is {CLAN}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorKingdom" text="They serve {KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerClanKingdom" text="At the time, it was controlled by {CLAN} and belonged to {KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerKingdom" text="At the time, it belonged to {KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerClan" text="At the time, it was controlled by {CLAN}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetHero" text="Hero involved: {HERO}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetClan" text="Clan involved: {CLAN}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetKingdom" text="Kingdom involved: {KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_ResultSentence" text="Result: {RESULT}." />
+    <string id="AF_NPCACTION_EDITOR_ResultSummary" text="Result: {RESULT}" />
+    <string id="AF_NPCACTION_EDITOR_KindSentence" text="Action type: {KIND}." />
+    <string id="AF_NPCACTION_EDITOR_ActorClanKingdom" text="{ACTOR} belongs to {CLAN}, which serves {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_ActorClan" text="{ACTOR} belongs to {CLAN}." />
+    <string id="AF_NPCACTION_EDITOR_ActorKingdom" text="{ACTOR} serves {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_LocationSentence" text="Location: {SETTLEMENT}." />
+    <string id="AF_NPCACTION_EDITOR_OwnerClanKingdom" text="At the time, the settlement was controlled by {CLAN} and belonged to {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_OwnerClan" text="At the time, the settlement was controlled by {CLAN}." />
+    <string id="AF_NPCACTION_EDITOR_OwnerKingdom" text="At the time, the settlement belonged to {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_PreviousOwner" text="Previously, it was controlled by {CLAN} and belonged to {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_TargetHero" text="Hero directly involved: {HERO}." />
+    <string id="AF_NPCACTION_EDITOR_TargetClan" text="Clan involved: {CLAN}." />
+    <string id="AF_NPCACTION_EDITOR_TargetKingdom" text="Kingdom involved: {KINGDOM}." />
+    <string id="AF_NPCACTION_EDITOR_DateSentence" text="{DATE}." />
+    <string id="AF_NPCACTION_EDITOR_NarrativeSentence" text="{NARRATIVE}." />
+    <string id="AF_NPCACTION_EDITOR_Separator" text="; " />
+    <string id="AF_NPCACTION_EDITOR_Period" text="." />
+    <string id="AF_NPCACTION_EDITOR_Invalid" text="Invalid action" />
+    <string id="AF_NPCACTION_EDITOR_DetailTitle" text="Action record (structured)" />
+    <string id="AF_NPCACTION_EDITOR_SummaryHeading" text="[Readable summary]" />
+    <string id="AF_NPCACTION_EDITOR_RawHeading" text="[Original fields]" />
+    <string id="AF_NPCACTION_EDITOR_FieldDate" text="Date" />
+    <string id="AF_NPCACTION_EDITOR_FieldDay" text="Day index" />
+    <string id="AF_NPCACTION_EDITOR_FieldText" text="Display text" />
+    <string id="AF_NPCACTION_EDITOR_FieldKind" text="Action type" />
+    <string id="AF_NPCACTION_EDITOR_FieldMajor" text="Major action" />
+    <string id="AF_NPCACTION_EDITOR_Yes" text="Yes" />
+    <string id="AF_NPCACTION_EDITOR_No" text="No" />
+    <string id="AF_NPCACTION_EDITOR_FieldResult" text="Result" />
+    <string id="AF_NPCACTION_EDITOR_Won" text="Victory" />
+    <string id="AF_NPCACTION_EDITOR_Lost" text="Defeat" />
+    <string id="AF_NPCACTION_EDITOR_FieldLocation" text="Location text" />
+    <string id="AF_NPCACTION_EDITOR_FieldSettlement" text="Settlement" />
+    <string id="AF_NPCACTION_EDITOR_FieldSettlementId" text="Settlement ID" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerHero" text="Settlement owner" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerClan" text="Settlement owner clan" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerKingdom" text="Settlement owner kingdom" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousHero" text="Previous settlement owner" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousClan" text="Previous settlement owner clan" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousKingdom" text="Previous settlement owner kingdom" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorHero" text="Acting hero" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorClan" text="Acting clan" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorKingdom" text="Acting kingdom" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetHero" text="Target hero" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetClan" text="Target clan" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetKingdom" text="Target kingdom" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedHeroes" text="Related hero IDs" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedClans" text="Related clan IDs" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedKingdoms" text="Related kingdom IDs" />
+    <string id="AF_NPCACTION_EDITOR_MissingMetadata" text="This action has limited structured metadata. It may be an older record, or the game may not have supplied enough target information." />
+    <string id="AF_NPCACTION_EDITOR_NewRecords" text="Allow 1-2 game days to pass, then check newly generated action records." />
+    <string id="AF_NPCACTION_EDITOR_PreviewMajor" text="Classified as a major action" />
+    <string id="AF_NPCACTION_EDITOR_NoSummary" text="No readable summary is available for this record." />
+    <string id="AF_NPCACTION_EDITOR_LimitedMetadata" text="This record has limited structured information" />
+    <string id="AF_NPCACTION_EDITOR_Actor" text="This person" />
+    <string id="AF_NPCACTION_EDITOR_MajorSentence" text="This is classified as a major action." />
+    <string id="AF_NPCACTION_EDITOR_FieldValue" text="{LABEL}: {VALUE}" />
+    <string id="AF_NPCACTION_EDITOR_KindWithId" text="{KIND} ({ID})" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyCreate" text="Army formation" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyGather" text="Army gathering" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyDisperse" text="Army disbanding" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyJoin" text="Joining an army" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyLeave" text="Leaving an army" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeStartAttack" text="Joining a siege attack" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeStartDefend" text="Joining a siege defense" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeEndAttack" text="Attacker action after a siege" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeEndDefend" text="Defender action after a siege" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeJoin" text="Joining a siege" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeLeave" text="Leaving a siege" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeComplete" text="Siege result" />
+    <string id="AF_NPCACTION_EDITOR_KindDailyBehavior" text="Recent movement" />
+    <string id="AF_NPCACTION_EDITOR_KindMapEvent" text="Battle engagement" />
+    <string id="AF_NPCACTION_EDITOR_KindMapEventAftermath" text="Battle aftermath" />
+    <string id="AF_NPCACTION_EDITOR_KindTournamentFinished" text="Tournament victory" />
+    <string id="AF_NPCACTION_EDITOR_KindDuelResult" text="Formal duel result" />
+    <string id="AF_NPCACTION_EDITOR_KindMarriage" text="Marriage" />
+    <string id="AF_NPCACTION_EDITOR_KindClanChangedKingdom" text="Clan allegiance change" />
+    <string id="AF_NPCACTION_EDITOR_KindClanDefected" text="Clan defection" />
+    <string id="AF_NPCACTION_EDITOR_KindClanRebellion" text="Clan rebellion" />
+    <string id="AF_NPCACTION_EDITOR_KindKingdomDecision" text="Kingdom decision" />
+    <string id="AF_NPCACTION_EDITOR_KindDiplomacyPending" text="Bilateral diplomacy reconsideration" />
+    <string id="AF_NPCACTION_EDITOR_KindDiplomacyOutcome" text="Bilateral diplomacy outcome" />
+    <string id="AF_NPCACTION_EDITOR_KindRulingClanChanged" text="Ruling clan change" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementGain" text="Settlement ownership gained" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementLoss" text="Settlement ownership lost" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementCapture" text="Settlement ownership change" />
+    <string id="AF_NPCACTION_EDITOR_KindHeroKilled" text="Hero death" />
+    <string id="AF_NPCACTION_EDITOR_KindHeroExecuted" text="Execution" />
+    <string id="AF_NPCACTION_EDITOR_KindClanMemberKilled" text="Clan member death" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerCaptor" text="Lord captured" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerTaken" text="Taken prisoner" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerReleased" text="Prisoner released" />
+    <string id="AF_NPCACTION_EDITOR_KindCaptivityEnded" text="Captivity ended" />
+    <string id="AF_NPCACTION_EDITOR_KindBirth" text="Clan birth" />
+    <string id="AF_NPCACTION_EDITOR_KindClanLeaderChanged" text="Clan leader succession" />
+  </strings>
+</base>
