@@ -552,5 +552,312 @@
     <string id="AF_DIP_UI_Annexation_SameKingdom" text="Annexation not established: you cannot annex your own kingdom." />
     <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="Annexation not established: the other party cannot renounce the target kingdom's sovereignty without being its ruler." />
     <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET} has joined your kingdom; its former vassalage treaties are now void." />
+    <!-- Kingdom CivilWar UI Strings -->
+    <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="An accepted agreement is still settling; the faction cannot be dissolved." />
+    <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="The agreement was accepted and is settling; it cannot be answered again or withdrawn. Wait for the safe retry." />
+    <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="An agreement is still settling; the faction cannot be refounded." />
+    <string id="AF_KINGDOM_CW_Action_AlreadyNeutral" text="You are already uncommitted." />
+    <string id="AF_KINGDOM_CW_Action_AwaitingFactionResponse" text="Waiting for the faction to respond." />
+    <string id="AF_KINGDOM_CW_Action_ChangeDemandConsequence" text="Change your faction's demand and immediately reassess whether every other member stays involved; those who leave return to uncommitted, with no extra relation loss, no outside clan recruitment, and no rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="You can only change the demand of a pre-war faction you lead." />
+    <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="The clan's allegiance changed; the original agreement can no longer be answered." />
+    <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="The clan leader is not eligible." />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="The current demand is honored in full; a claim to the throne means abdication, and a war of independence means recognizing independence." />
+    <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="A royal negotiation or agreement settlement is in progress; the demand cannot be changed yet." />
+    <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="The demand or target is not valid, or the required holdings are missing." />
+    <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="The demand and target are unchanged; members do not need to be reassessed." />
+    <string id="AF_KINGDOM_CW_Action_DetonateLeaderConsequence" text="Enter the rebellion and kingdom-founding process immediately." />
+    <string id="AF_KINGDOM_CW_Action_DetonateOwnOnly" text="You can only call your own pre-war faction to rise." />
+    <string id="AF_KINGDOM_CW_Action_DetonateProposalConsequence" text="Propose it to the leader; after a refusal you cannot propose again for 7 days." />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="Civil war factions are disabled, or the kingdom is no longer valid." />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnConsequence" text="Dissolve the faction you lead: −10 relation with every other member clan. Grievance is kept and any existing kingdom cooldown is not extended." />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnOnly" text="You can only dissolve a pre-war faction you lead." />
+    <string id="AF_KINGDOM_CW_Action_ExitCooldown" text="Exit cooldown runs until day {A}; changing kingdoms does not bypass it." />
+    <string id="AF_KINGDOM_CW_Action_FactionLeaderChanged" text="The faction leader changed; wait for the succession to resolve." />
+    <string id="AF_KINGDOM_CW_Action_FactionSlotsFull" text="Faction slots are full, or the kingdom is still on cooldown." />
+    <string id="AF_KINGDOM_CW_Action_ForceDissolveConsequence" text="Members take +7.5 grievance and −10 relation with the king; obedience dissolves the faction, defiance starts a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_FoundConsequence" text="Found a faction: −10 relation with the ruler. If you are already in a camp, you leave it first and bear the member relation loss, and your old faction dissolves. A player leader only starts a rebellion manually." />
+    <string id="AF_KINGDOM_CW_Action_GovernanceCooldown" text="Political actions are on cooldown until day {A}." />
+    <string id="AF_KINGDOM_CW_Action_InvalidOfferTier" text="Invalid compensation tier." />
+    <string id="AF_KINGDOM_CW_Action_KingCannotJoin" text="The king cannot join, leave, or found an opposition faction on their own." />
+    <string id="AF_KINGDOM_CW_Action_KingdomCooldownFound" text="The kingdom is on post-war cooldown until day {A}; founding a player faction must wait too." />
+    <string id="AF_KINGDOM_CW_Action_LeaderSuccession" text="{A} succeeds as faction leader." />
+    <string id="AF_KINGDOM_CW_Action_LeaveConsequence" text="−10 relation with the former member leader and −20 with the faction leader (not cumulative); you cannot join or found a faction for 7 days." />
+    <string id="AF_KINGDOM_CW_Action_MembershipLocked" text="Membership management is locked during a founding request or civil war." />
+    <string id="AF_KINGDOM_CW_Action_MembershipPendingReview" text="A faction operation result is still awaiting review; membership and factions cannot be changed yet." />
+    <string id="AF_KINGDOM_CW_Action_MustLeaveCampFirst" text="You must leave your current camp first, bearing the relation loss and the 7-day cooldown." />
+    <string id="AF_KINGDOM_CW_Action_NegotiateConsequence" text="Accepting transfers the compensation, withdraws the demand, and dissolves the faction; refusing costs nothing but consumes the 7-day cooldown. During a war, make peace first and return home." />
+    <string id="AF_KINGDOM_CW_Action_NewDemandInvalid" text="The new demand or target is not valid, or the required holdings are missing." />
+    <string id="AF_KINGDOM_CW_Action_NoDissolveWarBlocked" text="The domestic/world war cap or player-kingdom immunity blocks a defiant rebellion, so the dissolution order cannot be issued." />
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="No such operation." />
+    <string id="AF_KINGDOM_CW_Action_NoSuccessor" text="The faction has no eligible successor and is dissolved." />
+    <string id="AF_KINGDOM_CW_Action_NoSuppressAfterFounding" text="Once the kingdom-founding request has started, the faction cannot be suppressed or administratively dissolved." />
+    <string id="AF_KINGDOM_CW_Action_NothingToRespond" text="There is nothing for this clan to respond to." />
+    <string id="AF_KINGDOM_CW_Action_PlayerKingdomDisabled" text="Player-kingdom factions are disabled in settings." />
+    <string id="AF_KINGDOM_CW_Action_PreviousOperationPendingReview" text="A previous operation is still awaiting review; no further operation is possible yet." />
+    <string id="AF_KINGDOM_CW_Action_ProposalRefusedCooldown" text="After a proposal to rise is refused, you must wait 7 days." />
+    <string id="AF_KINGDOM_CW_Action_RebelsFoundingKingdom" text="The rebels are founding their kingdom; wait for it to finish." />
+    <string id="AF_KINGDOM_CW_Action_RespondAcceptConsequence" text="Accepting compensation withdraws the demand and dissolves the faction." />
+    <string id="AF_KINGDOM_CW_Action_RespondDissolveConsequence" text="Obedience dissolves the faction; defiance starts a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadline" text="&#10;Reply deadline: day {A}; missing it counts as {B}." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineDefy" text="defiance" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlinePassed" text="The response deadline has passed." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineRefuse" text="refusal" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDissolve" text="The crown orders the faction dissolved. Obey and it dissolves; defy and it rises in rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ResponseOffer" text="The crown offers {A} in exchange for withdrawing the demand; accepting dissolves the faction." />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferGold" text="{A} gold" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferInfluence" text="{A} influence" />
+    <string id="AF_KINGDOM_CW_Action_RisingBlocked" text="The domestic/world war cap or rebellion immunity prevents a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_RulingClanOnly" text="Only the ruling clan of the original kingdom can do this." />
+    <string id="AF_KINGDOM_CW_Action_RulingClanResources" text="The ruling clan lacks the resources." />
+    <string id="AF_KINGDOM_CW_Action_SelectExistingFaction" text="Select a faction that still exists." />
+    <string id="AF_KINGDOM_CW_Action_SelectJoinableFaction" text="Select a pre-war faction you can join." />
+    <string id="AF_KINGDOM_CW_Action_StateChanged" text="The faction state changed; please confirm again." />
+    <string id="AF_KINGDOM_CW_Action_SuppressConsequence" text="Members lose up to 20 influence; the leader takes +7.5 grievance and the rest +4; −5 relation with the king. The first suppression delays the deadline by 7 days." />
+    <string id="AF_KINGDOM_CW_Action_Unsupported" text="This operation is not supported." />
+    <string id="AF_KINGDOM_CW_Action_VassalOnly" text="You must be a full vassal of this kingdom." />
+    <string id="AF_KINGDOM_CW_Behavior_ClanDestroyed" text="{CLAN} was destroyed" />
+    <string id="AF_KINGDOM_CW_Behavior_CurrentPolicy" text="the current policy" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefGranted" text="{SETTLEMENT} was granted to {CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefLost" text="{CLAN} lost its fief" />
+    <string id="AF_KINGDOM_CW_Behavior_LandsRaided" text="The lands of {CLAN} were raided" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposed" text="The kingdom was forced to make peace" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposedByKing" text="The king overrode the council majority and forced a peace" />
+    <string id="AF_KINGDOM_CW_Behavior_PolicyImposed" text="The kingdom imposed a policy: {POLICY}" />
+    <string id="AF_KINGDOM_CW_Behavior_RoyalExecution" text="The crown executed a member of {CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposed" text="The kingdom was forced into war" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposedByKing" text="The king overrode the council majority and forced a war" />
+    <string id="AF_KINGDOM_CW_Core_AftermathEmboldened" text="The rebels' victory has emboldened the remaining factions, but they still need time to regroup" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSettled" text="The civil war has calmed; the remaining factions hold back their pressure" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSuppressed" text="The crown's suppression has cowed the remaining factions; for now they fall quiet" />
+    <string id="AF_KINGDOM_CW_Core_AftermathTruce" text="{MOOD} (no ultimatums for {WEEKS} weeks)" />
+    <string id="AF_KINGDOM_CW_Core_CauseThreshold" text="discontent has reached the threshold" />
+    <string id="AF_KINGDOM_CW_Core_CauseWeariness" text="the kingdom is war-weary ({VALUE})" />
+    <string id="AF_KINGDOM_CW_Core_DemandTurnedToAbdication" text="{FACTION} has been refused repeatedly and now demands the king's abdication" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedKingDelays" text="The king kept delaying {FACTION}; the faction falls apart" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedRepeatedRefusals" text="{FACTION} was refused repeatedly and still did not rise; the faction falls apart" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="an enemy kingdom" />
+    <string id="AF_KINGDOM_CW_Core_EscalationRollFailed" text="but the escalation roll failed" />
+    <string id="AF_KINGDOM_CW_Core_FactionDissolvedInvalid" text="{FACTION}'s demand target or leader is no longer valid; the faction dissolves" />
+    <string id="AF_KINGDOM_CW_Core_FactionFounded" text="{FACTION} is founded; demand: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_FactionRetained" text="{REASON}; the faction has been retained." />
+    <string id="AF_KINGDOM_CW_Core_FollowAccepted" text="Your clan follows {FACTION} and defects to {REBEL}." />
+    <string id="AF_KINGDOM_CW_Core_FollowDeclined" text="Your clan refuses to follow {FACTION} and sides with the crown." />
+    <string id="AF_KINGDOM_CW_Core_FollowEnded" text="This uprising is already over." />
+    <string id="AF_KINGDOM_CW_Core_FollowFailed" text="The defection to the rebels failed; your clan stays with the kingdom." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptFollow" text="&#10;&#10;Follow: your clan takes its fiefs over to {REBEL}; when the civil war ends you return with the outcome (if the crown wins, you will be punished)." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptIntro" text="The {FACTION} you belong to has risen and founded {REBEL}, going to war with the crown." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptStay" text="&#10;Stay: your clan sides with the crown and turns against its former comrades." />
+    <string id="AF_KINGDOM_CW_Core_FormationRollFailed" text="{CLAN} {CAUSE}, but the faction-formation roll failed ({CHANCE})" />
+    <string id="AF_KINGDOM_CW_Core_KingDefers" text="The king defers his answer to {FACTION}; the ultimatum is postponed" />
+    <string id="AF_KINGDOM_CW_Core_KingRefusedDemand" text="The king refused {FACTION}'s demand, {REASON}" />
+    <string id="AF_KINGDOM_CW_Core_LeaderGoneNoRising" text="{FACTION}'s leader no longer exists; the uprising is called off" />
+    <string id="AF_KINGDOM_CW_Core_NoPendingUltimatum" text="There is no ultimatum awaiting an answer." />
+    <string id="AF_KINGDOM_CW_Core_NoSlotDomesticWar" text="{FACTION} is resolved to rise, but a civil war is already running in the realm; it holds back for now" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotWorldLimit" text="{FACTION} is resolved to rise, but the world rebellion limit has been reached ({COUNT}/{MAX}); it holds back for now" />
+    <string id="AF_KINGDOM_CW_Core_OthersCoolingDown" text="{FACTION} has risen; the other factions enter a cooldown (no ultimatums before day {DAY})" />
+    <string id="AF_KINGDOM_CW_Core_OutbreakHistory" text="{FACTION} establishes {REBEL}; the civil war breaks out" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingAccepted" text="The player king accepted {FACTION}'s ultimatum" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingRefused" text="The player king refused {FACTION}'s ultimatum" />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="The king broke his pledge and made peace with {OTHER}" />
+    <string id="AF_KINGDOM_CW_Core_ReasonFoundingTimeout" text="the founding request timed out" />
+    <string id="AF_KINGDOM_CW_Core_RebelKingdomEstablished" text="The rebel kingdom has been established; the civil war breaks out." />
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="The kingdom has just been through a rebellion; no new faction will form for {WEEKS} weeks." />
+    <string id="AF_KINGDOM_CW_Core_RebellionImmunityBlocked" text="The player kingdom's stability-rebellion immunity stopped {FACTION} from rising" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncomplete" text="The uprising is not yet complete: {REASON}" />
+    <string id="AF_KINGDOM_CW_Core_RefusalCountNotMet" text="but the faction has not been refused enough times ({COUNT}/{MIN}); it will not rise yet" />
+    <string id="AF_KINGDOM_CW_Core_RisingRebelKingdom" text="{FACTION} has risen and is founding a temporary rebel kingdom" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptPending" text="The demand could not be fulfilled; the faction remains pending action." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptedDissolved" text="The ultimatum was accepted; the faction has disbanded." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION} has delivered an ultimatum: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumExpired" text="The ultimatum is no longer valid." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedNoRevolt" text="You refused the ultimatum; the faction has not revolted yet." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedRevolt" text="You refused the ultimatum; the faction has risen in revolt." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedWaiting" text="You refused the ultimatum; the faction is resolved to revolt and awaits its moment." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="&#10;&#10;Refused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumToPlayerKing" text="{FACTION}'s ultimatum has been delivered to the player king; awaiting an explicit answer" />
+    <string id="AF_KINGDOM_CW_Coup_AlreadyRegistered" text="The coup civil war is already registered." />
+    <string id="AF_KINGDOM_CW_Coup_ConditionsUnmet" text="Coup civil war registration requirements are not met." />
+    <string id="AF_KINGDOM_CW_Coup_IdentityConflict" text="Coup civil war identity conflict; the existing record is kept." />
+    <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="The coup rebels were eliminated; the rebellion ends." />
+    <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="The former royal clan has not joined the rebels, or the restoration identity/original kingdom name is missing; registration is postponed." />
+    <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="The former ruler's kingdom was eliminated; the coup outcome is recognized." />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Recognize autonomy for this faction's fiefs" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="Do not make peace with {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="End the war with {TARGET} and negotiate peace" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="Pay compensation and hold those responsible to account" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="Repeal {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="Pursue the faction's demand" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="The king abdicates and the faction leader succeeds" />
+    <string id="AF_KINGDOM_CW_Event_KingExecuted" text="The king was executed; the kingdom has fallen into civil war." />
+    <string id="AF_KINGDOM_CW_Event_ProposalPartiesChanged" text="The parties to the negotiation changed; the unaccepted old proposal has been withdrawn." />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="Separation faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="War faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="Anti-war faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="Retribution faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="Reform faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="Opposition faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="Claimant faction" />
+    <string id="AF_KINGDOM_CW_Panel_ChronicleWeek" text="Week {WEEK}  ·  {TEXT}" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWar" text="Civil war" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWarWeek" text="Civil war week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFactionSlots" text="Faction slots in this kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFormalVassal" text="Formal vassal eligibility" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionGrievanceThreshold" text="Grievance threshold {THRESHOLD}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionMet" text="Met" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNoEligibleClan" text="No eligible clan" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNotReached" text="Not reached" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionOrWeariness" text="or war weariness {VALUE}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions" text="Player-kingdom factions" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPostWarCooldown" text="Post-war cooldown" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionReached" text="Reached" />
+    <string id="AF_KINGDOM_CW_Panel_CrownExitHint" text="Leaving the crown faction: king −{LEADER}, other crown clans −{MEMBER}; you stay neutral for {DAYS} days." />
+    <string id="AF_KINGDOM_CW_Panel_CrownRespondedFirst" text="The crown responded first" />
+    <string id="AF_KINGDOM_CW_Panel_DayOf" text="Day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_DaysLeft" text="{DAYS} days left" />
+    <string id="AF_KINGDOM_CW_Panel_DeliverUltimatum" text="Deliver ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_Delivered" text="Delivered" />
+    <string id="AF_KINGDOM_CW_Panel_DeliveringSoon" text="Delivering soon" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTag" text="{TAG} demand" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitle" text="Demand: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitleExpired" text="Demand no longer valid" />
+    <string id="AF_KINGDOM_CW_Panel_DissolveOrder" text="Dissolution order" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyDisabled" text="Civil war factions are disabled" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyNoKingdom" text="You have not joined any kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_Enabled" text="Enabled" />
+    <string id="AF_KINGDOM_CW_Panel_ExitCost" text="Leader −{LEADER}, members −{MEMBER}; cannot join or found a faction for {DAYS} days." />
+    <string id="AF_KINGDOM_CW_Panel_FactionNameFallback" text="{LEADER}'s opposition faction" />
+    <string id="AF_KINGDOM_CW_Panel_GoalPressure" text="Pressure the throne" />
+    <string id="AF_KINGDOM_CW_Panel_GoalSecede" text="Independence" />
+    <string id="AF_KINGDOM_CW_Panel_GoalUsurp" text="Usurpation" />
+    <string id="AF_KINGDOM_CW_Panel_GoldAmount" text="{AMOUNT} gold" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityKing" text="You are the king  ·  Crown faction" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityNotVassal" text="{CLAN}  ·  Not a formal vassal; cannot join a faction" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityVassal" text="Vassal  ·  {CLAN}  ·  {ROLE}" />
+    <string id="AF_KINGDOM_CW_Panel_InfluenceAmount" text="{AMOUNT} influence" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedDaysAgo" text=" · joined {DAYS} days ago" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedToday" text=" · joined today" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintActive" text="Suppression, negotiation and force-dissolution share a {DAYS}-day cooldown; concession is unlimited but honors the demand." />
+    <string id="AF_KINGDOM_CW_Panel_KingHintIdle" text="Once an opposition faction forms, suppression, negotiation, concession and force-dissolution become available." />
+    <string id="AF_KINGDOM_CW_Panel_LeaderHint" text="This faction never rebels automatically; a manual rebellion needs this clan to hold {THRESHOLD}% of the kingdom's military power (currently {CURRENT}%). It can be dissolved or refounded, still subject to the post-war cooldown." />
+    <string id="AF_KINGDOM_CW_Panel_LeaderLine" text="Leader  {CLAN}{YOU}   ·   Relation with king {RELATION}" />
+    <string id="AF_KINGDOM_CW_Panel_MemberHint" text="Rebellion is the leader's decision; after a refused proposal you cannot raise it again for {DAYS} days. Leaving: {EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_MembersLocked" text="During a founding request or open civil war, member membership is locked." />
+    <string id="AF_KINGDOM_CW_Panel_MiddleCooldown" text="Exit cooldown runs until day {DAY}; until then you cannot join or found a faction." />
+    <string id="AF_KINGDOM_CW_Panel_MiddleSwitchHint" text="To switch factions after joining, leave first: {EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_NoAnswer" text="No answer" />
+    <string id="AF_KINGDOM_CW_Panel_NoUltimatum" text="No ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_None" text="None" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitKingReply" text="Waiting for the king's answer within the deadline" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitYourConfirm" text="Waiting for your confirmation" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingLeaderAnswer" text="Waiting for the faction leader's answer" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingYourAnswer" text="Awaiting your answer  ·  timeout counts as {OUTCOME}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCheckLog" text="State kept; check the log" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationAwaitsLeader" text="The king offers compensation for withdrawing the demand; the faction leader has yet to answer." />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationOffer" text="The king offers {OFFER} in compensation for withdrawing the demand and dissolving the faction; if you accept, the compensation goes to your clan." />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeAbdication" text="Conceding means abdication, with the faction leader taking the throne" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeHonors" text="Conceding will honor the demand" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCrownFightsWithKing" text="If the faction rebels, crown-faction clans fight alongside the king." />
+    <string id="AF_KINGDOM_CW_Panel_NoteDecidedOnRefusal" text="Decided after refusal" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDefaultRisk" text="If the king concedes the demand is honored; if refused, the faction decides by chance whether to rebel." />
+    <string id="AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum" text="About to deliver the ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDissolveAwaitsLeader" text="The king has ordered dissolution; the faction leader may obey or defy." />
+    <string id="AF_KINGDOM_CW_Panel_NoteFoundingGoal" text="The rebels are founding a kingdom. War goal: {GOAL}." />
+    <string id="AF_KINGDOM_CW_Panel_NoteHoldingStillHomeWar" text="Holding still while the kingdom is at war" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingDissolveOrder" text="The king has ordered the faction dissolved: obey and it disbands, defy and it rebels." />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingRuling" text="The king is deciding" />
+    <string id="AF_KINGDOM_CW_Panel_NoteLowEscalation" text=" If refused, the chance of rebellion is lower (×{SCALE})." />
+    <string id="AF_KINGDOM_CW_Panel_NoteOpenWarGoal" text="The rebel kingdom has gone to war with the crown. War goal: {GOAL}." />
+    <string id="AF_KINGDOM_CW_Panel_NotePlayerFactionRisk" text="If the king refuses, the faction decides by chance whether to rebel; once a founding request or open civil war begins, member membership is locked." />
+    <string id="AF_KINGDOM_CW_Panel_NoteRebelAtWarWithCrown" text="The rebel kingdom has gone to war with the crown" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusalRollSuffix" text="; if refused, the faction decides by chance whether to rebel." />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusedRetry" text="Refused {COUNT} times; raised again  ·  {NOTE}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteResolvedWaitWarEnd" text="Resolved; waiting for the war to end" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRetryNextDay" text="Retry next day" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebelFounding" text="Waiting for the rebel kingdom to be founded" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebellionSlot" text="Waiting for a rebellion slot to free up" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum" text="Will deliver an ultimatum to the king after that" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeDefiance" text="defiance" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeRefusal" text="refusal" />
+    <string id="AF_KINGDOM_CW_Panel_Paused" text="Paused" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedNote" text="A faction you lead never rebels automatically; you can change the demand and re-evaluate members, but a rebellion needs manual confirmation and must meet the strength threshold." />
+    <string id="AF_KINGDOM_CW_Panel_PreviouslyRefused" text="Previously refused" />
+    <string id="AF_KINGDOM_CW_Panel_RebelFounding" text="The rebel kingdom is being founded" />
+    <string id="AF_KINGDOM_CW_Panel_Rebellion" text="Rebellion" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnit" text=" times" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnitDeferred" text=" times  ·  deferred {COUNT}" />
+    <string id="AF_KINGDOM_CW_Panel_Refused" text="Refused" />
+    <string id="AF_KINGDOM_CW_Panel_ResolvedToRebel" text="Resolved to rebel" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalLetter" text="Royal letter" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalTalks" text="Royal talks" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingAccepts" text="The king accepts" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingDefers" text="The king defers" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefuses" text="The king refuses" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefusesRebels" text="The king refuses; the faction rises" />
+    <string id="AF_KINGDOM_CW_Panel_RulingPending" text="Under review" />
+    <string id="AF_KINGDOM_CW_Panel_SettingDisabled" text="Disabled in settings" />
+    <string id="AF_KINGDOM_CW_Panel_Settlement" text="Settlement" />
+    <string id="AF_KINGDOM_CW_Panel_ShortName" text="{CLAN} {TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StageAwaitingResponse" text="Awaiting faction response  ·  {DAYS} days left" />
+    <string id="AF_KINGDOM_CW_Panel_StageCivilWarWeek" text="Civil war  ·  week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_StageCooldown" text="Settling after civil war  ·  no faction can form before day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_StageEmboldened" text="Emboldened by rebel victories  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormed" text="{COUNT} opposition factions have formed" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumIn" text="Formed  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumSoon" text="Formed  ·  ultimatum imminent" />
+    <string id="AF_KINGDOM_CW_Panel_StageNoneFormed" text="No factions have formed yet" />
+    <string id="AF_KINGDOM_CW_Panel_StageOpenWar" text="{COUNT} factions are in civil war" />
+    <string id="AF_KINGDOM_CW_Panel_StagePausedHomeWar" text="Paused  ·  holding still while the kingdom is at war" />
+    <string id="AF_KINGDOM_CW_Panel_StagePlayerKingdomDisabled" text="Factions are disabled by settings in the player's kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_StageRebelling" text="Rebellion under way  ·  the rebel kingdom is being founded" />
+    <string id="AF_KINGDOM_CW_Panel_StageResolvedWaitingSlot" text="Resolved to rebel  ·  waiting for a rebellion slot" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementError" text="Settlement error  ·  state kept; check the log" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementIncomplete" text="Settlement incomplete  ·  retrying next day" />
+    <string id="AF_KINGDOM_CW_Panel_StageSuppressed" text="Deterred by the suppression  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatum" text="{COUNT} factions have issued an ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitKing" text="Ultimatum  ·  awaiting the king's answer ({DAYS} days left)" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitRuling" text="Ultimatum  ·  awaiting a ruling" />
+    <string id="AF_KINGDOM_CW_Panel_StanceCrown" text="Crown faction" />
+    <string id="AF_KINGDOM_CW_Panel_StanceFactionLeader" text="Faction leader" />
+    <string id="AF_KINGDOM_CW_Panel_StanceKing" text="King" />
+    <string id="AF_KINGDOM_CW_Panel_StanceSupporter" text="{TAG} supporter" />
+    <string id="AF_KINGDOM_CW_Panel_StanceUndeclared" text="Undeclared" />
+    <string id="AF_KINGDOM_CW_Panel_StandingBy" text="Standing by" />
+    <string id="AF_KINGDOM_CW_Panel_StepFounded" text="Founded" />
+    <string id="AF_KINGDOM_CW_Panel_StepKingAnswer" text="King's answer" />
+    <string id="AF_KINGDOM_CW_Panel_StepManualRebellion" text="Manual rebellion" />
+    <string id="AF_KINGDOM_CW_Panel_StepMayRebel" text="May rebel" />
+    <string id="AF_KINGDOM_CW_Panel_Ultimatum" text="Ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_UnitDays" text="d" />
+    <string id="AF_KINGDOM_CW_Panel_UnitWeeks" text="w" />
+    <string id="AF_KINGDOM_CW_Panel_UntilDay" text="until day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_ValueError" text="Error" />
+    <string id="AF_KINGDOM_CW_Panel_ValueFounding" text="Founding" />
+    <string id="AF_KINGDOM_CW_Panel_ValueSoon" text="Soon" />
+    <string id="AF_KINGDOM_CW_Panel_ValueWeekNumber" text="{WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_WeekOf" text="Week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_YouSuffix" text=" (you)" />
+    <string id="AF_KINGDOM_CW_PlayerControl_KingdomCooldown" text="The kingdom is in post-war cooldown until day {A}; the player cannot raise a rebellion by hand either." />
+    <string id="AF_KINGDOM_CW_PlayerControl_StrengthBelowThreshold" text="Your clan holds {A}% of the kingdom's military strength, below the {B}% needed to raise a rebellion by hand." />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG} leader" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG} member" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="Royal pledge broken" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="Demand refused" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="Fief denied" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="Fief lost" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="Lands raided" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="Peace imposed" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="Policy imposed" />
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="Royal execution" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="Royal suppression" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="Unknown grievance" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="War imposed" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="Average" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="Extremely high" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="Extremely poor" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="Fairly high" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="High" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="Poor" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="Very poor" />
   </strings>
 </base>

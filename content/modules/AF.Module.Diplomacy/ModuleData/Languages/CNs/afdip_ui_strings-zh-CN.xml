@@ -552,5 +552,312 @@
     <string id="AF_DIP_UI_Annexation_SameKingdom" text="吞并未成立：不能吞并自己的王国。" />
     <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="吞并未成立：对方无权代表目标王国放弃王权。" />
     <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET}已并入你的王国，旧臣属条约随之作废。" />
+    <!-- Kingdom CivilWar UI Strings -->
+    <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="已接受的协议仍在结算，不能解散。" />
+    <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="协议已接受并进入结算，不能重复答复或撤回；等待安全重试。" />
+    <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="已有协议正在结算，不能改建派系。" />
+    <string id="AF_KINGDOM_CW_Action_AlreadyNeutral" text="当前已是中立。" />
+    <string id="AF_KINGDOM_CW_Action_AwaitingFactionResponse" text="正在等待派系回应。" />
+    <string id="AF_KINGDOM_CW_Action_ChangeDemandConsequence" text="更改自己派系的诉求，并立即重评每个其他成员是否继续参与；退出者回到中立，不额外扣关系，不招募外部家族，不触发起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="只能更改自己领导的战前派系诉求。" />
+    <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="家族归属已变化，不能回应原协议。" />
+    <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="家族领袖不具备资格。" />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="完整兑现当前诉求；宣权将退位，独立战争将承认独立。" />
+    <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="王室交涉或协议结算中，暂不能更改诉求。" />
+    <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="诉求或目标不合法，或缺少所需领地。" />
+    <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="诉求及目标未改变，无需重新评估成员。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateLeaderConsequence" text="立即进入起兵建国流程。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateOwnOnly" text="只能要求自己的战前派系起兵。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateProposalConsequence" text="向领袖提议；拒绝后7天内不能再次建议。" />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="内战功能未启用或王国已失效。" />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnConsequence" text="解散自己领导的派系，与每个其他成员家族关系−10；保留不满，不延长已有王国冷却。" />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnOnly" text="只能主动解散自己领导的战前派系。" />
+    <string id="AF_KINGDOM_CW_Action_ExitCooldown" text="退出冷却至第 {A} 天，换国不能绕过。" />
+    <string id="AF_KINGDOM_CW_Action_FactionLeaderChanged" text="派系领袖已变化，请等待继任处理。" />
+    <string id="AF_KINGDOM_CW_Action_FactionSlotsFull" text="派系名额已满或王国仍在冷却。" />
+    <string id="AF_KINGDOM_CW_Action_ForceDissolveConsequence" text="成员不满+7.5、与国王关系−10；服从则解散，抗命则起兵。" />
+    <string id="AF_KINGDOM_CW_Action_FoundConsequence" text="创建派系，与统治者关系−10；若已有阵营，先退出并承担成员关系损失，自己的旧派系会解散。玩家领袖只会手动起兵。" />
+    <string id="AF_KINGDOM_CW_Action_GovernanceCooldown" text="政治行动冷却至第 {A} 天。" />
+    <string id="AF_KINGDOM_CW_Action_InvalidOfferTier" text="补偿档位无效。" />
+    <string id="AF_KINGDOM_CW_Action_KingCannotJoin" text="国王不能自行加入、退出或建立反对派。" />
+    <string id="AF_KINGDOM_CW_Action_KingdomCooldownFound" text="王国战后冷却至第 {A} 天，玩家创建派系也须等待。" />
+    <string id="AF_KINGDOM_CW_Action_LeaderSuccession" text="{A}继任派系领袖。" />
+    <string id="AF_KINGDOM_CW_Action_LeaveConsequence" text="与原成员领袖关系−10，与派系领袖−20（不叠加）；7天内不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Action_MembershipLocked" text="建国请求或内战期间，成员管理已锁定。" />
+    <string id="AF_KINGDOM_CW_Action_MembershipPendingReview" text="已有派系操作结果待核查，暂不能改变成员或派系。" />
+    <string id="AF_KINGDOM_CW_Action_MustLeaveCampFirst" text="须先退出当前阵营，承担关系损失及7天冷却。" />
+    <string id="AF_KINGDOM_CW_Action_NegotiateConsequence" text="接受后转移补偿、撤回诉求并解散；拒绝不收费但消耗7天冷却。战中先议和归国。" />
+    <string id="AF_KINGDOM_CW_Action_NewDemandInvalid" text="新诉求或目标不合法，或缺少所需领地。" />
+    <string id="AF_KINGDOM_CW_Action_NoDissolveWarBlocked" text="国内/世界战争上限或玩家王国免疫阻止抗命起兵，不能下达解散令。" />
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="操作不存在。" />
+    <string id="AF_KINGDOM_CW_Action_NoSuccessor" text="派系无合格继任者，解散。" />
+    <string id="AF_KINGDOM_CW_Action_NoSuppressAfterFounding" text="建国请求开始后不能压制或行政解散。" />
+    <string id="AF_KINGDOM_CW_Action_NothingToRespond" text="没有需要本家族回应的事项。" />
+    <string id="AF_KINGDOM_CW_Action_PlayerKingdomDisabled" text="设置已关闭玩家王国派系。" />
+    <string id="AF_KINGDOM_CW_Action_PreviousOperationPendingReview" text="先前操作结果待核查，暂不能继续操作。" />
+    <string id="AF_KINGDOM_CW_Action_ProposalRefusedCooldown" text="起兵建议被拒后须等待7天。" />
+    <string id="AF_KINGDOM_CW_Action_RebelsFoundingKingdom" text="叛军正在建国，请等待建国完成。" />
+    <string id="AF_KINGDOM_CW_Action_RespondAcceptConsequence" text="接受补偿将撤回诉求并解散派系。" />
+    <string id="AF_KINGDOM_CW_Action_RespondDissolveConsequence" text="服从将解散派系；抗命将起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadline" text="&#10;答复期限：第 {A} 天；超时视为{B}。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineDefy" text="抗命" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlinePassed" text="回应期限已过。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineRefuse" text="拒绝" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDissolve" text="王室命令解散派系。服从将解散，抗命将起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOffer" text="王室提出以 {A} 换取撤回诉求；接受后解散派系。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferGold" text="{A} 金币" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferInfluence" text="{A} 影响力" />
+    <string id="AF_KINGDOM_CW_Action_RisingBlocked" text="国内/世界战争上限或叛乱免疫阻止起兵。" />
+    <string id="AF_KINGDOM_CW_Action_RulingClanOnly" text="只有原王国的统治家族能执行此操作。" />
+    <string id="AF_KINGDOM_CW_Action_RulingClanResources" text="统治家族资源不足。" />
+    <string id="AF_KINGDOM_CW_Action_SelectExistingFaction" text="请选择仍然存在的派系。" />
+    <string id="AF_KINGDOM_CW_Action_SelectJoinableFaction" text="请选择可加入的战前派系。" />
+    <string id="AF_KINGDOM_CW_Action_StateChanged" text="派系状态已变化，请重新确认。" />
+    <string id="AF_KINGDOM_CW_Action_SuppressConsequence" text="成员失去最多20影响力；领袖不满+7.5，其余+4；与国王关系−5。首次压制延后期限7天。" />
+    <string id="AF_KINGDOM_CW_Action_Unsupported" text="不支持此操作。" />
+    <string id="AF_KINGDOM_CW_Action_VassalOnly" text="必须是本国正式封臣。" />
+    <string id="AF_KINGDOM_CW_Behavior_ClanDestroyed" text="{CLAN}被消灭" />
+    <string id="AF_KINGDOM_CW_Behavior_CurrentPolicy" text="现行政策" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefGranted" text="{SETTLEMENT}封给了{CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefLost" text="{CLAN}失去封地" />
+    <string id="AF_KINGDOM_CW_Behavior_LandsRaided" text="{CLAN}的领地遭到劫掠" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposed" text="王国被迫议和" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposedByKing" text="国王逆议会多数意见强行议和" />
+    <string id="AF_KINGDOM_CW_Behavior_PolicyImposed" text="王国强推政策：{POLICY}" />
+    <string id="AF_KINGDOM_CW_Behavior_RoyalExecution" text="王室处决了{CLAN}的成员" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposed" text="强行开战" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposedByKing" text="国王逆议会多数意见强行开战" />
+    <string id="AF_KINGDOM_CW_Core_AftermathEmboldened" text="叛军得胜鼓舞了其余派系，但各派仍需时间整顿" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSettled" text="内战平息，其余派系暂缓施压" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSuppressed" text="王室平叛震慑了其余派系，各派暂时偃旗息鼓" />
+    <string id="AF_KINGDOM_CW_Core_AftermathTruce" text="{MOOD}（{WEEKS} 周内不递交最后通牒）" />
+    <string id="AF_KINGDOM_CW_Core_CauseThreshold" text="不满达到阈值" />
+    <string id="AF_KINGDOM_CW_Core_CauseWeariness" text="王国厌战（{VALUE}）" />
+    <string id="AF_KINGDOM_CW_Core_DemandTurnedToAbdication" text="{FACTION}屡遭拒绝，转而要求国王退位" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedKingDelays" text="{FACTION}被国王一再拖延，派系瓦解" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedRepeatedRefusals" text="{FACTION}多次被拒仍未起兵，派系瓦解" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="敌国" />
+    <string id="AF_KINGDOM_CW_Core_EscalationRollFailed" text="但升级判定未通过" />
+    <string id="AF_KINGDOM_CW_Core_FactionDissolvedInvalid" text="{FACTION}的诉求目标或领袖已失效，派系解散" />
+    <string id="AF_KINGDOM_CW_Core_FactionFounded" text="{FACTION}成立，诉求：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_FactionRetained" text="{REASON}；保留派系。" />
+    <string id="AF_KINGDOM_CW_Core_FollowAccepted" text="你的家族追随{FACTION}，转投{REBEL}。" />
+    <string id="AF_KINGDOM_CW_Core_FollowDeclined" text="你的家族拒绝追随{FACTION}，站到了王室一边。" />
+    <string id="AF_KINGDOM_CW_Core_FollowEnded" text="这次起兵已经结束。" />
+    <string id="AF_KINGDOM_CW_Core_FollowFailed" text="未能转投叛军，你的家族留在王国一方。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptFollow" text="&#10;&#10;追随：你的家族带着封地转投{REBEL}，内战结束后随结局一同归国（王室获胜时会受到惩处）。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptIntro" text="你所在的{FACTION}已起兵，建立{REBEL}与王室开战。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptStay" text="&#10;留下：你的家族改站王室一边，与昔日同党为敌。" />
+    <string id="AF_KINGDOM_CW_Core_FormationRollFailed" text="{CLAN}{CAUSE}，但成派判定未通过（{CHANCE}）" />
+    <string id="AF_KINGDOM_CW_Core_KingDefers" text="国王暂缓答复{FACTION}，最后通牒延后" />
+    <string id="AF_KINGDOM_CW_Core_KingRefusedDemand" text="国王拒绝{FACTION}的诉求，{REASON}" />
+    <string id="AF_KINGDOM_CW_Core_LeaderGoneNoRising" text="{FACTION}的领袖已不存在，取消起兵" />
+    <string id="AF_KINGDOM_CW_Core_NoPendingUltimatum" text="当前没有待答复的最后通牒。" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotDomesticWar" text="{FACTION}决意起兵，但国内已有内战，暂时按兵不动" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotWorldLimit" text="{FACTION}决意起兵，但世界叛乱已达上限（{COUNT}/{MAX}），暂时按兵不动" />
+    <string id="AF_KINGDOM_CW_Core_OthersCoolingDown" text="{FACTION}起兵，其余派系进入冷却（第 {DAY} 天前不递交通牒）" />
+    <string id="AF_KINGDOM_CW_Core_OutbreakHistory" text="{FACTION}建立{REBEL}，内战爆发" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingAccepted" text="玩家国王接受{FACTION}的最后通牒" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingRefused" text="玩家国王拒绝{FACTION}的最后通牒" />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="国王违背承诺，与{OTHER}议和" />
+    <string id="AF_KINGDOM_CW_Core_ReasonFoundingTimeout" text="建国请求超时" />
+    <string id="AF_KINGDOM_CW_Core_RebelKingdomEstablished" text="叛军王国建立完成，内战爆发。" />
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="王国刚刚经历叛乱，{WEEKS} 周内不再形成新派系" />
+    <string id="AF_KINGDOM_CW_Core_RebellionImmunityBlocked" text="玩家王国的稳定度叛乱免疫阻止了{FACTION}起兵" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncomplete" text="起兵尚未完全完成：{REASON}" />
+    <string id="AF_KINGDOM_CW_Core_RefusalCountNotMet" text="但派系被拒次数未满（{COUNT}/{MIN}），暂不起兵" />
+    <string id="AF_KINGDOM_CW_Core_RisingRebelKingdom" text="{FACTION}起兵，正在建立临时叛军王国" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptPending" text="诉求尚未兑现，派系保留等待处理。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptedDissolved" text="已接受最后通牒，派系解散。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION}递交最后通牒：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumExpired" text="最后通牒已失效。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedNoRevolt" text="你拒绝了最后通牒，派系暂未起兵。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedRevolt" text="你拒绝了最后通牒，派系起兵了。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedWaiting" text="你拒绝了最后通牒，派系决意起兵，正等待时机。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="&#10;&#10;已被拒绝 {COUNT} 次。若不答复，将在第 {DAY} 天自动判定。拒绝可能导致内战。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumToPlayerKing" text="{FACTION}的最后通牒已送达玩家国王，等待明确答复" />
+    <string id="AF_KINGDOM_CW_Coup_AlreadyRegistered" text="政变内战已经登记。" />
+    <string id="AF_KINGDOM_CW_Coup_ConditionsUnmet" text="政变内战登记条件不满足。" />
+    <string id="AF_KINGDOM_CW_Coup_IdentityConflict" text="政变内战身份冲突，保留原记录。" />
+    <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="政变叛军被消灭，叛乱平定。" />
+    <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="原王室家族未加入叛军，或复辟身份/原王国名称缺失，暂缓登记。" />
+    <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="原统治者王国被消灭，确认政变结果。" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="承认本派系封地自主" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="不与{TARGET}议和" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="结束与{TARGET}的战争并议和" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="支付赔偿并追究当事人责任" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="废除{TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="贯彻派系诉求" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="国王退位，由派系领袖继任" />
+    <string id="AF_KINGDOM_CW_Event_KingExecuted" text="国王遭到处决，王国陷入内战。" />
+    <string id="AF_KINGDOM_CW_Event_ProposalPartiesChanged" text="交涉当事方已变化，撤销未接受的旧提议。" />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="分治派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="主战派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="反战派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="索赔派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="变法派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="反对派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="拥立派系" />
+    <string id="AF_KINGDOM_CW_Panel_ChronicleWeek" text="第 {WEEK} 周  ·  {TEXT}" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWar" text="内战" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWarWeek" text="内战第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFactionSlots" text="本国派系名额" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFormalVassal" text="正式封臣资格" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionGrievanceThreshold" text="不满门槛 {THRESHOLD}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionMet" text="已满足" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNoEligibleClan" text="无合格家族" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNotReached" text="未达到" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionOrWeariness" text="或 厌战度 {VALUE}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions" text="玩家王国派系" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPostWarCooldown" text="战后冷却" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionReached" text="已达到" />
+    <string id="AF_KINGDOM_CW_Panel_CrownExitHint" text="退出王室阵营：与国王 −{LEADER}、其余王室家族 −{MEMBER}，{DAYS} 天内保持中立。" />
+    <string id="AF_KINGDOM_CW_Panel_CrownRespondedFirst" text="王室先行回应" />
+    <string id="AF_KINGDOM_CW_Panel_DayOf" text="第 {DAY} 天" />
+    <string id="AF_KINGDOM_CW_Panel_DaysLeft" text="剩余 {DAYS} 天" />
+    <string id="AF_KINGDOM_CW_Panel_DeliverUltimatum" text="递交通牒" />
+    <string id="AF_KINGDOM_CW_Panel_Delivered" text="已递交" />
+    <string id="AF_KINGDOM_CW_Panel_DeliveringSoon" text="即将递交" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTag" text="{TAG}诉求" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitle" text="要求{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitleExpired" text="诉求已失效" />
+    <string id="AF_KINGDOM_CW_Panel_DissolveOrder" text="解散令" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyDisabled" text="内战派系功能未启用" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyNoKingdom" text="你尚未加入任何王国" />
+    <string id="AF_KINGDOM_CW_Panel_Enabled" text="已开启" />
+    <string id="AF_KINGDOM_CW_Panel_ExitCost" text="与领袖 −{LEADER}、成员 −{MEMBER}，{DAYS} 天内不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Panel_FactionNameFallback" text="{LEADER}的反对派" />
+    <string id="AF_KINGDOM_CW_Panel_GoalPressure" text="逼宫" />
+    <string id="AF_KINGDOM_CW_Panel_GoalSecede" text="独立" />
+    <string id="AF_KINGDOM_CW_Panel_GoalUsurp" text="夺位" />
+    <string id="AF_KINGDOM_CW_Panel_GoldAmount" text="{AMOUNT} 金币" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityKing" text="你是国王  ·  王室阵营" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityNotVassal" text="{CLAN}  ·  非正式封臣，不能参与派系" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityVassal" text="封臣  ·  {CLAN}  ·  {ROLE}" />
+    <string id="AF_KINGDOM_CW_Panel_InfluenceAmount" text="{AMOUNT} 影响力" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedDaysAgo" text=" · {DAYS} 日前加入" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedToday" text=" · 今日加入" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintActive" text="压制、谈判、强制解散共用 {DAYS} 天冷却；妥协不受限，但会兑现诉求。" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintIdle" text="反对派成立后开放压制、谈判、妥协与强制解散。" />
+    <string id="AF_KINGDOM_CW_Panel_LeaderHint" text="不会自动起兵；手动起兵须本家族军力占比达到 {THRESHOLD}%（当前 {CURRENT}%）。可主动解散或改建，仍受战后冷却。" />
+    <string id="AF_KINGDOM_CW_Panel_LeaderLine" text="领袖  {CLAN}{YOU}   ·   与国王关系 {RELATION}" />
+    <string id="AF_KINGDOM_CW_Panel_MemberHint" text="起兵由领袖决定，提议被拒后 {DAYS} 天内不能再提。退出：{EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_MembersLocked" text="建国请求或内战期间，成员去留锁定。" />
+    <string id="AF_KINGDOM_CW_Panel_MiddleCooldown" text="退出冷却至第 {DAY} 天，期间不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Panel_MiddleSwitchHint" text="加入后改投须先退出：{EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_NoAnswer" text="未经答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoUltimatum" text="未经通牒" />
+    <string id="AF_KINGDOM_CW_Panel_None" text="无" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitKingReply" text="期限内等待国王答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitYourConfirm" text="等待你确认" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingLeaderAnswer" text="等待派系领袖答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingYourAnswer" text="待你答复 · 超时视为{OUTCOME}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCheckLog" text="已保留状态，需检查日志" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationAwaitsLeader" text="国王提出补偿换取撤回诉求，等待派系领袖答复。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationOffer" text="国王提出 {OFFER} 补偿，换取撤回诉求并解散派系；接受后补偿归你的家族。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeAbdication" text="妥协即退位，由派系领袖继位" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeHonors" text="妥协将兑现该诉求" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCrownFightsWithKing" text="若派系起兵，王室阵营家族随国王应战。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDecidedOnRefusal" text="拒绝后判定" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDefaultRisk" text="国王若妥协将兑现诉求；若拒绝，派系按概率决定是否起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum" text="即将递交最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDissolveAwaitsLeader" text="国王已下令解散，等待派系领袖服从或抗命。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteFoundingGoal" text="叛军正在建国。战争目标：{GOAL}。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteHoldingStillHomeWar" text="国内战事期间按兵不动" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingDissolveOrder" text="国王下令解散派系：服从则解散，抗命则起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingRuling" text="国王正在裁决" />
+    <string id="AF_KINGDOM_CW_Panel_NoteLowEscalation" text="被拒后起兵概率较低（×{SCALE}）。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteOpenWarGoal" text="叛军王国已与王室开战。战争目标：{GOAL}。" />
+    <string id="AF_KINGDOM_CW_Panel_NotePlayerFactionRisk" text="国王若拒绝，派系按概率决定是否起兵；建国请求或内战开始后，成员去留锁定。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRebelAtWarWithCrown" text="叛军王国已与王室开战" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusalRollSuffix" text="；拒绝后，派系按概率决定是否起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusedRetry" text="被拒 {COUNT} 次后重提 · {NOTE}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteResolvedWaitWarEnd" text="已决意，待战事结束" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRetryNextDay" text="次日重试" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebelFounding" text="等待叛军王国建立" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebellionSlot" text="等待起兵名额释放" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum" text="之后向国王递交最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeDefiance" text="抗命" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeRefusal" text="拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_Paused" text="暂停" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedNote" text="玩家领袖派系不会自动起兵；可改换诉求重新评估成员，手动起兵需确认且满足军力门槛。" />
+    <string id="AF_KINGDOM_CW_Panel_PreviouslyRefused" text="前次被拒" />
+    <string id="AF_KINGDOM_CW_Panel_RebelFounding" text="叛军建国中" />
+    <string id="AF_KINGDOM_CW_Panel_Rebellion" text="起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnit" text="次" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnitDeferred" text="次 · 拖延 {COUNT}" />
+    <string id="AF_KINGDOM_CW_Panel_Refused" text="已拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_ResolvedToRebel" text="决意起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalLetter" text="王室来函" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalTalks" text="王室谈判" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingAccepts" text="国王接受" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingDefers" text="国王拖延" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefuses" text="国王拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefusesRebels" text="国王拒绝，派系起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RulingPending" text="裁决中" />
+    <string id="AF_KINGDOM_CW_Panel_SettingDisabled" text="设置已关闭" />
+    <string id="AF_KINGDOM_CW_Panel_Settlement" text="结算" />
+    <string id="AF_KINGDOM_CW_Panel_ShortName" text="{CLAN}{TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StageAwaitingResponse" text="待派系回应 · 剩 {DAYS} 天" />
+    <string id="AF_KINGDOM_CW_Panel_StageCivilWarWeek" text="内战 · 第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_StageCooldown" text="内战余波平息中（第 {DAY} 天前不会成派）" />
+    <string id="AF_KINGDOM_CW_Panel_StageEmboldened" text="受叛军得胜鼓舞 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormed" text="{COUNT} 个反对派已成立" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumIn" text="已成形 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumSoon" text="已成形 · 即将提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageNoneFormed" text="尚无派系成形" />
+    <string id="AF_KINGDOM_CW_Panel_StageOpenWar" text="{COUNT} 派正在内战" />
+    <string id="AF_KINGDOM_CW_Panel_StagePausedHomeWar" text="暂停 · 国内战事期间按兵不动" />
+    <string id="AF_KINGDOM_CW_Panel_StagePlayerKingdomDisabled" text="玩家王国派系已在设置中关闭" />
+    <string id="AF_KINGDOM_CW_Panel_StageRebelling" text="起兵中 · 叛军王国建立中" />
+    <string id="AF_KINGDOM_CW_Panel_StageResolvedWaitingSlot" text="决意起兵 · 等待起兵名额" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementError" text="结算异常 · 已保留状态，需检查日志" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementIncomplete" text="结算未完成 · 次日重试" />
+    <string id="AF_KINGDOM_CW_Panel_StageSuppressed" text="受平叛震慑 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatum" text="{COUNT} 派发出最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitKing" text="最后通牒 · 待国王答复（剩 {DAYS} 天）" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitRuling" text="最后通牒 · 等待裁决" />
+    <string id="AF_KINGDOM_CW_Panel_StanceCrown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Panel_StanceFactionLeader" text="派系领袖" />
+    <string id="AF_KINGDOM_CW_Panel_StanceKing" text="国王" />
+    <string id="AF_KINGDOM_CW_Panel_StanceSupporter" text="支持{TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StanceUndeclared" text="未表态" />
+    <string id="AF_KINGDOM_CW_Panel_StandingBy" text="待命" />
+    <string id="AF_KINGDOM_CW_Panel_StepFounded" text="成立" />
+    <string id="AF_KINGDOM_CW_Panel_StepKingAnswer" text="国王答复" />
+    <string id="AF_KINGDOM_CW_Panel_StepManualRebellion" text="手动起兵" />
+    <string id="AF_KINGDOM_CW_Panel_StepMayRebel" text="可能起兵" />
+    <string id="AF_KINGDOM_CW_Panel_Ultimatum" text="最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_UnitDays" text="天" />
+    <string id="AF_KINGDOM_CW_Panel_UnitWeeks" text="周" />
+    <string id="AF_KINGDOM_CW_Panel_UntilDay" text="至第 {DAY} 天" />
+    <string id="AF_KINGDOM_CW_Panel_ValueError" text="异常" />
+    <string id="AF_KINGDOM_CW_Panel_ValueFounding" text="建国中" />
+    <string id="AF_KINGDOM_CW_Panel_ValueSoon" text="即将" />
+    <string id="AF_KINGDOM_CW_Panel_ValueWeekNumber" text="{WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_WeekOf" text="第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_YouSuffix" text="（你）" />
+    <string id="AF_KINGDOM_CW_PlayerControl_KingdomCooldown" text="王国战后冷却至第 {A} 天，玩家也不能手动起兵。" />
+    <string id="AF_KINGDOM_CW_PlayerControl_StrengthBelowThreshold" text="玩家家族军力占比 {A}% 未达到手动起兵门槛 {B}%。" />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG}领袖" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG}成员" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="国王背诺" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="诉求被拒" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="封地落选" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="失守封地" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="领地遭劫" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="强行议和" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="政策强推" />
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="王室处决" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="王室打压" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="未知不满" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="强行开战" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="中等" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="极高" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="极危" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="较高" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="高" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="较弱" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="微弱" />
   </strings>
 </base>
