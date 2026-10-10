@@ -423,9 +423,7 @@ namespace AnimusForge.XihaiAction
                     prefix: new HarmonyMethod(strictPromptPrefix));
                 // Bridge installation runs on the host thread. Workers use only
                 // this frozen language choice and immutable Core text resources.
-                bool useChinese = string.Equals(
-                    new TaleWorlds.Localization.TextObject("{=AF_RUNTIME_SceneActions_Language}en").ToString(),
-                    "zh-CN", StringComparison.Ordinal);
+                bool useChinese = SceneActionPromptPackage.UseChinese;
                 if (!AfV130ConfiguredGatewayTransport.TryCreate(out IAfClassifierTransport configuredTransport))
                 {
                     _classifierProvider =
@@ -907,7 +905,7 @@ namespace AnimusForge.XihaiAction
                     error = "AF could not build the NPC speech packet.";
                     return false;
                 }
-                string sceneDescription = _sceneDescriptionMethod?.Invoke(null, null) as string ?? "战场";
+                string sceneDescription = _sceneDescriptionMethod?.Invoke(null, null) as string ?? SceneActionPromptPackage.Text("BattlefieldFallback");
                 Type listType = typeof(List<>).MakeGenericType(_npcDataPacketType);
                 IList packetList = (IList)Activator.CreateInstance(listType);
                 // Y-key actor selection is already frozen to the primary target.
@@ -997,6 +995,7 @@ namespace AnimusForge.XihaiAction
                 cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(response) ||
                     response.StartsWith("（错误", StringComparison.Ordinal) ||
+                    response.StartsWith("(error:", StringComparison.OrdinalIgnoreCase) ||
                     response.StartsWith("（没说话", StringComparison.Ordinal) ||
                     response.StartsWith("（API请求失败", StringComparison.Ordinal))
                 {
@@ -1325,7 +1324,7 @@ namespace AnimusForge.XihaiAction
                 {
                     if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
                     {
-                        __result = "【阵前演讲失败】只输出（错误：阵前演讲 Claim 已失效），不要生成普通NPC回复。";
+                        __result = SceneActionPromptPackage.Text("ClaimExpired");
                         return false;
                     }
                     return true;
@@ -1354,7 +1353,7 @@ namespace AnimusForge.XihaiAction
                     // continue with its ordinary player-facing prompt would
                     // silently turn it into a normal shout and could duplicate
                     // SceneActions. Fail the claimed path closed instead.
-                    __result = "【阵前演讲失败】只输出（错误：阵前演讲提示词不可用），不要生成普通NPC回复。";
+                    __result = SceneActionPromptPackage.Text("SpeechPromptUnavailable");
                     return false;
                 }
                 return true;
@@ -1393,8 +1392,8 @@ namespace AnimusForge.XihaiAction
                     return true;
                 }
 
-                const string battleSpeechPreamble =
-                    "你是当前阵前演讲中的NPC演讲者。你的唯一任务是：根据下方提供的角色身份、战场处境和对话历史，面向己方士兵发表战前动员。你不是在回复玩家，也不是在进行普通闲聊。";
+                string battleSpeechPreamble =
+                    SceneActionPromptPackage.Text("BattleSpeechPreamble");
                 __result = promptWithoutPlayerCustomRule.Substring(0, start) +
                            battleSpeechPreamble +
                            promptWithoutPlayerCustomRule.Substring(end + ordinaryPreambleEnd.Length);
@@ -1411,7 +1410,7 @@ namespace AnimusForge.XihaiAction
                     ex);
                 if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
                 {
-                    __result = "【阵前演讲失败】只输出（错误：阵前演讲系统提示词不可用），不要生成普通NPC回复。";
+                    __result = SceneActionPromptPackage.Text("SystemPromptUnavailable");
                     return false;
                 }
                 return true;

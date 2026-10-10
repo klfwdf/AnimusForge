@@ -77,6 +77,7 @@ namespace AnimusForge.XihaiAction
             {
                 if (_initialized) return;
                 ModuleRoot = moduleRoot;
+                SceneActionPromptPackage.Load(System.IO.Path.Combine(ModuleRoot, "ModuleData", "SceneActionPromptTexts.xml"));
                 Settings = BattleSpeechSettingsLoader.Load(
                     moduleRoot,
                     out bool valid,
@@ -1243,13 +1244,8 @@ namespace AnimusForge.XihaiAction
 
             try
             {
-                bool hasSpeechPromptMarker =
-                    systemPrompt.IndexOf(
-                        "【阵前演讲正文生成任务",
-                        StringComparison.Ordinal) >= 0 ||
-                    systemPrompt.IndexOf(
-                        "【阵前演讲单请求协议】",
-                        StringComparison.Ordinal) >= 0;
+                bool hasSpeechPromptMarker = BattleSpeechText.ContainsTaskInstruction(
+                    systemPrompt, SceneActionPromptPackage.UseChinese);
                 if (!hasSpeechPromptMarker)
                 {
                     return false;

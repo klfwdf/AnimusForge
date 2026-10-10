@@ -4,10 +4,9 @@ namespace AnimusForge.XihaiAction
 {
     internal static class SceneActionsText
     {
-        // Call only at an existing host-thread request/session capture boundary.
+        // Package initialization supplies this immutable choice; UI language is separate.
         internal static bool UseChineseLanguage()
-            => string.Equals(new TextObject("{=AF_RUNTIME_SceneActions_Language}en").ToString(),
-                "zh-CN", System.StringComparison.Ordinal);
+            => AnimusForge.SceneActions.Core.SceneActionPromptPackage.UseChinese;
 
         public static TextObject Loaded()
         {

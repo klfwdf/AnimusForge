@@ -73,5 +73,6 @@ bridge = (RUNTIME / 'AfCompatV130.cs').read_text(encoding='utf-8-sig')
 check('new AfV130AuxiliaryTextClassifier(_classifierApiMethod, useChinese)' in bridge and
       'new AfV130AuxiliaryTextClassifier(configuredTransport, useChinese)' in bridge, 'both transports receive captured language')
 host = (ROOT / 'src/AF.GameAdapter.Bannerlord/SceneActions/SceneActionDirectiveController.cs').read_text(encoding='utf-8-sig')
-check('BuildCatalogText(offeredKeys, useChinese)' in host and 'AF_RUNTIME_SceneActions_Language' in host, 'unified postprocess language route')
+check('BuildCatalogText(offeredKeys, useChinese)' in host and 'SceneActionPromptPackage.UseChinese' in host and
+      'AF_RUNTIME_SceneActions_Language' not in host, 'unified postprocess package language route')
 print(f'PASS scene action bilingual catalog: {checks} static checks; compiled Core/LLM/game replay NOT RUN')
