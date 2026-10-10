@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <strings>
+    <string id="AF_RUNTIME_ApiTest_Stage_Main" text="主API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Preprocess" text="前处理API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Postprocess" text="后处理API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Event" text="事件/叛乱API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Ambient" text="环境AI接口" />
+    <string id="AF_RUNTIME_ApiTest_Started" text="：已请求连接测试。" />
+    <string id="AF_RUNTIME_ApiTest_Success" text="：连接测试成功，回复：" />
+    <string id="AF_RUNTIME_ApiTest_Exception" text="：连接测试异常：" />
+    <string id="AF_RUNTIME_ApiTest_InvalidFormat" text="：连接成功，但前处理响应格式错误：" />
+    <string id="AF_RUNTIME_ApiTest_ReasoningRetry" text="后处理测试首次回复仅含思考且达到token上限，关闭思考后重试：completion_tokens=" />
+    <string id="AF_RUNTIME_ApiTest_RetrySucceeded" text="后处理测试关闭思考后重试成功：control_mode=" />
+    <string id="AF_RUNTIME_ApiTest_FirstResponse" text="【首次响应】&#xA;" />
+    <string id="AF_RUNTIME_ApiTest_RetryResponse" text="&#xA;&#xA;【关闭思考重试响应】&#xA;" />
+    <string id="AF_RUNTIME_ApiTest_FailureStatus" text="：连接测试失败，状态码：" />
+    <string id="AF_RUNTIME_ApiTest_FailureError" text=" | 错误信息：" />
+    <string id="AF_RUNTIME_ApiTest_MainPrompt" text="我是一名冒险者，你好啊！(扮演一名叫哈宝的可爱孩童，继续生成20字左右的热情回复)" />
+    <string id="AF_RUNTIME_ApiTest_PostprocessSystem" text="你是一个标签输出器，只输出标签。" />
+    <string id="AF_RUNTIME_ApiTest_PostprocessPrompt" text="只输出 [ACTION:MOOD:NEUTRAL]" />
+    <string id="AF_RUNTIME_ApiTest_EventSystem" text="你是一名测试回显助手，只输出一句短回复。" />
+    <string id="AF_RUNTIME_ApiTest_EventPrompt" text="请回复：事件与叛乱接口连通" />
+  </strings>
+</base>

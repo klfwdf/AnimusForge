@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <strings>
+    <string id="AF_RUNTIME_ApiTest_Stage_Main" text="Main API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Preprocess" text="Preprocessing API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Postprocess" text="Postprocessing API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Event" text="Event/rebellion API" />
+    <string id="AF_RUNTIME_ApiTest_Stage_Ambient" text="Ambient AI API" />
+    <string id="AF_RUNTIME_ApiTest_Started" text=": connection test requested." />
+    <string id="AF_RUNTIME_ApiTest_Success" text=": connection test succeeded. Reply: " />
+    <string id="AF_RUNTIME_ApiTest_Exception" text=": connection test error: " />
+    <string id="AF_RUNTIME_ApiTest_InvalidFormat" text=": reachable, but the preprocessing response format is invalid: " />
+    <string id="AF_RUNTIME_ApiTest_ReasoningRetry" text="Postprocessing test used its token budget on reasoning only; retrying with reasoning disabled: completion_tokens=" />
+    <string id="AF_RUNTIME_ApiTest_RetrySucceeded" text="Postprocessing test succeeded after disabling reasoning: control_mode=" />
+    <string id="AF_RUNTIME_ApiTest_FirstResponse" text="[First response]&#xA;" />
+    <string id="AF_RUNTIME_ApiTest_RetryResponse" text="&#xA;&#xA;[Retry response with reasoning disabled]&#xA;" />
+    <string id="AF_RUNTIME_ApiTest_FailureStatus" text=": connection test failed. Status: " />
+    <string id="AF_RUNTIME_ApiTest_FailureError" text=" | Error: " />
+    <string id="AF_RUNTIME_ApiTest_MainPrompt" text="I am an adventurer. Hello! (Play a cheerful child named Habo and give a warm reply of roughly 20 words.)" />
+    <string id="AF_RUNTIME_ApiTest_PostprocessSystem" text="You are an action-tag emitter. Output only tags." />
+    <string id="AF_RUNTIME_ApiTest_PostprocessPrompt" text="Output only [ACTION:MOOD:NEUTRAL]" />
+    <string id="AF_RUNTIME_ApiTest_EventSystem" text="You are a test echo assistant. Output only one short reply." />
+    <string id="AF_RUNTIME_ApiTest_EventPrompt" text="Please reply: Event and rebellion endpoint connected" />
+  </strings>
+</base>

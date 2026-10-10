@@ -26,4 +26,5 @@
   <LanguageFile xml_path="afkingdom_ui_strings.xml" />
   <LanguageFile xml_path="afweekly_ui_strings.xml" />
   <LanguageFile xml_path="afnpcaction_editor_strings.xml" />
+  <LanguageFile xml_path="af_runtime_strings.xml" />
 </LanguageData>
