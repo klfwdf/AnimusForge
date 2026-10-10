@@ -236,5 +236,29 @@
     <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="Japanese semi-realistic narrative illustration (prompt instructions)" />
     <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="Standalone panel" />
     <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="Fullscreen overlay (default)" />
+    <string id="AF_ILL_MENU_GALLERY" text="Calradia Visual Chronicle Gallery (AI illustrations)" />
+    <string id="AF_ILL_NOTIFY_GENERATION_COMPLETE" text="[AI Illustration] {TITLE} is complete and the gallery has been updated." />
+    <string id="AF_ILL_NOTIFY_GENERATION_FAILED" text="[AI Illustration] Generation failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_NOTICE" text="[AI Illustration] {STATUS}" />
+    <string id="AF_ILL_MISSION_CANCELLED" text="Capture cancelled; no image generation request was sent." />
+    <string id="AF_ILL_MISSION_CAPTURE_FAILED" text="Capture failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_START_FAILED" text="Could not start image generation: {ERROR}" />
+    <string id="AF_ILL_MISSION_FAILED" text="Image generation failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_BATTLE_TITLE" text="Battle scene" />
+    <string id="AF_ILL_MISSION_INPUT_HINT" text="Click Generate image to frame the scene freely. Press Enter to capture one or two images, then confirm for the director to plan the illustration." />
+    <string id="AF_ILL_MISSION_INPUT_PLACEHOLDER" text="This mode only generates images from screenshots; it does not send NPC shouts." />
+    <string id="AF_ILL_MISSION_NO_DIALOGUE" text="[Scene Shout] No dialogue channel is available in this custom battle." />
+    <string id="AF_ILL_MISSION_CAPTURING" text="[AI Illustration] Capturing the scene. You can generate another image once capture is complete." />
+    <string id="AF_ILL_MISSION_FRAMING" text="Frame the scene freely: press Enter to capture up to two images. Generation starts only after confirmation." />
+    <string id="AF_ILL_MISSION_DIRECTING" text="Screenshots confirmed; the director is planning the illustration..." />
+    <string id="AF_ILL_MISSION_GENERATING" text="The director has finished; generating the illustration. You may close the panel..." />
+    <string id="AF_ILL_MISSION_SAVED" text="Illustration saved to the gallery." />
+    <string id="AF_ILL_MISSION_BUSY" text="Image generation is busy. Wait for the existing tasks to finish." />
+    <string id="AF_ILL_MISSION_PREPARING" text="Screenshots confirmed; preparing the illustration..." />
+    <string id="AF_ILL_MISSION_PANEL_UNAVAILABLE" text="[AI Illustration] The progress panel could not be opened. Generation continues in the background; view the result in the gallery when it is complete." />
+    <string id="AF_ILL_MISSION_SCOPE_CANCELLED" text="Screenshot illustration cancelled because image generation was disabled or the host changed." />
+    <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="The image generation context has expired because the view changed or the panel closed. Reopen it to continue." />
+    <string id="AF_ILL_NOTIFY_TIMEOUT" text="Image generation timed out: the upstream model did not respond within the time limit. Try again later." />
+    <string id="AF_ILL_NOTIFY_BUSY" text="Image generation is busy. Wait for the existing tasks to finish, then try again." />
   </strings>
 </base>

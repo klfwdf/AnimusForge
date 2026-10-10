@@ -10,6 +10,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator.Core
@@ -69,11 +70,11 @@ namespace AnimusForge.Illustrator.Core
             Action open = _openProgress; _openProgress = null;
             ShoutBehavior.NotifySceneIllustrationChangedForExternal();
             if (capture.Completion.IsCanceled)
-            { Finish(scope, capture, _statusMission, "本次取景已取消，未发送生图请求。"); return; }
+            { Finish(scope, capture, _statusMission, IllustratorUiText.MissionCancelled); return; }
             if (capture.Completion.IsFaulted)
-            { Finish(scope, capture, _statusMission, "取景失败：" + capture.Completion.Exception.GetBaseException().Message); return; }
+            { Finish(scope, capture, _statusMission, IllustratorUiText.MissionCaptureFailed(capture.Completion.Exception.GetBaseException().Message)); return; }
             try { open?.Invoke(); }
-            catch (Exception ex) { Finish(scope, capture, _statusMission, "生图启动失败：" + ex.Message); }
+            catch (Exception ex) { Finish(scope, capture, _statusMission, IllustratorUiText.MissionStartFailed(ex.Message)); }
         }
 
         private static void OpenCustomBattleInput()
@@ -81,8 +82,8 @@ namespace AnimusForge.Illustrator.Core
             Mission mission = Mission.Current;
             float speed = mission.Scene.TimeSpeed;
             Action restore = () => { if (ReferenceEquals(Mission.Current, mission) && mission.Scene != null) mission.Scene.TimeSpeed = speed; };
-            ShoutTextInputPopup.Show("战斗现场", "点击生图：自由取景，Enter 截取一至两张，确认后由导演推演插画。", "当前模式只提供截图生图，不发送 NPC 喊话。", "",
-                _ => { restore(); InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 当前自定义战斗没有可用的交流链路。")); }, restore,
+            ShoutTextInputPopup.Show(IllustratorUiText.MissionBattleTitle, IllustratorUiText.MissionInputHint, IllustratorUiText.MissionInputPlaceholder, "",
+                _ => { restore(); InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionNoDialogue)); }, restore,
                 enableIllustration: true);
         }
 
@@ -97,7 +98,7 @@ namespace AnimusForge.Illustrator.Core
         private static void Request(Func<bool> panelStillOpen)
         {
             IllustratorRuntime.AssertMainThread();
-            if (_capture != null && !_capture.Completion.IsCompleted) { InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 正在采集现场，截图完成后即可再次生图。")); return; }
+            if (_capture != null && !_capture.Completion.IsCompleted) { InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionCapturing)); return; }
             Mission mission = Mission.Current;
             var originScreen = ScreenManager.TopScreen;
             IllustrationOptions options;
@@ -124,14 +125,14 @@ namespace AnimusForge.Illustrator.Core
             {
                 capture?.Cancel("截图启动失败。");
                 scope?.Close();
-                SetStatus(mission, "生图失败：" + ex.Message);
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + _status));
+                SetStatus(mission, IllustratorUiText.MissionFailed(ex.Message));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionNotice(_status)));
                 return;
             }
 
             _capture = capture;
             _scope = scope;
-            SetStatus(mission, "自由取景：Enter 截图，最多两张；确认后才发送生成请求。");
+            SetStatus(mission, IllustratorUiText.MissionFraming);
             // No worker/API admission while the player composes or chooses another shot.
             _openProgress = () => {
                 var pair = capture.Completion.GetAwaiter().GetResult();
@@ -169,9 +170,9 @@ namespace AnimusForge.Illustrator.Core
                         }
                         pair = null; current = null;
                         var plan = new IllustrationPromptPlan(battle ? MissionScreenshotRules.BattleMode : MissionScreenshotRules.ShoutMode, facts, contract, dialogue);
-                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, "现场截图已确认，导演正在推演…"); });
+                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, IllustratorUiText.MissionDirecting); });
                         var direction = await VisualDirectorEngine.CreateDirectionAsync(plan, references, options, token).ConfigureAwait(false);
-                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, "导演已完成，正在生成插画；可关闭面板…"); });
+                        IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, scope)) SetStatus(mission, IllustratorUiText.MissionGenerating); });
                         var image = await UniversalOpenAiImageClient.GenerateImageAsync(direction.Prompt, references, options, token).ConfigureAwait(false);
                         if (!image.Success || image.ImageBytes == null) throw new InvalidOperationException(image.ErrorMessage ?? "生图未返回图像。");
                         token.ThrowIfCancellationRequested();
@@ -191,12 +192,12 @@ namespace AnimusForge.Illustrator.Core
                     }
                 }, saved =>
                 {
-                    Finish(scope, capture, mission, "插画已保存到画廊。");
-                }, error => Finish(scope, capture, mission, "生图失败：" + error), value => value, _ => "成图保存失败。");
-                if (!started) { Finish(scope, capture, mission, "生图任务繁忙，请等待已有任务完成。"); return; }
+                    Finish(scope, capture, mission, IllustratorUiText.MissionSaved);
+                }, error => Finish(scope, capture, mission, IllustratorUiText.MissionFailed(error)), value => value, _ => "成图保存失败。");
+                if (!started) { Finish(scope, capture, mission, IllustratorUiText.MissionBusy); return; }
                 TryShowProgress(scope, subject, mission, originScreen, panelStillOpen);
             }
-            catch (Exception ex) { Finish(scope, capture, mission, "生图失败：" + ex.Message); }
+            catch (Exception ex) { Finish(scope, capture, mission, IllustratorUiText.MissionFailed(ex.Message)); }
         }
 
         private static void TryShowProgress(IllustrationScope scope, string subject, Mission mission,
@@ -206,13 +207,13 @@ namespace AnimusForge.Illustrator.Core
             {
                 if (ReferenceEquals(_scope, scope) && ReferenceEquals(Mission.Current, mission) && !mission.MissionEnded
                     && ReferenceEquals(ScreenManager.TopScreen, originScreen) && panelStillOpen?.Invoke() == true)
-                    IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, "现场截图已确认，正在准备画卷…");
+                    IllustrationCardPopup.ShowForMissionScreenshot(scope, subject, mission, IllustratorUiText.MissionPreparing);
             }
             catch (Exception ex)
             {
                 // Presentation is optional after admission. Never cancel or resubmit the paid worker here.
                 Debug.Print("[Illustrator] Mission progress UI unavailable: " + ex.GetType().Name);
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 等待面板打开失败，生成仍在后台继续，完成后可到画廊查看。"));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionPanelUnavailable));
             }
         }
 
@@ -239,7 +240,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 SetStatus(mission, status);
                 _scope = null; _capture = null; _openProgress = null;
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + status));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionNotice(status)));
             }
             scope.Close();
         }
@@ -248,8 +249,8 @@ namespace AnimusForge.Illustrator.Core
             capture?.Cancel("截图生图已取消（生图关闭或宿主切换）。");
             if (!ReferenceEquals(_scope, scope)) return;
             _scope = null; _capture = null; _openProgress = null;
-            SetStatus(mission, "截图生图已取消（生图关闭或宿主切换）。");
-            InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + _status));
+            SetStatus(mission, IllustratorUiText.MissionScopeCancelled);
+            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.MissionNotice(_status)));
         }
         internal static void Reset()
         {
