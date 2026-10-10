@@ -18,6 +18,8 @@
 
 详细命令、输出和候选绑定集中在本地 `artifacts/tests/bulletin-switch-20261010/receipt.json`、`code-map.json`及其关联目录；核实的一基源码范围与实际消费者见[代码导航](architecture/af-framework-code-scope.md#bulletin-independent-publishing-toggle-20261010)。用户授权推送 `origin/main`，真实远端ref以同目录 `publication-receipt.json` 核验，不以本地commit或dry-run代替推送成功。未 Stage/部署/打包/启动游戏，实机开关、玩家配置/存档、真实模型仍未验。源码回滚使用产品 `9bba267e` 的 focused inverse，保留其他历史；没有游戏安装改动需要恢复。
 
+合并接续：用户明确授权普通合并远端17个新提交、复验后推送。`cf4707fa7ff25de0abd2023cdb7bdbc6f6ecf450` 的父提交为本地 `384b24a2` 与远端 `2846c980`；仅三份文档顶部记录冲突，双方内容均保留，31个远端非冲突路径的Git blob逐一一致，快报修复未被覆盖。合并后的源再次通过owner124、策略141、设置12；原统一入口在此前不存在的Release输出目录完成1.3/1.4、Bootstrap与双Coup门禁，各348警告0错误，未改脚本或清理既有Debug证据。专项仍是显式.NET 10、provider/game受控，坐标 recorded/working-tree 六锚点校验通过；不是远端外交/TTS全部回放或实机验收。追加证据为本地 `merged-green/`、`merged-replays.json`、`merged-build.json`；普通推送与远端核验仍以 `publication-receipt.json` 的实际结果为准，没有变基或强推。
+
 <a id="peace-proposal-admission-20261010"></a>
 ## 玩家和平提案误拒绝修复（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 

@@ -3,6 +3,7 @@
 - 产品 `9bba267e`：真实发布门控改读 `AutoGenerateWorldBulletins`，不再受周报自动生成开关控制；采集、历史档案、旧配置迁移及缺省回退保持。按用户要求不处理跨期重复桥段。
 - 真实 owner 回放124、策略141、真实设置12项通过（显式 .NET 10，设置/provider/game 叶的替身边界见台账）；原1.3/1.4、Bootstrap及双Coup门禁通过，两实现各348警告0错误。默认 .NET 8入口因缺8.0.30引用包未运行；未验实机/玩家存档/真实模型，未部署或打包。
 - 本轮用户授权修改后推送 `origin/main`；远端状态以本地 publication 收据核验。详细证据见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-independent-publishing-toggle-20261010)与[代码导航](docs/architecture/af-framework-code-scope.md#bulletin-independent-publishing-toggle-20261010)，本地 `artifacts/tests/bulletin-switch-20261010/receipt.json`。本条仅接续快报发布开关，不替代下方其他交付。
+- 用户追加授权普通合并远端17个提交后复验推送；合并 `cf4707fa` 保留双方文档及全部远端代码。合并后124/141/12专项、Release双API/Bootstrap/双Coup门禁再次通过；未变基、未强推、未部署，详细接续证据仍归同一台账与本地收据。
 
 # 当前交接：外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
 
