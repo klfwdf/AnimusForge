@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -51,9 +52,35 @@ public static class LlmRetryPrompt
 
 	public static string BuildRetryDescription(string stageName, string error)
 	{
-		string stage = string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim();
+		string stage = RetryStageDisplay(stageName);
 		// 重试窗口只承载“重试/放弃”这个必要决策；完整诊断已在 ShowRetryPrompt 中转到左下角和日志。
-		return stage + "失败。详细错误已显示在左下角消息并写入日志。\n\n是否立即重试？";
+		var text = new TextObject("{=AF_UI_Retry_Description}{STAGE} failed. The full error was shown in the lower-left message feed and written to the log.\n\nRetry now?");
+		text.SetTextVariable("STAGE", stage);
+		return text.ToString();
+	}
+
+	private static string RetryStageDisplay(string stageName)
+	{
+		string stage = (stageName ?? "").Trim();
+		switch (stage)
+		{
+			case "": case "LLM请求": return new TextObject("{=AF_UI_Retry_StageRequest}LLM request").ToString();
+			case "动作后处理": return new TextObject("{=AF_UI_Retry_StagePostprocess}Action postprocessing").ToString();
+			case "辅助对话": return new TextObject("{=AF_UI_Retry_StageAuxiliary}Auxiliary conversation").ToString();
+			case "前处理规则选择": return new TextObject("{=AF_UI_Retry_StagePreprocess}Preprocessing rule selection").ToString();
+			case "正文生成": return new TextObject("{=AF_UI_Retry_StageReply}Reply generation").ToString();
+			case "信使回信正文生成": return new TextObject("{=AF_UI_Retry_StageCourierReply}Courier reply generation").ToString();
+			case "信使来信正文生成": return new TextObject("{=AF_UI_Retry_StageCourierLetter}Courier letter generation").ToString();
+			default: return stage;
+		}
+	}
+
+	private static string RetryFailureDisplay(string stageName, string error)
+	{
+		var text = new TextObject("{=AF_UI_Retry_FailureDetail}{STAGE} failed:\n\n{DETAIL}");
+		text.SetTextVariable("STAGE", RetryStageDisplay(stageName));
+		text.SetTextVariable("DETAIL", NormalizeFullText(error, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
+		return text.ToString();
 	}
 
 	public static string BuildFailureDetail(string reason, string modelReply, string rawResponse = null)
@@ -82,8 +109,8 @@ public static class LlmRetryPrompt
 		{
 			// 纯 LLM 失败报告改走左下角消息，避免完整 API 响应覆盖正在操作的菜单。
 			NonBlockingErrorReport.Show(
-				string.IsNullOrWhiteSpace(title) ? "AnimusForge 请求失败" : title.Trim(),
-				NormalizeFullText(message, "未知错误"));
+				string.IsNullOrWhiteSpace(title) ? new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString() : title.Trim(),
+				NormalizeFullText(message, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
 		}
 
 		PostToMainThread(Show);
@@ -108,7 +135,7 @@ public static class LlmRetryPrompt
 		}
 		if (_mainThreadId != 0 && Thread.CurrentThread.ManagedThreadId == _mainThreadId)
 		{
-			ShowFailurePopup("AnimusForge 请求失败", (string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim()) + "失败：\n\n" + NormalizeFullText(error, "未知错误"));
+			ShowFailurePopup(new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(), RetryFailureDisplay(stageName, error));
 			return false;
 		}
 		using ManualResetEventSlim waitHandle = new ManualResetEventSlim(false);
@@ -139,15 +166,15 @@ public static class LlmRetryPrompt
 			{
 				// 保留重试决策窗口，但把可能很长的接口响应从窗口主体迁到非阻塞消息。
 				NonBlockingErrorReport.Show(
-					"AnimusForge 请求失败",
-					(string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim()) + "失败：\n\n" + NormalizeFullText(error, "未知错误"));
+					new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(),
+					RetryFailureDisplay(stageName, error));
 				InformationManager.ShowInquiry(new InquiryData(
-					"AnimusForge 请求失败",
+					new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(),
 					BuildRetryDescription(stageName, error),
 					isAffirmativeOptionShown: true,
 					isNegativeOptionShown: true,
-					"重试",
-					"放弃",
+					new TextObject("{=AF_UI_Retry_Retry}Retry").ToString(),
+					new TextObject("{=AF_UI_Retry_Abort}Abort").ToString(),
 					delegate
 					{
 						completion.TrySetResult(true);

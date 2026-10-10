@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -23,8 +24,8 @@ public static class NonBlockingErrorReport
 	/// </summary>
 	public static void Show(string title, string detail, bool rememberForAnalysis = true)
 	{
-		string normalizedTitle = Normalize(title, "AnimusForge 操作失败");
-		string normalizedDetail = RedactConfiguredApiKeys(Normalize(detail, "未知错误"));
+		string normalizedTitle = Normalize(title, new TextObject("{=AF_UI_ErrorReport_OperationFailed}AnimusForge operation failed").ToString());
+		string normalizedDetail = RedactConfiguredApiKeys(Normalize(detail, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
 		string notification = BuildVisibleMessage(normalizedTitle, normalizedDetail);
 		// 保留最近一次自动错误，供玩家主动从终端请求 AI 分析，避免移除旧弹窗后丢失该功能。
 		if (rememberForAnalysis)
@@ -144,7 +145,10 @@ public static class NonBlockingErrorReport
 	private static string BuildVisibleMessage(string title, string detail)
 	{
 		// 用户需要在左下角直接阅读模型回复和 API 原始响应，不能在此处再裁剪或移除任何诊断段落。
-		return "[AnimusForge] " + title + "：\n" + Normalize(detail, "未知错误");
+		var text = new TextObject("{=AF_UI_ErrorReport_VisibleMessage}[AnimusForge] {TITLE}:\n{DETAIL}");
+		text.SetTextVariable("TITLE", title);
+		text.SetTextVariable("DETAIL", Normalize(detail, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
+		return text.ToString();
 	}
 
 	private static bool ShouldSuppressDuplicate(string title, string detail)
@@ -186,7 +190,7 @@ public static class NonBlockingErrorReport
 				string key = (keys[i] ?? "").Trim();
 				if (key.Length >= 6)
 				{
-					text = text.Replace(key, "[已隐藏 API Key]");
+					text = text.Replace(key, "[API key redacted]");
 				}
 			}
 		}

@@ -3007,5 +3007,25 @@ Choose how to proceed:" />
   <string id="AF_MCM_Option_StationeryKhuzait" text="Khuzait" />
   <string id="AF_MCM_Option_StationeryAserai" text="Aserai" />
   <string id="AF_MCM_Option_StationeryNord" text="Nord" />
+  <string id="AF_UI_Retry_Description" text="{STAGE} failed. The full error was shown in the lower-left message feed and written to the log.&#10;&#10;Retry now?" />
+  <string id="AF_UI_Retry_StageRequest" text="LLM request" />
+  <string id="AF_UI_Retry_StagePostprocess" text="Action postprocessing" />
+  <string id="AF_UI_Retry_StageAuxiliary" text="Auxiliary conversation" />
+  <string id="AF_UI_Retry_StagePreprocess" text="Preprocessing rule selection" />
+  <string id="AF_UI_Retry_StageReply" text="Reply generation" />
+  <string id="AF_UI_Retry_StageCourierReply" text="Courier reply generation" />
+  <string id="AF_UI_Retry_StageCourierLetter" text="Courier letter generation" />
+  <string id="AF_UI_Retry_FailureDetail" text="{STAGE} failed:&#10;&#10;{DETAIL}" />
+  <string id="AF_UI_Retry_UnknownError" text="Unknown error" />
+  <string id="AF_UI_Retry_RequestFailed" text="AnimusForge request failed" />
+  <string id="AF_UI_Retry_Retry" text="Retry" />
+  <string id="AF_UI_Retry_Abort" text="Abort" />
+  <string id="AF_UI_ErrorReport_OperationFailed" text="AnimusForge operation failed" />
+  <string id="AF_UI_ErrorReport_VisibleMessage" text="[AnimusForge] {TITLE}:&#10;{DETAIL}" />
+  <string id="AF_UI_ErrorAnalysis_ErrorTitle" text="AnimusForge error" />
+  <string id="AF_UI_ErrorAnalysis_ResultTitle" text="AI error analysis - {TITLE}" />
+  <string id="AF_UI_ErrorAnalysis_EmptyAnalysis" text="No analysis was generated." />
+  <string id="AF_UI_ErrorAnalysis_FailureBody" text="The preprocessing API could not complete the error analysis.&#10;&#10;[Analysis request error]&#10;{ERROR}&#10;&#10;[Original error]&#10;{TITLE}&#10;{DETAIL}" />
+  <string id="AF_UI_ErrorAnalysis_FailedTitle" text="AI analysis failed" />
   </strings>
 </base>

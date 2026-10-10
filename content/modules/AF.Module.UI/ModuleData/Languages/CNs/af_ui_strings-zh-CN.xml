@@ -3038,5 +3038,25 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Option_StationeryKhuzait" text="库塞特" />
   <string id="AF_MCM_Option_StationeryAserai" text="阿塞莱" />
   <string id="AF_MCM_Option_StationeryNord" text="诺德" />
+  <string id="AF_UI_Retry_Description" text="{STAGE}失败。详细错误已显示在左下角消息并写入日志。&#10;&#10;是否立即重试？" />
+  <string id="AF_UI_Retry_StageRequest" text="LLM请求" />
+  <string id="AF_UI_Retry_StagePostprocess" text="动作后处理" />
+  <string id="AF_UI_Retry_StageAuxiliary" text="辅助对话" />
+  <string id="AF_UI_Retry_StagePreprocess" text="前处理规则选择" />
+  <string id="AF_UI_Retry_StageReply" text="正文生成" />
+  <string id="AF_UI_Retry_StageCourierReply" text="信使回信正文生成" />
+  <string id="AF_UI_Retry_StageCourierLetter" text="信使来信正文生成" />
+  <string id="AF_UI_Retry_FailureDetail" text="{STAGE}失败：&#10;&#10;{DETAIL}" />
+  <string id="AF_UI_Retry_UnknownError" text="未知错误" />
+  <string id="AF_UI_Retry_RequestFailed" text="AnimusForge 请求失败" />
+  <string id="AF_UI_Retry_Retry" text="重试" />
+  <string id="AF_UI_Retry_Abort" text="放弃" />
+  <string id="AF_UI_ErrorReport_OperationFailed" text="AnimusForge 操作失败" />
+  <string id="AF_UI_ErrorReport_VisibleMessage" text="[AnimusForge] {TITLE}：&#10;{DETAIL}" />
+  <string id="AF_UI_ErrorAnalysis_ErrorTitle" text="AnimusForge 报错" />
+  <string id="AF_UI_ErrorAnalysis_ResultTitle" text="AI 报错分析 - {TITLE}" />
+  <string id="AF_UI_ErrorAnalysis_EmptyAnalysis" text="未生成分析结果。" />
+  <string id="AF_UI_ErrorAnalysis_FailureBody" text="前处理 API 未能完成报错分析。&#10;&#10;【分析请求错误】&#10;{ERROR}&#10;&#10;【原报错】&#10;{TITLE}&#10;{DETAIL}" />
+  <string id="AF_UI_ErrorAnalysis_FailedTitle" text="AI 分析失败" />
   </strings>
 </base>
