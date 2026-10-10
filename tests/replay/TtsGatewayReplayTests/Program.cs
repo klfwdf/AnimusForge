@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -118,23 +118,28 @@ using (ReplayServer malformed = ReplayServer.Start("AQID", 0))
 
 Console.WriteLine("PASS ttsGatewayReplay success=1 headers=1 credentialBoundary=1 providerError=1 invalidAudio=1 cancellation=1 malformedExtra=1");
 
+await V3Cases.Run(animusForge);
+
 internal sealed class ReplayServer : IDisposable
 {
     private readonly TcpListener _listener;
     private readonly string _responseBody;
     private readonly int _delayMilliseconds;
     private readonly int _statusCode;
+    private readonly bool _chunked, _truncate;
+    private readonly int _stallAfterHeaders, _fragmentSize;
     private readonly CancellationTokenSource _stop = new();
     private readonly Task _acceptLoop;
     private int _requestCount;
     private string _requestText = string.Empty;
 
-    private ReplayServer(TcpListener listener, int delayMilliseconds, int statusCode, string body)
+    private ReplayServer(TcpListener listener, int delayMilliseconds, int statusCode, string body, bool chunked, bool truncate, int stallAfterHeaders, int fragmentSize)
     {
         _listener = listener;
         _delayMilliseconds = delayMilliseconds;
         _statusCode = statusCode;
         _responseBody = body;
+        _chunked = chunked; _truncate = truncate; _stallAfterHeaders = stallAfterHeaders; _fragmentSize = fragmentSize;
         Url = "http://127.0.0.1:" + ((IPEndPoint)listener.LocalEndpoint).Port + "/tts";
         _acceptLoop = AcceptLoopAsync();
     }
@@ -143,12 +148,12 @@ internal sealed class ReplayServer : IDisposable
     public int RequestCount => Volatile.Read(ref _requestCount);
     public string RequestText => Volatile.Read(ref _requestText);
 
-    public static ReplayServer Start(string audioToken, int delayMilliseconds, int statusCode = 200, string body = null)
+    public static ReplayServer Start(string audioToken, int delayMilliseconds, int statusCode = 200, string body = null, bool chunked = false, bool truncate = false, int stallAfterHeaders = 0, int fragmentSize = 7)
     {
         TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         string response = body ?? "{\"code\":3000,\"data\":\"" + audioToken + "\"}";
-        return new ReplayServer(listener, delayMilliseconds, statusCode, response);
+        return new ReplayServer(listener, delayMilliseconds, statusCode, response, chunked, truncate, stallAfterHeaders, fragmentSize);
     }
 
     private async Task AcceptLoopAsync()
@@ -204,9 +209,26 @@ internal sealed class ReplayServer : IDisposable
                 catch (OperationCanceledException) { return; }
             }
             byte[] body = Encoding.UTF8.GetBytes(_responseBody);
-            string responseHeaders = "HTTP/1.1 " + _statusCode + " Test\r\nContent-Type: application/json\r\nContent-Length: " + body.Length + "\r\nConnection: close\r\n\r\n";
-            await stream.WriteAsync(Encoding.ASCII.GetBytes(responseHeaders)).ConfigureAwait(false);
-            await stream.WriteAsync(body).ConfigureAwait(false);
+            string framing = _chunked ? "Transfer-Encoding: chunked" : "Content-Length: " + body.Length;
+            string responseHeaders = "HTTP/1.1 " + _statusCode + " Test\r\nContent-Type: application/json\r\nX-Tt-Logid: replay-log-123\r\n" + (_statusCode == 302 ? "Location: " + Url + "\r\n" : "") + framing + "\r\nConnection: close\r\n\r\n";
+            try
+            {
+                await stream.WriteAsync(Encoding.ASCII.GetBytes(responseHeaders)).ConfigureAwait(false);
+                if (_stallAfterHeaders > 0) await Task.Delay(_stallAfterHeaders, _stop.Token);
+                if (!_chunked) await stream.WriteAsync(body).ConfigureAwait(false);
+                else
+                {
+                    for (int i = 0; i < body.Length; i += _fragmentSize)
+                    {
+                        int size = Math.Min(_fragmentSize, body.Length - i);
+                        await stream.WriteAsync(Encoding.ASCII.GetBytes(size.ToString("X") + "\r\n"));
+                        await stream.WriteAsync(body.AsMemory(i, size));
+                        await stream.WriteAsync(Encoding.ASCII.GetBytes("\r\n"));
+                    }
+                    if (!_truncate) await stream.WriteAsync(Encoding.ASCII.GetBytes("0\r\n\r\n"));
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is OperationCanceledException) { }
         }
     }
 

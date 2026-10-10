@@ -308,6 +308,7 @@ internal static class Dpl090PresentationReplay
     {
         public WorldDiplomacyPlayerContext Player { get; set; } = new(42, "player", true, true, "宗主国");
         public WorldDiplomacyRound Round = new() { RoundId = "round", State = "active" };
+        public WorldDiplomacyRound ComposeRound = null!;
         public WorldDiplomacyDocument? Source = new() { DocumentId = "source", RoundId = "round", AuthorKingdomId = "target", AutomaticReplyDepth = 2 };
         public bool TargetExists = true;
         public readonly List<WorldDiplomacyDocument> Added = new();
@@ -323,7 +324,10 @@ internal static class Dpl090PresentationReplay
         private readonly PlayerWorld _world;
         internal PlayerOrch(PlayerWorld world) { _world = world; }
         public override WorldDiplomacyRound EnsureActiveRound(string initiatorId, string targetId, bool isPlayerInsertion)
-        { Test.True(isPlayerInsertion, "player insertion preserved"); return _world.Round; }
+        {
+            Test.True(isPlayerInsertion && targetId == null, "both compose entries leave target selection to analysis");
+            return _world.ComposeRound = new() { RoundId = "compose" + _world.Added.Count, State = "active" };
+        }
         public override WorldDiplomacyDocument CreateDocument(string authorId, string targetId, string title, string body, string origin,
             bool isPlayerAuthored, bool isResponse, string exchangeId) => new()
             {
@@ -355,23 +359,28 @@ internal static class Dpl090PresentationReplay
         Test.True(Execute("  正文  ").StartsWith("外交宣言已经公开发布"), "declaration accepted");
         Equal("add,publish,analysis", string.Join(",", world.Effects), "publication precedes analysis");
         Equal("正文", world.Added[0].Body, "body normalized");
-        Equal(world.Added[0].DocumentId, world.Round.RootDocumentId, "root document set");
-        Equal(8, world.Round.LastActivityDay, "player activity time preserved");
+        Equal(world.Added[0].DocumentId, world.ComposeRound.RootDocumentId, "root document set");
+        Equal(8, world.ComposeRound.LastActivityDay, "player activity time preserved");
         world.Effects.Clear();
+        world.Round.Participants.Add(new() { KingdomId = "player", MandatoryReplyPending = true });
         var reply = new WorldDiplomacyPlayerDocumentCommand("回应", 42, "source", "round");
-        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交回应已经公开发布"), "reply accepted");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交宣言已经公开发布"), "shortcut uses declaration submission");
         var response = world.Added.Last();
         Equal("source", response.SourceDocumentId, "reply bound to exact source");
-        Equal("round", response.RoundId, "reply bound to original round");
-        Equal(3, response.AutomaticReplyDepth, "reply depth preserved");
-        Equal("target", response.TargetKingdomId, "reply target is original author");
+        Equal(world.ComposeRound.RoundId, response.RoundId, "shortcut uses the same provisional routing as archive compose");
+        Equal(0, response.AutomaticReplyDepth, "shortcut does not increase automatic reply depth");
+        Test.True(response.TargetKingdomId == null && !response.IsResponse && response.Origin == "player",
+            "source context does not force a target or response mechanism");
         Equal("add,publish,analysis", string.Join(",", world.Effects), "reply publication precedes analysis");
-        Test.True(!world.Round.Participants.Single(p => p.KingdomId == "player").MandatoryReplyPending, "player reply obligation cleared");
+        Test.True(world.Round.Participants.Single(p => p.KingdomId == "player").MandatoryReplyPending,
+            "clicking compose does not settle the original reply obligation");
         int count = world.Added.Count;
         world.Source!.RoundId = "new-round";
-        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply, orch), "rebound source cannot settle original round");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交宣言已经公开发布"),
+            "source round changes do not invalidate advisory compose context");
+        count++;
         world.Source = null;
-        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply, orch), "removed source ignored");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).Contains("原公文已不可用"), "removed source reports missing context");
         Equal(count, world.Added.Count, "stale reply produces no side effects");
     }
 

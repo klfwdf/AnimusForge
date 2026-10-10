@@ -13,6 +13,65 @@
 
 124 owner /141策略/12设置为显式 .NET 10离线检查，原双API/Bootstrap/双DLL门禁通过；.NET 8引用包缺失、实机与真实provider仍未覆盖。未处理重复桥段，未部署。
 
+<a id="peace-proposal-admission-20261010"></a>
+### 玩家和平提案逐动作校验
+
+源码 `b28bb5d40`，基线 `75317d47c`，状态/回归/实机限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#peace-proposal-admission-20261010)。范围仅为本包，下列坐标不代表全文件或全仓验收。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs:80–138`，TryValidateOfferedPeaceTerms / TryValidatePeaceTerms | 保留已有原案来源/动作身份校验，分离可复用条款校验；新提案、旧提案接受共同使用相同贡金/割地规则 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:1193–1218, 2406–2451`，ProcessAnalyzedDocument / TryGetPlayerWorldStateIntentViolation | 移除无SourceActionId的临时原案检查，将新提案自身条款接入真实逐动作owner guard |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs:323–329, 415–428`，ExecuteItems | 已有当前动作投影、预检和效果前重验消费该guard；迟到拒绝结果转为具体可读原因 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs:506–517`，DescribeRejectedPlayerMechanic | 公开公文拒绝通知解析和平条款具体原因，原机器码仍在日志 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PeaceProposalReplay.cs:9–167`，Run / Fixture | 实际解析到owner到执行器到pending offer回放：原日志、flat、遗漏/显式条款、多动作排序/双对象、非法条款、执行前归属变化和重复完成；游戏对象为已有detached端口 |
+
+未覆盖真实Campaign、实际provider、实机UI或玩家旧档；旧拒绝宣言不自动重放，修复后重新提交倡议。未改存档身份、三渠道口头外交、默认交互入口、Bootstrap或一键脚本。
+
+<a id="diplomacy-reply-shortcut-20261010"></a>
+### 外交回应撰写快捷入口
+
+源码 `d612425e9`（基线 `bdf51ff48`）；状态、失败与实机限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-reply-shortcut-20261010)。局部5处机器坐标及SHA保存在 `artifacts/diplomacy-reply-shortcut-20261010/code-map.json`，记录提交/working-tree已校验；不更新或宣称全仓历史坐标全绿。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs:82–91`，Detail | 公文弹窗 CanReply 只检查当前玩家为本国统治者，封臣拒绝；通知目标筛选未改 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:86–90`，CanOpenReply | UI快捷入口重验 owner/generation/原公文及君主身份，不依赖旧回合是否存在或改变 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs:43–97`，Execute / SubmitPlayerDocument | 公告与回应按钮统一立即公开和一次分析；原文ID只作上下文，后续实际owner决定归属，不预置回应目标/深度或修改原待回应状态 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs:479–492`，BuildAnalysisPrompt 来源上下文 | 原文/来源ID作为分析背景，玩家正文决定对象/动作，不能由按钮恢复旧案 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/ReplyShortcutReplay.cs:10–84`；AuthorityReplay / Dpl090PresentationReplay / LifecycleRepairReplay | 实际生产提交/调度、资格矩阵、prompt和生命周期回放；世界/游戏为已有fixture，实机UI/真实provider不覆盖 |
+
+未改外交通知路由、动作执行/原案校验、三渠道记忆、存档协议、外部API、Bootstrap或构建脚本。旧文本枚举测试同基线失败另记，双API编译与专项回放不能替代实机。
+
+<a id="tts-test-feedback-20261010"></a>
+### 测试语音失败回执修补
+
+源码 `77ca7886`；验证/限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-test-feedback-20261010)。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:76, 308–329, 637–647`，TestFailure / SpeakTestAsync / NotifyPlaybackFailed | 每测试 job 的回执，既有取消/一次终态/订阅者异常隔离；普通 job 不设置此回执 |
+| `src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs:8–29` | 只排队失败，应用主线程显示时重验取消；不读取场景对象、不合成或重试 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6729–6740`；`src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs:57, 101` | 原按钮绑定测试回执并检查入队结果；快速/观察 tick 均消费同一反馈队列 |
+| `tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 61 项生产源码回放与 8 个 mutation；游戏/UI/网络为 fixture，不能代替实机 |
+
+<a id="volc-tts-v3-compat-20261010"></a>
+### 火山 TTS V3 兼容升级
+
+最终源码 `0fe97a1a`（产品 `1b2fd919`），状态/测试/限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#volc-tts-v3-compat-20261010)。以下一基行号只定位本次责任，不是全文件验收。
+
+| 范围 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs:10–58`，GetVersion / SynthesizeAsync / DescribeError | URL 路由、单次协议选择与安全错误提示；TtsEngine 和测试按钮使用；未知 V3 拒绝，不自动降级 |
+| `src/modules/AF.Module.Llm/Tts/VolcV3TtsGateway.cs:15–149`，SynthesizeAsync / WrapWav / BoundedReadStream | HTTP API Key 协议、参数、总超时、取消、有界 JSON/PCM 收集和一次 WAV 封装；不持有游戏对象、不播放声音 |
+| `src/modules/AF.Module.Llm/Tts/LegacyVolcTtsGateway.cs:24–29` | 仅将 V1 AppID 必填检查放在 V1 请求入口；实际 V1 请求体/请求头/返回码保持 |
+| `src/AF.Contracts/Internal/TtsContracts.cs:12–62` | 请求 AppID 允许空供 V3 使用，V1 仍守卫；结果增加安全 LogId，保留原构造签名和 ITtsGateway 方法 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:104–113, 647–782, 1003–1044` | 原 worker 的协议预检/路由/失败反馈，V1/V3 客户端隔离；PCM/WAV 后续生产解析与 playback、请求归属/队列/口型流程不变 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1955–2008, 6683–6740`；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:177–193` | 原键/默认值保留，更新协议帮助/测试按钮 AppID 条件及错误 URL 拦截；真实 UI 渲染未验证 |
+| `tests/replay/TtsGatewayReplayTests/Program.cs` / `V3Cases.cs`；`tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 实际候选 DLL HTTP 与生产方法/按钮行为回放；后者网络、游戏状态、音频设备为 fixture，不能代替实机 |
+
+未修改的直接消费者：VoiceMapper、SceneAudioLipSyncController、NativeConversationPlaybackWaitAdapter，以及 Scene/Native 调用入口。无新增存档字段、外部 Api.V1 或 GPT-SoVITS/伴侣功能。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ### MCM 模型预设与快报战事修复接续
 

@@ -86,6 +86,13 @@ internal static class WorldDiplomacyPeaceAdmissionApplication
 			|| !string.Equals(source.AuthorKingdomId, proposer, StringComparison.OrdinalIgnoreCase)) return false;
 		WorldDiplomacyPeaceTerms terms = WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId);
 		if (source.Actions?.Count > 0 && WorldDiplomacyDocumentFactRules.ResolveDocumentAction(source, offer.SourceActionId) == null) return false;
+		return TryValidatePeaceTerms(port, terms, proposer, target, out reason);
+	}
+
+    internal static bool TryValidatePeaceTerms(IWorldDiplomacyPeaceAdmissionPort port,
+        WorldDiplomacyPeaceTerms terms, string proposer, string target, out string reason)
+    {
+		reason = "";
 		if (terms == null) { reason = ""; return true; }
         reason = "贡金金额或期限无法解析，或为负数。";
         if (terms.DailyTribute < 0 || terms.DurationDays < 0) return false;

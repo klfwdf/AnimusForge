@@ -24,7 +24,7 @@ public sealed class LegacyVolcTtsGateway : ITtsGateway
 
     public async Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest request, string credentialToken, CancellationToken cancellationToken)
     {
-        if (request == null || string.IsNullOrWhiteSpace(credentialToken))
+        if (request == null || string.IsNullOrWhiteSpace(credentialToken) || string.IsNullOrWhiteSpace(request.AppId))
         {
             return new TtsSynthesisResult(false, null, null, "tts_configuration_incomplete");
         }
