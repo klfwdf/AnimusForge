@@ -2973,5 +2973,39 @@ Choose how to proceed:" />
   <string id="AF_MCM_Prompt_KeepAsteriskActions_Hint" text="Retain actions enclosed in **...** or *...*, even when keeping scene-shout actions and inner thoughts is disabled." />
   <string id="AF_MCM_Prompt_CustomSceneFormat" text="Custom format: omit default scene-reply prompt" />
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="Omit the default one-on-one identity restrictions and reply format, action, inner-thought, and length requirements. Provide a complete format in the player custom rules. Disabled by default." />
+  <string id="AF_MCM_Option_ModelManual" text="*manual entry*" />
+  <string id="AF_MCM_Option_ModelEmpty" text="(empty)" />
+  <string id="AF_MCM_Option_DeviceCpu" text="CPU (default)" />
+  <string id="AF_MCM_Option_DeviceGpu" text="GPU (CUDA / NVIDIA)" />
+  <string id="AF_MCM_Option_DiplomacySmall" text="Small" />
+  <string id="AF_MCM_Option_DiplomacyMedium" text="Medium" />
+  <string id="AF_MCM_Option_DiplomacyLarge" text="Large" />
+  <string id="AF_MCM_Option_DiplomacyCompact" text="Compact (about 15 days)" />
+  <string id="AF_MCM_Option_DiplomacyStandard" text="Standard (about 21 days)" />
+  <string id="AF_MCM_Option_DiplomacyRelaxed" text="Relaxed (about 28 days)" />
+  <string id="AF_MCM_Option_ApiMain" text="Main API" />
+  <string id="AF_MCM_Option_ApiPreprocess" text="Preprocessing API" />
+  <string id="AF_MCM_Option_ApiPostprocess" text="Postprocessing API" />
+  <string id="AF_MCM_Option_ApiWeekly" text="Weekly report API" />
+  <string id="AF_MCM_Option_BackgroundBlack" text="Transparent black" />
+  <string id="AF_MCM_Option_BackgroundWhite" text="Transparent white" />
+  <string id="AF_MCM_Option_BackgroundPink" text="Transparent pink" />
+  <string id="AF_MCM_Option_CleanupOff" text="Off" />
+  <string id="AF_MCM_Option_CleanupStartup" text="Each startup" />
+  <string id="AF_MCM_Option_Cleanup30Minutes" text="Every 30 minutes" />
+  <string id="AF_MCM_Option_CleanupHour" text="Every hour" />
+  <string id="AF_MCM_Option_Cleanup6Hours" text="Every 6 hours" />
+  <string id="AF_MCM_Option_CleanupDay" text="Every day" />
+  <string id="AF_MCM_Option_Cleanup3Days" text="Every 3 days" />
+  <string id="AF_MCM_Option_CleanupWeek" text="Every week" />
+  <string id="AF_MCM_Option_StationeryVlandia" text="Vlandia" />
+  <string id="AF_MCM_Option_StationeryNorthEmpire" text="Northern Empire" />
+  <string id="AF_MCM_Option_StationeryWestEmpire" text="Western Empire" />
+  <string id="AF_MCM_Option_StationerySouthEmpire" text="Southern Empire" />
+  <string id="AF_MCM_Option_StationerySturgia" text="Sturgia" />
+  <string id="AF_MCM_Option_StationeryBattania" text="Battania" />
+  <string id="AF_MCM_Option_StationeryKhuzait" text="Khuzait" />
+  <string id="AF_MCM_Option_StationeryAserai" text="Aserai" />
+  <string id="AF_MCM_Option_StationeryNord" text="Nord" />
   </strings>
 </base>

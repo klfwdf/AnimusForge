@@ -1396,7 +1396,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
     [SettingPropertyDropdown("{=AF_MCM_Knowledge_Device}Reranker inference device", Order = 3, RequireRestart = true, HintText = "{=AF_MCM_Knowledge_Device_Hint}Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value.")]
     [SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
-    public Dropdown<string> RerankerDeviceDropdown { get; set; } = new Dropdown<string>(new List<string> { "CPU（默认）", "GPU（CUDA / NVIDIA）" }, 0);
+    public Dropdown<string> RerankerDeviceDropdown
+    {
+        get => _rerankerDeviceDropdown;
+        set => _rerankerDeviceDropdown = BuildFixedDisplayDropdown(value, 0,
+            "{=AF_MCM_Option_DeviceCpu}CPU (default)", "{=AF_MCM_Option_DeviceGpu}GPU (CUDA / NVIDIA)");
+    }
+    private Dropdown<string> _rerankerDeviceDropdown = BuildFixedDisplayDropdown(null, 0,
+        "{=AF_MCM_Option_DeviceCpu}CPU (default)", "{=AF_MCM_Option_DeviceGpu}GPU (CUDA / NVIDIA)");
 
 
 	[SettingPropertyInteger("{=AF_MCM_Knowledge_Entity}Entity injection limit", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Knowledge_Entity_Hint}Maximum people, places, clans, and kingdoms injected into each AI request. Terms receive distinct entity slots by preprocessing importance; unused slots are filled only when the limit exceeds the term count. Default: 6.")]
@@ -2264,9 +2271,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_Activity}Countries per diplomacy event", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Activity_Hint}Low allows up to 2 countries, medium up to 3, and high up to 5, including the initiator. Only countries with real diplomatic business are selected. Default: medium; this is per-event participation, not the concurrent-event count.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
-	public Dropdown<string> WorldDiplomacyActivityDropdown { get; set; } = new Dropdown<string>(
-		new List<string> { "少量", "适中", "较多" },
-		1);
+	public Dropdown<string> WorldDiplomacyActivityDropdown
+	{
+		get => _worldDiplomacyActivityDropdown;
+		set => _worldDiplomacyActivityDropdown = BuildFixedDisplayDropdown(value, 1,
+			"{=AF_MCM_Option_DiplomacySmall}Small", "{=AF_MCM_Option_DiplomacyMedium}Medium", "{=AF_MCM_Option_DiplomacyLarge}Large");
+	}
+	private Dropdown<string> _worldDiplomacyActivityDropdown = BuildFixedDisplayDropdown(null, 1,
+		"{=AF_MCM_Option_DiplomacySmall}Small", "{=AF_MCM_Option_DiplomacyMedium}Medium", "{=AF_MCM_Option_DiplomacyLarge}Large");
 
 	[Obsolete("Legacy configuration compatibility only; court and civilian delivery settings control propagation.")]
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
@@ -2281,7 +2293,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_RoundLength}Diplomacy event target duration", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_RoundLength_Hint}Typical event closing time: compact about 15 days, standard about 21, and relaxed about 28. Results may end it early or briefly extend cleanup. Default: standard; affects new events only.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
-	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
+	public Dropdown<string> WorldDiplomacyRoundLengthDropdown
+	{
+		get => _worldDiplomacyRoundLengthDropdown;
+		set => _worldDiplomacyRoundLengthDropdown = BuildFixedDisplayDropdown(value, 1,
+			"{=AF_MCM_Option_DiplomacyCompact}Compact (about 15 days)", "{=AF_MCM_Option_DiplomacyStandard}Standard (about 21 days)", "{=AF_MCM_Option_DiplomacyRelaxed}Relaxed (about 28 days)");
+	}
+	private Dropdown<string> _worldDiplomacyRoundLengthDropdown = BuildFixedDisplayDropdown(null, 1,
+		"{=AF_MCM_Option_DiplomacyCompact}Compact (about 15 days)", "{=AF_MCM_Option_DiplomacyStandard}Standard (about 21 days)", "{=AF_MCM_Option_DiplomacyRelaxed}Relaxed (about 28 days)");
 
 	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Minimum AI declaration characters", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default minimum 100, adjustable from 1 to 1000; does not limit player editing.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
@@ -5479,7 +5498,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static string NormalizeModelOption(string value)
 	{
-		return (value ?? "").Trim();
+		string option = (value ?? "").Trim();
+		return option == "{=AF_MCM_Option_ModelManual}*manual entry*" ? ManualDropdownModelName : option;
 	}
 
 	private static bool IsManualModelOption(string value)
@@ -5663,7 +5683,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 1;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return new Dropdown<string>(BuildPolicyApiSourceDisplayOptions(options.Count), selectedIndex);
 	}
 
 	private static string ReadPlayerPolicyAutoDraftApiSourceSelection(Dropdown<string> dropdown)
@@ -5710,7 +5730,26 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 0;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return new Dropdown<string>(BuildPolicyApiSourceDisplayOptions(options.Count), selectedIndex);
+	}
+
+	private static List<string> BuildPolicyApiSourceDisplayOptions(int count)
+	{
+		var options = new List<string>
+		{
+			"{=AF_MCM_Option_ApiMain}Main API",
+			"{=AF_MCM_Option_ApiPreprocess}Preprocessing API",
+			"{=AF_MCM_Option_ApiPostprocess}Postprocessing API"
+		};
+		if (count == 4) options.Add("{=AF_MCM_Option_ApiWeekly}Weekly report API");
+		return options;
+	}
+
+	private static Dropdown<string> BuildFixedDisplayDropdown(Dropdown<string> incoming, int defaultIndex, params string[] options)
+	{
+		int index = incoming?.SelectedIndex ?? defaultIndex;
+		if (index < 0 || index >= options.Length) index = defaultIndex;
+		return new Dropdown<string>(options, index);
 	}
 
 	private static string ReadPolicyApiSourceSelection(Dropdown<string> dropdown, int defaultIndex)
@@ -5748,7 +5787,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 0;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return BuildShoutInputUiBackgroundDisplayDropdown(selectedIndex);
 	}
 
 	private static Dropdown<string> NormalizeShoutInputUiBackgroundDropdown(Dropdown<string> dropdown)
@@ -5764,8 +5803,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 0;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return BuildShoutInputUiBackgroundDisplayDropdown(selectedIndex);
 	}
+
+	private static Dropdown<string> BuildShoutInputUiBackgroundDisplayDropdown(int selectedIndex)
+		=> new Dropdown<string>(new[]
+		{
+			"{=AF_MCM_Option_BackgroundBlack}Transparent black",
+			"{=AF_MCM_Option_BackgroundWhite}Transparent white",
+			"{=AF_MCM_Option_BackgroundPink}Transparent pink"
+		}, selectedIndex);
 
 	private static string ReadShoutInputUiBackgroundSelection(Dropdown<string> dropdown)
 	{
@@ -5808,7 +5855,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 0;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return BuildLogCleanupIntervalDisplayDropdown(selectedIndex);
 	}
 
 	private static Dropdown<string> NormalizeLogCleanupIntervalDropdown(Dropdown<string> dropdown)
@@ -5819,8 +5866,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			selectedIndex = 0;
 		}
-		return new Dropdown<string>(options, selectedIndex);
+		return BuildLogCleanupIntervalDisplayDropdown(selectedIndex);
 	}
+
+	private static Dropdown<string> BuildLogCleanupIntervalDisplayDropdown(int selectedIndex)
+		=> new Dropdown<string>(new[]
+		{
+			"{=AF_MCM_Option_CleanupOff}Off",
+			"{=AF_MCM_Option_CleanupStartup}Each startup",
+			"{=AF_MCM_Option_Cleanup30Minutes}Every 30 minutes",
+			"{=AF_MCM_Option_CleanupHour}Every hour",
+			"{=AF_MCM_Option_Cleanup6Hours}Every 6 hours",
+			"{=AF_MCM_Option_CleanupDay}Every day",
+			"{=AF_MCM_Option_Cleanup3Days}Every 3 days",
+			"{=AF_MCM_Option_CleanupWeek}Every week"
+		}, selectedIndex);
 
 	private static string ReadLogCleanupIntervalSelection(Dropdown<string> dropdown)
 	{
@@ -6104,7 +6164,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		normalizedOptions = BuildModelOptionList(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection);
 		int num = ResolveModelOptionIndex(normalizedOptions, selectedOption);
 		normalizedSelectedOption = normalizedOptions[num];
-		return new Dropdown<string>(normalizedOptions, num);
+		return BuildModelDisplayDropdown(normalizedOptions, num);
+	}
+
+	private static Dropdown<string> BuildModelDisplayDropdown(List<string> options, int selectedIndex)
+	{
+		var display = new List<string>(options.Count);
+		foreach (string option in options)
+			display.Add(IsManualModelOption(option) ? "{=AF_MCM_Option_ModelManual}*manual entry*" : option);
+		return new Dropdown<string>(display, selectedIndex);
 	}
 
 	private static Dropdown<string> BuildDropdownFromIncoming(Dropdown<string> incoming, List<string> cachedOptions, string selectedOption, string fallbackModel, bool preserveBlankSelection, out List<string> normalizedOptions, out string normalizedSelectedOption)
@@ -6116,7 +6184,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			normalizedOptions = BuildModelOptionList(list, text, fallbackModel, preserveBlankSelection);
 			int num = ResolveModelOptionIndex(normalizedOptions, text);
 			normalizedSelectedOption = normalizedOptions[num];
-			return new Dropdown<string>(normalizedOptions, num);
+			return BuildModelDisplayDropdown(normalizedOptions, num);
 		}
 		return BuildDropdownFromOptions(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection, out normalizedOptions, out normalizedSelectedOption);
 	}
@@ -6527,7 +6595,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					{
 						text7 = NormalizeModelOption(EventAndRebellionModelName);
 					}
-					text6 = ManualDropdownModelName + " -> " + (string.IsNullOrWhiteSpace(text7) ? "(空)" : text7);
+					text6 = Ui("AF_MCM_Option_ModelManual", "*manual entry*") + " -> " + (string.IsNullOrWhiteSpace(text7) ? Ui("AF_MCM_Option_ModelEmpty", "(empty)") : text7);
 				}
 				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetched", "[System] {CHANNEL} model list fetched: {COUNT} models; selected: {SELECTED}", ("CHANNEL", channelDisplayName), ("COUNT", modelListFetchResult.Models.Count), ("SELECTED", string.IsNullOrWhiteSpace(text6) ? Ui("AF_MCM_Api_EmptySelection", "empty") : text6)), Color.FromUint(4278255360u)));
 				Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表成功: count=" + modelListFetchResult.Models.Count + " url=" + (modelListFetchResult.RequestUrl ?? ""));

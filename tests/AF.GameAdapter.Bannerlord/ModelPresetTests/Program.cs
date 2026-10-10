@@ -80,6 +80,16 @@ static class Program
         foreach(var n in Names)Check(D(manual,n).SelectedIndex==0&&N(manual,n)=="manual-"+n,n+" manual text and sentinel roundtrip");
         foreach(var n in Names)
         {
+            Check(D(manual,n)[0]=="{=AF_MCM_Option_ModelManual}*manual entry*",n+" manual option has native localization marker");
+            Select(manual,n,"chosen-"+n);
+            var property=new PropertyRef(Drop(n),manual);
+            object legacy=new Dropdown<string>(new[]{"*手动填写*","legacy-model"},0);
+            int count=D(manual,n).Count;
+            McmDropdownRuntimeRefresh.ModelPresetIndexPrefix(property,ref legacy);
+            Check(((Dropdown<string>)legacy).SelectedIndex==0&&D(manual,n).Count==count,n+" legacy manual preset maps to existing localized sentinel");
+        }
+        foreach(var n in Names)
+        {
             Select(restored,n,"chosen-"+n);
             Check(N(restored,n)=="chosen-"+n,n+" terminal/UI in-place choice drives model name");
             Check(ReferenceEquals(D(restored,n),D(restored,n)),n+" repeated getters reuse dropdown");

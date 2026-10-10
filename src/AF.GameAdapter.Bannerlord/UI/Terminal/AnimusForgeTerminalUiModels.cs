@@ -1204,6 +1204,20 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 	private bool _isUpdatingFromSettings;
 	private SelectorVM<SelectorItemVM> _dropdownSelector;
+	private readonly Dictionary<string, string> _dropdownDisplayLabels = new Dictionary<string, string>(StringComparer.Ordinal);
+
+	private string DropdownDisplayLabel(string raw)
+	{
+		if (string.IsNullOrEmpty(raw)) return raw ?? "";
+		if (!raw.StartsWith("{=", StringComparison.Ordinal) && raw != "*手动填写*") return raw;
+		if (_dropdownDisplayLabels.TryGetValue(raw, out var label)) return label;
+		// Resolve once per option in this UI instance, never in the model/configuration.
+		label = raw == "*手动填写*"
+			? new TextObject("{=AF_MCM_Option_ModelManual}*manual entry*").ToString()
+			: raw.StartsWith("{=", StringComparison.Ordinal) ? new TextObject(raw).ToString() : raw;
+		_dropdownDisplayLabels[raw] = label;
+		return label;
+	}
 	[DataSourceProperty]
 	public SelectorVM<SelectorItemVM> DropdownSelector
 	{
@@ -1369,14 +1383,14 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 			case TerminalSettingType.Dropdown:
 				ItemKind = TerminalItemKind.DropdownSetting;
 				BadgeText = new TextObject("{=AF_UI_Terminal_Dropdown}Dropdown").ToString();
-				DisplayValue = def.Getter(settings)?.ToString() ?? "";
+				DisplayValue = DropdownDisplayLabel(def.Getter(settings)?.ToString());
 				var dropdown = def.DropdownGetter?.Invoke(settings);
 				if (dropdown != null && dropdown.Count > 0)
 				{
 					var options = new List<string>();
 					for (int i = 0; i < dropdown.Count; i++)
 					{
-						options.Add(dropdown[i]);
+						options.Add(DropdownDisplayLabel(dropdown[i]));
 					}
 					_dropdownSelector = new SelectorVM<SelectorItemVM>(options, dropdown.SelectedIndex, OnDropdownItemChanged);
 				}
@@ -1412,7 +1426,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		var current = SettingDef.DropdownGetter?.Invoke(settings);
 		if (current == null || current.SelectedIndex == selector.SelectedIndex) return;
 		SettingDef.Setter(settings, selector.SelectedIndex);
-		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		DisplayValue = DropdownDisplayLabel(SettingDef.Getter(settings)?.ToString());
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
 		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
@@ -1634,7 +1648,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		int nextIdx = dropdown.SelectedIndex - 1;
 		if (nextIdx < 0) nextIdx = dropdown.Count - 1;
 		SettingDef.Setter(settings, nextIdx);
-		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		DisplayValue = DropdownDisplayLabel(SettingDef.Getter(settings)?.ToString());
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
 		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
@@ -1649,7 +1663,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		if (dropdown == null || dropdown.Count <= 0) return;
 		int nextIdx = (dropdown.SelectedIndex + 1) % dropdown.Count;
 		SettingDef.Setter(settings, nextIdx);
-		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		DisplayValue = DropdownDisplayLabel(SettingDef.Getter(settings)?.ToString());
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
 		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
@@ -1667,7 +1681,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		List<InquiryElement> elements = new List<InquiryElement>();
 		for (int i = 0; i < dropdown.Count; i++)
 		{
-			string opt = dropdown[i];
+			string opt = DropdownDisplayLabel(dropdown[i]);
 			elements.Add(new InquiryElement(i.ToString(), opt, null, isEnabled: true, ""));
 		}
 
@@ -1689,7 +1703,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 				if (selected != null && selected.Count > 0 && int.TryParse(selected[0].Identifier as string, out int idx))
 				{
 					SettingDef.Setter(settings, idx);
-					DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+					DisplayValue = DropdownDisplayLabel(SettingDef.Getter(settings)?.ToString());
 					OnPropertyChanged(nameof(DisplayValue));
 					_onModified?.Invoke();
 					AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
@@ -1777,7 +1791,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 					OnPropertyChanged(nameof(DisplayValue));
 					break;
 				case TerminalItemKind.DropdownSetting:
-					DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+					DisplayValue = DropdownDisplayLabel(SettingDef.Getter(settings)?.ToString());
 					OnPropertyChanged(nameof(DisplayValue));
 					var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
 					if (dropdown != null && dropdown.Count > 0)
@@ -1787,7 +1801,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 						{
 							for (int i = 0; i < dropdown.Count; i++)
 							{
-								if (_dropdownSelector.ItemList[i]?.StringItem != dropdown[i])
+								if (_dropdownSelector.ItemList[i]?.StringItem != DropdownDisplayLabel(dropdown[i]))
 								{
 									needRebuild = true;
 									break;
@@ -1800,7 +1814,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 							var options = new List<string>(dropdown.Count);
 							for (int i = 0; i < dropdown.Count; i++)
 							{
-								options.Add(dropdown[i]);
+								options.Add(DropdownDisplayLabel(dropdown[i]));
 							}
 							int selectedIdx = dropdown.SelectedIndex;
 							if (selectedIdx < 0 || selectedIdx >= options.Count)
