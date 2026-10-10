@@ -7,6 +7,7 @@ import re
 import json
 import sys
 import xml.etree.ElementTree as ET
+import xml.dom.minidom as DOM
 from pathlib import Path
 
 
@@ -15,6 +16,9 @@ VAR = re.compile(r"\{([A-Za-z][A-Za-z0-9_]*)\}")
 
 
 def strings(path: Path) -> dict[str, str]:
+    document = DOM.parse(str(path))
+    if not path.read_text(encoding="utf-8-sig").startswith("<?xml") or document.firstChild.nodeName != "base":
+        raise AssertionError(f"native loader requires XML declaration followed by base: {path}")
     root = ET.parse(path).getroot()
     result: dict[str, str] = {}
     if root.tag != "base" or root.attrib.get("type") != "string":
@@ -45,8 +49,18 @@ def main() -> int:
             raise AssertionError(f"duplicate IDs across loader resources: {sorted(duplicate)}")
         all_ids.update(en)
         for key in en:
+            if key.startswith("AF_MEMORY_UI_") and ("\\n" in en[key] or "\\n" in zh[key]):
+                raise AssertionError(f"literal newline escape in XML text: {key}; use &#10;")
             if sorted(VAR.findall(en[key])) != sorted(VAR.findall(zh[key])):
                 raise AssertionError(f"placeholder mismatch: {key}")
+    mapped = json.loads((root / "content/content-map.json").read_text(encoding="utf-8"))["entries"]
+    registered = {path.resolve() for pair in pairs for path in pair}
+    for entry in mapped:
+        if not entry["target"].startswith("ModuleData/Languages/"):
+            continue
+        source = root / entry["source"]
+        if ET.parse(source).getroot().attrib.get("type") == "string" and source.resolve() not in registered:
+            raise AssertionError(f"mapped localization strings missing LanguageFile registration: {source}")
     # Vengeance source code must never introduce a player-facing REX_ key without both language entries.
     vengeance_source = root / "Vengeance/Source"
     source_text = "\n".join(path.read_text(encoding="utf-8") for path in vengeance_source.rglob("*.cs"))

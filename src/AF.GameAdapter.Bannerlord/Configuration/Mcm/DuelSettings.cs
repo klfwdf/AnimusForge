@@ -1974,7 +1974,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra_param (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written verbatim to request.extra_param as a string. Example: {\"disable_markdown_filter\":true}")]
+	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra_param (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written verbatim to request.extra_param as a string. Example key/value: disable_markdown_filter=true")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
