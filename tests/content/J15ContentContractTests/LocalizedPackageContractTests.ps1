@@ -14,10 +14,10 @@ function Check([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
     $script:checks++
 }
-function Reject([scriptblock]$Action, [string]$Message) {
-    $failed = $false
-    try { & $Action | Out-Null } catch { $failed = $true }
-    Check $failed $Message
+function Reject([scriptblock]$Action, [string]$Message, [string]$ExpectedError) {
+    $actualError = ''
+    try { & $Action | Out-Null } catch { $actualError = $_.Exception.Message }
+    Check (-not [string]::IsNullOrEmpty($ExpectedError) -and $actualError.Contains($ExpectedError)) "$Message Expected '$ExpectedError'; received '$actualError'."
 }
 function FixtureText([string]$Path, [string]$Text) {
     New-Item -ItemType Directory -Path (Split-Path -Parent $Path) -Force | Out-Null
@@ -47,16 +47,13 @@ $entries = @(
 )
 FixtureText (Join-Path $root 'content/Prompt.json') ('{"Text":"' + $han + '"}')
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
-FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt", "LostContract":true}'
-Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'English schema drift must fail closed.'
-FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
 FixtureText (Join-Path $RunRoot 'protocol-cn.json') '{"Text":"{HERO} [ACTION:DUEL:1]", "TopicId":"duel", "Rules":["One", "Two"]}'
 FixtureText (Join-Path $RunRoot 'protocol-en.json') '{"Text":"{HERO} [ACTION:DUEL:1]", "TopicId":"duel", "Rules":["Translated one", "Translated two"]}'
 Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json')
 FixtureText (Join-Path $RunRoot 'protocol-en.json') '{"Text":"{NPC} [ACTION:DUEL:2]", "TopicId":"duel", "Rules":["Translated one", "Translated two"]}'
-Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json') } 'Protocol and variable changes must fail closed.'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json') } 'Protocol and variable changes must fail closed.' 'Prompt variable/protocol changed:'
 FixtureText (Join-Path $RunRoot 'protocol-en.json') '{"Text":"{HERO} [ACTION:DUEL:1]", "TopicId":"duel", "Rules":["Translated one"]}'
-Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json') } 'Dropped constraint arrays must fail closed.'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json') } 'Dropped constraint arrays must fail closed.' 'JSON array length changed:'
 FixtureText (Join-Path $root 'content/en.xml') '<base><strings><string id="Fixture" text="English" /></strings></base>'
 FixtureText (Join-Path $root 'content/en_language.xml') '<LanguageData id="English"><LanguageFile xml_path="en.xml" /></LanguageData>'
 FixtureText (Join-Path $root 'content/zh.xml') ('<base><strings><string id="Fixture" text="' + $han + '" /></strings></base>')
@@ -72,6 +69,9 @@ $snapshots = @{}
 foreach ($file in Get-ChildItem -LiteralPath $root -Recurse -File) { $snapshots[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName).Hash }
 $cn = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language CN -PackageVersion v1.5.6)
 $en = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6)
+FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt", "LostContract":true}'
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'English schema drift must fail closed.' 'JSON field set changed:'
+FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
 Check ($cn.Count -eq $en.Count + 2) 'EN must remove the complete CN language branch.'
 Check (@($en | Where-Object { $_.Target -match '\.en(?:-US)?\.json$' }).Count -eq 0) 'Parallel English filenames must not leak into the package.'
 Check (@($en | Where-Object { $_.Target -eq $entries[5].target }).Count -eq 1) 'Worldbook original filename and directory must remain intact.'
@@ -88,18 +88,18 @@ foreach ($language in @('CN', 'EN')) {
     Check (Test-Path -LiteralPath $zipPath) "$language isolated archive must exist."
 }
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"changed after snapshot"}'
-Reject { Assert-AnimusForgeProjectedZip -ZipPath (Join-Path $RunRoot 'fixture_EN.zip') -Projection $en } 'Changed source must invalidate the locked ZIP.'
+Reject { Assert-AnimusForgeProjectedZip -ZipPath (Join-Path $RunRoot 'fixture_EN.zip') -Projection $en } 'Changed source must invalidate the locked ZIP.' 'Localization source changed during packaging:'
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"\u4e2d\u6587"}'
-Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Escaped Chinese must block EN.'
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Escaped Chinese must block EN.' 'Chinese text remains or English asset is missing: ModuleData/Prompt.json'
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
 Move-Item -LiteralPath (Join-Path $root 'content/Prompt.en.json') -Destination (Join-Path $root 'content/Prompt.held.json')
-Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Missing English must fail closed.'
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Missing English must fail closed.' 'Chinese text remains or English asset is missing: ModuleData/Prompt.json'
 Move-Item -LiteralPath (Join-Path $root 'content/Prompt.held.json') -Destination (Join-Path $root 'content/Prompt.en.json')
 FixtureText (Join-Path $root 'src/Fixture.cs') ('// ' + $han + "`npublic class Fixture { string Text = " + '"English"; }')
 Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $root
 FixtureText (Join-Path $root 'src/Fixture.cs') 'public class Fixture { string Text = "\u4e2d\u6587"; }'
-Reject { Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $root } 'Runtime escaped Chinese literals must block packaging.'
+Reject { Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $root } 'Runtime escaped Chinese literals must block packaging.' 'Runtime Chinese literals block EN packaging'
 foreach ($path in $snapshots.Keys) { Check ((Get-FileHash -LiteralPath $path).Hash -eq $snapshots[$path]) "Projection must preserve source/Stage bytes: $path" }
 # Only tiny test DLLs are compiled; no production build/Stage/deploy takes place.
 $cleanDll = Join-Path $RunRoot 'EnglishFixture.dll'
@@ -107,7 +107,7 @@ Add-Type -TypeDefinition 'public class EnglishPackageFixture { public static str
 Assert-AnimusForgeEnglishRuntimeDll -DllPath $cleanDll
 $dirtyDll = Join-Path $RunRoot 'ChineseFixture.dll'
 Add-Type -TypeDefinition 'public class ChinesePackageFixture { public static string Text() { return "\u4e2d\u6587"; } }' -OutputAssembly $dirtyDll
-Reject { Assert-AnimusForgeEnglishRuntimeDll -DllPath $dirtyDll } 'Actual DLL user strings must block Chinese runtime text.'
+Reject { Assert-AnimusForgeEnglishRuntimeDll -DllPath $dirtyDll } 'Actual DLL user strings must block Chinese runtime text.' 'Chinese runtime string remains in actual DLL:'
 # Exercise the production two-archive transaction. These stubs replace only full
 # Stage/game-artifact checks; ZIP writing and snapshot validation remain real.
 $writer = (Get-Command Write-AnimusForgeProjectedZip).ScriptBlock
@@ -133,6 +133,6 @@ Check ($outputs[0].EndsWith('_CN.zip') -and $outputs[1].EndsWith('_EN.zip')) 'Fi
 Check ((Get-ChildItem -LiteralPath $OutputDir -File).Count -eq 2) 'Success must publish both archives without temporary files.'
 $OutputDir = Join-Path $RunRoot 'transaction-failure'
 $script:failEnglish = $true
-Reject { Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false } 'Failure writing EN must reject the pair.'
+Reject { Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false } 'Failure writing EN must reject the pair.' 'injected second archive failure'
 Check ((Get-ChildItem -LiteralPath $OutputDir -File -Force).Count -eq 0) 'Second archive failure must clean up both candidates.'
 Write-Output "PASS localized ZIP projection checks=$checks; source/Stage preserved; missing/escaped/runtime Chinese rejected; no product build"
