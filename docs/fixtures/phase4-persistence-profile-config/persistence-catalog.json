@@ -413,9 +413,9 @@
   ],
   "chunkedJsonBindings": [
     {
-      "source": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "source": "src/AF.GameAdapter.Bannerlord/Persistence/CampaignCivilWarPersistenceAdapter.cs",
       "key": "_af_kingdom_civil_war_v2",
-      "variable": "_civilWarJsonStorage",
+      "variable": "JsonStorage",
       "store": "dataStore"
     },
     {
