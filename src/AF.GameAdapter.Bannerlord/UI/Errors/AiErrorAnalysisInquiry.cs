@@ -97,8 +97,8 @@ public static class AiErrorAnalysisInquiry
 	/// </summary>
 	internal static void RememberFailure(string title, string detail)
 	{
-		string safeTitle = NormalizeText(title, "AnimusForge 报错");
-		string safeDetail = LimitForAnalysis(NormalizeText(detail, "未知错误"));
+		string safeTitle = NormalizeText(title, Ui("AF_UI_ErrorAnalysis_ErrorTitle", "AnimusForge error"));
+		string safeDetail = LimitForAnalysis(NormalizeText(detail, Ui("AF_UI_Retry_UnknownError", "Unknown error")));
 		lock (LatestFailureLock)
 		{
 			_latestFailureTitle = safeTitle;
@@ -394,22 +394,20 @@ public static class AiErrorAnalysisInquiry
 	{
 		// 分析结果是信息展示而非新决策，必须和原错误一样留在左下角，不再创建遮挡选项的结果弹窗。
 		NonBlockingErrorReport.Show(
-			"AI 报错分析 - " + NormalizeText(originalTitle, "AnimusForge 报错"),
-			NormalizeText(analysis, "未生成分析结果。"),
+			UiFormat("AF_UI_ErrorAnalysis_ResultTitle", "AI error analysis - {TITLE}", ("TITLE", NormalizeText(originalTitle, Ui("AF_UI_ErrorAnalysis_ErrorTitle", "AnimusForge error")))),
+			NormalizeText(analysis, Ui("AF_UI_ErrorAnalysis_EmptyAnalysis", "No analysis was generated.")),
 			rememberForAnalysis: false);
 		SafeInvoke(onClosed);
 	}
 
 	private static void ShowAnalysisFailure(string originalTitle, string originalDetail, string error, Action onClosed)
 	{
-		string text = "前处理 API 未能完成报错分析。\n\n【分析请求错误】\n"
-			+ NormalizeText(error, "未知错误")
-			+ "\n\n【原报错】\n"
-			+ NormalizeText(originalTitle, "AnimusForge 报错")
-			+ "\n"
-			+ NormalizeText(originalDetail, "未知错误");
+		string text = UiFormat("AF_UI_ErrorAnalysis_FailureBody", "The preprocessing API could not complete the error analysis.\n\n[Analysis request error]\n{ERROR}\n\n[Original error]\n{TITLE}\n{DETAIL}",
+			("ERROR", NormalizeText(error, Ui("AF_UI_Retry_UnknownError", "Unknown error"))),
+			("TITLE", NormalizeText(originalTitle, Ui("AF_UI_ErrorAnalysis_ErrorTitle", "AnimusForge error"))),
+			("DETAIL", NormalizeText(originalDetail, Ui("AF_UI_Retry_UnknownError", "Unknown error"))));
 		// AI 分析失败本身也是纯诊断报告，保持为左下角消息并恢复原来的关闭回调。
-		NonBlockingErrorReport.Show("AI 分析失败", text, rememberForAnalysis: false);
+		NonBlockingErrorReport.Show(Ui("AF_UI_ErrorAnalysis_FailedTitle", "AI analysis failed"), text, rememberForAnalysis: false);
 		SafeInvoke(onClosed);
 	}
 
