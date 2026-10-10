@@ -338,5 +338,6 @@
     <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="Missing the vanilla quest turn-in execution parameters." />
     <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="The vanilla turn-in chain branched into multiple paths and could not be auto-selected with high confidence." />
     <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="The vanilla turn-in chain ran, but the quest is still not completed." />
+    <string id="AF_CONV_UI_Issue_UnknownCompanion" text="an unknown companion" />
   </strings>
 </base>

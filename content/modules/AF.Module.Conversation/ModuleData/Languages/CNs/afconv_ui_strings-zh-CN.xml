@@ -338,5 +338,6 @@
     <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="缺少原版任务交付执行参数。" />
     <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="原版交付链在中途出现多条分支，且无法高置信度自动选择。" />
     <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="原版交付链已运行，但任务仍未完成。" />
+    <string id="AF_CONV_UI_Issue_UnknownCompanion" text="一位身份不明的同伴" />
   </strings>
 </base>
