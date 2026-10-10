@@ -102,6 +102,12 @@ main_source=(ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").r
 runtime_source=(ROOT / "src/AF.GameAdapter.Bannerlord/Kingdom/KingdomRebellionRuntimeController.cs").read_text(encoding="utf-8-sig")
 (output / "RebellionUiDto.cs").write_text("using System; using System.Collections.Generic; using static AnimusForge.MyBehavior; namespace AnimusForge; public partial class MyBehavior {"+"\n".join(extract(main_source,"internal sealed class "+n) for n in ["RebelKingdomNamingResult","PendingDevForcedKingdomRebellionContext","PendingAutomaticKingdomRebellionContext"])+"} internal sealed partial class KingdomRebellionRuntimeController {"+"\n".join(extract(runtime_source,"internal static "+t+" "+n+"(") for t,n in [("bool","IsRebelKingdomNamingSuccess"),("RebelKingdomNamingResult","BuildFailedRebelKingdomNamingResult")])+"}",encoding="utf-8")
 project=project.replace("</ItemGroup>",'<Compile Include="RebellionUiDto.cs" /><Compile Include="'+str(ROOT / "src/AF.GameAdapter.Bannerlord/UI/Editors/KingdomRebellionEditorController.cs").replace("\\","/")+'" /></ItemGroup>')
+dto_path = output / "RebellionUiDto.cs"
+dto = dto_path.read_text(encoding="utf-8")
+constants = []
+for name in ("AutomaticNamingFailurePrefix", "NamingRetryFailurePrefix", "ForcedNamingFailurePrefix"):
+    constants.append(re.search(r"internal const string " + name + r" = [^\n]+;", runtime_source).group(0))
+dto_path.write_text(dto + "\nnamespace AnimusForge { internal sealed partial class KingdomRebellionRuntimeController {" + "\n".join(constants) + "} }", encoding="utf-8")
 
 # Reuse the existing J17 format fixture leaves, not a second production memory implementation.
 fixture = (ROOT / "tests/modules/AF.Module.Memory/J17ImportExportTests/OwnerChecks.cs").read_text(encoding="utf-8-sig")

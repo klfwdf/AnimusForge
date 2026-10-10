@@ -3177,5 +3177,6 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_EncyclopediaRelationEffect" text="King-to-non-royal adult relation modifier: {VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect" text="Royal-domain daily loyalty modifier: {VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaTitle" text="Kingdom stability" />
+  <string id="AF_UI_KingdomRebellion_NamingForcedBackgroundFailurePrefix" text="Background forced-rebellion kingdom naming task failed: " />
 </strings>
 </base>
