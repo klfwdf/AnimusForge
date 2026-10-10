@@ -94,3 +94,10 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - `EconomyUiTexts.FixedAssetStatusForDisplay`移除4处从中文句子贪婪拆名称的正则，改用`FixedAssetDisplayContext`捕获值进行完整ordinal匹配和资源变量投影；支持名称含原句分隔词/换行，不靠猜测分割归属。内部唯一HUD消费者改传context；未知原文仍透传。
 - `RewardSystemBehavior.TryApplySettlementTransferEntryAction`在调用任何转移函数前捕获资产名/给付者名，透传经`TryApplySettlementTransferAction`到HUD；捕获失败不阻断授权动作。两层原有私有重载保留供外部入口/回放复用，mutationObservation仍传递；原状态与facts不改。
 - `FixedAssetDisplayContextContractTests.py`156静态/模拟检查PASS；对Git `e732a3ab3`逐段验证Settlement/Workshop/Caravan三个实际转移方法与全部giver/receiverFacts.Add语句不变。既有经济词表245、债务34、图库30及28资源对PASS。真实转移、编译压力/回放、游戏仍NOT RUN。未将此项当作所有未知经济状态已翻译。
+
+## 后续分工与持续 Jev 决策（2026-10-10）
+
+- 用户要求再分小包给B；可直接转发`artifacts/localization/plan-B2-weekly-date-display.txt`，限定Weekly日期显示投影、已知格式与未知原文保留。当前只是任务卡已备好，未冒称已向外部agent发送或其已开始；主线避开此包的Weekly/AF.UI资源写入。
+- 用户再次显式调用typesafe-ai并要求持续联动做决策。本会话后续按有证据的具体问题持续调用Jev；不是无限循环/无限API预算，也不把Jev置信度当编译验收。
+- `work/localization-decisions-20261010-02`：live docs与网关OpenAPI经curl读取（web读取不可用）；先offline PASS，再一次4个Choice真实请求，model=jev、underlying_version_pinned=false。结果：B追加日期显示0.99；只接受已证明日期格式1.00；演讲语言采用显式主线程快照1.00；主线优先修英文接收/兜底1.00。3580输入/234输出tokens，返回cost=0.002148（币种未推断），needs_review=false。
+- 新发现：BattleSpeechFrameworkV2.NormalizeNpcSpeechReply及听众解析有ContainsChinese门槛；听众英文池的FitFallbackAudienceReply仍附加中文填充和中文标点。下一主线处理显式语言传递与英文正文/兜底，保留动作白名单、内容安全和政治归属检查。
