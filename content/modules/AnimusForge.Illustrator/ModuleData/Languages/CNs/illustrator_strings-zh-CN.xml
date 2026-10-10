@@ -260,5 +260,16 @@
     <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。" />
     <string id="AF_ILL_NOTIFY_TIMEOUT" text="生成请求超时：上游模型在限定时间内无响应，请稍后重试。" />
     <string id="AF_ILL_NOTIFY_BUSY" text="生图任务繁忙，请等待已有任务完成后重试。" />
+  <string id="AF_ILL_UI_CONVERSATION_SESSION_CHANGED" text="原会话画卷已存入画廊，当前会话已变化。" />
+  <string id="AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED" text="请点击“重新绘制”生成本次对话的第一张场景插画。" />
+  <string id="AF_ILL_UI_CONVERSATION_PREPARING" text="AI画师正在分析现场交谈与肢体姿势..." />
+  <string id="AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE" text="未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。" />
+  <string id="AF_ILL_UI_CONVERSATION_REFERENCE_REUSE" text="复用本次会话首次环境与人物参考" />
+  <string id="AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE" text="无法读取百科当前展示装备，已停止生成；不会改用猜测的便服或战斗服。" />
+  <string id="AF_ILL_UI_CARD_DRAW_FAILED" text="绘制失败: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_GENERATION_EXCEPTION" text="生成异常: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="未能保存或显示图片" />
+  <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="正在重建附近环境并采集完整全景..." />
+  <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="未能显示导出的预览" />
   </strings>
 </base>

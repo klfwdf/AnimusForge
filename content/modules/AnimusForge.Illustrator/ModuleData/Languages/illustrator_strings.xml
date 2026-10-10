@@ -260,5 +260,16 @@
     <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="The image generation context has expired because the view changed or the panel closed. Reopen it to continue." />
     <string id="AF_ILL_NOTIFY_TIMEOUT" text="Image generation timed out: the upstream model did not respond within the time limit. Try again later." />
     <string id="AF_ILL_NOTIFY_BUSY" text="Image generation is busy. Wait for the existing tasks to finish, then try again." />
+  <string id="AF_ILL_UI_CONVERSATION_SESSION_CHANGED" text="The previous conversation illustration was archived; the current conversation has changed." />
+  <string id="AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED" text="Click Redraw to create the first scene illustration for this conversation." />
+  <string id="AF_ILL_UI_CONVERSATION_PREPARING" text="The AI artist is analyzing the conversation and body language..." />
+  <string id="AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE" text="The complete equipment snapshot for both characters was unavailable. Generation stopped without substituting a troop template or another outfit." />
+  <string id="AF_ILL_UI_CONVERSATION_REFERENCE_REUSE" text="Reusing the environment and character references captured at the start of this conversation" />
+  <string id="AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE" text="The encyclopedia's current displayed equipment could not be read. Generation stopped without guessing civilian or battle clothing." />
+  <string id="AF_ILL_UI_CARD_DRAW_FAILED" text="Drawing failed: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_GENERATION_EXCEPTION" text="Generation error: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="The image could not be saved or displayed." />
+  <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="Rebuilding the nearby environment and capturing a complete panorama..." />
+  <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="The exported preview could not be displayed." />
   </strings>
 </base>

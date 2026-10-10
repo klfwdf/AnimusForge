@@ -132,6 +132,17 @@ namespace AnimusForge.Illustrator.UI
         internal static string ConversationComplete => Resolve("AF_ILL_UI_CONVERSATION_COMPLETE", "Conversation illustration complete.");
         internal static string PortraitTitle(string hero) => Format("AF_ILL_UI_PORTRAIT_TITLE", "Chronicle portrait · {HERO}", "HERO", hero);
         internal static string ConversationTitle(string partner) => Format("AF_ILL_UI_CONVERSATION_TITLE", "Conversation illustration · with {HERO}", "HERO", partner);
+        internal static string ConversationSessionChanged => Resolve("AF_ILL_UI_CONVERSATION_SESSION_CHANGED", "The previous conversation illustration was archived; the current conversation has changed.");
+        internal static string ConversationFirstImageRequired => Resolve("AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED", "Click Redraw to create the first scene illustration for this conversation.");
+        internal static string ConversationPreparing => Resolve("AF_ILL_UI_CONVERSATION_PREPARING", "The AI artist is analyzing the conversation and body language...");
+        internal static string ConversationEquipmentUnavailable => Resolve("AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE", "The complete equipment snapshot for both characters was unavailable. Generation stopped without substituting a troop template or another outfit.");
+        internal static string ConversationReferenceReuse => Resolve("AF_ILL_UI_CONVERSATION_REFERENCE_REUSE", "Reusing the environment and character references captured at the start of this conversation");
+        internal static string PortraitEquipmentUnavailable => Resolve("AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE", "The encyclopedia's current displayed equipment could not be read. Generation stopped without guessing civilian or battle clothing.");
+        internal static string CardDrawFailed(string error) => Format("AF_ILL_UI_CARD_DRAW_FAILED", "Drawing failed: {ERROR}", "ERROR", error);
+        internal static string CardGenerationException(string error) => Format("AF_ILL_UI_CARD_GENERATION_EXCEPTION", "Generation error: {ERROR}", "ERROR", error);
+        internal static string CardNotSavedOrDisplayed => Resolve("AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED", "The image could not be saved or displayed.");
+        internal static string SceneProbeLoading => Resolve("AF_ILL_UI_SCENE_PROBE_LOADING", "Rebuilding the nearby environment and capturing a complete panorama...");
+        internal static string SceneProbeDisplayFailed => Resolve("AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED", "The exported preview could not be displayed.");
         internal static string GalleryMenu => Resolve("AF_ILL_MENU_GALLERY", "Calradia Visual Chronicle Gallery (AI illustrations)");
         internal static string GenerationComplete(string title) => Format("AF_ILL_NOTIFY_GENERATION_COMPLETE", "[AI Illustration] {TITLE} is complete and the gallery has been updated.", "TITLE", title);
         internal static string GenerationFailed(string error) => Format("AF_ILL_NOTIFY_GENERATION_FAILED", "[AI Illustration] Generation failed: {ERROR}", "ERROR", error);
