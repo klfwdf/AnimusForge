@@ -26,7 +26,7 @@ if a.current_consumer:
  # Historical oracle sources, shortened timers and truncated commit bodies are never inputs here.
  import json,hashlib,subprocess,xml.etree.ElementTree as ET
  from output_isolation import resolve_dotnet,minimal_test_environment
- test_paths=[HERE/'run_liveness.py',HERE/'LivenessHooks.cs.txt',HERE/'LivenessCases.cs.txt']
+ test_paths=[HERE/'run_liveness.py',HERE/'LivenessHooks.cs.txt',HERE/'LivenessCases.cs.txt',HERE/'CourierLocalizationBoundary.cs.txt']
  test_inputs=[{'path':path.relative_to(ROOT).as_posix(),'rawSha256':hashlib.sha256(path.read_bytes()).hexdigest()} for path in test_paths]
  if a.old or a.mutate or a.output_name: p.error('current consumer requires --run-root and forbids legacy inverse/mutants')
  if not a.run_root: p.error('current consumer requires a new explicit --run-root')
@@ -332,9 +332,12 @@ if a.current_consumer:
 
  cases=(HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig').split('// @@COURIER_CURRENT_CASES@@')[1]
  (seed/'CourierCurrentLeaves.cs').write_text(hooks,encoding='utf-8');(seed/'CourierCurrentCases.cs').write_text(cases,encoding='utf-8')
+ # Scalar localization boundary for the current helper; native language loading is a separate check.
+ (seed/'CourierLocalizationBoundary.cs').write_text((HERE/'CourierLocalizationBoundary.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
  project=seed/'CurrentConsumer.csproj';tree=ET.parse(project);item=ET.SubElement(tree.getroot(),'ItemGroup')
  for file in sorted(seed.glob('Courier*.cs')):ET.SubElement(item,'Compile',{'Include':str(file)})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierVisibleLetterSanitizer.cs')})
+ ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierFailureUiText.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionReceipt.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionCommitCoordinator.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs')})

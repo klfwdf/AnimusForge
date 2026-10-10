@@ -324,7 +324,7 @@ public sealed partial class CourierDeliveryBehavior
 		try
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"信使来信处理失败，信使已安全终止，未交付信件。",
+				CourierFailureUiText.InboundAborted,
 				Colors.Red));
 		}
 		catch

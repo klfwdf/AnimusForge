@@ -3082,5 +3082,12 @@ Choose how to proceed:" />
   <string id="AF_NOTIFY_NewsCollection_SwitchWeekly" text="Switched to weekly reports: collection restarts now. The first issue will be generated after 7 game days; previous retries have been canceled." />
   <string id="AF_NOTIFY_NativeConversation_InputOpened" text="AnimusForge free conversation input is open." />
   <string id="AF_NOTIFY_Escort_PrisonersSpawned" text="[Noble prisoner escort] {COUNT} hero prisoners have entered the scene and joined formation 8." />
+  <string id="AF_CONV_UI_Courier_ReplyFailedTitle" text="Courier reply generation failed" />
+  <string id="AF_CONV_UI_Courier_LetterFailedTitle" text="Courier letter generation failed" />
+  <string id="AF_CONV_UI_Courier_ReplyStoppedTitle" text="Courier reply stopped" />
+  <string id="AF_CONV_UI_Courier_ReplyStoppedDetail" text="This reply could not be completed safely. The system will not automatically retry actions that may already have taken effect. Check the log and verify the actual outcome." />
+  <string id="AF_CONV_UI_Courier_InboundAborted" text="Courier letter processing failed. The courier was safely stopped and the letter was not delivered." />
+  <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="Courier reply generation failed:&#10;&#10;{DETAIL}" />
+  <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="Courier letter generation failed:&#10;&#10;{DETAIL}" />
   </strings>
 </base>

@@ -3113,5 +3113,12 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_NOTIFY_NewsCollection_SwitchWeekly" text="已切换周报：从现在重新收集，累计7个游戏日后生成第一期；旧重试已取消。" />
   <string id="AF_NOTIFY_NativeConversation_InputOpened" text="已打开 AnimusForge 自由对话输入框。" />
   <string id="AF_NOTIFY_Escort_PrisonersSpawned" text="【贵族俘虏随行】已带入 {COUNT} 名英雄俘虏，归入第 8 编队。" />
+  <string id="AF_CONV_UI_Courier_ReplyFailedTitle" text="信使回信生成失败" />
+  <string id="AF_CONV_UI_Courier_LetterFailedTitle" text="信使来信生成失败" />
+  <string id="AF_CONV_UI_Courier_ReplyStoppedTitle" text="信使回信已停止" />
+  <string id="AF_CONV_UI_Courier_ReplyStoppedDetail" text="本次回信未能安全完成，系统不会自动重试可能已生效的动作。请查看日志并核对实际结果。" />
+  <string id="AF_CONV_UI_Courier_InboundAborted" text="信使来信处理失败，信使已安全终止，未交付信件。" />
+  <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="信使回信正文生成失败：&#10;&#10;{DETAIL}" />
+  <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="信使来信正文生成失败：&#10;&#10;{DETAIL}" />
   </strings>
 </base>
