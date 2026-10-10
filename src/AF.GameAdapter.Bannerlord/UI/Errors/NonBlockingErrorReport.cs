@@ -19,14 +19,19 @@ public static class NonBlockingErrorReport
 	private static long _lastNotificationUtcTicks;
 
 	/// <summary>
-	/// Shows the full redacted failure detail without truncation and writes the same detail to the log.
+	/// Preserves full redacted diagnostics; an optional display projection changes only the visible notification.
 	/// This method is only called from UI/main-thread paths or LlmRetryPrompt's main-thread dispatcher.
 	/// </summary>
 	public static void Show(string title, string detail, bool rememberForAnalysis = true)
+		=> Show(title, detail, rememberForAnalysis, null);
+
+	internal static void Show(string title, string detail, bool rememberForAnalysis, string displayDetail)
 	{
 		string normalizedTitle = Normalize(title, new TextObject("{=AF_UI_ErrorReport_OperationFailed}AnimusForge operation failed").ToString());
 		string normalizedDetail = RedactConfiguredApiKeys(Normalize(detail, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
-		string notification = BuildVisibleMessage(normalizedTitle, normalizedDetail);
+		// The display projection never replaces raw diagnostics in logs, analysis or duplicate suppression.
+		string visibleDetail = displayDetail == null ? normalizedDetail : RedactConfiguredApiKeys(Normalize(displayDetail, normalizedDetail));
+		string notification = BuildVisibleMessage(normalizedTitle, visibleDetail);
 		// 保留最近一次自动错误，供玩家主动从终端请求 AI 分析，避免移除旧弹窗后丢失该功能。
 		if (rememberForAnalysis)
 		{

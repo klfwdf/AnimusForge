@@ -256,7 +256,7 @@ internal void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, in
 			}
 			catch (Exception ex)
 			{
-				namingResult = KingdomRebellionRuntimeController.BuildFailedRebelKingdomNamingResult("强制叛乱建国命名后台任务异常：" + ex.Message);
+				namingResult = KingdomRebellionRuntimeController.BuildFailedRebelKingdomNamingResult(KingdomRebellionRuntimeController.ForcedNamingFailurePrefix + ex.Message);
 			}
 			_runtime().EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
@@ -404,7 +404,20 @@ internal static void ReportRebelKingdomNamingFailure(RebelKingdomNamingResult na
 		if (!string.IsNullOrWhiteSpace(failureReason))
 		{
 			// 仅在失败 UI 已经准备显示时报告一次，避免后台重试过程反复打断玩家。
-			NonBlockingErrorReport.Show(Ui("AF_UI_KingdomRebellion_NamingFailedTitle", "Rebel kingdom naming failed"), failureReason);
+			NonBlockingErrorReport.Show(Ui("AF_UI_KingdomRebellion_NamingFailedTitle", "Rebel kingdom naming failed"), failureReason,
+				true, NamingFailureDisplay(failureReason));
 		}
+	}
+
+	internal static string NamingFailureDisplay(string raw)
+	{
+		string text = raw ?? "";
+		if (text.StartsWith(KingdomRebellionRuntimeController.ForcedNamingFailurePrefix, StringComparison.Ordinal))
+			return Ui("AF_UI_KingdomRebellion_NamingForcedBackgroundFailurePrefix", "Background forced-rebellion kingdom naming task failed: ") + text.Substring(KingdomRebellionRuntimeController.ForcedNamingFailurePrefix.Length);
+		if (text.StartsWith(KingdomRebellionRuntimeController.NamingRetryFailurePrefix, StringComparison.Ordinal))
+			return Ui("AF_UI_KingdomRebellion_NamingRetryBackgroundFailurePrefix", "Background rebel kingdom naming retry failed: ") + text.Substring(KingdomRebellionRuntimeController.NamingRetryFailurePrefix.Length);
+		if (text.StartsWith(KingdomRebellionRuntimeController.AutomaticNamingFailurePrefix, StringComparison.Ordinal))
+			return Ui("AF_UI_KingdomRebellion_NamingBackgroundFailurePrefix", "Background rebel kingdom naming task failed: ") + text.Substring(KingdomRebellionRuntimeController.AutomaticNamingFailurePrefix.Length);
+		return text;
 	}
 }

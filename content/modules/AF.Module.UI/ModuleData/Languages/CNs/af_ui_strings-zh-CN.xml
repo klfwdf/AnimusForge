@@ -3208,5 +3208,6 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_EncyclopediaRelationEffect" text="国王与本国非王族成年成员关系修正：{VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect" text="王室直辖地忠诚日修正：{VALUE}" />
   <string id="AF_UI_KingdomStability_EncyclopediaTitle" text="【王国稳定度】" />
+  <string id="AF_UI_KingdomRebellion_NamingForcedBackgroundFailurePrefix" text="强制叛乱建国命名后台任务异常：" />
 </strings>
 </base>

@@ -9,6 +9,10 @@ namespace AnimusForge;
 // Domain naming context and retry/result application. Provider configuration/gateway stays in H3; no whole Campaign host capture.
 internal sealed class KingdomRebellionRuntimeController
 {
+ // Legacy diagnostic prefixes are internal matching values, never localized in workers.
+ internal const string AutomaticNamingFailurePrefix = "叛乱建国命名后台任务异常：";
+ internal const string NamingRetryFailurePrefix = "叛乱建国命名重试后台任务异常：";
+ internal const string ForcedNamingFailurePrefix = "强制叛乱建国命名后台任务异常：";
  private const int RebelKingdomNamingMaxAttempts=RebellionNamingOwner.MaxAttempts;
  private readonly WeeklyEventRecordStateOwner _records;
  private readonly Func<int> _requestInterval;
@@ -538,7 +542,7 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
 			}
 			catch (Exception ex)
 			{
-				namingResult = BuildFailedRebelKingdomNamingResult(KingdomUiText.T("AF_UI_KingdomRebellion_NamingBackgroundFailurePrefix", "Background rebel kingdom naming task failed: ") + ex.Message);
+				namingResult = BuildFailedRebelKingdomNamingResult(AutomaticNamingFailurePrefix + ex.Message);
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
@@ -710,7 +714,7 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 			}
 			catch (Exception ex)
 			{
-				namingResult = BuildFailedRebelKingdomNamingResult(KingdomUiText.T("AF_UI_KingdomRebellion_NamingRetryBackgroundFailurePrefix", "Background rebel kingdom naming retry failed: ") + ex.Message);
+				namingResult = BuildFailedRebelKingdomNamingResult(NamingRetryFailurePrefix + ex.Message);
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
