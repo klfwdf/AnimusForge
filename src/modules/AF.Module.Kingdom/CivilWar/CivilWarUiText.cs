@@ -126,6 +126,7 @@ internal static class CivilWarUiText
         "LeftCamp" => "{A} leaves the camp and stays uncommitted for seven days.",
         "Founded" => "{A} founds a faction, demand: {B}.",
         "DissolvedOwn" => "You dissolved your own faction: −10 relation with the other member clans. Grievance and any existing kingdom cooldown are kept.",
+        "DemandChanged" => "You changed the faction demand to {A}; {B} other clans stay involved. The faction will not rise automatically.",
         "LeaderRefusedRising" => "The leader refused the proposal to rise; it can be proposed again in seven days.",
         "RisingAccepted" => "The order to rise was accepted; waiting for the rebels to found their kingdom.",
         "Suppressed" => "The crown imposes political suppression on the {A}.",

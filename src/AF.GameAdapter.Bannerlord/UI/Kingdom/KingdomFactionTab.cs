@@ -351,7 +351,9 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	private static string Badge(CivilWarPanelFaction f)
 	{
 		if (!f.DeadlineUrgent || string.IsNullOrEmpty(f.DeadlineLabel)) return "";
-		string label = f.DeadlineLabel == "最后通牒" ? KingdomFactionUiText.T("AF_DIP_UI_Faction_Ultimatum", "Ultimatum") : f.DeadlineLabel;
+		// Driven by the panel's stable flag, not by comparing the localized label, so this keeps working
+		// in any language.
+		string label = f.DeadlineIsUltimatum ? KingdomFactionUiText.T("AF_DIP_UI_Faction_Ultimatum", "Ultimatum") : f.DeadlineLabel;
 		return Clip(label + " " + f.DeadlineValue + f.DeadlineUnit, 9);
 	}
 

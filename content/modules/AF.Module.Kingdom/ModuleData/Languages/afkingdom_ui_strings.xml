@@ -73,5 +73,7 @@
     <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="The model returned an empty or invalid kingdom name, or one that duplicates an existing kingdom." />
     <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="The model reply could not be parsed into the [NAME]/[SHORT]/[LORE] format." />
     <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="Rebel kingdom naming failed." />
+    <string id="AF_KINGDOM_CW_World_UnknownClan" text="an unknown clan" />
+    <string id="AF_KINGDOM_CW_Notice_DemandChanged" text="You changed the faction demand to {A}; {B} other clans stay involved. The faction will not rise automatically." />
 </strings>
 </base>
